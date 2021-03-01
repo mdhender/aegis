@@ -1,7 +1,7 @@
 #!/bin/sh
 #
 #	aegis - project change supervisor
-#	Copyright (C) 1997-2003 Peter Miller;
+#	Copyright (C) 1997-2004 Peter Miller;
 #	All rights reserved.
 #
 #	This program is free software; you can redistribute it and/or modify
@@ -60,6 +60,7 @@ check_it()
 		-e 's/20[0-9][0-9]/YYYY/' \
 		-e 's/node = ".*"/node = "NODE"/' \
 		-e 's/crypto = ".*"/crypto = "GUNK"/' \
+		-e 's/uuid = ".*"/uuid = "UUID"/' \
 		< $2 > $work/sed.out
 	if test $? -ne 0; then no_result; fi
 	diff $1 $work/sed.out
@@ -289,6 +290,7 @@ src =
 [
 	{
 		file_name = "fred";
+		uuid = "UUID";
 		action = modify;
 		edit_origin =
 		{

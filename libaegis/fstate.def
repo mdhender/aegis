@@ -1,6 +1,6 @@
 /*
  *	aegis - project change supervisor
- *	Copyright (C) 1995-1998, 2001-2003 Peter Miller;
+ *	Copyright (C) 1995-1998, 2001-2004 Peter Miller;
  *	All rights reserved.
  *
  *	This program is free software; you can redistribute it and/or modify
@@ -27,9 +27,9 @@
 
 type fingerprint =
 {
-	youngest = time;
-	oldest = time;
-	crypto = string;
+    youngest = time;
+    oldest = time;
+    crypto = string;
 };
 
 
@@ -38,192 +38,207 @@ type fingerprint =
  */
 src =
 [
-	{
+    {
+	/*
+	 * This file names the file.  The name is relative to
+	 * the root of the baseline directory tree.
+	 */
+	file_name = string;
+
+	/*
+         * This field uniquely identifies the file for its entire
+         * lifetime.  This field remains constant across file renames.
+         * The value of this field shall be formatted as a valid UUID,
+         * all in lower case.
+	 */
+	uuid = string;
+
+	/*
+	 * This field describes what is being done with the file.
+	 */
+	action = file_action;
+
+	/*
+	 * For an active branch, this field records the current
+	 * ``head revision'' of the file.
+	 *
+	 * For a completed branch, this field records the edit
+	 * number the file assumed upon integration completion.
+	 *
+	 * For a change, or a completed branch, this field
+	 * is only meaningfuil in the completed state, where
+	 * it records the edit number the file assumed upon
+	 * integration completion.
+	 */
+	edit = history_version;
+
+	/* As above, but no longer used. */
+	edit_number = string;
+
+	/*
+	 * For a branch, this field records the edit number of
+	 * the file when it was copied from the parent branch.
+	 *
+	 * For a change, this field record the edit number of the
+	 * file when it was copied from the branch (or ancestor)
+	 * into the change.
+	 */
+	edit_origin = history_version;
+
+	/* As above, but no longer used. */
+	edit_number_origin = string;
+
+	/*
+	 * This field is only valid for changes, not branches.
+	 * It records a new edit_number_origin to be given to the
+	 * branch once integration is complete.  (This field only
+	 * present between being_developed and being_integrated,
+	 * inclusive.)
+	 */
+	edit_origin_new = history_version;
+
+	/* As above, but no longer used. */
+	edit_number_origin_new = string;
+
+	/*
+	 * This field describes what function the file serves.
+	 */
+	usage = file_usage;
+
+	/*
+	 * This field remembers when the source file itself was
+	 * last modified (os_mtime also checks ctime to make
+	 * sure it is not being faked out).  If the file_time
+	 * has changed, the fingerprint is checked.
+	 */
+	file_fp = fingerprint;
+
+	/*
+	 * This field is set by a successful 'aegis -DIFFerence'
+	 * command to the last modified time of the difference
+	 * file.  It is only present between the
+	 * 'being_developed' and 'being_integrated' states,
+	 * inclusive (for both changes *and* branches).  This
+	 * allows checking that the files have not been modified
+	 * at the develop_end, review_pass and integrate_begin
+	 * state transitions.
+	 */
+	diff_file_fp = fingerprint;
+
+	/*
+	 * This field is set by a successful 'aegis -DIFFerence'
+	 * command to the last modified time of the difference
+	 * file.  It is only present in the 'being integrated'
+	 * state.
+	 */
+	idiff_file_fp = fingerprint;
+
+	/*
+	 * This field records the time of various operations for
+	 * each variant named in the "architecture" field.  It
+	 * is only present in the 'being_developed' and
+	 * 'being_integrated' states.
+	 */
+	architecture_times =
+	[
+	    {
 		/*
-		 * This file names the file.  The name is relative to
-		 * the root of the baseline directory tree.
+		 * This field is one of the patterns named in
+		 * the outer "architecture" field.
 		 */
-		file_name = string;
-
-		/*
-		 * This field describes what is being done with the file.
-		 */
-		action = file_action;
-
-		/*
-		 * For an active branch, this field records the current
-		 * ``head revision'' of the file.
-		 *
-		 * For a completed branch, this field records the edit
-		 * number the file assumed upon integration completion.
-		 *
-		 * For a change, or a completed branch, this field
-		 * is only meaningfuil in the completed state, where
-		 * it records the edit number the file assumed upon
-		 * integration completion.
-		 */
-		edit = history_version;
-
-		/* As above, but no longer used. */
-		edit_number = string;
-
-		/*
-		 * For a branch, this field records the edit number of
-		 * the file when it was copied from the parent branch.
-		 *
-		 * For a change, this field record the edit number of the
-		 * file when it was copied from the branch (or ancestor)
-		 * into the change.
-		 */
-		edit_origin = history_version;
-
-		/* As above, but no longer used. */
-		edit_number_origin = string;
-
-		/*
-		 * This field is only valid for changes, not branches.
-		 * It records a new edit_number_origin to be given to the
-		 * branch once integration is complete.  (This field only
-		 * present between being_developed and being_integrated,
-		 * inclusive.)
-		 */
-		edit_origin_new = history_version;
-
-		/* As above, but no longer used. */
-		edit_number_origin_new = string;
-
-		/*
-		 * This field describes what function the file serves.
-		 */
-		usage = file_usage;
-
-		/*
-		 * This field remembers when the source file itself was
-		 * last modified (os_mtime also checks ctime to make
-		 * sure it is not being faked out).  If the file_time
-		 * has changed, the fingerprint is checked.
-		 */
-		file_fp = fingerprint;
-
-		/*
-		 * This field is set by a successful 'aegis -DIFFerence'
-		 * command to the last modified time of the difference
-		 * file.  It is only present between the
-		 * 'being_developed' and 'being_integrated' states,
-		 * inclusive (for both changes *and* branches).  This
-		 * allows checking that the files have not been modified
-		 * at the develop_end, review_pass and integrate_begin
-		 * state transitions.
-		 */
-		diff_file_fp = fingerprint;
-
-		/*
-		 * This field is set by a successful 'aegis -DIFFerence'
-		 * command to the last modified time of the difference
-		 * file.  It is only present in the 'being integrated'
-		 * state.
-		 */
-		idiff_file_fp = fingerprint;
-
-		/*
-		 * This field records the time of various operations for
-		 * each variant named in the "architecture" field.  It
-		 * is only present in the 'being_developed' and
-		 * 'being_integrated' states.
-		 */
-		architecture_times =
-		[
-		    {
-			/*
-			 * This field is one of the patterns named in
-			 * the outer "architecture" field.
-			 */
-			variant = string;
-
-			/*
-			 * This field records the last time the last
-			 * successful 'aegis -Test' command was run for
-			 * this specific architecture variant.
-			 */
-			test_time = time;
-
-			/*
-			 * This field records the last time the last
-			 * successful 'aegis -Test -BaseLine' command
-			 * was run for this specific architecture
-			 * variant.
-			 */
-			test_baseline_time = time;
-		    }
-		];
+		variant = string;
 
 		/*
-		 * To change the name of a file, a combination of aerm
-		 * and aenf are used.  With deleted files, this field is
-		 * used to say where it went.  With new files, this
-		 * field is used to say where it came from.
+		 * This field records the last time the last
+		 * successful 'aegis -Test' command was run for
+		 * this specific architecture variant.
 		 */
-		move = string;
+		test_time = time;
 
 		/*
-		 * The change which locked this file.
-		 *
-		 * Caveat: this field is redundant, you can figure it
-		 * out by scanning all of he change files.  Having it
-		 * here is very convenient, even though it means
-		 * multiple updates.
+		 * This field records the last time the last
+		 * successful 'aegis -Test -BaseLine' command
+		 * was run for this specific architecture
+		 * variant.
 		 */
-		locked_by = integer;
+		test_baseline_time = time;
+	    }
+	];
 
-		/*
-		 * The change which is about to create this file for the
-		 * first time.  Same caveat as above.
-		 */
-		about_to_be_created_by = integer;
+	/*
+	 * To change the name of a file, a combination of aerm
+	 * and aenf are used.  With deleted files, this field is
+	 * used to say where it went.  With new files, this
+	 * field is used to say where it came from.
+	 */
+	move = string;
 
-		/*
-		 * For each change file that is acting on a project file
-		 * from a deeper level than the immediate parent
-		 * project, the file needs to be added to the immediate
-		 * parent project.  Same caveat as above.
-		 */
-		about_to_be_copied_by = integer;
+	/*
+	 * The change which locked this file.
+	 *
+	 * Caveat: this field is redundant, you can figure it
+	 * out by scanning all of he change files.  Having it
+	 * here is very convenient, even though it means
+	 * multiple updates.
+	 */
+	locked_by = integer;
 
-		/*
-		 * The change which last deleted this file.  We never
-		 * throw them away, becase (a) it may be created again,
-		 * and more imortant (b) we need it to recreate earlier
-		 * deltas.
-		 */
-		deleted_by = integer;
+	/*
+	 * The change which is about to create this file for the
+	 * first time.  Same caveat as above.
+	 */
+	about_to_be_created_by = integer;
 
-		/*
-		 * This field is used to remember the correlation
-		 * between source files and test files.  It is updated
-		 * by aeipass.  It is only present for projects and
-		 * branches.  It is only present for source files (not
-		 * build files and not test files).
-		 */
-		test = [ string ];
+	/*
+	 * For each change file that is acting on a project file
+	 * from a deeper level than the immediate parent
+	 * project, the file needs to be added to the immediate
+	 * parent project.  Same caveat as above.
+	 */
+	about_to_be_copied_by = integer;
 
-		/*
-		 * This field is an arbitrary list of names and values.
-		 * They are expected to be generated by the integration
-		 * build, and are transferred at aeipass.
-		 */
-		metrics = metric;
+	/*
+	 * The change which last deleted this file.  We never
+	 * throw them away, becase (a) it may be created again,
+	 * and more imortant (b) we need it to recreate earlier
+	 * deltas.
+	 */
+	deleted_by = integer;
 
-		/*
-		 * This field tracks whether this incarnation of the file
-		 * was executable at `develop end' time.  This mode
-		 * is restored (taking the project umask into account)
-		 * when the file is copied.
-		 *
-		 * This field is only meaningful for changes in the
-		 * "completed" state, because this field is only set
-		 * by aeip.  Until then, the mode if the file itself is
-		 * the authority.
-		 */
-		executable = boolean hide_if_default;
-	}
+	/*
+	 * This field is used to remember the correlation
+	 * between source files and test files.  It is updated
+	 * by aeipass.  It is only present for projects and
+	 * branches.  It is only present for source files (not
+	 * build files and not test files).
+	 */
+	test = [ string ];
+
+	/*
+	 * This field is an arbitrary list of names and values.
+	 * They are expected to be generated by the integration
+	 * build, and are transferred at aeipass.
+	 */
+	metrics = metric;
+
+	/*
+	 * This field tracks whether this incarnation of the file
+	 * was executable at `develop end' time.  This mode
+	 * is restored (taking the project umask into account)
+	 * when the file is copied.
+	 *
+	 * This field is only meaningful for changes in the
+	 * "completed" state, because this field is only set
+	 * by aeip.  Until then, the mode if the file itself is
+	 * the authority.
+	 */
+	executable = boolean hide_if_default;
+
+	/*
+         * This field records the file attributes.  Users may edit this
+         * field using the aegis --file-attributes --edit command.
+	 * These attributes are for users only; Aegis ignores them.
+	 */
+	attribute = attributes;
+    }
 ];

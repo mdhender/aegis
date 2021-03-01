@@ -1,6 +1,6 @@
 .\"
 .\"	aegis - project change supervisor
-.\"	Copyright (C) 2002, 2003 Peter Miller;
+.\"	Copyright (C) 2002-2004 Peter Miller;
 .\"	All rights reserved.
 .\"
 .\"	This program is free software; you can redistribute it and/or modify
@@ -129,13 +129,18 @@ instructions to suit the name of your project.)  You wont be able to
 compile on SourceForge, so do it on a Linux PC elsewhere.
 <ol>
 <li>
-Configure with <i>./configure --prefix=/home/groups/a/ae/aegis
+Configure with <i>./configure
+.br
+--prefix=/home/groups/a/ae/aegis
+.br
 --with-no-aegis-configured</i>
 <li>
-Edit the generated Makefile, and add -DSOURCE_FORGE_HACK to the CFLAGS
-variable.
-(You may need <tt>LDFLAGS = -static</tt> if you aren't building on a
-Redhat 7.3 system, like SourceForge users.)
+Edit the generated Makefile,
+<ul>
+<li>add <tt>-DSOURCE_FORGE_HACK</tt> to the CXXFLAGS variable;
+<li>add <tt>-static</tt> to the LDFLAGS variable if you aren't building on a
+Redhat 7.3 system, like SourceForge uses.
+</ul>
 <li>
 Now you can <i>make</i> as normal.
 <li>
@@ -145,28 +150,27 @@ You can use the RPM_BUILD_ROOT setting of the Makefile, or you can
 When you <i>make install</i>, you will then need to cull the install
 tree of unneccessary files.
 You only need
+<i>bin/ae_diff2htm</i>,
 <i>bin/aedist</i>,
 <i>bin/aeget</i>,
 <i>bin/aegis</i>,
+<i>bin/aegis.cgi</i>,
 <i>bin/aepatch</i>,
 <i>bin/aerect</i>,
 <i>bin/aereport</i>,
 <i>bin/aetar</i>,
-<i>bin/ae_diff2htm</i>,
-<i>bin/aegis.cgi</i>, and the
+and the
 <i>share/en/html</i> tree.
 The rest can be removed.
 <blockquote>
 .nf
 <pre>cd /home/groups/a/ae/aegis
 mkdir -m755 cgi-bin
-mv bin/aeget cgi-bin
-mv bin/aegis.cgi cgi-bin
-rm bin/aeannotate bin/aebuffy bin/aecomp bin/aecomplete
-rm bin/ae_diff2htm bin/aeedit bin/aefind bin/aegis.cgi.i
-rm bin/aeimport bin/aeintegratq bin/aels bin/aemeasure
-rm bin/ae-sccs-put bin/aesub bin/aexml bin/tkaeca bin/tkaegis
-rm bin/tkaenc bin/tkaepa bin/tkaer bin/xaegis
+rm bin/aeannotate bin/aebuffy bin/aecomp bin/aecomplete bin/ae-cvs-ci
+rm bin/aecvsserver bin/aeedit bin/aefind bin/aegis.cgi.i bin/aeimport
+rm bin/aeintegratq bin/aels bin/aemeasure bin/ae-sccs-put bin/aesub
+rm bin/aexml bin/tkaeca bin/tkaegis bin/tkaenc bin/tkaepa bin/tkaer
+rm bin/xaegis
 rm -r com lib man
 mkdir -p share-new/en
 mv share/en/html share-new/en
@@ -175,7 +179,35 @@ mv share-new share</pre>
 .fi
 </blockquote>
 <li>
+You will need to create a couple of shell scripts in the <i>cgi-bin</i>
+directory to set the command search PATH and then invoke <i>aeget</i>
+or <i>aegis.cgi</i> as appropriate.
+<blockquote>
+.nf
+<pre>#!/bin/sh
+cmd=`basename $0`
+bin=/home/groups/a/ae/aegis/bin
+PATH=${bin}:$PATH
+export PATH
+exec $bin/$cmd "$@"
+.fi
+</blockquote>
+<li>
+Total size is about 50MB (shared libraries would <i>really</i> help).
 Make a tarball, <i>scp</i> it to SourceForge, unpack at the other end.
+<blockquote>
+.nf
+<pre>tar czf xxx.tgz bin cgi-bin share
+scp xxx.tgz aegis.sourceforge.net:.
+ssh aegis.sourceforge.net
+cd /home/groups/a/ae/aegis
+tar xf ~/xxx.tgz
+cd
+rm xxx.tgz
+</pre>
+.fi
+</blockquote>
+The tarball is about 15MB so the upload time isn't too bad.
 <li>
 <a name="num7">Now upload your project.</a>
 I use <i>rsync</i> for efficient differential

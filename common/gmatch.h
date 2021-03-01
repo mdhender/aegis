@@ -25,6 +25,10 @@
 
 #include <main.h>
 
+/** \addtogroup Misc
+  * @{
+  */
 int gmatch(const char *, const char *);
 
+/** @} */
 #endif /* COMMON_GMATCH_H */

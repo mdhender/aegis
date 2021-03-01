@@ -1,6 +1,6 @@
 '\" t
 .\"	aegis - project change supervisor
-.\"	Copyright (C) 1991-1994, 2002 Peter Miller.
+.\"	Copyright (C) 1991-1994, 2002, 2004 Peter Miller.
 .\"	All rights reserved.
 .\"
 .\"	This program is free software; you can redistribute it and/or modify
@@ -125,3 +125,22 @@ version_previous = string;
 This field records the "previous" version, mostly to simplify patch generation.
 It is only meaningful for trunks and branches.
 It is set automatically when a branch is started or integrated.
+.TP 8n
+attribute = [ { ... } ];
+.RS
+This is a list of \fI(name,value)\fP pairs, defining user specified attributes.
+.TP 8n
+name = string;
+.RS
+The name of the attribute.
+By convention, names which start with an upper-case letter will appear
+in listings, and lower-case will not.
+.RE
+.TP 8n
+value = string;
+The value of the attribute.
+.PP
+Arguably, most change attributes which may be altered by the user (and
+some that can't) should be of this form.  Due to an accident of history,
+this is not the case.
+.RE

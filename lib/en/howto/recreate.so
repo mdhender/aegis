@@ -37,6 +37,8 @@ the source recreation:
 .in +0.25i
 This option tells \fIaecp\fP(1) to extract an historical version of the
 files, rather than the head revision (the one visable in the baseline).
+You need to know the \fIdelta\fP number of the change,
+assigned at integration time, not the change number.
 'in -0.25i
 .LP
 \fB\-BRanch\fP \fInumber\fP
@@ -45,6 +47,22 @@ If the
 historical version is on a different branch than the one the current
 change is on, use this option.  The branch number is to the left of the
 \&"D" in version strings.
+'in -0.25i
+.LP
+\fB\-DELta-From-Change\fP \fInumber\fP
+.in +0.25i
+This option tells \fIaecp\fP(1) to extract an historical version of the
+files, rather than the head revision (the one visable in the baseline).
+You only need the change number to use this option.
+.LP
+\fB\-DELta-Date "\fIstring\fP"
+.in +0.25i
+This option tells \fIaecp\fP(1) to extract an historical version of the
+files, rather than the head revision (the one visable in the baseline).
+You only need the date the change was integrated to use this option.
+It understands many forms of written (English) dates, but try to
+avoid ambiguous month numbering (it can be confused by some European
+vs. American numeric formats, use month names instead).
 'in -0.25i
 .nh 2 "Finding Delta Numbers"
 .LP

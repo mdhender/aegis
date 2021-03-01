@@ -44,8 +44,23 @@
 /* Define to 1 if you have the `clu_info' function. */
 #undef HAVE_CLU_INFO
 
+/* Define to 1 if you have the `crypt' function. */
+#undef HAVE_CRYPT
+
 /* Define to 1 if you have the <curl/curl.h> header file. */
 #undef HAVE_CURL_CURL_H
+
+/* Define to 1 if you have the `curl_easy_strerror' function. */
+#undef HAVE_CURL_EASY_STRERROR
+
+/* Define to 1 if you have the `curl_multi_strerror' function. */
+#undef HAVE_CURL_MULTI_STRERROR
+
+/* Define to 1 if you have the <dce/rpc.h> header file. */
+#undef HAVE_DCE_RPC_H
+
+/* Define to 1 if you have the <dce/uuid.h> header file. */
+#undef HAVE_DCE_UUID_H
 
 /* Define to 1 if you have the <dirent.h> header file, and it defines `DIR'.
    */
@@ -66,6 +81,12 @@
 /* Define this symbol of your system has GNU diff. */
 #undef HAVE_GNU_DIFF
 
+/* Define to 1 if you have the `igetspnam' function. */
+#undef HAVE_IGETSPNAM
+
+/* Define to 1 if you have the `initgroups' function. */
+#undef HAVE_INITGROUPS
+
 /* Define to 1 if you have the <inttypes.h> header file. */
 #undef HAVE_INTTYPES_H
 
@@ -80,6 +101,9 @@
 
 /* Define to 1 if you have the `clu' library (-lclu). */
 #undef HAVE_LIBCLU
+
+/* Define to 1 if you have the `crypt' library (-lcrypt). */
+#undef HAVE_LIBCRYPT
 
 /* Define to 1 if you have the `curl' library (-lcurl). */
 #undef HAVE_LIBCURL
@@ -105,6 +129,9 @@
 /* Define to 1 if you have the `socket' library (-lsocket). */
 #undef HAVE_LIBSOCKET
 
+/* Define to 1 if you have the `uuid' library (-luuid). */
+#undef HAVE_LIBUUID
+
 /* Define to 1 if you have the `w' library (-lw). */
 #undef HAVE_LIBW
 
@@ -114,8 +141,17 @@
 /* Define to 1 if you have the <limits.h> header file. */
 #undef HAVE_LIMITS_H
 
+/* Define this symbol if your sistem has /proc/sys/kernel/random/uuid */
+#undef HAVE_LINUX_UUID
+
+/* Define this symbol if your system has the locale-gen(8) program. */
+#undef HAVE_LOCALE_GEN_PROG
+
 /* Define to 1 if you have the <locale.h> header file. */
 #undef HAVE_LOCALE_H
+
+/* Define this symbol if your system has the locale(1) program. */
+#undef HAVE_LOCALE_PROG
 
 /* Define to 1 if you support file names longer than 14 characters. */
 #undef HAVE_LONG_FILE_NAMES
@@ -148,11 +184,17 @@
 /* Define to 1 if you have the `pathconf' function. */
 #undef HAVE_PATHCONF
 
+/* Define to 1 if you have the `prctl' function. */
+#undef HAVE_PRCTL
+
 /* Define to 1 if you have the `regcomp' function. */
 #undef HAVE_REGCOMP
 
 /* Define to 1 if you have the <regex.h> header file. */
 #undef HAVE_REGEX_H
+
+/* Define to 1 if you have the `rpc_string_free' function. */
+#undef HAVE_RPC_STRING_FREE
 
 /* Define to 1 if you have the <rxposix.h> header file. */
 #undef HAVE_RXPOSIX_H
@@ -168,6 +210,9 @@
 
 /* Define to 1 if you have the `setreuid' function. */
 #undef HAVE_SETREUID
+
+/* Define to 1 if you have the <shadow.h> header file. */
+#undef HAVE_SHADOW_H
 
 /* Define to 1 if you have the `sighold' function. */
 #undef HAVE_SIGHOLD
@@ -217,6 +262,9 @@
 /* Define to 1 if you have the `strverscmp' function. */
 #undef HAVE_STRVERSCMP
 
+/* Define to 1 if you have the `symlink' function. */
+#undef HAVE_SYMLINK
+
 /* Define to 1 if you have the <sys/clu.h> header file. */
 #undef HAVE_SYS_CLU_H
 
@@ -231,6 +279,9 @@
    */
 #undef HAVE_SYS_NDIR_H
 
+/* Define to 1 if you have the <sys/prctl.h> header file. */
+#undef HAVE_SYS_PRCTL_H
+
 /* Define to 1 if you have the <sys/stat.h> header file. */
 #undef HAVE_SYS_STAT_H
 
@@ -242,6 +293,21 @@
 
 /* Define to 1 if you have the <unistd.h> header file. */
 #undef HAVE_UNISTD_H
+
+/* Define to 1 if you have the `uuid_generate' function. */
+#undef HAVE_UUID_GENERATE
+
+/* Define to 1 if you have the <uuid.h> header file. */
+#undef HAVE_UUID_H
+
+/* Define to 1 if you have the `uuid_hash' function. */
+#undef HAVE_UUID_HASH
+
+/* Define to 1 if you have the `uuid_load' function. */
+#undef HAVE_UUID_LOAD
+
+/* Define to 1 if you have the <uuid/uuid.h> header file. */
+#undef HAVE_UUID_UUID_H
 
 /* Define to 1 if you have the `vsnprintf' function. */
 #undef HAVE_VSNPRINTF
@@ -286,6 +352,12 @@
 /* Define this symbol if your system as <termios.h> AND it defines TIOCGWINSZ
    and struct winsize. */
 #undef HAVE_winsize_TERMIOS_H
+
+/* Define this symbol if your system has /proc/sys/kernel/random/uuid */
+#undef LINUX_UUID_FILENAME
+
+/* Define this symbol if your system has /proc/sys/kernel/random/uuid */
+#undef LINUX_UUID_SIZE
 
 /* Define to the address where bug reports for this package should be sent. */
 #undef PACKAGE_BUGREPORT

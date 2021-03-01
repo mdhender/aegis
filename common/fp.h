@@ -1,6 +1,6 @@
 /*
  *	cook - file construction tool
- *	Copyright (C) 1994, 2003 Peter Miller.
+ *	Copyright (C) 1994, 2003, 2004 Peter Miller.
  *	All rights reserved.
  *
  *	This program is free software; you can redistribute it and/or modify
@@ -25,6 +25,11 @@
 
 #include <ac/stddef.h>
 
+/** \addtogroup Fingerprint
+  * \brief Fingerprint types and functions
+  * \ingroup Common
+  * @{
+  */
 struct fingerprint_methods_ty; /* forward */
 
 #define FINGERPRINT_BASE_CLASS \
@@ -45,20 +50,21 @@ struct fingerprint_methods_ty
     void	    (*destructor)(fingerprint_ty *);
     void	    (*addn)(fingerprint_ty *, unsigned char *, size_t);
     int		    (*hash)(fingerprint_ty *, unsigned char *);
-    void	    (*sum)(fingerprint_ty *, char *);
+    void	    (*sum)(fingerprint_ty *, char *, size_t);
 };
 
 fingerprint_ty *fingerprint_new(fingerprint_methods_ty *);
 void fingerprint_delete(fingerprint_ty *);
 void fingerprint_add(fingerprint_ty *, int);
 int fingerprint_file_hash(fingerprint_ty *, char *, unsigned char *);
-int fingerprint_file_sum(fingerprint_ty *, char *, char *);
+int fingerprint_file_sum(fingerprint_ty *, char *, char *, size_t);
 
 #define fingerprint_addn(p, s, n) \
 	(p)->method->addn((p), (s), (n))
 #define fingerprint_hash(p, s) \
 	(p)->method->hash((p), (s))
-#define fingerprint_sum(p, s) \
-	(p)->method->sum((p), (s))
+#define fingerprint_sum(p, s, len) \
+	(p)->method->sum((p), (s), (len))
 
+/** @} */
 #endif /* COMMON_FP_H */

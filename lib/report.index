@@ -59,6 +59,13 @@ style of output.";
 		filename = "report/chan_log.rpt";
 	},
 	{
+		name = "Debian_Change_Log";
+		description = "Report the history of a change.  Usually \
+employed on branches, where it can provide a Debian formatted changelog \
+file; best used with the -nph option.";
+		filename = "report/debchanlog.rpt";
+	},
+	{
 		name = "Change_Recursive_Debug";
 		description = "Recursive descent of change information, \
 mind-bogglingly verbose";

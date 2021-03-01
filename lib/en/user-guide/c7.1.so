@@ -1,6 +1,6 @@
 .\"
 .\"	aegis - project change supervisor
-.\"	Copyright (C) 1991-1993, 1998, 2001, 2002 Peter Miller;
+.\"	Copyright (C) 1991-1993, 1998, 2001, 2002, 2004 Peter Miller;
 .\"	All rights reserved.
 .\"
 .\"	This program is free software; you can redistribute it and/or modify
@@ -77,26 +77,18 @@ This means that the
 user may select the history tool most suited to any given project.
 It also means that Aegis is that much smaller to test and maintain.
 .LP
-The structure of the baseline is dictated by the nature of each project,
-with some minor exceptions.
-The Aegis program attempts to make as few
-arbitrary rules as possible.
-There is one mandatory file in the
-baseline,
-and one mandatory directory.
-The file is called
-.I config ,
-and
-contains the per-project configuration information;
-the directory is
-called
-.I test ,
-and contains all of the tests.
-The contents and structure of the
-.I test
-directory are also dictated by Aegis.
-Tests are treated just like any other source file,
-and are subject to the same process.
+The structure of the baseline is dictated by the nature of each project.
+The Aegis program attempts to make as few arbitrary rules as possible.
+There is one mandatory file in the your project baseline.  The mandatory
+file is called \fIaegis.conf\fP by default, and contains the per-project
+configuration information.  The name of this file may be changed if
+you want to call it something different.  It ios also common (though
+not mandatory, and the name may be changed) to have a directory called
+\fItest\fP which contains all of the test scripts.  The contents and
+structure of the \fItest\fP directory (or whatever you call it) are
+controlled by a test filename pattern you supply to Aegis.  Tests are
+treated just like any other source file, and are subject to the same
+process.
 .LP
 The baseline in Aegis has one particular attribute:
 it always works.

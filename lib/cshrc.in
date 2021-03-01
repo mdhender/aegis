@@ -36,12 +36,11 @@ endif
 # which understand the $LANGUAGE environment variable will be able to find
 # manual pages in the user's preferred language.
 #
+# On old versions of man, you could use man -w to find the default value
+# for $MANPATH.  We'll have to submit a bug report, hmm?
+#
 if ( ! $?MANPATH ) then
-	if ( "`uname`" == "Linux" ) then
-		setenv MANPATH `man -w`
-	else
-		setenv MANPATH /usr/man
-	endif
+    setenv MANPATH "`@MANPATH_PROG@`"
 endif
 setenv MANPATH ${MANPATH}:@mandir@:@datadir@
 
@@ -96,6 +95,7 @@ alias aedless \
 alias aedmore	\
     'more `find . -type f \( -name "*,D" -o -name ".*,D" \) -print | sort`'
 alias	aedn	'aegis -dn \!* -v'
+alias	aefa	'aegis -fat \!* -v'
 alias	aeib	'aegis -ib \!* -v'
 alias	aeibu	'aegis -ibu \!* -v'
 alias	aeifail	'aegis -ifail \!* -v'

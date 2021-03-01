@@ -1,6 +1,6 @@
 .\"
 .\"	aegis - project change supervisor
-.\"	Copyright (C) 1991-1993, 1998, 2002 Peter Miller;
+.\"	Copyright (C) 1991-1993, 1998, 2002, 2004 Peter Miller;
 .\"	All rights reserved.
 .\"
 .\"	This program is free software; you can redistribute it and/or modify
@@ -138,11 +138,10 @@ whether that file lying there in the development directory is significant
 to the project,
 or just a shopping list of the groceries you forgot to buy yesterday.
 .LP
-One particular
-new file which \fImust\fP be created by this change is the
-.I "config"
-file.
-This tells the aegis program what history mechanism you wish to use,
+One particular new file which \fImust\fP be created by this change is
+the project configuration file, usually called \fIaegis.conf\fP but
+can be named something else.
+This file tells Aegis what history mechanism you wish to use,
 what dependency maintenance command to use,
 what file difference tools to use,
 and much more.
@@ -325,7 +324,7 @@ the file histories are updated.
 In the case of the first change,
 the history is created,
 and problems with the
-.I "config"
+project configuration
 file's history commands will
 be revealed at this point.
 The integration won't pass,

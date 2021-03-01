@@ -1,6 +1,6 @@
 /*
  *      aegis - project change supervisor
- *      Copyright (C) 2001-2003 Peter Miller;
+ *      Copyright (C) 2001-2004 Peter Miller;
  *      All rights reserved.
  *
  *      This program is free software; you can redistribute it and/or modify
@@ -129,13 +129,13 @@ str2date(string_ty *s)
     s2 =
         str_format
         (
-            "%S/%S/%S %S:%S:%S GMT",
-            sl.string[1],
-            sl.string[2],
-            sl.string[0],
-            sl.string[3],
-            sl.string[4],
-            sl.string[5]
+            "%s/%s/%s %s:%s:%s GMT",
+            sl.string[1]->str_text,
+            sl.string[2]->str_text,
+            sl.string[0]->str_text,
+            sl.string[3]->str_text,
+            sl.string[4]->str_text,
+            sl.string[5]->str_text
         );
     string_list_destructor(&sl);
     t = date_scan(s2->str_text);

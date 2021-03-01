@@ -37,6 +37,7 @@
 #endif
 
 static void yyerror(const char *s);
+static void yydebugger(void *, const char *, ...);
 
 %}
 
@@ -133,7 +134,7 @@ yyerror(const char *s)
  */
 #define fprintf trace_where_, yydebugger
 
-void
+static void
 yydebugger(void *junk, const char *fmt, ...)
 {
     va_list         ap;

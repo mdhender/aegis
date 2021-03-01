@@ -1,6 +1,6 @@
 .\"
 .\"	aegis - project change supervisor
-.\"	Copyright (C) 1993, 1994, 2002 Peter Miller.
+.\"	Copyright (C) 1993, 1994, 2002, 2004 Peter Miller.
 .\"	All rights reserved.
 .\"
 .\"	This program is free software; you can redistribute it and/or modify
@@ -61,7 +61,7 @@ If your DMT of choice does not provide this functionality,
 the
 .I create_symlinks_before_build
 field of the project
-.I config
+configuration
 file may be set to
 \fItrue\fP,
 which tells aegis to maintain symbolic links in the development directory

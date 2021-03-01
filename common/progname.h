@@ -25,7 +25,13 @@
 
 #include <main.h>
 
+/** \addtogroup Progname
+  * \brief Program name manipulation
+  * \ingroup Common
+  * @{
+  */
 void progname_set(char *);
 const char *progname_get(void);
 
+/** @{ */
 #endif /* COMMON_PROGNAME_H */

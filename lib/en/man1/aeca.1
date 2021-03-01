@@ -1,6 +1,6 @@
 '\" t
 .\"	aegis - project change supervisor
-.\"	Copyright (C) 1991-1993, 1995, 1998, 1999, 2001, 2002 Peter Miller;
+.\"	Copyright (C) 1991-1995, 1998, 1999, 2001, 2002, 2004 Peter Miller;
 .\"	All rights reserved.
 .\"
 .\"	This program is free software; you can redistribute it and/or modify
@@ -42,7 +42,7 @@
 .br
 .B \*(n)
 .B -Change_Attributes
-.B -Fix_Attributes
+.B -Fix_ARchitecture
 .br
 .B \*(n)
 .B -Change_Attributes
@@ -54,6 +54,11 @@
 .B \*(n)
 .B -Change_Attributes
 .B -Help
+.br
+.B \*(n)
+.B -Change_Attributes
+\fB\-UUID\fP \fIstring\fP
+[ \fIoption\fP... ]
 .SH DESCRIPTION
 The
 .I \*(n)
@@ -67,6 +72,53 @@ variant is suitable for use as input at a later time.
 See
 .IR aecattr (5)
 for a description of the file format.
+.SS Example
+When you edit the file, you will see something like this:
+.RS
+.nf
+.ft CW
+brief_description = "login(1) is too fussy";
+description = "When users type their password "
+    "incorrectly, after three times the login(1) "
+    "program should assume they have forgotten "
+    "their password and automatically reset it "
+    "for them.";
+cause = external_enhancement;
+attribute =
+[
+    {
+        name = "bugzilla";
+        value = "666";
+    },
+    {
+        name = "customer-priority";
+        value = "high";
+    },
+    {
+        name = "marketing-priority";
+        value = "urgent-panic-headless-chicken";
+    },
+    {
+        name = "engineering-priority";
+        value = "after-heat-death-of-universe";
+    }
+];
+.ft R
+.fi
+.RE
+Note the semicolons, you need to get them right.
+Edit the fields you want to change.
+When you quit the editor, they will be updated.
+.SS Universal Unique Identifier
+Each change set is assigned a unique universal identifier (UUID) at
+\fIintegrate pass\fP time.  This serves to identify the change across
+all sites when a geographically distributed development model is being
+used.  This may be exploited to rapidly determine which change sets need
+to be downloaded.
+.PP
+The \fB\-Universal_Unique_IDentifier\fP option is used by the
+\fIaedist\fP(1) and \fIaepatch\fP(1) commands to set the UUID of a
+change set.  It should not be used by developers.
 .SH OPTIONS
 The following options are understood:
 .so o_change.so
@@ -78,7 +130,7 @@ any of the quotes or escapes present when this command is not used.
 .so o_edit.so
 .so o_file.so
 .TP 8n
-\-Fix_Architecture
+\-Fix_ARchitecture
 This option may be used to replace change change's architecture list with
 all of the mandatory architectures from the project \fIconfig\fP file,
 plus any of the optional architectures that match the current machine.
@@ -88,6 +140,9 @@ May not be used with \-file or \-edit options.
 .so o_project.so
 .so o_terse.so
 .so o_verbose.so
+.TP 8n
+\fB\-Universal_Unique_IDentifier\fP \fIstring\fP
+This option may be used to set the UUID of change change.
 .so o_wait.so
 .so o__rules.so
 .SH RECOMMENDED ALIAS

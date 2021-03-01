@@ -1,7 +1,7 @@
 #!/bin/sh
 #
 #	aegis - project change supervisor
-#	Copyright (C) 1991-2003 Peter Miller;
+#	Copyright (C) 1991-2004 Peter Miller;
 #	All rights reserved.
 #
 #	This program is free software; you can redistribute it and/or modify
@@ -88,6 +88,7 @@ check_it()
 		-e 's/19[0-9][0-9]/YYYY/' \
 		-e 's/20[0-9][0-9]/YYYY/' \
 		-e 's/crypto = ".*"/crypto = "GUNK"/' \
+		-e 's/uuid = ".*"/uuid = "UUID"/' \
 		< $1 > $work/sed.out
 	if test $? -ne 0; then no_result; fi
 	diff $2 $work/sed.out
@@ -123,19 +124,19 @@ unset LANG
 unset LANGUAGE
 
 #
-# If the C compiler is called something other than ``cc'', as discovered
-# by the configure script, create a shell script called ``cc'' which
-# invokes the correct C compiler.  Make sure the current directory is in
-# the path, so that it will be invoked.
+# If the C++ compiler is called something other than ``c++'', as
+# discovered by the configure script, create a shell script called
+# ``c++'' which invokes the correct C++ compiler.  Make sure the current
+# directory is in the path, so that it will be invoked.
 #
-if test "$CC" != "" -a "$CC" != "cc"
+if test "$CXX" != "" -a "$CXX" != "c++"
 then
-	cat >> cc << fubar
+	cat >> c++ << fubar
 #!/bin/sh
-exec $CC \$*
+exec $CXX \$*
 fubar
 	if test $? -ne 0 ; then no_result; fi
-	chmod a+rx cc
+	chmod a+rx c++
 	if test $? -ne 0 ; then no_result; fi
 	PATH=${work}:${PATH}
 	export PATH
@@ -190,20 +191,20 @@ if test $? -ne 0 ; then no_result; fi
 # add a new files to the change
 #
 activity="add files to change 197"
-$bin/aegis -new_file $workchan/main.c -nl -lib $worklib -p foo
+$bin/aegis -new_file $workchan/main.cc -nl -lib $worklib -p foo
 if test $? -ne 0 ; then no_result; fi
 $bin/aegis -new_file $workchan/config -nl -lib $worklib -p foo
 if test $? -ne 0 ; then no_result; fi
-cat > $workchan/main.c << 'end'
-void
-main()
+cat > $workchan/main.cc << 'end'
+int
+main(int argc, char **argv)
 {
-	exit(0);
+	return 0;
 }
 end
 if test $? -ne 0 ; then no_result; fi
 cat > $workchan/config << 'end'
-build_command = "rm -f foo; cc -o foo -D'VERSION=\"$v\"' main.c";
+build_command = "rm -f foo; c++ -o foo -D'VERSION=\"$v\"' main.cc";
 link_integration_directory = true;
 
 history_get_command =
@@ -422,16 +423,18 @@ src =
 [
 	{
 		file_name = "config";
+		uuid = "UUID";
 		action = create;
 		edit =
 		{
 			revision = "1.1";
 			encoding = none;
 		};
-		usage = source;
+		usage = config;
 	},
 	{
-		file_name = "main.c";
+		file_name = "main.cc";
+		uuid = "UUID";
 		action = create;
 		edit =
 		{
@@ -442,6 +445,7 @@ src =
 	},
 	{
 		file_name = "test/00/t0001a.sh";
+		uuid = "UUID";
 		action = create;
 		edit =
 		{
@@ -539,6 +543,7 @@ src =
 [
 	{
 		file_name = "config";
+		uuid = "UUID";
 		action = create;
 		edit =
 		{
@@ -550,7 +555,7 @@ src =
 			revision = "1.1";
 			encoding = none;
 		};
-		usage = source;
+		usage = config;
 		file_fp =
 		{
 			youngest = TIME;
@@ -563,13 +568,10 @@ src =
 			oldest = TIME;
 			crypto = "GUNK";
 		};
-		test =
-		[
-			"test/00/t0001a.sh",
-		];
 	},
 	{
-		file_name = "main.c";
+		file_name = "main.cc";
+		uuid = "UUID";
 		action = create;
 		edit =
 		{
@@ -601,6 +603,7 @@ src =
 	},
 	{
 		file_name = "test/00/t0001a.sh";
+		uuid = "UUID";
 		action = create;
 		edit =
 		{
@@ -822,7 +825,7 @@ if test $? -ne 0 ; then no_result; fi
 # copy a file into the change
 #
 activity="copy file 767"
-$bin/aegis -cp $workchan/main.c -nl -lib $worklib -p bar.1.1
+$bin/aegis -cp $workchan/main.cc -nl -lib $worklib -p bar.1.1
 if test $? -ne 0 ; then no_result; fi
 
 #
@@ -870,7 +873,8 @@ cat > ok << 'fubar'
 src =
 [
 	{
-		file_name = "main.c";
+		file_name = "main.cc";
+		uuid = "UUID";
 		action = modify;
 		edit_origin =
 		{

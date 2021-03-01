@@ -1,6 +1,6 @@
 .\"
 .\"	aegis - project change supervisor
-.\"	Copyright (C) 1999 Peter Miller;
+.\"	Copyright (C) 1999, 2004 Peter Miller;
 .\"	All rights reserved.
 .\"
 .\"	This program is free software; you can redistribute it and/or modify
@@ -93,15 +93,16 @@ Now, build, develop end, review and integrate, as found in the
 \fIUser Guide\fP worked example.  (Except, of course, there is only one
 member of staff.)
 .IP \(bu 2n
-Create a second change, and copy the project \fIconfig\fP file, and the
-build config file (probably \fIMakefile\fP or \fIHowto.cook\fP)
+Create a second change, and copy the project configuration file (called
+\fIaegis.conf\fP by default), and the
+build configuration file (probably \fIMakefile\fP or \fIHowto.cook\fP)
 into the change.
 .IP \(bu 2n
 This would be a good time to read the \fIDependency Maintenance Tool\fP
 chapter of the Aegis User Guide, and also \fIRecursive Make Considered
 Harmful\fP (see the author's web site) if you haven't already.
 .IP \(bu 2n
-Edit the build config, try the \fIaeb\fP command;
+Edit the build configuration, try the \fIaeb\fP command;
 it will probably fail.
 Iterate until things build correctly.
 .IP \(bu 2n

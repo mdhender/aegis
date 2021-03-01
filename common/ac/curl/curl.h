@@ -1,6 +1,6 @@
 /*
  *	aegis - project change supervisor
- *	Copyright (C) 2003 Peter Miller;
+ *	Copyright (C) 2003, 2004 Peter Miller;
  *	All rights reserved.
  *
  *	This program is free software; you can redistribute it and/or modify
@@ -27,6 +27,28 @@
 
 #ifdef HAVE_CURL_CURL_H
 #include <curl/curl.h>
-#endif
+
+#ifndef HAVE_CURL_EASY_STRERROR
+
+/**
+  * The curl_easy_strerror function may be used to turn a CURLcode value
+  * into the equivalent human readable error string.  This is useful for
+  * printing meaningful error messages.
+  */
+const char *curl_easy_strerror(CURLcode);
+
+#endif /* HAVE_CURL_EASY_STRERROR */
+
+#ifndef HAVE_CURL_MULTI_STRERROR
+
+/**
+  * The curl_multi_strerror function may be used to turn a CURLMcode
+  * value into the equivalent human readable error string.  This is
+  * useful for printing meaningful error messages.
+  */
+const char *curl_multi_strerror(CURLMcode);
+
+#endif /* HAVE_CURL_MULTI_STRERROR */
+#endif /* HAVE_CURL_CURL_H */
 
 #endif /* COMMON_AC_CURL_CURL_H */

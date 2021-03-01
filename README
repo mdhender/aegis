@@ -97,11 +97,11 @@ ARCHIVE	SITE
 
 		URL:	http://www.canb.auug.org.au/~millerp/
 		File:	aegis.html	    # the Aegis	page
-		File:	aegis.4.16.README   # Description, from	tar file
-		File:	aegis.4.16.lsm	    # Description, in LSM format
-		File:	aegis.4.16.ae	    # the complete source, aedist format
-		File:	aegis.4.16.spec	    # RedHat package specification
-		File:	aegis.4.16.tar.gz   # the complete source
+		File:	aegis.4.17.README   # Description, from	tar file
+		File:	aegis.4.17.lsm	    # Description, in LSM format
+		File:	aegis.4.17.ae	    # the complete source, aedist format
+		File:	aegis.4.17.spec	    # RedHat package specification
+		File:	aegis.4.17.tar.gz   # the complete source
 
 	This directory also contains a few other pieces	of software written by
 	me.  Some are referred to in the Aegis documentation.  Please have a
@@ -114,11 +114,11 @@ ARCHIVE	SITE
 	will be	able to	find Aegis on any of its mirrors.
 
 		URL:	ftp://metalab.unc.edu/pub/Linux/devel/vc/
-		File:	aegis.4.16.README   # Description, from	tar file
-		File:	aegis.4.16.lsm	    # Description, in LSM format
-		File:	aegis.4.16.spec	    # RedHat package specification
-		File:	aegis.4.16.ae	    # the complete source, aedist format
-		File:	aegis.4.16.tar.gz   # the complete source
+		File:	aegis.4.17.README   # Description, from	tar file
+		File:	aegis.4.17.lsm	    # Description, in LSM format
+		File:	aegis.4.17.spec	    # RedHat package specification
+		File:	aegis.4.17.ae	    # the complete source, aedist format
+		File:	aegis.4.17.tar.gz   # the complete source
 	This site is extensively mirrored around the world, so look for	a copy
 	near you (you will get much better response).
 
@@ -251,6 +251,156 @@ RELEASE	NOTES
 	compatible, it is rarely forwards compatible in	the face of new
 	capabilities.
 
+   Version 4.17	(3-Jun-2004)
+	* Each new change set is now assigned a	Universally Unique Identifier
+	(UUID) to allow	it to be tracked across	geographically distributed
+	development.  The aedist(1) and	aepatch(1) commands now	send the
+	change set UUIDs, and preserve them on receipt.
+
+	* Each file now	has a Universally Unique Identifier (UUID) which
+	allows tracking	files across renames, even on geographically separate
+	sites.	(The aedist(1) and aepatch(1) commands send the	file UUIDs,
+	the next release will take advantage of	them on	receipt.)
+
+	* The history filename used to remember	file history is	now based in
+	the file UUID, if the file has a UUID.	This simplifies	continuity of
+	history	across renames (this fucntion always been present in Aegis,
+	but harder to access).
+
+	* As a consequence of the UUID being used to generate history file
+	names, there is	no longer the restriction that new files may not be
+	named after the	directory portion of a deleted file (or	vice versa).
+
+	* There	is a new aecvsserver(1)	command, which presents	Aegis projects
+	and change sets	as CVS modules.	 All of	the core CVS functions are
+	supported.  This code needs to be exersized and	tested by users.
+
+	* It is	now possible to	specify	arbitrary attribute names and value
+	for each source	file.  The aefa(1) command may be used to edit file
+	attributes.  The aedist(1) and aepatch(1) send these attributes; a
+	future release will take advantage of the information on receipt.
+
+	* It is	now possible to	attach arbitrary attribute names and values to
+	change sets.  For example, you can use this to remember	the bugzilla
+	tracking number	for a change.
+
+	* The aepatch(1) command now includes change set meta-data as a
+	compressed BASE64 encoded block	at the top of the patch, after the
+	human-readable text but	before the files.  This	means that aepatch(1)
+	can be as effective as aedist(1) is transmitting chaneg	sets.  Patches
+	without	meta-data still	work as	before.
+
+	* There	is a new report	script which writes change logs	in Debian
+	format.
+
+	* The aeget(1) web interface has been improved.	 The aepatch(1)
+	download now accepts compat=N modifier,	and there is a new Project
+	Staff page.
+
+	* There	is a new ae-cvs-ci(1) support script which may be used as an
+	integrate_pass_notify_command to commit	change sets to CVS in
+	parallel.
+
+	* There	is more	documentation in the User Guide	about using GNU	Diff,
+	particularly using diff	-U to provide whole-file listings with "change
+	bars" on the left hand side.
+
+	* The files view of the	aeget(1) web interface now accepts options to
+	control	the page contents.  The	simplest view allows recursive fetch
+	of project sources using wget or similar, with no extraneous links to
+	confuse	the results.  Previous behavior	is preserved by	the aeget-
+	generated links.
+
+	* You now receive a warning when you are seeing	the short version of
+	the error messages.  These are terse and often quite cryptic. the long
+	form of	the error messages is to be preferred.
+
+	* The behaviour	of the aedeu(1)	command	has changed slightly.  When
+	changes	are in the being reviewed state, and Aegis has been configured
+	to use the awaiting review state, the aedeu91) command will now	report
+	an error.  This	is so that reviewers don't waste their time reviewing
+	changes	which have already been	returned to the	being developed	state.
+	Think of the change as "belonging" to the reviewer while in the	being
+	reviewed state.
+
+	* The aedist -send command has a new -compatibility option, use	to
+	indicate the version of	the receiving aedist program.  This, in	turn,
+	selects	the features which may be added	to or omitted form the
+	generated .ae file.
+
+	* There	is a new config	file usage, and	a corresponding	aenf
+	-configure command line	option.	 It is now possible to move project
+	configuration files.  It is now	possible to remove project
+	configuration files, provided there is at least	one left.  The
+	aeimport(1) command now	avoids files which have	the same name as the
+	default	project	configuration file ("aegis.conf" or "config") and will
+	use something else.
+
+	* The aeipass(1) command now adds a symlink from the delta directory
+	to the baseline	once it	has been integrated.  This helps lots of
+	(idiotic) compilers which insist on burying absolute paths into
+	executables.
+
+	* It is	now possible to	assign to some project configuration file
+	array fields more than once.  This can be useful where the
+	configuration file is split into several pieces	on several branches.
+
+	* The source language has been changed from C to C++.  Future releases
+	will take advantage of this.
+
+	* Several bugs have been fixed in the aeget(1) web interface where it
+	would display "-42" instead of "0" for changes and branches numbered
+	zero.
+
+	* A bug	has been fixed in the aed(1) command when merging files	which
+	have been renamed.  It now recognises they need	merging.
+
+	* A bug	has been fixed in the aenf(1) command.	It now correctly
+	ignores	difference files when given a directory	name.
+
+	* A bug	has been fixed in aedist(1) where one of the aegis -new-file
+	commands was missing a -no-template argument.  Under some
+	circumstances, this resulted in	change sets which could	not be aedist
+	-received.
+
+	* A bug	has been fixed in the way invalid sequences of multi-byte
+	characters are handled by the internationalization code.  This
+	potentially affected all reports, listings and error messages.	The
+	symptom	was that aeannotate listings could sometimes have a blank
+	source code column.
+
+	* A bug	has been fixed in the aepatch(1) command.  It was creating
+	empty patches for some changes in completed project branches.  This
+	also affected aedist -send and aecp -delta and aecp -rescind in	some
+	cases.	It was caused by a subtle flaw in the non-detailed case	for
+	the project_file_roll_forward function.
+
+	* A bug	has been fixed in the handling of the MANPATH enviromnet
+	variable by the	profile	and cshrc scripts.
+
+	* A bug	has been fixed in the aedist -receive and aepatch -receive
+	commands has been fixed.  There	were cases where these commands	could
+	access off the end of an array and SEGFAULT.
+
+	* A bug	has been fixed in the aede(1) command when it received pre-
+	config-usage change sets.  It used to try to remove the	last project
+	configuration file, which is a fatal error, and	made it	impossible to
+	receive	the change set.
+
+	* A bug	has been fixed which caused the	aetar(1) command to hang
+	(actually, any thing which consulted LDAP or NIS) because the reserved
+	symbol "send" was being	overloaded.  The reserved symbol "clone" was
+	also being overloaded.	Both have been fixed.
+
+	* A bug	has been fixed which caused the	aedist(1) command to reprt the
+	wrong error when the input file	did not	exist.
+
+	* A bug	has been fixed in the aenbru(1)	command	which made project
+	aliases	disappear.
+
+	* A bug	has been fixed in the aede command.  It	would fail with	new
+	build files already in the baseline.
+
    Version 4.16	(14-Jan-2004)
 	* There	is a new aecp -keep option, causing aecp(1) not	to overwrite
 	file contents in the development directory.
@@ -280,7 +430,7 @@ RELEASE	NOTES
 	* The missing aemt and aemtu alias ve been added to the	profile.
 
 	* More detail has been added to	aepconf(5) detailing how to create the
-	project	config file for	the first time.
+	project	configuration file for the first time.
 
 	* A bug	has been fixed in aedist(1) and	aepatch(1) which would cause
 	an assertion failure (or segfault) when	you tried to aedist -send
@@ -665,8 +815,8 @@ RELEASE	NOTES
 
 	* The aedist -receive command now runs the aeca	-fixarch command when
 	a change set arrives which modified the	project	config file.  This
-	should fix many	of the "architecture not in project config file"
-	problems when seeding new projects.
+	should fix many	of the "architecture not in project configuration
+	file" problems when seeding new	projects.
 
 	* Some deficiencies on the ``How to Become a Developer'' instructions
 	have been addressed.  The native Aegis build (but not the Makefile.in)
@@ -1588,9 +1738,9 @@ RELEASE	NOTES
 	the mkpasswd and mkgroup utilities included in the Cygwin system.
 
    Version 3.12	(26-Mar-1999)
-	* The way the Apache config files are scanned for and read has been
-	changed, to adapt to recent Apache changes.  The ./configure script
-	will now find it more often.
+	* The way the Apache configuration files are scanned for and read has
+	been changed, to adapt to recent Apache	changes.  The ./configure
+	script will now	find it	more often.
 
 	* The ``aedist -receive'' command has been enhanced to be more robust
 	about change sets without headers (some	browsers generously strip them
@@ -2072,8 +2222,8 @@ RELEASE	NOTES
 	listing.  See aesub(5) and ael(1) for more information.
 
 	* It is	now possible to	specify	patterns for acceptable	and
-	unacceptable filenames in the project config file.  See	aepconf(5) for
-	more information.
+	unacceptable filenames in the project configuration file.  See
+	aepconf(5) for more information.
 
 	* Four more functions have been	added to the report language: length,
 	split, substr and wrap.	 See aer(5) for	more information.

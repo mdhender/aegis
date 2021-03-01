@@ -1,6 +1,6 @@
 .\"
 .\"	aegis - project change supervisor
-.\"	Copyright (C) 1994-1996, 1998, 2002 Peter Miller;
+.\"	Copyright (C) 1994-1996, 1998, 2002, 2004 Peter Miller;
 .\"	All rights reserved.
 .\"
 .\"	This program is free software; you can redistribute it and/or modify
@@ -62,7 +62,7 @@ Because of this,
 the
 .I create_symlinks_before_build
 field of the project
-.I config
+configuration
 file is set to
 .I true
 so that aegis will arrange for the development
@@ -74,7 +74,7 @@ is in each change's development directory.
 The
 .I build_command
 field of the project
-.I config
+configuration
 file is used to invoke the relevant build command.
 In this case, it is set as follows
 .E(
@@ -94,7 +94,7 @@ for more information about command substitutions.
 .LP
 The rules which follow will all remove their targets before constructing
 them, which qualifies them for the next entry in the
-.I config
+configuration
 file:
 .E(
 link_integration_directory = true;
@@ -367,7 +367,7 @@ The
 file in the Aegis distribution
 contains all of the above commands,
 so that you may readily insert them into your project
-.I config
+configuration
 file.
 .nh 3 "GNU Make VPATH Patch"
 .LP
@@ -398,7 +398,7 @@ see the README file referenced.
 In theory, using GNU Make 3.76 or later (or a suitable patched earlier
 version) is similar to using Cook.
 The project
-.I config
+configuration
 file now requires
 .E(
 link_integration_directory = false;

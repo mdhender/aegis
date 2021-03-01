@@ -1,6 +1,6 @@
 /*
  *	aegis - project change supervisor
- *	Copyright (C) 1997-2003 Peter Miller;
+ *	Copyright (C) 1997-2004 Peter Miller;
  *	All rights reserved.
  *
  *	This program is free software; you can redistribute it and/or modify
@@ -20,7 +20,7 @@
  * MANIFEST: instructions to cook(1), how to build archive directory
  */
 
-integration-build-targets =
+integration-build-targets +=
 	/* archive/Part.01.gz */
 	/* archive/[project_minus].patch.gz */
 	archive/change_log.txt
@@ -66,8 +66,6 @@ if [find_command png2ico] then
 	rm temp1.pnm temp16.png temp32.png;
     }
 }
-
-integration-build-targets: [integration-build-targets];
 
 html-targets: [html-targets];
 
@@ -196,7 +194,24 @@ source_file_order =
 	]
 	;
 
+/*
+ * For the primary build, when making a release,
+ * add the full changes list.
+ */
+if [matches %1.D%2 [version]] then
+if [in [fromto %1.D%2 %2 [version]] 001 002] then
+if [matches linux%1 [arch]] then
+    source_file_order += etc/CHANGES.txt;
+
+etc/CHANGES.txt: [arch]/bin/aegis
+{
+    [resolve [arch]/bin/aegis] -list project_details -p [project_short]
+	-pw\=80 -pl\=66 -v > [target]
+								set meter;
+}
+
 if [find_command msgcat] then
+{
     source_file_order +=
 	/*
 	 * This next file is for the benefit of the Translation Project
@@ -237,11 +252,18 @@ if [find_command msgcat] then
 	 * AND ALSO any other documentation, once it is translated.
 	 */
 	po/[project_short].pot
+	[prepost "po/"[project_short]"." ".po" [langs]]
+	    /* see etc/i18n.cook for definition of "langs" variable */
 	;
+}
 
-MANIFEST: etc/MANIFEST.sh [stringset [source_file_order] - MANIFEST]
+MANIFEST: [arch]/bin/aemanifest(exists)
+    [stringset [source_file_order] - [target]]
 {
-	sh [resolve etc/MANIFEST.sh [source_file_order]] > [target];
+    [resolve [arch]/bin/aemanifest]
+	[addprefix "--dir=" [search_list]]
+	[source_file_order]
+	-o [target];
 }
 
 archive/Part.01.gz: [source_file_order]

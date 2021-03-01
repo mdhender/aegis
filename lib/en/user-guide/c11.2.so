@@ -1,6 +1,6 @@
 .\"
 .\"	aegis - project change supervisor
-.\"	Copyright (C) 1993, 1994, 1999-2002 Peter Miller;
+.\"	Copyright (C) 1993, 1994, 1999-2002, 2004 Peter Miller;
 .\"	All rights reserved.
 .\"
 .\"	This program is free software; you can redistribute it and/or modify
@@ -606,7 +606,7 @@ from tests to decide if a failure occurred.
 .LP
 It's actually pretty easy to accomodate both conventions.
 You can do this as easily as setting the test_command variable
-in the project config file to something like the following:
+in the project configuration file to something like the following:
 .E(
 test_command =
 	"perl -MTest::Harness -e 'runtests(\e"$fn\e"); \e
@@ -650,5 +650,5 @@ The usual ``\fItest_command\fP'' field of the project \fIconfig\fP
 file runs a single test at a time.  When you have a multi-CPU machine,
 or are able to distribute the testing load across a range of machines,
 it is often desirable to do so.  The ``\fIbatch_test_command\fP''
-of the project config file is for this purpose.  See \fIaepconf\fP(5)
+of the project configuration file is for this purpose.  See \fIaepconf\fP(5)
 for more information.

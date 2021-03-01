@@ -1,0 +1,95 @@
+//
+//	aegis - project change supervisor
+//	Copyright (C) 2002-2004 Peter Miller;
+//	All rights reserved.
+//
+//	This program is free software; you can redistribute it and/or modify
+//	it under the terms of the GNU General Public License as published by
+//	the Free Software Foundation; either version 2 of the License, or
+//	(at your option) any later version.
+//
+//	This program is distributed in the hope that it will be useful,
+//	but WITHOUT ANY WARRANTY; without even the implied warranty of
+//	MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+//	GNU General Public License for more details.
+//
+//	You should have received a copy of the GNU General Public License
+//	along with this program; if not, write to the Free Software
+//	Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111, USA.
+//
+// MANIFEST: functions to manipulate shells
+//
+
+#include <error.h> // for assert
+#include <shell.h>
+#include <shell/bash.h>
+#include <shell/zsh.h>
+#include <sub.h>
+
+
+typedef shell_ty *(*funcptr)(void);
+
+static funcptr table[] =
+{
+    shell_bash,
+    shell_zsh,
+};
+
+
+shell_ty *
+shell_find(void)
+{
+    funcptr         *tp;
+    shell_ty        *sp;
+    funcptr         func;
+
+    for (tp = table; tp < ENDOF(table); ++tp)
+    {
+	func = *tp;
+	sp = func();
+	if (shell_test(sp))
+	    return sp;
+	shell_delete(sp);
+    }
+    fatal_intl(0, i18n("unknown shell"));
+}
+
+
+int
+shell_test(shell_ty *this_thing)
+{
+    assert(this_thing);
+    assert(this_thing->vptr);
+    assert(this_thing->vptr->test);
+    return this_thing->vptr->test(this_thing);
+}
+
+
+string_ty *
+shell_command_get(shell_ty *this_thing)
+{
+    assert(this_thing);
+    assert(this_thing->vptr);
+    assert(this_thing->vptr->command_get);
+    return this_thing->vptr->command_get(this_thing);
+}
+
+
+string_ty *
+shell_prefix_get(shell_ty *this_thing)
+{
+    assert(this_thing);
+    assert(this_thing->vptr);
+    assert(this_thing->vptr->prefix_get);
+    return this_thing->vptr->prefix_get(this_thing);
+}
+
+
+void
+shell_emit(shell_ty *this_thing, string_ty *s)
+{
+    assert(this_thing);
+    assert(this_thing->vptr);
+    assert(this_thing->vptr->emit);
+    this_thing->vptr->emit(this_thing, s);
+}

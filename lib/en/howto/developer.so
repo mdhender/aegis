@@ -1,6 +1,6 @@
 .\"
 .\"	aegis - project change supervisor
-.\"	Copyright (C) 1999-2003 Peter Miller;
+.\"	Copyright (C) 1999-2004 Peter Miller;
 .\"	All rights reserved.
 .\"
 .\"	This program is free software; you can redistribute it and/or modify
@@ -35,70 +35,138 @@ There are a number of pieces of software you will need to work on Aegis.
 .IP \(bu 2n
 It will probably come as no surprise that Aegis is developed using Aegis
 (never trust a skinny chef) so the first thing you need is to install
-Aegis and become familiar with using it.  You will need Aegis 4.11 or later.
+Aegis and become familiar with using it.  You will need Aegis \*(v) or later.
+.IP \(bu 2n
+You will need a C++ compiler.
 .IP \(bu 2n
 You will need to install Cook,
 in order to build things.
 Version 2.8 or later, preferably you should track the latest release.
+.br
+http://www.canb.auug.org.au/~millerp/cook/
 .IP \(bu 2n
 GNU Autoconf 2.53 or later.
+.br
+http://ftp.gnu.org/pub/gnu/autoconf/
 .IP \(bu 2n
 GNU Automake.
+.br
+http://ftp.gnu.org/pub/gnu/automake/
 .IP \(bu 2n
 You will need to install FHist, for the history tool.
+.br
+http://fhist.sourceforge.net/
 .IP \(bu 2n
 You will need to install \fItardy\fP, for manipulating tarballs.
+.br
+http://www.canb.auug.org.au/~millerp/tardy.html
 .IP \(bu 2n
 You will need to install \fIptx\fP(1), for the permuted indexes in the
 documentation.
 This is now part of GNU coreutils.
+.br
+http://ftp.gnu.org/pub/gnu/coreutils/
 .IP \(bu 2n
-You need psutils (e.g. http://www.dcs.ed.ac.uk/home/ajcd/psutils/) for
-the psselect utility, to manipulate the documentation files, mostly to
-put the tables of contents at the start, rather than at the end as GNU
-Groff generates them.
+You need psutils for the \fIpsselect\fP utility, to manipulate the
+documentation files, mostly to put the tables of contents at the start,
+rather than at the end as GNU Groff generates them.
+.br
+http://www.dcs.ed.ac.uk/home/ajcd/psutils/
 .IP \(bu 2n
 You will need the developer libraries for the \fIrx\fP library (if you
 installed from the tarball, you have these, but if you installed from RPM,
-you probably don't.
+you need the \-devel package as well).
+.br
+http://ftp.gnu.org/pub/gnu/rx/
 .IP \(bu 2n
 You will need the developer libraries for the \fIzlib\fP library (if you
 installed from the tarball, you have these, but if you installed from RPM,
-you probably don't).
+you need the \-devel package as well).
+.br
+http://www.gzip.org/zlib/
 .IP \(bu 2n
-You need to install Bison, the GNU Yacc replacement.
+You will need the developer libraries for the \fIlibcurl\fP library (if you
+installed from the tarball, you have these, but if you installed from RPM,
+you need the \-devel package as well).
+.br
+http://curl.haxx.se/
+.IP \(bu 2n
+You need UUID generation capability.
+This requirement may be
+satisfied in several different ways depending of your development platform.
+.br
+First, on GNU/Linux you could skip this requirement provided that your
+kernel has support for \fI/proc\fP filesystem.  Please note: in order to
+work \fI/proc\fP must be mounted and \fI/proc/sys/kernel/random/uuid\fP
+must be present.
+.br
+Second, you could install the developer libraries for the
+\fIe2fsprogs\fP package (if you installed from the tarball, you have
+these, but if you installed from RPM you need the \-devel package as
+well).
+.br
+http://e2fsprogs.sourceforge.net/
+.br
+Third, you could install the UUID library from OSSP:
+.br
+http://www.ossp.org/pkg/lib/uuid/
+.br
+Fourth, if your platform has support for an API compliant with DCE 1.1,
+Aegis also supports the DCE API.
+.IP \(bu 2n
+You need to install Bison, the GNU replacement for Yacc.
+.br
+http://ftp.gnu.org/pub/gnu/bison/
 .IP \(bu 2n
 You will need to install Flex, the GNU replacement for Lex.
+.br
+http://ftp.gnu.org/pub/gnu/non-gnu/flex/
 .IP \(bu 2n
 You need to GNU Gettext (0.11.4 or later) tools installed.
 Even though Glibc 2.0 and
 later include Gettext, you need the developer tools as well.  (You need
 GNU Gettext even on Solaris, because the Solaris Gettext implementation
 is... well... stuffed.)
+.br
+http://ftp.gnu.org/pub/gnu/gettext/
 .IP \(bu 2n
 You need GNU Ghostscript, for the ps2pdf utility, so that you can create
 PDF documents.
+.br
+http://ftp.gnu.org/pub/gnu/ghostscript/
 .IP \(bu 2n
-You need \fIuudecode\fP with a \f[CW]-o\fP option (to redirect the output).
+You need a \fIuudecode\fP with a \f[CW]-o\fP option (to redirect the output).
 It is part of GNU Sharutils.
+.br
+http://ftp.gnu.org/pub/gnu/sharutils/
 .IP \(bu 2n
 You need to install GNU awk.
+.br
+http://ftp.gnu.org/pub/gnu/gawk/
 .IP \(bu 2n
 You need a \fIctags\fP(1) command with a \f[CW]-L\fP option
 (to read file names from standard input).
+.br
+http://ctags.sourceforge.net/
 .IP \(bu 2n
 You need RCS installed for the automated tests.
+.br
+http://ftp.gnu.org/pub/gnu/rcs/
 .IP \(bu 2n
 You need to install \fIsudo\fP(8).
 See \f[CW]etc/set-uid-root\fP in the distribution for how to configure
 the \fI/etc/sudoers\fP file.
+.br
+ftp://ftp.sudo.ws/pub/sudo/
 .IP \(bu 2n
 You need netpbm installed, for turning \fIaegis.png\fP into
 \fIaegis.xpm\fP because \fIrpm\fP(8) will only accept GIF or XPM icons.
+.br
+http://netpbm.sourceforge.net/
 .IP \(bu 2n
 The location box icon is generated using \fIpng2ico\fP but the build
 can cope if you don't have it.
-You can get it from
+.br
 http://www.winterdrache.de/freeware/png2ico/
 .IP \(bu 2n
 \fIProbably more things I've forgotten.\fP
@@ -192,12 +260,12 @@ This change remains in the \fIbeing developed\fP state.
 .LP
 This message comes because in order to build the project, you are
 going to have to execute a number of commands contained in the
-project \fIconfig\fP file, and in the \fIetc/Howto.cook\fP file.
+project \fIaegis.conf\fP file, and in the \fIetc/Howto.cook\fP file.
 For your own protection, \fIaedist\fP stops at this point.  You may
 want to inspect these two files before continuing.
 .LP
 \fII really must get around to signing it with PGP.  This would make
-the \fI-notrojan\fP option safe, because you could tell the file is direct
+the \fI\-notrojan\fP option safe, because you could tell the file is direct
 from the chief maintainer, and thus as trustable as you think the chief
 maintainer happens to be.\fP
 .LP
@@ -213,11 +281,22 @@ build it...
 .LP
 Things that can go wrong...
 .IP \(bu 2n
+There are checks to make sure that there is no white space on the ends
+of lines.  If you use Emacs, you can add
+.E(
+(add-hook 'write-file-hooks
+    'delete-trailing-whitespace)
+.E)
+to have this done automagically.  The same checks also verify that the
+text files are all printable, and that line lengths are 80 characters or
+less.  Please don't disable the checks, it makes accepting your patches
+more time consuming.
+.IP \(bu 2n
 Each change set has an architecture list associated with it.  Initially
 you won't care, but Aegis does if you see the following error message:
 .in +0.25i
 found 1 unlisted architecture, edit the change attributes to remove it
-or edit the project ``config'' file to add it
+or edit the project configuration file to add it
 .in -0.25i
 You need to use the \fIaeca -e\fP command (\fInot\fP the tkaeca command).
 You will be placed into an editor (usually \fIvi\fP unless you have used
@@ -309,9 +388,12 @@ is complete are the files actually committed to the repository.
 % \f[CB]aeib -p aegis.\*(v) -c 10\fP
 % \f[CB]aeb\fP
 \fI\&...you will see commands which build the project...\fP
-Integrator: please use the following command:
-  su1 -c "chown root \fIarch\fP/bin/aegis &&
-  chmod u+s \fIarch\fP/bin/aegis"
+-rwsr-xr-x 1 root ... \fIarch\fP/bin/aegis
+-rwsr-xr-x 1 root ... \fIarch\fP/bin/aeimport
+Integrator: please do the following:
+  sudo .../baseline/etc/set-uid-root \fIarch\fP aegis aeimport
+  if they aren't root already.  See etc/set-uid-root for
+  instructions for how to set-up your /etc/sudoers file.
 %
 .E)
 .LP
@@ -320,10 +402,7 @@ in the repository.  You want to do this, because you are going to symlink
 out of \fI/usr/local/bin\fP (or wherever you installed Aegis) right into
 the baseline.  In this way, you will be executing your bleeding-edge
 version of Aegis, exercising it before you send it to anyone else.
-Hang on a bit, that comes later.
-.LP
-If you don't have my \fIsu1\fP(1) command, just use \fIsu\fP(1) instead,
-or \fIsudo\fP or something.
+Hang on a bit, the sending part comes later.
 .LP
 Things that can go wrong...
 .IP \(bu 2n
@@ -363,71 +442,20 @@ of \fI/usr/local/bin\fP into your Aegis baseline.  The reason for doing
 this is so that you exercise your Aegis changes by using Aegis before
 you send them to anyone else.  (Never trust a skinny chef.)
 .LP
-I use the following shell script...
+There is a shell script called \fIae-symlinks\fP
+in the baseline \fI$arch/bin\fP direcdtory.
+Use it like this:
 .E(
-#!/bin/sh
-project=aegis.\*(v)
-arch=linux-i486 # \fIset to match your system\fP
-prefix=/usr/local # \fIset to match your system\fP
-bin=$prefix/bin
-dir=`$bin/aegis -cd -bl -p $project`
-test $? -eq 0 || exit 1
-bin=$dir/$arch/bin
+$ \f[CB]aecd -bl\fP
+# \f[CB]su\fP
+Password:
+# \f[CB]linux-i486/bin/ae-symlinks aegis.\*(v)\fP
+# \f[CB]exit\fP
+$
 .E)
-.E(
-echo bin...
-cd $prefix/bin
-for f in aeannotate aecomplete aedist \e
-	aefind aegis aeimport aels \e
-	aepatch aerect aereport aesub \e
-	aetar tkaegis tkaeca tkaenc \e
-	tkaepa aegis.cgi aegis.cgi.i
-do
-	rm $f
-	ln -s $dir/$arch/bin/$f $f
-done
-.E)
-.E(
-echo lib...
-cd $prefix/lib/aegis
-for f in en
-do
-	rm -rf $f
-	ln -s $dir/$arch/lib/$f $f
-done
-for f in profile cshrc
-do
-	rm $f
-	ln -s $dir/$arch/lib/$f $f
-done
-.E)
-.E(
-echo share...
-cd $prefix/share/aegis
-for f in en/html report \e
-	config.example wish
-do
-	rm -rf $f
-	mkdir $f
-.fi
-'in +4n
-ln -s `$bin/aefind -p $project -bl -baserel lib/$f
--type f ! -name "*,*" ! -name "*.d" -print -resolve` $f/.
-'in -4n
-.nf
-done
-for f in report.index aegis.icon \e
-	aegis.mask
-do
-	rm $f
-.fi
-'in +4n
-ln -s `$bin/aefind -p $project -bl -baserel lib/$f
--type f ! -name "*,*" ! -name "*.d" -print -resolve` $f
-'in -4n
-.nf
-done
-.E)
+The \fIlinux-i486\fP may need to be replaced with the output of the
+\fIaesub -bl '$arch'\fP command if you are using something more
+interesting than a PC.
 .nh 2 "Undiscovered Country"
 .LP
 If you got this far, your local Aegis project is ready for use.
@@ -443,10 +471,11 @@ changes to the example project.
 .LP
 First, read the Distributed Development chapter of the User Guide.
 .LP
-Use a simple command such as
+When you have a change set you wish to have the other Aegis deveopers try,
+use a simple command such as:
 .E(
-aedist --send -p aegis.\*(v) -bl | \e
-pgp | \e
+aedist --send -p aegis.\*(v) -c \fInumber\fP | \e
+gpg --clearsign | \e
 mail aegis-developers@lists.sourceforge.net
 .E)
 or similar.  (Or maybe \fIaepatch\fP(1) instead.)
@@ -480,7 +509,7 @@ Only add new project attributes (aepa -e) for things which
 .nh 3 "What You Can't Do"
 .LP
 You can't change Aegis' semantics.  Developers around the world, and
-their managers, rely on  Aegis working just the way it does right now.
+their managers, rely on Aegis working just the way it does right now.
 You can't change things that will compromise their ability to get
 things done.
 .LP
@@ -499,9 +528,92 @@ set-uid-root executable.
 .nh 2 "Coding Style"
 .LP
 Please try to emulate the existing coding style.
-(Indents recently change from 8 to 4, not all of the code has caugh-up yet.)
+(Indents recently changed from 8 to 4, not all of the code has caugh-up yet.)
 Lines are to be 80 charcters or less wide, no unprintable characters,
 no trailing white space.
 .LP
 Probably need a GNU Indent profile for code formatting, too.
+.nh 2 "Writing Tests"
+.LP
+If you have fixed a bug you should write a test to verify the correct
+behaviour of Aegis.
+Because test file names are generated automatically starting from your
+repository state, it's possible that \fIaet\fP will create a test with the
+same name as one in the P.Miller repository.  Because Aegis is not yet
+able to detect such situation, if you plan to send back
+your work to P.Miller you may want to modify your \f[CW]aegis.conf\fP
+adding the following lines:
+.E(
+new_test_filename =
+	"test/${zpad $hundred 2}/"
+	"t${zpad $number 4}${left $type 1}-${left ${user login} 4}.sh";
+.E)
+In this way the possibility of a name collision should be reduced.
+Invoke \fIaent\fP:
+.E(
+% \f(CBaent\fP
+aegis: appending log to "aegis.log"
+aegis: user "walter", group "projadm"
+aegis: rm -f etc/cook/change_filesf etc/cook/project_files
+aegis: project "aegis.4.16.2": change 11: file "test/01/t0157a-walt.sh" new test
+%
+.E)
+Now you can start to implement the test.  Remember to invoke the
+programs under test as \f[CW]$bin/program\fP.
+.IP \(bu 2n
+In order to improve error messages you should organize your script as
+a sequence of activity and use the \fIactivity\fP variable as sketched
+below:
+.E(
+#
+# create a new change
+#
+activity="new change 163"
+cat > tmp << 'end'
+brief_description = "The first change";
+cause = internal_bug;
+end
+if test $? -ne 0 ; then no_result; fi
+$bin/aegis -nc 1 -f tmp -p foo > log 2>&1
+if test $? -ne 0 ; then cat log; no_result; fi
+.E)
+If you are reading this document, you probably don't need help to
+understand this code fragment, the only thing to note is that the
+number in the string (163) refer to the current line number and is
+used when printing a failure message.  You don't need to maintain it
+by hand as explained in the following step.
+.IP \(bu 2n
+You can use \f[CW]test/activity.sh\fP to automatically renumber the
+activity variables of your tests:
+.E(
+$ \f(CBsh test/activity.sh\fP
+test/01/t0159a-walt.sh...
+test/01/t0160a-walt.sh...
+$
+.E)
+If you have not modified \f[CW]test/activity.sh\fP you should find it
+as \f[CW]bl/test/activity.sh\fP or \f[CW]blbl/test/activity.sh\fP.
+.nh 2 "Debugging"
+.LP
+Aegis, as any other software, may contain undiscovered bugs.  If you are
+interested in helping to fix these bugs, and as a developer you should
+be interested, the first thing to do is compiling Aegis in DEBUG mode.
+In order to do so you must modify \f[CW]common/main.h\fP and uncomment
+the DEBUG define.  (If you use the \fIaecp \-read-only\fP option, Aegis
+will remind you to uncopy the file again before develop end, ensuring
+that you don't accidentally integrate this.)
+.LP
+In DEBUG mode the \-Trace command line option is available for most
+Aegis commands.  This option is followed by the names of the source
+files you want to trace, and may be used more than once.
+.LP
+If you need to add tracing capability to a file, you must first
+include \f[CW]trace.h\fP, modify the code in order to use the trace
+facility (look at \f[CW]common/trace.h\fP) then build the change with
+\fIaeb\fP and run the buggy command with the proper \-Trace option.
+.LP
+On Linux >= 2.4 the \fIaegis\fP command, wich is set-uid-root, is enabled
+to dump core when needed.  If this does not happen, remember to verify
+the \fIulimit\fP(1) settings; you may need to execute the \fIulimit \-c
+unlimited\fP command.
 .so devel_to_do.so

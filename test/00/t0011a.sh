@@ -1,7 +1,7 @@
 #!/bin/sh
 #
 #	aegis - project change supervisor
-#	Copyright (C) 1991-1998, 2002, 2003 Peter Miller;
+#	Copyright (C) 1991-1998, 2002-2004 Peter Miller;
 #	All rights reserved.
 #
 #	This program is free software; you can redistribute it and/or modify
@@ -128,19 +128,19 @@ unset LANG
 unset LANGUAGE
 
 #
-# If the C compiler is called something other than ``cc'', as discovered
-# by the configure script, create a shell script called ``cc'' which
-# invokes the correct C compiler.  Make sure the current directory is in
-# the path, so that it will be invoked.
+# If the C++ compiler is called something other than ``c++'', as
+# discovered by the configure script, create a shell script called
+# ``c++'' which invokes the correct C++ compiler.  Make sure the current
+# directory is in the path, so that it will be invoked.
 #
-if test "$CC" != "" -a "$CC" != "cc"
+if test "$CXX" != "" -a "$CXX" != "c++"
 then
-	cat >> cc << fubar
+	cat >> c++ << fubar
 #!/bin/sh
-exec $CC \$*
+exec $CXX \$*
 fubar
 	if test $? -ne 0 ; then no_result; fi
-	chmod a+rx cc
+	chmod a+rx c++
 	if test $? -ne 0 ; then no_result; fi
 	PATH=${work}:${PATH}
 	export PATH
@@ -206,7 +206,7 @@ if test $? -ne 0 ; then cat log; fail; fi
 #
 activity="new file 189"
 $bin/aegis -new_file $workchan/Howto.cook $workchan/config $workchan/gram.y \
-	$workchan/lex.l $workchan/main.c -nl -v > log 2>&1
+	$workchan/lex.l $workchan/main.cc -nl -v > log 2>&1
 if test $? -ne 0 ; then cat log; fail; fi
 
 cat > $workchan/Howto.cook << 'TheEnd'
@@ -222,17 +222,16 @@ source_files = [sort [stringset [project_files] [change_files]]];
 obj_files =
 	[fromto %.y %.o [match_mask %.y [source_files]]]
 	[fromto %.l %.o [match_mask %.l [source_files]]]
-	[fromto %.c %.o [match_mask %.c [source_files]]]
+	[fromto %.cc %.o [match_mask %.cc [source_files]]]
 	;
 
-cc = cc;
 cc_flags = -O;
 cc_include_flags = [prepost "-I" "" [search_list]];
 
-%.o: %.c
+%.o: %.cc
 {
-	[cc] [cc_include_flags] [cc_flags]
-		-c [resolve %.c];
+	c++ [cc_include_flags] [cc_flags]
+		-c [resolve %.cc];
 }
 
 /*
@@ -248,10 +247,10 @@ else
 	yacc = yacc;
 yacc_flags = ;
 
-%.c %.h: %.y
+%.cc %.h: %.y
 {
 	[yacc] -d [yacc_flags] [resolve %.y];
-	mv y.tab.c %.c;
+	mv y.tab.c %.cc;
 	mv y.tab.h %.h;
 }
 
@@ -271,10 +270,10 @@ else
 }
 lex_flags = ;
 
-%.c: %.l
+%.cc: %.l
 {
 	[lex] [lex_flags] [resolve %.l];
-	mv lex.yy.c %.c;
+	mv lex.yy.c %.cc;
 }
 
 
@@ -289,7 +288,7 @@ all: example;
 
 example: [obj_files]
 {
-	[cc] -o [target] [resolve [obj_files]] -lm;
+	c++ -o [target] [resolve [obj_files]] -lm;
 }
 
 lex.o: gram.h;
@@ -311,8 +310,9 @@ history_query_command =
 
 diff_command = "set +e; diff $orig $i > $out; test $$? -le 1";
 
-merge_command = "(diff3 -e $mr $orig $i | sed -e '/^w$$/d' -e '/^q$$/d'; \
-	echo '1,$$p' ) | ed - $mr > $out";
+merge_command =
+    "(diff3 -e $i $orig $mr | sed -e '/^w$$/d' -e '/^q$$/d'; echo '1,$$p' ) "
+    "| ed - $i > $out";
 TheEnd
 if test $? -ne 0 ; then fail; fi
 
@@ -321,6 +321,7 @@ cat > $workchan/lex.l << 'TheEnd'
 #include <math.h>
 #include <gram.h>
 extern double atof(); /* sometimes missing from math.h */
+extern "C" int yywrap();
 %}
 %%
 [0-9]+(\.[0-9]*)?([eE][+-]?[0-9]+)? {
@@ -340,6 +341,8 @@ if test $? -ne 0 ; then fail; fi
 cat > $workchan/gram.y << 'TheEnd'
 %{
 #include <stdio.h>
+extern int yylex();
+extern void yyerror(char *);
 %}
 %token DOUBLE
 %token NAME
@@ -384,8 +387,11 @@ expr
 TheEnd
 if test $? -ne 0 ; then fail; fi
 
-cat > $workchan/main.c << 'TheEnd'
+cat > $workchan/main.cc << 'TheEnd'
+#include <stdlib.h>
 #include <stdio.h>
+
+extern int yyparse();
 
 void
 usage()
@@ -394,26 +400,23 @@ usage()
 	exit(1);
 }
 
-void
-main(argc, argv)
-	int	argc;
-	char	**argv;
+int
+main(int argc, char **argv)
 {
 	if (argc != 1)
 		usage();
 	yyparse();
-	exit(0);
+	return 0;
 }
 
 void
-yyerror(s)
-	char	*s;
+yyerror(char *s)
 {
 	fprintf(stderr, "%s\n", s);
 	exit(1);
 }
 
-int
+extern "C" int
 yywrap()
 {
 	return 1;
@@ -617,11 +620,14 @@ if test $? -ne 0 ; then cat log; fail; fi
 # add the new files to the change
 #
 activity="copy file 608"
-$bin/aegis -copy_file $workchan/main.c -nl -v > log 2>&1
+$bin/aegis -copy_file $workchan/main.cc -nl -v > log 2>&1
 if test $? -ne 0 ; then cat log; fail; fi
 
-cat > $workchan/main.c << 'TheEnd'
+cat > $workchan/main.cc << 'TheEnd'
+#include <stdlib.h>
 #include <stdio.h>
+
+extern int yyparse();
 
 void
 usage()
@@ -630,10 +636,8 @@ usage()
 	exit(1);
 }
 
-void
-main(argc, argv)
-	int	argc;
-	char	**argv;
+int
+main(int argc, char **argv)
 {
 	char	*in = 0;
 	char	*out = 0;
@@ -662,18 +666,17 @@ main(argc, argv)
 		exit(1);
 	}
 	yyparse();
-	exit(0);
+	return 0;
 }
 
 void
-yyerror(s)
-	char	*s;
+yyerror(char *s)
 {
 	fprintf(stderr, "%s\n", s);
 	exit(1);
 }
 
-int
+extern "C" int
 yywrap()
 {
 	return 1;
@@ -853,6 +856,8 @@ cat > $workchan.3/gram.y << 'TheEnd'
 %{
 #include <stdio.h>
 #include <math.h>
+extern int yylex();
+extern void yyerror(char *);
 %}
 %token DOUBLE
 %token NAME
@@ -954,7 +959,7 @@ Xend
 Xif test $? -ne 0 ; then fail; fi
 X
 X$here/example test.in < /dev/null > test.out 2>&1
-Xif test $? -ne 0 ; then fail; fi
+Xif test $? -ne 0 ; then cat test.out; fail; fi
 X
 Xdiff test.ok test.out
 Xif test $? -ne 0 ; then fail; fi
@@ -1020,6 +1025,10 @@ if test $? -ne 0 ; then cat log; fail; fi
 cat > $workchan.4/gram.y << 'TheEnd'
 %{
 #include <stdio.h>
+extern int yylex();
+extern void yyerror(char *);
+extern void assign(int, double);
+extern double recall(int);
 %}
 %token DOUBLE
 %token NAME
@@ -1050,7 +1059,7 @@ command
 expr
 	: DOUBLE
 	| NAME
-		{ extern double recall(); $$ = recall($1); }
+		{ $$ = recall($1); }
 	| '(' expr ')'
 		{ $$ = $2; }
 	| '-' expr
@@ -1069,23 +1078,20 @@ TheEnd
 if test $? -ne 0 ; then fail; fi
 
 activity="new file 1060"
-$bin/aegis -new_file $workchan.4/var.c -nl -v -c 4 > log 2>&1
+$bin/aegis -new_file $workchan.4/var.cc -nl -v -c 4 > log 2>&1
 if test $? -ne 0 ; then cat log; fail; fi
 
-cat > $workchan.4/var.c << 'TheEnd'
+cat > $workchan.4/var.cc << 'TheEnd'
 static double memory[26];
 
 void
-assign(name, value)
-	int	name;
-	double	value;
+assign(int name, double value)
 {
 	memory[name] = value;
 }
 
 double
-recall(name)
-	int	name;
+recall(int name)
 {
 	return memory[name];
 }
@@ -1141,7 +1147,7 @@ Xend
 Xif test $? -ne 0 ; then fail; fi
 X
 X$here/example test.in < /dev/null > test.out 2>&1
-Xif test $? -ne 0 ; then fail; fi
+Xif test $? -ne 0 ; then cat test.out; fail; fi
 X
 Xdiff test.ok test.out
 Xif test $? -ne 0 ; then fail; fi
@@ -1244,7 +1250,7 @@ if test $? -ne 1 ; then cat log; fail; fi
 # need a new difference
 #
 activity="merge 1235"
-$bin/aegis -diff -nl -v -c 3 > log 2>&1
+$bin/aegis -diff --merge-only -nl -v -c 3 > log 2>&1
 if test $? -ne 0 ; then cat log; fail; fi
 
 #

@@ -1,6 +1,6 @@
 /*
  *	aegis - project change supervisor
- *	Copyright (C) 1995-1999, 2001, 2002 Peter Miller;
+ *	Copyright (C) 1995-1999, 2001, 2002, 2004 Peter Miller;
  *	All rights reserved.
  *
  *	This program is free software; you can redistribute it and/or modify
@@ -137,5 +137,19 @@ void change_branch_develop_end_action_set(change_ty *, int);
 int change_branch_protect_development_directory_get(change_ty *);
 void change_branch_protect_development_directory_set(change_ty *, int);
 time_t change_completion_timestamp(change_ty *);
+
+/**
+  * The change_branch_uuid_find function is used to locate a change by
+  * its UUID.  This function will recurse down the branch tree.
+  *
+  * @param pp
+  *     The change or branch to search.
+  * @param uuid
+  *     The change UUID to search for.
+  * @returns
+  *     a pointer to the change with th given UUID, or NULL if no change
+  *     has the given UUID.
+  */
+change_ty *change_branch_uuid_find(change_ty *, string_ty *);
 
 #endif /* AEGIS_CHANGE_BRAN_H */

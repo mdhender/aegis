@@ -1,7 +1,7 @@
 #!/bin/sh
 #
 #	aegis - project change supervisor
-#	Copyright (C) 1991, 1992, 1993, 1994, 1995, 1996, 1997, 1998 Peter Miller;
+#	Copyright (C) 1991-1998, 2004 Peter Miller;
 #	All rights reserved.
 #
 #	This program is free software; you can redistribute it and/or modify
@@ -110,19 +110,19 @@ unset LANG
 unset LANGUAGE
 
 #
-# If the C compiler is called something other than ``cc'', as discovered
-# by the configure script, create a shell script called ``cc'' which
-# invokes the correct C compiler.  Make sure the current directory is in
-# the path, so that it will be invoked.
+# If the C++ compiler is called something other than ``c++'', as
+# discovered by the configure script, create a shell script called
+# ``c++'' which invokes the correct C++ compiler.  Make sure the current
+# directory is in the path, so that it will be invoked.
 #
-if test "$CC" != "" -a "$CC" != "cc"
+if test "$CXX" != "" -a "$CXX" != "c++"
 then
-	cat >> $work/cc << fubar
+	cat >> $work/c++ << fubar
 #!/bin/sh
-exec $CC \$*
+exec $CXX \$*
 fubar
 	if test $? -ne 0 ; then no_result; fi
-	chmod a+rx $work/cc
+	chmod a+rx $work/c++
 	if test $? -ne 0 ; then no_result; fi
 	PATH=${work}:${PATH}
 	export PATH
@@ -207,18 +207,22 @@ if test $? -ne 0 ; then no_result; fi
 # add a few files to the change
 #
 activity="new file 189"
-$bin/aegis -new_file $workchan/main.c $workchan/junk -nl
+$bin/aegis -new_file $workchan/main.cc $workchan/junk -nl
 if test $? -ne 0 ; then no_result; fi
 $bin/aegis -new_file $workchan/config -nl
 if test $? -ne 0 ; then no_result; fi
 $bin/aegis -new_file -list -lib $worklib -p foo
 if test $? -ne 0 ; then no_result; fi
-cat > $workchan/main.c << 'end'
-void main() { exit(0); }
+cat > $workchan/main.cc << 'end'
+int
+main(int argc, char **argv)
+{
+	return 0;
+}
 end
 if test $? -ne 0 ; then no_result; fi
 cat > $workchan/config << 'end'
-build_command = "rm -f foo; cc -o foo -D'VERSION=\"$v\"' main.c";
+build_command = "rm -f foo; c++ -o foo -D'VERSION=\"$v\"' main.cc";
 
 history_get_command =
 	"co -u'$e' -p $h,v > $o";
@@ -287,7 +291,7 @@ activity="remove file 266"
 $bin/aegis -rm $workchan/junk -nl
 if test $? -ne 0 ; then no_result; fi
 activity="copy file 269"
-$bin/aegis -cp $workchan/main.c -nl
+$bin/aegis -cp $workchan/main.cc -nl
 if test $? -ne 0 ; then no_result; fi
 activity="build 272"
 $bin/aegis -b -nl > /dev/null 2>&1
@@ -326,7 +330,7 @@ activity="new file 305"
 $bin/aegis -nf $workchan/junk -nl
 if test $? -ne 0 ; then fail; fi
 activity="copy file 308"
-$bin/aegis -cp $workchan/main.c -nl
+$bin/aegis -cp $workchan/main.cc -nl
 if test $? -ne 0 ; then no_result; fi
 activity="build 311"
 $bin/aegis -b -nl > /dev/null 2>&1
@@ -351,8 +355,8 @@ activity="build 330"
 $bin/aegis -b -nl > /dev/null 2>&1
 if test $? -ne 0 ; then no_result; fi
 activity="integrate pass 333"
-$bin/aegis -ipass -nl > /dev/null 2>&1
-if test $? -ne 0 ; then fail; fi
+$bin/aegis -ipass -nl > LOG 2>&1
+if test $? -ne 0 ; then cat LOG; fail; fi
 
 #
 # the things tested in this test, worked

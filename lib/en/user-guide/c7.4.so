@@ -1,6 +1,6 @@
 .\"
 .\"	aegis - project change supervisor
-.\"	Copyright (C) 1992, 1993, 1994, 1998, 1999 Peter Miller;
+.\"	Copyright (C) 1992-1994, 1998, 1999, 2004 Peter Miller;
 .\"	All rights reserved.
 .\"
 .\"	This program is free software; you can redistribute it and/or modify
@@ -104,7 +104,7 @@ in significant productivity gains?
 The addition of the
 .I create_symlinks_before_build
 field to the project
-.I config
+configuration
 file has greatly reduced the need for this functionality.
 However, it does not provide
 copy-on-write semantics,

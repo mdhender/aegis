@@ -44,6 +44,43 @@
 fstate_src_ty *project_file_find(project_ty *pp, string_ty *filename,
     view_path_ty as_view_path);
 
+/**
+  * The project_file_find_by_uuid function is used to find the state
+  * information of a file within the project, given the file's UUID.  It
+  * will search the immediate branch, and then any ancestor branches
+  * until the file is found.
+  *
+  * \param pp
+  *	The project to search.
+  * \param uuid
+  *	The UUID of the file to search for.
+  * \param as_view_path
+  *	If this is true, apply viewpath rules to the file (i.e. if
+  *	it is removed, return a null pointer) if false return first
+  *	instance found.
+  */
+fstate_src_ty *project_file_find_by_uuid(project_ty *pp, string_ty *uuid,
+    view_path_ty as_view_path);
+
+/**
+  * The project_file_find_by_meta function is used to find the state
+  * information of a file within the project, given the corresponding
+  * change file's meta-data.  It will search the immediate branch, and
+  * then any ancestor branches until the file is found.
+  *
+  * \param pp
+  *	The project to search.
+  * \param c_src
+  *     The change file meta-data for which the corresponding project
+  *     file is sought.
+  * \param as_view_path
+  *	If this is true, apply viewpath rules to the file (i.e. if
+  *	it is removed, return a null pointer) if false return first
+  *	instance found.
+  */
+fstate_src_ty *project_file_find_by_meta(project_ty *pp, fstate_src_ty *c_src,
+    view_path_ty as_view_path);
+
 string_ty *project_file_path(project_ty *, string_ty *);
 
 /**

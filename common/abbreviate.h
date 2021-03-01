@@ -23,10 +23,16 @@
 #ifndef COMMON_ABBREVIATE_H
 #define COMMON_ABBREVIATE_H
 
+/** \addtogroup abbreviate
+  * \brief Abbreviate file and directory names
+  * \ingroup Common
+  * @{
+  */
 #include <ac/stddef.h>
 
 struct string_ty *abbreviate_filename(struct string_ty *, size_t);
 struct string_ty *abbreviate_dirname(struct string_ty *, size_t);
 struct string_ty *abbreviate_8dos3(struct string_ty *);
 
+/** @} */
 #endif /* COMMON_ABBREVIATE_H */

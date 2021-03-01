@@ -1,6 +1,6 @@
 /*
  *	aegis - project change supervisor
- *	Copyright (C) 1991-1995, 1999, 2001, 2002 Peter Miller;
+ *	Copyright (C) 1991-1995, 1999, 2001, 2002, 2004 Peter Miller;
  *	All rights reserved.
  *
  *	This program is free software; you can redistribute it and/or modify
@@ -36,5 +36,11 @@ void lex_close(void);
 void lex_error(struct sub_context_ty *, const char *);
 void gram_error(const char *);
 int gram_lex(void);
+
+/**
+  * The lex_position function is used to get the current lexer position.
+  * If no file is open at present, it returns "end of input".
+  */
+struct string_ty *lex_position(void);
 
 #endif /* LEX_H */

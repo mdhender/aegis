@@ -47,5 +47,6 @@
 #define INDENT_WIDTH	8	/* used for change_details */
 #define PROJECT_WIDTH	15
 #define DIRECTORY_WIDTH 23
+#define ATTR_WIDTH      8	/* used for file and change attributes */
 
 #endif /* LIBAEGIS_AEL_COLUMN_WIDTH_H */

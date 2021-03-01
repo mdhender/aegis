@@ -53,13 +53,14 @@ extern int yydebug;
 
 %}
 
-%token	SHOW_IF_DEFAULT
 %token	HIDE_IF_DEFAULT
 %token	INCLUDE
 %token	INTEGER
 %token	INTEGER_CONSTANT
 %token	NAME
 %token	REAL
+%token	REDEFINITION_OK
+%token	SHOW_IF_DEFAULT
 %token	STRING
 %token	STRING_CONSTANT
 %token	TIME
@@ -73,7 +74,7 @@ extern int yydebug;
 }
 
 %type <lv_string> NAME STRING_CONSTANT
-%type <lv_integer> INTEGER_CONSTANT if_default_clause
+%type <lv_integer> INTEGER_CONSTANT attributes
 %type <lv_type> type structure list enumeration enum_list_begin
 
 %{
@@ -104,7 +105,8 @@ push_name(string_ty *s)
     trace(("push_name(s = \"%s\")\n{\n", s->str_text));
     np = (name_ty *)mem_alloc(sizeof(name_ty));
     np->name_short = str_copy(s);
-    np->name_long = str_format("%S_%S", current->name_long, s);
+    np->name_long =
+	str_format("%s_%s", current->name_long->str_text, s->str_text);
     np->parent = current;
     np->type = 0;
     current = np;
@@ -256,9 +258,10 @@ generate_include_file(const char *include_file, const char *definition_file)
 	indent_printf("#include <ac/time.h>\n");
 	indent_putchar('\n');
     }
-    indent_printf("#include <type.h>\n");
-    indent_printf("#include <str.h>\n");
+    indent_printf("#include <lex.h>\n");
     indent_printf("#include <parse.h>\n");
+    indent_printf("#include <str.h>\n");
+    indent_printf("#include <type.h>\n");
     indent_putchar('\n');
     indent_printf("struct output_ty; /* existence */\n");
     for (j = 0; j < emit_length; ++j)
@@ -338,7 +341,12 @@ generate_code_file(const char *code_file, const char *include_file,
 	cp1
     );
     indent_printf("os_become_must_be_active();\n");
-    indent_printf("result = parse(filename, &%s_type);\n", s->str_text);
+    indent_printf
+    (
+	"result = (%s_ty *)parse(filename, &%s_type);\n",
+	cp1,
+	s->str_text
+    );
     indent_printf("trace((\"return %%08lX;\\n\", (long)result));\n");
     indent_printf("trace((\"}\\n\"));\n");
     indent_printf("return result;\n");
@@ -480,7 +488,7 @@ type_name
     ;
 
 field
-    : field_name '=' type if_default_clause ';'
+    : field_name '=' type attributes ';'
 	{
 	    type_member_add(current->parent->type, current->name_short, $3, $4);
 	    pop_name();
@@ -618,11 +626,13 @@ optional_comma
     | ','
     ;
 
-if_default_clause
+attributes
     : /* empty */
-	{ $$ = -1; }
-    | SHOW_IF_DEFAULT
-	{ $$ = 1; }
-    | HIDE_IF_DEFAULT
 	{ $$ = 0; }
+    | attributes REDEFINITION_OK
+	{ $$ = $1 | ATTRIBUTE_REDEFINITION_OK; }
+    | attributes SHOW_IF_DEFAULT
+	{ $$ = $1 | ATTRIBUTE_SHOW_IF_DEFAULT; }
+    | attributes HIDE_IF_DEFAULT
+	{ $$ = $1 | ATTRIBUTE_HIDE_IF_DEFAULT; }
     ;

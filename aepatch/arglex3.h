@@ -29,6 +29,7 @@ enum
 {
     arglex_token_ascii_armor = ARGLEX2_MAX,
     arglex_token_ascii_armor_not,
+    arglex_token_compatibility,
     arglex_token_compress,
     arglex_token_compress_not,
     arglex_token_content_transfer_encoding,

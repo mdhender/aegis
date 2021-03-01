@@ -1,0 +1,108 @@
+/*
+ *	aegis - project change supervisor
+ *	Copyright (C) 2004 Peter Miller;
+ *	All rights reserved.
+ *
+ *	This program is free software; you can redistribute it and/or modify
+ *	it under the terms of the GNU General Public License as published by
+ *	the Free Software Foundation; either version 2 of the License, or
+ *	(at your option) any later version.
+ *
+ *	This program is distributed in the hope that it will be useful,
+ *	but WITHOUT ANY WARRANTY; without even the implied warranty of
+ *	MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ *	GNU General Public License for more details.
+ *
+ *	You should have received a copy of the GNU General Public License
+ *	along with this program; if not, write to the Free Software
+ *	Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111, USA.
+ *
+ * MANIFEST: report the lib/report/debchanlog.rpt
+ */
+
+columns
+(
+	{ left = 0; right = 0; }, /* for the change heading */
+	{ left = 2; right = 3; }, /* for the star */
+	{ left = 4; right = 0; }  /* for the change description */
+);
+
+title(sprintf("Project \"%s\"", project_name()), "Debian Change Log");
+auto pss, ps, j, ph, cs, tmp, tmp2, tmp3, the_list;
+pss = project[project_name()].state;
+ps = pss.branch;
+
+/*
+ * Build the list of changes to be put into the change log.
+ */
+the_list = [];
+if (ps.currently_integrating_change != "")
+{
+    the_list ##= ps.currently_integrating_change;
+}
+for (j = count(ps.history) - 1; j >= 0; j = j - 1)
+{
+    ph = ps.history[j];
+    the_list ##= ph.change_number;
+}
+
+/*
+ * Now print information about each of them.
+ */
+for (j in the_list)
+{
+    cs = ps.change[j];
+
+    /*
+     * Mangle the project name and change version into the format that
+     * the Debian changelog wants it to be in.
+     */
+    tmp = sprintf("%s.D%3.3d", pss.name, cs.delta_number);
+    tmp2 = split(tmp, ".")[0];
+    tmp3 = substr(tmp, length(tmp2) + 1, 9999);
+    print(sprintf("%s (%s) unstable; urgency=low", tmp2, tmp3));
+    print("");
+
+    /*
+     * Print the change description.
+     */
+    tmp = split(substr(cs.description, 0, 2000), "\n");
+    for (tmp2 in tmp)
+    {
+	if (tmp2 != "")
+	    print("", "*", tmp2);
+    }
+    print("");
+
+    /*
+     * find the developer name
+     */
+    auto dev, h, when, email;
+    dev = "";
+    for (h in cs.history)
+    {
+	if (h.what == develop_begin)
+	    dev = h.who;
+    }
+    when = cs.history[count(cs.history) - 1].when;
+
+    /*
+     * You absolutely positively have to have "a <b@c>" as the email
+     * address, "b@c" is not sufficient, according to the debian
+     * changelog parser.
+     */
+    email = user[dev].email_address;
+    if (count(split(email, '<')) < 2)
+	email = passwd[dev].pw_comment ## " <" ## email ## ">";
+
+    /*
+     * Print the developer's email address and the date the change
+     * was integrated.
+     */
+    print
+    (
+	" --", "",
+	email ## "  " ## strftime("%a, %d %b %Y %H:%M:%S %z", when))
+    );
+    print("");
+}

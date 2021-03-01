@@ -170,8 +170,17 @@ if test $? -ne 0 ; then cat log; no_result; fi
 # add a new files to the change
 #
 activity="new file 172"
-$bin/aegis -nf $workchan/main.c $workchan/test.c $workchan/Makefile \
-	$workchan/config -nl > log 2>&1
+$bin/aegis -nf $workchan/main.c -nl \
+	-uuid aaaaaaaa-bbbb-4bbb-8ccc-ccccddddddd1 > log 2>&1
+if test $? -ne 0 ; then cat log; no_result; fi
+$bin/aegis -nf $workchan/test.c -nl \
+	-uuid aaaaaaaa-bbbb-4bbb-8ccc-ccccddddddd2 > log 2>&1
+if test $? -ne 0 ; then cat log; no_result; fi
+$bin/aegis -nf $workchan/Makefile -nl \
+	-uuid aaaaaaaa-bbbb-4bbb-8ccc-ccccddddddd3 > log 2>&1
+if test $? -ne 0 ; then cat log; no_result; fi
+$bin/aegis -nf $workchan/config -nl \
+	-uuid aaaaaaaa-bbbb-4bbb-8ccc-ccccddddddd4 > log 2>&1
 if test $? -ne 0 ; then cat log; no_result; fi
 cat > $workchan/main.c << 'end'
 int
@@ -220,8 +229,8 @@ if test $? -ne 0 ; then no_result; fi
 #
 # create a new test
 #
-activity="new test 220"
-$bin/aegis -nt > log 2>&1
+activity="new test 223"
+$bin/aegis -nt -uuid aaaaaaaa-bbbb-4bbb-8ccc-ccccddddddd5 > log 2>&1
 if test $? -ne 0 ; then cat log; no_result; fi
 cat > $workchan/test/00/t0001a.sh << 'end'
 #!/bin/sh
@@ -232,70 +241,73 @@ if test $? -ne 0 ; then no_result; fi
 #
 # build the change
 #
-activity="build 232"
+activity="build 235"
 $bin/aegis -build -nl -v > log 2>&1
 if test $? -ne 0 ; then cat log; fail; fi
 
 #
 # difference the change
 #
-activity="diff 239"
+activity="diff 242"
 $bin/aegis -diff > log 2>&1
 if test $? -ne 0 ; then cat log; no_result; fi
 
 #
 # test the change
 #
-activity="test 246"
+activity="test 249"
 $bin/aegis -t -v > log 2>&1
+if test $? -ne 0 ; then cat log; no_result; fi
+
+$bin/aegis -ca -uuid aaaaaaaa-bbbb-4bbb-8ccc-ccccddddddd6 > log 2>&1
 if test $? -ne 0 ; then cat log; no_result; fi
 
 #
 # finish development of the change
 #
-activity="develop end 253"
+activity="develop end 256"
 $bin/aegis -de > log 2>&1
 if test $? -ne 0 ; then cat log; fail; fi
 
 #
 # pass the review
 #
-activity="review pass 260"
+activity="review pass 263"
 $bin/aegis -rpass -c 1 > log 2>&1
 if test $? -ne 0 ; then cat log; no_result; fi
 
 #
 # start integrating
 #
-activity="integrate begin 267"
+activity="integrate begin 270"
 $bin/aegis -ib 1 > log 2>&1
 if test $? -ne 0 ; then cat log; no_result; fi
 
 #
 # integrate build
 #
-activity="build 274"
+activity="build 277"
 $bin/aegis -b -nl -v > log 2>&1
 if test $? -ne 0 ; then cat log; no_result; fi
 
 #
 # integrate test
 #
-activity="test 281"
+activity="test 284"
 $bin/aegis -t -nl -v > log 2>&1
 if test $? -ne 0 ; then cat log; no_result; fi
 
 #
 # pass the integration
 #
-activity="integrate pass 288"
+activity="integrate pass 291"
 $bin/aegis -intpass -nl > log 2>&1
 if test $? -ne 0 ; then cat log; no_result; fi
 
 #
 # create a new change, to generate a patch
 #
-activity="new change 143"
+activity="new change 298"
 cat > $tmp << 'end'
 brief_description = "The second change";
 cause = internal_bug;
@@ -313,7 +325,7 @@ if test $? -ne 0 ; then cat log; no_result; fi
 #
 # add a new files to the change
 #
-activity="copy file 172"
+activity="copy file 316"
 $bin/aegis -cp $workchan/main.c -c 2 -nl > log 2>&1
 if test $? -ne 0 ; then cat log; no_result; fi
 cat > $workchan/main.c << 'end'
@@ -355,6 +367,13 @@ X
 #	X
 #	The second changeX
 #	X
+# Aegis-Change-Set-BeginX
+# H4sIAAAAAAAAA42PwUoFMQxF9/2KMmtHEFwIw/sLdyJDJs30Bdp0aNqnIv67Kc5G3HghWeTcX
+# NLdbZdrXQIqVj8ZF/MVPz1fySlgkeLyCRJoW9w8LQlcyyNKoCqR163FxjbSt9E75aMZ2SErnX
+# cAOlxEJ/aKVYSdVOrb+3W+2GtUEbd+ANuLFEi3+jVI5M0oxW9Bf34j7dzolWgTy8UwaWe7SUX
+# vXMYAzg1b6b5cbQnRJytMPzoweyA55dzCbx/2L5CHC9q6RUtzdede13cN97PYDNIAQAAX
+# Aegis-Change-Set-EndX
+#X
 Index: main.cX
 *** main.c
 --- main.c
@@ -384,14 +403,14 @@ if test $? -ne 0 ; then fail; fi
 #
 # receive the patch
 #
-activity="aepatch receive 339"
+activity="aepatch receive 394"
 $bin/aepatch -receive -dir ${workchan}3 -f the.patch -trojan > log 2>&1
 if test $? -ne 0 ; then cat log; fail; fi
 
 #
 # Make sure the patch is applied properly.
 #
-activity="verify 346"
+activity="verify 401"
 diff $workchan/main.c ${workchan}3/main.c
 if test $? -ne 0 ; then fail; fi
 

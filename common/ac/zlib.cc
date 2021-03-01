@@ -1,0 +1,61 @@
+//
+//	aegis - project change supervisor
+//	Copyright (C) 1999, 2004 Peter Miller;
+//	All rights reserved.
+//
+//	This program is free software; you can redistribute it and/or modify
+//	it under the terms of the GNU General Public License as published by
+//	the Free Software Foundation; either version 2 of the License, or
+//	(at your option) any later version.
+//
+//	This program is distributed in the hope that it will be useful,
+//	but WITHOUT ANY WARRANTY; without even the implied warranty of
+//	MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+//	GNU General Public License for more details.
+//
+//	You should have received a copy of the GNU General Public License
+//	along with this program; if not, write to the Free Software
+//	Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111, USA.
+//
+// MANIFEST: functions to manipulate zlibs
+//
+
+#include <errno.h>
+#include <ac/string.h>
+#include <ac/zlib.h>
+
+
+const char *
+z_error(int err)
+{
+    switch (err)
+    {
+    case Z_OK:
+	return "no error";
+
+    case Z_STREAM_END:
+	return "stream end";
+
+    case Z_NEED_DICT:
+	return "need dict";
+
+    case Z_ERRNO:
+	return strerror(errno);
+
+    case Z_STREAM_ERROR:
+	return "stream error";
+
+    case Z_DATA_ERROR:
+	return "data error";
+
+    case Z_MEM_ERROR:
+	return "memory error";
+
+    case Z_BUF_ERROR:
+	return "buffer error";
+
+    case Z_VERSION_ERROR:
+	return "version error";
+    }
+    return "unknown zlib error";
+}

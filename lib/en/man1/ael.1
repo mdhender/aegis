@@ -1,6 +1,6 @@
 '\" t
 .\"	aegis - project change supervisor
-.\"	Copyright (C) 1991-1994, 1999, 2001, 2003 Peter Miller;
+.\"	Copyright (C) 1991-1994, 1999, 2001, 2003, 2004 Peter Miller;
 .\"	All rights reserved.
 .\"
 .\"	This program is free software; you can redistribute it and/or modify
@@ -55,6 +55,11 @@ as follows (abbreviations as for command line options):
 Administrators
 .br
 List the administrators of a project.
+.TP 8n
+Branch_Details
+.br
+List full information about all the changes in the branch in large
+format.  This listing will recurse down the full branch tree.
 .TP 8n
 Change_Details
 .br
@@ -126,6 +131,12 @@ List all changes owned by the specified user that are not yet completed
 All_Outstanding_Changes
 .br
 List all changes not yet completed, for all projects.
+.TP 8n
+Project_Details
+.br
+List full information about all the changes in the project in large
+format.  This listing will recurse down the full branch tree below the
+project.
 .TP 8n
 Project_Files
 .br

@@ -28,6 +28,12 @@
 
 #include <main.h>
 
+/** \addtogroup Trace
+  * \brief Trace capability support
+  * \ingroup Common
+  * @{
+  */
+
 #ifdef DEBUG
 #define trace_pretest_ \
 	(							\
@@ -221,4 +227,11 @@ void trace_string_real(const char *, const char *);
 
 #endif
 
+/**
+  * The unctrl function may be used to turn a character into something
+  * printable for debugging purposes.  It's very verbose.
+  */
+const char *unctrl(int);
+
+/** @} */
 #endif /* TRACE_H */

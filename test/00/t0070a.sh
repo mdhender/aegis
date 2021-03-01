@@ -1,7 +1,7 @@
 #!/bin/sh
 #
 #	aegis - project change supervisor
-#	Copyright (C) 1994, 1995, 1996, 1997, 1998 Peter Miller;
+#	Copyright (C) 1994-1998, 2004 Peter Miller;
 #	All rights reserved.
 #
 #	This program is free software; you can redistribute it and/or modify
@@ -102,19 +102,19 @@ cd $work
 if test $? -ne 0 ; then no_result; fi
 
 #
-# If the C compiler is called something other than ``cc'', as discovered
-# by the configure script, create a shell script called ``cc'' which
-# invokes the correct C compiler.  Make sure the current directory is in
-# the path, so that it will be invoked.
+# If the C++ compiler is called something other than ``c++'', as
+# discovered by the configure script, create a shell script called
+# ``c++'' which invokes the correct C++ compiler.  Make sure the current
+# directory is in the path, so that it will be invoked.
 #
-if test "$CC" != "" -a "$CC" != "cc"
+if test "$CXX" != "" -a "$CXX" != "c++"
 then
-	cat >> $work/cc << fubar
+	cat >> $work/c++ << fubar
 #!/bin/sh
-exec $CC \$*
+exec $CXX \$*
 fubar
 	if test $? -ne 0 ; then no_result; fi
-	chmod a+rx $work/cc
+	chmod a+rx $work/c++
 	if test $? -ne 0 ; then no_result; fi
 	PATH=${work}:${PATH}
 	export PATH
@@ -123,33 +123,29 @@ fi
 #
 # program to ask questions about symlinks
 #
-cat > symlink.c << 'fubar'
+cat > symlink.cc << 'fubar'
 #include <sys/types.h>
 #include <sys/stat.h>
 int
-main(argc, argv)
-	int	argc;
-	char	**argv;
+main(int argc, char **argv)
 {
 #ifdef S_IFLNK
 	if (argc == 2)
 	{
 		struct stat st;
 		if (lstat(argv[1], &st))
-			exit(0);
+			return 0;
 		/* fails if file exists */
-		exit(1);
+		return 1;
 	}
-	exit(0);
 	return 0;
 #else
-	exit(2);
 	return 2;
 #endif
 }
 fubar
 if test $? -ne 0 ; then no_result; fi
-cc -o symlink symlink.c
+c++ -o symlink symlink.cc
 if test $? -ne 0 ; then no_result; fi
 
 #
@@ -244,25 +240,35 @@ if test $? -ne 0 ; then cat log; no_result; fi
 # add a new files to the change
 #
 activity="new file 224"
-$bin/aegis -nf $workchan/main.c $workchan/test.c $workchan/Makefile \
+$bin/aegis -nf $workchan/main.cc $workchan/test.cc $workchan/Makefile \
 	$workchan/config -nl > log 2>&1
 if test $? -ne 0 ; then cat log; no_result; fi
-cat > $workchan/main.c << 'end'
-int main() { test(); exit(0); return 0; }
+cat > $workchan/main.cc << 'end'
+extern void test(void);
+
+int
+main(int argc, char **argv)
+{
+	test();
+	return 0;
+}
 end
 if test $? -ne 0 ; then no_result; fi
-cat > $workchan/test.c << 'end'
-void test() { }
+cat > $workchan/test.cc << 'end'
+void
+test(void)
+{
+}
 end
 if test $? -ne 0 ; then no_result; fi
 cat > $workchan/Makefile << 'end'
-.c.o:
+.cc.o:
 	rm -f $*.o
-	$(CC) $(CFLAGS) -D'VERSION="$(VERSION)"' -c $*.c
+	c++ $(CFLAGS) -D'VERSION="$(VERSION)"' -c $*.cc
 
 foo: main.o test.o
 	rm -f foo
-	$(CC) -o foo main.o test.o
+	c++ -o foo main.o test.o
 end
 if test $? -ne 0 ; then no_result; fi
 cat > $workchan/config << 'end'
@@ -394,27 +400,25 @@ if test $? -ne 0 ; then cat log; fail; fi
 #	It will have to remove the symlink before copying
 #
 activity="copy file 361"
-$bin/aegis -cp $workchan/main.c -nl > log 2>&1
+$bin/aegis -cp $workchan/main.cc -nl > log 2>&1
 if test $? -ne 0 ; then cat log; fail; fi
 
 #
 # change the file
 #
-cat > $workchan/main.c << 'end'
+cat > $workchan/main.cc << 'end'
 #include <stdio.h>
+extern void test(void);
 
 int
-main(argc, argv)
-	int	argc;
-	char	**argv;
+main(int argc, char **argv)
 {
 	if (argc != 1)
 	{
 		fprintf(stderr, "usage: %s\n", argv[0]);
-		exit(1);
+		return 1;
 	}
 	test();
-	exit(0);
 	return 0;
 }
 end

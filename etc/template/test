@@ -50,7 +50,14 @@ export AEGIS_THROTTLE
 here=`pwd`
 if test $$? -ne 0 ; then exit 2; fi
 
-bin=$$here/$${1-.}/bin
+if test "$$1" != "" ; then bin="$$here/$$1/bin"; else bin="$$here/bin"; fi
+
+#
+# set the path, so that the aegis command that aepatch/aedist invokes
+# is from the same test set as the aepatch/aedist command itself.
+#
+PATH=$${bin}:$$PATH
+export PATH
 
 pass()
 {
@@ -64,7 +71,7 @@ pass()
 fail()
 {
 	set +x
-	echo 'FAILED test of the ??? functionality' 1>&2
+	echo "FAILED test of the ??? functionality ($$activity)" 1>&2
 	cd $$here
 	find $$work -type d -user $$USER -exec chmod u+w {} \;
 	rm -rf $$work
@@ -73,7 +80,7 @@ fail()
 no_result()
 {
 	set +x
-	echo 'NO RESULT when testing the ??? functionality' 1>&2
+	echo "NO RESULT when testing the ??? functionality ($$activity)" 1>&2
 	cd $$here
 	find $$work -type d -user $$USER -exec chmod u+w {} \;
 	rm -rf $$work
@@ -81,6 +88,7 @@ no_result()
 }
 trap \"no_result\" 1 2 3 15
 
+activity="create test directory"
 mkdir $$work $$work/lib
 if test $$? -ne 0 ; then no_result; fi
 chmod 777 $$work/lib
@@ -97,19 +105,19 @@ unset LANG
 unset LANGUAGE
 
 #
-# If the C compiler is called something other than ``cc'', as discovered
-# by the configure script, create a shell script called ``cc'' which
-# invokes the correct C compiler.  Make sure the current directory is in
-# the path, so that it will be invoked.
+# If the C++ compiler is called something other than ``c++'', as
+# discovered by the configure script, create a shell script called
+# ``c++'' which invokes the correct C++ compiler.  Make sure the current
+# directory is in the path, so that it will be invoked.
 #
-if test "$$CC" != "" -a "$$CC" != "cc"
+if test "$$CXX" != "" -a "$$CXX" != "c++"
 then
-	cat >> $$work/cc << fubar
+	cat >> $$work/c++ << fubar
 #!/bin/sh
-exec $$CC \$$*
+exec $$CXX \$$*
 fubar
 	if test $$? -ne 0 ; then no_result; fi
-	chmod a+rx $$work/cc
+	chmod a+rx $$work/c++
 	if test $$? -ne 0 ; then no_result; fi
 	PATH=$${work}:$${PATH}
 	export PATH
@@ -118,6 +126,7 @@ fi
 #
 # test the ??? functionality
 #
+activity="something descriptive"
 $$bin/aegis
 if test $$? -ne 0 ; then fail; fi
 

@@ -1,7 +1,7 @@
 #!/bin/sh
 #
 #	aegis - project change supervisor
-#	Copyright (C) 1999 Peter Miller;
+#	Copyright (C) 1999, 2004 Peter Miller;
 #	All rights reserved.
 #
 #	This program is free software; you can redistribute it and/or modify
@@ -193,9 +193,18 @@ date > $workchan/x/f4
 if test $? -ne 0 ; then no_result; fi
 
 #
+# create temp file to be ignored
+#
+activity="garbage 198"
+cat > $workchan/garb2.x,D <<EOF
+this is garbage2
+EOF
+if test $? -ne 0; then no_result; fi
+
+#
 # add the new files to the change
 #
-activity="new file 198"
+activity="new file 207"
 $bin/aegis -new_file $workchan -nl -v > log 2>&1
 if test $? -ne 0 ; then cat log; fail; fi
 

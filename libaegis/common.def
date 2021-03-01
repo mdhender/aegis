@@ -1,6 +1,6 @@
 /*
  *	aegis - project change supervisor
- *	Copyright (C) 1991-1993, 1997, 1998, 2001-2003 Peter Miller;
+ *	Copyright (C) 1991-1993, 1997, 1998, 2001-2004 Peter Miller;
  *	All rights reserved.
  *
  *	This program is free software; you can redistribute it and/or modify
@@ -171,3 +171,16 @@ type history_version =
 	 */
 	encoding = (none, quoted_printable, base64);
 };
+
+/*
+ * The attribute_list structure is used to remember arbitrary name/value
+ * pairs of information.  This is used for project attributes, change
+ * attributes and file attributes.
+ */
+type attributes =
+[
+    {
+	name = string;
+	value = string;
+    }
+];

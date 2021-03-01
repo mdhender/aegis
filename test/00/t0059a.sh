@@ -1,7 +1,7 @@
 #!/bin/sh
 #
 #	aegis - project change supervisor
-#	Copyright (C) 1997, 1998 Peter Miller;
+#	Copyright (C) 1997, 1998, 2004 Peter Miller;
 #	All rights reserved.
 #
 #	This program is free software; you can redistribute it and/or modify
@@ -94,19 +94,19 @@ unset LANG
 unset LANGUAGE
 
 #
-# If the C compiler is called something other than ``cc'', as discovered
-# by the configure script, create a shell script called ``cc'' which
-# invokes the correct C compiler.  Make sure the current directory is in
-# the path, so that it will be invoked.
+# If the C++ compiler is called something other than ``c++'', as
+# discovered by the configure script, create a shell script called
+# ``c++'' which invokes the correct C++ compiler.  Make sure the current
+# directory is in the path, so that it will be invoked.
 #
-if test "$CC" != "" -a "$CC" != "cc"
+if test "$CXX" != "" -a "$CXX" != "c++"
 then
-	cat > $work/cc << fubar
+	cat > $work/c++ << fubar
 #!/bin/sh
-exec $CC \$*
+exec $CXX \$*
 fubar
 	if test $? -ne 0 ; then no_result; fi
-	chmod a+rx $work/cc
+	chmod a+rx $work/c++
 	if test $? -ne 0 ; then no_result; fi
 	PATH=${work}:${PATH}
 	export PATH
@@ -165,7 +165,8 @@ $bin/aegis -new_file $workchan/config $workchan/template -nl -lib $worklib -Pro 
 if test $? -ne 0 ; then no_result; fi
 
 cat > $workchan/config << 'end'
-build_command = "rm -f foo; cc -o foo -D'VERSION=\"$v\"' -D'PATH=\"$sp\"' main.c";
+build_command =
+    "rm -f foo; c++ -o foo -D'VERSION=\"$v\"' -D'PATH=\"$sp\"' main.cc";
 
 history_get_command =
 	"co -u'$e' -p $h,v > $o";

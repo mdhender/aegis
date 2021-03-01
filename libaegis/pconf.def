@@ -1,6 +1,6 @@
 /*
  *	aegis - project change supervisor
- *	Copyright (C) 1991-1996, 1998-2003 Peter Miller;
+ *	Copyright (C) 1991-1996, 1998-2004 Peter Miller;
  *	All rights reserved.
  *
  *	This program is free software; you can redistribute it and/or modify
@@ -867,7 +867,8 @@ architecture =
 		 */
 		mode = (required, optional, forbidden);
 	}
-];
+]
+	redefinition_ok;
 
 /*
  * new file templates
@@ -880,7 +881,8 @@ file_template =
 		body = string;
 		body_command = string;
 	}
-];
+]
+	redefinition_ok;
 
 /*
  * Whiteout templates are used to produce ``whiteout'' files in the
@@ -895,7 +897,8 @@ whiteout_template =
 		pattern = [ string ];
 		body = string;
 	}
-];
+]
+	redefinition_ok;
 
 /*
  * This field is used to limit the length of filenames.  All new files
@@ -1040,13 +1043,8 @@ trojan_horse_suspect = [ string ];
  * using the ${project_specific <name> } subsstitution.  See aesub(5)
  * for more information.
  */
-project_specific =
-[
-	{
-		name = string;
-		value = string;
-	}
-];
+project_specific = attributes
+	redefinition_ok;
 
 /*
  * This field controls the adjustment of file modification times at the

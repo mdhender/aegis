@@ -1,7 +1,7 @@
 #!/bin/sh
 #
 #	aegis - project change supervisor
-#	Copyright (C) 1996-1998, 2000-2001 Peter Miller;
+#	Copyright (C) 1996-1998, 2000, 2001, 2004 Peter Miller;
 #	All rights reserved.
 #
 #	This program is free software; you can redistribute it and/or modify
@@ -94,6 +94,7 @@ check_it()
 		-e 's/20[0-9][0-9]/YYYY/' \
 		-e 's/node = ".*"/node = "NODE"/' \
 		-e 's/crypto = ".*"/crypto = "GUNK"/' \
+		-e 's/uuid = ".*"/uuid = "UUID"/' \
 		< $2 > $work/sed.out
 	if test $? -ne 0; then no_result; fi
 	diff $1 $work/sed.out
@@ -259,6 +260,7 @@ src =
 [
 	{
 		file_name = "fred";
+		uuid = "UUID";
 		action = remove;
 		edit_origin =
 		{
@@ -291,10 +293,10 @@ if test $? -ne 0 ; then cat log; no_result; fi
 activity="integrate begin 290"
 $bin/aegis -ib 11 -v > log 2>&1
 if test $? -ne 0 ; then cat log; no_result; fi
-if test ! -f $work/test/branch.1/branch.0/delta*/config; then no_result; fi
-if test ! -f $work/test/branch.1/branch.0/delta*/config,D; then no_result; fi
-if test -f $work/test/branch.1/branch.0/delta*/fred; then fail; fi
-if test -f $work/test/branch.1/branch.0/delta*/fred,D; then fail; fi
+if test ! -f $work/test/branch.1/branch.0/delta*002/config; then no_result; fi
+if test ! -f $work/test/branch.1/branch.0/delta*002/config,D; then no_result; fi
+if test -f $work/test/branch.1/branch.0/delta*002/fred; then fail; fi
+if test -f $work/test/branch.1/branch.0/delta*002/fred,D; then fail; fi
 
 activity="integrate build 298"
 $bin/aegis -b -v > log 2>&1
@@ -303,7 +305,7 @@ if test $? -ne 0 ; then cat log; no_result; fi
 activity="integrate diff 302"
 $bin/aegis -diff -v > log 2>&1
 if test $? -ne 0 ; then cat log; no_result; fi
-if test ! -f $work/test/branch.1/branch.0/delta*/fred,D; then fail; fi
+if test ! -f $work/test/branch.1/branch.0/delta*002/fred,D; then fail; fi
 
 activity="check change file state 307"
 cat > ok << 'fubar'
@@ -311,6 +313,7 @@ src =
 [
 	{
 		file_name = "fred";
+		uuid = "UUID";
 		action = remove;
 		edit_origin =
 		{
@@ -350,6 +353,7 @@ src =
 [
 	{
 		file_name = "config";
+		uuid = "UUID";
 		action = create;
 		edit =
 		{
@@ -361,7 +365,7 @@ src =
 			revision = "1.1";
 			encoding = none;
 		};
-		usage = source;
+		usage = config;
 		file_fp =
 		{
 			youngest = TIME;
@@ -377,6 +381,7 @@ src =
 	},
 	{
 		file_name = "fred";
+		uuid = "UUID";
 		action = remove;
 		edit =
 		{
@@ -435,6 +440,7 @@ src =
 [
 	{
 		file_name = "config";
+		uuid = "UUID";
 		action = create;
 		edit =
 		{
@@ -446,7 +452,7 @@ src =
 			revision = "1.2";
 			encoding = none;
 		};
-		usage = source;
+		usage = config;
 		file_fp =
 		{
 			youngest = TIME;
@@ -462,6 +468,7 @@ src =
 	},
 	{
 		file_name = "fred";
+		uuid = "UUID";
 		action = remove;
 		edit =
 		{

@@ -1,6 +1,6 @@
 .\"
 .\"	aegis - project change supervisor
-.\"	Copyright (C) 1999-2003 Peter Miller;
+.\"	Copyright (C) 1999-2004 Peter Miller;
 .\"	All rights reserved.
 .\"
 .\"	This program is free software; you can redistribute it and/or modify
@@ -293,7 +293,7 @@
 .\" testing remarks into a single chapter.
 .\"
 .\" Aegis works for anything you want to version and manage: source
-.\" code, documentation, webs, config settings, yada yada yada.
+.\" code, documentation, webs, configuration settings, yada yada yada.
 .\"
 .\" > * While there is a web interface for Aegis, you write about it
 .\" >   as intranet solution, rather than an Internet solution.  Does

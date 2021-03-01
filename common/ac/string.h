@@ -37,6 +37,10 @@ int strncasecmp(const char *, const char *, size_t);
 char *strsignal(int);
 #endif
 
+#if !defined(HAVE_STRVERSCMP)
+int strverscmp(const char *, const char *);
+#endif
+
 #if STDC_HEADERS || HAVE_STRING_H
 #  include <string.h>
    /* An ANSI string.h and pre-ANSI memory.h might conflict.  */

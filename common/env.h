@@ -23,6 +23,11 @@
 #ifndef COMMON_ENV_H
 #define COMMON_ENV_H
 
+/** \addtogroup Environment
+  * \brief Process environment manipulation
+  * \ingroup Common
+  * @{
+  */
 #include <main.h>
 
 void env_initialize(void);
@@ -31,4 +36,5 @@ void env_setf(const char *name, const char *value, ...);
 void env_set_page(void);
 void env_unset(const char *name);
 
+/** @} */
 #endif /* COMMON_ENV_H */

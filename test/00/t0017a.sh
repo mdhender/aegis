@@ -1,7 +1,7 @@
 #!/bin/sh
 #
 #	aegis - project change supervisor
-#	Copyright (C) 1993, 1994, 1995, 1996, 1997, 1998 Peter Miller;
+#	Copyright (C) 1993-1998, 2004 Peter Miller;
 #	All rights reserved.
 #
 #	This program is free software; you can redistribute it and/or modify
@@ -111,19 +111,19 @@ unset LANG
 unset LANGUAGE
 
 #
-# If the C compiler is called something other than ``cc'', as discovered
-# by the configure script, create a shell script called ``cc'' which
-# invokes the correct C compiler.  Make sure the current directory is in
-# the path, so that it will be invoked.
+# If the C++ compiler is called something other than ``c++'', as
+# discovered by the configure script, create a shell script called
+# ``c++'' which invokes the correct C++ compiler.  Make sure the current
+# directory is in the path, so that it will be invoked.
 #
-if test "$CC" != "" -a "$CC" != "cc"
+if test "$CXX" != "" -a "$CXX" != "c++"
 then
-	cat >> cc << fubar
+	cat >> c++ << fubar
 #!/bin/sh
-exec $CC \$*
+exec $CXX \$*
 fubar
 	if test $? -ne 0 ; then no_result; fi
-	chmod a+rx cc
+	chmod a+rx c++
 	if test $? -ne 0 ; then no_result; fi
 	PATH=${work}:${PATH}
 	export PATH
@@ -206,19 +206,19 @@ if test $? -ne 0 ; then cat log; no_result; fi
 # add a new files to the change
 #
 activity="new file 188"
-$bin/aegis -new_file $workchan/main.c -nl -v -lib $worklib -p foo > log 2>&1
+$bin/aegis -new_file $workchan/main.cc -nl -v -lib $worklib -p foo > log 2>&1
 if test $? -ne 0 ; then cat log; no_result; fi
 $bin/aegis -new_file $workchan/config -nl -v -lib $worklib -p foo > log 2>&1
 if test $? -ne 0 ; then cat log; no_result; fi
-cat > $workchan/main.c << 'end'
-void
-main()
+cat > $workchan/main.cc << 'end'
+int
+main(int argc, char **argv)
 {
-	exit(0);
+	return 0;
 }
 end
 cat > $workchan/config << 'end'
-build_command = "rm -f foo; cc -o foo -D'VERSION=\"$version\"' main.c";
+build_command = "rm -f foo; c++ -o foo -D'VERSION=\"$version\"' main.cc";
 link_integration_directory = true;
 
 history_get_command =
@@ -361,35 +361,33 @@ if test $? -ne 0 ; then cat log; no_result; fi
 # copy a file into change 2
 #
 activity="copy file 338"
-$bin/aegis -cp $workchan/main.c -nl -v -lib $worklib -c 2 -p foo > log 2>&1
+$bin/aegis -cp $workchan/main.cc -nl -v -lib $worklib -c 2 -p foo > log 2>&1
 if test $? -ne 0 ; then cat log; no_result; fi
 
 #
 # copy a file into change 3
 #
 activity="copy file 345"
-$bin/aegis -cp $workchan3/main.c -nl -v -lib $worklib -c 3 -p foo > log 2>&1
+$bin/aegis -cp $workchan3/main.cc -nl -v -lib $worklib -c 3 -p foo > log 2>&1
 if test $? -ne 0 ; then cat log; no_result; fi
 
 #
 # change the file
 #
-cat > $workchan/main.c << 'end'
+cat > $workchan/main.cc << 'end'
 
 #include <stdio.h>
 
-void
-main(argc, argv)
-	int	argc;
-	char	**argv;
+int
+main(int argc, char **argv)
 {
 	if (argc != 1)
 	{
 		fprintf(stderr, "usage: %s\n", argv[0]);
-		exit(1);
+		return 1;
 	}
 	printf("hello, world\n");
-	exit(0);
+	return 0;
 }
 end
 
@@ -472,7 +470,7 @@ if test $? -ne 0 ; then cat log; fail; fi
 # the merged result (in change 3) should look like
 # the edited one from change 2
 #
-diff $workchan3/main.c,D $workchan/main.c
+diff $workchan3/main.cc,D $workchan/main.cc
 if test $? -ne 0 ; then fail; fi
 
 #

@@ -1,7 +1,7 @@
 #!/bin/sh
 #
 #	aegis - project change supervisor
-#	Copyright (C) 1991-2003 Peter Miller;
+#	Copyright (C) 1991-2004 Peter Miller;
 #	All rights reserved.
 #
 #	This program is free software; you can redistribute it and/or modify
@@ -138,6 +138,8 @@ do
 	esac
 
 	case $file in
+	script/aegis.synpic | script/ae-symlinks.in)
+		;;
 	script/*.in)
 		name=`echo $file | sed -e 's|.*/||' -e 's|\.in$||'`
 		commands_bin="$commands_bin bin/$name\$(EXEEXT)"
@@ -145,13 +147,13 @@ do
 		commands_install="$commands_install \$(RPM_BUILD_ROOT)\
 \$(bindir)/\$(PROGRAM_PREFIX)$name\$(PROGRAM_SUFFIX)\$(EXEEXT)"
 		;;
-	*/main.c)
+	*/main.cc)
 		name=`echo $file | sed 's|/.*||'`
 		commands="$commands $name"
 		commands_bin="$commands_bin bin/$name\$(EXEEXT)"
 
 		case $name in
-		aefp | fmtgen | find_sizes | cklinlen )
+		aefp | fmtgen | find_sizes | cklinlen | aemanifest )
 			;;
 		test_*)
 			;;
@@ -167,9 +169,9 @@ do
 
 	case $file in
 
-	*/*.c)
+	*/*.cc)
 		dir=`echo $file | sed 's|/.*||'`
-		stem=`echo $file | sed 's/\.c$//'`
+		stem=`echo $file | sed 's/\.cc$//'`
 		eval "${dir}_files=\"\$${dir}_files ${stem}.\\\$(OBJEXT)\""
 		clean_files="$clean_files ${stem}.\$(OBJEXT)"
 		;;
@@ -179,13 +181,13 @@ do
 		stem=`echo $file | sed 's/\.def$//'`
 		eval "${dir}_files=\"\$${dir}_files ${stem}.\\\$(OBJEXT)\""
 		clean_files="$clean_files ${stem}.\$(OBJEXT) \
-${stem}.c ${stem}.h"
+${stem}.cc ${stem}.h"
 		;;
 
 	*/*.y)
 		dir=`echo $file | sed 's|/.*||'`
 		stem=`echo $file | sed 's/\.y$//'`
-		clean_files="$clean_files ${stem}.gen.c ${stem}.gen.h"
+		clean_files="$clean_files ${stem}.gen.cc ${stem}.gen.h"
 		eval "${dir}_files=\"\$${dir}_files ${stem}.gen.\\\$(OBJEXT)\""
 		clean_files="$clean_files ${stem}.gen.\$(OBJEXT)"
 		;;
@@ -268,7 +270,7 @@ do
 	find_sizes | fmtgen )
 		echo "bin/$name\$(EXEEXT): \$(${name}_files) .bin"
 		echo '	@sleep 1'
-		echo "	\$(CC) \$(LDFLAGS) -o \$@ \$(${name}_files) \$(LIBS)"
+		echo "	\$(CXX) \$(LDFLAGS) -o \$@ \$(${name}_files) \$(LIBS)"
 		echo '	@sleep 1'
 		;;
 
@@ -276,7 +278,7 @@ do
 		echo "bin/$name\$(EXEEXT): \$(${name}_files) \
 common/common.\$(LIBEXT) .bin"
 		echo '	@sleep 1'
-		echo "	\$(CC) \$(LDFLAGS) -o \$@ \$(${name}_files) \
+		echo "	\$(CXX) \$(LDFLAGS) -o \$@ \$(${name}_files) \
 common/common.\$(LIBEXT) \$(LIBS)"
 		echo '	@sleep 1'
 		;;
@@ -285,7 +287,7 @@ common/common.\$(LIBEXT) \$(LIBS)"
 		echo "bin/$name\$(EXEEXT): \$(${name}_files) \
 libaegis/libaegis.\$(LIBEXT) .bin"
 		echo '	@sleep 1'
-		echo "	\$(CC) \$(LDFLAGS) -o \$@ \$(${name}_files) \
+		echo "	\$(CXX) \$(LDFLAGS) -o \$@ \$(${name}_files) \
 libaegis/libaegis.\$(LIBEXT) \$(LIBS)"
 		case $name in
 		aegis | aeimport)

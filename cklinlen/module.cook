@@ -1,6 +1,6 @@
 /*
  *	aegis - project change supervisor
- *	Copyright (C) 2002 Peter Miller;
+ *	Copyright (C) 2002, 2004 Peter Miller;
  *	All rights reserved.
  *
  *	This program is free software; you can redistribute it and/or modify
@@ -23,8 +23,8 @@
 all += cklinlen/.checked;
 
 cklinlen_obj =
-    [fromto cklinlen/%0%.c [arch]/cklinlen/%0%.o
-	[match_mask cklinlen/%0%.c [source_files]]
+    [fromto cklinlen/%0%.cc [arch]/cklinlen/%0%.o
+	[match_mask cklinlen/%0%.cc [source_files]]
     ]
     [arch]/common/arglex.o
     [arch]/common/error.o
@@ -41,7 +41,7 @@ cklinlen_obj =
 cklinlen/.checked: [arch]/bin/cklinlen [change_files]
     set nocascade
 {
-    [resolve [arch]/bin/cklinlen] `cat`;
+    xargs [resolve [arch]/bin/cklinlen] ;
 data
 [unsplit "\n" [resolve [sort [change_files] [project_files]]]]
 dataend

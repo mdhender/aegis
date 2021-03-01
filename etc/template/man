@@ -23,6 +23,7 @@
 .TH "\*(n) -Glup" 1 \*(N) "Reference Manual" ""
 .SH NAME
 \*(n) -Glup \- glup a change
+.XX "aeglup(1)" "glup a change"
 .SH SYNOPSIS
 .B \*(n)
 .B \-Glup

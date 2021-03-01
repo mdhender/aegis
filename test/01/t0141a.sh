@@ -1,7 +1,7 @@
 #!/bin/sh
 #
 #	aegis - project change supervisor
-#	Copyright (C) 2003 Peter Miller;
+#	Copyright (C) 2003, 2004 Peter Miller;
 #	All rights reserved.
 #
 #	This program is free software; you can redistribute it and/or modify
@@ -188,7 +188,11 @@ if test $? -ne 0 ; then cat log; no_result; fi
 # add a new files to the change
 #
 activity="new file 190"
-$bin/aegis -nf  $workchan/config $workchan/bogus -nl > log 2>&1
+$bin/aegis -nf  $workchan/bogus -nl \
+	-uuid "aaaaaaaa-bbbb-4bbb-8ccc-ccccddddddd1" > log 2>&1
+if test $? -ne 0 ; then cat log; no_result; fi
+$bin/aegis -nf  $workchan/config -nl \
+	-uuid "aaaaaaaa-bbbb-4bbb-8ccc-ccccddddddd2" > log 2>&1
 if test $? -ne 0 ; then cat log; no_result; fi
 
 cat > $workchan/bogus << 'end'
@@ -274,6 +278,7 @@ src =
 [
 	{
 		file_name = "bogus";
+		uuid = "aaaaaaaa-bbbb-4bbb-8ccc-ccccddddddd1";
 		action = create;
 		edit =
 		{
@@ -295,6 +300,7 @@ src =
 	},
 	{
 		file_name = "config";
+		uuid = "aaaaaaaa-bbbb-4bbb-8ccc-ccccddddddd2";
 		action = create;
 		edit =
 		{
@@ -306,7 +312,7 @@ src =
 			revision = "1.1";
 			encoding = none;
 		};
-		usage = source;
+		usage = config;
 		file_fp =
 		{
 			youngest = TIME;
@@ -416,6 +422,7 @@ src =
 [
 	{
 		file_name = "bogus";
+		uuid = "aaaaaaaa-bbbb-4bbb-8ccc-ccccddddddd1";
 		action = create;
 		edit =
 		{
@@ -444,6 +451,7 @@ src =
 	},
 	{
 		file_name = "config";
+		uuid = "aaaaaaaa-bbbb-4bbb-8ccc-ccccddddddd2";
 		action = create;
 		edit =
 		{
@@ -455,7 +463,7 @@ src =
 			revision = "1.1";
 			encoding = none;
 		};
-		usage = source;
+		usage = config;
 		file_fp =
 		{
 			youngest = TIME;

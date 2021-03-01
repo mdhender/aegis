@@ -1,6 +1,6 @@
 .\"
 .\"	aegis - project change supervisor
-.\"	Copyright (C) 1997 Peter Miller;
+.\"	Copyright (C) 1997, 2004 Peter Miller;
 .\"	All rights reserved.
 .\"
 .\"	This program is free software; you can redistribute it and/or modify
@@ -50,7 +50,7 @@
 .nf
 .char \[toc*leader-char] .\h'1m'
 .lc \[toc*leader-char]
-.ta 0.8i (u;\\n[.l]-\\n[.i]-\w'000') (u;\\n[.l]-\\n[.i])R
+.ta 1i (u;\\n[.l]-\\n[.i]-\w'000') (u;\\n[.l]-\\n[.i])R
 .toc*div
 .fi
 ..

@@ -19,10 +19,263 @@
 .\"
 .\" MANIFEST: document describing new 4.16 features
 .\"
-.\" .PP
-.\" .if n *
-.\" .if t \(bu
-.\" .\" change NNN
+.\" ---------- Major New Functionality -------------------------------------
+.PP
+.if n *
+.if t \(bu
+.\" change 119
+Each new change set is now assigned a Universally Unique Identifier
+(UUID) to allow it to be tracked across geographically distributed
+development.  The \fIaedist\fP(1) and \fIaepatch\fP(1) commands now send
+the change set UUIDs, and preserve them on receipt.
+.PP
+.if n *
+.if t \(bu
+.\" change 175, 162, 159, 151, 136, 120, 118, 117, 116, 115
+Each file now has a Universally Unique Identifier (UUID) which allows
+tracking files across renames, even on geographically separate sites.
+(The \fIaedist\fP(1) and \fIaepatch\fP(1) commands send the file UUIDs,
+the next release will take advantage of them on receipt.)
+.PP
+.if n *
+.if t \(bu
+.\" change 127, 138, 139, 150
+The history filename used to remember file history is now based in
+the file UUID, if the file has a UUID.  This simplifies continuity of
+history across renames (this fucntion always been present in Aegis, but
+harder to access).
+.PP
+.if n *
+.if t \(bu
+.\" change 155
+As a consequence of the UUID being used to generate history
+file names, there is no longer the restriction that new
+files may not be named after the directory portion of a
+deleted file (or vice versa).
+.PP
+.if n *
+.if t \(bu
+.\" change 171, 102, 93, 92, 91, 90, 89, 88, 87, 71, 67, 66, 65, 62, 61,
+.\" change 52, 31, 28, 27, 19, 18, 16
+There is a new \fIaecvsserver\fP(1) command, which presents Aegis
+projects and change sets as CVS modules.  All of the core CVS functions
+are supported.  This code needs to be exersized and tested by users.
+.PP
+.if n *
+.if t \(bu
+.\" change 133, 131, 83, 82, 81, 78, 77, 76, 75, 30
+It is now possible to specify arbitrary attribute names and value for
+each source file.
+The \fIaefa\fP(1) command may be used to edit file attributes.
+The \fIaedist\fP(1) and \fIaepatch\fP(1)
+send these attributes; a future release will take advantage of the
+information on receipt.
+.PP
+.if n *
+.if t \(bu
+.\" change 80, 73
+It is now possible to attach arbitrary attribute names and values to
+change sets.  For example, you can use this to remember the
+bugzilla tracking number for a change.
+.PP
+.if n *
+.if t \(bu
+.\" change 23
+The \fIaepatch\fP(1) command now includes change set meta-data as
+a compressed BASE64 encoded block at the top of the patch, after
+the human-readable text but before the files.  This means that
+\fIaepatch\fP(1) can be as effective as \fIaedist\fP(1) is transmitting
+chaneg sets.  Patches without meta-data still work as before.
+.\" ---------- Minor New Functionality -------------------------------------
+.PP
+.if n *
+.if t \(bu
+.\" change 153, 152
+There is a new report script which writes change logs in Debian format.
+.PP
+.if n *
+.if t \(bu
+.\" change 137
+The \fIaeget\fP(1) web interface has been improved.  The
+\fIaepatch\fP(1) download now accepts \f[CW]compat=\fP\fIN\fP modifier,
+and there is a new Project Staff page.
+.PP
+.if n *
+.if t \(bu
+.\" change 123
+There is a new \fIae-cvs-ci\fP(1) support script which
+may be used as an \fIintegrate_\%pass_\%notify_\%command\fP to commit
+change sets to CVS in parallel.
+.PP
+.if n *
+.if t \(bu
+.\" change 125
+There is more documentation in the User Guide about using
+GNU Diff, particularly using diff -U to provide whole-file
+listings with "change bars" on the left hand side.
+.PP
+.if n *
+.if t \(bu
+.\" change 111
+The files view of the \fIaeget\fP(1) web interface now accepts
+options to control the page contents.  The simplest view
+allows recursive fetch of project sources using wget or
+similar, with no extraneous links to confuse the results.
+Previous behavior is preserved by the aeget-generated
+links.
+.PP
+.if n *
+.if t \(bu
+.\" change 107, 103, 101
+You now receive a warning when you are seeing the short version of the
+error messages.  These are terse and often quite cryptic. the long form
+of the error messages is to be preferred.
+.PP
+.if n *
+.if t \(bu
+.\" change 106
+The behaviour of the \fIaedeu\fP(1) command has changed slightly.  When
+changes are in the \fIbeing reviewed\fP state, and Aegis has been
+configured to use the \fIawaiting review\fP state, the \fIaedeu\fP91)
+command will now report an error.  This is so that reviewers don't waste
+their time reviewing changes which have already been returned to the
+\fIbeing developed\fP state.  Think of the change as "belonging" to the
+reviewer while in the \fIbeing reviewed\fP state.
+.PP
+.if n *
+.if t \(bu
+.\" change 25
+The \fIaedist -send\fP command has a new \fI\-compatibility\fP option,
+use to indicate the version of the \fBreceiving\fP aedist program.
+This, in turn, selects the features which may be added to or omitted
+form the generated \f[CW].ae\fP file.
+.PP
+.if n *
+.if t \(bu
+.\" change 35
+There is a new \f[CW]config\fP file usage, and a corresponding \fIaenf
+\-configure\fP command line option.  It is now possible to move project
+configuration files.  It is now possible to remove project configuration
+files, provided there is at least one left.  The \fIaeimport\fP(1)
+command now avoids files which have the same name as the default project
+configuration file ("aegis.conf" or "config") and will use something
+else.
+.PP
+.if n *
+.if t \(bu
+.\" change 51
+The \fIaeipass\fP(1) command now adds a symlink from the delta directory
+to the baseline once it has been integrated.  This helps lots of
+(idiotic) compilers which insist on burying absolute paths into
+executables.
+.PP
+.if n *
+.if t \(bu
+.\" change 38
+It is now possible to assign to some project configuration
+file array fields more than once.  This can be useful where the
+configuration file is split into several pieces on several
+branches.
+.PP
+.if n *
+.if t \(bu
+.\" change 180, 176, 173, 33, 32, 14
+The source language has been changed from C to C++.
+Future releases will take advantage of this.
+.\" ---------- Bug Fixes ---------------------------------------------------
+.PP
+.if n *
+.if t \(bu
+.\" change 172, 15
+Several bugs have been fixed in the \fIaeget\fP(1) web interface where
+it would display "-42" instead of "0" for changes and branches numbered
+zero.
+.PP
+.if n *
+.if t \(bu
+.\" change 161, 169
+A bug has been fixed in the \fIaed\fP(1) command when merging files
+which have been renamed.  It now recognises they need merging.
+.PP
+.if n *
+.if t \(bu
+.\" change 44
+A bug has been fixed in the \fIaenf\fP(1) command.
+It now correctly ignores difference files when given a directory name.
+.PP
+.if n *
+.if t \(bu
+.\" change 129
+A bug has been fixed in \fIaedist\fP(1) where one of the \fIaegis
+\-new-file\fP commands was missing a \fI\-no-template\fP argument.
+Under some circumstances, this resulted in change sets which could not
+be \fIaedist -receive\fPd.
+.PP
+.if n *
+.if t \(bu
+.\" change 121
+A bug has been fixed in the way invalid sequences of multi-byte
+characters are handled by the internationalization code.  This
+potentially affected all reports, listings and error messages.  The
+symptom was that aeannotate listings could sometimes have a blank source
+code column.
+.PP
+.if n *
+.if t \(bu
+.\" change 109
+A bug has been fixed in the \fIaepatch\fP(1) command.  It was creating
+empty patches for some changes in completed project branches.  This
+also affected \fIaedist -send\fP and \fIaecp -delta\fP and \fIaecp
+-rescind\fP in some cases.  It was caused by a subtle flaw in the
+non-detailed case for the \fIproject_\%file_\%roll_\%forward\fP
+function.
+.PP
+.if n *
+.if t \(bu
+.\" change 110, 108, 98
+A bug has been fixed in the handling of the MANPATH enviromnet variable
+by the \fIprofile\fP and \fIcshrc\fP scripts.
+.PP
+.if n *
+.if t \(bu
+.\" change 100, 13
+A bug has been fixed in the \fIaedist -receive\fP and \fIaepatch
+-receive\fP commands has been fixed.  There were cases where these
+commands could access off the end of an array and SEGFAULT.
+.PP
+.if n *
+.if t \(bu
+.\" change 199
+A bug has been fixed in the \fIaede\fP(1) command when it received
+pre-config-usage change sets.  It used to try to remove the last project
+configuration file, which is a fatal error, and made it impossible to
+receive the change set.
+.PP
+.if n *
+.if t \(bu
+.\" change 72
+A bug has been fixed which caused the \fIaetar\fP(1) command to hang
+(actually, any thing which consulted LDAP or NIS) because the reserved
+symbol "send" was being overloaded.  The reserved symbol "clone" was
+also being overloaded.  Both have been fixed.
+.PP
+.if n *
+.if t \(bu
+.\" change 70, 69
+A bug has been fixed which caused the \fIaedist\fP(1)
+command to reprt the wrong error when the input file did not exist.
+.PP
+.if n *
+.if t \(bu
+.\" change 68
+A bug has been fixed in the \fIaenbru\fP(1) command which made project
+aliases disappear.
+.PP
+.if n *
+.if t \(bu
+.\" change 59
+A bug has been fixed in the \fIaede\fP command.  It would fail with new
+build files already in the baseline.
 .\" ------------------------------------------------------------------------
 .\" Place new text above this line.
 .SS Version 4.16 (14-Jan-2004)

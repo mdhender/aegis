@@ -1,6 +1,6 @@
 /*
  *	aegis - project change supervisor
- *	Copyright (C) 1995 Peter Miller;
+ *	Copyright (C) 1995, 2004 Peter Miller;
  *	All rights reserved.
  *
  *	This program is free software; you can redistribute it and/or modify
@@ -25,8 +25,52 @@
 
 #include <main.h>
 
+/** \addtogroup Language
+  * \brief Locale setting
+  * \ingroup Common
+  * @{
+  */
+
+/**
+  * The language_init function must be called at the start of the
+  * program, to set the various locale features.
+  *
+  * This function must be called after the setuid initialization.
+  * If you forget to call me, all bets are off.
+  */
 void language_init(void);
+
+/**
+  * The language_human function must be called to change the general
+  * mode over to the default locale (usually dictated by the LANG
+  * environment variable, et al).
+  *
+  * The language_human and language_C functions MUST bracket human
+  * interactions, otherwise the mostly-english C locale will be
+  * used.  The default locale through-out the program is otherwise
+  * assumed to be C.
+  */
 void language_human(void);
+
+/**
+  * The language_human function must be called to change the general
+  * mode over to the default locale (usually dictated by the LANG
+  * environment variable, et al).
+  *
+  * The language_human and language_C functions MUST bracket human
+  * interactions, otherwise the mostly-english C locale will be
+  * used.  The default locale through-out the program is otherwise
+  * assumed to be C.
+  */
 void language_C(void);
 
+/**
+  * The language_check_translations function is used to provide a warning
+  * message if the short form of the error messages is being used.
+  * The warning will only appear once.  This function should be called
+  * <b>outside</b> any language_human/language_C bracketing.
+  */
+void language_check_translations(void);
+
+/** @} */
 #endif /* COMMON_LANGUAGE_H */

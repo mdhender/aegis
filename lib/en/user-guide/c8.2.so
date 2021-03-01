@@ -1,6 +1,6 @@
 .\"
 .\"	aegis - project change supervisor
-.\"	Copyright (C) 1993, 1994, 2002 Peter Miller.
+.\"	Copyright (C) 1993, 1994, 2002, 2004 Peter Miller.
 .\"	All rights reserved.
 .\"
 .\"	This program is free software; you can redistribute it and/or modify
@@ -29,8 +29,8 @@ One severe limitation is the
 command,
 which often can only cope with 200 lines of differences.
 The best alternative is to use GNU diff,
-with context differences available,
-and a far more robust diff3.
+which has context differences available,
+and a far more robust \fIdiff3\fP(1).
 .LP
 See the earlier
 .I Interfacing
@@ -38,12 +38,12 @@ section for substitution details.
 .nh 3 "diff_command"
 .LP
 The entry in the
-.I config
+configuration
 file looks like this:
 .E(
 diff_command =
-  "set +e; diff -c $original \e
-   $input > $output; test $? -le 1";
+  "set +e; diff -c $original "
+  "$input > $output; test $? -le 1";
 .E)
 .LP
 This needs a little explanation:
@@ -77,13 +77,27 @@ Binary files will often cause modern versions of GNU Diff to exit with
 an exit status of 2, which is probably reasonable most of the time.
 If your project contains binary files, you may want to treat all files
 as text files.  Use the GNU Diff \fB\-a\fP option in this case.
+.LP
+A useful alternative, available with more recent versions of GNU Diff,
+is the \fB\-U\fP option.  This is a more compact form than the \fB\-c\fP
+option, and is able to give the whole file as context.
+.E(
+diff_command =
+  "set +e; diff -U999999 $original "
+  "$input > $output; test $? -le 1";
+.E)
+.LP
+The exit status must once again be taylored, however the output will be
+the whole source for context, with changes marked by `+' and `-' in the
+left margin.  This, reviewers need only search for \f[CW]/^[-+]/\fP in
+order to see all edit made to the file.
 .nh 3 "merge_command"
 .LP
 Note: The \fImerge\fP(1) command is better than this use of the
 \fIdiff3\fP(1) command.  See the RCS chapter for more details.
 .LP
 The entry in the
-.I config
+configuration
 file looks like this:
 .E(
 merge_command =

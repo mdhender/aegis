@@ -1,6 +1,6 @@
 /*
  *	aegis - project change supervisor
- *	Copyright (C) 1991-1997, 1999, 2001-2003 Peter Miller;
+ *	Copyright (C) 1991-1997, 1999, 2001-2004 Peter Miller;
  *	All rights reserved.
  *
  *	This program is free software; you can redistribute it and/or modify
@@ -46,7 +46,20 @@ void os_rename(string_ty *, string_ty *);
 void os_unlink(string_ty *);
 void os_unlink_errok(string_ty *);
 string_ty *os_curdir(void);
+
+/**
+  * The os_path_join function may be used to joint two strings together
+  * with a slash between them.
+  */
+string_ty *os_path_join(string_ty *, string_ty *);
+
+/**
+  * The os_path_cat function is used to carefully joint two path
+  * components together with a slash.  Care is taken to remove redundant
+  * "." components and redundant slashes.
+  */
 string_ty *os_path_cat(string_ty *, string_ty *);
+
 string_ty *os_path_rel2abs(string_ty *, string_ty *);
 string_ty *os_pathname(string_ty *, int);
 string_ty *os_dirname(string_ty *);
@@ -75,6 +88,7 @@ void os_link(string_ty *from, string_ty *to);
 int os_testing_mode(void);
 void os_become_init(void);
 void os_become_init_mortal(void);
+void os_become_reinit_mortal(void);
 void os_become(int uid, int gid, int umsk);
 void os_become_undo(void);
 void os_become_orig(void);
@@ -126,7 +140,28 @@ string_ty *os_tmpdir(void);
 
 int os_pathconf_name_max(string_ty *);
 int os_pathconf_path_max(string_ty *);
-void os_symlink(string_ty *, string_ty *);
+
+/**
+  * The os_symlink function is used to make symbolic links.
+  *
+  * @param src
+  *     The src paramter is the source file to be linked from.
+  * @param dst
+  *     The dst paramter is the destination file to be created.
+  */
+void os_symlink(string_ty *src, string_ty *dst);
+
+/**
+  * The os_symlink_or_copy function is used to make symbolic links if
+  * possible otherwise hard links otherwise make a complete copy.
+  *
+  * @param src
+  *     The src paramter is the source file to be linked from.
+  * @param dst
+  *     The dst paramter is the destination file to be created.
+  */
+void os_symlink_or_copy(string_ty *src, string_ty *dst);
+
 string_ty *os_readlink(string_ty *);
 int os_symlink_query(string_ty *);
 void os_throttle(void);

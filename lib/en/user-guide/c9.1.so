@@ -1,6 +1,6 @@
 .\"
 .\"	aegis - project change supervisor
-.\"	Copyright (C) 1999, 2002 Peter Miller;
+.\"	Copyright (C) 1999, 2002, 2004 Peter Miller;
 .\"	All rights reserved.
 .\"
 .\"	This program is free software; you can redistribute it and/or modify
@@ -147,7 +147,7 @@ aenbr -p gizmo.0.2 3 # \fIfor the baz project\fP
 .LP
 Most folks find doing the whole mega-project-build every time
 tiresome \- so don't.  Temporarily (via a change set) hack the build
-config to build only the bit you want \- obviously a different hack
+configuration to build only the bit you want \- obviously a different hack
 on each sub-project's branch.  Just remember to un-hack it (via
 another change set) before you integrate the sub-project.
 .nh 3 "Bug Fixing"

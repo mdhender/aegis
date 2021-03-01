@@ -17,7 +17,7 @@
 .\"	along with this program; if not, write to the Free Software
 .\"	Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111, USA.
 .\"
-.\" MANIFEST: description of aegis project config file format
+.\" MANIFEST: description of aegis project configuration file format
 .\"
 .so z_name.so
 .TH aepconf 5 \*(N) "Reference Manual"
@@ -25,13 +25,19 @@
 aepconf - \*(n) project configuration file
 .XX "aepconf(5)" "project configuration file format"
 .SH SYNOPSIS
-\fIproject\fP\f(CW/baseline/config\fP
+\fIproject\fP\f(CW/baseline/aegis.conf\fP \fI(default)\fP
+.br
+\fIproject\fP\f(CW/baseline/config\fP \fI(obsolete)\fP
 .SH DESCRIPTION
 A project configuration file
 is used to store information about a project.
 This file is under source control,
 and is one of the project's source files.
 Developers may thus modify this file as part of a change.
+.PP
+As of aegis.4.17, it is possible to assign any arbitrary name to the
+project configuration file or files.
+See \fIaenf\fP(1) for more information.
 .PP
 This file contains a number of commands to be executed by Aegis.  There
 are times when the substitutions in these commands may contain shell
@@ -51,7 +57,7 @@ change of your project.  Use the
 .RS
 .nf
 .ft CW
-$ \f[CB]aenf config\fP
+$ \f[CB]aenf aegis.conf\fP
 $
 .ft R
 .fi
@@ -67,7 +73,7 @@ a change using the
 .RS
 .nf
 .ft CW
-$ \f[CB]aecp config\fP
+$ \f[CB]aecp aegis.conf\fP
 $
 .ft R
 .fi
@@ -77,6 +83,21 @@ While it's \fIbeing developed\fP your change will use it's copy of
 the project \fIconfig\fP file, but once the change is completed (see
 \fIaeipass\fP(1) for more information), it becomes the new version used
 by all users and changes.
+.PP
+If you would prefer a different name for the project configuration file,
+use the \fIaenf \-config\fP option.  For example, the
+.RS
+.nf
+.ft CW
+$ \f[CB]aenf -config project.configuration\fP
+$
+.ft R
+.fi
+.RE
+command would create a file called \fIproject.configuration\fP and Aegis
+would then proceed to use it to obtain project configuration information
+for the duration of the project.  This attribute will even be preserved
+across file renames (see the \fIaemv\fP(1) command).
 .SH CONTENTS
 This file contains the following fields:
 .TP 8n
@@ -88,7 +109,7 @@ only legal or meaningful in the master project \fIconfig\fP file.)
 .PP
 All source files (change source files and project source files)
 present in this directory will be read in as if they were added to
-the end of the project "config" file.
+the end of the project "aegis.conf" file.
 .PP
 The usual priority of files (development directory, branch baseline,
 \fIetc\fP, project trunk baseline) is observed when these files are read.
@@ -936,7 +957,7 @@ Used by the \fIaepatch\fP(1) command.
 .PP
 Defaults to \f[CW]"set +e;
 diff -c -L $index -L $index $original $input > $output;
-text $? -le 1"\fP if not set.
+test $? -le 1"\fP if not set.
 .PP
 All of the substitutions described by
 .IR aesub (5)
@@ -991,7 +1012,7 @@ misleading results.
 .PP
 Defaults to \f[CW]"set +e;
 diff $option $original $input > $output;
-text $? -le 1"\fP if not set.
+test $? -le 1"\fP if not set.
 .PP
 All of the substitutions described by
 .IR aesub (5)
@@ -1209,6 +1230,7 @@ architecture = [{ ... }];
 This field is a list of
 system and machine architectures on which each change
 must successfully build and test.
+May be assigned more than once.
 The structures listed have fields as follows:
 .TP 8n
 name = string;
@@ -1303,6 +1325,7 @@ by one of the
 or
 .IR aent (1)
 commands.
+May be assigned more than once.
 Each list item has the form:
 .RS
 .TP 8n
@@ -1394,7 +1417,7 @@ Legal values range from 9 to 255.
 The file name lengths of project files will be checked
 at develop end
 if the project
-.I config
+.I aegis.conf
 file is in the change.
 See
 .I aede (1)
@@ -1537,6 +1560,7 @@ project_specific = [ { ... } ];
 .RS
 This is a list of name and value pairs for use within the
 ${project-specific} substitution (see \fIaesub\fP(5) for more information).
+May be assigned more than once.
 The sub-fields are
 .TP 8n
 name = string;

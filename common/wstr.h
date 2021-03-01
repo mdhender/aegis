@@ -27,6 +27,12 @@
 #include <ac/stdlib.h>
 #include <main.h>
 
+/** \addtogroup WString
+  * \brief Wide char strings
+  * \ingroup String
+  * @{
+  */
+
 typedef unsigned long wstr_hash_ty;
 
 typedef struct wstring_ty wstring_ty;
@@ -66,4 +72,5 @@ wstring_ty *str_to_wstr(const struct string_ty *);
 wstring_ty *wstr_quote_shell(wstring_ty *);
 int wstr_column_width(wstring_ty *);
 
+/** @} */
 #endif /* COMMON_WSTR_H */

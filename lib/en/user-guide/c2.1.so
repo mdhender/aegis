@@ -1,6 +1,6 @@
 .\"
 .\"	aegis - project change supervisor
-.\"	Copyright (C) 1991-1994, 1999, 2002 Peter Miller;
+.\"	Copyright (C) 1991-1994, 1999, 2002, 2004 Peter Miller;
 .\"	All rights reserved.
 .\"
 .\"	This program is free software; you can redistribute it and/or modify
@@ -79,9 +79,9 @@ is configurable for each user.
 .LP
 Five files will be created by this change.
 .E(
-pat% \f(CBaenf config Howto.cook gram.y lex.l main.c\fP
+pat% \f(CBaenf aegis.conf Howto.cook gram.y lex.l main.c\fP
 aegis: project "example.1.0": change 10: file "Howto.cook" added
-aegis: project "example.1.0": change 10: file "config" added
+aegis: project "example.1.0": change 10: file "aegis.conf" added
 aegis: project "example.1.0": change 10: file "gram.y" added
 aegis: project "example.1.0": change 10: file "lex.l" added
 aegis: project "example.1.0": change 10: file "main.c" added
@@ -90,7 +90,7 @@ pat%
 .E)
 .LP
 The contents of the
-.I config
+.I aegis.conf
 file will not be described in this section,
 mostly because it is a rather complex subject;
 so complex it requires four chapters to describe:
@@ -246,7 +246,7 @@ the
 .I "being developed"
 state.)
 The build command is in the
-.I config
+.I aegis.conf
 file so vaguely described earlier.
 In this example it will use the \fIcook\fP(1) command
 which in turn will use the
@@ -305,8 +305,8 @@ but important edits to large or complex files.
 pat% \f(CBaed\fP
 aegis: set +e; diff -c /dev/null /u/pat/example.1.0.C010/Howto.cook >
         /u/pat/example.1.0.C010/Howto.cook,D; test $? -eq 0 -o $? -eq 1
-aegis: set +e; diff -c /dev/null /u/pat/example.1.0.C010/config >
-        /u/pat/example.1.0.C010/config,D; test $? -eq 0 -o $? -eq 1
+aegis: set +e; diff -c /dev/null /u/pat/example.1.0.C010/aegis.conf >
+        /u/pat/example.1.0.C010/aegis.conf,D; test $? -eq 0 -o $? -eq 1
 aegis: set +e; diff -c /dev/null /u/pat/example.1.0.C010/gram.y >
         /u/pat/example.1.0.C010/gram.y,D; test $? -eq 0 -o $? -eq 1
 aegis: set +e; diff -c /dev/null /u/pat/example.1.0.C010/lex.l >

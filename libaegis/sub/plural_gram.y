@@ -1,6 +1,6 @@
 /*
  *	aegis - project change supervisor
- *	Copyright (C) 2002, 2003 Peter Miller;
+ *	Copyright (C) 2002-2004 Peter Miller;
  *	All rights reserved.
  *
  *	This program is free software; you can redistribute it and/or modify
@@ -35,6 +35,9 @@
 #ifdef DEBUG
 #define YYDEBUG 1
 #endif
+
+static void yyerror(const char *);
+static void yydebugger(void *, const char *, ...);
 
 %}
 
@@ -122,7 +125,7 @@ sub_plural_gram(string_ty *s, unsigned n)
 }
 
 
-void
+static void
 yyerror(const char *s)
 {
     /* do nothing */
@@ -151,7 +154,7 @@ yyerror(const char *s)
  */
 #define fprintf trace_where_, yydebugger
 
-void
+static void
 yydebugger(void *junk, const char *fmt, ...)
 {
 	va_list		ap;

@@ -1,7 +1,7 @@
 #!/bin/sh
 #
 #	aegis - project change supervisor
-#	Copyright (C) 1993-1998, 2002 Peter Miller;
+#	Copyright (C) 1993-1998, 2002, 2004 Peter Miller;
 #	All rights reserved.
 #
 #	This program is free software; you can redistribute it and/or modify
@@ -108,19 +108,19 @@ unset LANG
 unset LANGUAGE
 
 #
-# If the C compiler is called something other than ``cc'', as discovered
-# by the configure script, create a shell script called ``cc'' which
-# invokes the correct C compiler.  Make sure the current directory is in
-# the path, so that it will be invoked.
+# If the C++ compiler is called something other than ``c++'', as
+# discovered by the configure script, create a shell script called
+# ``c++'' which invokes the correct C++ compiler.  Make sure the current
+# directory is in the path, so that it will be invoked.
 #
-if test "$CC" != "" -a "$CC" != "cc"
+if test "$CXX" != "" -a "$CXX" != "c++"
 then
-	cat >> cc << fubar
+	cat >> c++ << fubar
 #!/bin/sh
-exec $CC \$*
+exec $CXX \$*
 fubar
 	if test $? -ne 0 ; then no_result; fi
-	chmod a+rx cc
+	chmod a+rx c++
 	if test $? -ne 0 ; then no_result; fi
 	PATH=${work}:${PATH}
 	export PATH
@@ -177,7 +177,7 @@ if test $? -ne 0 ; then cat test.out; no_result; fi
 # add a new files to the change
 #
 activity="new file 159"
-$bin/aegis -new_file $workchan/main.c -nl -v -lib $worklib -p foo > test.out 2>&1
+$bin/aegis -new_file $workchan/main.cc -nl -v -lib $worklib -p foo > test.out 2>&1
 if test $? -ne 0 ; then cat test.out; no_result; fi
 $bin/aegis -new_file $workchan/fubar -nl -v -lib $worklib -p foo > test.out 2>&1
 if test $? -ne 0 ; then cat test.out; no_result; fi
@@ -187,13 +187,13 @@ $bin/aegis -new_file $workchan/config -nl -v -lib $worklib -p foo > test.out 2>&
 if test $? -ne 0 ; then cat test.out; no_result; fi
 
 #
-# put something in 'main.c'
+# put something in 'main.cc'
 #
-cat > $workchan/main.c << 'end'
-void
-main()
+cat > $workchan/main.cc << 'end'
+int
+main(int argc, char **argv)
 {
-	exit(0);
+	return 0;
 }
 end
 
@@ -201,7 +201,7 @@ end
 # put something in 'config'
 #
 cat > $workchan/config << 'end'
-build_command = "rm -f foo version; cc -o foo main.c; echo '$v' > version";
+build_command = "rm -f foo version; c++ -o foo main.cc; echo '$v' > version";
 link_integration_directory = true;
 
 history_get_command =
@@ -383,13 +383,13 @@ if test $? -ne 0 ; then cat test.out; no_result; fi
 # add a new files to the change
 #
 activity="copy file 360"
-$bin/aegis -cp $workchan/main.c -nl -v -lib $worklib -p foo > test.out 2>&1
+$bin/aegis -cp $workchan/main.cc -nl -v -lib $worklib -p foo > test.out 2>&1
 if test $? -ne 0 ; then cat test.out; no_result; fi
 
 #
 # make it re-compile
 #
-cat >> $workchan/main.c << 'end'
+cat >> $workchan/main.cc << 'end'
 /* almost nothing */
 end
 
@@ -450,7 +450,7 @@ activity="check change file state 424"
 $bin/aegis -l cf -c 2 -unf -lib $worklib -p foo > test.out 2>&1
 if test $? -ne 0 ; then cat test.out; fail; fi
 cat > test.ok << 'fubar'
-source modify 1.1 -> 1.2 main.c
+source modify 1.1 -> 1.2 main.cc
 build modify 1.1 -> 1.2 version
 fubar
 if test $? -ne 0 ; then no_result; fi

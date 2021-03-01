@@ -1,6 +1,6 @@
 .\"
 .\"	aegis - project change supervisor
-.\"	Copyright (C) 2001, 2002 Peter Miller;
+.\"	Copyright (C) 2001, 2002, 2004 Peter Miller;
 .\"	All rights reserved.
 .\"
 .\"	This program is free software; you can redistribute it and/or modify
@@ -161,7 +161,7 @@ Administrator;\fIaena\fP(1);\fIaera\fP(1)
 .TE
 See the User Guide for more information about the various roles within Aegis.
 .IP \(bu 2n
-You need to customize the project \f[CW]config\fP file for your project.
+You need to customize the \f[CW]aegis.conf\fP file for your project.
 In order to do this, you will need to create a change set to modify
 the file.  The worked example in the User guide will be useful in
 understanding how this is done.  It is essential that you use a change

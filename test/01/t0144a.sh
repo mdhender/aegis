@@ -1,7 +1,7 @@
 #!/bin/sh
 #
 #	aegis - project change supervisor
-#	Copyright (C) 2003 Peter Miller;
+#	Copyright (C) 2003, 2004 Peter Miller;
 #	All rights reserved.
 #
 #	This program is free software; you can redistribute it and/or modify
@@ -95,26 +95,6 @@ AEGIS_MESSAGE_LIBRARY=$work/no-such-dir
 export AEGIS_MESSAGE_LIBRARY
 unset LANG
 unset LANGUAGE
-
-#
-# If the C compiler is called something other than ``cc'', as discovered
-# by the configure script, create a shell script called ``cc'' which
-# invokes the correct C compiler.  Make sure the current directory is in
-# the path, so that it will be invoked.
-#
-if test "$CC" != "" -a "$CC" != "cc"
-then
-	cat >> $work/cc << fubar
-#!/bin/sh
-exec $CC \$*
-fubar
-	if test $? -ne 0 ; then no_result; fi
-	chmod a+rx $work/cc
-	if test $? -ne 0 ; then no_result; fi
-	PATH=${work}:${PATH}
-	export PATH
-fi
-
 
 $bin/aegis -np foo -dir  $work/proj -lib $work/lib
 if test $? -ne 0 ; then no_result; fi

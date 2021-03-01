@@ -21,20 +21,23 @@
 # MANIFEST: shell script to manipulate activitys
 #
 awkfile=test/activity.awk
-if test ! -r $awkfile; then
-	awkfile=bl/$awkfile
-	if test ! -r $awkfile; then
-		awkfile=bl/$awkfile
-		if test ! -r $awkfile; then
-			awkfile=bl/$awkfile
-		fi
-	fi
-fi
+for dir in . bl blbl bl/bl blblbl bl/bl/bl blblblbl bl/bl/bl/bl
+do
+    if test -r $dir/$awkfile
+    then
+	awkfile=$dir/$awkfile
+	break
+    fi
+done
 for f in test/*/*.sh
 do
 	echo $f...
-	awk -f $awkfile < $f > $f.new
-	mv $f $f.orig
-	mv $f.new $f
+	if awk -f $awkfile < $f > $f.new
+	then
+	    mv $f $f.orig
+	    mv $f.new $f
+	else
+	    rm $f.new
+	fi
 done
 exit 0

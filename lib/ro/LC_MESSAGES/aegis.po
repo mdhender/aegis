@@ -25,10 +25,13 @@
 #
 # -------------------------------------------------------------------------
 #
+# The presence of the "#, fuzzy" flag is an indication that the error
+# message needs to be (re)translated.
+#
+# -------------------------------------------------------------------------
+#
 msgid	""
-msgstr	"Project-Id-Version: aegis 4.10\n"
-	"POT-Creation-Date: 2003-02-01 00:13-0800\n"
-	"PO-Revision-Date: 2003-03-16 22:05+0000\n"
+msgstr	"PO-Revision-Date: 2004-05-26\n"
 	"Last-Translator: Laurentiu Buzdugan <buzdugan@voyager.net>\n"
 	"Language-Team: Romanian <translation-team-ro@lists.sourceforge."
 	"net>\n"
@@ -44,8 +47,20 @@ msgstr	"Project-Id-Version: aegis 4.10\n"
 #
 # 	$Name		The name of the environment variable.
 #
+#, fuzzy
 msgid	"$$$name must be positive"
 msgstr	"the $name environment variable must be a positive decimal number"
+
+#
+# TRANSLATION REQUIRED
+# This error message is issued when the parameter of the -UUid switch is
+# not a valid uuid.
+#
+#	$Name		The -UUid switch
+#
+#, fuzzy
+msgid	"$Name needs an uuid"
+msgstr	"The $Name option needs to be given a valid UUID"
 
 #
 # TRANSLATION REQUIRED
@@ -56,8 +71,17 @@ msgstr	"the $name environment variable must be a positive decimal number"
 #
 # 	$File_Name	The name of the offending file.
 #
+#, fuzzy
 msgid	"$filename altered"
 msgstr	"file \"$filename\" has been altered"
+
+#
+# TRANSLATION REQUIRED
+# This message is issued when an aefa is successfully completed.
+#
+#, fuzzy
+msgid  "$filename attributes changed"
+msgstr "file \"$filename\" attributes changed"
 
 #
 # TRANSLATION REQUIRED
@@ -66,6 +90,7 @@ msgstr	"file \"$filename\" has been altered"
 #
 # 	$File_Name	The name of the offending file.
 #
+#, fuzzy
 msgid	"$filename bad nf type"
 msgstr	"The \"$filename\" file is a inappropriate type of file.  You may "
 	"only use this command for normal files.  Symbolic links and "
@@ -81,6 +106,7 @@ msgstr	"The \"$filename\" file is a inappropriate type of file.  You may "
 #
 # 	$File_Name	The name of the test file.
 #
+#, fuzzy
 msgid	"$filename baseline fail, good"
 msgstr	"test \"$filename\" on baseline failed (as it should)"
 
@@ -91,6 +117,7 @@ msgstr	"test \"$filename\" on baseline failed (as it should)"
 #
 # 	$File_Name	The name of the test file.
 #
+#, fuzzy
 msgid	"$filename baseline pass, not good"
 msgstr	"test \"$filename\" on baseline passed (it must fail)"
 
@@ -101,6 +128,7 @@ msgstr	"test \"$filename\" on baseline passed (it must fail)"
 #
 # 	$File_Name	The name of the offending file.
 #
+#, fuzzy
 msgid	"$filename being removed"
 msgstr	"file \"$filename\" is being removed"
 
@@ -113,6 +141,7 @@ msgstr	"file \"$filename\" is being removed"
 # 	$Outstanding	A list of outstanding architectures to be built,
 # 			or empty if all are outstanding.  (Optional)
 #
+#, fuzzy
 msgid	"$filename changed after build"
 msgstr	"the \"$filename\" file was modified after the last build, this "
 	"change must successfully complete another 'aegis -Build' "
@@ -126,6 +155,7 @@ msgstr	"the \"$filename\" file was modified after the last build, this "
 #
 # 	$File_Name	The name of the offending file.
 #
+#, fuzzy
 msgid	"$filename changed after diff"
 msgstr	"the \"$filename\" file was modified after the last difference, "
 	"this change must successfully complete another 'aegis -Diff' "
@@ -136,6 +166,7 @@ msgstr	"the \"$filename\" file was modified after the last difference, "
 # This progress message is issued when aed merges a file, and notifies the
 # user that the merge has taken place.
 #
+#, fuzzy
 msgid	"$filename diff3ed"
 msgstr	"file \"$filename\" was out of date, see \"$filename,D\" for "
 	"merged source"
@@ -146,6 +177,7 @@ msgstr	"file \"$filename\" was out of date, see \"$filename,D\" for "
 #
 # 	$File_Name	The name of the test file.
 #
+#, fuzzy
 msgid	"$filename fail"
 msgstr	"test \"$filename\" failed"
 
@@ -157,6 +189,7 @@ msgstr	"test \"$filename\" failed"
 #
 # 	$File_Name	The name of the offending file.
 #
+#, fuzzy
 msgid	"$filename in baseline"
 msgstr	"file \"$filename\" already exists in the project"
 
@@ -167,6 +200,7 @@ msgstr	"file \"$filename\" already exists in the project"
 #
 # 	$File_Name	The offending file name.
 #
+#, fuzzy
 msgid	"$filename is built"
 msgstr	"file \"$filename\" is built, it may not be copied into a change"
 
@@ -178,6 +212,7 @@ msgstr	"file \"$filename\" is built, it may not be copied into a change"
 #
 #     $File_Name      The offending file name.
 #
+#, fuzzy
 msgid	"$filename is insulation"
 msgstr	"file \"$filename\" was copied read-only, it must be uncopied "
 	"before this change can leave the '$state' state"
@@ -187,6 +222,7 @@ msgstr	"file \"$filename\" was copied read-only, it must be uncopied "
 # This progress message is issued when aed merges a file, and notifies the
 # user that the merge has taken place.
 #
+#, fuzzy
 msgid	"$filename merged"
 msgstr	"file \"$filename\" was out of date and has been merged with the "
 	"up to date version, see \"$filename,B\" for the original source"
@@ -199,6 +235,7 @@ msgstr	"file \"$filename\" was out of date and has been merged with the "
 #
 # 	$File_Name	The name of the offending file.
 #
+#, fuzzy
 msgid	"$filename modified by history tool"
 msgstr	"the history tool modified the \"$filename\" source file"
 
@@ -209,6 +246,7 @@ msgstr	"the history tool modified the \"$filename\" source file"
 #
 # 	$File_Name	The name of the offending file.
 #
+#, fuzzy
 msgid	"$filename no result"
 msgstr	"test \"$filename\" returned no result; some other problem "
 	"prevented the functionality under test from being exercised"
@@ -221,6 +259,7 @@ msgstr	"test \"$filename\" returned no result; some other problem "
 #
 # 	$File_Name	The name of the offending file.
 #
+#, fuzzy
 msgid	"$filename not found"
 msgstr	"file \"$filename\" not found"
 
@@ -231,6 +270,7 @@ msgstr	"file \"$filename\" not found"
 #
 # 	$File_Name	The name of the offending file.
 #
+#, fuzzy
 msgid	"$filename not test"
 msgstr	"file \"$filename\" is not a test"
 
@@ -240,6 +280,7 @@ msgstr	"file \"$filename\" is not a test"
 #
 # 	$File_Name	The name of the test file.
 #
+#, fuzzy
 msgid	"$filename pass"
 msgstr	"test \"$filename\" passed"
 
@@ -250,22 +291,9 @@ msgstr	"test \"$filename\" passed"
 #
 # 	$File_Name	The offending command line argument.
 #
+#, fuzzy
 msgid	"$filename unrelated"
 msgstr	"path \"$filename\" unrelated"
-
-#
-# TRANSLATION REQUIRED
-# This warning message is issued when an obsolete percent (%)
-# substitution used.
-#
-# 	$File_Name	file containing message
-# 	$Line_Number	line number of message
-#
-#, no-c-format
-msgid	"$filename: $linenumber: don't use %% substitutions"
-msgstr	"$filename: $linenumber: warning: the percent (%%) substitutions "
-	"are obsolescent, please use the equivalent dollar ($$) "
-	"substitution"
 
 #
 # TRANSLATION REQUIRED
@@ -275,6 +303,7 @@ msgstr	"$filename: $linenumber: warning: the percent (%%) substitutions "
 # 	$File_Name	The filename containg the message
 # 	$Line_Number	The line number of the message
 #
+#, fuzzy
 msgid	"$filename: $linenumber: empty $${} substitution"
 msgstr	"$filename: $linenumber: empty $${} substitution"
 
@@ -291,6 +320,7 @@ msgstr	"$filename: $linenumber: empty $${} substitution"
 # 	$Number		The number of unused substitution variables.
 # 			(Optional)
 #
+#, fuzzy
 msgid	"$filename: $linenumber: in substitution \"$message\" found "
 	"unused variables"
 msgstr	"$filename: $linenumber: in substitution \"$message\" found "
@@ -309,6 +339,7 @@ msgstr	"$filename: $linenumber: in substitution \"$message\" found "
 # 	$Name		The name of the unused substitution variable.
 # 			(optional)
 #
+#, fuzzy
 msgid	"$filename: $linenumber: in substitution \"$message\" variable "
 	"\"$name\" unused"
 msgstr	"$filename: $linenumber: in substitution \"$message\" variable "
@@ -327,6 +358,7 @@ msgstr	"$filename: $linenumber: in substitution \"$message\" variable "
 # 	$Name		The name of the offending substitution.
 # 	$Message	What was wrong with it.
 #
+#, fuzzy
 msgid	"$filename: $linenumber: substitution $${$name} failed: $message"
 msgstr	"$filename: $linenumber: substitution $${$name} failed: $message"
 
@@ -338,6 +370,7 @@ msgstr	"$filename: $linenumber: substitution $${$name} failed: $message"
 # 	$File_Name	The filename containg the message
 # 	$Line_Number	The line number of the message
 #
+#, fuzzy
 msgid	"$filename: $linenumber: unterminated $${} \\ sequence"
 msgstr	"$filename: $linenumber: unterminated $${} \\ sequence"
 
@@ -349,6 +382,7 @@ msgstr	"$filename: $linenumber: unterminated $${} \\ sequence"
 # 	$File_Name	The filename containg the message
 # 	$Line_Number	The line number of the message
 #
+#, fuzzy
 msgid	"$filename: $linenumber: unterminated $${} quotes"
 msgstr	"$filename: $linenumber: unterminated $${} quotes"
 
@@ -357,17 +391,9 @@ msgstr	"$filename: $linenumber: unterminated $${} quotes"
 # This error message is issued when a substitution function is formed
 # incorrectly.  See (+++) below.
 #
+#, fuzzy
 msgid	"$filename: $linenumber: unterminated $${} substitution"
 msgstr	"$filename: $linenumber: unterminated $${} substitution"
-
-#
-# TRANSLATION REQUIRED
-# This error message is issued when a substitution function is formed
-# incorrectly.  See (+++) below.
-#
-#, no-c-format
-msgid	"$filename: $linenumber: unterminated %%() substitution"
-msgstr	"$filename: $linenumber: unterminated %%() substitution"
 
 #
 # This error message is issued when a generic error in a text file is required.
@@ -385,6 +411,7 @@ msgstr	"$filename: $message"
 #
 # 	$File_Name	The name of the offending file
 #
+#, fuzzy
 msgid	"$filename: arch needs name and pattern"
 msgstr	"$filename: architectures must be specified as both a name and a "
 	"pattern"
@@ -398,6 +425,7 @@ msgstr	"$filename: architectures must be specified as both a name and a "
 # 			absolute path, but not always.
 # 	$FieLD_Name	The name of the absent field.
 #
+#, fuzzy
 msgid	"$filename: contains no \"$field_name\" field"
 msgstr	"$filename: contains no \"$field_name\" field"
 
@@ -410,6 +438,7 @@ msgstr	"$filename: contains no \"$field_name\" field"
 # 			absolute path, but not always.
 # 	$FieLD_Name	The name of the absent field.
 #
+#, fuzzy
 msgid	"$filename: corrupted \"$field_name\" field"
 msgstr	"$filename: corrupted \"$field_name\" field"
 
@@ -418,6 +447,7 @@ msgstr	"$filename: corrupted \"$field_name\" field"
 # This fatal error message is issued when Aegis is checking a project's
 # ownership and finds something incorrect.
 #
+#, fuzzy
 msgid	"$filename: gid $number1 invalid, must be >= $number2"
 msgstr	"$filename: this file's group ID ($number1) is too small, it must "
 	"be greater than or equal to AEGIS_MIN_GID ($number2).  This is "
@@ -434,6 +464,7 @@ msgstr	"$filename: this file's group ID ($number1) is too small, it must "
 # 	$Number1	The file's gid.
 # 	$Number2	What Aegis expected as the file's gid.
 #
+#, fuzzy
 msgid	"$filename: group is $number1, should be $number2"
 msgstr	"$filename: group is $number1, should be $number2"
 
@@ -444,6 +475,7 @@ msgstr	"$filename: group is $number1, should be $number2"
 #
 # 	$File_Name	The name of the offending file.
 #
+#, fuzzy
 msgid	"$filename: has been tampered with (fatal)"
 msgstr	"$filename: has been tampered with (fatal)"
 
@@ -458,6 +490,7 @@ msgstr	"$filename: has been tampered with (fatal)"
 # 	$Number		Number of fatal errors found.
 # 			(Optional)
 #
+#, fuzzy
 msgid	"$filename: has errors"
 msgstr	"$filename: found $number fatal error${plural $number s}"
 
@@ -470,6 +503,7 @@ msgstr	"$filename: found $number fatal error${plural $number s}"
 # 	$Number1	The file's mode.
 # 	$Number2	What Aegis expected as the file's mode.
 #
+#, fuzzy
 msgid	"$filename: mode is $number1, should be $number2"
 msgstr	"$filename: mode is $number1, should be $number2"
 
@@ -482,6 +516,7 @@ msgstr	"$filename: mode is $number1, should be $number2"
 # 	$Number1	The file's uid.
 # 	$Number2	What Aegis expected as the file's uid.
 #
+#, fuzzy
 msgid	"$filename: owner is $number1, should be $number2"
 msgstr	"$filename: owner is $number1, should be $number2"
 
@@ -492,6 +527,7 @@ msgstr	"$filename: owner is $number1, should be $number2"
 #
 # 	$File_Name	The name of the file being read or parsed.
 #
+#, fuzzy
 msgid	"$filename: too many errors"
 msgstr	"$filename: too many fatal errors, aborted"
 
@@ -500,6 +536,7 @@ msgstr	"$filename: too many fatal errors, aborted"
 # This fatal error message is issued when Aegis is checking a project's
 # ownership and finds something incorrect.
 #
+#, fuzzy
 msgid	"$filename: uid $number1 invalid, must be >= $number2"
 msgstr	"$filename: this file's user ID ($number1) is too small, it must "
 	"be greater than or equal to AEGIS_MIN_UID ($number2).  This is "
@@ -515,6 +552,7 @@ msgstr	"$filename: this file's user ID ($number1) is too small, it must "
 # 	$Number		The line number on which the error occurred.
 # 	$Message	The error message, formed previously.
 #
+#, fuzzy
 msgid	"$function: argument $number: $message"
 msgstr	"$function: argument $number: $message"
 
@@ -526,6 +564,7 @@ msgstr	"$function: argument $number: $message"
 # 	$Function	The name of the function
 # 	$Number		The argument number
 #
+#, fuzzy
 msgid	"$function: argument $number: cannot convert string into a time"
 msgstr	"$function: argument $number: cannot convert string into a time"
 
@@ -538,6 +577,7 @@ msgstr	"$function: argument $number: cannot convert string into a time"
 # 	$Name		The type name of the offending argument.
 # 	$Number		The number of the offending argument (starts at 1).
 #
+#, fuzzy
 msgid	"$function: argument $number: integer value required (was given "
 	"$name)"
 msgstr	"$function: argument $number: integer value required (was given "
@@ -552,6 +592,7 @@ msgstr	"$function: argument $number: integer value required (was given "
 # 	$Number		The number of the offending argument.
 # 	$Value		The value of the offending precision.
 #
+#, fuzzy
 msgid	"$function: argument $number: precision of $value is out of range"
 msgstr	"$function: argument $number: precision of $value is out of range"
 
@@ -564,6 +605,7 @@ msgstr	"$function: argument $number: precision of $value is out of range"
 # 	$Name		The type name of the offending argument.
 # 	$Number		The number of the offending argument (starts at 1).
 #
+#, fuzzy
 msgid	"$function: argument $number: real value required (was given "
 	"$name)"
 msgstr	"$function: argument $number: real value required (was given "
@@ -578,6 +620,7 @@ msgstr	"$function: argument $number: real value required (was given "
 # 	$Number		The number of the offending argument (starts at 1).
 # 	$Name		The type name of the offending argument.
 #
+#, fuzzy
 msgid	"$function: argument $number: string value required (was given "
 	"$name)"
 msgstr	"$function: argument $number: string value required (was given "
@@ -592,6 +635,7 @@ msgstr	"$function: argument $number: string value required (was given "
 # 	$Name		The type name of the offending argument.
 # 	$Number		The number of the offending argument (starts at 1).
 #
+#, fuzzy
 msgid	"$function: argument $number: time value required (was given "
 	"$name)"
 msgstr	"$function: argument $number: time value required (was given "
@@ -606,6 +650,7 @@ msgstr	"$function: argument $number: time value required (was given "
 # 	$Number		The argument number
 # 	$Name		The type name of the offending argument.
 #
+#, fuzzy
 msgid	"$function: argument $number: unable to print $name value"
 msgstr	"$function: argument $number: unable to print $name value"
 
@@ -618,6 +663,7 @@ msgstr	"$function: argument $number: unable to print $name value"
 # 	$Number		The number of the offending argument.
 # 	$Value		The value of the offending width.
 #
+#, fuzzy
 msgid	"$function: argument $number: width $value out of range"
 msgstr	"$function: argument $number: width $value out of range"
 
@@ -628,6 +674,7 @@ msgstr	"$function: argument $number: width $value out of range"
 #
 # 	$Function	The name of the function being called.
 #
+#, fuzzy
 msgid	"$function: result too long"
 msgstr	"$function: result too long"
 
@@ -638,6 +685,7 @@ msgstr	"$function: result too long"
 #
 # 	$Function	The name of the function being called.
 #
+#, fuzzy
 msgid	"$function: too few arguments"
 msgstr	"$function: too few arguments"
 
@@ -649,6 +697,7 @@ msgstr	"$function: too few arguments"
 # 	$Number1	The number of arguments given to the function call.
 # 	$Number2	The number of arguments used by the format.
 #
+#, fuzzy
 msgid	"$function: too many arguments ($number1 given, only $number2 "
 	"used)"
 msgstr	"$function: too many arguments ($number1 given, only $number2 "
@@ -662,6 +711,7 @@ msgstr	"$function: too many arguments ($number1 given, only $number2 "
 # 	$Function	The name of the function being called.
 # 	$Name		The offending format character.
 #
+#, fuzzy
 msgid	"$function: unknown format specifier '$name'"
 msgstr	"$function: unknown format specifier '$name'"
 
@@ -682,6 +732,7 @@ msgstr	"$mesaj"
 # 	$Name		The name of the offending option.
 # 	$Number		The value given to the option.
 #
+#, fuzzy
 msgid	"$name $number must be pos"
 msgstr	"the $name $number option is out of range, the $name option "
 	"requires a small positive integer as its argument"
@@ -695,6 +746,7 @@ msgstr	"the $name $number option is out of range, the $name option "
 # 	$Name		The name of the offending option.
 # 	$Number		The value given to the option.
 #
+#, fuzzy
 msgid	"$name $number must not be neg"
 msgstr	"the $name $number option is out of range, the $name option "
 	"requires zero or a small positive integer as its argument"
@@ -706,6 +758,7 @@ msgstr	"the $name $number option is out of range, the $name option "
 #
 # 	$Name		The offending user name.
 #
+#, fuzzy
 msgid	"$name already administrator"
 msgstr	"user \"$name\" is already an administrator"
 
@@ -716,6 +769,7 @@ msgstr	"user \"$name\" is already an administrator"
 #
 # 	$Name		The offending user name.
 #
+#, fuzzy
 msgid	"$name already developer"
 msgstr	"user \"$name\" is already a developer"
 
@@ -726,6 +780,7 @@ msgstr	"user \"$name\" is already a developer"
 #
 # 	$Name		The offending user name.
 #
+#, fuzzy
 msgid	"$name already integrator"
 msgstr	"user \"$name\" is already an integrator"
 
@@ -736,6 +791,7 @@ msgstr	"user \"$name\" is already an integrator"
 #
 # 	$Name		The offending user name.
 #
+#, fuzzy
 msgid	"$name already reviewer"
 msgstr	"user \"$name\" is already a reviewer"
 
@@ -743,6 +799,7 @@ msgstr	"user \"$name\" is already a reviewer"
 # TRANSLATION REQUIRED
 # This fatal error message is issued when a lock is not available.
 #
+#, fuzzy
 msgid	"$name lock not available"
 msgstr	"$name lock not available"
 
@@ -753,6 +810,7 @@ msgstr	"$name lock not available"
 #
 # 	$Name		The name of the offending option.
 #
+#, fuzzy
 msgid	"$name needs dir"
 msgstr	"the $name option must be followed by a directory path"
 
@@ -763,6 +821,7 @@ msgstr	"the $name option must be followed by a directory path"
 #
 # 	$Name		The name of the offending option.
 #
+#, fuzzy
 msgid	"$name needs file"
 msgstr	"the $name option must be followed by a file name"
 
@@ -773,6 +832,7 @@ msgstr	"the $name option must be followed by a file name"
 #
 # 	$Name		The name of the offending option.
 #
+#, fuzzy
 msgid	"$name needs files"
 msgstr	"the $name option must be followed by one or more file names"
 
@@ -867,6 +927,7 @@ msgstr	"$value1 ** $value2: $errno"
 # version of Aegis compiled without the DEBUG define in common/main.h
 # turned on.
 #
+#, fuzzy
 msgid	"-TRace needs DEBUG"
 msgstr	"Warning: the -TRace option is only effective when Aegis is "
 	"compiled using the DEBUG define in the common/main.h include "
@@ -879,6 +940,7 @@ msgstr	"Warning: the -TRace option is only effective when Aegis is "
 # 	$Number1	the current AEGIS_USER_GID setting
 # 	$Number2	the current AEGIS_MIN_GID setting
 #
+#, fuzzy
 msgid	"AEGIS_USER_GID ($number1) vs AEGIS_MIN_GID ($number2) "
 	"misconfigured"
 msgstr	"This program has been mis-configured.  The AEGIS_USER_GID "
@@ -894,6 +956,7 @@ msgstr	"This program has been mis-configured.  The AEGIS_USER_GID "
 # 	$Number1	the current AEGIS_USER_UID setting
 # 	$Number2	the current AEGIS_MIN_UID setting
 #
+#, fuzzy
 msgid	"AEGIS_USER_UID ($number1) vs AEGIS_MIN_UID ($number2) "
 	"misconfigured"
 msgstr	"This program has been mis-configured.  The AEGIS_USER_UID "
@@ -908,6 +971,7 @@ msgstr	"This program has been mis-configured.  The AEGIS_USER_UID "
 #
 # 	$Name		The name of the old project.
 #
+#, fuzzy
 msgid	"New release derived from $name."
 msgstr	"New release derived from $name."
 
@@ -930,14 +994,30 @@ msgstr	"Proiect $name"
 # 	$Name		The name of a project.
 # 	$Number		The number of a change.
 #
+#, fuzzy
 msgid	"Project $name, Change $number"
 msgstr	"Project \"$name\", Change $number"
+
+#
+# TRANSLATION REQUIRED
+# This text is used when a project name, change number and file name are
+# inserted at the top of a file or listing.  Usually in the C locale,
+# so avoid non-ascii characters if at all possible.
+#
+# 	$Name		The name of a project.
+# 	$Number		The number of a change.
+#	$File_Name	The name of the file.
+#
+#, fuzzy
+msgid	"Project $name, Change $number, File $filename"
+msgstr	"Project \"$name\", Change $number, File \"$filename\""
 
 #
 # TRANSLATION REQUIRED
 # This error message is issued when the ${read_file} substitution is
 # called incorrectly.  See (+++) below.
 #
+#, fuzzy
 msgid	"absolute path required"
 msgstr	"absolute path required"
 
@@ -955,6 +1035,7 @@ msgstr	"ajusteazã data modificãrii fiºierului"
 # an administrator is to undo a forced aedb; thus if the change has been
 # worked on at all, this is probably not a good idea.
 #
+#, fuzzy
 msgid	"aedbu, has files"
 msgstr	"this change has files associated with it, you may only use this "
 	"command on changes with no associated files"
@@ -965,6 +1046,7 @@ msgstr	"this change has files associated with it, you may only use this "
 # given the -keep option without the -directory option.  It doesn't know
 # what to keep.
 #
+#, fuzzy
 msgid	"aenpr -keep needs -dir"
 msgstr	"the aegis -New-PRoject `-Keep' option requires the `-DIRectory' "
 	"option as well"
@@ -974,6 +1056,7 @@ msgstr	"the aegis -New-PRoject `-Keep' option requires the `-DIRectory' "
 # This fatal error message is issued if it appears that there is a
 # reference loop of project aliases.
 #
+#, fuzzy
 msgid	"alias loop detected"
 msgstr	"alias loop detected"
 
@@ -983,6 +1066,7 @@ msgstr	"alias loop detected"
 # test, and all the test numbers appear to have been consumed.  This error
 # message should be impossible.
 #
+#, fuzzy
 msgid	"all test numbers used"
 msgstr	"it appears that all test numbers have been consumed"
 
@@ -991,6 +1075,7 @@ msgstr	"it appears that all test numbers have been consumed"
 # This error message is issued when an unknown substitution is
 # referenced.  See (+++) below.
 #
+#, fuzzy
 msgid	"ambiguous substitution name"
 msgstr	"ambiguous substitution name"
 
@@ -999,6 +1084,7 @@ msgstr	"ambiguous substitution name"
 # This progress message is issued when an 'aegis -diff -anticipate'
 # command completes successfully.
 #
+#, fuzzy
 msgid	"anticipated merge complete"
 msgstr	"anticipated merge complete"
 
@@ -1009,6 +1095,7 @@ msgstr	"anticipated merge complete"
 #
 # 	$File_Name	The name of the log file.
 #
+#, fuzzy
 msgid	"appending log to $filename"
 msgstr	"appending log to \"$filename\""
 
@@ -1017,6 +1104,7 @@ msgstr	"appending log to \"$filename\""
 # This progress message is issued when aeib copies the source files form
 # the development directory into the integration directory.
 #
+#, fuzzy
 msgid	"apply change to integration directory"
 msgstr	"applying the change to the integration directory"
 
@@ -1028,6 +1116,7 @@ msgstr	"applying the change to the integration directory"
 #
 # 	$Name		The offending architecture name.
 #
+#, fuzzy
 msgid	"architecture \"$name\" forbidden"
 msgstr	"architecture \"$name\" forbidden, you may not perform this "
 	"command on this machine"
@@ -1041,6 +1130,7 @@ msgstr	"architecture \"$name\" forbidden, you may not perform this "
 #
 # 	$Name		The offending architecture name.
 #
+#, fuzzy
 msgid	"architecture \"$name\" unknown"
 msgstr	"architecture \"$name\" unknown"
 
@@ -1053,6 +1143,7 @@ msgstr	"architecture \"$name\" unknown"
 #
 # 	$Name		The name of the offending architecture.
 #
+#, fuzzy
 msgid	"architecture \"$name\" unlisted"
 msgstr	"architecture \"$name\" appears in the change attributes, but is "
 	"not listed in the project ``config'' file"
@@ -1064,6 +1155,7 @@ msgstr	"architecture \"$name\" appears in the change attributes, but is "
 #
 # 	$File_Name	The name of the offending file.
 #
+#, fuzzy
 msgid	"archive member $filename changed size"
 msgstr	"archive member $filename changed size during processing, "
 	"corrupting the result"
@@ -1074,6 +1166,7 @@ msgstr	"archive member $filename changed size during processing, "
 #
 # 	$Name		The type name of the offending operand.
 #
+#, fuzzy
 msgid	"arithmetic type required for decrement (was given $name)"
 msgstr	"arithmetic type required for decrement (was given $name)"
 
@@ -1083,6 +1176,7 @@ msgstr	"arithmetic type required for decrement (was given $name)"
 #
 # 	$Name		The type name of the offending operand.
 #
+#, fuzzy
 msgid	"arithmetic type required for increment (was given $name)"
 msgstr	"arithmetic type required for increment (was given $name)"
 
@@ -1101,6 +1195,7 @@ msgstr	"atribute schimbate"
 # 	$File_Name	The absolute path of the file containing the
 # 			offending attributes text file.
 #
+#, fuzzy
 msgid	"attributes in $filename"
 msgstr	"attributes text left in the \"$filename\" file"
 
@@ -1109,6 +1204,7 @@ msgstr	"attributes text left in the \"$filename\" file"
 # This error message is issued when the change is not in a suitable state
 # to search within for files.
 #
+#, fuzzy
 msgid	"bad aefind state"
 msgstr	"this change is in the '$state' state, it must be in the 'being "
 	"developed' state to walk its directory tree"
@@ -1118,6 +1214,7 @@ msgstr	"this change is in the '$state' state, it must be in the 'being "
 # This fatal error message sis issued when the aels command is used on
 # a change which is in the `aewaiting development' state.
 #
+#, fuzzy
 msgid	"bad aels state"
 msgstr	"this change is in the '$state' state, it must be in the 'being "
 	"developed' state to list file information"
@@ -1130,6 +1227,7 @@ msgstr	"this change is in the '$state' state, it must be in the 'being "
 #
 # 	$Name		The offending project alias.
 #
+#, fuzzy
 msgid	"bad alias $name"
 msgstr	"project alias \"$name\" is invalid"
 
@@ -1138,6 +1236,7 @@ msgstr	"project alias \"$name\" is invalid"
 # This error message is issued when an attempt is made to difference
 # against a change which is in an inappropriate state.
 #
+#, fuzzy
 msgid	"bad anticipate diff"
 msgstr	"this change is in the '$state' state, it must be in one of the "
 	"'being reviewed', 'awaiting integration' or 'being integrated' "
@@ -1148,6 +1247,7 @@ msgstr	"this change is in the '$state' state, it must be in one of the "
 # This error message is issued when a user requests a build of a branch
 # which is in the 'being developed' state.
 #
+#, fuzzy
 msgid	"bad branch build"
 msgstr	"this branch may not be built directly in the '$state' state, it "
 	"must be in the 'being integrated' state to do this"
@@ -1158,6 +1258,7 @@ msgstr	"this branch may not be built directly in the '$state' state, it "
 # directly into a branch.  You must use a change on the branch for
 # that.
 #
+#, fuzzy
 msgid	"bad branch cp"
 msgstr	"you may not copy files into a branch directly, you must create a "
 	"change to modify files"
@@ -1167,6 +1268,7 @@ msgstr	"you may not copy files into a branch directly, you must create a "
 # This error message is issued when an aed command is used on a branch
 # which is not in the 'being integrated' state.
 #
+#, fuzzy
 msgid	"bad branch diff"
 msgstr	"this branch is in the '$state' state, it must be in the 'being "
 	"integrated' state to do a difference"
@@ -1176,6 +1278,7 @@ msgstr	"this branch is in the '$state' state, it must be in the 'being "
 # This error message is issued when a user requests a build of a branch
 # which is in the 'being developed' state.
 #
+#, fuzzy
 msgid	"bad branch test"
 msgstr	"this branch may not be tested directly in the '$state' state, it "
 	"must be in the 'being integrated' state to do this"
@@ -1185,6 +1288,7 @@ msgstr	"this branch may not be tested directly in the '$state' state, it "
 # This error message is issued when a user requests a build of a change
 # from the wrong state.
 #
+#, fuzzy
 msgid	"bad build state"
 msgstr	"this change is in the '$state' state, it must be in the 'being "
 	"developed' or 'being integrated' state to do a build"
@@ -1194,6 +1298,7 @@ msgstr	"this change is in the '$state' state, it must be in the 'being "
 # This error message is issued when a partial integration is requested
 # for a change in the 'being integrated' state.
 #
+#, fuzzy
 msgid	"bad build, partial"
 msgstr	"you may not do a partial build in the \"$state\" state"
 
@@ -1202,6 +1307,7 @@ msgstr	"you may not do a partial build in the \"$state\" state"
 # This error message is issued when a developer who is not an administrator
 # attempts to grant an architecture exemption to a change.
 #
+#, fuzzy
 msgid	"bad ca, no arch exempt"
 msgstr	"only a project administrator may grant architecture exemptions"
 
@@ -1210,6 +1316,7 @@ msgstr	"only a project administrator may grant architecture exemptions"
 # This error message is issued when a user who is not an administrator
 # attempts to grant a test exemption to a change.
 #
+#, fuzzy
 msgid	"bad ca, no test exempt"
 msgstr	"only project administrators may exempt changes from testing"
 
@@ -1218,6 +1325,7 @@ msgstr	"only project administrators may exempt changes from testing"
 # This error message is issued when a user without sufficient
 # authorization attempts to modify a change's attributes.
 #
+#, fuzzy
 msgid	"bad ca, not auth"
 msgstr	"user \"$user\" may not modify the change's attributes; "
 	"attributes may only be modified by a project administrator, or "
@@ -1229,15 +1337,38 @@ msgstr	"user \"$user\" may not modify the change's attributes; "
 # attributes to include an architecture not named in the project
 # 'config' file.
 #
+#, fuzzy
 msgid	"bad ca, unknown architecture"
 msgstr	"architecture contains variations not listed in the project "
 	"``config'' file"
 
 #
 # TRANSLATION REQUIRED
+# This error message is issued when a user attempts to set a change's
+# UUID when the change already has a UUID.
+#
+#, fuzzy
+msgid	"bad ca, uuid already set"
+msgstr	"the UUID of this change has already been set"
+
+#
+# TRANSLATION REQUIRED
+# This error message is issued when a user attempts to set a change's
+# UUID and the given UUID has already be used by another change.
+#
+#	$Other	The version of change using the specified UUID.
+#		Optional.
+#
+#, fuzzy
+msgid	"bad ca, uuid duplicate"
+msgstr	"the UUID specified is already is use by $other"
+
+#
+# TRANSLATION REQUIRED
 # This error message is issued when an aecd is requested for a change
 # which does not have a directory.
 #
+#, fuzzy
 msgid	"bad cd, no dir"
 msgstr	"this change is in the '$state' state, there is no directory to "
 	"go to"
@@ -1248,6 +1379,7 @@ msgstr	"this change is in the '$state' state, there is no directory to "
 # owner of a change, when that change is not in the 'being developed'
 # state.
 #
+#, fuzzy
 msgid	"bad chown state"
 msgstr	"this change is in the '$state' state, it must be in the 'being "
 	"developed' state to change its owner"
@@ -1257,6 +1389,7 @@ msgstr	"this change is in the '$state' state, it must be in the 'being "
 # This error message is issued when an attempt is made to clean a change
 # which is not in the 'being developed' state.
 #
+#, fuzzy
 msgid	"bad clean state"
 msgstr	"this change is in the '$state' state, it must be in the 'being "
 	"developed' state to be cleaned"
@@ -1266,6 +1399,7 @@ msgstr	"this change is in the '$state' state, it must be in the 'being "
 # This error message is issued when an attempt is made to copy files
 # into a change which is not in the 'being developed' state.
 #
+#, fuzzy
 msgid	"bad cp state"
 msgstr	"this change is in the '$state' state, it must be in the 'being "
 	"developed' state to modify files with it"
@@ -1277,6 +1411,7 @@ msgstr	"this change is in the '$state' state, it must be in the 'being "
 #
 # 	$File_Name	The name of the offending file.
 #
+#, fuzzy
 msgid	"bad cp undo $filename"
 msgstr	"file \"$filename\" was not added to this change using the 'aegis "
 	"-CoPy_file' command"
@@ -1286,6 +1421,7 @@ msgstr	"file \"$filename\" was not added to this change using the 'aegis "
 # This error message is issued when an aecpu command is used directly on
 # a branch.  Branches may only be altered via a change.
 #
+#, fuzzy
 msgid	"bad cp undo branch"
 msgstr	"you may not remove files from a branch directly, you must create "
 	"a change to remove files"
@@ -1295,6 +1431,7 @@ msgstr	"you may not remove files from a branch directly, you must create "
 # This error message is issued when the aecpu command is used on a change
 # which is not in the 'being developed' state.
 #
+#, fuzzy
 msgid	"bad cp undo state"
 msgstr	"this change is in the '$state' state, it must be in the 'being "
 	"developed' state to be able to remove a copied file from it"
@@ -1307,6 +1444,7 @@ msgstr	"this change is in the '$state' state, it must be in the 'being "
 #
 # 	$File_Name	The name of the offending file.
 #
+#, fuzzy
 msgid	"bad cp, file $filename dup"
 msgstr	"file \"$filename\" is already in the change, it will not be "
 	"overwritten; use the -OverWriting option if you want to "
@@ -1318,6 +1456,7 @@ msgstr	"file \"$filename\" is already in the change, it will not be "
 # development on a change which is not in the 'awaiting development'
 # state.
 #
+#, fuzzy
 msgid	"bad db state"
 msgstr	"this change is in the '$state' state, it must be in the "
 	"'awaiting development' state to begin development"
@@ -1327,6 +1466,7 @@ msgstr	"this change is in the '$state' state, it must be in the "
 # This error message is issued when aedbu is asked to operate on
 # a change which is not in the 'being developed' state.
 #
+#, fuzzy
 msgid	"bad dbu state"
 msgstr	"this change is in the '$state' state, it must be in the 'being "
 	"developed' state to undo develop begin"
@@ -1336,6 +1476,7 @@ msgstr	"this change is in the '$state' state, it must be in the 'being "
 # This error message is issued when aede is invokes on a change which is
 # not in the 'being developed' state.
 #
+#, fuzzy
 msgid	"bad de state"
 msgstr	"this change is in the '$state' state, it must be in the 'being "
 	"developed' state to end development"
@@ -1345,6 +1486,7 @@ msgstr	"this change is in the '$state' state, it must be in the 'being "
 # This error message is issued when aedeu is invoked for a change which
 # is not in the 'being reviewed' or 'awaiting integration' state.
 #
+#, fuzzy
 msgid	"bad deu state"
 msgstr	"this change is in the '$state' state, it must be in the 'being "
 	"reviewed' or 'awaiting integration' state to undo develop end"
@@ -1354,9 +1496,21 @@ msgstr	"this change is in the '$state' state, it must be in the 'being "
 # This error message is issued when an aed command used on a change
 # which is not in the 'being developed' state.
 #
+#, fuzzy
 msgid	"bad diff state"
 msgstr	"this change is in the '$state' state, it must be in the 'being "
 	"developed' state to do a difference"
+
+#
+# TRANSLATION REQUIRED
+# This error message is issued when a user without sufficient
+# authorization attempts to modify a change file's attributes.
+#
+#, fuzzy
+msgid	"bad fa, not auth"
+msgstr	"user \"$user\" may not modify the change's attributes; "
+	"attributes may only be modified by the developer during "
+	"development"
 
 #
 # This error message is issued when an aeib command is used on a change
@@ -1371,6 +1525,7 @@ msgstr	"this change is in the '$state' state, it must be in the "
 # This error message is issued when aeibu is used on a change which is
 # not in the 'being integrated' state.
 #
+#, fuzzy
 msgid	"bad ibu state"
 msgstr	"this change is in the '$state' state, it must be in the 'being "
 	"integrated' state to undo integrate begin"
@@ -1380,6 +1535,7 @@ msgstr	"this change is in the '$state' state, it must be in the 'being "
 # This error message is issued when an aed command used on a change
 # which is not in the 'being developed' or 'being integrated' state.
 #
+#, fuzzy
 msgid	"bad idiff state"
 msgstr	"this change is in the '$state' state, it must be in the 'being "
 	"developed' or 'being integrated' state to do a difference"
@@ -1389,6 +1545,7 @@ msgstr	"this change is in the '$state' state, it must be in the 'being "
 # This error message is issued when aeifail is invoked for a change which
 # is not in the 'being integrated' state.
 #
+#, fuzzy
 msgid	"bad if state"
 msgstr	"this change is in the '$state' state, it must be in the 'being "
 	"integrated' state to fail integration"
@@ -1398,6 +1555,7 @@ msgstr	"this change is in the '$state' state, it must be in the 'being "
 # This error message is issued when an aeipass command is invoked on a
 # change which is not in the 'being integrated' state.
 #
+#, fuzzy
 msgid	"bad ip state"
 msgstr	"this change is in the '$state' state, it must be in the 'being "
 	"integrated' state to pass integration"
@@ -1410,6 +1568,7 @@ msgstr	"this change is in the '$state' state, it must be in the 'being "
 # 	$Outstanding	A list of outstanding architectures to be built,
 # 			or empty if all are outstanding.  (Optional)
 #
+#, fuzzy
 msgid	"bad ip, build required"
 msgstr	"this change must successfully complete an 'aegis -Build' "
 	"$outstanding before it can pass integration"
@@ -1422,6 +1581,7 @@ msgstr	"this change must successfully complete an 'aegis -Build' "
 # 	$Outstanding	A list of outstanding architectures to be tested,
 # 			or empty if all are outstanding.  (Optional)
 #
+#, fuzzy
 msgid	"bad ip, test -bl required"
 msgstr	"this change must successfully complete an 'aegis -Test -"
 	"BaseLine' $outstanding before it can pass integration"
@@ -1434,6 +1594,7 @@ msgstr	"this change must successfully complete an 'aegis -Test -"
 # 	$Outstanding	A list of outstanding architectures to be tested,
 # 			or empty if all are outstanding.  (Optional)
 #
+#, fuzzy
 msgid	"bad ip, test -reg required"
 msgstr	"this change must successfully complete an 'aegis -Test -"
 	"REGression' $outstanding before it can pass integration"
@@ -1446,6 +1607,7 @@ msgstr	"this change must successfully complete an 'aegis -Test -"
 # 	$Outstanding	A list of outstanding architectures to be tested,
 # 			or empty if all are outstanding.  (Optional)
 #
+#, fuzzy
 msgid	"bad ip, test required"
 msgstr	"this change must successfully complete an 'aegis -Test' "
 	"$outstanding before it can pass integration"
@@ -1455,6 +1617,7 @@ msgstr	"this change must successfully complete an 'aegis -Test' "
 # This error message is issued when aemv is asked to operate on a change
 # which is not in the 'being developed' state.
 #
+#, fuzzy
 msgid	"bad mv state"
 msgstr	"this change is in the '$state' state, it must be in the 'being "
 	"developed' state to rename files with it"
@@ -1466,6 +1629,7 @@ msgstr	"this change is in the '$state' state, it must be in the 'being "
 #
 # 	$File_Name	The name of the offending file.
 #
+#, fuzzy
 msgid	"bad mv undo $filename"
 msgstr	"file \"$filename\" was not added to this change using the 'aegis "
 	"-MoVe_file' command"
@@ -1475,6 +1639,7 @@ msgstr	"file \"$filename\" was not added to this change using the 'aegis "
 # This error message is issued when aencu is requested of a change which
 # is not in the 'awaiting development' state.
 #
+#, fuzzy
 msgid	"bad ncu state"
 msgstr	"this change is in the '$state' state, it must be in the "
 	"'awaiting development' state to undo a new change"
@@ -1485,6 +1650,7 @@ msgstr	"this change is in the '$state' state, it must be in the "
 # 'being developed' state.  You must use a change on the branch for
 # that.
 #
+#, fuzzy
 msgid	"bad nf branch"
 msgstr	"you may not add files into a branch directly, you must create a "
 	"change to create new files"
@@ -1494,6 +1660,7 @@ msgstr	"you may not add files into a branch directly, you must create a "
 # This error message is issued when aenf is invoked on a change which is
 # not in the 'being developed' state.
 #
+#, fuzzy
 msgid	"bad nf state"
 msgstr	"this change is in the '$state' state, it must be in the 'being "
 	"developed' state to create new files with it"
@@ -1505,6 +1672,7 @@ msgstr	"this change is in the '$state' state, it must be in the 'being "
 #
 # 	$File_Name	The name of the offending file.
 #
+#, fuzzy
 msgid	"bad nf undo $filename"
 msgstr	"file \"$filename\" was not added to this change using the 'aegis "
 	"-New_File' command"
@@ -1515,6 +1683,7 @@ msgstr	"file \"$filename\" was not added to this change using the 'aegis "
 # 'being developed' state.  You must use a change on the branch for
 # that.
 #
+#, fuzzy
 msgid	"bad nfu branch"
 msgstr	"you may not remove files from a branch directly, you must create "
 	"a change to remove files"
@@ -1524,6 +1693,7 @@ msgstr	"you may not remove files from a branch directly, you must create "
 # This error message is issued when aenfu is invoked on a change which is
 # not in the 'being developed' state.
 #
+#, fuzzy
 msgid	"bad nfu state"
 msgstr	"this change is in the '$state' state, it must be in the 'being "
 	"developed' state to remove new files with it"
@@ -1535,6 +1705,7 @@ msgstr	"this change is in the '$state' state, it must be in the 'being "
 # onwards.  The New_ReLeaSe command is only used to convert the old
 # branch-less style to the new branch style.
 #
+#, fuzzy
 msgid	"bad nrls, too modern"
 msgstr	"The `aegis -New_ReLeaSe' command may only be used to convert "
 	"projects created by aegis.2.3 and earlier.  This project is more "
@@ -1545,6 +1716,7 @@ msgstr	"The `aegis -New_ReLeaSe' command may only be used to convert "
 # This error message is issued when aent is invoked fro a change which
 # is not in the 'being developed' state.
 #
+#, fuzzy
 msgid	"bad nt state"
 msgstr	"this change is in the '$state' state, it must be in the 'being "
 	"developed' state to create a new test with it"
@@ -1556,6 +1728,7 @@ msgstr	"this change is in the '$state' state, it must be in the 'being "
 #
 # 	$File_Name	The name of the offending file.
 #
+#, fuzzy
 msgid	"bad nt undo $filename"
 msgstr	"file \"$filename\" was not added to this change using the 'aegis "
 	"-New_Test' command"
@@ -1565,6 +1738,7 @@ msgstr	"file \"$filename\" was not added to this change using the 'aegis "
 # This error message is issued when aentu is invoked for a change which
 # is not in the 'being developed' state.
 #
+#, fuzzy
 msgid	"bad ntu state"
 msgstr	"this change is in the '$state' state, it must be in the 'being "
 	"developed' state to undo new tests"
@@ -1574,6 +1748,7 @@ msgstr	"this change is in the '$state' state, it must be in the 'being "
 # This error message is issued when aepa is given a default development
 # directory which is not an absolute path.
 #
+#, fuzzy
 msgid	"bad pa, rel def dev dir"
 msgstr	"default development directory must be specified as an absolute "
 	"path"
@@ -1583,6 +1758,7 @@ msgstr	"default development directory must be specified as an absolute "
 # This fatal error message is issued when a change is not in a suitable
 # state from which to make a distribution change set.
 #
+#, fuzzy
 msgid	"bad patch send state"
 msgstr	"this change is in the $state state; it must be in a later state "
 	"to be sent"
@@ -1593,6 +1769,7 @@ msgstr	"this change is in the $state state; it must be in a later state "
 #
 # 	$File_Name	The offending file name pattern.
 #
+#, fuzzy
 msgid	"bad pattern $filename"
 msgstr	"filename pattern \"$filename\" is illegal"
 
@@ -1603,6 +1780,7 @@ msgstr	"filename pattern \"$filename\" is illegal"
 #
 # 	$Name		The offending project name.
 #
+#, fuzzy
 msgid	"bad project $name"
 msgstr	"project name \"$name\" is invalid"
 
@@ -1611,6 +1789,7 @@ msgstr	"project name \"$name\" is invalid"
 # This error message is issued when aerb is invoked for a change which is
 # not in the 'awaiting review' state.
 #
+#, fuzzy
 msgid	"bad rb state"
 msgstr	"this change is in the '$state' state, it must be in the "
 	"'awaiting review' state to begin review"
@@ -1620,6 +1799,7 @@ msgstr	"this change is in the '$state' state, it must be in the "
 # This error message is issued when aerbu is invoked for a change which is
 # not in the 'being reviewed' state.
 #
+#, fuzzy
 msgid	"bad rbu state"
 msgstr	"this change is in the '$state' state, it must be in the 'being "
 	"reviewed' state to stop reviewing"
@@ -1629,6 +1809,7 @@ msgstr	"this change is in the '$state' state, it must be in the 'being "
 # This error message is issued when a request is made to fail a review
 # of a change, but that change is not in the 'being reviewed' state.
 #
+#, fuzzy
 msgid	"bad rf state"
 msgstr	"this change is in the '$state' state, it must be in the 'being "
 	"reviewed' state to fail review"
@@ -1638,6 +1819,7 @@ msgstr	"this change is in the '$state' state, it must be in the 'being "
 # This error message is issued when aerm is invoked for a change which
 # is not in the 'being developed' state.
 #
+#, fuzzy
 msgid	"bad rm state"
 msgstr	"this change is in the '$state' state, it must be in the 'being "
 	"developed' state to remove a file with it"
@@ -1649,6 +1831,7 @@ msgstr	"this change is in the '$state' state, it must be in the 'being "
 #
 # 	$File_Name	The name of the offending file.
 #
+#, fuzzy
 msgid	"bad rm undo $filename"
 msgstr	"file \"$filename\" was not added to this change using the 'aegis "
 	"-ReMove_file' command"
@@ -1658,6 +1841,7 @@ msgstr	"file \"$filename\" was not added to this change using the 'aegis "
 # This error message is issued when aermu is invoked for a change which
 # is not in the 'being developed' state.
 #
+#, fuzzy
 msgid	"bad rmu state"
 msgstr	"this change is in the '$state' state, it must be in the 'being "
 	"developed' state to undo remove files"
@@ -1667,6 +1851,7 @@ msgstr	"this change is in the '$state' state, it must be in the 'being "
 # This error message is issued when aerpass is invoked for a change which is
 # not in the 'being reviewed' state.
 #
+#, fuzzy
 msgid	"bad rp state"
 msgstr	"this change is in the '$state' state, it must be in the 'being "
 	"reviewed' state to pass review"
@@ -1676,6 +1861,7 @@ msgstr	"this change is in the '$state' state, it must be in the 'being "
 # This error message is issued when aerpu is invoked for a change which is
 # not in the 'awaiting integration' state.
 #
+#, fuzzy
 msgid	"bad rpu state"
 msgstr	"this change is in the '$state' state, it must be in the "
 	"'awaiting integration' state to undo a review pass"
@@ -1685,6 +1871,7 @@ msgstr	"this change is in the '$state' state, it must be in the "
 # This fatal error message is issued when there would be no files in
 # the distributed change set.
 #
+#, fuzzy
 msgid	"bad send no files"
 msgstr	"there are no files to distribute"
 
@@ -1701,6 +1888,7 @@ msgstr	"aceastã schimbare este în starea $state; aceasta trebuie sã fie "
 # This error message is issued when a user requests a test of a change
 # from the wrong state.
 #
+#, fuzzy
 msgid	"bad test state"
 msgstr	"this change is in the '$state' state, it must be in the 'being "
 	"developed' or 'being integrated' state to run tests"
@@ -1712,6 +1900,7 @@ msgstr	"this change is in the '$state' state, it must be in the 'being "
 #
 # 	$Number		The offending version number.
 #
+#, fuzzy
 msgid	"bad version $number"
 msgstr	"version number \"$number\" is invalid"
 
@@ -1722,6 +1911,7 @@ msgstr	"version number \"$number\" is invalid"
 #
 # 	$File_Name	The name of the offending file.
 #
+#, fuzzy
 msgid	"baseline $filename changed"
 msgstr	"file \"$filename\" in the baseline has changed since the last "
 	"'aegis -DIFFerence' command, you need to do a merge"
@@ -1735,6 +1925,7 @@ msgstr	"file \"$filename\" in the baseline has changed since the last "
 #
 # 	$File_Name	The name of the offending file.
 #
+#, fuzzy
 msgid	"baseline $filename changed, merge in new change"
 msgstr	"File \"$filename\" in this branch's parent baseline has changed "
 	"since it was modified by this branch.  In order to resolve this, "
@@ -1749,6 +1940,7 @@ msgstr	"File \"$filename\" in this branch's parent baseline has changed "
 # TRANSLATION REQUIRED
 # This fatal error message is issued when a lock is not available.
 #
+#, fuzzy
 msgid	"baseline read lock not available"
 msgstr	"baseline read lock not available"
 
@@ -1756,6 +1948,7 @@ msgstr	"baseline read lock not available"
 # TRANSLATION REQUIRED
 # This fatal error message is issued when a lock is not available.
 #
+#, fuzzy
 msgid	"baseline write lock not available"
 msgstr	"baseline write lock not available"
 
@@ -1768,8 +1961,9 @@ msgstr	"baseline write lock not available"
 # 	$Last		Number of the last test in batch
 # 	$Total		Total number of tests
 #
+#, fuzzy
 msgid	"batch test from $current to $last of $total"
-msgstr	"tests $current-$last of $total, ${date %%H:%%M}"
+msgstr	"tests $current-$last of $total, ${date %H:%M}"
 
 #
 # This error message is issued when the bevel size specified is negative,
@@ -1785,6 +1979,7 @@ msgstr	"dimensiune muchie $number în afara domeniului: acesta trebuie sã "
 #
 # 	$Name		The type name of the offending operand.
 #
+#, fuzzy
 msgid	"boolean value required for arithmetic if (was given $name)"
 msgstr	"boolean value required for arithmetic if (was given $name)"
 
@@ -1795,6 +1990,7 @@ msgstr	"boolean value required for arithmetic if (was given $name)"
 #
 # 	$name	The name of the type of e1.
 #
+#, fuzzy
 msgid	"boolean value required for if (was given $name)"
 msgstr	"boolean value required for ?: expression (was given $name)"
 
@@ -1804,6 +2000,7 @@ msgstr	"boolean value required for ?: expression (was given $name)"
 #
 # 	$Name		The type name of the offending operand.
 #
+#, fuzzy
 msgid	"boolean value required for logical and (was given $name)"
 msgstr	"boolean value required for logical ``and'' (was given $name)"
 
@@ -1813,6 +2010,7 @@ msgstr	"boolean value required for logical ``and'' (was given $name)"
 #
 # 	$Name		The type name of the offending operand.
 #
+#, fuzzy
 msgid	"boolean value required for logical or (was given $name)"
 msgstr	"boolean value required for logical ``or'' (was given $name)"
 
@@ -1823,6 +2021,7 @@ msgstr	"boolean value required for logical ``or'' (was given $name)"
 #
 # 	$Name		The type name of the offending operand.
 #
+#, fuzzy
 msgid	"boolean value required in if statement (not $name)"
 msgstr	"boolean value required in ``if'' statement (was given $name)"
 
@@ -1833,6 +2032,7 @@ msgstr	"boolean value required in ``if'' statement (was given $name)"
 #
 # 	$Number		The offending branch number.
 #
+#, fuzzy
 msgid	"branch $number out of range"
 msgstr	"ramurã $number în afara domeniului"
 
@@ -1844,6 +2044,7 @@ msgstr	"ramurã $number în afara domeniului"
 #
 # 	$Number		The offending branch number.
 #
+#, fuzzy
 msgid	"branch $number used"
 msgstr	"branch number $number has already been used, please choose "
 	"another; or do not specify one if you want one to be allocated "
@@ -1854,6 +2055,7 @@ msgstr	"branch number $number has already been used, please choose "
 # This error message is issued when aenc or aenbr are issued against a
 # project branch which is no longer in the `being developed' state.
 #
+#, fuzzy
 msgid	"branch completed"
 msgstr	"you may only create changes and branches on branches which are "
 	"active, this branch is not in the 'being developed' state"
@@ -1866,6 +2068,7 @@ msgstr	"you may only create changes and branches on branches which are "
 # 	$Outstanding	A list of outstanding architectures to be built,
 # 			or empty if all are outstanding.  (Optional)
 #
+#, fuzzy
 msgid	"build required"
 msgstr	"this change must successfully complete an 'aegis -Build' "
 	"$outstanding before it can end development"
@@ -1879,6 +2082,7 @@ msgstr	"this change must successfully complete an 'aegis -Build' "
 #
 # 	$File_Name	The name of the offending file.
 #
+#, fuzzy
 msgid	"build trashed $filename"
 msgstr	"The build appears to have modified the \"$filename\" source "
 	"file.  This often occurs when a source files becomes a generated "
@@ -1911,6 +2115,7 @@ msgstr	"cd $filename"
 #
 # 	$Message	The message to be issued.
 #
+#, fuzzy
 msgid	"change $change: $message"
 msgstr	"change $change: $message"
 
@@ -1921,6 +2126,7 @@ msgstr	"change $change: $message"
 #
 # 	$Number		The offending change's number.
 #
+#, fuzzy
 msgid	"change $number not completed"
 msgstr	"change $number is in the \"$state\" state; it must be in the "
 	"\"completed\" state to be used with the --delta-from-change "
@@ -1933,6 +2139,7 @@ msgstr	"change $number is in the \"$state\" state; it must be in the "
 #
 # 	$Number		The offending change number.
 #
+#, fuzzy
 msgid	"change $number out of range"
 msgstr	"$number schimbare în afara domeniului, acesta trebuie sã fie un "
 	"numãr pozitiv mic"
@@ -1945,6 +2152,7 @@ msgstr	"$number schimbare în afara domeniului, acesta trebuie sã fie un "
 #
 # 	$Number		The offending change number.
 #
+#, fuzzy
 msgid	"change $number used"
 msgstr	"change number $number has already been used, please choose "
 	"another; or do not specify one if you want one to be allocated "
@@ -1955,6 +2163,7 @@ msgstr	"change number $number has already been used, please choose "
 # This message is issued when aedist --receive cancells a change because
 # the change is alreday present in the repository.  No action required.
 #
+#, fuzzy
 msgid	"change already present"
 msgstr	"This change has been cancelled because the change set is already "
 	"present in the repository."
@@ -1965,6 +2174,7 @@ msgstr	"This change has been cancelled because the change set is already "
 #
 # 	$File_Name	The absolute path of the directory changed to.
 #
+#, fuzzy
 msgid	"change directory $filename complete"
 msgstr	"$filename"
 
@@ -2001,6 +2211,7 @@ msgstr	"chmod(\"$filename\", $arg): $errno"
 # 	$ORiginal	The login name of the original owner.  (Optional)
 # 	$Target		The login name of the new owner.  (Optional)
 #
+#, fuzzy
 msgid	"chown complete"
 msgstr	"proprietatea schimbatã de la utilizator \"$original\" la "
 	"utilizator \"$target\""
@@ -2009,6 +2220,7 @@ msgstr	"proprietatea schimbatã de la utilizator \"$original\" la "
 # TRANSLATION REQUIRED
 # This message is issued when an aeclean command completes successfully.
 #
+#, fuzzy
 msgid	"clean complete"
 msgstr	"curãþenie terminatã"
 
@@ -2018,6 +2230,7 @@ msgstr	"curãþenie terminatã"
 #
 # 	$ORiginal	The login the original change.  (Optional)
 #
+#, fuzzy
 msgid	"clone complete"
 msgstr	"copy of change $original completed"
 
@@ -2046,6 +2259,7 @@ msgstr	"cmp \"$filename1\" \"$filename2\": $errno"
 # This error message is issued when a color component is not in the
 # range 0..255.
 #
+#, fuzzy
 msgid	"color component $number out of range"
 msgstr	"color component $number out of range, it must be 0 to 255"
 
@@ -2057,6 +2271,7 @@ msgstr	"color component $number out of range, it must be 0 to 255"
 # 	$Command	The offending command.
 # 	$Number		The exit status of the child.
 #
+#, fuzzy
 msgid	"command \"$command\" exit status $number"
 msgstr	"command \"$command\" exit status $number"
 
@@ -2067,6 +2282,7 @@ msgstr	"command \"$command\" exit status $number"
 #
 # 	$Command	The offending command.
 #
+#, fuzzy
 msgid	"command \"$command\" stopped"
 msgstr	"command \"$command\" stopped"
 
@@ -2078,6 +2294,7 @@ msgstr	"command \"$command\" stopped"
 # 	$Command	The offending command.
 # 	$Signal		The name of the terminating signal.
 #
+#, fuzzy
 msgid	"command \"$command\" terminated by $signal"
 msgstr	"command \"$command\" terminated by $signal"
 
@@ -2089,6 +2306,7 @@ msgstr	"command \"$command\" terminated by $signal"
 # 	$Command	The offending command.
 # 	$Signal		The name of the terminating signal.
 #
+#, fuzzy
 msgid	"command \"$command\" terminated by $signal (core dumped)"
 msgstr	"command \"$command\" terminated by $signal (core dumped)"
 
@@ -2096,6 +2314,7 @@ msgstr	"command \"$command\" terminated by $signal (core dumped)"
 # TRANSLATION REQUIRED
 # This error message is issued when the command line is too short.
 #
+#, fuzzy
 msgid	"command line too short"
 msgstr	"command line too short"
 
@@ -2104,7 +2323,8 @@ msgstr	"command line too short"
 # This message is inserted into the top of the project config file
 # automatically created by aeimport.
 #
-msgid	"config file hint"
+#, fuzzy
+msgid	"configuration file hint"
 msgstr	"This file will need to be customized for this project.  See "
 	"aepconf(5) for a description of the fields in this file.  See\n"
 	"$datadir/config.example/rcs\n"
@@ -2120,6 +2340,7 @@ msgstr	"This file will need to be customized for this project.  See "
 #
 # 	$Name		The offending encoding name.
 #
+#, fuzzy
 msgid	"content transfer encoding $name unknown"
 msgstr	"content transfer encoding \"$name\" unknown"
 
@@ -2128,6 +2349,7 @@ msgstr	"content transfer encoding \"$name\" unknown"
 # This progress message is issued for aecp file when aecp completes
 # successfully.
 #
+#, fuzzy
 msgid	"copied $filename"
 msgstr	"file \"$filename\" copied"
 
@@ -2136,6 +2358,7 @@ msgstr	"file \"$filename\" copied"
 # This progress message is issued when aenrls creates a copy of the
 # baseline in the new project.
 #
+#, fuzzy
 msgid	"copy baseline"
 msgstr	"copying baseline"
 
@@ -2144,6 +2367,7 @@ msgstr	"copying baseline"
 # This progress message is issued when aeib creates a copy of
 # the baseline to construct the integration directory.
 #
+#, fuzzy
 msgid	"copy baseline to integration directory"
 msgstr	"copying baseline to integration directory"
 
@@ -2152,6 +2376,7 @@ msgstr	"copying baseline to integration directory"
 # This progress message is issued when copying the change source files
 # during an aechown command.
 #
+#, fuzzy
 msgid	"copy change source files"
 msgstr	"copying change source files"
 
@@ -2163,6 +2388,7 @@ msgstr	"copying change source files"
 # 	$Number		The number of files copied.
 # 			(Optional)
 #
+#, fuzzy
 msgid	"copy file complete"
 msgstr	"copied $number ${plural $number files file}"
 
@@ -2175,6 +2401,7 @@ msgstr	"copied $number ${plural $number files file}"
 #
 # 	$File_Name	Name of the file removed from the change.
 #
+#, fuzzy
 msgid	"copy file undo $filename complete"
 msgstr	"file \"$filename\" no longer being modified"
 
@@ -2220,6 +2447,7 @@ msgstr	"Creez legãturi simbolice cãtre bazã"
 #
 # 	$Number		The change number of the current integration.
 #
+#, fuzzy
 msgid	"currently integrating $number"
 msgstr	"change $number is the currently active integration, only one "
 	"integration may be performed at a time"
@@ -2231,6 +2459,7 @@ msgstr	"change $number is the currently active integration, only one "
 #
 # 	$Name		The offending string.
 #
+#, fuzzy
 msgid	"date $name unknown"
 msgstr	"the string \"$name\" does not look like a date"
 
@@ -2255,6 +2484,7 @@ msgstr	"Avertisment: Diferenþa de datã specificatã este în viitor.  "
 # 	$Other		The delta number already associated with the
 # 			delta name.
 #
+#, fuzzy
 msgid	"delta $name in use"
 msgstr	"the delta name \"$name\" is already assigned to delta $other; to "
 	"reassign this name to delta $number you must use the -"
@@ -2267,6 +2497,7 @@ msgstr	"the delta name \"$name\" is already assigned to delta $other; to "
 #
 # 	$Number		The offending delta number.
 #
+#, fuzzy
 msgid	"delta $number out of range"
 msgstr	"diferenþa $number în afara domeniului, acesta trebuie sã fie un "
 	"numãr pozitiv mic"
@@ -2278,6 +2509,7 @@ msgstr	"diferenþa $number în afara domeniului, acesta trebuie sã fie un "
 # 	$Name		The name of the delta.  (Optional)
 # 	$Number		The number of the delta.  (Optional)
 #
+#, fuzzy
 msgid	"delta name complete"
 msgstr	"delta $number may now be referred to as delta \"$name\""
 
@@ -2285,6 +2517,7 @@ msgstr	"delta $number may now be referred to as delta \"$name\""
 # TRANSLATION REQUIRED
 # This progress message is issued when aedb completes successfully.
 #
+#, fuzzy
 msgid	"develop begin complete"
 msgstr	"user \"$user\" has begun development"
 
@@ -2292,6 +2525,7 @@ msgstr	"user \"$user\" has begun development"
 # TRANSLATION REQUIRED
 # This progress message is issued when aedbu completes successfully.
 #
+#, fuzzy
 msgid	"develop begin undo complete"
 msgstr	"no longer being developed"
 
@@ -2301,6 +2535,7 @@ msgstr	"no longer being developed"
 # been found.  Because they are often grouped, as many errors as
 # possible are found before aede aborts.
 #
+#, fuzzy
 msgid	"develop end fail"
 msgstr	"found $number error${plural $number s}, this change remains in "
 	"the '$state' state"
@@ -2309,6 +2544,7 @@ msgstr	"found $number error${plural $number s}, this change remains in "
 # TRANSLATION REQUIRED
 # This progress message is issued when aedeu completes successfully.
 #
+#, fuzzy
 msgid	"develop end undo complete"
 msgstr	"development resumed"
 
@@ -2317,6 +2553,7 @@ msgstr	"development resumed"
 # This error message is issued when a developer attempts to integrate her
 # own change, and the project is configured to disallow this.
 #
+#, fuzzy
 msgid	"developer may not integrate"
 msgstr	"the developer of a change may not also integrate it"
 
@@ -2325,6 +2562,7 @@ msgstr	"the developer of a change may not also integrate it"
 # This error message is issued when a developer attempts to review her
 # own change, and the project is configured to disallow this.
 #
+#, fuzzy
 msgid	"developer may not review"
 msgstr	"the developer of a change may not also review it"
 
@@ -2332,20 +2570,23 @@ msgstr	"the developer of a change may not also review it"
 # TRANSLATION REQUIRED
 # This message is issued when development builds are completed.
 #
+#, fuzzy
 msgid	"development build complete"
-msgstr	"development build complete ${date %%H:%%M}"
+msgstr	"development build complete ${date %H:%M}"
 
 #
 # TRANSLATION REQUIRED
 # This message is issued when development builds are commenced.
 #
+#, fuzzy
 msgid	"development build started"
-msgstr	"development build started ${date %%H:%%M}"
+msgstr	"development build started ${date %H:%M}"
 
 #
 # TRANSLATION REQUIRED
 # This progress message is issued when aede completes successfully.
 #
+#, fuzzy
 msgid	"development completed"
 msgstr	"Dezvoltare terminatã"
 
@@ -2358,6 +2599,7 @@ msgstr	"Dezvoltare terminatã"
 # 	$File_Name	The absolute path of the generated development
 # 			directory.
 #
+#, fuzzy
 msgid	"development directory \"$filename\""
 msgstr	"development directory \"$filename\""
 
@@ -2369,6 +2611,7 @@ msgstr	"development directory \"$filename\""
 # 	$Number		The number of errors found.
 # 			(Optional)
 #
+#, fuzzy
 msgid	"diff fail"
 msgstr	"found $number error${plural $number s}, no files were differenced"
 
@@ -2378,6 +2621,7 @@ msgstr	"found $number error${plural $number s}, no files were differenced"
 # differenced.  Can occur in both the 'being developed' and 'being
 # integrated' states.
 #
+#, fuzzy
 msgid	"diff required"
 msgstr	"this change must successfully complete an 'aegis -Diff' before "
 	"it can leave the '$state' state"
@@ -2386,6 +2630,7 @@ msgstr	"this change must successfully complete an 'aegis -Diff' before "
 # TRANSLATION REQUIRED
 # This progress message is issued when the aed command completes successfully.
 #
+#, fuzzy
 msgid	"difference complete"
 msgstr	"difference complete"
 
@@ -2394,6 +2639,7 @@ msgstr	"difference complete"
 # This error message is issued when an option which must be a relative
 # directory is specified as an absolute directory.
 #
+#, fuzzy
 msgid	"dir must be rel"
 msgstr	"directory must be relative (must not start with /)"
 
@@ -2407,6 +2653,7 @@ msgstr	"directory must be relative (must not start with /)"
 # 	$Number		The number of files found in the directory
 # 			(Optional)
 #
+#, fuzzy
 msgid	"directory $filename contains no relevant files"
 msgstr	"directory \"$filename\" contains $number likely ${plural $number "
 	"files file}, however ${plural $number 'none of them are' 'it is "
@@ -2424,6 +2671,7 @@ msgstr	"renunþã la directoarele vechi"
 # TRANSLATION REQUIRED
 # This error message is issued when a division by zero is attempted.
 #
+#, fuzzy
 msgid	"division by zero"
 msgstr	"division by zero"
 
@@ -2433,6 +2681,7 @@ msgstr	"division by zero"
 # options are used with the new modern better improved preferred -version
 # option.
 #
+#, fuzzy
 msgid	"don't mix old and new version options"
 msgstr	"the -MAJor and -MINOr options are incompatible with the -VERSion "
 	"option"
@@ -2444,6 +2693,7 @@ msgstr	"the -MAJor and -MINOr options are incompatible with the -VERSion "
 #
 # 	$Name		The name of the offending option.
 #
+#, fuzzy
 msgid	"duplicate $name option"
 msgstr	"duplicate $name option, you may only give one"
 
@@ -2452,6 +2702,7 @@ msgstr	"duplicate $name option, you may only give one"
 # This error message is issued when an unterminated comment is seen.
 # Comments may not span input files.
 #
+#, fuzzy
 msgid	"end-of-file within comment"
 msgstr	"end-of-file within comment"
 
@@ -2460,6 +2711,7 @@ msgstr	"end-of-file within comment"
 # This error message is issued when an unterminated string is detected.
 # Strings may not span input files.
 #
+#, fuzzy
 msgid	"end-of-file within string"
 msgstr	"end-of-file within string"
 
@@ -2468,6 +2720,7 @@ msgstr	"end-of-file within string"
 # This error message is issued when an unterminated string is detected.
 # Strings may not span multiple input lines.
 #
+#, fuzzy
 msgid	"end-of-line within string"
 msgstr	"end-of-line within string"
 
@@ -2478,6 +2731,7 @@ msgstr	"end-of-line within string"
 #
 # 	$Name		The name of the offending environment variable.
 #
+#, fuzzy
 msgid	"environment variable $name not set"
 msgstr	"environment variable ``$name'' not set"
 
@@ -2496,6 +2750,7 @@ msgstr	"exec \"$filename\": $errno"
 #
 # 	$Number		The number of tests which failed.
 #
+#, fuzzy
 msgid	"failed $number tests"
 msgstr	"failed $number test${plural $number s}"
 
@@ -2504,6 +2759,7 @@ msgstr	"failed $number test${plural $number s}"
 # This error message is issued when a fatal error occurs while Aegis is
 # attempting to recover from an earlier fatal error.
 #
+#, fuzzy
 msgid	"fatal error during fatal error recovery"
 msgstr	"A fatal error occurred while attempting to recover from an "
 	"earlier fatal error.  Some Aegis data may have been corrupted.  "
@@ -2566,6 +2822,7 @@ msgstr	"fcntl(\"$filename\", F_SETLKW, $arg): $errno"
 # 	$Number1	The number of tests available.
 # 	$Number2	The number of tests requested by the user.
 #
+#, fuzzy
 msgid	"few candidate tests"
 msgstr	"warning: there are only $number1 suitable tests, however you "
 	"have asked for $number2 tests to be suggested; all $number1 "
@@ -2578,6 +2835,7 @@ msgstr	"warning: there are only $number1 suitable tests, however you "
 #
 # 	$Name		The name of the offending field.
 #
+#, fuzzy
 msgid	"field \"$name\" redefined"
 msgstr	"field \"$name\" redefined"
 
@@ -2588,6 +2846,7 @@ msgstr	"field \"$name\" redefined"
 #
 # 	$File_Name	The name of the offending file.
 #
+#, fuzzy
 msgid	"file \"$filename\" bombs filters"
 msgstr	"file \"$filename\" is not acceptable to the filename pattern "
 	"filters (see the 'config' file)"
@@ -2599,6 +2858,7 @@ msgstr	"file \"$filename\" is not acceptable to the filename pattern "
 #
 # 	$File_Name	The name of the offending file.
 #
+#, fuzzy
 msgid	"file \"$filename\" does not exist"
 msgstr	"file \"$filename\" does not exist, and yet is a change source "
 	"file"
@@ -2610,6 +2870,7 @@ msgstr	"file \"$filename\" does not exist, and yet is a change source "
 #
 # 	$File_Name	The name of the offending file.
 #
+#, fuzzy
 msgid	"file \"$filename\" is log file"
 msgstr	"file \"$filename\" duplicates log file name"
 
@@ -2622,6 +2883,7 @@ msgstr	"file \"$filename\" duplicates log file name"
 # 	$File_Name	The name of the offending file.
 # 	$Number		The change number of the change which locked the file.
 #
+#, fuzzy
 msgid	"file \"$filename\" locked for change $number"
 msgstr	"file \"$filename\" locked for change $number, try again later"
 
@@ -2634,6 +2896,7 @@ msgstr	"file \"$filename\" locked for change $number, try again later"
 # 	$File_Name	The name of the offending file.
 # 	$PArt		The directory part in question.
 #
+#, fuzzy
 msgid	"file \"$filename\" part \"$part\" bombs filters"
 msgstr	"file \"$filename\" path element \"$part\" is not acceptable to "
 	"the filename pattern filters (see the 'config' file)"
@@ -2646,6 +2909,7 @@ msgstr	"file \"$filename\" path element \"$part\" is not acceptable to "
 # 	$File_Name	The name of the offending file.
 # 	$PArt		The directory part in question.
 #
+#, fuzzy
 msgid	"file \"$filename\" part \"$part\" contains illegal characters"
 msgstr	"file \"$filename\" path element \"$part\" contains illegal "
 	"characters"
@@ -2658,6 +2922,7 @@ msgstr	"file \"$filename\" path element \"$part\" contains illegal "
 # 	$File_Name	The name of the offending file.
 # 	$PArt		The directory part in question.
 #
+#, fuzzy
 msgid	"file \"$filename\" part \"$part\" contains shell special "
 	"characters"
 msgstr	"file \"$filename\" path element \"$part\" contains shell special "
@@ -2671,6 +2936,7 @@ msgstr	"file \"$filename\" path element \"$part\" contains shell special "
 # 	$File_Name	The name of the offending file.
 # 	$PArt		The directory part in question.
 #
+#, fuzzy
 msgid	"file \"$filename\" part \"$part\" is log file"
 msgstr	"file \"$filename\" path element \"$part\" duplicates log file "
 	"name"
@@ -2684,6 +2950,7 @@ msgstr	"file \"$filename\" path element \"$part\" duplicates log file "
 # 	$PArt		The directory part in question.
 # 	$SUGgest	Suggested alternative.
 #
+#, fuzzy
 msgid	"file \"$filename\" part \"$part\" not suitable for DOS"
 msgstr	"file \"$filename\" path element \"$part\" not suitable for DOS, "
 	"suggest \"$suggest\" instead"
@@ -2696,6 +2963,7 @@ msgstr	"file \"$filename\" path element \"$part\" not suitable for DOS, "
 # 	$File_Name	The name of the offending file.
 # 	$PArt		The directory part in question.
 #
+#, fuzzy
 msgid	"file \"$filename\" part \"$part\" not suitable for Windows"
 msgstr	"file \"$filename\" path element \"$part\" not suitable for "
 	"Windows"
@@ -2711,6 +2979,7 @@ msgstr	"file \"$filename\" path element \"$part\" not suitable for "
 # 			(Optional)
 # 	$SUGgest	Suggested abbreviated filename (optional).
 #
+#, fuzzy
 msgid	"file \"$filename\" part \"$part\" too long, suggest \"$suggest\" "
 	"instead"
 msgstr	"file \"$filename\" path element \"$part\" too long (by $number), "
@@ -2726,6 +2995,7 @@ msgstr	"file \"$filename\" path element \"$part\" too long (by $number), "
 # 			(Optional)
 # 	$SUGgest	Suggested abbreviated filename (optional).
 #
+#, fuzzy
 msgid	"file \"$filename\" too long, suggest \"$suggest\" instead"
 msgstr	"file \"$filename\" too long (by $number), suggest \"$suggest\" "
 	"instead"
@@ -2738,6 +3008,7 @@ msgstr	"file \"$filename\" too long (by $number), suggest \"$suggest\" "
 # 	$File_Name	The name of the offending file.
 # 	$File_Name2	The name of the conflicting file.  (Optional)
 #
+#, fuzzy
 msgid	"file $filename directory name conflict"
 msgstr	"file \"$filename\" is illegal, because it would result in a "
 	"directory name conflict with the \"$filename2\" file"
@@ -2749,6 +3020,7 @@ msgstr	"file \"$filename\" is illegal, because it would result in a "
 #
 # 	$File_Name	The name of the offending file.
 #
+#, fuzzy
 msgid	"file $filename dup"
 msgstr	"file \"$filename\" already in change"
 
@@ -2759,6 +3031,7 @@ msgstr	"file \"$filename\" already in change"
 #
 # 	$File_Name	The name of the offending file.
 #
+#, fuzzy
 msgid	"file name \"$filename\" contains illegal characters"
 msgstr	"file name \"$filename\" contains illegal characters"
 
@@ -2769,6 +3042,7 @@ msgstr	"file name \"$filename\" contains illegal characters"
 #
 # 	$File_Name	The name of the offending file.
 #
+#, fuzzy
 msgid	"file name \"$filename\" contains shell special characters"
 msgstr	"file name \"$filename\" contains shell special characters"
 
@@ -2780,6 +3054,7 @@ msgstr	"file name \"$filename\" contains shell special characters"
 # 	$File_Name	The name of the offending file.
 # 	$SUGgest	Suggested alternative file name.
 #
+#, fuzzy
 msgid	"file name \"$filename\" not suitable for DOS"
 msgstr	"file name \"$filename\" not suitable for DOS, suggest \"$suggest"
 	"\" instead"
@@ -2791,6 +3066,7 @@ msgstr	"file name \"$filename\" not suitable for DOS, suggest \"$suggest"
 #
 # 	$File_Name	The name of the offending file.
 #
+#, fuzzy
 msgid	"file name \"$filename\" not suitable for Windows"
 msgstr	"file name \"$filename\" not suitable for Windows "
 
@@ -2799,6 +3075,7 @@ msgstr	"file name \"$filename\" not suitable for Windows "
 # This error message is issued when a file qualifier in a substitution
 # is an unknown name.  See (+++) below.
 #
+#, fuzzy
 msgid	"file qualifier unknown"
 msgstr	"file qualifier unknown"
 
@@ -2809,6 +3086,7 @@ msgstr	"file qualifier unknown"
 #
 # 	$name	The offending type name.
 #
+#, fuzzy
 msgid	"file type $name unknown"
 msgstr	"file type ``$name'' unknown"
 
@@ -2821,6 +3099,7 @@ msgstr	"file type ``$name'' unknown"
 # 	$Number		The number of files modified.
 # 			(Optional)
 #
+#, fuzzy
 msgid	"files modified by history tool"
 msgstr	"The history tool modified $number ${plural $number files file}.  "
 	"The source ${plural $number files file} in the repository now no "
@@ -2833,6 +3112,7 @@ msgstr	"The history tool modified $number ${plural $number files file}.  "
 # This progress message is issued when aeimport starts going through
 # the history information looking for change sets.
 #
+#, fuzzy
 msgid	"find change sets"
 msgstr	"Looking for clusters of changes to files in order to interpolate "
 	"the change sets..."
@@ -2843,6 +3123,7 @@ msgstr	"Looking for clusters of changes to files in order to interpolate "
 #
 # 	$File_Name	The file to be fingerprinted
 #
+#, fuzzy
 msgid	"fingerprint $filename: $errno"
 msgstr	"fingerprint \"$filename\": $errno"
 
@@ -2851,6 +3132,7 @@ msgstr	"fingerprint \"$filename\": $errno"
 # This error message is issued when a break statement is seen outside any
 # enclosing loop or switch statement.
 #
+#, fuzzy
 msgid	"floating ``break'' statement"
 msgstr	"floating ``break'' statement"
 
@@ -2859,6 +3141,7 @@ msgstr	"floating ``break'' statement"
 # This error message is issued when a continue statement is seen outside
 # any enclosing loop or switch statement.
 #
+#, fuzzy
 msgid	"floating ``continue'' statement"
 msgstr	"floating ``continue'' statement"
 
@@ -2867,6 +3150,7 @@ msgstr	"floating ``continue'' statement"
 # This error message is issued when a return statement is used outside
 # any function.
 #
+#, fuzzy
 msgid	"floating ``return'' statement"
 msgstr	"floating ``return'' statement"
 
@@ -2879,6 +3163,7 @@ msgstr	"floating ``return'' statement"
 # 	$Number		How many architectures are outstanding.
 # 			(Optional)  Use to pluralize the message.
 #
+#, fuzzy
 msgid	"for the $name_list architectures"
 msgstr	"for the $name_list architecture${plural $number s}"
 
@@ -2892,6 +3177,7 @@ msgstr	"for the $name_list architecture${plural $number s}"
 # 	$Number		The number of unknown architecture(s).
 # 			(Optional)
 #
+#, fuzzy
 msgid	"found unlisted architectures"
 msgstr	"found $number unlisted architecture${plural $number s}, edit the "
 	"change attributes to remove ${plural $number them it} or edit "
@@ -2919,6 +3205,7 @@ msgstr	"funcþia $name cere exact douã argumente"
 # TRANSLATION REQUIRED
 # This error message is issued when a getcwd fails.
 #
+#, fuzzy
 msgid	"getcwd: $errno"
 msgstr	"get current directory: $errno"
 
@@ -2929,6 +3216,7 @@ msgstr	"get current directory: $errno"
 #
 # 	$Number		The offending group number.
 #
+#, fuzzy
 msgid	"gid $number unknown"
 msgstr	"gid $number unknown"
 
@@ -2936,6 +3224,7 @@ msgstr	"gid $number unknown"
 # TRANSLATION REQUIRED
 # This fatal error message is issued when a lock is not available.
 #
+#, fuzzy
 msgid	"global state lock not available"
 msgstr	"global state lock not available"
 
@@ -2946,6 +3235,7 @@ msgstr	"global state lock not available"
 #
 # 	$Name		The offending group name.
 #
+#, fuzzy
 msgid	"group \"$name\" unknown"
 msgstr	"group \"$name\" unknown"
 
@@ -2957,6 +3247,7 @@ msgstr	"group \"$name\" unknown"
 #
 # 	$Name		The offending group name.
 #
+#, fuzzy
 msgid	"group $name too privileged"
 msgstr	"group \"$name\" is too privileged"
 
@@ -2969,6 +3260,7 @@ msgstr	"group \"$name\" is too privileged"
 # 	$ERRNO		Overridden to contain the error string from zlib
 # 			(but sometimes not, because the real errno has it)
 #
+#, fuzzy
 msgid	"gunzip $filename: $errno"
 msgstr	"while decompressing input from the \"$filename\" file: $errno"
 
@@ -2981,6 +3273,7 @@ msgstr	"while decompressing input from the \"$filename\" file: $errno"
 # 	$ERRNO		Overridden to contain the error string from zlib
 # 			(but sometimes not, because the real errno has it)
 #
+#, fuzzy
 msgid	"gzip $filename: $errno"
 msgstr	"while compressing output for the \"$filename\" file: $errno"
 
@@ -2990,6 +3283,7 @@ msgstr	"while compressing output for the \"$filename\" file: $errno"
 # there are no files which are candidates of the options specified, or
 # the project may have no tests at all.
 #
+#, fuzzy
 msgid	"has no tests"
 msgstr	"this change requires tests before this command may be used"
 
@@ -3000,6 +3294,7 @@ msgstr	"this change requires tests before this command may be used"
 #
 # 	$name		The offending format name.
 #
+#, fuzzy
 msgid	"history format \"$name\" unknown"
 msgstr	"history format \"$name\" unknown"
 
@@ -3007,6 +3302,7 @@ msgstr	"history format \"$name\" unknown"
 # TRANSLATION REQUIRED
 # This fatal error message is issued when a lock is not available.
 #
+#, fuzzy
 msgid	"history lock not available"
 msgstr	"history lock not available"
 
@@ -3016,6 +3312,7 @@ msgstr	"history lock not available"
 # empty string.  It is meant to return a unique string to identify the
 # top-most version number in the history file.
 #
+#, fuzzy
 msgid	"history_query_command return empty"
 msgstr	"the history_query_command returned the empty string, this is not "
 	"a useful response"
@@ -3027,6 +3324,7 @@ msgstr	"the history_query_command returned the empty string, this is not "
 #
 # 	$Name		The offending character, as a C octal escape sequence.
 #
+#, fuzzy
 msgid	"illegal '$name' character"
 msgstr	"illegal '$name' character"
 
@@ -3037,6 +3335,7 @@ msgstr	"illegal '$name' character"
 # 	$Name1		The type name of the left operand.
 # 	$Name2		The type name of the right operand.
 #
+#, fuzzy
 msgid	"illegal addition ($name1 + $name2)"
 msgstr	"illegal addition ($name1 + $name2)"
 
@@ -3046,6 +3345,7 @@ msgstr	"illegal addition ($name1 + $name2)"
 #
 # 	$Name		The type name of the offending operand.
 #
+#, fuzzy
 msgid	"illegal bit not ($name)"
 msgstr	"integer value required for bit-wise ``not'' (was given $name)"
 
@@ -3056,6 +3356,7 @@ msgstr	"integer value required for bit-wise ``not'' (was given $name)"
 # 	$Name1		The type name of the left operand.
 # 	$Name2		The type name of the right operand.
 #
+#, fuzzy
 msgid	"illegal comparison ($name1 != $name2)"
 msgstr	"illegal comparison ($name1 != $name2)"
 
@@ -3066,6 +3367,7 @@ msgstr	"illegal comparison ($name1 != $name2)"
 # 	$Name1		The type name of the left operand.
 # 	$Name2		The type name of the right operand.
 #
+#, fuzzy
 msgid	"illegal comparison ($name1 !~ $name2)"
 msgstr	"illegal comparison ($name1 !~ $name2)"
 
@@ -3076,6 +3378,7 @@ msgstr	"illegal comparison ($name1 !~ $name2)"
 # 	$Name1		The type name of the left operand.
 # 	$Name2		The type name of the right operand.
 #
+#, fuzzy
 msgid	"illegal comparison ($name1 < $name2)"
 msgstr	"illegal comparison ($name1 < $name2)"
 
@@ -3086,6 +3389,7 @@ msgstr	"illegal comparison ($name1 < $name2)"
 # 	$Name1		The type name of the left operand.
 # 	$Name2		The type name of the right operand.
 #
+#, fuzzy
 msgid	"illegal comparison ($name1 <= $name2)"
 msgstr	"illegal comparison ($name1 <= $name2)"
 
@@ -3096,6 +3400,7 @@ msgstr	"illegal comparison ($name1 <= $name2)"
 # 	$Name1		The type name of the left operand.
 # 	$Name2		The type name of the right operand.
 #
+#, fuzzy
 msgid	"illegal comparison ($name1 == $name2)"
 msgstr	"illegal comparison ($name1 == $name2)"
 
@@ -3106,6 +3411,7 @@ msgstr	"illegal comparison ($name1 == $name2)"
 # 	$Name1		The type name of the left operand.
 # 	$Name2		The type name of the right operand.
 #
+#, fuzzy
 msgid	"illegal comparison ($name1 > $name2)"
 msgstr	"illegal comparison ($name1 > $name2)"
 
@@ -3116,6 +3422,7 @@ msgstr	"illegal comparison ($name1 > $name2)"
 # 	$Name1		The type name of the left operand.
 # 	$Name2		The type name of the right operand.
 #
+#, fuzzy
 msgid	"illegal comparison ($name1 >= $name2)"
 msgstr	"illegal comparison ($name1 >= $name2)"
 
@@ -3126,6 +3433,7 @@ msgstr	"illegal comparison ($name1 >= $name2)"
 # 	$Name1		The type name of the left operand.
 # 	$Name2		The type name of the right operand.
 #
+#, fuzzy
 msgid	"illegal comparison ($name1 ~~ $name2)"
 msgstr	"illegal comparison ($name1 ~~ $name2)"
 
@@ -3136,6 +3444,7 @@ msgstr	"illegal comparison ($name1 ~~ $name2)"
 #
 # 	$Name		The type name of the offending operand.
 #
+#, fuzzy
 msgid	"illegal count request ($name)"
 msgstr	"illegal count request ($name)"
 
@@ -3146,6 +3455,7 @@ msgstr	"illegal count request ($name)"
 # 	$Name1		The type name of the left operand.
 # 	$Name2		The type name of the right operand.
 #
+#, fuzzy
 msgid	"illegal division ($name1 / $name2)"
 msgstr	"illegal division ($name1 / $name2)"
 
@@ -3156,6 +3466,7 @@ msgstr	"illegal division ($name1 / $name2)"
 # 	$Name1		The type name of the left operand.
 # 	$Name2		The type name of the right operand.
 #
+#, fuzzy
 msgid	"illegal join ($name1 ## $name2)"
 msgstr	"illegal join ($name1 ## $name2)"
 
@@ -3167,6 +3478,7 @@ msgstr	"illegal join ($name1 ## $name2)"
 #
 # 	$Name		The type name of the offending operand.
 #
+#, fuzzy
 msgid	"illegal keys request ($name)"
 msgstr	"illegal keys request ($name)"
 
@@ -3174,6 +3486,7 @@ msgstr	"illegal keys request ($name)"
 # TRANSLATION REQUIRED
 # This message is issued when an inappropriate assignment is attempted.
 #
+#, fuzzy
 msgid	"illegal left hand side of assignment"
 msgstr	"illegal left hand side of assignment, it must be an assignable "
 	"variable"
@@ -3184,6 +3497,7 @@ msgstr	"illegal left hand side of assignment, it must be an assignable "
 #
 # 	$Name		The type name of the left hand side.
 #
+#, fuzzy
 msgid	"illegal left hand side of assignment (was given $name)"
 msgstr	"illegal left hand side of assignment (was given $name), it must "
 	"be an assignable variable"
@@ -3194,6 +3508,7 @@ msgstr	"illegal left hand side of assignment (was given $name), it must "
 #
 # 	$Name		The type name of the offending operand.
 #
+#, fuzzy
 msgid	"illegal logical not ($name)"
 msgstr	"boolean value required for logical ``not'' (was given $name)"
 
@@ -3206,6 +3521,7 @@ msgstr	"boolean value required for logical ``not'' (was given $name)"
 # 	$Name1		The type name of the first operand.
 # 	$Name2		The type name of the second operand.
 #
+#, fuzzy
 msgid	"illegal lookup ($name1[$name2])"
 msgstr	"illegal lookup ($name1[$name2])"
 
@@ -3217,6 +3533,7 @@ msgstr	"illegal lookup ($name1[$name2])"
 # 	$name1	The name of the type of argument 1
 # 	$name2	The name of the type of argument 2
 #
+#, fuzzy
 msgid	"illegal match ($name1 ~ $name2)"
 msgstr	"illegal match ($name1 ~ $name2)"
 
@@ -3227,9 +3544,9 @@ msgstr	"illegal match ($name1 ~ $name2)"
 # 	$Name1		The type name of the left operand.
 # 	$Name2		The type name of the right operand.
 #
-#, no-c-format
-msgid	"illegal modulo ($name1 %% $name2)"
-msgstr	"illegal modulo ($name1 %% $name2)"
+#, fuzzy, no-c-format
+msgid	"illegal modulo ($name1 % $name2)"
+msgstr	"illegal modulo ($name1 % $name2)"
 
 #
 # TRANSLATION REQUIRED
@@ -3238,6 +3555,7 @@ msgstr	"illegal modulo ($name1 %% $name2)"
 # 	$Name1		The type name of the left operand.
 # 	$Name2		The type name of the right operand.
 #
+#, fuzzy
 msgid	"illegal multiplication ($name1 * $name2)"
 msgstr	"illegal multiplication ($name1 * $name2)"
 
@@ -3247,6 +3565,7 @@ msgstr	"illegal multiplication ($name1 * $name2)"
 #
 # 	$Name		The type name of the offending operand.
 #
+#, fuzzy
 msgid	"illegal negative ($name)"
 msgstr	"integer value required for negative (was given $name)"
 
@@ -3256,6 +3575,7 @@ msgstr	"integer value required for negative (was given $name)"
 #
 # 	$Name		The type name of the offending operand.
 #
+#, fuzzy
 msgid	"illegal positive ($name)"
 msgstr	"integer value required for positive (was given $name)"
 
@@ -3266,6 +3586,7 @@ msgstr	"integer value required for positive (was given $name)"
 # 	$Name1		The type name of the left operand.
 # 	$Name2		The type name of the right operand.
 #
+#, fuzzy
 msgid	"illegal power ($name1 ** $name2)"
 msgstr	"illegal power ($name1 ** $name2)"
 
@@ -3276,6 +3597,7 @@ msgstr	"illegal power ($name1 ** $name2)"
 # 	$Name1		The type name of the left operand.
 # 	$Name2		The type name of the right operand.
 #
+#, fuzzy
 msgid	"illegal shift ($name1 << $name2)"
 msgstr	"illegal right shift ($name1 << $name2)"
 
@@ -3286,6 +3608,7 @@ msgstr	"illegal right shift ($name1 << $name2)"
 # 	$Name1		The type name of the left operand.
 # 	$Name2		The type name of the right operand.
 #
+#, fuzzy
 msgid	"illegal shift ($name1 >> $name2)"
 msgstr	"illegal left shift ($name1 >> $name2)"
 
@@ -3296,6 +3619,7 @@ msgstr	"illegal left shift ($name1 >> $name2)"
 # 	$Name1		The type name of the left operand.
 # 	$Name2		The type name of the right operand.
 #
+#, fuzzy
 msgid	"illegal subtraction ($name1 - $name2)"
 msgstr	"illegal subtraction ($name1 - $name2)"
 
@@ -3303,6 +3627,7 @@ msgstr	"illegal subtraction ($name1 - $name2)"
 # TRANSLATION REQUIRED
 # This progress message is issued when aeimport completed successfully.
 #
+#, fuzzy
 msgid	"import complete"
 msgstr	"import completed successfully"
 
@@ -3313,6 +3638,7 @@ msgstr	"import completed successfully"
 #
 # 	$Name		The name of the offending command line option.
 #
+#, fuzzy
 msgid	"inappropriate $name option"
 msgstr	"inappropriate use of the $name command line option"
 
@@ -3324,6 +3650,7 @@ msgstr	"inappropriate use of the $name command line option"
 # 	$Name		The offending info name.
 # 	$Name_List	The list of possible alternatives.
 #
+#, fuzzy
 msgid	"info $name ambig ($name_list)"
 msgstr	"version information name \"$name\" ambiguous ($name_list)"
 
@@ -3334,6 +3661,7 @@ msgstr	"version information name \"$name\" ambiguous ($name_list)"
 # You must not name files, and thus you must difference all files in the
 # change.
 #
+#, fuzzy
 msgid	"int must diff all"
 msgstr	"when differencing a change in the 'being integrated' state you "
 	"may not name files on the command line"
@@ -3344,6 +3672,7 @@ msgstr	"when differencing a change in the 'being integrated' state you "
 # the being 'integrated state' and files are named on the command line.
 # You must not name files, and thus you must run all tests in the change.
 #
+#, fuzzy
 msgid	"int must test all"
 msgstr	"when testing a change in the 'being integrated' state you may "
 	"not name files on the command line"
@@ -3355,6 +3684,7 @@ msgstr	"when testing a change in the 'being integrated' state you may "
 #
 # 	$Name		The type name of the offending argument.
 #
+#, fuzzy
 msgid	"integer index required (was given $name)"
 msgstr	"integer index required (was given $name)"
 
@@ -3364,6 +3694,7 @@ msgstr	"integer index required (was given $name)"
 #
 # 	$Name		The type name of the offending operand.
 #
+#, fuzzy
 msgid	"integer value required for bit and (was given $name)"
 msgstr	"integer value required for bit-wise ``and'' (was given $name)"
 
@@ -3373,6 +3704,7 @@ msgstr	"integer value required for bit-wise ``and'' (was given $name)"
 #
 # 	$Name		The type name of the offending operand.
 #
+#, fuzzy
 msgid	"integer value required for bit or (was given $name)"
 msgstr	"integer value required for bit-wise ``or'' (was given $name)"
 
@@ -3382,6 +3714,7 @@ msgstr	"integer value required for bit-wise ``or'' (was given $name)"
 #
 # 	$Name		The type name of the offending operand.
 #
+#, fuzzy
 msgid	"integer value required for bit xor (was given $name)"
 msgstr	"integer value required for bit-wise ``exclusive or'' (was given "
 	"$name)"
@@ -3390,6 +3723,7 @@ msgstr	"integer value required for bit-wise ``exclusive or'' (was given "
 # TRANSLATION REQUIRED
 # This progress message is issued when aeib complete successfully.
 #
+#, fuzzy
 msgid	"integrate begin complete"
 msgstr	"integration has begun"
 
@@ -3398,6 +3732,7 @@ msgstr	"integration has begun"
 # This verbose message is issued when integrate begin undo completes
 # successfully.
 #
+#, fuzzy
 msgid	"integrate begin undo complete"
 msgstr	"integrate begin undo complete, change returned to the '$state' "
 	"state"
@@ -3406,6 +3741,7 @@ msgstr	"integrate begin undo complete, change returned to the '$state' "
 # TRANSLATION REQUIRED
 # This progress message is issued when aeifail completes successfully.
 #
+#, fuzzy
 msgid	"integrate fail complete"
 msgstr	"failed integration, returned to developer"
 
@@ -3413,6 +3749,7 @@ msgstr	"failed integration, returned to developer"
 # TRANSLATION REQUIRED
 # This progress message is issued when aeipass completes successfully.
 #
+#, fuzzy
 msgid	"integrate pass complete"
 msgstr	"integrate pass"
 
@@ -3423,6 +3760,7 @@ msgstr	"integrate pass"
 #
 # 	$Number		Number of fatal errors found.
 #
+#, fuzzy
 msgid	"integrate pass fail"
 msgstr	"found $number error${plural $number s}, this change remains in "
 	"the '$state' state"
@@ -3431,15 +3769,17 @@ msgstr	"found $number error${plural $number s}, this change remains in "
 # TRANSLATION REQUIRED
 # This message is issued when integration builds are completed.
 #
+#, fuzzy
 msgid	"integration build complete"
-msgstr	"integration build complete ${date %%H:%%M}"
+msgstr	"integration build complete ${date %H:%M}"
 
 #
 # TRANSLATION REQUIRED
 # This message is issued when integration builds are commenced.
 #
+#, fuzzy
 msgid	"integration build started"
-msgstr	"integration build started ${date %%H:%%M}"
+msgstr	"integration build started ${date %H:%M}"
 
 #
 # TRANSLATION REQUIRED
@@ -3449,6 +3789,7 @@ msgstr	"integration build started ${date %%H:%%M}"
 #
 # 	$Signal		The name of the signal which interrupted us.
 #
+#, fuzzy
 msgid	"interrupted by $signal"
 msgstr	"interrupted by $signal"
 
@@ -3464,6 +3805,7 @@ msgstr	"argumente invalide pentru funcþie"
 #
 # 	$Name		The type name of the non-function expression.
 #
+#, fuzzy
 msgid	"invalid function name ($name)"
 msgstr	"an expression of type $name was given where a function name was "
 	"expected"
@@ -3475,6 +3817,7 @@ msgstr	"an expression of type $name was given where a function name was "
 # Some UNIX will allow to delete an active directory, and some will
 # not, so it is an error.
 #
+#, fuzzy
 msgid	"leave baseline"
 msgstr	"please leave the baseline directory"
 
@@ -3485,6 +3828,7 @@ msgstr	"please leave the baseline directory"
 # Some UNIX will allow to delete an active directory, and some will
 # not, so it is an error.
 #
+#, fuzzy
 msgid	"leave dev dir"
 msgstr	"please leave the development directory"
 
@@ -3495,6 +3839,7 @@ msgstr	"please leave the development directory"
 # Some UNIX will allow to delete an active directory, and some will
 # not, so it is an error.
 #
+#, fuzzy
 msgid	"leave int dir"
 msgstr	"please leave the integration directory"
 
@@ -3503,6 +3848,7 @@ msgstr	"please leave the integration directory"
 # This progress message is issued when aeib creates a virtual copy of
 # the baseline to construct the integration directory.
 #
+#, fuzzy
 msgid	"link baseline to integration directory"
 msgstr	"linking baseline to integration directory"
 
@@ -3522,6 +3868,7 @@ msgstr	"link(\"$filename1\", \"$filename2\"): $errno"
 # 	$Name		The offending list name.
 # 	$Name_List	A list of possible interpretations.  (Optional)
 #
+#, fuzzy
 msgid	"list $name ambiguous"
 msgstr	"list name \"$name\" is ambiguous ($name_list)"
 
@@ -3531,6 +3878,7 @@ msgstr	"list name \"$name\" is ambiguous ($name_list)"
 #
 # 	$Name		The type name of the offending operand.
 #
+#, fuzzy
 msgid	"list value required (was given $name)"
 msgstr	"list value required (was given $name)"
 
@@ -3538,6 +3886,7 @@ msgstr	"list value required (was given $name)"
 # TRANSLATION REQUIRED
 # This fatal error message is issued when a lock is not available.
 #
+#, fuzzy
 msgid	"lock not available"
 msgstr	"lock not available"
 
@@ -3548,6 +3897,7 @@ msgstr	"lock not available"
 #
 # 	$File_Name	The name of the log file.
 #
+#, fuzzy
 msgid	"logging to $filename"
 msgstr	"logging to \"$filename\""
 
@@ -3558,6 +3908,7 @@ msgstr	"logging to \"$filename\""
 #
 # 	$Name		The type name of the offending expression.
 #
+#, fuzzy
 msgid	"loop condition must be boolean (not $name)"
 msgstr	"loop condition must be boolean (was given $name)"
 
@@ -3577,6 +3928,7 @@ msgstr	"$filename: $errno"
 #
 # $filename	The name of the offending file.
 #
+#, fuzzy
 msgid	"make $filename transparent, fail, too deep"
 msgstr	"it is not possible to make $filename transparent because it is "
 	"not present in the branch, but is present in a deeper ancestor "
@@ -3590,6 +3942,7 @@ msgstr	"it is not possible to make $filename transparent because it is "
 #
 # $filename	The name of the offending file.
 #
+#, fuzzy
 msgid	"make $filename transparent, fail, too shallow"
 msgstr	"it is not possible to make $filename transparent because it is "
 	"not also present in a deeper ancestor branch"
@@ -3601,6 +3954,7 @@ msgstr	"it is not possible to make $filename transparent because it is "
 #
 # $filename	The name of the offending file.
 #
+#, fuzzy
 msgid	"make $filename transparent, fail, trunk"
 msgstr	"it is not possible to make $filename transparent because it is "
 	"in the trunk, you probably want to use the aerm command instead"
@@ -3610,6 +3964,7 @@ msgstr	"it is not possible to make $filename transparent because it is "
 # This error message is issued when aemt is invoked for a change which
 # is not in the 'being developed' state.
 #
+#, fuzzy
 msgid	"make transparent bad state"
 msgstr	"this change is in the '$state' state, it must be in the 'being "
 	"developed' state to make a file transparent with it"
@@ -3621,6 +3976,7 @@ msgstr	"this change is in the '$state' state, it must be in the 'being "
 #
 # $number	The number of files (optional).
 #
+#, fuzzy
 msgid	"make transparent complete"
 msgstr	"making $number ${plural $number files file} transparent"
 
@@ -3633,6 +3989,7 @@ msgstr	"making $number ${plural $number files file} transparent"
 #
 # 	$File_Name	Name of the file removed from the change.
 #
+#, fuzzy
 msgid	"make transparent undo $filename complete"
 msgstr	"file \"$filename\" no longer being made transparent"
 
@@ -3642,6 +3999,7 @@ msgstr	"file \"$filename\" no longer being made transparent"
 # development directory read only.  This remindes the developer not to
 # change anything.
 #
+#, fuzzy
 msgid	"making dev dir read only"
 msgstr	"making the development directory read-only"
 
@@ -3650,6 +4008,7 @@ msgstr	"making the development directory read-only"
 # This informational message is issued when the aedeu, aerfail or aeifail
 # command make the development directory writable again.
 #
+#, fuzzy
 msgid	"making dev dir writable"
 msgstr	"making the development directory writable again"
 
@@ -3658,6 +4017,7 @@ msgstr	"making the development directory writable again"
 # This error message is issued when a number which looks like a floating
 # point constant has an incomplete exponent.
 #
+#, fuzzy
 msgid	"malformed exponent"
 msgstr	"malformed exponent"
 
@@ -3666,6 +4026,7 @@ msgstr	"malformed exponent"
 # This error message is issued when a number which looks like a hex
 # constant is not complete.
 #
+#, fuzzy
 msgid	"malformed hex constant"
 msgstr	"malformed hex constant"
 
@@ -3677,21 +4038,9 @@ msgstr	"malformed hex constant"
 # 	$Name1		The type name of the first operand.
 # 	$Name2		The type name of the second operand.
 #
+#, fuzzy
 msgid	"may not assign to a list member ($name1[$name2])"
 msgstr	"may not assign to a list member ($name1[$name2])"
-
-#
-# TRANSLATION REQUIRED
-# This error message is issued when the used attempts to create the
-# project ``config'' file with the -Build option.  The file must be
-# available to Aegis at all times, and thus must be an ordinary source
-# file.
-#
-# 	$File_Name	The name of the offending file.
-#
-msgid	"may not build $filename"
-msgstr	"the \"$filename\" file must be an ordinary source file, it may "
-	"not be constructed at build time"
 
 #
 # TRANSLATION REQUIRED
@@ -3701,6 +4050,7 @@ msgstr	"the \"$filename\" file must be an ordinary source file, it may "
 #
 # 	$File_Name	The name of the offending file.
 #
+#, fuzzy
 msgid	"may not remove $filename"
 msgstr	"file \"$filename\" may not be removed"
 
@@ -3712,6 +4062,7 @@ msgstr	"file \"$filename\" may not be removed"
 #
 # 	$File_Name	The name of the offending file.
 #
+#, fuzzy
 msgid	"may not test $filename"
 msgstr	"file \"$filename\" may not be a test"
 
@@ -3721,6 +4072,7 @@ msgstr	"file \"$filename\" may not be a test"
 #
 # 	$Name		The name of the -Edit option.
 #
+#, fuzzy
 msgid	"may not use $name in the background"
 msgstr	"may not use $name in the background"
 
@@ -3731,6 +4083,7 @@ msgstr	"may not use $name in the background"
 # 	$Number		The number of files merged.
 # 			(Optional)
 #
+#, fuzzy
 msgid	"merge complete"
 msgstr	"merged $number file${plural $number s}, new 'aegis -Build' "
 	"required"
@@ -3742,6 +4095,7 @@ msgstr	"merged $number file${plural $number s}, new 'aegis -Build' "
 #
 # 	$Name		The offending command line argument.
 #
+#, fuzzy
 msgid	"misplaced \"$name\" option"
 msgstr	"misplaced \"$name\" option on the command line"
 
@@ -3752,6 +4106,7 @@ msgstr	"misplaced \"$name\" option on the command line"
 #
 # 	$File_Name	The offending command line argument.
 #
+#, fuzzy
 msgid	"misplaced file name (\"$filename\")"
 msgstr	"misplaced file name (\"$filename\") on command line"
 
@@ -3762,6 +4117,7 @@ msgstr	"misplaced file name (\"$filename\") on command line"
 #
 # 	$Number		The offending command line argument.
 #
+#, fuzzy
 msgid	"misplaced number ($number)"
 msgstr	"misplaced number ($number) on the command line"
 
@@ -3778,6 +4134,7 @@ msgstr	"mkdir(\"$filename\", $arg): $errno"
 # TRANSLATION REQUIRED
 # This message is issued when an inappropriate -- is attempted.
 #
+#, fuzzy
 msgid	"modifiable lvalue required for decrement"
 msgstr	"modifiable lvalue required for decrement"
 
@@ -3787,6 +4144,7 @@ msgstr	"modifiable lvalue required for decrement"
 #
 # 	$Name		The type name of the offending operand.
 #
+#, fuzzy
 msgid	"modifiable lvalue required for decrement (was given $name)"
 msgstr	"modifiable lvalue required for decrement (was given $name), it "
 	"must be an assignable variable"
@@ -3795,6 +4153,7 @@ msgstr	"modifiable lvalue required for decrement (was given $name), it "
 # TRANSLATION REQUIRED
 # This message is issued when an inappropriate ++ is attempted.
 #
+#, fuzzy
 msgid	"modifiable lvalue required for increment"
 msgstr	"modifiable lvalue required for increment"
 
@@ -3804,6 +4163,7 @@ msgstr	"modifiable lvalue required for increment"
 #
 # 	$Name		The type name of the offending operand.
 #
+#, fuzzy
 msgid	"modifiable lvalue required for increment (was given $name)"
 msgstr	"modifiable lvalue required for increment (was given $name), it "
 	"must be an assignable variable"
@@ -3812,6 +4172,7 @@ msgstr	"modifiable lvalue required for increment (was given $name), it "
 # TRANSLATION REQUIRED
 # This error message is issued when a modulo by zero is attempted.
 #
+#, fuzzy
 msgid	"modulo by zero"
 msgstr	"modulo by zero"
 
@@ -3822,6 +4183,7 @@ msgstr	"modulo by zero"
 # 	$File_Name1	The name of the original file.
 # 	$File_Name2	The name of the destination file.
 #
+#, fuzzy
 msgid	"move $filename1 to $filename2 complete"
 msgstr	"file \"$filename1\" moved to \"$filename2\""
 
@@ -3834,6 +4196,7 @@ msgstr	"file \"$filename1\" moved to \"$filename2\""
 #
 # 	$File_Name	Name of the file removed from the change.
 #
+#, fuzzy
 msgid	"move file undo $filename complete"
 msgstr	"file \"$filename\" no longer being moved"
 
@@ -3845,6 +4208,7 @@ msgstr	"file \"$filename\" no longer being moved"
 # (A leading newline is a good idea.  Internal newlines are also a good
 # idea, because io_comment_append does not automatically wrap.)
 #
+#, fuzzy
 msgid	"nc dflt hint"
 msgstr	" \n"
 	"Hint: deleting everything below the \"cause\" field will set\n"
@@ -3856,6 +4220,7 @@ msgstr	" \n"
 #
 # 	$Name		The user name of the new administrator.
 #
+#, fuzzy
 msgid	"new administrator $name complete"
 msgstr	"user \"$name\" is now an administrator"
 
@@ -3863,6 +4228,7 @@ msgstr	"user \"$name\" is now an administrator"
 # TRANSLATION REQUIRED
 # This progress message is issued when aenrls completes successfully.
 #
+#, fuzzy
 msgid	"new alias $name complete"
 msgstr	"new alias \"$name\" created"
 
@@ -3870,6 +4236,7 @@ msgstr	"new alias \"$name\" created"
 # TRANSLATION REQUIRED
 # This progress message is issued when aenbr completes successfully.
 #
+#, fuzzy
 msgid	"new branch complete"
 msgstr	"created"
 
@@ -3877,6 +4244,7 @@ msgstr	"created"
 # TRANSLATION REQUIRED
 # This progress message is issued when aenbru completes successfully.
 #
+#, fuzzy
 msgid	"new branch undo complete"
 msgstr	"removed"
 
@@ -3884,6 +4252,7 @@ msgstr	"removed"
 # TRANSLATION REQUIRED
 # This progress message is issued when aenc completes successfully.
 #
+#, fuzzy
 msgid	"new change complete"
 msgstr	"created"
 
@@ -3891,6 +4260,7 @@ msgstr	"created"
 # TRANSLATION REQUIRED
 # This progress message is issued when aencu completes successfully.
 #
+#, fuzzy
 msgid	"new change undo complete"
 msgstr	"removed"
 
@@ -3900,6 +4270,7 @@ msgstr	"removed"
 #
 # 	$Name		The user name of the new developer.
 #
+#, fuzzy
 msgid	"new developer $name complete"
 msgstr	"user \"$name\" is now a developer"
 
@@ -3907,6 +4278,7 @@ msgstr	"user \"$name\" is now a developer"
 # TRANSLATION REQUIRED
 # This progress message is issued when aenf completes successfully
 #
+#, fuzzy
 msgid	"new file $filename completed"
 msgstr	"file \"$filename\" added"
 
@@ -3918,6 +4290,7 @@ msgstr	"file \"$filename\" added"
 #
 # 	$File_Name	The name of the offending file.
 #
+#, fuzzy
 msgid	"new file $filename not created"
 msgstr	"the file \"$filename\" was not created"
 
@@ -3927,6 +4300,7 @@ msgstr	"the file \"$filename\" was not created"
 #
 # 	$File_Name	The name of a removed file.
 #
+#, fuzzy
 msgid	"new file undo $filename complete"
 msgstr	"new file \"$filename\" removed"
 
@@ -3940,6 +4314,7 @@ msgstr	"new file \"$filename\" removed"
 # 	$Number		Number of fatal errors found.
 # 			(Optional)
 #
+#, fuzzy
 msgid	"new file undo fail"
 msgstr	"found $number fatal error${plural $number s}, no files were "
 	"removed from the change"
@@ -3950,6 +4325,7 @@ msgstr	"found $number fatal error${plural $number s}, no files were "
 #
 # 	$Name		The user name of the new integrator.
 #
+#, fuzzy
 msgid	"new integrator $name complete"
 msgstr	"user \"$name\" is now an integrator"
 
@@ -3957,6 +4333,7 @@ msgstr	"user \"$name\" is now an integrator"
 # TRANSLATION REQUIRED
 # This progress message is issued when aenpr completes successfully.
 #
+#, fuzzy
 msgid	"new project complete"
 msgstr	"created"
 
@@ -3964,6 +4341,7 @@ msgstr	"created"
 # TRANSLATION REQUIRED
 # This progress message is issued when aenrls completes successfully.
 #
+#, fuzzy
 msgid	"new release complete"
 msgstr	"created"
 
@@ -3973,6 +4351,7 @@ msgstr	"created"
 #
 # 	$Name		The user name of the new reviewer.
 #
+#, fuzzy
 msgid	"new reviewer $name complete"
 msgstr	"user \"$name\" is now a reviewer"
 
@@ -3980,6 +4359,7 @@ msgstr	"user \"$name\" is now a reviewer"
 # TRANSLATION REQUIRED
 # This progress message is issued when aent completes successfully.
 #
+#, fuzzy
 msgid	"new test $filename complete"
 msgstr	"file \"$filename\" new test"
 
@@ -3993,6 +4373,7 @@ msgstr	"file \"$filename\" new test"
 # 	$Number		Number of fatal errors found.
 # 			(Optional)
 #
+#, fuzzy
 msgid	"new test failed"
 msgstr	"found $number fatal error${plural $number s}, no new tests were "
 	"added to the change"
@@ -4003,6 +4384,7 @@ msgstr	"found $number fatal error${plural $number s}, no new tests were "
 #
 # 	$File_Name	The name of the test removed.
 #
+#, fuzzy
 msgid	"new test undo $filename complete"
 msgstr	"file \"$filename\" new test undo"
 
@@ -4016,6 +4398,7 @@ msgstr	"file \"$filename\" new test undo"
 # 	$Number		Number of fatal errors found.
 # 			(Optional)
 #
+#, fuzzy
 msgid	"new test undo fail"
 msgstr	"found $number fatal error${plural $number s}, no tests were "
 	"removed from the change"
@@ -4028,6 +4411,7 @@ msgstr	"found $number fatal error${plural $number s}, no tests were "
 #
 # 	$File_Name	The name of the offending file.
 #
+#, fuzzy
 msgid	"nil move $filename"
 msgstr	"you may not move the \"$filename\" file on top of itself"
 
@@ -4039,6 +4423,7 @@ msgstr	"you may not move the \"$filename\" file on top of itself"
 # 	$Name		The undefined variable name.
 # 	$Guess		The closest match found for the name.
 #
+#, fuzzy
 msgid	"no \"$name\", guessing \"$guess\""
 msgstr	"the name \"$name\" is undefined, guessing you meant \"$guess\" "
 	"instead"
@@ -4061,6 +4446,7 @@ msgstr	"fiºierul \"$filename\" nu existã"
 #
 # 	$File_Name	The name of the offending file.
 #
+#, fuzzy
 msgid	"no $filename in baseline"
 msgstr	"file \"$filename\" no longer in baseline"
 
@@ -4074,6 +4460,7 @@ msgstr	"file \"$filename\" no longer in baseline"
 # 	$Guess		The best guess as to the most possible filename
 # 			the user may have meant.
 #
+#, fuzzy
 msgid	"no $filename, closest is $guess"
 msgstr	"file \"$filename\" is unknown, closest is the \"$guess\" file"
 
@@ -4084,6 +4471,7 @@ msgstr	"file \"$filename\" is unknown, closest is the \"$guess\" file"
 #
 # 	$Name		The offending list name.
 #
+#, fuzzy
 msgid	"no $name list"
 msgstr	"list name \"$name\" unknown"
 
@@ -4094,6 +4482,7 @@ msgstr	"list name \"$name\" unknown"
 #
 # 	$Name		The offending project name.
 #
+#, fuzzy
 msgid	"no $name project"
 msgstr	"project \"$name\" unknown"
 
@@ -4105,6 +4494,7 @@ msgstr	"project \"$name\" unknown"
 # 	$Name		The offending project name.
 # 	$Guess		The closest matching project name.
 #
+#, fuzzy
 msgid	"no $name project, closest is $guess"
 msgstr	"project \"$name\" unknown, closest is the \"$guess\" project"
 
@@ -4113,6 +4503,7 @@ msgstr	"project \"$name\" unknown, closest is the \"$guess\" project"
 # This fatal error message is issued when an attempt is made to aechown
 # a branch.
 #
+#, fuzzy
 msgid	"no branch chown"
 msgstr	"this change is a branch; it is not possible to change the "
 	"ownership of a branch"
@@ -4129,6 +4520,7 @@ msgstr	"trebuie sa daþi numãrul explicit pentru aceastã comandã"
 # This fatal error message is issued when a user attempts to perform a
 # cross branch merge on a change in the ``being integrated'' state.
 #
+#, fuzzy
 msgid	"no cross branch int merge"
 msgstr	"you may not perform a cross branch merge on a change in the "
 	"'$state' state"
@@ -4139,6 +4531,7 @@ msgstr	"you may not perform a cross branch merge on a change in the "
 #
 # 	$Name		The offending delta name.
 #
+#, fuzzy
 msgid	"no delta $name"
 msgstr	"delta name \"$name\" unknown"
 
@@ -4149,6 +4542,7 @@ msgstr	"delta name \"$name\" unknown"
 # 	$Name		The offending delta name.
 # 	$Guess		The closest matching known delta name.
 #
+#, fuzzy
 msgid	"no delta $name, closest is $guess"
 msgstr	"delta name \"$name\" unknown, closest is \"$guess\""
 
@@ -4158,6 +4552,7 @@ msgstr	"delta name \"$name\" unknown, closest is \"$guess\""
 #
 # 	$Number		The offending delta number.
 #
+#, fuzzy
 msgid	"no delta $number"
 msgstr	"delta $number unknown"
 
@@ -4166,6 +4561,7 @@ msgstr	"delta $number unknown"
 # This error message is issued when a delta name should have been given
 # on the command line, and was not.
 #
+#, fuzzy
 msgid	"no delta name"
 msgstr	"no delta name specified"
 
@@ -4176,6 +4572,7 @@ msgstr	"no delta name specified"
 # does not yet have an integrations, and so nothing to attache a delta
 # name to.
 #
+#, fuzzy
 msgid	"no delta yet"
 msgstr	"no integrations have been completed, so it is not yet possible "
 	"to assign a delta name"
@@ -4186,6 +4583,7 @@ msgstr	"no integrations have been completed, so it is not yet possible "
 # development directory of a change, but the change is in a state which
 # has no development directory.
 #
+#, fuzzy
 msgid	"no dev dir"
 msgstr	"this change is in the '$state' state, there is no development "
 	"directory"
@@ -4198,6 +4596,7 @@ msgstr	"this change is in the '$state' state, there is no development "
 #
 # 	$Name		The name of the -Output option.
 #
+#, fuzzy
 msgid	"no dir with $name"
 msgstr	"may not name directories and use the $name option"
 
@@ -4215,6 +4614,7 @@ msgstr	"nici un nume de fiºier nu a fost specificat în linia de comandã"
 #
 # 	$Name		The name of the conflicting option.
 #
+#, fuzzy
 msgid	"no file with $name"
 msgstr	"may not name files and use the $name option"
 
@@ -4236,6 +4636,7 @@ msgstr	"aceastã schimbare nu are nici un fiºier, trebuie sã adãugaþi "
 # 	$Number		Number of fatal errors found.
 # 			(Optional)
 #
+#, fuzzy
 msgid	"no files copied"
 msgstr	"found $number fatal error${plural $number s}, no files copied"
 
@@ -4249,6 +4650,7 @@ msgstr	"found $number fatal error${plural $number s}, no files copied"
 # 	$Number		Number of fatal errors found.
 # 			(Optional)
 #
+#, fuzzy
 msgid	"no files uncopied"
 msgstr	"found $number fatal error${plural $number s}, no files were "
 	"removed from the change"
@@ -4258,6 +4660,7 @@ msgstr	"found $number fatal error${plural $number s}, no files were "
 # This fatal error message is issued when aeimport finds no history
 # files in the directory tree specified on the command line.
 #
+#, fuzzy
 msgid	"no history files found"
 msgstr	"nici un fiºier de istorie nu a fost gãsit sub directorul "
 	"specificat"
@@ -4269,6 +4672,7 @@ msgstr	"nici un fiºier de istorie nu a fost gãsit sub directorul "
 #
 # 	$Name		The offending info name.
 #
+#, fuzzy
 msgid	"no info $name"
 msgstr	"version information name \"$name\" unknown"
 
@@ -4278,6 +4682,7 @@ msgstr	"version information name \"$name\" unknown"
 # integration directory of a change, but the change is in a state which
 # has no integration directory.
 #
+#, fuzzy
 msgid	"no int dir"
 msgstr	"this change is in the '$state' state, there is no integration "
 	"directory"
@@ -4288,6 +4693,7 @@ msgstr	"this change is in the '$state' state, there is no integration "
 # change in the 'being integrated' state.  The integrator has no mandate
 # to fix things, and so a merge in this state is illegal.
 #
+#, fuzzy
 msgid	"no int merge"
 msgstr	"a change in the 'being integrated' state may not be merged"
 
@@ -4303,6 +4709,7 @@ msgstr	"nici un nume de listã specificat"
 # log file name of a change, but the change is in a state which
 # has no log file.
 #
+#, fuzzy
 msgid	"no log file"
 msgstr	"this change is in the '$state' state, there is no log file"
 
@@ -4311,18 +4718,9 @@ msgstr	"this change is in the '$state' state, there is no log file"
 # This error message is issued when the user gives a merge option to
 # aed, as well as the -anticipate option.
 #
+#, fuzzy
 msgid	"no merge anticipate"
 msgstr	"you may not specify a merge option with -ANticipate"
-
-#
-# TRANSLATION REQUIRED
-# This error message is issued when aemv is asked to move the project
-# 'config' file.
-#
-# 	$File_Name	The name of the offending file.
-#
-msgid	"no move $filename"
-msgstr	"may not rename the \"$filename\" file"
 
 #
 # TRANSLATION REQUIRED
@@ -4334,6 +4732,7 @@ msgstr	"may not rename the \"$filename\" file"
 # 	$Number		Number of fatal errors found.
 # 			(Optional)
 #
+#, fuzzy
 msgid	"no new files"
 msgstr	"found $number fatal error${plural $number s}, no new files added"
 
@@ -4342,6 +4741,7 @@ msgstr	"found $number fatal error${plural $number s}, no new files added"
 # This error message is issued when a command which requires an explicit
 # project name is not given one.
 #
+#, fuzzy
 msgid	"no project name"
 msgstr	"you must give the project name explicitly to this command"
 
@@ -4367,6 +4767,7 @@ msgstr	"nume raport nespecificat"
 #
 # 	$Number		The number of tests which failed.
 #
+#, fuzzy
 msgid	"no result $number tests"
 msgstr	"there ${plural $number were was} $number test${plural $number s} "
 	"which returned no result"
@@ -4376,6 +4777,7 @@ msgstr	"there ${plural $number were was} $number test${plural $number s} "
 # This error message is issued if no size was specified on the command
 # line.  Exactly two are required.
 #
+#, fuzzy
 msgid	"no size specified"
 msgstr	"no size specified"
 
@@ -4384,6 +4786,7 @@ msgstr	"no size specified"
 # This error message is issued when aed attempts to anticipate another
 # change, and the two files don't have any suitable files in common.
 #
+#, fuzzy
 msgid	"no suitable files in common"
 msgstr	"no suitable files in common"
 
@@ -4410,6 +4813,7 @@ msgstr	"nici un nume de utilizator specificat"
 # 	$Name2		The name of a command line option.
 # 	$Name3		The name of a command line option.
 #
+#, fuzzy
 msgid	"not $name1 and $name2 and $name3 together"
 msgstr	"the $name1 and $name2 and $name3 options are mutually exclusive, "
 	"only one may be specified"
@@ -4422,6 +4826,7 @@ msgstr	"the $name1 and $name2 and $name3 options are mutually exclusive, "
 # 	$Name1		The name of a command line option.
 # 	$Name2		The name of a command line option.
 #
+#, fuzzy
 msgid	"not $name1 and $name2 together"
 msgstr	"the $name1 and $name2 options are mutually exclusive, only one "
 	"may be specified"
@@ -4432,6 +4837,7 @@ msgstr	"the $name1 and $name2 options are mutually exclusive, only one "
 # which requires a branch.  (The change number will be supplied by the
 # change_fatal function.)
 #
+#, fuzzy
 msgid	"not a branch"
 msgstr	"this change is not a branch"
 
@@ -4440,6 +4846,7 @@ msgstr	"this change is not a branch"
 # This error message is issued when a command which requires
 # developer privileges is used, and the user is not a developer.
 #
+#, fuzzy
 msgid	"not a developer"
 msgstr	"user \"$user\" is not a developer"
 
@@ -4448,6 +4855,7 @@ msgstr	"user \"$user\" is not a developer"
 # This error message is issued when a command which requires
 # reviewer privileges is used, and the user is not a reviewer.
 #
+#, fuzzy
 msgid	"not a reviewer"
 msgstr	"user \"$user\" is not a reviewer"
 
@@ -4463,6 +4871,7 @@ msgstr	"utilizatorul \"$user\" nu este un administrator"
 # This error message is issued when a command which requires integrator
 # privileges is run, and the user is not an integrator.
 #
+#, fuzzy
 msgid	"not an integrator"
 msgstr	"user \"$user\" is not an integrator"
 
@@ -4472,6 +4881,7 @@ msgstr	"user \"$user\" is not an integrator"
 # change which is in the being developed state, but the requesting user
 # is not the change's developer.
 #
+#, fuzzy
 msgid	"not developer"
 msgstr	"user \"$user\" is not the developer, only user \"$developer\" "
 	"may work on this change"
@@ -4482,6 +4892,7 @@ msgstr	"user \"$user\" is not the developer, only user \"$developer\" "
 # administrator of a project.  There must always be at least one project
 # administrator at all times.
 #
+#, fuzzy
 msgid	"not enough admin"
 msgstr	"must have at least one administrator at all times"
 
@@ -4491,6 +4902,7 @@ msgstr	"must have at least one administrator at all times"
 # change which is in the 'being integrated' state, but the requesting user
 # is not the change's integrator.
 #
+#, fuzzy
 msgid	"not integrator"
 msgstr	"user \"$user\" is not the integrator, only user \"$integrator\" "
 	"may work on this change"
@@ -4502,6 +4914,7 @@ msgstr	"user \"$user\" is not the integrator, only user \"$integrator\" "
 # state, but the requesting user is not the change's reviewer AND the
 # project attribute "develop_end_action" is set to "goto_awaiting_review".
 #
+#, fuzzy
 msgid	"not reviewer"
 msgstr	"user \"$user\" is not the reviewer, only user \"$reviewer\" may "
 	"work on this change"
@@ -4511,6 +4924,7 @@ msgstr	"user \"$user\" is not the reviewer, only user \"$reviewer\" may "
 # This error message is issued when a substitution function is called
 # incorrectly.  See (+++) below.
 #
+#, fuzzy
 msgid	"not valid in current context"
 msgstr	"not valid in current context"
 
@@ -4528,6 +4942,7 @@ msgstr	"open \"$filename\": $errno"
 # development of a branch and there is still an outstanding change on
 # the branch.  This message will be issued for each outstanding change.
 #
+#, fuzzy
 msgid	"outstanding change"
 msgstr	"this change is in the '$state' state"
 
@@ -4539,6 +4954,7 @@ msgstr	"this change is in the '$state' state"
 #
 # 	$Number		Number of changes outstanding.  (Optional)
 #
+#, fuzzy
 msgid	"outstanding changes"
 msgstr	"there ${plural $number are is} $number outstanding ${plural "
 	"$number changes change}; you may not use this command if there "
@@ -4550,6 +4966,7 @@ msgstr	"there ${plural $number are is} $number outstanding ${plural "
 #
 # 	$Number		The offending page length.
 #
+#, fuzzy
 msgid	"page length $number out of range"
 msgstr	"a page length of $number is out of range"
 
@@ -4559,6 +4976,7 @@ msgstr	"a page length of $number is out of range"
 #
 # 	$Number		The offending page width.
 #
+#, fuzzy
 msgid	"page width $number out of range"
 msgstr	"a page width of $number is out of range"
 
@@ -4566,6 +4984,7 @@ msgstr	"a page width of $number is out of range"
 # TRANSLATION REQUIRED
 # This error message is issued when bison finds an error at parse time.
 #
+#, fuzzy
 msgid	"parse error"
 msgstr	"unable to work out what you meant to say"
 
@@ -4573,6 +4992,7 @@ msgstr	"unable to work out what you meant to say"
 # TRANSLATION REQUIRED
 # This error message is issued when bison finds an error at parse time.
 #
+#, fuzzy
 msgid	"parse error; also virtual memory exceeded"
 msgstr	"unable to work out what you meant to say, because it was too "
 	"complicated to fit in memory"
@@ -4581,6 +5001,7 @@ msgstr	"unable to work out what you meant to say, because it was too "
 # TRANSLATION REQUIRED
 # This error message is issued when bison finds an error at parse time.
 #
+#, fuzzy
 msgid	"parse error; also virtual memory exhausted"
 msgstr	"unable to work out what you meant to say, because it was too "
 	"complicated to fit in memory"
@@ -4589,6 +5010,7 @@ msgstr	"unable to work out what you meant to say, because it was too "
 # TRANSLATION REQUIRED
 # This error message is issued when bison finds an error at parse time.
 #
+#, fuzzy
 msgid	"parser stack overflow"
 msgstr	"unable to work out what you meant to say, because it was too "
 	"complicated and blew my stack"
@@ -4597,15 +5019,17 @@ msgstr	"unable to work out what you meant to say, because it was too "
 # TRANSLATION REQUIRED
 # This message is issued when partial development builds are completed.
 #
+#, fuzzy
 msgid	"partial build complete"
-msgstr	"partial build complete ${date %%H:%%M}"
+msgstr	"partial build complete ${date %H:%M}"
 
 #
 # TRANSLATION REQUIRED
 # This message is issued when partial development builds are commenced.
 #
+#, fuzzy
 msgid	"partial build started"
-msgstr	"partial build started ${date %%H:%%M}"
+msgstr	"partial build started ${date %H:%M}"
 
 #
 # TRANSLATION REQUIRED
@@ -4614,6 +5038,7 @@ msgstr	"partial build started ${date %%H:%%M}"
 #
 # 	$Number		The number of tests which passed.
 #
+#, fuzzy
 msgid	"passed $number tests"
 msgstr	"passed $number test${plural $number s}"
 
@@ -4640,6 +5065,7 @@ msgstr	"pathconf(\"$filename\", {PATH_MAX}): $errno"
 #
 # 	$File_Name	The absolute path of the project home directory.
 #
+#, fuzzy
 msgid	"proj dir $filename"
 msgstr	"project directory \"$filename\""
 
@@ -4649,6 +5075,7 @@ msgstr	"project directory \"$filename\""
 # tests, but there are no files which are candidates of the options
 # specified, or the project may have no tests at all.
 #
+#, fuzzy
 msgid	"proj has no tests"
 msgstr	"this project requires relevant tests before this command may be "
 	"used"
@@ -4658,6 +5085,7 @@ msgstr	"this project requires relevant tests before this command may be "
 # This is the format of project messages (error, fatal and verbose).
 # Change messages also pass through this format indirectly.
 #
+#, fuzzy
 msgid	"project \"$project\": $message"
 msgstr	"project \"$project\": $message"
 
@@ -4677,6 +5105,7 @@ msgstr	"proiect $message"
 #
 # 	$Name		The offending project name.
 #
+#, fuzzy
 msgid	"project $name exists"
 msgstr	"project name \"$name\" already in use"
 
@@ -4690,6 +5119,7 @@ msgstr	"project name \"$name\" already in use"
 # 	$Number		How many characters too long (how many to remove)
 # 			(Optional)
 #
+#, fuzzy
 msgid	"project $name too long"
 msgstr	"project name \"$name\" too long (by $number)"
 
@@ -4700,6 +5130,7 @@ msgstr	"project name \"$name\" too long (by $number)"
 #
 # 	$Name		The offending project alias.
 #
+#, fuzzy
 msgid	"project alias $name exists"
 msgstr	"project alias \"$name\" already in use"
 
@@ -4710,6 +5141,7 @@ msgstr	"project alias \"$name\" already in use"
 #
 # 	$Name		The offending project alias.
 #
+#, fuzzy
 msgid	"project alias $name exists not"
 msgstr	"the name \"$name\" is not a project alias"
 
@@ -4717,6 +5149,7 @@ msgstr	"the name \"$name\" is not a project alias"
 # TRANSLATION REQUIRED
 # This progress message is issued when aepa completes successfully.
 #
+#, fuzzy
 msgid	"project attributes complete"
 msgstr	"attributes changed"
 
@@ -4736,6 +5169,7 @@ msgstr	"read \"$filename\": $errno"
 #
 # 	$File_Name	The name of the offending file.
 #
+#, fuzzy
 msgid	"read $filename: format error"
 msgstr	"read \"$filename\": format error"
 
@@ -4746,6 +5180,7 @@ msgstr	"read \"$filename\": format error"
 # history files, and reading each one to extract the history information
 # it will use to reconstruct the changes.
 #
+#, fuzzy
 msgid	"read history files"
 msgstr	"reading history files to learn when each file was changed and by "
 	"whom..."
@@ -4763,6 +5198,7 @@ msgstr	"readlink \"$filename\": $errno"
 # This progress message is issued when aeimport starts to checkout the
 # head revision of each history file to form the baseline of the project.
 #
+#, fuzzy
 msgid	"reconstruct baseline"
 msgstr	"checking out head revisions of imported files to reconstruct the "
 	"project baseline..."
@@ -4774,6 +5210,7 @@ msgstr	"checking out head revisions of imported files to reconstruct the "
 # we make the statistics more meaningful, and also block other reviewes
 # from wasting their time.
 #
+#, fuzzy
 msgid	"remember to use the aerb command"
 msgstr	"If you are going to review this change, please use the ``aegis -"
 	"review-begin'' command as soon as possible.  This ensures that "
@@ -4785,6 +5222,7 @@ msgstr	"If you are going to review this change, please use the ``aegis -"
 #
 # 	$Name		The name of the removed user.
 #
+#, fuzzy
 msgid	"remove administrator $name complete"
 msgstr	"user \"$name\" is no longer an administrator"
 
@@ -4794,6 +5232,7 @@ msgstr	"user \"$name\" is no longer an administrator"
 #
 # 	$Name		The name of the removed user.
 #
+#, fuzzy
 msgid	"remove developer $name complete"
 msgstr	"user \"$name\" is no longer a developer"
 
@@ -4802,6 +5241,7 @@ msgstr	"user \"$name\" is no longer a developer"
 # This progress message is issued when removing the development
 # directory during an aedbu command.
 #
+#, fuzzy
 msgid	"remove development directory"
 msgstr	"removing development directory"
 
@@ -4811,6 +5251,7 @@ msgstr	"removing development directory"
 #
 # 	$File_Name	The name of the file to be removed.
 #
+#, fuzzy
 msgid	"remove file $filename complete"
 msgstr	"file \"$filename\" being removed"
 
@@ -4824,6 +5265,7 @@ msgstr	"file \"$filename\" being removed"
 # 	$Number		Number of fatal errors found.
 # 			(Optional)
 #
+#, fuzzy
 msgid	"remove file fail"
 msgstr	"found $number fatal error${plural $number s}, no files were "
 	"added to the change"
@@ -4834,6 +5276,7 @@ msgstr	"found $number fatal error${plural $number s}, no files were "
 #
 # 	$File_Name	The name of the file to be removed.
 #
+#, fuzzy
 msgid	"remove file undo $filename complete"
 msgstr	"file \"$filename\" no longer being removed"
 
@@ -4847,6 +5290,7 @@ msgstr	"file \"$filename\" no longer being removed"
 # 	$Number		Number of fatal errors found.
 # 			(Optional)
 #
+#, fuzzy
 msgid	"remove file undo fail"
 msgstr	"found $number fatal error${plural $number s}, no files were "
 	"removed from the change"
@@ -4856,6 +5300,7 @@ msgstr	"found $number fatal error${plural $number s}, no files were "
 # This progress message is issued when removing the integration
 # directory during an aeibu command.
 #
+#, fuzzy
 msgid	"remove integration directory"
 msgstr	"removing integration directory"
 
@@ -4865,6 +5310,7 @@ msgstr	"removing integration directory"
 #
 # 	$Name		The name of the removed user.
 #
+#, fuzzy
 msgid	"remove integrator $name complete"
 msgstr	"user \"$name\" is no longer an integrator"
 
@@ -4873,6 +5319,7 @@ msgstr	"user \"$name\" is no longer an integrator"
 # This progress message is issued when removing the old development
 # directory during an aechown command.
 #
+#, fuzzy
 msgid	"remove old development directory"
 msgstr	"removing old development directory"
 
@@ -4880,6 +5327,7 @@ msgstr	"removing old development directory"
 # TRANSLATION REQUIRED
 # This progress message is issued when aerpa completes successfully.
 #
+#, fuzzy
 msgid	"remove project alias $name complete"
 msgstr	"alias \"$name\" removed"
 
@@ -4887,6 +5335,7 @@ msgstr	"alias \"$name\" removed"
 # TRANSLATION REQUIRED
 # This progress message is issued when aermpr completes successfully.
 #
+#, fuzzy
 msgid	"remove project complete"
 msgstr	"removed"
 
@@ -4903,6 +5352,7 @@ msgstr	"ºterg directorul proiectului"
 #
 # 	$Name		The user name of the removed reviewer.
 #
+#, fuzzy
 msgid	"remove reviewer $name complete"
 msgstr	"user \"$name\" is no longer a reviewer"
 
@@ -4911,6 +5361,7 @@ msgstr	"user \"$name\" is no longer a reviewer"
 # This progress message is issued when Aegis removes the symbolic links
 # from the development directory which point to the baseline.
 #
+#, fuzzy
 msgid	"removing symbolic links to baseline"
 msgstr	"removing symbolic links to baseline"
 
@@ -4931,6 +5382,7 @@ msgstr	"rename(\"$filename1\", \"$filename2\"): $errno"
 # 	$Name_List	A list of possible alternatives.
 # 			(Optional)
 #
+#, fuzzy
 msgid	"report $name ambig"
 msgstr	"report name \"$name\" is ambiguous ($name_list)"
 
@@ -4939,6 +5391,7 @@ msgstr	"report name \"$name\" is ambiguous ($name_list)"
 # This error message is issued when an error is discovered in a report
 # at run-time.
 #
+#, fuzzy
 msgid	"report aborted"
 msgstr	"report aborted"
 
@@ -4947,6 +5400,7 @@ msgstr	"report aborted"
 # This error message is issued when a substitution function is called
 # incorrectly.  See (+++) below.
 #
+#, fuzzy
 msgid	"requires at least one argument"
 msgstr	"requires at least one argument"
 
@@ -5006,6 +5460,7 @@ msgstr	"nu cere nici un argument"
 # fingerprints are absent, and restarting the integration will cause
 # them to be created.
 #
+#, fuzzy
 msgid	"restart integration after upgrade"
 msgstr	"no change should be in the $state state when Aegis is upgraded "
 	"because some file state is not available, please use ``aegis -"
@@ -5016,6 +5471,7 @@ msgstr	"no change should be in the $state state when Aegis is upgraded "
 # TRANSLATION REQUIRED
 # This progress message is issued when aerb completes successfully.
 #
+#, fuzzy
 msgid	"review begin complete"
 msgstr	"user \"$user\" has begun review"
 
@@ -5023,6 +5479,7 @@ msgstr	"user \"$user\" has begun review"
 # TRANSLATION REQUIRED
 # This progress message is issued when aerbu completes successfully.
 #
+#, fuzzy
 msgid	"review begin undo complete"
 msgstr	"review begin rescinded"
 
@@ -5030,6 +5487,7 @@ msgstr	"review begin rescinded"
 # TRANSLATION REQUIRED
 # This progress message is issued when aerfail completes successfully.
 #
+#, fuzzy
 msgid	"review fail complete"
 msgstr	"failed review, returned to developer"
 
@@ -5037,6 +5495,7 @@ msgstr	"failed review, returned to developer"
 # TRANSLATION REQUIRED
 # This progress message is issued when aerpass completes successfully.
 #
+#, fuzzy
 msgid	"review pass complete"
 msgstr	"passed review"
 
@@ -5044,6 +5503,7 @@ msgstr	"passed review"
 # TRANSLATION REQUIRED
 # This progress message is issued when aerpu completes successfully.
 #
+#, fuzzy
 msgid	"review pass undo complete"
 msgstr	"review pass rescinded"
 
@@ -5052,6 +5512,7 @@ msgstr	"review pass rescinded"
 # This error message is issued when a reviewer attempts to integrate
 # a change she reviewed, and the project is configured to disallow this.
 #
+#, fuzzy
 msgid	"reviewer may not integrate"
 msgstr	"the reviewer of a change may not also integrate it"
 
@@ -5060,6 +5521,7 @@ msgstr	"the reviewer of a change may not also integrate it"
 # This progress message is issued when aeifail is removing the
 # integration directory.
 #
+#, fuzzy
 msgid	"rm int dir"
 msgstr	"removing the integration directory"
 
@@ -5076,6 +5538,7 @@ msgstr	"rmdir \"$filename\": $errno"
 # This error message is issued when a substitution function is called
 # incorrectly.  See (+++) below.
 #
+#, fuzzy
 msgid	"second argument must be \"Absolute\" or \"Relative\""
 msgstr	"second argument must be \"Absolute\" or \"Relative\""
 
@@ -5103,6 +5566,7 @@ msgstr	"setuid $arg: $errno"
 # 	$Number		The number of files actually given.
 # 			(Optional)
 #
+#, fuzzy
 msgid	"single file with -Output"
 msgstr	"exactly one source file may be specified when the -Output option "
 	"is used (you gave $number)"
@@ -5114,6 +5578,7 @@ msgstr	"exactly one source file may be specified when the -Output option "
 #
 # 	$Name		The type name of the offending argument.
 #
+#, fuzzy
 msgid	"sort requires a list argument (was given $name)"
 msgstr	"sort requires a list argument (was given $name)"
 
@@ -5124,6 +5589,7 @@ msgstr	"sort requires a list argument (was given $name)"
 #
 # 	$Number		The number of arguments given.
 #
+#, fuzzy
 msgid	"sort requires exactly 1 argument (was given $number)"
 msgstr	"sort requires exactly 1 argument (was given $number)"
 
@@ -5132,6 +5598,7 @@ msgstr	"sort requires exactly 1 argument (was given $number)"
 # This error message is issued when the ${source} substitution is called
 # incorrectly.  See (+++) below.
 #
+#, fuzzy
 msgid	"source file unknown"
 msgstr	"source file unknown"
 
@@ -5140,6 +5607,7 @@ msgstr	"source file unknown"
 # This is the name of the program's standard input.  The place input
 # from getchar (et al) comes from.
 #
+#, fuzzy
 msgid	"standard input"
 msgstr	"the standard input"
 
@@ -5148,6 +5616,7 @@ msgstr	"the standard input"
 # This is the name of the program's standard output.  The place output
 # from putchar (et al) goes.
 #
+#, fuzzy
 msgid	"standard output"
 msgstr	"the standard output"
 
@@ -5165,6 +5634,7 @@ msgstr	"$filename: $errno"
 # than 1000 characters of output.  Hopefully, this is unlikely, and
 # usually indicates some other error.
 #
+#, fuzzy
 msgid	"strftime output too large"
 msgstr	"strftime output too large"
 
@@ -5183,6 +5653,7 @@ msgstr	"symlink(\"$filename1\", \"$filename2\"): $errno"
 # obtained, has changed by the time the lock was obtained.  This is only
 # seen rarely.
 #
+#, fuzzy
 msgid	"sync error, try again"
 msgstr	"something changed, operation aborted, please try again"
 
@@ -5196,6 +5667,7 @@ msgstr	"nu pot înþelege ce aþi dorit sã spuneþi"
 # TRANSLATION REQUIRED
 # This error message is issued when yacc finds an error at parse time.
 #
+#, fuzzy
 msgid	"syntax error: cannot back up"
 msgstr	"unable to work out what you meant to say"
 
@@ -5212,6 +5684,7 @@ msgstr	"unable to work out what you meant to say, because it was too "
 #
 # 	$Number		The offending tab width.
 #
+#, fuzzy
 msgid	"tab width $number out of range"
 msgstr	"a tab width of $number is out of range"
 
@@ -5223,8 +5696,9 @@ msgstr	"a tab width of $number is out of range"
 #      $Current        Current test number
 #      $Total          Total number of tests
 #
+#, fuzzy
 msgid	"test $current of $total"
-msgstr	"test $current of $total, ${date %%H:%%M}"
+msgstr	"test $current of $total, ${date %H:%M}"
 
 #
 # TRANSLATION REQUIRED
@@ -5232,6 +5706,7 @@ msgstr	"test $current of $total, ${date %%H:%%M}"
 # suggestions.  This allows the user to know which are exact, and which
 # are noise.
 #
+#, fuzzy
 msgid	"test $filename scored $number"
 msgstr	"$number $filename"
 
@@ -5243,6 +5718,7 @@ msgstr	"$number $filename"
 # 	$Outstanding	A list of outstanding architectures to be tested,
 # 			or empty if all are outstanding.  (Optional)
 #
+#, fuzzy
 msgid	"test -bl required"
 msgstr	"this change must successfully complete an 'aegis -Test -"
 	"BaseLine' $outstanding before it can end development"
@@ -5255,6 +5731,7 @@ msgstr	"this change must successfully complete an 'aegis -Test -"
 # 	$Outstanding	A list of outstanding architectures to be tested,
 # 			or empty if all are outstanding.  (Optional)
 #
+#, fuzzy
 msgid	"test -reg required"
 msgstr	"this change must successfully complete an 'aegis -Test -"
 	"REGression' $outstanding before it can end development"
@@ -5266,6 +5743,7 @@ msgstr	"this change must successfully complete an 'aegis -Test -"
 #
 # 	$Name	The name of the -LIBrary option.
 #
+#, fuzzy
 msgid	"test mode needs $name"
 msgstr	"There was no $name option specified.  This is mandatory in \"test"
 	"\" mode."
@@ -5278,6 +5756,7 @@ msgstr	"There was no $name option specified.  This is mandatory in \"test"
 # 	$Outstanding	A list of outstanding architectures to be tested,
 # 			or empty if all are outstanding.  (Optional)
 #
+#, fuzzy
 msgid	"test required"
 msgstr	"this change must successfully complete an 'aegis -Test' "
 	"$outstanding before it can end development"
@@ -5287,6 +5766,7 @@ msgstr	"this change must successfully complete an 'aegis -Test' "
 # This message is printed when the variable named in a catch lause is
 # not a modifiable lvalue.
 #
+#, fuzzy
 msgid	"the catch variable must be modifiable"
 msgstr	"the catch variable must be modifiable"
 
@@ -5297,6 +5777,7 @@ msgstr	"the catch variable must be modifiable"
 #
 # 	$Name		The type name of the offending expression.
 #
+#, fuzzy
 msgid	"the catch variable must be modifiable (not $name)"
 msgstr	"the catch variable must be a modifiable lvalue (was given $name)"
 
@@ -5307,6 +5788,7 @@ msgstr	"the catch variable must be a modifiable lvalue (was given $name)"
 #
 # 	$Name		The type name of the offending expression.
 #
+#, fuzzy
 msgid	"the loop iteration value must be a list (not $name)"
 msgstr	"the loop iteration value must be a list (was given $name)"
 
@@ -5316,6 +5798,7 @@ msgstr	"the loop iteration value must be a list (was given $name)"
 # expression (the first one) which is not an lvalue.  This is determined
 # at compile time, the other one is determined at run time.
 #
+#, fuzzy
 msgid	"the loop variable must be modifiable"
 msgstr	"the loop variable must be a modifiable lvalue"
 
@@ -5326,6 +5809,7 @@ msgstr	"the loop variable must be a modifiable lvalue"
 #
 # 	$Name		The type name of the offending expression.
 #
+#, fuzzy
 msgid	"the loop variable must be modifiable (not $name)"
 msgstr	"the loop variable must be a modifiable lvalue (was given $name)"
 
@@ -5335,6 +5819,7 @@ msgstr	"the loop variable must be a modifiable lvalue (was given $name)"
 #
 # 	$Name		The offending variable name.
 #
+#, fuzzy
 msgid	"the name \"$name\" has already been used"
 msgstr	"the name \"$name\" has already been used"
 
@@ -5344,6 +5829,7 @@ msgstr	"the name \"$name\" has already been used"
 #
 # 	$Name		The undefined variable name.
 #
+#, fuzzy
 msgid	"the name \"$name\" is undefined"
 msgstr	"the name \"$name\" is undefined"
 
@@ -5354,6 +5840,7 @@ msgstr	"the name \"$name\" is undefined"
 # into the future.  Commonest sighting is when aeipass needs to sleep.
 # Also used as a debug message, only visable when DEBUG is defined.
 #
+#, fuzzy
 msgid	"throttling $number seconds"
 msgstr	"sleeping $number second${plural $number s} to allow file "
 	"modifications times to be consistent"
@@ -5365,6 +5852,7 @@ msgstr	"sleeping $number second${plural $number s} to allow file "
 #
 # 	$Name		The type name of the offending expression.
 #
+#, fuzzy
 msgid	"throw statement requires string argument (not $name)"
 msgstr	"the throw statement requires string argument (was given $name)"
 
@@ -5376,6 +5864,7 @@ msgstr	"the throw statement requires string argument (was given $name)"
 #
 # 	$number		The offending date and time.
 #
+#, fuzzy
 msgid	"time $number after branch"
 msgstr	"warning: the time \"$number\" is after the branch finished, this "
 	"is not meaningful when recreating the contents of the branch"
@@ -5388,6 +5877,7 @@ msgstr	"warning: the time \"$number\" is after the branch finished, this "
 #
 # 	$number		The offending date and time.
 #
+#, fuzzy
 msgid	"time $number before branch"
 msgstr	"warning: the time \"$number\" is before the branch started, this "
 	"is not meaningful when recreating the contents of the branch"
@@ -5397,6 +5887,7 @@ msgstr	"warning: the time \"$number\" is before the branch started, this "
 # This error message is issued when too few files names are specified on
 # the command line.
 #
+#, fuzzy
 msgid	"too few files named"
 msgstr	"too few files named"
 
@@ -5414,6 +5905,7 @@ msgstr	"fiºierul \"$filename\" numit mai mult decât o datã"
 # This error message is issued when too many delta names are given on
 # the command line.
 #
+#, fuzzy
 msgid	"too many delta names"
 msgstr	"too many delta names specified"
 
@@ -5436,6 +5928,7 @@ msgstr	"prea multe nume de fiºiere specificate"
 # This error message is issued when too many information names are
 # specified to the aev command.  It only accepts one.
 #
+#, fuzzy
 msgid	"too many info names"
 msgstr	"too many version information names specified"
 
@@ -5466,6 +5959,7 @@ msgstr	"prea multe dimensiuni specificate"
 #
 # 	$Name		The offending user name.
 #
+#, fuzzy
 msgid	"too many user $name"
 msgstr	"user \"$name\" named more than once"
 
@@ -5476,6 +5970,7 @@ msgstr	"user \"$name\" named more than once"
 #
 # 	$Message	The message to be issued.
 #
+#, fuzzy
 msgid	"trunk: $message"
 msgstr	"trunk: $message"
 
@@ -5486,6 +5981,7 @@ msgstr	"trunk: $message"
 #
 # 	$Number		The offending user number.
 #
+#, fuzzy
 msgid	"uid $number unknown"
 msgstr	"uid $number unknown"
 
@@ -5503,6 +5999,7 @@ msgstr	"uname: $errno"
 # 	$Argument	The mode, in octal, the file is to be changed to.
 # 	$File_Name	The name of the file
 #
+#, fuzzy
 msgid	"unfinished: chmod $arg $filename"
 msgstr	"unfinished recovery: chmod $arg $filename"
 
@@ -5514,6 +6011,7 @@ msgstr	"unfinished recovery: chmod $arg $filename"
 # 	$File_Name1	The name of the source file
 # 	$File_Name2	The name of the destination file
 #
+#, fuzzy
 msgid	"unfinished: mv $filename1 $filename2"
 msgstr	"unfinished recovery: mv $filename1 $filename2"
 
@@ -5524,6 +6022,7 @@ msgstr	"unfinished recovery: mv $filename1 $filename2"
 #
 # 	$File_Name	The name of the file
 #
+#, fuzzy
 msgid	"unfinished: rm $filename"
 msgstr	"unfinished recovery: rm $filename"
 
@@ -5534,6 +6033,7 @@ msgstr	"unfinished recovery: rm $filename"
 #
 # 	$File_Name	The name of the directory
 #
+#, fuzzy
 msgid	"unfinished: rmdir $filename"
 msgstr	"unfinished recovery: rmdir $filename"
 
@@ -5544,6 +6044,7 @@ msgstr	"unfinished recovery: rmdir $filename"
 #
 # 	$Name		The offending command line argument.
 #
+#, fuzzy
 msgid	"unknown \"$name\" option"
 msgstr	"unknown \"$name\" option on the command line"
 
@@ -5553,6 +6054,7 @@ msgstr	"unknown \"$name\" option on the command line"
 #
 # 	$Name		The offending escape sequence, including the backslash.
 #
+#, fuzzy
 msgid	"unknown '$name' escape"
 msgstr	"unknown '$name' escape"
 
@@ -5561,6 +6063,7 @@ msgstr	"unknown '$name' escape"
 # This error message is issued when an unknown change is referred to.
 # The change number will be given in the surrounding "wrapper".
 #
+#, fuzzy
 msgid	"unknown change"
 msgstr	"there is no change or branch of this number known to this project"
 
@@ -5568,6 +6071,7 @@ msgstr	"there is no change or branch of this number known to this project"
 # TRANSLATION REQUIRED
 # This fatal error message is issued when the shell cannot be determined.
 #
+#, fuzzy
 msgid	"unknown shell"
 msgstr	"unable to determine the shell which has requested the completion"
 
@@ -5576,6 +6080,7 @@ msgstr	"unable to determine the shell which has requested the completion"
 # This error message is issued when an unknown substitution is
 # referenced.  See (+++) below.
 #
+#, fuzzy
 msgid	"unknown substitution name"
 msgstr	"unknown substitution name"
 
@@ -5584,6 +6089,7 @@ msgstr	"unknown substitution name"
 # This error message is issued when an unknown substitution variant
 # is referenced.  See (+++) below.
 #
+#, fuzzy
 msgid	"unknown substitution variant"
 msgstr	"unknown substitution variant"
 
@@ -5600,6 +6106,7 @@ msgstr	"unlink \"$filename\": $errno"
 # This fatal error message is issued when aedbu command is applied to
 # a simple change.
 #
+#, fuzzy
 msgid	"use aedbu instead"
 msgstr	"use the `aegis -dbu' command instead"
 
@@ -5608,6 +6115,7 @@ msgstr	"use the `aegis -dbu' command instead"
 # This fatal error message is issued when the aedbu or aermpr commands
 # are applied to a branch.
 #
+#, fuzzy
 msgid	"use aenbru instead"
 msgstr	"use the `aegis -nbru' command instead"
 
@@ -5619,6 +6127,7 @@ msgstr	"use the `aegis -nbru' command instead"
 #
 # 	$Name		The offending user name.
 #
+#, fuzzy
 msgid	"user \"$name\" is not a developer"
 msgstr	"user \"$name\" is not a developer"
 
@@ -5629,6 +6138,7 @@ msgstr	"user \"$name\" is not a developer"
 #
 # 	$Name		The offending user name.
 #
+#, fuzzy
 msgid	"user \"$name\" is not a reviewer"
 msgstr	"user \"$name\" is not a reviewer"
 
@@ -5640,6 +6150,7 @@ msgstr	"user \"$name\" is not a reviewer"
 #
 # 	$Name		The offending user name.
 #
+#, fuzzy
 msgid	"user \"$name\" is not an administrator"
 msgstr	"user \"$name\" is not an administrator"
 
@@ -5651,6 +6162,7 @@ msgstr	"user \"$name\" is not an administrator"
 #
 # 	$Name		The offending user name.
 #
+#, fuzzy
 msgid	"user \"$name\" is not an integrator"
 msgstr	"user \"$name\" is not an integrator"
 
@@ -5662,6 +6174,7 @@ msgstr	"user \"$name\" is not an integrator"
 #
 # 	$Name		The offending user name.
 #
+#, fuzzy
 msgid	"user $name too privileged"
 msgstr	"user \"$name\" is too privileged"
 
@@ -5672,6 +6185,7 @@ msgstr	"user \"$name\" is too privileged"
 #
 # 	$Name		The offending user name.
 #
+#, fuzzy
 msgid	"user $name unknown"
 msgstr	"user \"$name\" unknown"
 
@@ -5683,6 +6197,7 @@ msgstr	"user \"$name\" unknown"
 # 	$Name		The offending user name.
 # 	$Guess		The closest match in the /etc/passwd file.
 #
+#, fuzzy
 msgid	"user $name unknown, closest is $guess"
 msgstr	"user \"$name\" unknown, closest is the \"$guess\" user"
 
@@ -5694,6 +6209,7 @@ msgstr	"user \"$name\" unknown, closest is the \"$guess\" user"
 # 	$Name1		The quoted user name.
 # 	$Name2		The quoted group name.
 #
+#, fuzzy
 msgid	"user $name1, group $name2"
 msgstr	"user $name1, group $name2"
 
@@ -5701,6 +6217,7 @@ msgstr	"user $name1, group $name2"
 # TRANSLATION REQUIRED
 # This is the format of user messages (error, fatal and verbose).
 #
+#, fuzzy
 msgid	"user $name: $message"
 msgstr	"user \"$name\": $message"
 
@@ -5719,6 +6236,7 @@ msgstr	"utime \"$filename\": $errno"
 #
 # 	$Name		The type name of the *required* type.
 #
+#, fuzzy
 msgid	"value of type $name required"
 msgstr	"value of type $name required"
 
@@ -5729,6 +6247,7 @@ msgstr	"value of type $name required"
 #
 # 	$number	The offending version number.
 #
+#, fuzzy
 msgid	"version $number not a branch"
 msgstr	"version ``$number'' is not a branch"
 
@@ -5739,6 +6258,7 @@ msgstr	"version ``$number'' is not a branch"
 #
 # 	$Name		The type name of the lock being waited for.
 #
+#, fuzzy
 msgid	"waiting for $name lock"
 msgstr	"waiting for $name lock"
 
@@ -5747,6 +6267,7 @@ msgstr	"waiting for $name lock"
 # This progress message is issued when Aegis is waiting for a project
 # baseline read lock.  This message is issued with a project indicator.
 #
+#, fuzzy
 msgid	"waiting for baseline read lock"
 msgstr	"waiting for shared baseline lock; this is because there is an "
 	"``aegis -Integrate_PASS'' command in progress"
@@ -5756,6 +6277,7 @@ msgstr	"waiting for shared baseline lock; this is because there is an "
 # This progress message is issued when Aegis is waiting for a project
 # baseline write lock.  This message is issued with a project indicator.
 #
+#, fuzzy
 msgid	"waiting for baseline write lock"
 msgstr	"waiting for exclusive baseline lock; this is because there is "
 	"one or more ``aegis -Build'' commands in progress"
@@ -5765,6 +6287,7 @@ msgstr	"waiting for exclusive baseline lock; this is because there is "
 # This progress message is issued when Aegis is waiting for a global state
 # lock.  The global state remembers project names and where they are.
 #
+#, fuzzy
 msgid	"waiting for global state lock"
 msgstr	"waiting for project location index lock"
 
@@ -5773,6 +6296,7 @@ msgstr	"waiting for project location index lock"
 # This progress message is issued when Aegis is waiting for a project
 # history lock.  This message is issued with a project indicator.
 #
+#, fuzzy
 msgid	"waiting for history lock"
 msgstr	"waiting for history lock; this is because there is an ``aegis -"
 	"Integrate_PASS'' command in progress on another branch"
@@ -5782,6 +6306,7 @@ msgstr	"waiting for history lock; this is because there is an ``aegis -"
 # This progress message is issued when Aegis is waiting for a lock.
 # This message is seen often, usually with a change or project indicator.
 #
+#, fuzzy
 msgid	"waiting for lock"
 msgstr	"waiting for lock"
 
@@ -5794,6 +6319,7 @@ msgstr	"waiting for lock"
 #
 # 	$File_Name	The name of the affected file.
 #
+#, fuzzy
 msgid	"warning: $filename in baseline, copying"
 msgstr	"warning: file \"$filename\" already exists in the project, "
 	"action automatically changed from \"create\" to \"modify\""
@@ -5806,6 +6332,7 @@ msgstr	"warning: file \"$filename\" already exists in the project, "
 #
 # 	$File_Name	The name of the offending file.
 #
+#, fuzzy
 msgid	"warning: $filename modified by history tool"
 msgstr	"warning: the history tool modified the \"$filename\" source file"
 
@@ -5818,6 +6345,7 @@ msgstr	"warning: the history tool modified the \"$filename\" source file"
 #
 # 	$filename	The name of the offending file.
 #
+#, fuzzy
 msgid	"warning: $filename patch not used"
 msgstr	"warning: the patch for \"$filename\" could not be used, so the "
 	"full incoming source for this file has been used; you may need "
@@ -5832,22 +6360,10 @@ msgstr	"warning: the patch for \"$filename\" could not be used, so the "
 # 	$Name1	The name of the AEGIS environment variable.
 # 	$Name2	The name of the AEGIS_PATH environment variable.
 #
+#, fuzzy
 msgid	"warning: $name1 is obsolete, use $name2 environment variable"
 msgstr	"warning: the $name1 environment variable is obsolete, please use "
 	"$name2 instead"
-
-#
-# TRANSLATION REQUIRED
-# This warning message is issued when an obsolete % substitution is used.
-# (They are so obsolete they are undocumented, and will eventually be
-# removed.) An equivalent ${...} substitution is suggested.
-#
-# 	$Name1		The offending percent (%) substitution.
-# 	$Name2		The appropriate dollar ($) replacement.
-#
-msgid	"warning: $name1 is obsolete, use $name2 substitution"
-msgstr	"warning: the $name1 substitution is obsolete and has been "
-	"replaced by $name2 in this context"
 
 #
 # TRANSLATION REQUIRED
@@ -5856,6 +6372,7 @@ msgstr	"warning: the $name1 substitution is obsolete and has been "
 # 	$Name1		The name of the obsolete option.
 # 	$Name2		The name of the preferred option.
 #
+#, fuzzy
 msgid	"warning: $name1 obsolete, use $name2 option"
 msgstr	"warning: the $name1 option is obsolete, please the $name2 option "
 	"in future"
@@ -5867,6 +6384,7 @@ msgstr	"warning: the $name1 option is obsolete, please the $name2 option "
 # 	$File_Name	The name of the file to be changed.
 # 	$Argument	The mode desired.
 #
+#, fuzzy
 msgid	"warning: chmod(\"$filename\", $arg): $errno"
 msgstr	"warning: chmod(\"$filename\", $arg): $errno"
 
@@ -5878,6 +6396,7 @@ msgstr	"warning: chmod(\"$filename\", $arg): $errno"
 # 	$Command	The offending command.
 # 	$Number		The exit status of the child.
 #
+#, fuzzy
 msgid	"warning: command \"$command\" exit status $number"
 msgstr	"warning: command \"$command\" exit status $number"
 
@@ -5890,6 +6409,7 @@ msgstr	"warning: command \"$command\" exit status $number"
 # 	$Number		The number of files requiring merging.
 # 			(Optional)
 #
+#, fuzzy
 msgid	"warning: diffable files"
 msgstr	"warning: there ${plural $number 'are $number files which need' "
 	"'is a file which needs' } to be differenced"
@@ -5899,6 +6419,7 @@ msgstr	"warning: there ${plural $number 'are $number files which need' "
 # This error message is issued when your search expression doesn't
 # do anything.
 #
+#, fuzzy
 msgid	"warning: expression has no side effects, assuming you meant -"
 	"PRint"
 msgstr	"warning: expression has no side effects, assuming you meant to -"
@@ -5911,6 +6432,7 @@ msgstr	"warning: expression has no side effects, assuming you meant to -"
 #
 # 	$FileName	The name of the offending file.
 #
+#, fuzzy
 msgid	"warning: file \"$filename\" needs diff"
 msgstr	"warning: file \"$filename\" needs to be differenced"
 
@@ -5921,6 +6443,7 @@ msgstr	"warning: file \"$filename\" needs to be differenced"
 #
 # 	$FileName	The name of the offending file.
 #
+#, fuzzy
 msgid	"warning: file \"$filename\" needs merge"
 msgstr	"warning: file \"$filename\" needs to be merged"
 
@@ -5933,6 +6456,7 @@ msgstr	"warning: file \"$filename\" needs to be merged"
 # 	$Number		The number of seconds into the future.
 # 			(Optional)
 #
+#, fuzzy
 msgid	"warning: file times in future"
 msgstr	"warning: file modification times extend $number second${plural "
 	"$number s} into the future"
@@ -5946,6 +6470,7 @@ msgstr	"warning: file modification times extend $number second${plural "
 # 	$Number		The number of files modified.
 # 			(Optional)
 #
+#, fuzzy
 msgid	"warning: files modified by history tool"
 msgstr	"warning: The history tool modified $number source ${plural "
 	"$number files file}.  The source ${plural $number files file} in "
@@ -5963,6 +6488,7 @@ msgstr	"warning: The history tool modified $number source ${plural "
 # 	$Number		The number of files requiring merging.
 # 			(Optional)
 #
+#, fuzzy
 msgid	"warning: mergable files"
 msgstr	"warning: there ${plural $number 'are $number files which need' "
 	"'is a file which needs' } merging"
@@ -5976,6 +6502,7 @@ msgstr	"warning: there ${plural $number 'are $number files which need' "
 #
 # 	$File_Name	The name of the affected file.
 #
+#, fuzzy
 msgid	"warning: no $filename in baseline, creating"
 msgstr	"warning: file \"$filename\" is no longer in the baseline, action "
 	"automatically changed from \"modify\" to \"create\""
@@ -5988,6 +6515,7 @@ msgstr	"warning: file \"$filename\" is no longer in the baseline, action "
 # 	$Name1		The name of a command line option.
 # 	$Name2		The name of a command line option.
 #
+#, fuzzy
 msgid	"warning: no $name1, assuming $name2"
 msgstr	"warning: no $name1 specified, assuming $name2 desired"
 
@@ -5996,6 +6524,7 @@ msgstr	"warning: no $name1 specified, assuming $name2 desired"
 # This warning message is issued when an aechown command attempts to
 # change the owner of a change to the current owner.
 #
+#, fuzzy
 msgid	"warning: no chown"
 msgstr	"warning: no need to change owner, already being developed by "
 	"user \"$developer\", a new development directory will be "
@@ -6006,6 +6535,7 @@ msgstr	"warning: no need to change owner, already being developed by "
 # This warning is issued when a received file could have a Trojan horse
 # attack in it, but the use said to keep going.
 #
+#, fuzzy
 msgid	"warning: potential trojan, proceeding anyway"
 msgstr	"Warning: This change contains files which could host a Trojan "
 	"horse attack.  Because you specified the --no-trojan option, the "
@@ -6016,6 +6546,7 @@ msgstr	"Warning: This change contains files which could host a Trojan "
 # This warning is issued when a received file could have a Trojan horse
 # attack in it.
 #
+#, fuzzy
 msgid	"warning: potential trojan, review before completing development"
 msgstr	"Warning: This change contains files which could host a Trojan "
 	"horse attack.  You should review it before building it or "
@@ -6028,6 +6559,7 @@ msgstr	"Warning: This change contains files which could host a Trojan "
 #
 # 	$File_Name	The name of the directory to be removed.
 #
+#, fuzzy
 msgid	"warning: rmdir $filename: $errno"
 msgstr	"warning: rmdir \"$filename\": $errno"
 
@@ -6037,6 +6569,7 @@ msgstr	"warning: rmdir \"$filename\": $errno"
 #
 # 	$Argument	The gid argument.
 #
+#, fuzzy
 msgid	"warning: setgid $arg: $errno"
 msgstr	"warning: setgid $arg: $errno"
 
@@ -6046,6 +6579,7 @@ msgstr	"warning: setgid $arg: $errno"
 #
 # 	$File_Name	The name of the file to be stat()ed.
 #
+#, fuzzy
 msgid	"warning: stat $filename: $errno"
 msgstr	"warning: stat \"$filename\": $errno"
 
@@ -6053,6 +6587,7 @@ msgstr	"warning: stat \"$filename\": $errno"
 # TRANSLATION REQUIRED
 # This warning message is issued when in Aegis runs in test mode.
 #
+#, fuzzy
 msgid	"warning: test mode"
 msgstr	"Warning: This copy is running in \"test\" mode.  It has reduced "
 	"capabilities due to reduced privileges.  This mode is provided "
@@ -6064,6 +6599,7 @@ msgstr	"Warning: This copy is running in \"test\" mode.  It has reduced "
 #
 # 	$File_Name	The name of the file to be unlinked.
 #
+#, fuzzy
 msgid	"warning: unlink $filename: $errno"
 msgstr	"warning: unlink \"$filename\": $errno"
 
@@ -6076,6 +6612,7 @@ msgstr	"warning: unlink \"$filename\": $errno"
 # 	$Name		The name of the -File option,
 # 			assuming option names will be internationalized RSN
 #
+#, fuzzy
 msgid	"warning: use $name option"
 msgstr	"warning: please use the $name option when specifying an "
 	"attributes file, the unadorned form is now obsolescent"
@@ -6086,6 +6623,7 @@ msgstr	"warning: please use the $name option when specifying an "
 #
 # 	$File_Name	The name of the file
 #
+#, fuzzy
 msgid	"warning: utime $filename: $errno"
 msgstr	"warning: utime \"$filename\": $errno"
 
@@ -6094,6 +6632,7 @@ msgstr	"warning: utime \"$filename\": $errno"
 # This error message is issued when a aedbu command is run by a
 # user who was not the developer of the change being operated on.
 #
+#, fuzzy
 msgid	"was not developer"
 msgstr	"user \"$user\" was not the developer of this change, only user "
 	"\"$developer\" may undo develop end"
@@ -6103,6 +6642,7 @@ msgstr	"user \"$user\" was not the developer of this change, only user "
 # This error message is issued when a aerpu command is run by a
 # user who was not the reviewer of the change being operated on.
 #
+#, fuzzy
 msgid	"was not reviewer"
 msgstr	"user \"$user\" was not the reviewer of this change, only user "
 	"\"$reviewer\" may undo the review pass"
@@ -6120,6 +6660,7 @@ msgstr	"write \"$filename\": $errno"
 # This error message is issued when the input it too complicated for
 # yacc to figure out.
 #
+#, fuzzy
 msgid	"yacc stack overflow"
 msgstr	"unable to work out what you meant to say, it's too complicated"
 
@@ -6130,5 +6671,6 @@ msgstr	"unable to work out what you meant to say, it's too complicated"
 #
 # 	$File_Name	The name of the offending file
 #
+#, fuzzy
 msgid	"you must create a \"$filename\" file"
 msgstr	"you must create a \"$filename\" file"

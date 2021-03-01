@@ -101,4 +101,4 @@ fi
 # Do not throw into the background, because not all editors are graphical.
 # If the user wants this, she can put & on the end of the command.
 #
-${EDITOR-vi} $cf
+${EDITOR-@VI_PROG@} $cf

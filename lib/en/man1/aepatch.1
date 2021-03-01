@@ -70,11 +70,47 @@ The result is compressed, and encoded into a text format which can be
 sent as e-mail without being corrupted by the mail transfer agents along
 the way.
 .PP
-This patch is a normal Unix patch, as you would produce using
+The output of the \fIaepatch -send\fP command is a normal Unix patch,
+as you would produce using
 \fIdiff\fP(1), \fIgzip\fP(1) and a MIME encoder such as \fImpack\fP(1).
 There are no special formats.  The output can be uncompressed with the
 normal \fIgunzip\fP(1) command and applied with the normal \fIpatch\fP(1)
 command.
+.SS Generating Traditional Patches
+If you wish to send "traditional" patches to developers who are not using
+Aegis to manage the sources at their end, you can use the following
+options:
+.RS
+.ft CW
+aepatch -send -cte=none -nocomp
+.ft R
+.RE
+This says to use no Content Transfer Encoding, and no compression.
+If you wish to also omit the Aegis meta data,
+you can use the following options:
+.RS
+.ft CW
+aepatch -send -cte=none -nocomp -compat=4.16
+.ft R
+.RE
+This setting for the \-compatibility option omits all Aegis extensions.
+.PP
+By default, a context diff is generated.
+Some projects prefer to use the unified diff format.
+This is controlled by the \fIpatch_diff_command\fP field of the project
+configuration file (see \fIaepconf\fP(5) for more information).
+If you have GNU diff, use the following command:
+.RS
+patch_diff_command = "set +e; "
+    "diff -u --text "
+    "-L ${quote $index} -L ${quote $index} "
+    "${quote $original} ${quote $input} > ${quote $output}; "
+    "test $? -le 1"";
+.RE
+This setting will cause the \fIaepatch\fP(1) command to produce unified
+diff patches instead of context diff patches.  As you can see from this
+command, the \fIaepatch\fP(1) command is onlu of use if you have text
+source files; it produces less than ideal results for binary files.
 .SS Options
 The following options are understood by the send variant:
 .so o_change.so
@@ -85,6 +121,12 @@ This is the default.
 .TP 8n
 \fB\-No_COmpress
 This option may be used to specify that the output is not to be compressed.
+.TP 8n
+\fB\-COMPATibility\fP \fIversion-number\fP
+This option may be used to specify the version of \fIaepatch\fP(1) which
+will be \fIreceiving\fP this change set.  This information is used to
+select which features to include in the data, and which to omit.
+By default, the latest feature set will be used.
 .so o_cte.so
 .so o_delta.so
 .so o_output.so

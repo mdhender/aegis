@@ -23,6 +23,11 @@
 #ifndef MAIN_H
 #define MAIN_H
 
+/** \addtogroup Common
+  * \brief A common set of functions and types
+  *
+  */
+
 /*
  * Generate a syntax error for all C++ keywords that aren't C keywords.
  * This ensures that we won't write C code that can't be complied by a

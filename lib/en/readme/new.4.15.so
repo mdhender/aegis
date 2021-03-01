@@ -74,7 +74,7 @@ The missing \fIaemt\fP and \fIaemtu\fP alias ve been added to the profile.
 .if t \(bu
 .\" change 50
 More detail has been added to \fIaepconf\fP(5) detailing how to create
-the project config file for the first time.
+the project configuration file for the first time.
 .PP
 .if n *
 .if t \(bu

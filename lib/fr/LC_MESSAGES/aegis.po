@@ -1,6 +1,6 @@
 #
 # 	aegis - project change supervisor
-# 	Copyright (C) 2002, 2003 Peter Miller;
+# 	Copyright (C) 2002-2004 Peter Miller;
 # 	All rights reserved.
 #
 # 	This program is free software; you can redistribute it and/or modify
@@ -24,8 +24,13 @@
 #
 # -------------------------------------------------------------------------
 #
+# The presence of the "#, fuzzy" flag is an indication that the error
+# message needs to be (re)translated.
+#
+# -------------------------------------------------------------------------
+#
 msgid	""
-msgstr	"PO-Revision-Date: 2003-03-07\n"
+msgstr	"PO-Revision-Date: 2004-05-26\n"
 	"Last-Translator: Mathieu Lacam <mathieu.b.lacam@wanadoo.fr>\n"
 	"MIME-Version: 1.0\n"
 	"Content-Type: text/plain; charset=iso-8859-1\n"
@@ -42,6 +47,17 @@ msgid	"$$$name must be positive"
 msgstr	"la variable d'environnement $name doit être un entier positif"
 
 #
+# TRANSLATION REQUIRED
+# This error message is issued when the parameter of the -UUid switch is
+# not a valid uuid.
+#
+#	$Name		The -UUid switch
+#
+#, fuzzy
+msgid	"$Name needs an uuid"
+msgstr	"The $Name option needs to be given a valid UUID"
+
+#
 # This error message is issued when a file has been tampered with while
 # in the 'being reviewed' or 'awaiting integration' state.  Files in
 # these states must be left strictly alone, or Aegis will assume that
@@ -51,6 +67,14 @@ msgstr	"la variable d'environnement $name doit être un entier positif"
 #
 msgid	"$filename altered"
 msgstr	"le fichier «$filename» a été altéré"
+
+#
+# TRANSLATION REQUIRED
+# This message is issued when an aefa is successfully completed.
+#
+#, fuzzy
+msgid  "$filename attributes changed"
+msgstr "file \"$filename\" attributes changed"
 
 #
 # This error message is issued when aenf is invoked on a file which is
@@ -233,19 +257,6 @@ msgid	"$filename unrelated"
 msgstr	"chemin «$filename» sans relation avec la modification"
 
 #
-# This warning message is issued when an obsolete percent (%)
-# substitution used.
-#
-# 	$File_Name	file containing message
-# 	$Line_Number	line number of message
-#
-#, no-c-format
-msgid	"$filename: $linenumber: don't use %% substitutions"
-msgstr	"$filename: $linenumber: attention: les substitutions préfixées "
-	"par un pour-cent (%%) sont obsolètes: veuillez utiliser les "
-	"substitutions équivalentes préfixées par un dollar ($$)"
-
-#
 # This error message is issued when a substitution function is formed
 # incorrectly.  See (+++) below.
 #
@@ -332,14 +343,6 @@ msgstr	"$filename: $linenumber: guillemets $${} non fermés"
 #
 msgid	"$filename: $linenumber: unterminated $${} substitution"
 msgstr	"$filename: $linenumber: substitution $${} non terminée"
-
-#
-# This error message is issued when a substitution function is formed
-# incorrectly.  See (+++) below.
-#
-#, no-c-format
-msgid	"$filename: $linenumber: unterminated %%() substitution"
-msgstr	"$filename: $linenumber: substitution %%() non terminée"
 
 #
 # This error message is issued when a generic error in a text file is required.
@@ -777,6 +780,7 @@ msgstr	"$name1 et $name2"
 # 	$Name1		The name of the offending option.
 # 	$Name2		The name of the offending option.
 #
+#, fuzzy
 msgid	"$name1 needs $name2"
 msgstr	"l'option $name1 doit être accompagnée par l'option $name2"
 
@@ -875,6 +879,20 @@ msgstr	"Projet «$name»"
 #
 msgid	"Project $name, Change $number"
 msgstr	"Projet «$name», Modification $number"
+
+#
+# TRANSLATION REQUIRED
+# This text is used when a project name, change number and file name are
+# inserted at the top of a file or listing.  Usually in the C locale,
+# so avoid non-ascii characters if at all possible.
+#
+# 	$Name		The name of a project.
+# 	$Number		The number of a change.
+#	$File_Name	The name of the file.
+#
+#, fuzzy
+msgid	"Project $name, Change $number, File $filename"
+msgstr	"Project \"$name\", Change $number, File \"$filename\""
 
 #
 # This error message is issued when the ${read_file} substitution is
@@ -1158,6 +1176,27 @@ msgstr	"l'architecture inclut des variations absentes du fichier "
 	"«config» du projet"
 
 #
+# TRANSLATION REQUIRED
+# This error message is issued when a user attempts to set a change's
+# UUID when the change already has a UUID.
+#
+#, fuzzy
+msgid	"bad ca, uuid already set"
+msgstr	"the UUID of this change has already been set"
+
+#
+# TRANSLATION REQUIRED
+# This error message is issued when a user attempts to set a change's
+# UUID and the given UUID has already be used by another change.
+#
+#	$Other	The version of change using the specified UUID.
+#		Optional.
+#
+#, fuzzy
+msgid	"bad ca, uuid duplicate"
+msgstr	"the UUID specified is already is use by $other"
+
+#
 # This error message is issued when an aecd is requested for a change
 # which does not have a directory.
 #
@@ -1275,6 +1314,17 @@ msgstr	"cette modification est au stade «$state»: elle doit être au "
 msgid	"bad diff state"
 msgstr	"cette modification est au stade «$state»: elle doit être au "
 	"stade «being developed» pour qu'on puisse faire une différence"
+
+#
+# TRANSLATION REQUIRED
+# This error message is issued when a user without sufficient
+# authorization attempts to modify a change file's attributes.
+#
+#, fuzzy
+msgid	"bad fa, not auth"
+msgstr	"user \"$user\" may not modify the change's attributes; "
+	"attributes may only be modified by the developer during "
+	"development"
 
 #
 # This error message is issued when an aeib command is used on a change
@@ -1626,6 +1676,7 @@ msgstr	"le fichier «$filename» dans la base de référence a été modifié "
 #
 #      $File_Name      The name of the offending file.
 #
+#, fuzzy
 msgid	"baseline $filename changed, merge in new change"
 msgstr	"le fichier «$filename» a changé dans l'ancêtre de la branche "
 	"depuis qu'il a été modifié dans cette branche.  Pour résoudre "
@@ -1658,8 +1709,9 @@ msgstr	"verrou d'écriture pour la base de référence non disponible"
 # 	$Last		Number of the last test in batch
 # 	$Total		Total number of tests
 #
+#, fuzzy
 msgid	"batch test from $current to $last of $total"
-msgstr	"tests $current à $last sur $total: ${date %%H:%%M}"
+msgstr	"tests $current à $last sur $total: ${date %H:%M}"
 
 #
 # This error message is issued when the bevel size specified is negative,
@@ -1977,7 +2029,7 @@ msgstr	"ligne de commande trop courte"
 # This message is inserted into the top of the project config file
 # automatically created by aeimport.
 #
-msgid	"config file hint"
+msgid	"configuration file hint"
 msgstr	"Il vous faudra adapter ce fichier au projet.\n"
 	"Voir aepconf(5) pour des renseignements sur les champs de ce "
 	"fichier.\n"
@@ -2045,6 +2097,7 @@ msgstr	"${plural $number '$number fichiers copiés' 'un fichier copié'}"
 #
 # 	$File_Name	Name of the file removed from the change.
 #
+#, fuzzy
 msgid	"copy file undo $filename complete"
 msgstr	"le fichier «$filename» ne fait désormais plus partie de la "
 	"modification"
@@ -2192,13 +2245,13 @@ msgstr	"le développeur d'une modification ne peut pas aussi en faire la "
 # This message is issued when development builds are completed.
 #
 msgid	"development build complete"
-msgstr	"construction du développement terminée à ${date %%H:%%M}"
+msgstr	"construction du développement terminée à ${date %H:%M}"
 
 #
 # This message is issued when development builds are commenced.
 #
 msgid	"development build started"
-msgstr	"construction du développement commencée à ${date %%H:%%M}"
+msgstr	"construction du développement commencée à ${date %H:%M}"
 
 #
 # This progress message is issued when aede completes successfully.
@@ -2629,6 +2682,7 @@ msgstr	"le nom de fichier «$filename» ne convient pas à Windows "
 # This error message is issued when a file qualifier in a substitution
 # is an unknown name.  See (+++) below.
 #
+#, fuzzy
 msgid	"file qualifier unknown"
 msgstr	"file qualifier unknown"
 
@@ -3023,9 +3077,9 @@ msgstr	"comparaison illégale ($name1 ~ $name2)"
 # 	$Name1		The type name of the left operand.
 # 	$Name2		The type name of the right operand.
 #
-#, no-c-format
-msgid	"illegal modulo ($name1 %% $name2)"
-msgstr	"modulo ($name1 %% $name2) illégal"
+#,  no-c-format
+msgid	"illegal modulo ($name1 % $name2)"
+msgstr	"modulo ($name1 % $name2) illégal"
 
 #
 # This error message is issued when an illegal * is attempted.
@@ -3209,13 +3263,13 @@ msgstr	"${plural $number '$number erreurs trouvées' 'une erreur "
 # This message is issued when integration builds are completed.
 #
 msgid	"integration build complete"
-msgstr	"construction de l'intégration terminée à ${date %%H:%%M}"
+msgstr	"construction de l'intégration terminée à ${date %H:%M}"
 
 #
 # This message is issued when integration builds are commenced.
 #
 msgid	"integration build started"
-msgstr	"construction de l'intégration commencée à ${date %%H:%%M}"
+msgstr	"construction de l'intégration commencée à ${date %H:%M}"
 
 #
 # This error message is issued when Aegis terminates, because an
@@ -3345,6 +3399,7 @@ msgstr	"$filename: $errno"
 #
 # $filename	The name of the offending file.
 #
+#, fuzzy
 msgid	"make $filename transparent, fail, too deep"
 msgstr	"le fichier «$filename» ne peut être rendu transparent car il ne "
 	"fait pas partie de la branche, alors qu'il appartient bien à une "
@@ -3358,6 +3413,7 @@ msgstr	"le fichier «$filename» ne peut être rendu transparent car il ne "
 #
 # $filename	The name of the offending file.
 #
+#, fuzzy
 msgid	"make $filename transparent, fail, too shallow"
 msgstr	"le fichier «$filename» ne peut être rendu transparent car il "
 	"n'est pas présent également dans une branche-ancêtre plus "
@@ -3370,6 +3426,7 @@ msgstr	"le fichier «$filename» ne peut être rendu transparent car il "
 #
 # $filename	The name of the offending file.
 #
+#, fuzzy
 msgid	"make $filename transparent, fail, trunk"
 msgstr	"le fichier «$filename» ne peut être rendu transparent car il "
 	"appartient au tronc: il est probable que la commande «aerm» vous "
@@ -3380,6 +3437,7 @@ msgstr	"le fichier «$filename» ne peut être rendu transparent car il "
 # This error message is issued when aemt is invoked for a change which
 # is not in the 'being developed' state.
 #
+#, fuzzy
 msgid	"make transparent bad state"
 msgstr	"cette modification est au stade «$state»: elle doit être au "
 	"stade «being developed» pour qu'on puisse y rendre un fichier "
@@ -3392,6 +3450,7 @@ msgstr	"cette modification est au stade «$state»: elle doit être au "
 #
 # $number	The number of files (optional).
 #
+#, fuzzy
 msgid	"make transparent complete"
 msgstr	"${plural $number '$number fichiers rendus transparents' 'un "
 	"fichier rendu transparent'}"
@@ -3405,6 +3464,7 @@ msgstr	"${plural $number '$number fichiers rendus transparents' 'un "
 #
 # 	$File_Name	Name of the file removed from the change.
 #
+#, fuzzy
 msgid	"make transparent undo $filename complete"
 msgstr	"le fichier «$filename» n'est désormais plus transparent"
 
@@ -3446,18 +3506,6 @@ msgstr	"constante hexadécimale malformée"
 #
 msgid	"may not assign to a list member ($name1[$name2])"
 msgstr	"un élément d'une liste ($name1[$name2]) ne peut être affecté"
-
-#
-# This error message is issued when the used attempts to create the
-# project ``config'' file with the -Build option.  The file must be
-# available to Aegis at all times, and thus must be an ordinary source
-# file.
-#
-# 	$File_Name	The name of the offending file.
-#
-msgid	"may not build $filename"
-msgstr	"le fichier «$filename» doit être un fichier source ordinaire: il "
-	"ne peut pas être généré lors de la construction"
 
 #
 # This error message is issued when the user attempts to use the aerm
@@ -3587,6 +3635,7 @@ msgstr	"fichier «$filename1» déplacé vers «$filename2»"
 #
 # 	$File_Name	Name of the file removed from the change.
 #
+#, fuzzy
 msgid	"move file undo $filename complete"
 msgstr	"le déplacement du fichier «$filename» est annulé"
 
@@ -4026,15 +4075,6 @@ msgstr	"impossible d'utiliser une option de fusion avec l'option «-"
 	"ANticipate»"
 
 #
-# This error message is issued when aemv is asked to move the project
-# 'config' file.
-#
-# 	$File_Name	The name of the offending file.
-#
-msgid	"no move $filename"
-msgstr	"impossible de déplacer le fichier «$filename»"
-
-#
 # This error message is issued when aenf command fails.  Errors are
 # printed out as they are found, but frequently errors happen together,
 # so the aenf command finds as many as possible before aborting.  This
@@ -4284,13 +4324,13 @@ msgstr	"impossible de comprendre ce que vous voulez dire: c'est trop "
 # This message is issued when partial development builds are completed.
 #
 msgid	"partial build complete"
-msgstr	"construction partielle terminée à ${date %%H:%%M}"
+msgstr	"construction partielle terminée à ${date %H:%M}"
 
 #
 # This message is issued when partial development builds are commenced.
 #
 msgid	"partial build started"
-msgstr	"construction partielle commencée à ${date %%H:%%M}"
+msgstr	"construction partielle commencée à ${date %H:%M}"
 
 #
 # This progress message is issued when aet completes, both successfully
@@ -4332,6 +4372,7 @@ msgstr	"répertoire du project «$filename»"
 # tests, but there are no files which are candidates of the options
 # specified, or the project may have no tests at all.
 #
+#, fuzzy
 msgid	"proj has no tests"
 msgstr	"this project requires relevant tests before this command may be "
 	"used"
@@ -4627,6 +4668,7 @@ msgstr	"exige un ou deux arguments"
 # This error message is issued when a substitution function is called
 # incorrectly.  See (+++) below.
 #
+#, fuzzy
 msgid	"requires three arguments"
 msgstr	"exige trois arguments"
 
@@ -4840,6 +4882,7 @@ msgstr	"impossible de comprendre ce que vous voulez dire"
 # TRANSLATION REQUIRED
 # This error message is issued when yacc finds an error at parse time.
 #
+#, fuzzy
 msgid	"syntax error: cannot back up"
 msgstr	"impossible de comprendre ce que vous voulez dire: impossible de "
 	"récupérer en reculant"
@@ -4848,6 +4891,7 @@ msgstr	"impossible de comprendre ce que vous voulez dire: impossible de "
 # TRANSLATION REQUIRED
 # This error message is issued when bison finds an error at parse time.
 #
+#, fuzzy
 msgid	"syntax error; also virtual memory exhausted"
 msgstr	"ne comprendre pas ce que vous voulez dire; parce qu'il est trop "
 	"compliqué de reste au mémoire"
@@ -4868,8 +4912,9 @@ msgstr	"largeur de tabulation de $number en dehors du domaine"
 #      $Current        Current test number
 #      $Total          Total number of tests
 #
+#, fuzzy
 msgid	"test $current of $total"
-msgstr	"test $current sur $total à ${date %%H:%%M}"
+msgstr	"test $current sur $total à ${date %H:%M}"
 
 #
 # This verbose message is issued when aent determines the list of
@@ -5013,6 +5058,7 @@ msgstr	"l'instruction «throw» nécessite un argument chaîne (un type "
 #
 # 	$number		The offending date and time.
 #
+#, fuzzy
 msgid	"time $number after branch"
 msgstr	"warning: the time \"$number\" is after the branch finished, this "
 	"is not meaningful when recreating the contents of the branch"
@@ -5025,6 +5071,7 @@ msgstr	"warning: the time \"$number\" is after the branch finished, this "
 #
 # 	$number		The offending date and time.
 #
+#, fuzzy
 msgid	"time $number before branch"
 msgstr	"warning: the time \"$number\" is before the branch started, this "
 	"is not meaningful when recreating the contents of the branch"
@@ -5421,6 +5468,7 @@ msgstr	"attention: l'outil d'historique a altéré le fichier source "
 #
 # 	$filename	The name of the offending file.
 #
+#, fuzzy
 msgid	"warning: $filename patch not used"
 msgstr	"attention: le patch pour «$filename» ne convenant pas, le "
 	"fichier provenant de la modification a été utilisé en entier: "
@@ -5437,18 +5485,6 @@ msgstr	"attention: le patch pour «$filename» ne convenant pas, le "
 msgid	"warning: $name1 is obsolete, use $name2 environment variable"
 msgstr	"attention: la variable d'environnement $name1 est obsolète: "
 	"merci d'utiliser $name2 à la place"
-
-#
-# This warning message is issued when an obsolete % substitution is used.
-# (They are so obsolete they are undocumented, and will eventually be
-# removed.) An equivalent ${...} substitution is suggested.
-#
-# 	$Name1		The offending percent (%) substitution.
-# 	$Name2		The appropriate dollar ($) replacement.
-#
-msgid	"warning: $name1 is obsolete, use $name2 substitution"
-msgstr	"attention: la substitution $name1 est désuète et a été remplacée "
-	"par $name2 dans ce contexte"
 
 #
 # This warning is issued when an obsolete option is used.

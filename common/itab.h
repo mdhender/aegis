@@ -25,6 +25,11 @@
 
 #include <main.h>
 
+/** \addtogroup ITAB
+  * \brief [ITAB - Add a description here]
+  * \ingroup Common
+  * @{
+  */
 typedef long itab_key_ty;
 
 typedef struct itab_row_ty itab_row_ty;
@@ -53,4 +58,5 @@ void itab_delete(itab_ty *, itab_key_ty);
 void itab_walk(itab_ty *, void (*)(itab_ty *, itab_key_ty, void *, void *),
 	void *);
 
+/** @} */
 #endif /* COMMON_ITAB_H */

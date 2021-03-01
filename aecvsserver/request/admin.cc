@@ -1,0 +1,80 @@
+//
+//	aegis - project change supervisor
+//	Copyright (C) 2004 Peter Miller;
+//	All rights reserved.
+//
+//	This program is free software; you can redistribute it and/or modify
+//	it under the terms of the GNU General Public License as published by
+//	the Free Software Foundation; either version 2 of the License, or
+//	(at your option) any later version.
+//
+//	This program is distributed in the hope that it will be useful,
+//	but WITHOUT ANY WARRANTY; without even the implied warranty of
+//	MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+//	GNU General Public License for more details.
+//
+//	You should have received a copy of the GNU General Public License
+//	along with this program; if not, write to the Free Software
+//	Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111, USA.
+//
+// MANIFEST: functions to manipulate admins
+//
+//
+// admin
+//
+// Actually do a cvs admin command.  This uses any previous Argument,
+// Directory, Entry, or Modified requests, if they have been sent.
+// The last Directory sent specifies the working directory at the time
+// of the operation.
+//
+// The admin command can take Is-modified instead of
+// Modified with no known change in behavior.
+//
+// Root required: yes.
+// Response expected: yes.
+//
+//
+// From cvs(1):
+// admin [rcs-options] files...
+//     This is the cvs interface to assorted administrative facilities,
+//     similar to rcs(1).  Execute control functions on the source
+//     repository.  (Changes repository directly; uses working directory
+//     without changing it.)
+//
+//
+// Reverse Engineering Notes:
+//
+// We can infer from the cvs(1) man page that the Argument requests
+// preceeding the admin request will be the rcs-options and then the
+// file names.
+//
+// You can expect Entry, Unchanged and Is-modified requests to preceed
+// this request for each of the files named in the Argument requests
+// (with the necessary Directory requests for context).
+//
+
+#include <request/admin.h>
+#include <server.h>
+
+
+static void
+run(server_ty *sp, string_ty *arg)
+{
+    if (server_root_required(sp, "admin"))
+	return;
+    server_m
+    (
+	sp,
+	"This command has been ignored.\n"
+	    "You must use Aegis commands for Aegis administration."
+    );
+    server_ok(sp);
+}
+
+
+const request_ty request_admin =
+{
+    "admin",
+    run,
+    1, // reset
+};

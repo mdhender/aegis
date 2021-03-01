@@ -1,7 +1,7 @@
 #!/bin/sh
 #
 #	aegis - project change supervisor
-#	Copyright (C) 1994-1999, 2002 Peter Miller;
+#	Copyright (C) 1994-1999, 2002, 2004 Peter Miller;
 #	All rights reserved.
 #
 #	This program is free software; you can redistribute it and/or modify
@@ -365,7 +365,7 @@ FILES
 	Type	Action	 File Name
 	------- -------- -----------
 	source	create	 Makefile
-	source	create	 config
+	config	create	 config
 	source	modify	 main.c
 	source	create	 test.c
 	test	create	 test/00/t0001a.sh

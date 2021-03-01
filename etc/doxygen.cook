@@ -25,10 +25,10 @@ if [doxygen] then
 	all += doxygen-targets;
 
 doxygen-targets:
-	doxygen-html/index.html
+	archive/doxygen-html/index.html
 	;
 
-doxygen-html/-files =
+archive/doxygen-html/-files =
 	[match_mask common/%0%.h [source_files]]
 	[match_mask libaegis/%0%.h [source_files]]
 	/*
@@ -44,9 +44,9 @@ doxygen-html/-files =
 	*/
 	;
 
-doxygen-html/index.html: [doxygen-html/-files] etc/doxygen.cfg
+archive/doxygen-html/index.html: [archive/doxygen-html/-files] etc/doxygen.cfg
 {
-	rm -rf doxygen-html doxygen-tmp;
+	rm -rf archive/doxygen-html doxygen-tmp;
 	cat [resolve etc/doxygen.cfg] - > Doxyfile;
 data
 # The OUTPUT_DIRECTORY tag is used to specify the (relative or
@@ -75,14 +75,15 @@ INCLUDE_PATH = [unsplit " \\\n"
     ]
 ]
 dataend
-	[doxygen] Doxyfile -d doxygen-html
+	[doxygen] Doxyfile -d archive/doxygen-html
 						/*
-						 * have Cook tell use how long
+						 * Have Cook tell us how long
 						 * it takes to cook.
 						 */
 						set meter
 		;
-	mv doxygen-tmp/html doxygen-html;
+	rm -rf archive/doxygen-htm;
+	mv doxygen-tmp/html archive/doxygen-html;
 	rm -rf Doxyfile doxygen-tmp
 		set errok ;
 }

@@ -1,6 +1,6 @@
 /*
  *	aegis - project change supervisor
- *	Copyright (C) 1991, 1992, 1993, 1994, 1999 Peter Miller;
+ *	Copyright (C) 1991-1994, 1999, 2004 Peter Miller;
  *	All rights reserved.
  *
  *	This program is free software; you can redistribute it and/or modify
@@ -23,13 +23,47 @@
 #ifndef MEM_H
 #define MEM_H
 
+/** \addtogroup Memory
+  * \brief Memory management functions
+  * \ingroup Common
+  * @{
+  */
 #include <ac/stddef.h>
 #include <main.h>
 
+/** \brief allocate memory
+ *
+ *  mem_alloc uses malloc to allocate the required sized chunk of
+ *  memory.  If any error is returned from malloc() a fatal
+ *  diagnostic is issued.
+ *
+ *  @param The size of the memory to allocate.
+ *
+ *  @warning It is the responsibility of the caller to ensure that the
+ *  space is freed when finished with, by a call to mem_free().
+ */
+
 void *mem_alloc(size_t);
+
+
+/** \brief allocate and clear memory
+ *
+ *  mem_alloc_clear uses malloc to allocate the required sized chunk
+ *  of memory.  If any error is returned from malloc() an fatal
+ *  diagnostic is issued.  The memory is zeroed befor it is returned.
+ *
+ *  @param n - The size of the memory to allocate
+ *
+ *  @warning It is the responsibility of the caller to ensure that the space is
+ *	freed when finished with, by a call to free().
+ */
+
 void *mem_alloc_clear(size_t);
+
+
 void *mem_change_size(void *, size_t);
 void mem_free(void *);
 char *mem_copy_string(const char *);
 
+/** @} */
 #endif /* MEM_H */

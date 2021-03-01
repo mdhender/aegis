@@ -1,6 +1,6 @@
 /*
  *	aegis - project change supervisor
- *	Copyright (C) 1991-1994, 1998, 2002, 2003 Peter Miller;
+ *	Copyright (C) 1991-1994, 1998, 2002-2004 Peter Miller;
  *	All rights reserved.
  *
  *	This program is free software; you can redistribute it and/or modify
@@ -27,10 +27,15 @@
 #include <lex.h>
 #include <str.h>
 
+#define ATTRIBUTE_REDEFINITION_OK 1
+#define ATTRIBUTE_SHOW_IF_DEFAULT 2
+#define ATTRIBUTE_HIDE_IF_DEFAULT 4
+
 #define TYPE_TY \
-    struct type_method_ty *method; \
-    string_ty       *name; \
-    int             is_a_typedef; \
+    struct type_method_ty *method;	\
+    string_ty       *name;		\
+    string_ty       *c_name;		\
+    int             is_a_typedef;	\
     int             included_flag;
 
 typedef struct type_ty type_ty;
@@ -56,6 +61,7 @@ struct type_method_ty
     void            (*gen_free_declarator)(type_ty *, string_ty *, int);
     void            (*member_add)(type_ty *, string_ty *, type_ty *, int);
     void            (*in_include_file)(type_ty *);
+    string_ty       *(*c_name)(type_ty *);
 };
 
 void type_gen_include(type_ty *);
@@ -70,5 +76,13 @@ void type_in_include_file(type_ty *);
 
 type_ty *type_new(type_method_ty *, string_ty *);
 void type_delete(type_ty *);
+
+/**
+  * The type_c_name function is used to get the C name to be used in
+  * abstract declarators (and casts) of this type.  Usually the names
+  * match (with _ty on the end), but integer->intel->double, time->time_t,
+  * etc, are exceptions.
+  */
+string_ty *type_c_name(type_ty *);
 
 #endif /* TYPE_H */

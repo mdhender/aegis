@@ -1,6 +1,6 @@
 /*
  *	aegis - project change supervisor
- *	Copyright (C) 1995-2003 Peter Miller;
+ *	Copyright (C) 1995-2004 Peter Miller;
  *	All rights reserved.
  *
  *	This program is free software; you can redistribute it and/or modify
@@ -27,13 +27,15 @@
 #include <cstate.h>
 #include <fstate.h>
 #include <pconf.h>
+#include <view_path.h>
 #include <zero.h>
 
 /*
  * Name of the project configuration file,
  * relative to the baseline/devdir root.
  */
-#define THE_CONFIG_FILE "config"
+#define THE_CONFIG_FILE_OLD "config"
+#define THE_CONFIG_FILE_NEW "aegis.conf"
 
 /*
  * Define a magic number to represent the trunk transaction
@@ -65,15 +67,17 @@ struct change_ty
 	string_ty	*integration_directory_unresolved;
 	string_ty	*integration_directory_resolved;
 	string_ty	*logfile;
-	string_ty	*pconf_path;
 	pconf_ty	*pconf_data;
 	long		lock_magic;
 	int		bogus;
 	string_ty	*architecture_name;
+	struct string_list_ty *file_list[view_path_MAX];
 
 	/*
 	 * if you add to this structure, don't forget to update
-	 * change_alloc() and change_free() in aegis/change.c
+	 * change_alloc()     in libaegis/change/alloc.c
+	 * change_free()      in libaegis/change/free.c
+	 * change_lock_sync() in libaegis/change/lock_sync.c
 	 */
 };
 
@@ -81,6 +85,7 @@ change_ty *change_alloc(struct project_ty *, long);
 void change_free(change_ty *);
 change_ty *change_copy(change_ty *);
 void change_bind_existing(change_ty *);
+int change_bind_existing_errok(change_ty *);
 void change_bind_new(change_ty *);
 change_ty *change_bogus(struct project_ty *);
 cstate_ty *change_cstate_get(change_ty *);
@@ -102,7 +107,6 @@ void change_cstate_lock_prepare(change_ty *);
 void change_error(change_ty *, struct sub_context_ty *, const char *);
 void change_fatal(change_ty *, struct sub_context_ty *, const char *) NORETURN;
 void change_verbose(change_ty *, struct sub_context_ty *, const char *);
-string_ty *change_pconf_path_get(change_ty *);
 pconf_ty *change_pconf_get(change_ty *, int);
 void change_run_new_file_command(change_ty *, struct string_list_ty *,
 	struct user_ty *);
@@ -141,8 +145,21 @@ void change_run_history_get_command(change_ty *cp, fstate_src_ty *src,
 	string_ty *output_file, struct user_ty *up);
 void change_run_history_create_command(change_ty *cp, fstate_src_ty *);
 void change_run_history_put_command(change_ty *cp, fstate_src_ty *);
-string_ty *change_run_history_query_command(change_ty *cp,
-	string_ty *file_name);
+
+/**
+  * The change_run_history_query_command function is used to obtain the
+  * head revision number of the history of the given source file.
+  *
+  * @param cp
+  *     The change to operate within.
+  * @param src
+  *     The source file meta-data of the file of interest.
+  * @returns
+  *     Pointer to string containing the version.  Use str_free() when
+  *     you are done with it.
+  */
+string_ty *change_run_history_query_command(change_ty *cp, fstate_src_ty *src);
+
 void change_run_history_label_command(change_ty *cp, fstate_src_ty *,
 	string_ty *label);
 void change_history_trashed_fingerprints(change_ty *,
@@ -225,7 +242,13 @@ string_ty *change_development_directory_template(change_ty *,
 string_ty *change_metrics_filename_pattern_get(change_ty *);
 
 /**
-  * The change_is_completed function returns true (no-zero) if the given
+  * The change_is_being_developed function returns true (non-zero) if the
+  * given change is in the completed state, and false (zero) if it is not.
+  */
+int change_is_being_developed(change_ty *);
+
+/**
+  * The change_is_completed function returns true (non-zero) if the given
   * change is in the completed state, and false (zero) if it is not.
   */
 int change_is_completed(change_ty *);
@@ -235,5 +258,23 @@ int change_is_completed(change_ty *);
   * of a change, or zero if the change is not yet completed.
   */
 long change_delta_number_get(change_ty *);
+
+/**
+  * The change_brief_description_get function may be used to get the
+  * brief_descriotion field of the change attributes.
+  */
+string_ty *change_brief_description_get(change_ty *);
+
+/**
+  * The change_uuid_set function is used to set a change's UUID,
+  * if it has not been set already.
+  */
+void change_uuid_set(change_ty *cp);
+
+/**
+  * The change_uuid_clear function is used to clear a change's UUID,
+  * if it has been set in the past.
+  */
+void change_uuid_clear(change_ty *cp);
 
 #endif /* LIBAEGIS_CHANGE_H */

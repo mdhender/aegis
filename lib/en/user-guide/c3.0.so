@@ -1,6 +1,6 @@
 .\"
 .\"	aegis - project change supervisor
-.\"	Copyright (C) 1991-1994, 1998, 2001, 2002 Peter Miller;
+.\"	Copyright (C) 1991-1994, 1998, 2001, 2002, 2004 Peter Miller;
 .\"	All rights reserved.
 .\"
 .\"	This program is free software; you can redistribute it and/or modify
@@ -43,7 +43,7 @@ utilities look a little strange.
 .LP
 The history mechanism interface is found in the
 project configuration file called
-.I "config" ,
+.I "aegis.conf" ,
 relative to the root of the baseline.
 It is a source file and subject to the same controls
 as any other source file.

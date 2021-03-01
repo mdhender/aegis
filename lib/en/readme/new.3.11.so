@@ -1,6 +1,6 @@
 .\"
 .\"	aegis - project change supervisor
-.\"	Copyright (C) 1999, 2003 Peter Miller;
+.\"	Copyright (C) 1999, 2003, 2004 Peter Miller;
 .\"	All rights reserved.
 .\"
 .\"	This program is free software; you can redistribute it and/or modify
@@ -22,7 +22,8 @@
 .PP
 .if n *
 .if t \(bu
-The way the Apache config files are scanned for and read has been changed,
+The way the Apache configuration files are scanned for and read has
+been changed,
 to adapt to recent Apache changes.  The \fI./configure\fP script will
 now find it more often.
 .PP

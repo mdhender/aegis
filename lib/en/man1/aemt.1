@@ -1,6 +1,6 @@
 '\" t
 .\"	aegis - project change supervisor
-.\"	Copyright (C) 2002, 2003 Peter Miller;
+.\"	Copyright (C) 2002-2004 Peter Miller;
 .\"	All rights reserved.
 .\"
 .\"	This program is free software; you can redistribute it and/or modify
@@ -63,14 +63,14 @@ command, through the agency of a change.
 This command will cancel any build or test registrations,
 because changing the change file list logically invalidates them.
 .\" If the project
-.\" .I config
+.\" configuration
 .\" file was made transparent,
 .\" any diff registration will also be canceled.
-.\" .SS Notification
-.\" The \fIcopy_file_undo_command\fP in the project \fIconfig\fP file is
-.\" run, if set.  The \fIproject_\%file_\%command\fP is also run, if set,
-.\" and if there has been an integration recently.  See \fIaepconf\fP(5)
-.\" for more information.
+.SS Notification
+The \fImake_transparent_command\fP in the project configuration file is
+run, if set.  The \fIproject_\%file_\%command\fP is also run, if set,
+and if there has been an integration recently.  See \fIaepconf\fP(5)
+for more information.
 .SH OPTIONS
 The following options are understood:
 .so o_baserel.so

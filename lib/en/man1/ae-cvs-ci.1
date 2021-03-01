@@ -1,0 +1,52 @@
+'\" t
+.\"	aegis - project change supervisor
+.\"	Copyright (C) 2004 Peter Miller;
+.\"	All rights reserved.
+.\"
+.\"	This program is free software; you can redistribute it and/or modify
+.\"	it under the terms of the GNU General Public License as published by
+.\"	the Free Software Foundation; either version 2 of the License, or
+.\"	(at your option) any later version.
+.\"
+.\"	This program is distributed in the hope that it will be useful,
+.\"	but WITHOUT ANY WARRANTY; without even the implied warranty of
+.\"	MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+.\"	GNU General Public License for more details.
+.\"
+.\"	You should have received a copy of the GNU General Public License
+.\"	along with this program; if not, write to the Free Software
+.\"	Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111, USA.
+.\"
+.\" MANIFEST: manual page describing the lib/en/man/ae-cvs-ci command.
+.\"
+.so z_name.so
+.ds n) ae-cvs-ci
+.TH "ae-cvs-ci" 1 \*(N) "Reference Manual" ""
+.SH NAME
+ae-cvs-ci \- checkin a change set to CVS
+.XX "ae-cvs-ci(1)" "checkin a change set to CVS"
+.SH SYNOPSIS
+.B \*(n)
+.I project-name
+.I change-number
+.SH DESCRIPTION
+The \fI\*(n)\fP command is used to check an Aegis change set into CVS.
+This is usually used in the \fIintegrate pass notify command\fP project
+attribute, as in
+.RS
+integrate_pass_notify_command =
+    "$bin/ae-cvs-ci $project $change";
+.RE
+.LP
+Alternatively, you may wish to taylor this script to the individual
+needs of your project.  Make it a source file, e.g. \fIetc/ae-cvs-ci.sh\fP
+and the use the following:
+.RS
+integrate_pass_notify_command =
+    "$sh ${source etc/ae-cvs-ci abs} $project $change";
+.RE
+.LP
+It is assumed that your CVSROOT and CVS_RSH environment variables have
+already been set appropriately, or you could set them in the command.
+.so z_exit.so
+.so z_cr.so

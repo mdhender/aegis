@@ -23,6 +23,11 @@
 #ifndef ARGLEX_H
 #define ARGLEX_H
 
+/** \addtogroup arglex
+  * \brief Parse command switch
+  * \ingroup Common
+  * @{
+  */
 #include <main.h>
 
 #define ARGLEX_END_MARKER { (const char *)0, 0, }
@@ -86,4 +91,5 @@ void arglex_synthetic(int, char **, int);
 void arglex_retable(arglex_table_ty *);
 int arglex_get_string(void);
 
+/** @} */
 #endif /* ARGLEX_H */

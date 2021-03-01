@@ -1,7 +1,7 @@
 #!/bin/sh
 #
 #	aegis - project change supervisor
-#	Copyright (C) 1999, 2000 Peter Miller;
+#	Copyright (C) 1999, 2000, 2004 Peter Miller;
 #	All rights reserved.
 #
 #	This program is free software; you can redistribute it and/or modify
@@ -37,21 +37,6 @@ here=`pwd`
 if test $? -ne 0 ; then exit 2; fi
 
 if test "$1" != "" ; then bin="$here/$1/bin"; else bin="$here/bin"; fi
-
-check_it()
-{
-	sed	-e "s|$work|...|g" \
-		-e 's|= [0-9][0-9]*; /.*|= TIME;|' \
-		-e "s/\"$USER\"/\"USER\"/g" \
-		-e 's/19[0-9][0-9]/YYYY/' \
-		-e 's/20[0-9][0-9]/YYYY/' \
-		-e 's/node = ".*"/node = "NODE"/' \
-		-e 's/crypto = ".*"/crypto = "GUNK"/' \
-		< $2 > $work/sed.out
-	if test $? -ne 0; then no_result; fi
-	diff $1 $work/sed.out
-	if test $? -ne 0; then fail; fi
-}
 
 no_result()
 {
@@ -263,11 +248,24 @@ $bin/aegis -diff -nl -v > log 2>&1
 if test $? -ne 0 ; then cat log; no_result; fi
 
 #
-# pass the integration
+# try pass the integration
 #
-activity="integrate pass 347"
-$bin/aegis -intpass -verbose -nl > log 2>&1
-if test $? -ne 1 ; then cat log; fail; fi
+# It should complain about "files modified by history tool" because RCS
+# has a nasty habbit of rewriting the input files.
+#
+# BUT: with the new UUID code, we see that RCS unlinks the input file
+# first, and then rewrites it (which is probably a good thing).  This
+# means this test is thus broken, because the file is rewrittent in the
+# directory which contains the symlink with the funny name.
+#
+# Only history tools which aren't as polite as RCS will cause this test
+# to fail.  [Of course, it was RCS's stupid behaviour, needing the input
+# and thistory file names to be so similar, which caused this test to
+# fail in the first place.
+#
+# activity="integrate pass 347"
+# $bin/aegis -intpass -verbose -nl > log 2>&1
+# if test $? -ne 1 ; then cat log; fail; fi
 
 #
 # the things tested in this test, worked

@@ -1,6 +1,6 @@
 /*
  *	aegis - project change supervisor
- *	Copyright (C) 2003 Peter Miller;
+ *	Copyright (C) 2003, 2004 Peter Miller;
  *	All rights reserved.
  *
  *	This program is free software; you can redistribute it and/or modify
@@ -25,30 +25,45 @@
 
 #include <main.h>
 
-/*
- * If you add to this enum, make sure you extend project_ty::file_list
- * and change_ty::file_list
- */
+/**
+  * If you add to this enum, make sure you extend project_ty::file_list
+  * and change_ty::file_list
+  */
 enum view_path_ty
 {
-    /*
-     * Do not impose a view path when searching for files.
-     */
+    /**
+      * Only use the first element of the view path.  Transparent and
+      * removed files will be reported.
+      */
+    view_path_first,
+
+    /**
+      * Walk down the search list looking for files, unioning all of
+      * the file lists together.  Transparent and removed file will be
+      * reported.  The "none" is somewhat of a misnomer - it means no
+      * transparency processing is done, rather then no view path.
+      */
     view_path_none,
 
-    /*
-     * Apply the transparency when searching for files, but return
-     * removed files when you see them.
-     */
+    /**
+      * Apply the transparency when searching for files, but return
+      * removed files when you see them.
+      */
     view_path_simple,
 
-    /*
-     * Apply the transparency when searching for files, and also omit
-     * any mention of removed files.
-     */
+    /**
+      * Apply the transparency when searching for files, and also omit
+      * any mention of removed files.
+      */
     view_path_extreme
 };
 typedef enum view_path_ty view_path_ty;
+
+/*
+ * Use for declaring arrays indexed by view_path_ty.
+ * Don't put it into the enum, of gcc can't give sensable errors.
+ */
+#define view_path_MAX 4
 
 /**
   * The view_path_ename function may be used to obtain a human readable

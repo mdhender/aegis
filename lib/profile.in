@@ -42,11 +42,7 @@ fi
 # manual pages in the user's preferred language.
 #
 if [ "${MANPATH-no}" = "no" ]; then
-	if [ "`uname`" = "Linux" ]; then
-		MANPATH=`man -w`
-	else
-		MANPATH=/usr/man
-	fi
+    MANPATH="`@MANPATH_PROG@`"
 fi
 MANPATH=${MANPATH}:@mandir@:@datadir@
 export MANPATH
@@ -151,6 +147,10 @@ aedmore()
 aedn()
 {
 	aegis -dn "$@" -v
+}
+aefa()
+{
+	aegis -fat "$@" -v
 }
 aeib()
 {
@@ -436,6 +436,7 @@ then
 	    aede \
 	    aedeu \
 	    aedn \
+	    aefa \
 	    aegis \
 	    aeib \
 	    aeibu \

@@ -1,6 +1,6 @@
 .\"
 .\"	aegis - project change supervisor
-.\"	Copyright (C) 1994, 1995 Peter Miller;
+.\"	Copyright (C) 1994, 1995, 2004 Peter Miller;
 .\"	All rights reserved.
 .\"
 .\"	This program is free software; you can redistribute it and/or modify
@@ -80,7 +80,7 @@ for more information.
 It is now possible to specify patterns for
 acceptable and unacceptable
 filenames in the project
-.I config
+configuration
 file.
 See
 .IR aepconf (5)

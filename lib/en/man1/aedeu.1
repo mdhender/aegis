@@ -1,6 +1,6 @@
 '\" tp
 .\"	aegis - project change supervisor
-.\"	Copyright (C) 1991-1993, 1998, 1999, 2001, 2002 Peter Miller;
+.\"	Copyright (C) 1991-1993, 1998, 1999, 2001, 2002, 2004 Peter Miller;
 .\"	All rights reserved.
 .\"
 .\"	This program is free software; you can redistribute it and/or modify
@@ -102,11 +102,22 @@ sh$	aedeu(){\*(n) -deu "$@" -v}
 It is an error if
 the change is not in one of
 the
+.I "awaiting review"
+or
 .I "being reviewed"
 or
 .I "awaiting integration"
 states.
-.br
+.LP
+If is an error if
+the project has been configured to use the \fIawaiting review\fP
+state, and the change is currently in the \fIbeing reviewed\fP state.
+This is because the change currently belongs to the reviewer.
+.\" If the project does not use the \fIawaiting review\fP state (the
+.\" default is for \fIaede\fP(1) to pass changes straight to the \fIbeing
+.\" reviewed\fP state) the most recent developer \fImay\fP undo the
+.\" develop end.
+.LP
 It is an error if
 the change was not developed by the current user.
 .so z_exit.so

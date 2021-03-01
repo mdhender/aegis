@@ -25,6 +25,10 @@
 
 #include <main.h>
 
+/** \addtogroup Misc
+  * @{
+  */
 double fstrcmp(const char *, const char *);
 
+/** @} */
 #endif /* COMMON_FSTRCMP_H */

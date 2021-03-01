@@ -1,7 +1,7 @@
 #!/bin/sh
 #
 #	aegis - project change supervisor
-#	Copyright (C) 1997, 1999-2003 Peter Miller;
+#	Copyright (C) 1997, 1999-2004 Peter Miller;
 #	All rights reserved.
 #
 #	This program is free software; you can redistribute it and/or modify
@@ -67,21 +67,21 @@ with as little disruption as possible.
 
 %package txtdocs
 Summary: Aegis documentation, dumb ascii text
-Group: Development/Building
+Group: Development/Version Control
 
 %description txtdocs
 Aegis documentation in dumb ascii text format.
 
 %package psdocs
 Summary: Aegis documentation, PostScript format
-Group: Development/Building
+Group: Development/Version Control
 
 %description psdocs
 Aegis documentation in PostScript format.
 
 %package dvidocs
 Summary: aegis documentation, DVI format
-Group: Development/Building
+Group: Development/Version Control
 
 %description dvidocs
 Aegis documentation in DVI format.
@@ -155,16 +155,17 @@ do
 
 	aefp/* | etc/* | common/* | find_sizes/* | fmtgen/* | \
 	fstrcmp/* | libaegis/* | test/* | test_* | cklinlen/* | \
-	simp_file_stat/* )
+	simp_file_stat/* | aemanifest/* )
 		;;
 
-	*/main.c)
+	*/main.cc)
 		dir=`echo $file | sed 's|/.*||'`
 		remember_prog $dir
 		;;
 
-	script/aegis.synpic)
+	script/aegis.synpic | script/ae-symlinks)
 		;;
+
 	script/*)
 		prog=`echo $file | sed 's|.*/||'`
 		remember_prog $prog

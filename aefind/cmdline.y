@@ -1,6 +1,6 @@
 /*
  *	aegis - project change supervisor
- *	Copyright (C) 1997-1999, 2001-2003 Peter Miller;
+ *	Copyright (C) 1997-1999, 2001-2004 Peter Miller;
  *	All rights reserved.
  *
  *	This program is free software; you can redistribute it and/or modify
@@ -63,6 +63,7 @@
 #include <tree/relative.h>
 #include <tree/this.h>
 #include <user.h>
+#include <version.h>
 
 #ifdef DEBUG
 #define YYDEBUG 1
@@ -280,7 +281,7 @@ stack_nth(int n)
     assert(stack->nstrings);
     if (!stack)
        	return 0;
-    if (n < 0 || n >= stack->nstrings)
+    if (n < 0 || n >= (int)stack->nstrings)
        	return 0;
     return stack->string[n];
 }
@@ -475,7 +476,7 @@ cmdline_grammar(int argc, char **argv)
        	if (s0->str_text[0] == '/' || !based)
 	    s1 = str_copy(s0);
        	else
-	    s1 = str_format("%S/%S", stack->string[0], s0);
+	    s1 = os_path_join(stack->string[0], s0);
        	str_free(s0);
        	s2 = stack_relative(s1);
        	assert(s2);

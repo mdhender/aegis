@@ -1,0 +1,97 @@
+'\" t
+.\"	aegis - project change supervisor
+.\"	Copyright (C) 2004 Peter Miller;
+.\"	All rights reserved.
+.\"
+.\"	This program is free software; you can redistribute it and/or modify
+.\"	it under the terms of the GNU General Public License as published by
+.\"	the Free Software Foundation; either version 2 of the License, or
+.\"	(at your option) any later version.
+.\"
+.\"	This program is distributed in the hope that it will be useful,
+.\"	but WITHOUT ANY WARRANTY; without even the implied warranty of
+.\"	MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+.\"	GNU General Public License for more details.
+.\"
+.\"	You should have received a copy of the GNU General Public License
+.\"	along with this program; if not, write to the Free Software
+.\"	Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111, USA.
+.\"
+.\" MANIFEST: manual entry for 'aegis -File_ATtributes' command
+.\"
+.so z_name.so
+.TH "\*(n) -File_ATtributes" 1 \*(N) "Reference Manual"
+.SH NAME
+\*(n) -File_ATtributes \- modify the attributes of a file
+.XX "aefa(1)" "modify the attributes of a file"
+.SH SYNOPSIS
+.B \*(n)
+.B -File_ATtributes
+.B -File
+.I attr-file
+[
+.IR option ...
+]
+.I filename
+.br
+.B \*(n)
+.B -File_ATtributes
+.B -Edit
+[
+.IR option ...
+]
+.I filename
+.br
+.B \*(n)
+.B -File_ATtributes
+.B -Help
+.SH DESCRIPTION
+The
+.I \*(n)
+.I -File_ATtributes
+command is used to set, edit or list the attributes of a file.
+.PP
+The output of the
+.B -List
+variant is suitable for use as input at a later time.
+.PP
+See
+.IR aefattr (5)
+for a description of the file format.
+.SH OPTIONS
+The following options are understood:
+.so o_baserel.so
+.so o_change.so
+.so o_help.so
+.so o_list.so
+.so o_project.so
+.so o_terse.so
+.so o_verbose.so
+.so o_wait.so
+.so o__rules.so
+.SH RECOMMENDED ALIAS
+The recommended alias for this command is
+.nf
+.ta 8n 16n
+csh%	alias aefa '\*(n) -fat \e!* -v'
+sh$	aefa(){\*(n) -fat "$@" -v}
+.fi
+.SH ERRORS
+It is an error if the current user is not an administrator of the
+specified project.
+.br
+It is an error if the current user is not the developer of the specified
+change.
+.br
+It is an error if the file is not included in the specified change.
+.so z_exit.so
+.br
+.ne 1i
+.SH SEE ALSO
+.TP 8n
+.IR aeca (5)
+modify the attributes of a change
+.TP 8n
+.IR aefattr (5)
+file attributes file format
+.so z_cr.so

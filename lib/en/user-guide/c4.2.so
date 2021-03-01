@@ -1,6 +1,6 @@
 .\"
 .\"	aegis - project change supervisor
-.\"	Copyright (C) 1993-1995, 1998, 2002 Peter Miller;
+.\"	Copyright (C) 1993-1995, 1998, 2002, 2004 Peter Miller;
 .\"	All rights reserved.
 .\"
 .\"	This program is free software; you can redistribute it and/or modify
@@ -58,7 +58,7 @@ and
 and
 .I link_\%integration_\%directory
 fields of the
-.I config
+configuration
 file.
 See
 .I aepconf (5)
@@ -69,7 +69,7 @@ about this file.
 The
 .I build_command
 field of the
-.I config
+configuration
 file is used to invoke the relevant build command.
 In this case, it is set as follows
 .E(
@@ -89,7 +89,7 @@ for more information about command substitutions.
 .LP
 The recipes which follow will all remove their targets before constructing
 them, which qualifies them for the next entry in the
-.I config
+configuration
 file:
 .E(
 link_integration_directory = true;
@@ -406,5 +406,5 @@ The
 file in the Aegis distribution
 contains all of the above commands,
 so that you may readily insert them into your project
-.I config
+configuration
 file.

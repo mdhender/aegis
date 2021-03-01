@@ -106,26 +106,6 @@ unset LANG
 unset LANGUAGE
 
 #
-# If the C compiler is called something other than ``cc'', as discovered
-# by the configure script, create a shell script called ``cc'' which
-# invokes the correct C compiler.  Make sure the current directory is in
-# the path, so that it will be invoked.
-#
-if test "$CC" != "" -a "$CC" != "cc"
-then
-	cat >> $work/cc << fubar
-#!/bin/sh
-exec $CC \$*
-fubar
-	if test $? -ne 0 ; then no_result; fi
-	chmod a+rx $work/cc
-	if test $? -ne 0 ; then no_result; fi
-	PATH=${work}:${PATH}
-	export PATH
-fi
-
-
-#
 # make a new project
 #
 activity="new project 161"
@@ -312,17 +292,7 @@ activity="integrate pass 347"
 $bin/aegis -intpass -nl  > log 2>&1
 if test $? -ne 0 ; then cat log; no_result; fi
 
-
-
-grep "Labeling $workproj/history/Makefile edit 1.1 with t_D001" log > /dev/null
-if test $? -ne 0 ; then cat log; fail; fi
-grep "Labeling $workproj/history/config edit 1.1 with t_D001" log > /dev/null
-if test $? -ne 0 ; then cat log; fail; fi
-grep "Labeling $workproj/history/main.c edit 1.1 with t_D001" log > /dev/null
-if test $? -ne 0 ; then cat log; fail; fi
-grep "Labeling $workproj/history/test.c edit 1.1 with t_D001" log > /dev/null
-if test $? -ne 0 ; then cat log; fail; fi
-grep "Labeling $workproj/history/test/00/t0001a.sh edit 1.1 with t_D001" log > /dev/null
+grep "Labeling .* edit 1.1 with t_D001" log > /dev/null
 if test $? -ne 0 ; then cat log; fail; fi
 
 #
@@ -413,17 +383,10 @@ activity="integrate pass 447"
 $bin/aegis -intpass -nl  > log 2>&1
 if test $? -ne 0 ; then cat log; no_result; fi
 
-grep "Labeling $workproj/history/Makefile edit 1.1 with t_D002" log > /dev/null
+grep "Labeling .* edit 1.1 with t_D002" log > /dev/null
 if test $? -ne 0 ; then cat log; fail; fi
-grep "Labeling $workproj/history/config edit 1.1 with t_D002" log > /dev/null
+grep "Labeling .* edit 1.2 with t_D002" log > /dev/null
 if test $? -ne 0 ; then cat log; fail; fi
-grep "Labeling $workproj/history/main.c edit 1.2 with t_D002" log > /dev/null
-if test $? -ne 0 ; then cat log; fail; fi
-grep "Labeling $workproj/history/test.c edit 1.1 with t_D002" log > /dev/null
-if test $? -ne 0 ; then cat log; fail; fi
-grep "Labeling $workproj/history/test/00/t0001a.sh edit 1.1 with t_D002" log > /dev/null
-if test $? -ne 0 ; then cat log; fail; fi
-
 
 #
 # label the HEAD of the history
@@ -432,18 +395,10 @@ activity="label history head 449"
 $bin/aegis -delta_name XyZZY  > log 2>&1
 if test $? -ne 0 ; then cat log; no_result; fi
 
-grep "Labeling $workproj/history/Makefile edit 1.1 with tXyZZY" log > /dev/null
+grep "Labeling .* edit 1.1 with tXyZZY" log > /dev/null
 if test $? -ne 0 ; then cat log; fail; fi
-grep "Labeling $workproj/history/config edit 1.1 with tXyZZY" log > /dev/null
+grep "Labeling .* edit 1.2 with tXyZZY" log > /dev/null
 if test $? -ne 0 ; then cat log; fail; fi
-grep "Labeling $workproj/history/main.c edit 1.2 with tXyZZY" log > /dev/null
-if test $? -ne 0 ; then cat log; fail; fi
-grep "Labeling $workproj/history/test.c edit 1.1 with tXyZZY" log > /dev/null
-if test $? -ne 0 ; then cat log; fail; fi
-grep "Labeling $workproj/history/test/00/t0001a.sh edit 1.1 with tXyZZY" log > /dev/null
-if test $? -ne 0 ; then cat log; fail; fi
-
-
 
 #
 # label Delta 1  of the history
@@ -452,17 +407,7 @@ activity="label history delta 1 455"
 $bin/aegis -delta_name 1 Foobar > log 2>&1
 if test $? -ne 0 ; then cat log; no_result; fi
 
-
-
-grep "Labeling $workproj/history/Makefile edit 1.1 with tFoobar" log > /dev/null
-if test $? -ne 0 ; then cat log; fail; fi
-grep "Labeling $workproj/history/config edit 1.1 with tFoobar" log > /dev/null
-if test $? -ne 0 ; then cat log; fail; fi
-grep "Labeling $workproj/history/main.c edit 1.1 with tFoobar" log > /dev/null
-if test $? -ne 0 ; then cat log; fail; fi
-grep "Labeling $workproj/history/test.c edit 1.1 with tFoobar" log > /dev/null
-if test $? -ne 0 ; then cat log; fail; fi
-grep "Labeling $workproj/history/test/00/t0001a.sh edit 1.1 with tFoobar" log > /dev/null
+grep "Labeling .* edit 1.1 with tFoobar" log > /dev/null
 if test $? -ne 0 ; then cat log; fail; fi
 
 #

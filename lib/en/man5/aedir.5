@@ -1,6 +1,6 @@
 '\" t
 .\"	aegis - project change supervisor
-.\"	Copyright (C) 1991-1993, 1995, 2002 Peter Miller;
+.\"	Copyright (C) 1991-1993, 1995, 2002, 2004 Peter Miller;
 .\"	All rights reserved.
 .\"
 .\"	This program is free software; you can redistribute it and/or modify
@@ -36,7 +36,7 @@ The project directory has the following contents
 .eB
 \fIproject\fP/
 	baseline/
-		config
+		aegis.conf
 		\fI...project specific...\fP
 		test/
 			\fI[0-9][0-9]\fP/
@@ -124,13 +124,14 @@ does not need to know anything about it.
 Similarly for tests.
 .PP
 The
-.I baseline/config
+.I baseline/aegis.conf
 file is used to tell \*(n) everything else it needs to know about a project.
 See
 .IR aepconf (5)
 for more information.
 This file  is a source file of the project,
 and is treated in the same way as all source files.
+The name of this file is not mandatory.
 .SH SEE ALSO
 .TP 8n
 .IR aenc (1)

@@ -1,4 +1,5 @@
 .so ../man1/aegis.1
+.so ../man1/ae-cvs-ci.1
 .so ../man1/ae-sccs-put.1
 .so ../man1/ae_c.1
 .so ../man1/ae_p.1
@@ -14,6 +15,7 @@
 .so ../man1/aecomplete.1
 .so ../man1/aecp.1
 .so ../man1/aecpu.1
+.so ../man1/aecvsserver.1
 .so ../man1/aed.1
 .so ../man1/aedb.1
 .so ../man1/aedbu.1
@@ -22,6 +24,7 @@
 .so ../man1/aedist.1
 .so ../man1/aedn.1
 .so ../man1/aeedit.1
+.so ../man1/aefa.1
 .so ../man1/aefind.1
 .so ../man1/aefp.1
 .so ../man1/aeget.1
@@ -85,6 +88,7 @@
 .so ../man5/aecattr.5
 .so ../man5/aecstate.5
 .so ../man5/aedir.5
+.so ../man5/aefattr.5
 .so ../man5/aefstate.5
 .so ../man5/aegis.5
 .so ../man5/aegstate.5

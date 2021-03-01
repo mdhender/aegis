@@ -1,6 +1,6 @@
 /*
  *	aegis - project change supervisor
- *	Copyright (C) 1999, 2002 Peter Miller;
+ *	Copyright (C) 1999, 2002, 2004 Peter Miller;
  *	All rights reserved.
  *
  *	This program is free software; you can redistribute it and/or modify
@@ -51,6 +51,7 @@ struct input_vtbl_ty
 	long (*ftell)(input_ty *);
 	struct string_ty *(*name)(input_ty *);
 	long (*length)(input_ty *);
+	void (*keepalive)(input_ty *);
 };
 
 /**
@@ -173,5 +174,11 @@ struct string_ty *input_one_line(input_ty *);
 	((ip)->buffer_position > (ip)->buffer ? \
 	(void)(*(--((ip)->buffer_position)) = (c)) : \
 	input_ungetc_complicated((ip), (c)))
+
+/**
+  * The input_keepalive function is used to set the SO_KEEPALIVE socket
+  * option, if the file is a socket.  Does nothing otherwise.
+  */
+void input_keepalive(input_ty *);
 
 #endif /* LIBAEGIS_INPUT_H */

@@ -1,6 +1,6 @@
 /*
  *	aegis - project change supervisor
- *	Copyright (C) 1991-1995, 1997-1999, 2002, 2003 Peter Miller;
+ *	Copyright (C) 1991-1995, 1997-1999, 2002-2004 Peter Miller;
  *	All rights reserved.
  *
  *	This program is free software; you can redistribute it and/or modify
@@ -659,9 +659,10 @@ date_string(time_t when)
     /*
      * build the date string
      */
-    sprintf
+    snprintf
     (
 	buffer,
+	sizeof(buffer),
 	"%s,%3d %s %4.4d %2.2d:%2.2d:%2.2d GMT",
 	weekday_name[tm->tm_wday],
 	tm->tm_mday,

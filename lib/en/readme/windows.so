@@ -1,6 +1,6 @@
 .\"
 .\"	aegis - project change supervisor
-.\"	Copyright (C) 1999, 2002 Peter Miller;
+.\"	Copyright (C) 1999, 2002, 2004 Peter Miller;
 .\"	All rights reserved.
 .\"
 .\"	This program is free software; you can redistribute it and/or modify
@@ -20,6 +20,7 @@
 .\" MANIFEST: document describing lib/en/readme/windowss
 .\"
 .SH Windows NT
+.XX "" "\ \ \ \ Windows NT"
 Aegis depends on the underlying security provided by the operating system
 (rather than re-invent yet another security mechanism).  However, in
 order to do this, Aegis uses the POSIX \fIseteuid\fP system call, which

@@ -64,7 +64,8 @@ pass()
 fail()
 {
 	set +x
-	echo 'FAILED test of the aede functionality' 1>&2
+	echo 'FAILED test of the aede functionality' \
+	    "($activity)" 1>&2
 	cd $here
 	find $work -type d -user $USER -exec chmod u+w {} \;
 	rm -rf $work
@@ -73,7 +74,8 @@ fail()
 no_result()
 {
 	set +x
-	echo 'NO RESULT when testing the aede functionality' 1>&2
+	echo 'NO RESULT when testing the aede functionality' \
+	    "($activity)" 1>&2
 	cd $here
 	find $work -type d -user $USER -exec chmod u+w {} \;
 	rm -rf $work
@@ -81,6 +83,7 @@ no_result()
 }
 trap \"no_result\" 1 2 3 15
 
+activity="create test directory 86"
 mkdir $work $work/lib
 workproj="$work/foo1.proj"
 workchan="$work/foo.chan"
@@ -101,25 +104,6 @@ unset LANG
 unset LANGUAGE
 
 #
-# If the C compiler is called something other than ``cc'', as discovered
-# by the configure script, create a shell script called ``cc'' which
-# invokes the correct C compiler.  Make sure the current directory is in
-# the path, so that it will be invoked.
-#
-if test "$CC" != "" -a "$CC" != "cc"
-then
-	cat >> $work/cc << fubar
-#!/bin/sh
-exec $CC \$*
-fubar
-	if test $? -ne 0 ; then no_result; fi
-	chmod a+rx $work/cc
-	if test $? -ne 0 ; then no_result; fi
-	PATH=${work}:${PATH}
-	export PATH
-fi
-
-#
 # test the aede functionality
 #
 #
@@ -128,14 +112,14 @@ fi
 AEGIS_PROJECT=blurb
 AEGIS_PATH=$work/lib
 export AEGIS_PROJECT AEGIS_PATH
-activity="new project 124"
+activity="new project 134"
 $bin/aegis -npr $AEGIS_PROJECT -vers "" -dir $workproj \
     -lib $work/lib -verb > log 2>&1
 if test $? -ne 0 ; then cat log; no_result; fi
 #
 # change project attributes
 #
-activity="project attributes 131"
+activity="project attributes 141"
 cat > $tmp << 'end'
 description = "A bogus project created to test the de functionality on a branch.";
 developer_may_review = true;
@@ -150,7 +134,7 @@ if test $? -ne 0 ; then cat log; no_result; fi
 #
 # create a new change
 #
-activity="new change 145"
+activity="new change 156"
 cat > $tmp << 'end'
 brief_description = "The first change";
 cause = internal_bug;
@@ -166,7 +150,7 @@ if test $? -ne 0 ; then cat log; no_result; fi
 #
 # add the staff
 #
-activity="staff 161"
+activity="staff 172"
 $bin/aegis -nd $USER -p $AEGIS_PROJECT > log 2>&1
 if test $? -ne 0 ; then cat log; no_result; fi
 $bin/aegis -nrv $USER -p $AEGIS_PROJECT > log 2>&1
@@ -177,6 +161,7 @@ if test $? -ne 0 ; then cat log; no_result; fi
 #
 # begin development of a change
 #
+activity="develop begin 183"
 $bin/aegis -db 10 -dir $workchan > log 2>&1
 if test $? -ne 0 ; then cat log; no_result; fi
 
@@ -199,53 +184,52 @@ remove_symlinks_after_integration_build = false;
 end
 if test $? -ne 0 ; then no_result; fi
 
-activity="New file 194"
+activity="New file 206"
 $bin/aegis -nf $workchan/config > log 2>&1
 if test $? -ne 0 ; then cat log; no_result; fi
 
-activity="New file build 202"
+activity="New file build 210"
 $bin/aegis -nf -build $workchan/non-source-file > log 2>& 1
 if test $? -ne 0 ; then cat log; no_result; fi
 
-activity="Build 198"
+activity="Build 214"
 $bin/aegis -b > log 2>&1
 if test $? -ne 0 ; then cat log; no_result; fi
 
-activity="Diff 202"
+activity="Diff 218"
 $bin/aegis -diff > log 2>&1
 if test $? -ne 0 ; then cat log; no_result; fi
 
-activity="Develop end 207"
+activity="Develop end 222"
 $bin/aegis -de > log 2>&1
 if test $? -ne 0 ; then cat log; no_result; fi
 
-activity="Review Pass 214"
+activity="Review Pass 226"
 $bin/aegis -rpass 10 > log 2>&1
 if test $? -ne 0 ; then cat log; no_result; fi
 
-activity="Integrate Begin 218"
+activity="Integrate Begin 230"
 $bin/aegis -ib  10 > log 2>&1
 if test $? -ne 0 ; then cat log; no_result; fi
 
-activity="Integrate Build 222"
+activity="Integrate Build 234"
 $bin/aegis -b 10 > log 2>&1
 if test $? -ne 0 ; then cat log; no_result; fi
 
-activity="Integrate Pass 227"
+activity="Integrate Pass 238"
 $bin/aegis -ipass 10 > log 2>&1
 if test $? -ne 0 ; then cat log; no_result; fi
 
 #
 # Open a new branch
 #
-activity="new branch 233"
+activity="new branch 245"
 $bin/aegis -nbr  1 -p $AEGIS_PROJECT > log 2>&1
 if test $? -ne 0 ; then cat log; no_result; fi
 
 AEGIS_PROJECT=blurb.1
 
-
-activity="branch change 1"
+activity="branch change 251"
 cat > $tmp << 'end'
 brief_description = "The first change";
 cause = internal_bug;
@@ -258,35 +242,50 @@ if test $? -ne 0 ; then no_result; fi
 $bin/aegis -nc 10 -p $AEGIS_PROJECT -f $tmp > log 2>&1
 if test $? -ne 0 ; then cat log; no_result; fi
 
+activity="develop begin 264"
 $bin/aegis -db -c 10 -p $AEGIS_PROJECT -dir $workchan -nl > log 2>&1
 if test $? -ne 0 ; then cat log; no_result; fi
 
+activity="copy file 268"
 $bin/aegis -cp -c 10 $workchan/config -p $AEGIS_PROJECT -nl > log 2>&1
 if test $? -ne 0 ; then cat log; no_result; fi
 echo '/* */' >> $workchan/config
 if test $? -ne 0 ; then cat log; no_result; fi
 
+activity="develop build 274"
 $bin/aegis -build -p $AEGIS_PROJECT -nl > log 2>&1
 if test $? -ne 0 ; then cat log; no_result; fi
 
+activity="develop diff 278"
 $bin/aegis -diff -p $AEGIS_PROJECT -nl > log 2>&1
 if test $? -ne 0 ; then cat log; no_result; fi
 
+activity="develop end 282"
 $bin/aegis -p $AEGIS_PROJECT -de 10 > log 2>&1
 if test $? -ne 0 ; then cat log; no_result; fi
+
+activity="review pass 286"
 $bin/aegis -p $AEGIS_PROJECT -rpass 10 > log 2>&1
 if test $? -ne 0 ; then cat log; no_result; fi
+
+activity="integrate begin 290"
 $bin/aegis -p $AEGIS_PROJECT -ib 10 > log 2>&1
 if test $? -ne 0 ; then cat log; no_result; fi
+
+activity="integrate build 294"
 $bin/aegis -p $AEGIS_PROJECT -build 10 > log 2>&1
 if test $? -ne 0 ; then cat log; no_result; fi
+
+activity="integrate diff 298"
 $bin/aegis -p $AEGIS_PROJECT -diff 10 > log 2>&1
 if test $? -ne 0 ; then cat log; no_result; fi
+
+activity="integrate pass 302"
 $bin/aegis -p $AEGIS_PROJECT -ipass 10  > log 2>&1
 if test $? -ne 0 ; then cat log; no_result; fi
 
 # The second change
-activity="new change 239"
+activity="new change 307"
 cat > $tmp << 'end'
 brief_description = "The second change";
 cause = internal_bug;
@@ -297,9 +296,10 @@ end
 if test $? -ne 0 ; then no_result; fi
 AEGIS_PROJECT=blurb
 
-$bin/aegis -nc 11 -p $AEGIS_PROJECT > log 2>&1
+$bin/aegis -nc 11 -p $AEGIS_PROJECT -f $tmp > log 2>&1
 if test $? -ne 0 ; then cat log; no_result; fi
 
+activity="develop begin 321"
 $bin/aegis -db 11 -dir $workchan > log 2>&1
 if test $? -ne 0 ; then cat log; no_result; fi
 
@@ -309,89 +309,119 @@ EOF
 $bin/aegis -nf 11 $workchan/dummy_file > log 2>&1
 cp $tmp $workchan/dummy_file
 
+activity="develop build 331"
 $bin/aegis -b 11 -nl > log 2>&1
 if test $? -ne 0 ; then cat log; no_result; fi
 
+activity="develop diff 335"
 $bin/aegis -diff 11 -nl > log 2>&1
 if test $? -ne 0 ; then cat log; no_result; fi
 
+activity="develop end 339"
 $bin/aegis -de 11 > log 2>&1
 if test $? -ne 0 ; then cat log; no_result; fi
 
+activity="review pass 343"
 $bin/aegis -rpass 11 > log 2>&1
 if test $? -ne 0 ; then cat log; no_result; fi
 
+activity="integrate begin 347"
 $bin/aegis -ib 11 > log 2>&1
 if test $? -ne 0 ; then cat log; no_result; fi
 
+activity="integrate build 351"
 $bin/aegis -b 11 -nl > log 2>&1
 if test $? -ne 0 ; then cat log; no_result; fi
 
+activity="integrate diff 355"
 $bin/aegis -diff 11 -nl > log 2>&1
 if test $? -ne 0 ; then cat log; no_result; fi
 
+activity="integrate pass 359"
 $bin/aegis -ipass 11 > log 2>&1
 if test $? -ne 0 ; then cat log; no_result; fi
 
+activity="new change 363"
+cat > $tmp << 'end'
+brief_description = "The third change";
+cause = internal_bug;
+test_exempt = true;
+test_baseline_exempt = true ;
+regression_test_exempt = true;
+end
+if test $? -ne 0 ; then no_result; fi
+
 AEGIS_PROJECT=blurb.1
-$bin/aegis -nc 11 -p $AEGIS_PROJECT > log 2>&1
+$bin/aegis -nc 11 -p $AEGIS_PROJECT -f $tmp > log 2>&1
 if test $? -ne 0 ; then cat log; no_result; fi
 
-
+activity="develop begin 377"
 $bin/aegis -db 11 -dir $workchan > log 2>&1
 if test $? -ne 0 ; then cat log; no_result; fi
 
-
+activity="copy file 381"
 $bin/aegis -cp 11 $workchan/dummy_file > log 2>&1
 if test $? -ne 0 ; then cat log; no_result; fi
 
 echo 'DUMMY LINE' >> $workchan/dummy_file
 
+activity="develop build 387"
 $bin/aegis -build 11 -nl > log 2>&1
 if test $? -ne 0 ; then cat log; no_result; fi
 
-
+activity="develop diff 391"
 $bin/aegis -diff 11 -nl > log 2>&1
 if test $? -ne 0 ; then cat log; no_result; fi
 
-
+activity="develop end 395"
 $bin/aegis -de 11 > log 2>&1
 if test $? -ne 0 ; then cat log; no_result; fi
 
-
+activity="review pass 399"
 $bin/aegis -rpass 11 > log 2>&1
 if test $? -ne 0 ; then cat log; no_result; fi
 
+activity="integrate begin 403"
 $bin/aegis -ib 11 > log 2>&1
 if test $? -ne 0 ; then cat log; no_result; fi
 
+activity="integrate build 407"
 $bin/aegis -build 11 -nl > log 2>&1
 if test $? -ne 0 ; then cat log; no_result; fi
 
+activity="integrate diff 411"
 $bin/aegis -diff 11 -nl > log 2>&1
 if test $? -ne 0 ; then cat log; no_result; fi
 
+activity="integrate pass 415"
 $bin/aegis -ipass 11 -nl > log 2>&1
 if test $? -ne 0 ; then cat log; no_result; fi
 
+activity="develop end 419"
 AEGIS_PROJECT=blurb
 $bin/aegis -de 1 > log 2>&1
 if test $? -ne 0 ; then cat log; fail; fi
 
+activity="review pass 424"
 $bin/aegis -rpass 1 > log 2>&1
 if test $? -ne 0 ; then cat log; fail; fi
 
+activity="integrate begin 428"
 $bin/aegis -ib 1 > log 2>&1
 if test $? -ne 0 ; then cat log; fail; fi
 
+activity="integrate build 432"
 $bin/aegis -build 1 -nl > log 2>&1
 if test $? -ne 0 ; then cat log; fail; fi
 
+activity="integrate diff 436"
 $bin/aegis -diff 1 -nl > log 2>&1
 if test $? -ne 0 ; then cat log; fail; fi
 
+activity="integrate pass 440"
 $bin/aegis -ipass 1 > log 2>&1
 if test $? -ne 0 ; then cat log; fail; fi
+
 #
 # Only definite negatives are possible.
 # The functionality exercised by this test appears to work,

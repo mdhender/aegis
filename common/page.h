@@ -25,6 +25,12 @@
 
 #include <main.h>
 
+/** \addtogroup Page
+  * \brief Page size manipulation
+  * \ingroup Common
+  * @{
+  */
+
 /*
  * These error values are returned by the page_width_set and
  * page_length_set functions.
@@ -43,4 +49,5 @@ int page_width_get(int);
 int page_length_set(int rows);
 int page_length_get(int);
 
+/** @} */
 #endif /* COMMON_PAGE_H */

@@ -1,6 +1,6 @@
 /*
  *	aegis - project change supervisor
- *	Copyright (C) 2001, 2002 Peter Miller;
+ *	Copyright (C) 2001, 2002, 2004 Peter Miller;
  *	All rights reserved.
  *
  *	This program is free software; you can redistribute it and/or modify
@@ -41,5 +41,12 @@ void format_search_list_delete(format_search_list_ty *);
 void format_search_list_append(format_search_list_ty *, format_search_ty *);
 void format_search_list_staff(format_search_list_ty *, struct string_list_ty *);
 void format_search_list_validate(format_search_list_ty *);
+
+/**
+  * The format_search_list_query function is used to determine if a
+  * given filename is present in the formatsearch list.
+  */
+format_search_ty *format_search_list_query(format_search_list_ty *,
+    string_ty *);
 
 #endif /* AEIMPORT_FORMAT_SEARCH_LIST_H */

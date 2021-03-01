@@ -1,6 +1,6 @@
 #
 # 	aegis - project change supervisor
-# 	Copyright (C) 1995-2003 Peter Miller;
+# 	Copyright (C) 1995-2004 Peter Miller;
 # 	All rights reserved.
 #
 # 	This program is free software; you can redistribute it and/or modify
@@ -49,8 +49,13 @@
 #
 # -------------------------------------------------------------------------
 #
+# The presence of the "#, fuzzy" flag is an indication that the error
+# message needs to be (re)translated.
+#
+# -------------------------------------------------------------------------
+#
 msgid	""
-msgstr	"PO-Revision-Date: 3-Dec-2001\n"
+msgstr	"PO-Revision-Date: 2004-05-26\n"
 	"Last-Translator: Ralf Fassel <ralf@akutech.de>\n"
 	"MIME-Version: 1.0\n"
 	"Content-Type: text/plain; charset=iso-8859-1\n"
@@ -67,6 +72,17 @@ msgstr	"Die Umgebungsvariable $$$name muss einen positive Dezimalzahl "
 	"sein"
 
 #
+# TRANSLATION REQUIRED
+# This error message is issued when the parameter of the -UUid switch is
+# not a valid uuid.
+#
+#	$Name		The -UUid switch
+#
+#, fuzzy
+msgid	"$Name needs an uuid"
+msgstr	"The $Name option needs to be given a valid UUID"
+
+#
 # This error message is issued when a file has been tampered with while
 # in the 'being reviewed' or 'awaiting integration' state.  Files in
 # these states must be left strictly alone, or Aegis will assume that
@@ -76,6 +92,14 @@ msgstr	"Die Umgebungsvariable $$$name muss einen positive Dezimalzahl "
 #
 msgid	"$filename altered"
 msgstr	"Datei \"$filename\" wurde verändert"
+
+#
+# TRANSLATION REQUIRED
+# This message is issued when an aefa is successfully completed.
+#
+#, fuzzy
+msgid  "$filename attributes changed"
+msgstr "file \"$filename\" attributes changed"
 
 #
 # This error message is issued when aenf is invoked on a file which is
@@ -262,19 +286,6 @@ msgid	"$filename unrelated"
 msgstr	"Pfad \"$filename\" unrelated"
 
 #
-# This warning message is issued when an obsolete percent (%)
-# substitution used.
-#
-# 	$File_Name	file containing message
-# 	$Line_Number	line number of message
-#
-#, no-c-format
-msgid	"$filename: $linenumber: don't use %% substitutions"
-msgstr	"$filename: $linenumber: Warnung: die Ersetzungen über "
-	"Prozentzeichen (%%) sind überholt, bitte verwenden Sie die "
-	"entsprechenden Ersetzungen durch Dollar ($$) "
-
-#
 # This error message is issued when a substitution function is formed
 # incorrectly.  See (+++) below.
 #
@@ -360,14 +371,6 @@ msgstr	"$filename: $linenumber: unabgeschlossene $${} Anführungszeichen"
 #
 msgid	"$filename: $linenumber: unterminated $${} substitution"
 msgstr	"$filename: $linenumber: unabgeschlossene $${} Ersetzung"
-
-#
-# This error message is issued when a substitution function is formed
-# incorrectly.  See (+++) below.
-#
-#, no-c-format
-msgid	"$filename: $linenumber: unterminated %%() substitution"
-msgstr	"$filename: $linenumber: unabgeschlossene %%() Ersetzung"
 
 #
 # This error message is issued when a generic error in a text file is required.
@@ -900,6 +903,20 @@ msgid	"Project $name, Change $number"
 msgstr	"Projekt \"$name\", Change $number"
 
 #
+# TRANSLATION REQUIRED
+# This text is used when a project name, change number and file name are
+# inserted at the top of a file or listing.  Usually in the C locale,
+# so avoid non-ascii characters if at all possible.
+#
+# 	$Name		The name of a project.
+# 	$Number		The number of a change.
+#	$File_Name	The name of the file.
+#
+#, fuzzy
+msgid	"Project $name, Change $number, File $filename"
+msgstr	"Project \"$name\", Change $number, File \"$filename\""
+
+#
 # This error message is issued when the ${read_file} substitution is
 # called incorrectly.  See (+++) below.
 #
@@ -1173,6 +1190,27 @@ msgstr	"Architektur-Feld enthält Variationen, die nicht in der "
 	"``config'' Datei des Projektes enthalten sind"
 
 #
+# TRANSLATION REQUIRED
+# This error message is issued when a user attempts to set a change's
+# UUID when the change already has a UUID.
+#
+#, fuzzy
+msgid	"bad ca, uuid already set"
+msgstr	"the UUID of this change has already been set"
+
+#
+# TRANSLATION REQUIRED
+# This error message is issued when a user attempts to set a change's
+# UUID and the given UUID has already be used by another change.
+#
+#	$Other	The version of change using the specified UUID.
+#		Optional.
+#
+#, fuzzy
+msgid	"bad ca, uuid duplicate"
+msgstr	"the UUID specified is already is use by $other"
+
+#
 # This error message is issued when an aecd is requested for a change
 # which does not have a directory.
 #
@@ -1285,6 +1323,17 @@ msgstr	"Dieser Change ist im '$state' Status, er muß im 'being "
 msgid	"bad diff state"
 msgstr	"Dieser Change ist im '$state' Status, er muß im 'being "
 	"developed' Status sein, um einen Diff zu erstellen"
+
+#
+# TRANSLATION REQUIRED
+# This error message is issued when a user without sufficient
+# authorization attempts to modify a change file's attributes.
+#
+#, fuzzy
+msgid	"bad fa, not auth"
+msgstr	"user \"$user\" may not modify the change's attributes; "
+	"attributes may only be modified by the developer during "
+	"development"
 
 #
 # This error message is issued when an aeib command is used on a change
@@ -1973,7 +2022,7 @@ msgstr	"Kommandozeile zu kurz"
 # This message is inserted into the top of the project config file
 # automatically created by aeimport.
 #
-msgid	"config file hint"
+msgid	"configuration file hint"
 msgstr	"Diese Datei muß für dieses Projekt angepaßt werden.  Siehe "
 	"aepconf(5) für eine Beschreibung der Felder in dieser Datei.  "
 	"Siehe\n"
@@ -2183,13 +2232,13 @@ msgstr	"Der Entwickler eines Changes darf diesen nicht auch reviewen"
 # This message is issued when development builds are completed.
 #
 msgid	"development build complete"
-msgstr	"Development Build beendet ${date %%H:%%M}"
+msgstr	"Development Build beendet ${date %H:%M}"
 
 #
 # This message is issued when development builds are commenced.
 #
 msgid	"development build started"
-msgstr	"Development Build gestartet ${date %%H:%%M}"
+msgstr	"Development Build gestartet ${date %H:%M}"
 
 #
 # This progress message is issued when aede completes successfully.
@@ -2615,6 +2664,7 @@ msgstr	"Dateiname \"$filename\" ist nicht für Windows geeignet"
 # This error message is issued when a file qualifier in a substitution
 # is an unknown name.  See (+++) below.
 #
+#, fuzzy
 msgid	"file qualifier unknown"
 msgstr	"file qualifier unknown"
 
@@ -3007,9 +3057,9 @@ msgstr	"ungültiger Vergleich ($name1 ~ $name2)"
 # 	$Name1		The type name of the left operand.
 # 	$Name2		The type name of the right operand.
 #
-#, no-c-format
-msgid	"illegal modulo ($name1 %% $name2)"
-msgstr	"ungültiger Modulo ($name1 %% $name2)"
+#,  no-c-format
+msgid	"illegal modulo ($name1 % $name2)"
+msgstr	"ungültiger Modulo ($name1 % $name2)"
 
 #
 # This error message is issued when an illegal * is attempted.
@@ -3190,13 +3240,13 @@ msgstr	"$number Fehler gefunden, dieser Change bleibt im Status '$state'"
 # This message is issued when integration builds are completed.
 #
 msgid	"integration build complete"
-msgstr	"Integrations-Build beendet ${date %%H:%%M}"
+msgstr	"Integrations-Build beendet ${date %H:%M}"
 
 #
 # This message is issued when integration builds are commenced.
 #
 msgid	"integration build started"
-msgstr	"Integrations-Build gestartet ${date %%H:%%M}"
+msgstr	"Integrations-Build gestartet ${date %H:%M}"
 
 #
 # This error message is issued when Aegis terminates, because an
@@ -3417,18 +3467,6 @@ msgstr	"unbrauchbare Hex Konstante"
 #
 msgid	"may not assign to a list member ($name1[$name2])"
 msgstr	"ein Listenelement darf nicht zugewiesen werden ($name1[$name2])"
-
-#
-# This error message is issued when the used attempts to create the
-# project ``config'' file with the -Build option.  The file must be
-# available to Aegis at all times, and thus must be an ordinary source
-# file.
-#
-# 	$File_Name	The name of the offending file.
-#
-msgid	"may not build $filename"
-msgstr	"Die Datei \"$filename\" muß eine gewöhnliche Datei sein, sie "
-	"kann nicht beim Build erzeugt werden"
 
 #
 # This error message is issued when the user attempts to use the aerm
@@ -3997,15 +4035,6 @@ msgid	"no merge anticipate"
 msgstr	"Sie können keine Merge-Option mit -ANticipate angeben"
 
 #
-# This error message is issued when aemv is asked to move the project
-# 'config' file.
-#
-# 	$File_Name	The name of the offending file.
-#
-msgid	"no move $filename"
-msgstr	"Sie können die Datei \"$filename\" nicht umbenennen"
-
-#
 # This error message is issued when aenf command fails.  Errors are
 # printed out as they are found, but frequently errors happen together,
 # so the aenf command finds as many as possible before aborting.  This
@@ -4255,13 +4284,13 @@ msgstr	"Es ist unklar, was Sie ausdrücken wollen; zu kompliziert, und "
 # This message is issued when partial development builds are completed.
 #
 msgid	"partial build complete"
-msgstr	"Partieller Build beendet ${date %%H:%%M}"
+msgstr	"Partieller Build beendet ${date %H:%M}"
 
 #
 # This message is issued when partial development builds are commenced.
 #
 msgid	"partial build started"
-msgstr	"Partieller Build gestartet ${date %%H:%%M}"
+msgstr	"Partieller Build gestartet ${date %H:%M}"
 
 #
 # This progress message is issued when aet completes, both successfully
@@ -4977,6 +5006,7 @@ msgstr	"die throw-Anweisung benötigt ein string-Argument (angegeben "
 #
 # 	$number		The offending date and time.
 #
+#, fuzzy
 msgid	"time $number after branch"
 msgstr	"warning: the time \"$number\" is after the branch finished, this "
 	"is not meaningful when recreating the contents of the branch"
@@ -4989,6 +5019,7 @@ msgstr	"warning: the time \"$number\" is after the branch finished, this "
 #
 # 	$number		The offending date and time.
 #
+#, fuzzy
 msgid	"time $number before branch"
 msgstr	"warning: the time \"$number\" is before the branch started, this "
 	"is not meaningful when recreating the contents of the branch"
@@ -5401,18 +5432,6 @@ msgstr	"Warnung: der Patch für \"$filename\" konnte nicht verwendet "
 msgid	"warning: $name1 is obsolete, use $name2 environment variable"
 msgstr	"Warnung: die Umgebungsvariable $name1 ist überholt, bitte "
 	"verwenden Sie $name2 stattdessen"
-
-#
-# This warning message is issued when an obsolete % substitution is used.
-# (They are so obsolete they are undocumented, and will eventually be
-# removed.) An equivalent ${...} substitution is suggested.
-#
-# 	$Name1		The offending percent (%) substitution.
-# 	$Name2		The appropriate dollar ($) replacement.
-#
-msgid	"warning: $name1 is obsolete, use $name2 substitution"
-msgstr	"Warnung: die Ersetzung $name1 ist überholt und wurde in diesem "
-	"Kontext durch $name2 ersetzt"
 
 #
 # This warning is issued when an obsolete option is used.

@@ -1,6 +1,6 @@
 /*
  *	aegis - a project change supervisor
- *	Copyright (C) 1994, 1996, 1997 Peter Miller;
+ *	Copyright (C) 1994, 1996, 1997, 2004 Peter Miller;
  *	All rights reserved.
  *
  *	This program is free software; you can redistribute it and/or modify
@@ -24,17 +24,6 @@
 #define COMMON_AC_TIME_H
 
 #include <config.h>
-
-/*
- * Catch-22: Dec Alpha OSF/1: need to include time.h before sys/time.h
- * before time.h
- */
-#ifdef __alpha__
-#ifndef _CLOCK_ID_T
-#define _CLOCK_ID_T
-typedef int clockid_t;
-#endif
-#endif
 
 #ifdef TIME_WITH_SYS_TIME
 #include <sys/time.h>

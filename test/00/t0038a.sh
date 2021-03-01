@@ -1,7 +1,7 @@
 #!/bin/sh
 #
 #	aegis - project change supervisor
-#	Copyright (C) 1996-1998, 2001, 2002 Peter Miller;
+#	Copyright (C) 1996-1998, 2001, 2002, 2004 Peter Miller;
 #	All rights reserved.
 #
 #	This program is free software; you can redistribute it and/or modify
@@ -114,19 +114,19 @@ unset LANG
 unset LANGUAGE
 
 #
-# If the C compiler is called something other than ``cc'', as discovered
-# by the configure script, create a shell script called ``cc'' which
-# invokes the correct C compiler.  Make sure the current directory is in
-# the path, so that it will be invoked.
+# If the C++ compiler is called something other than ``c++'', as
+# discovered by the configure script, create a shell script called
+# ``c++'' which invokes the correct C++ compiler.  Make sure the current
+# directory is in the path, so that it will be invoked.
 #
-if test "$CC" != "" -a "$CC" != "cc"
+if test "$CXX" != "" -a "$CXX" != "c++"
 then
-	cat >> $work/cc << fubar
+	cat >> $work/c++ << fubar
 #!/bin/sh
-exec $CC \$*
+exec $CXX \$*
 fubar
 	if test $? -ne 0 ; then no_result; fi
-	chmod a+rx $work/cc
+	chmod a+rx $work/c++
 	if test $? -ne 0 ; then no_result; fi
 	PATH=${work}:${PATH}
 	export PATH
@@ -207,7 +207,7 @@ if test $? -ne 0 ; then no_result; fi
 # add a new files to the change
 #
 activity="new file 184"
-$bin/aegis -nf $workchan/config $workchan/a.c $workchan/b.c $workchan/h.h \
+$bin/aegis -nf $workchan/config $workchan/a.cc $workchan/b.cc $workchan/h.h \
 	$workchan/Makefile -nl -lib $worklib -Pro foo
 if test $? -ne 0 ; then no_result; fi
 
@@ -235,46 +235,45 @@ if test $? -ne 0 ; then no_result; fi
 cat > $workchan/Makefile << 'fubar'
 all: a.o b.o
 	rm -f all
-	cc -o all a.o b.o
+	c++ -o all a.o b.o
 
-a.o: a.c h.h
+a.o: a.cc h.h
 	rm -f a.o
-	cc -c a.c
+	c++ -c a.cc
 
-b.o: b.c h.h
+b.o: b.cc h.h
 	rm -f b.o
-	cc -c b.c
+	c++ -c b.cc
 fubar
 if test $? -ne 0 ; then no_result; fi
 
-cat > $workchan/a.c << 'fubar'
+cat > $workchan/a.cc << 'fubar'
+#include <string.h>
+#include <stdio.h>
 #include "h.h"
-main()
+int
+main(int argc, char **argv)
 {
 	if (0 != strcmp(b(), MESSAGE))
 	{
 		printf("b() -> \"%s\"\n", b());
 		printf("MESSAGE -> \"%s\"\n", MESSAGE);
-		exit(1);
+		return 1;
 	}
-	exit(0);
+	return 0;
 }
 fubar
 if test $? -ne 0 ; then no_result; fi
 
-cat > $workchan/b.c << 'fubar'
+cat > $workchan/b.cc << 'fubar'
 #include "h.h"
-char *b() { return MESSAGE; }
+char *b(void) { return MESSAGE; }
 fubar
 if test $? -ne 0 ; then no_result; fi
 
 cat > $workchan/h.h << 'fubar'
 #define MESSAGE "First"
-#if __STDC__ >= 1
 char *b(void);
-#else
-char *b();
-#endif
 fubar
 if test $? -ne 0 ; then no_result; fi
 
@@ -428,9 +427,9 @@ if test $? -ne 0 ; then no_result; fi
 #
 activity="copy file 404"
 sleep 2
-$bin/aegis -cp 3 $workchan.3/b.c -nl -lib $worklib -p foo
+$bin/aegis -cp 3 $workchan.3/b.cc -nl -lib $worklib -p foo
 if test $? -ne 0 ; then no_result; fi
-cat >> $workchan.3/b.c << 'fubar'
+cat >> $workchan.3/b.cc << 'fubar'
 /* nothing */
 fubar
 if test $? -ne 0 ; then no_result; fi

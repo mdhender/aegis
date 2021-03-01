@@ -1,7 +1,7 @@
 #!/bin/sh
 #
 #	aegis - project change supervisor
-#	Copyright (C) 1991-1998, 2002 Peter Miller;
+#	Copyright (C) 1991-1998, 2002, 2004 Peter Miller;
 #	All rights reserved.
 #
 #	This program is free software; you can redistribute it and/or modify
@@ -108,19 +108,19 @@ unset LANG
 unset LANGUAGE
 
 #
-# If the C compiler is called something other than ``cc'', as discovered
-# by the configure script, create a shell script called ``cc'' which
-# invokes the correct C compiler.  Make sure the current directory is in
-# the path, so that it will be invoked.
+# If the C++ compiler is called something other than ``c++'', as
+# discovered by the configure script, create a shell script called
+# ``c++'' which invokes the correct C++ compiler.  Make sure the current
+# directory is in the path, so that it will be invoked.
 #
-if test "$CC" != "" -a "$CC" != "cc"
+if test "$CXX" != "" -a "$CXX" != "c++"
 then
-	cat >> cc << fubar
+	cat >> c++ << fubar
 #!/bin/sh
-exec $CC \$*
+exec $CXX \$*
 fubar
 	if test $? -ne 0 ; then no_result; fi
-	chmod a+rx cc
+	chmod a+rx c++
 	if test $? -ne 0 ; then no_result; fi
 	PATH=${work}:${PATH}
 	export PATH
@@ -191,13 +191,13 @@ if test $? -ne 0 ; then cat log; no_result; fi
 # add a new files to the change
 #
 activity="new file 173"
-$bin/aegis -new_file $workchan/main.c -nl -v -lib $worklib -p foo > log 2>&1
+$bin/aegis -new_file $workchan/main.cc -nl -v -lib $worklib -p foo > log 2>&1
 if test $? -ne 0 ; then cat log; no_result; fi
-cat > $workchan/main.c << 'end'
-void
+cat > $workchan/main.cc << 'end'
+int
 main()
 {
-	exit(0);
+	return 0;
 }
 end
 if test $? -ne 0 ; then no_result; fi
@@ -227,9 +227,9 @@ if test $? -ne 0 ; then no_result; fi
 $bin/aegis -new_file $workchan/Makefile -nl -v -lib $worklib -p foo > log 2>&1
 if test $? -ne 0 ; then cat log; no_result; fi
 cat > $workchan/Makefile << 'end'
-foo: main.c
+foo: main.cc
 	rm -f foo
-	cc -o foo main.c
+	c++ -o foo main.cc
 end
 if test $? -ne 0 ; then no_result; fi
 
@@ -347,20 +347,18 @@ if test $? -ne 0 ; then cat log; fail; fi
 # copy a file into the change
 #
 activity="copy file 327"
-$bin/aegis -cp $workchan/main.c -nl -v -lib $worklib -p foo > log 2>&1
+$bin/aegis -cp $workchan/main.cc -nl -v -lib $worklib -p foo > log 2>&1
 if test $? -ne 0 ; then cat log; fail; fi
 
 #
 # change the file
 #
-cat > $workchan/main.c << 'end'
-
+cat > $workchan/main.cc << 'end'
+#include <stdlib.h>
 #include <stdio.h>
 
-void
-main(argc, argv)
-	int	argc;
-	char	**argv;
+int
+main(int argc, char **argv)
 {
 	if (argc != 1)
 	{
@@ -368,7 +366,7 @@ main(argc, argv)
 		exit(1);
 	}
 	printf("hello, world\n");
-	exit(0);
+	return 0;
 }
 end
 if test $? -ne 0 ; then no_result; fi

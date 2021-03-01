@@ -1,7 +1,7 @@
 #!/bin/sh
 #
 #	aegis - project change supervisor
-#	Copyright (C) 2003 Peter Miller;
+#	Copyright (C) 2003, 2004 Peter Miller;
 #	All rights reserved.
 #
 #	This program is free software; you can redistribute it and/or modify
@@ -30,6 +30,7 @@ check_it()
 		-e 's/20[0-9][0-9]/YYYY/' \
 		-e 's/node = ".*"/node = "NODE"/' \
 		-e 's/crypto = ".*"/crypto = "GUNK"/' \
+		-e 's/uuid = ".*"/uuid = "UUID"/' \
 		< $2 > $work/sed.out
 	if test $? -ne 0; then no_result; fi
 	diff $1 $work/sed.out
@@ -154,7 +155,8 @@ projectDir=$work/$theProject
 libDir=$work/lib
 chanDir=$work/chan-dev-dir
 
-export AEGIS_PATH=$AEGIS_PATH:$libDir
+AEGIS_PATH=$AEGIS_PATH:$libDir
+export AEGIS_PATH
 
 activity="create project 159"
 # Write the project attributes file
@@ -239,7 +241,10 @@ history_create_command = "ci -f -u -m$c -t/dev/null $i $h,v; rcs -U $h,v";
 history_get_command = "co -r'$e' -p $h,v > $o";
 history_put_command = "ci -f -u -m$c -t/dev/null $i $h,v; rcs -U $h,v";
 history_query_command = "rlog -r $h,v | awk '/^head:/ {print $$2}'";
-diff_command = "fcomp -w -s $original $input -o $output";
+diff_command =
+    "set +e; "
+    "diff -U10 -a ${quote $original} ${quote $input} > ${quote $output}; "
+    "test $? -le 1";
 merge_command =
 	"fmerge $original $MostRecent $input -o $output -c /dev/null";
 posix_filename_charset = true;
@@ -534,6 +539,7 @@ src =
 [
 	{
 		file_name = "config";
+		uuid = "UUID";
 		action = create;
 		edit =
 		{
@@ -545,7 +551,7 @@ src =
 			revision = "1.2";
 			encoding = none;
 		};
-		usage = source;
+		usage = config;
 		file_fp =
 		{
 			youngest = TIME;
@@ -561,6 +567,7 @@ src =
 	},
 	{
 		file_name = "hosttest/0001/main.cc";
+		uuid = "UUID";
 		action = create;
 		edit =
 		{
@@ -592,6 +599,7 @@ src =
 	},
 	{
 		file_name = "test/00/t0001a.sh";
+		uuid = "UUID";
 		action = create;
 		edit =
 		{
@@ -628,6 +636,7 @@ src =
 [
 	{
 		file_name = "hosttest/0001/main.cc";
+		uuid = "UUID";
 		action = remove;
 		edit =
 		{
@@ -667,6 +676,7 @@ src =
 [
 	{
 		file_name = "hosttest/0001/main.cc";
+		uuid = "UUID";
 		action = remove;
 		edit =
 		{

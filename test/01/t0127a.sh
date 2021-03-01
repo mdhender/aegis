@@ -1,7 +1,7 @@
 #!/bin/sh
 #
 #	aegis - project change supervisor
-#	Copyright (C) 2001-2003 Peter Miller;
+#	Copyright (C) 2001-2004 Peter Miller;
 #	All rights reserved.
 #
 #	This program is free software; you can redistribute it and/or modify
@@ -315,7 +315,7 @@ cat > ok << 'fubar'
 src =
 [
 	{
-		file_name = "config";
+		file_name = "aegis.conf";
 		action = create;
 		edit =
 		{
@@ -327,7 +327,7 @@ src =
 			revision = "1.1";
 			encoding = none;
 		};
-		usage = source;
+		usage = config;
 		file_fp =
 		{
 			youngest = TIME;
@@ -402,8 +402,8 @@ if test $? -ne 0 ; then no_result; fi
 check_it ok $workproj/info/change/0/001.branch/0/000.fs
 
 cat > ok << 'fubar'
-brief_description = "config file";
-description = "Initial project `config' file.";
+brief_description = "aegis.conf file";
+description = "Initial project `aegis.conf' file.";
 cause = internal_enhancement;
 test_exempt = true;
 test_baseline_exempt = true;
@@ -460,14 +460,14 @@ cat > ok << 'fubar'
 src =
 [
 	{
-		file_name = "config";
+		file_name = "aegis.conf";
 		action = create;
 		edit =
 		{
 			revision = "1.1";
 			encoding = none;
 		};
-		usage = source;
+		usage = config;
 	},
 ];
 fubar

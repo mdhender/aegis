@@ -1,6 +1,6 @@
 /*
  *      aegis - project change supervisor
- *      Copyright (C) 2001-2003 Peter Miller;
+ *      Copyright (C) 2001-2004 Peter Miller;
  *      All rights reserved.
  *
  *      This program is free software; you can redistribute it and/or modify
@@ -35,6 +35,11 @@
 #include <itab.h>
 #include <str_list.h>
 
+#ifdef DEBUG
+#undef YYDEBUG
+#define YYDEBUG 1
+#endif
+
 %}
 
 %token COMMENT
@@ -67,8 +72,6 @@
 %type <lv_string> COMMENT STRING TEXTLINE
 
 %{
-
-#define YYDEBUG 1
 
 static format_version_ty *current;
 static itab_ty  *itp;
@@ -244,11 +247,11 @@ date_and_time
             s =
                 str_format
                 (
-                    "%S/%S/%S %S GMT",
-                    sl.string[1],
-                    sl.string[2],
-                    sl.string[0],
-                    $2
+                    "%s/%s/%s %s GMT",
+                    sl.string[1]->str_text,
+                    sl.string[2]->str_text,
+                    sl.string[0]->str_text,
+                    $2->str_text
                 );
             string_list_destructor(&sl);
             str_free($2);
@@ -295,7 +298,13 @@ comment
             {
                 if (current->description)
                 {
-                    s = str_format("%S\n%S", current->description, $1);
+                    s =
+			str_format
+			(
+			    "%s\n%s",
+			    current->description->str_text,
+			    $1->str_text
+			);
                     str_free(current->description);
                     current->description = s;
                 }

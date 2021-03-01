@@ -1,6 +1,6 @@
 /*
  *	aegis - project change supervisor
- *	Copyright (C) 1991-1997, 1999, 2001-2003 Peter Miller;
+ *	Copyright (C) 1991-1997, 1999, 2001-2004 Peter Miller;
  *	All rights reserved.
  *
  *	This program is free software; you can redistribute it and/or modify
@@ -31,57 +31,55 @@
 
 state =
 (
-	/*
-	 * The change has been created,
-	 * but has yet to be worked on.
-	 */
-	awaiting_development,
+    /*
+     * The change has been created,
+     * but has yet to be worked on.
+     */
+    awaiting_development,
 
-	/*
-	 * The change is being developed.
-	 */
-	being_developed,
+    /*
+     * The change is being developed.
+     */
+    being_developed,
 
-	/*
-	 * The change has been developed,
-	 * and is waiting to be reviewed.
-	 * (Optional, controlled by pattr::develop_end_action field)
-	 */
-	awaiting_review,
+    /*
+     * The change has been developed,
+     * and is waiting to be reviewed.
+     * (Optional, controlled by pattr::develop_end_action field)
+     */
+    awaiting_review,
 
-	/*
-	 * The change has been developed,
-	 * and is being reviewed.
-	 * (Optional, controlled by pattr::develop_end_action field)
-	 */
-	being_reviewed,
+    /*
+     * The change has been developed,
+     * and is being reviewed.
+     * (Optional, controlled by pattr::develop_end_action field)
+     */
+    being_reviewed,
 
-	/*
-	 * The change has passed review,
-	 * and is queued ready for integration.
-	 */
-	awaiting_integration,
+    /*
+     * The change has passed review,
+     * and is queued ready for integration.
+     */
+    awaiting_integration,
 
-	/*
-	 * The change is being integrated.
-	 */
-	being_integrated,
+    /*
+     * The change is being integrated.
+     */
+    being_integrated,
 
-	/*
-	 * The change has been completed and is now
-	 * part of the baseline.
-	 * Changes in this state can not be reversed.
-	 */
-	completed
+    /*
+     * The change has been completed and is now
+     * part of the baseline.
+     * Changes in this state can not be reversed.
+     */
+    completed
 );
-
 
 /*
  * This field is the value of test_exemption (see libaegis/cattr.def)
  * when the change was created.
  */
 given_test_exemption = boolean hide_if_default;
-
 
 /*
  * This field is the value of regression_test_exemption (see
@@ -212,386 +210,392 @@ integration_directory = string;
  */
 history =
 [
-	{
-		/*
-		 * This field records the time the state transition occured.
-		 */
-		when = time;
+    {
+	/*
+	 * This field records the time the state transition occured.
+	 */
+	when = time;
 
-		/*
-		 * This field records what happened.
-		 * Valid value names echo the various aegis functions.
-		 */
-		what =
-		(
-			new_change,
-			develop_begin,
-			develop_begin_undo,
-			develop_end,
-			develop_end_2ar,
-			develop_end_2ai,
-			develop_end_undo,
-			review_begin,
-			review_begin_undo,
-			review_pass,
-			review_pass_undo,
-			review_fail,
-			integrate_begin,
-			integrate_begin_undo,
-			integrate_pass,
-			integrate_fail
-		);
+	/*
+	 * This field records what happened.
+	 * Valid value names echo the various aegis functions.
+	 */
+	what =
+	(
+		new_change,
+		develop_begin,
+		develop_begin_undo,
+		develop_end,
+		develop_end_2ar,
+		develop_end_2ai,
+		develop_end_undo,
+		review_begin,
+		review_begin_undo,
+		review_pass,
+		review_pass_undo,
+		review_fail,
+		integrate_begin,
+		integrate_begin_undo,
+		integrate_pass,
+		integrate_fail
+	);
 
-		/*
-		 * This field records the user name of the user who
-		 * caused the state transition.
-		 */
-		who = string; /* the user name */
+	/*
+	 * This field records the user name of the user who
+	 * caused the state transition.
+	 */
+	who = string; /* the user name */
 
-		/*
-		 * This field is optional.
-		 * It is a comment of some sort.
-		 * In the cause of review_file and integrate_fail,
-		 * this field will contain why the change failed.
-		 */
-		why = string;
-	}
+	/*
+	 * This field is optional.
+	 * It is a comment of some sort.
+	 * In the cause of review_file and integrate_fail,
+	 * this field will contain why the change failed.
+	 */
+	why = string;
+    }
 ];
+
+/*
+ * This field provides a globally unique identifier for the change set,
+ * even when geographically distributed development is happening.
+ */
+uuid = string;
 
 /*
  * This field is only present in branch changes (long transactions).
  */
 branch =
 {
-	/*
-	 * File permission mode mask.  See umask(2) for more
-	 * information.  This value will always be OR'ed with 022,
-	 * because aegis is paranoid.
-	 */
-	umask = integer;
+    /*
+     * File permission mode mask.  See umask(2) for more
+     * information.  This value will always be OR'ed with 022,
+     * because aegis is paranoid.
+     */
+    umask = integer;
 
-	/*
-	 * If this field is true, then a developer may review her own
-	 * change.  This is probably only a good idea for projects of
-	 * less than 3 people.  The idea is for as many people as
-	 * possible to critically examine a change.
-	 */
-	developer_may_review = boolean;
+    /*
+     * If this field is true, then a developer may review her own
+     * change.  This is probably only a good idea for projects of
+     * less than 3 people.  The idea is for as many people as
+     * possible to critically examine a change.
+     */
+    developer_may_review = boolean;
 
-	/*
-	 * If this field is true, then a developer may integrate her own
-	 * change.  This is probably only a good idea for projects of
-	 * less than 3 people.  The idea is for as many people as
-	 * possible to critically examine a change.
-	 */
-	developer_may_integrate = boolean;
+    /*
+     * If this field is true, then a developer may integrate her own
+     * change.  This is probably only a good idea for projects of
+     * less than 3 people.  The idea is for as many people as
+     * possible to critically examine a change.
+     */
+    developer_may_integrate = boolean;
 
-	/*
-	 * If this field is true, then a reviewer may integrate a change
-	 * she reviewed.  This is probably only a good idea for projects
-	 * of less than 3 people.  The idea is for as many people as
-	 * possible to critically examine a change.
-	 */
-	reviewer_may_integrate = boolean;
+    /*
+     * If this field is true, then a reviewer may integrate a change
+     * she reviewed.  This is probably only a good idea for projects
+     * of less than 3 people.  The idea is for as many people as
+     * possible to critically examine a change.
+     */
+    reviewer_may_integrate = boolean;
 
-	/*
-	 * This field is true if developers may created changes, in
-	 * addition to administrators.  This tends to be a very useful
-	 * thing, since developers find most of the bugs.
-	 */
-	developers_may_create_changes = boolean;
+    /*
+     * This field is true if developers may created changes, in
+     * addition to administrators.  This tends to be a very useful
+     * thing, since developers find most of the bugs.
+     */
+    developers_may_create_changes = boolean;
 
-	/*
-	 * This command is used to notify a developer that a change
-	 * requires developing; it is issued when a project
-	 * administrator uses an 'aedb -User' command to force
-	 * development of a change by a specific user.  All of the
-	 * substitutions described in aesub(5) are available.  This
-	 * field is optional.
-	 *
-	 * Executed as: the new developer.
-	 * Current directory: the development directory of the change
-	 *	for the new developer.
-	 * Exit status: ignored.
-	 */
-	forced_develop_begin_notify_command = string;
+    /*
+     * This command is used to notify a developer that a change
+     * requires developing; it is issued when a project
+     * administrator uses an 'aedb -User' command to force
+     * development of a change by a specific user.  All of the
+     * substitutions described in aesub(5) are available.  This
+     * field is optional.
+     *
+     * Executed as: the new developer.
+     * Current directory: the development directory of the change
+     *	for the new developer.
+     * Exit status: ignored.
+     */
+    forced_develop_begin_notify_command = string;
 
-	/*
-	 * Notify that a change requires reviewing All of the
-	 * substitutions described in aesub(5) are available.  This
-	 * field is optional.
-	 *
-	 * This command could also be used to notify other management
-	 * systems, such as progress and defect tracking.
-	 *
-	 * Executed as: the developer.
-	 * Current directory: the development directory of the change.
-	 * Exit status: ignored.
-	 */
-	develop_end_notify_command = string;
+    /*
+     * Notify that a change requires reviewing All of the
+     * substitutions described in aesub(5) are available.  This
+     * field is optional.
+     *
+     * This command could also be used to notify other management
+     * systems, such as progress and defect tracking.
+     *
+     * Executed as: the developer.
+     * Current directory: the development directory of the change.
+     * Exit status: ignored.
+     */
+    develop_end_notify_command = string;
 
-	/*
-	 * Notify that a change has been withdrawn from review for
-	 * further development.  All of the substitutions described in
-	 * aesub(5) are available.  This field is optional.
-	 *
-	 * This command could also be used to notify other management
-	 * systems, such as progress and defect tracking.
-	 *
-	 * Executed as: the developer.
-	 * Current directory: the development directory of the change.
-	 * Exit status: ignored.
-	 */
-	develop_end_undo_notify_command = string;
+    /*
+     * Notify that a change has been withdrawn from review for
+     * further development.  All of the substitutions described in
+     * aesub(5) are available.  This field is optional.
+     *
+     * This command could also be used to notify other management
+     * systems, such as progress and defect tracking.
+     *
+     * Executed as: the developer.
+     * Current directory: the development directory of the change.
+     * Exit status: ignored.
+     */
+    develop_end_undo_notify_command = string;
 
-	/*
-	 * notify that the review has begun
-	 * All of the substitutions described in aesub(5) are available.
-	 * this field is optional
-	 *
-	 * This command could also be used to notify other management systems,
-	 * such as progress and defect tracking.
-	 *
-	 * Executed as: the reviewer.
-	 * Current directory: the development directory of the change.
-	 * Exit status: ignored.
-	 */
-	review_begin_notify_command = string;
+    /*
+     * notify that the review has begun
+     * All of the substitutions described in aesub(5) are available.
+     * this field is optional
+     *
+     * This command could also be used to notify other management systems,
+     * such as progress and defect tracking.
+     *
+     * Executed as: the reviewer.
+     * Current directory: the development directory of the change.
+     * Exit status: ignored.
+     */
+    review_begin_notify_command = string;
 
-	/*
-	 * notify that the review has no longer begun
-	 * All of the substitutions described in aesub(5) are available.
-	 * this field is optional
-	 *
-	 * This command could also be used to notify other management systems,
-	 * such as progress and defect tracking.
-	 *
-	 * Executed as: the reviewer.
-	 * Current directory: the development directory of the change.
-	 * Exit status: ignored.
-	 */
-	review_begin_undo_notify_command = string;
+    /*
+     * notify that the review has no longer begun
+     * All of the substitutions described in aesub(5) are available.
+     * this field is optional
+     *
+     * This command could also be used to notify other management systems,
+     * such as progress and defect tracking.
+     *
+     * Executed as: the reviewer.
+     * Current directory: the development directory of the change.
+     * Exit status: ignored.
+     */
+    review_begin_undo_notify_command = string;
 
-	/*
-	 * Notify that the review has passed.  All of the substitutions
-	 * described in aesub(5) are available.  This field is optional.
-	 *
-	 * This command could also be used to notify other management
-	 * systems, such as progress and defect tracking.
-	 *
-	 * Executed as: the reviewer.
-	 * Current directory: the development directory of the change.
-	 * Exit status: ignored.
-	 */
-	review_pass_notify_command = string;
+    /*
+     * Notify that the review has passed.  All of the substitutions
+     * described in aesub(5) are available.  This field is optional.
+     *
+     * This command could also be used to notify other management
+     * systems, such as progress and defect tracking.
+     *
+     * Executed as: the reviewer.
+     * Current directory: the development directory of the change.
+     * Exit status: ignored.
+     */
+    review_pass_notify_command = string;
 
-	/*
-	 * Notify that a review pass has has been rescinded.  All of the
-	 * substitutions described in aesub(5) are available.  This
-	 * field is optional.
-	 *
-	 * This command could also be used to notify other management
-	 * systems, such as progress and defect tracking.
-	 *
-	 * Executed as: the reviewer.
-	 * Current directory: the development directory of the change.
-	 * Exit status: ignored.
-	 */
-	review_pass_undo_notify_command = string;
+    /*
+     * Notify that a review pass has has been rescinded.  All of the
+     * substitutions described in aesub(5) are available.  This
+     * field is optional.
+     *
+     * This command could also be used to notify other management
+     * systems, such as progress and defect tracking.
+     *
+     * Executed as: the reviewer.
+     * Current directory: the development directory of the change.
+     * Exit status: ignored.
+     */
+    review_pass_undo_notify_command = string;
 
-	/*
-	 * Notify that the review has failed.  All of the substitutions
-	 * described in aesub(5) are available.  This field is optional.
-	 *
-	 * This command could also be used to notify other management
-	 * systems, such as progress and defect tracking.
-	 *
-	 * Executed as: the reviewer.
-	 * Current directory: the development directory of the change.
-	 * Exit status: ignored.
-	 */
-	review_fail_notify_command = string;
+    /*
+     * Notify that the review has failed.  All of the substitutions
+     * described in aesub(5) are available.  This field is optional.
+     *
+     * This command could also be used to notify other management
+     * systems, such as progress and defect tracking.
+     *
+     * Executed as: the reviewer.
+     * Current directory: the development directory of the change.
+     * Exit status: ignored.
+     */
+    review_fail_notify_command = string;
 
-	/*
-	 * Notify that the integration has passed.  All of the
-	 * substitutions described in aesub(5) are available.  This
-	 * field is optional.
-	 *
-	 * This command could also be used to notify other management
-	 * systems, such as progress and defect tracking.
-	 *
-	 * Executed as: the project owner.
-	 * Current directory: the new baseline of the project.
-	 * Exit status: ignored.
-	 */
-	integrate_pass_notify_command = string;
+    /*
+     * Notify that the integration has passed.  All of the
+     * substitutions described in aesub(5) are available.  This
+     * field is optional.
+     *
+     * This command could also be used to notify other management
+     * systems, such as progress and defect tracking.
+     *
+     * Executed as: the project owner.
+     * Current directory: the new baseline of the project.
+     * Exit status: ignored.
+     */
+    integrate_pass_notify_command = string;
 
-	/*
-	 * Notify that the integration has failed.  All of the
-	 * substitutions described in aesub(5) are available.  This
-	 * field is optional.
-	 *
-	 * This command could also be used to notify other management
-	 * systems, such as progress and defect tracking.
-	 *
-	 * Executed as: the integrator.
-	 * Current directory: the development directory of the change.
-	 * Exit status: ignored.
-	 */
-	integrate_fail_notify_command = string;
+    /*
+     * Notify that the integration has failed.  All of the
+     * substitutions described in aesub(5) are available.  This
+     * field is optional.
+     *
+     * This command could also be used to notify other management
+     * systems, such as progress and defect tracking.
+     *
+     * Executed as: the integrator.
+     * Current directory: the development directory of the change.
+     * Exit status: ignored.
+     */
+    integrate_fail_notify_command = string;
 
-	/*
-	 * This field contains what to do when a change is created with
-	 * no test exemption specified.
-	 */
-	default_test_exemption = boolean;
+    /*
+     * This field contains what to do when a change is created with
+     * no test exemption specified.
+     */
+    default_test_exemption = boolean;
 
-	/*
-	 * This field may be set to true if you want to skip various
-	 * unlucky numbers for changes, branches and tests.  Various
-	 * traditions are avoided, both Eastern and Western.  Defaults to
-	 * false if not set.
-	 */
-	skip_unlucky = boolean;
+    /*
+     * This field may be set to true if you want to skip various
+     * unlucky numbers for changes, branches and tests.  Various
+     * traditions are avoided, both Eastern and Western.  Defaults to
+     * false if not set.
+     */
+    skip_unlucky = boolean;
 
-	/*
-	 * This field may be set to true if you want to compress the
-	 * database on writing.  (It is always uncompress on reading
-	 * if necessary.)
-	 */
-	compress_database = boolean;
+    /*
+     * This field may be set to true if you want to compress the
+     * database on writing.  (It is always uncompress on reading
+     * if necessary.)
+     */
+    compress_database = boolean;
 
-	/*
-	 * This field controls the state entered on a successfil develop end
-	 * state transition.  The default is "being reviewed".
-	 *
-	 * goto_being_reviewed
-	 *      This means that the state machine goes from the being_developed
-	 *      state to the being_reviewed state.  The aerb command only sends
-	 *      informative email.
-	 *
-	 * goto_awaiting_review
-	 *      This means that the state machine goes from the being_developed
-	 *      state to the awaiting_review state.  The aerb command is now
-	 *      essential.
-	 *
-	 * goto_awaiting_integration
-	 *      This means that the state machine goes from the being_developed
-	 *      state into the awaiting_inmtegartion state.  Code review is
-	 *      skipped entirely.
-	 *
-	 * Note that the "developer_may_review" setting may not contradict
-	 * the "develop_end_action".  If developers may not review their
-	 * own work, then you may not goto directly to being integrated
-	 * (as this means much te same thing).
-	 */
-	develop_end_action = (goto_being_reviewed, goto_awaiting_review,
-		goto_awaiting_integration);
+    /*
+     * This field controls the state entered on a successfil develop end
+     * state transition.  The default is "being reviewed".
+     *
+     * goto_being_reviewed
+     *      This means that the state machine goes from the being_developed
+     *      state to the being_reviewed state.  The aerb command only sends
+     *      informative email.
+     *
+     * goto_awaiting_review
+     *      This means that the state machine goes from the being_developed
+     *      state to the awaiting_review state.  The aerb command is now
+     *      essential.
+     *
+     * goto_awaiting_integration
+     *      This means that the state machine goes from the being_developed
+     *      state into the awaiting_inmtegartion state.  Code review is
+     *      skipped entirely.
+     *
+     * Note that the "developer_may_review" setting may not contradict
+     * the "develop_end_action".  If developers may not review their
+     * own work, then you may not goto directly to being integrated
+     * (as this means much te same thing).
+     */
+    develop_end_action = (goto_being_reviewed, goto_awaiting_review,
+	    goto_awaiting_integration);
 
-	/*
-	 * This field contains a history of integrations for the branch.
-	 * Update by each successful 'aegis -Integrate_Pass' command.
-	 */
-	history =
-	[
-		{
-			/*
-			 * The delta number of the integration.
-			 */
-			delta_number = integer;
+    /*
+     * This field contains a history of integrations for the branch.
+     * Update by each successful 'aegis -Integrate_Pass' command.
+     */
+    history =
+    [
+	{
+	    /*
+	     * The delta number of the integration.
+	     */
+	    delta_number = integer;
 
-			/*
-			 * The number of the change which was integrated.
-			 */
-			change_number = integer;
+	    /*
+	     * The number of the change which was integrated.
+	     */
+	    change_number = integer;
 
-			/*
-			 * the names by which this delta is known
-			 */
-			name = [ string ];
-		}
-	];
+	    /*
+	     * the names by which this delta is known
+	     */
+	    name = [ string ];
+	}
+    ];
 
-	/*
-	 * The list of changes which have been created to date.
-	 */
-	change = [integer];
+    /*
+     * The list of changes which have been created to date.
+     */
+    change = [integer];
 
-	/*
-	 * The list of branches which have been created to date.  This
-	 * will be a subset of the above (possibly empty, possibly
-	 * complete, never larger).
-	 */
-	sub_branch = [integer];
+    /*
+     * The list of branches which have been created to date.  This
+     * will be a subset of the above (possibly empty, possibly
+     * complete, never larger).
+     */
+    sub_branch = [integer];
 
-	/*
-	 * The list of administrators of the branch.
-	 */
-	administrator = [string];
+    /*
+     * The list of administrators of the branch.
+     */
+    administrator = [string];
 
-	/*
-	 * The list of developers of the branch.
-	 */
-	developer = [string];
+    /*
+     * The list of developers of the branch.
+     */
+    developer = [string];
 
-	/*
-	 * The list of reviewers of the branch.
-	 */
-	reviewer = [string];
+    /*
+     * The list of reviewers of the branch.
+     */
+    reviewer = [string];
 
-	/*
-	 * The list of integrators of the branch.
-	 */
-	integrator = [string];
+    /*
+     * The list of integrators of the branch.
+     */
+    integrator = [string];
 
-	/*
-	 * The change currently being integrated.  Only one change
-	 * (within a branch) may be integrated at a time.  Only set when
-	 * an integration is in progress.
-	 */
-	currently_integrating_change = integer;
+    /*
+     * The change currently being integrated.  Only one change
+     * (within a branch) may be integrated at a time.  Only set when
+     * an integration is in progress.
+     */
+    currently_integrating_change = integer;
 
-	/*
-	 * The pathname of where to place new development directories.
-	 * The pathname must be absolute.  Only consulted if the uconf
-	 * field of the same name is not set.  Defaults to $HOME.
-	 */
-	default_development_directory = string;
+    /*
+     * The pathname of where to place new development directories.
+     * The pathname must be absolute.  Only consulted if the uconf
+     * field of the same name is not set.  Defaults to $HOME.
+     */
+    default_development_directory = string;
 
-	/*
-	 * The minimum change number for aenc, if no change number is
-	 * specified.  This allows the low-numbered change numbers to be
-	 * used for branches later in the project.  Defaults to 10 if
-	 * not set, may not be less than 1.
-	 */
-	minimum_change_number = integer;
+    /*
+     * The minimum change number for aenc, if no change number is
+     * specified.  This allows the low-numbered change numbers to be
+     * used for branches later in the project.  Defaults to 10 if
+     * not set, may not be less than 1.
+     */
+    minimum_change_number = integer;
 
-	/*
-	 * This controls whether the automatically selected aenc(1) change
-	 * numbers ``fill in'' any gaps.  Defaults to true if not set.
-	 */
-	reuse_change_numbers = boolean;
+    /*
+     * This controls whether the automatically selected aenc(1) change
+     * numbers ``fill in'' any gaps.  Defaults to true if not set.
+     */
+    reuse_change_numbers = boolean;
 
-	/*
-	 * The minimum branchhange number for aebr, if no branch number is
-	 * specified.  Defaults to 1 if not set.
-	 */
-	minimum_branch_number = integer;
+    /*
+     * The minimum branchhange number for aebr, if no branch number is
+     * specified.  Defaults to 1 if not set.
+     */
+    minimum_branch_number = integer;
 
-	/*
-	 * This field may be used to protect the development directory
-	 * after the "being developed" state.  It does this by making
-	 * it read-only at develop end time.  Should the change ever
-	 * be returned to the "being developed" state, it will be made
-	 * writble again.
-	 *
-	 * The default is false, meaning to leave the development
-	 * directory writable while is being reviewed and integrated.
-	 * Aegis' normal tampering detection will notice if files are
-	 * changed, but there is no reminder to the developer that the
-	 * change should be left alone.
-	 */
-	protect_development_directory = boolean;
+    /*
+     * This field may be used to protect the development directory
+     * after the "being developed" state.  It does this by making
+     * it read-only at develop end time.  Should the change ever
+     * be returned to the "being developed" state, it will be made
+     * writble again.
+     *
+     * The default is false, meaning to leave the development
+     * directory writable while is being reviewed and integrated.
+     * Aegis' normal tampering detection will notice if files are
+     * changed, but there is no reminder to the developer that the
+     * change should be left alone.
+     */
+    protect_development_directory = boolean;
 };
 
 /************************ OBSOLETE FIELDS ************************/
@@ -600,67 +604,84 @@ branch =
  * This field is a list of all the files in the change.
  * This field is not obsolete, and will automatically be moved to fstate
  * in any change aegis detects it in.
+ *
+ * Note: this field is used by aedist to record file state, rather than
+ * add another file to the transfer format, which has compatibility
+ * problems already.
  */
 src =
 [
-	{
-		/*
-		 * This file names the file.
-		 * The name is relative to the root of the
-		 * baseline directory tree.
-		 */
-		file_name = string;
+    {
+	/*
+	 * This file names the file.
+	 * The name is relative to the root of the
+	 * baseline directory tree.
+	 */
+	file_name = string;
 
-		/*
-		 * This field describes what is being done with the file.
-		 */
-		action = file_action;
+	/*
+         * This field uniquely identifies the file for its entire
+         * lifetime.  This field remains constant across file renames.
+         * The value of this field shall be formatted as a valid UUID,
+         * all in lower case.
+	 */
+	uuid = string;
 
-		/*
-		 * This field records the edit number of the file
-		 * when it was added to the change (or updated using the
-		 * 'aegis -DIFFerence' command).
-		 * This field is not present for new files.
-		 */
-		edit_number = string;
+	/*
+	 * This field describes what is being done with the file.
+	 */
+	action = file_action;
 
-		/*
-		 * This field describes what function the file serves.
-		 */
-		usage = file_usage;
+	/*
+	 * This field records the edit number of the file
+	 * when it was added to the change (or updated using the
+	 * 'aegis -DIFFerence' command).
+	 * This field is not present for new files.
+	 */
+	edit_number = string;
 
-		/*
-		 * These fields are set by a successful
-		 * 'aegis -DIFFerence' command to the last-time-modified
-		 * of the source file and the difference listing.
-		 * It is only present between the 'being_developed' and
-		 * 'being_integrated' states, inclusive.
-		 * This allows checking that the files have not been modified
-		 * at the develop_end, review_pass and integrate_begin
-		 * state transitions.
-		 */
-		diff_time = time;
-		diff_file_time = time;
+	/*
+	 * This field describes what function the file serves.
+	 */
+	usage = file_usage;
 
-		/*
-		 * To change the name of a file,
-		 * a combination of aerm and aenf are used.
-		 * With deleted files, this field is used to say where it went.
-		 * With new files, this field is used to say where it came from.
-		 */
-		move = string;
+	/*
+	 * These fields are set by a successful
+	 * 'aegis -DIFFerence' command to the last-time-modified
+	 * of the source file and the difference listing.
+	 * It is only present between the 'being_developed' and
+	 * 'being_integrated' states, inclusive.
+	 * This allows checking that the files have not been modified
+	 * at the develop_end, review_pass and integrate_begin
+	 * state transitions.
+	 */
+	diff_time = time;
+	diff_file_time = time;
 
-		/*
-		 * This field tracks whether this incarnation of the file
-		 * was executable at `develop end' time.  This mode
-		 * is restored (taking the project umask into account)
-		 * when the file is copied.
-		 *
-		 * This field is only meaningful for changes in the
-		 * "completed" state, because this field is only set
-		 * by aeip.  Until then, the mode if the file itself is
-		 * the authority.
-		 */
-		executable = boolean hide_if_default;
-	}
+	/*
+	 * To change the name of a file,
+	 * a combination of aerm and aenf are used.
+	 * With deleted files, this field is used to say where it went.
+	 * With new files, this field is used to say where it came from.
+	 */
+	move = string;
+
+	/*
+	 * This field tracks whether this incarnation of the file
+	 * was executable at `develop end' time.  This mode
+	 * is restored (taking the project umask into account)
+	 * when the file is copied.
+	 *
+	 * This field is only meaningful for changes in the
+	 * "completed" state, because this field is only set
+	 * by aeip.  Until then, the mode if the file itself is
+	 * the authority.
+	 */
+	executable = boolean hide_if_default;
+
+	/*
+         * This field records the file attributes.
+	 */
+	attribute = attributes;
+    }
 ];

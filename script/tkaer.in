@@ -405,9 +405,9 @@ proc process_config_file {} {
 	} else {
 	    set cmd xterm
 	}
-	puts $fd [list set pref(view_command) "$cmd -e /bin/vi -R"]
+	puts $fd [list set pref(view_command) "$cmd -e @VI_PROG@ -R"]
 	puts $fd \
-	    "#set pref(view_command) \"/usr/bin/gnome-terminal -x /bin/vi\""
+	    "#set pref(view_command) \"/usr/bin/gnome-terminal -x @VI_PROG@\""
 	puts $fd "#set pref(view_command) \"/usr/bin/emacs\""
 	puts $fd ""
 	puts $fd "# Text Viewer/Editor Font."

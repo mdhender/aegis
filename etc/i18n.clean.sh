@@ -23,6 +23,7 @@
 set -e
 tmp=/tmp/$$.tmp
 sed -e 's/charset=CHARSET/charset=iso-8859-1/' \
-    -e 's/POT-Creation-Date:[^"]*//' $1 > $tmp
+    -e 's/POT-Creation-Date:[^"]*//' \
+    -e 's/Report-Msgid-Bugs-To:[^"]*//' $1 > $tmp
 mv $tmp $1
 exit 0

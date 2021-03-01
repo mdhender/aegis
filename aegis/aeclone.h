@@ -1,6 +1,6 @@
 /*
  *	aegis - project change supervisor
- *	Copyright (C) 1998, 2002 Peter Miller;
+ *	Copyright (C) 1998, 2002, 2004 Peter Miller;
  *	All rights reserved.
  *
  *	This program is free software; you can redistribute it and/or modify
@@ -25,6 +25,6 @@
 
 #include <main.h>
 
-void clone(void);
+void aeclone(void);
 
 #endif /* AEGIS_AECLONE_H */

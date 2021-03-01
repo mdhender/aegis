@@ -1,0 +1,143 @@
+#
+#	aegis - project change supervisor
+#	Copyright (C) 2004 Peter Miller;
+#	All rights reserved.
+#
+#	As a specific exception to the GPL, you are allowed to copy
+#	this source file into you own project and modify it, without
+#	releasing your project under the GPL, unless there is some other
+#	file or condition which would require it.
+#
+# MANIFEST: shell script to commit changes to CVS
+#
+# It is assumed that your CVSROOT and CVS_RSH environment variables have
+# already been set appropriately.
+#
+# This script is expected to be run as by integrate_pass_notify_command
+# and as such the baseline has already assumed the shape asked fro by
+# the change.
+#
+#	integrate_pass_notify_command =
+#    	    "$bin/ae-cvs-ci $project $change";
+#
+# Alternatively, you may wish to taylor this script to the individual
+# needs of your project.  Make it a source file, e.g. "etc/ae-cvs-ci.sh"
+# and the use the following:
+#
+#	integrate_pass_notify_command =
+#    	    "$sh $bin/ae-cvs-ci $project $change";
+#
+case $# in
+2)
+    project=$1
+    change=$2
+    ;;
+*)
+    echo "Usage: $0 <project> <change>" 1>&2
+    exit 1
+    ;;
+esac
+
+here=`pwd`
+
+AEGIS_PROJECT=$project
+export AEGIS_PROJECT
+AEGIS_CHANGE=$change
+export AEGIS_CHANGE
+
+module=`echo $project | sed 's|[.].*||'`
+
+baseline=`aegis -cd -bl`
+
+TMP=/tmp/$$
+echo "TMP=$TMP"
+mkdir $TMP
+cd $TMP
+
+fail()
+{
+    set +x
+    cd $here
+    rm -rf $TMP
+    echo "FAILED" 1>&2
+    exit 1
+}
+trap "fail" 1 2 3 15
+
+#
+# Create a new CVS work area.
+#
+# Note: this assumes the module is checked-out into a directory of the
+# same name.  Is there a way to ask CVS where is is going to put a
+# modules, so we can always get the "cd" right?
+#
+echo cvs co $module
+cvs co ncav > LOG 2>&1
+if test $? -ne 0; then cat LOG; fail; fi
+cd $module
+
+#
+# Now we need to extract the sources from Aegis and drop them into the
+# CVS work area.  There are two ways to do this.
+#
+# The first way is to use the generated tarball.
+# This has the advantage that it has the Makefile.in file in it, and
+# will work immediately.
+#
+# The second way is to use aetar, which will give exact sources, and
+# omit all derived files.  This will *not* include the Makefile.in,
+# and so will not be readily compilable.
+#
+# gunzip < $baseline/export/${project}.tar.gz | tardy -rp ${project} | tar xf -
+aetar -send -o - | tar xf -
+
+#
+# If any new directories have been created we will need to add them
+# to CVS before we can add the new files which we know are in them,
+# or they would not have been created.
+#
+find . \( -name CVS -o -name Attic \) -prune -o -type d -print |
+xargs --max-args=1 |
+while read dir
+do
+    if [ ! -d $dir/CVS ]
+    then
+	cvs add $dir
+    fi
+done
+
+#
+# Use the Aegis meta-data to perform some CVS commands that CVS can't
+# figure out for itself.
+#
+aegis -l cf -unf | sed 's| -> [0-9][0-9.]*||' |
+while read usage action filename
+do
+    case $action in
+    create)
+	echo cvs add $filename
+	cvs add $filename
+	;;
+    remove)
+	rm -f $filename
+	echo cvs remove $filename
+	cvs remove $filename
+	;;
+    *)
+	;;
+    esac
+done
+
+#
+# Now commit all the changes.
+#
+message=`aesub '${version} - ${change description}'`
+echo cvs commit
+cvs commit -m "$message"
+
+#
+# All done.  Clean up and go home.
+#
+cd $here
+rm -rf $TMP
+exit 0

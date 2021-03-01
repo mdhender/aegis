@@ -25,6 +25,11 @@
 
 #include <main.h>
 
+/** \addtogroup Error
+  * \brief Error functions
+  * \ingroup Common
+  * @{
+  */
 #define error /!/!/
 void error_raw(const char *, ...);
 #define fatal /!/!/
@@ -57,4 +62,5 @@ int assert_failed(const char *condition, const char *file, int line)
 		__LINE__						\
 	)
 
+/** @} */
 #endif /* ERROR_H */

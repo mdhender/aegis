@@ -1,7 +1,7 @@
 #!/bin/sh
 #
 #	aegis - project change supervisor
-#	Copyright (C) 1996, 1997, 1998, 2000 Peter Miller;
+#	Copyright (C) 1996-1998, 2000, 2004 Peter Miller;
 #	All rights reserved.
 #
 #	This program is free software; you can redistribute it and/or modify
@@ -206,7 +206,7 @@ src =
 	{
 		file_name = "config";
 		action = create;
-		usage = source;
+		usage = config;
 	},
 ];
 fubar

@@ -1,7 +1,7 @@
 #!/bin/sh
 #
 #	aegis - project change supervisor
-#	Copyright (C) 1995-2003 Peter Miller;
+#	Copyright (C) 1995-2004 Peter Miller;
 #	All rights reserved.
 #
 #	This program is free software; you can redistribute it and/or modify
@@ -81,6 +81,7 @@ check_it()
 		-e 's/20[0-9][0-9]/YYYY/' \
 		-e 's/node = ".*";/node = "NODE";/' \
 		-e 's/crypto = ".*"/crypto = "GUNK"/' \
+		-e 's/uuid = ".*"/uuid = "UUID"/' \
 		< $1 > $work/sed.out
 	if test $? -ne 0; then no_result; fi
 	diff $2 $work/sed.out
@@ -127,19 +128,19 @@ unset LANG
 unset LANGUAGE
 
 #
-# If the C compiler is called something other than ``cc'', as discovered
-# by the configure script, create a shell script called ``cc'' which
-# invokes the correct C compiler.  Make sure the current directory is in
-# the path, so that it will be invoked.
+# If the C++ compiler is called something other than ``c++'', as
+# discovered by the configure script, create a shell script called
+# ``c++'' which invokes the correct C++ compiler.  Make sure the current
+# directory is in the path, so that it will be invoked.
 #
-if test "$CC" != "" -a "$CC" != "cc"
+if test "$CXX" != "" -a "$CXX" != "c++"
 then
-	cat >> $work/cc << fubar
+	cat >> $work/c++ << fubar
 #!/bin/sh
-exec $CC \$*
+exec $CXX \$*
 fubar
 	if test $? -ne 0 ; then no_result; fi
-	chmod a+rx $work/cc
+	chmod a+rx $work/c++
 	if test $? -ne 0 ; then no_result; fi
 	PATH=${work}:${PATH}
 	export PATH
@@ -196,19 +197,20 @@ activity="develop begin 196"
 $bin/aegis -devbeg 1 -p foo -dir $workchan -lib $worklib > log 2>&1
 if test $? -ne 0 ; then cat log; no_result; fi
 activity="new file 199"
-$bin/aegis -new_file $workchan/main.c $workchan/config -nl -lib $worklib \
+$bin/aegis -new_file $workchan/main.cc $workchan/config -nl -lib $worklib \
 	-Pro foo > log 2>&1
 if test $? -ne 0 ; then cat log; no_result; fi
 
-cat > $workchan/main.c << 'end'
-void
-main()
+cat > $workchan/main.cc << 'end'
+int
+main(int argc, char **argv)
 {
-	exit(0);
+	return 0;
 }
 end
 cat > $workchan/config << 'end'
-build_command = "rm -f foo; cc -o foo -D'VERSION=\"$v\"' -D'PATH=\"$sp\"' main.c";
+build_command =
+    "rm -f foo; c++ -o foo -D'VERSION=\"$v\"' -D'PATH=\"$sp\"' main.cc";
 
 history_get_command =
 	"co -u'$e' -p $h,v > $o";
@@ -334,7 +336,7 @@ src =
 	{
 		file_name = "config";
 		action = create;
-		usage = source;
+		usage = config;
 		file_fp =
 		{
 			youngest = TIME;
@@ -349,7 +351,7 @@ src =
 		};
 	},
 	{
-		file_name = "main.c";
+		file_name = "main.cc";
 		action = create;
 		usage = source;
 		file_fp =
@@ -637,28 +639,26 @@ check_it $worklib/user/$USER ok
 # copy a file into the change
 #
 activity="copy file 566"
-$bin/aegis -cp $workchan/main.c -nl -lib $worklib -p foo-2 > log 2>&1
+$bin/aegis -cp $workchan/main.cc -nl -lib $worklib -p foo-2 > log 2>&1
 if test $? -ne 0 ; then cat log; fail; fi
 
 #
 # change the file
 #
-cat > $workchan/main.c << 'end'
+cat > $workchan/main.cc << 'end'
 
 #include <stdio.h>
 
-void
-main(argc, argv)
-	int	argc;
-	char	**argv;
+int
+main(int argc, char **argv)
 {
 	if (argc != 1)
 	{
 		fprintf(stderr, "usage: %s\n", argv[0]);
-		exit(1);
+		return 1;
 	}
 	printf("hello, world\n");
-	exit(0);
+	return 0;
 }
 end
 if test $? -ne 0 ; then no_result; fi
@@ -757,7 +757,8 @@ cat > ok << 'fubar'
 src =
 [
 	{
-		file_name = "main.c";
+		file_name = "main.cc";
+		uuid = "UUID";
 		action = transparent;
 		edit =
 		{
@@ -897,7 +898,8 @@ cat > ok << 'fubar'
 src =
 [
 	{
-		file_name = "main.c";
+		file_name = "main.cc";
+		uuid = "UUID";
 		action = modify;
 		edit =
 		{
@@ -930,6 +932,7 @@ src =
 	},
 	{
 		file_name = "test/00/t0002a.sh";
+		uuid = "UUID";
 		action = create;
 		edit =
 		{
@@ -983,6 +986,7 @@ src =
 [
 	{
 		file_name = "config";
+		uuid = "UUID";
 		action = create;
 		edit =
 		{
@@ -994,20 +998,17 @@ src =
 			revision = "1.1";
 			encoding = none;
 		};
-		usage = source;
+		usage = config;
 		file_fp =
 		{
 			youngest = TIME;
 			oldest = TIME;
 			crypto = "GUNK";
 		};
-		test =
-		[
-			"test/00/t0001a.sh",
-		];
 	},
 	{
-		file_name = "main.c";
+		file_name = "main.cc";
+		uuid = "UUID";
 		action = create;
 		edit =
 		{
@@ -1034,6 +1035,7 @@ src =
 	},
 	{
 		file_name = "test/00/t0001a.sh";
+		uuid = "UUID";
 		action = create;
 		edit =
 		{
@@ -1062,6 +1064,7 @@ src =
 	},
 	{
 		file_name = "test/00/t0002a.sh";
+		uuid = "UUID";
 		action = transparent;
 		usage = test;
 		locked_by = 2;
@@ -1099,7 +1102,8 @@ cat > ok << 'fubar'
 src =
 [
 	{
-		file_name = "main.c";
+		file_name = "main.cc";
+		uuid = "UUID";
 		action = modify;
 		edit =
 		{
@@ -1132,6 +1136,7 @@ src =
 	},
 	{
 		file_name = "test/00/t0002a.sh";
+		uuid = "UUID";
 		action = create;
 		edit =
 		{
@@ -1182,7 +1187,8 @@ cat > ok << fubar
 src =
 [
 	{
-		file_name = "main.c";
+		file_name = "main.cc";
+		uuid = "UUID";
 		action = modify;
 		edit =
 		{
@@ -1203,6 +1209,7 @@ src =
 	},
 	{
 		file_name = "test/00/t0002a.sh";
+		uuid = "UUID";
 		action = create;
 		edit =
 		{
@@ -1236,6 +1243,7 @@ src =
 [
 	{
 		file_name = "config";
+		uuid = "UUID";
 		action = create;
 		edit =
 		{
@@ -1247,20 +1255,17 @@ src =
 			revision = "1.1";
 			encoding = none;
 		};
-		usage = source;
+		usage = config;
 		file_fp =
 		{
 			youngest = TIME;
 			oldest = TIME;
 			crypto = "GUNK";
 		};
-		test =
-		[
-			"test/00/t0001a.sh",
-		];
 	},
 	{
-		file_name = "main.c";
+		file_name = "main.cc";
+		uuid = "UUID";
 		action = create;
 		edit =
 		{
@@ -1287,6 +1292,7 @@ src =
 	},
 	{
 		file_name = "test/00/t0001a.sh";
+		uuid = "UUID";
 		action = create;
 		edit =
 		{
@@ -1315,6 +1321,7 @@ src =
 	},
 	{
 		file_name = "test/00/t0002a.sh";
+		uuid = "UUID";
 		action = create;
 		edit =
 		{

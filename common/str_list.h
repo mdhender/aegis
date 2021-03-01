@@ -25,6 +25,12 @@
 
 #include <str.h>
 
+/** \addtogroup String_List
+  * \brief String Lists
+  * \ingroup String
+  * @{
+  */
+
 /**
   * The string_list_ty type is used to represent a list of string
   * (string_ty *) values.
@@ -256,4 +262,5 @@ void string_list_quote_shell(string_list_ty *lhs, string_list_ty *rhs);
   */
 int string_list_validate(string_list_ty *);
 
+/** @} */
 #endif /* COMMON_STR_LIST_H */

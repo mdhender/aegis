@@ -102,6 +102,12 @@ This is the default.
 .TP 8n
 \fB\-No_COmpress
 This option may be used to specify that the output is not to be compressed.
+.TP 8n
+\fB\-COMPATibility\fP \fIversion-number\fP
+This option may be used to specify the version of \fIaedist\fP(1) which
+will be \fIreceiving\fP this change set.  This information is used to
+select which features to include in the data, and which to omit.
+By default, the latest feature set will be used.
 .so o_cte.so
 .so o_delta.so
 .TP 8n
@@ -123,14 +129,12 @@ This is the default, except for the \fI\-BaseLine\fP option.
 .so o_output.so
 .TP 8n
 \fB\-PATch\fP
-This option may be used to add patches for modified files to the output,
-in addition to complete files sources.
-This is the default.
+This option is deprecated.
+Please use the \fB\-COMPATibility\fP option instead.
 .TP 8n
 \fB\-No_PATch\fP
-This option may be used to omit patches for modified files to the output.
-The result will contain only complete files sources.
-(It also supresses the change number.)
+This option is deprecated.
+Please use the \fB\-COMPATibility=4.6\fP option instead.
 .so o_project.so
 .SH RECEIVE
 The receive variant takes a change package created by the send variant
@@ -210,8 +214,8 @@ so a human must examine the file before the change proceeds any further.
 \(bu
 There is a \fIpotential_trojan_horse = [ string ];\fP
 field in the project\fIconfig\fP file.
-Nominate build config files, shell scripts, code generators, \fIetc\fP
-here to specify files in addition to the config file which should
+Nominate build configuration files, shell scripts, code generators, \fIetc\fP
+here to specify files in addition to the project configuration file which should
 cause the automatic processing to halt.
 .TP 2n
 \(bu

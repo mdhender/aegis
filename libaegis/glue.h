@@ -1,6 +1,6 @@
 /*
  *	aegis - project change supervisor
- *	Copyright (C) 1993, 1994, 1999, 2002 Peter Miller;
+ *	Copyright (C) 1993, 1994, 1999, 2002, 2004 Peter Miller;
  *	All rights reserved.
  *
  *	This program is free software; you can redistribute it and/or modify
@@ -31,10 +31,28 @@
 struct stat;
 struct utimbuf;
 struct flock;
+struct string_list_ty; /* forward */
 
 int copyfile(char *src, char *dst);
 int catfile(char *path);
-int read_whole_dir(char *path, char **data, long *datalen);
+int read_whole_dir(const char *path, char **data, long *datalen);
+
+/**
+  * The read_whole_dir__wl function may be used to read the list of file
+  * names contained in a directory.  It is returned as a string_list_ty.
+  * The string list is initialized (via string_list_constructor) before
+  * the results are appended.
+  */
+int read_whole_dir__wl(const char *path, struct string_list_ty *);
+
+/**
+  * The read_whole_dir__wla function may be used to read the list of
+  * file names contained in a directory and append them to the given
+  * string list.  It is returned as a string_list_ty.  The string list
+  * is NOT initialized first.
+  */
+int read_whole_dir__wla(const char *path, struct string_list_ty *);
+
 int file_compare(char *, char *);
 int file_fingerprint(char *path, char *buf, int max);
 int rmdir_bg(char *path);
@@ -64,7 +82,7 @@ int glue_open(char *path, int mode, int perm);
 long glue_pathconf(char *path, int mode);
 long glue_read(int fd, void *data, size_t len);
 int glue_readlink(char *path, char *buf, int max);
-int glue_read_whole_dir(char *path, char **data, long *datalen);
+int glue_read_whole_dir(const char *path, char **data, long *datalen);
 int glue_rename(char *p1, char *p2);
 int glue_rmdir(char *path);
 int glue_rmdir_bg(char *path);

@@ -1,6 +1,6 @@
 /*
  *	aegis - project change supervisor
- *	Copyright (C) 1991-1993, 1995, 1997, 1999, 2002, 2003 Peter Miller;
+ *	Copyright (C) 1991-1993, 1995, 1997, 1999, 2002-2004 Peter Miller;
  *	All rights reserved.
  *
  *	This program is free software; you can redistribute it and/or modify
@@ -36,7 +36,8 @@ sub_context_ty *sub_context_New(const char *, int);
 void sub_context_delete(sub_context_ty *);
 
 void sub_var_clear(sub_context_ty *);
-void sub_var_set_format(sub_context_ty *, const char *, const char *, ...);
+void sub_var_set_format(sub_context_ty *, const char *, const char *, ...)
+                                                              ATTR_PRINTF(3, 4);
 void sub_var_set_string(sub_context_ty *, const char *, struct string_ty *);
 void sub_var_set_charstar(sub_context_ty *, const char *, const char *);
 void sub_var_set_long(sub_context_ty *, const char *, long);
@@ -45,8 +46,20 @@ void sub_var_optional(sub_context_ty *, const char *);
 void sub_var_append_if_unused(sub_context_ty *, const char *);
 void sub_var_override(sub_context_ty *, const char *);
 void sub_var_resubstitute(sub_context_ty *, const char *);
-void sub_errno_set(sub_context_ty *);
+
+/**
+  * Set the $ERRNO value in the given substitition context.
+  *
+  * \Note
+  *     There is no method to directly read errno and set it, because
+  *     there is at least one malloc() library call and possibly several
+  *     others before you get arround to calling this function.
+  *     You *must* instead copy the value of errno immediatly after
+  *     the offending system call, and before doing inything towards
+  *     preparing the error message.
+  */
 void sub_errno_setx(sub_context_ty *, int);
+
 string_ty *substitute(sub_context_ty *, struct change_ty *cp,
 	string_ty *the_command);
 string_ty *substitute_p(sub_context_ty *, struct project_ty *cp,

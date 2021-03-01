@@ -1,6 +1,6 @@
 /*
  *	aegis - project change supervisor
- *	Copyright (C) 1997, 1999 Peter Miller;
+ *	Copyright (C) 1997, 1999, 2004 Peter Miller;
  *	All rights reserved.
  *
  *	This program is free software; you can redistribute it and/or modify
@@ -26,5 +26,8 @@
 #include <config.h>
 
 #include <stdio.h>
+
+#define sprintf use_snprintf_instead
+#define vsprintf use_vsnprintf_instead
 
 #endif /* COMMON_AC_STDIO_H */

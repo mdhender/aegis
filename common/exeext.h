@@ -25,6 +25,12 @@
 
 #include <main.h>
 
+/** \addtogroup Misc
+  * \brief Miscellaneous functions
+  * \ingroup Common
+  * @{
+  */
 int exeext(const char *);
 
+/** @} */
 #endif /* COMMON_EXEEXT_H */

@@ -25,6 +25,14 @@
 
 #include <main.h>
 
+/** \addtogroup Misc
+  * @{
+  */
+
+/**
+  * \brief Skip unlucky numbers
+  */
 long skip_unlucky(long);
 
+/** @} */
 #endif /* COMMON_SKIP_UNLUCKY_H */

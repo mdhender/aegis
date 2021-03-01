@@ -1,6 +1,6 @@
 /*
  *	aegis - project change supervisor
- *	Copyright (C) 1992-1999, 2001-2003 Peter Miller;
+ *	Copyright (C) 1992-1999, 2001-2004 Peter Miller;
  *	All rights reserved.
  *
  *	This program is free software; you can redistribute it and/or modify
@@ -27,10 +27,12 @@
 
 #include <pstate.h>
 #include <pattr.h>
+#include <view_path.h>
 
 struct string_list_ty; /* existence */
 struct change_ty; /* existence */
 struct sub_context_ty; /* existence */
+struct fstate_src_ty; /* existence */
 
 typedef struct project_ty project_ty;
 struct project_ty
@@ -51,7 +53,8 @@ struct project_ty
     int             uid, gid;
     project_ty      *parent;
     long            parent_bn;
-    struct string_list_ty *file_list[3];
+    struct string_list_ty *file_list[view_path_MAX];
+    struct symtab_ty *file_by_uuid[view_path_MAX];
     /*
      * if you add anything to this structure,
      * make sure you fix project_free in project.c
@@ -61,6 +64,7 @@ struct project_ty
 
 project_ty *project_alloc(string_ty *name);
 void project_bind_existing(project_ty *);
+int project_bind_existing_errok(project_ty *);
 project_ty *project_bind_branch(project_ty *ppp, struct change_ty *bp);
 void project_bind_new(project_ty *);
 void project_list_get(struct string_list_ty *);
@@ -75,7 +79,28 @@ string_ty *project_Home_path_get(project_ty *);
 string_ty *project_top_path_get(project_ty *, int);
 void project_home_path_set(project_ty *, string_ty *);
 string_ty *project_baseline_path_get(project_ty *, int);
+
+/**
+  * The project_history_path_get function is used to determine the
+  * top-level directory of the tree which is used to hold the project's
+  * history files.
+  *
+  * @returns
+  *     a pointer to a string.  Do NOT free this string when you are
+  *     done with it, because it is cahced.
+  */
 string_ty *project_history_path_get(project_ty *);
+
+/**
+  * The project_history_filename_get function is used to determine the
+  * absolute path pf the file used to contain the history of the given file.
+  *
+  * @returns
+  *     a pointer to a string.  You are required to str_free this string
+  *     when you are done with it.
+  */
+string_ty *project_history_filename_get(project_ty *, struct fstate_src_ty *);
+
 string_ty *project_info_path_get(project_ty *);
 string_ty *project_changes_path_get(project_ty *);
 string_ty *project_change_path_get(project_ty *, long);
@@ -128,5 +153,20 @@ struct pconf_ty *project_pconf_get(project_ty *);
 project_ty *project_new_branch(project_ty *, struct user_ty *, long,
     string_ty *);
 void project_file_list_invalidate(project_ty *);
+string_ty *project_brief_description_get(project_ty *);
+
+/**
+  * The project_uuid_find function is used to locate a change given its UUID.
+  *
+  * @param pp
+  *     The project to search.  Will rewind to the trunk project
+  *     before the search commences.
+  * @param uuid
+  *     The change UUID to search for.
+  * @returns
+  *     a pointer to the change with th given UUID, or NULL if no change
+  *     has the given UUID.
+  */
+struct change_ty *project_uuid_find(project_ty *pp, string_ty *uuid);
 
 #endif /* PROJECT_H */

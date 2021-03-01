@@ -23,6 +23,11 @@
 #ifndef COMMON_LIBDIR_H
 #define COMMON_LIBDIR_H
 
+/** \addtogroup Configured
+  * \brief Retrieve configure time values
+  * \ingroup Common
+  * @{
+  */
 const char *configured_prefix(void);
 const char *configured_bindir(void);
 const char *configured_comdir(void);
@@ -34,4 +39,5 @@ int configured_aegis_uid(void);
 int configured_aegis_gid(void);
 const char *configured_exeext(void);
 
+/** @} */
 #endif /* COMMON_LIBDIR_H */

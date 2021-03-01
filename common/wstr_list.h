@@ -25,6 +25,12 @@
 
 #include <wstr.h>
 
+/** \addtogroup WStringList
+  * \brief Lists of wide char strings
+  * \ingroup WString
+  * @{
+  */
+
 typedef struct wstring_list_ty wstring_list_ty;
 struct wstring_list_ty
 {
@@ -49,4 +55,5 @@ void wstring_list_constructor(wstring_list_ty *);
 int wstring_list_equal(wstring_list_ty *, wstring_list_ty *);
 int wstring_list_subset(wstring_list_ty *, wstring_list_ty *);
 
+/** @} */
 #endif /* COMMON_WSTR_LIST_H */

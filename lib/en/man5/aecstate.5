@@ -1,6 +1,6 @@
 '\" t
 .\"	aegis - project change supervisor
-.\"	Copyright (C) 1991-1997, 1999, 2001-2003 Peter Miller;
+.\"	Copyright (C) 1991-1997, 1999, 2001-2004 Peter Miller;
 .\"	All rights reserved.
 .\"
 .\"	This program is free software; you can redistribute it and/or modify
@@ -270,6 +270,10 @@ and
 .IR integrate_fail ,
 this field will contain why the change failed.
 .RE
+.TP 8n
+uuid = string;
+This field provides a globally unique identifier for the change set,
+even when geographically distributed development is happening.
 .TP 8n
 branch = { ... };
 .RS
@@ -645,6 +649,12 @@ file_name = string;
 .br
 This file names the file.
 The name is relative to the root of the baseline directory tree.
+.TP 8n
+uuid = string;
+.br
+This field uniquely identifies the file for its entire lifetime.  This
+field remains constant across file renames.  The value of this field
+shall be formatted as a valid UUID, all in lower case.
 .TP 8n
 action = (create, modify, remove);
 .br

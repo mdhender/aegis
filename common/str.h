@@ -1,6 +1,6 @@
 /*
  *	aegis - project change supervisor
- *	Copyright (C) 1991-1995, 1998, 1999, 2001-2003 Peter Miller;
+ *	Copyright (C) 1991-1995, 1998, 1999, 2001-2004 Peter Miller;
  *	All rights reserved.
  *
  *	This program is free software; you can redistribute it and/or modify
@@ -23,6 +23,11 @@
 #ifndef STR_H
 #define STR_H
 
+/** \addtogroup String
+  * \brief String manipulation funtions
+  * \ingroup Common
+  * @{
+  */
 #include <ac/stddef.h>
 #include <ac/stdarg.h>
 #include <main.h>
@@ -351,7 +356,7 @@ void slow_to_fast(const char *const *, string_ty **, size_t);
   *	finished with.	The contents of the structure pointed to <b>shall
   *	not</b> be altered.
   */
-string_ty *str_format(const char *fmt, ...);
+string_ty *str_format(const char *fmt, ...)               ATTR_PRINTF(1, 2);
 
 /**
   * \brief
@@ -538,4 +543,5 @@ int str_validate(string_ty *str);
   */
 int str_leading_prefix(string_ty *haystack, string_ty *needle);
 
+/** @} */
 #endif /* STR_H */

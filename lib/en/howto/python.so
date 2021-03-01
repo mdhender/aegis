@@ -1,6 +1,6 @@
 .\"
 .\"	aegis - project change supervisor
-.\"	Copyright (C) 2000, 2002 Peter Miller and Pieter Nagel;
+.\"	Copyright (C) 2000, 2002, 2004 Peter Miller and Pieter Nagel;
 .\"	All rights reserved.
 .\"
 .\"	This program is free software; you can redistribute it and/or modify
@@ -78,7 +78,7 @@ test_command="\e
 PYTHONPATH=$$PYTHONPATH:src/python \e
 python \fI...\fP";
 .E)
-in your project config file (example split across multiple lines for
+in your project configuration file (example split across multiple lines for
 formatting only).
 .LP
 It may seem strange to you that we are not substituting the Aegis
@@ -131,7 +131,7 @@ be a no-op, by setting
 .E(
 build_command = "true";
 .E)
-in the project config file. \fItrue\fP(1) is a Unix command which is
+in the project configuration file. \fItrue\fP(1) is a Unix command which is
 guaranteed to always succeed.
 .LP
 In practice, however, there often are housekeeping chores that can be

@@ -1,7 +1,7 @@
 #!/bin/sh
 #
 #	aegis - project change supervisor
-#	Copyright (C) 1993-1998, 2000-2001 Peter Miller;
+#	Copyright (C) 1993-1998, 2000, 2001, 2004 Peter Miller;
 #	All rights reserved.
 #
 #	This program is free software; you can redistribute it and/or modify
@@ -59,6 +59,7 @@ check_it()
 		-e 's/20[0-9][0-9]/YYYY/' \
 		-e 's/node = ".*"/node = "NODE"/' \
 		-e 's/crypto = ".*"/crypto = "GUNK"/' \
+		-e 's/uuid = ".*"/uuid = "UUID"/' \
 		< $2 > $work/sed.out
 	if test $? -ne 0; then no_result; fi
 	diff $1 $work/sed.out
@@ -111,19 +112,19 @@ unset LANG
 unset LANGUAGE
 
 #
-# If the C compiler is called something other than ``cc'', as discovered
-# by the configure script, create a shell script called ``cc'' which
-# invokes the correct C compiler.  Make sure the current directory is in
-# the path, so that it will be invoked.
+# If the C++ compiler is called something other than ``c++'', as
+# discovered by the configure script, create a shell script called
+# ``c++'' which invokes the correct C++ compiler.  Make sure the current
+# directory is in the path, so that it will be invoked.
 #
-if test "$CC" != "" -a "$CC" != "cc"
+if test "$CXX" != "" -a "$CXX" != "c++"
 then
-	cat >> cc << fubar
+	cat >> c++ << fubar
 #!/bin/sh
-exec $CC \$*
+exec $CXX \$*
 fubar
 	if test $? -ne 0 ; then no_result; fi
-	chmod a+rx cc
+	chmod a+rx c++
 	if test $? -ne 0 ; then no_result; fi
 	PATH=${work}:${PATH}
 	export PATH
@@ -205,18 +206,18 @@ if test $? -ne 0 ; then cat test.out; no_result; fi
 # add a new files to the change
 #
 activity="new file 190"
-$bin/aegis -new_file $workchan/main.c $workchan/old \
+$bin/aegis -new_file $workchan/main.cc $workchan/old \
 	$workchan/config -nl -v -lib $worklib -p foo > test.out 2>&1
 if test $? -ne 0 ; then cat test.out; no_result; fi
-cat > $workchan/main.c << 'end'
-void
-main()
+cat > $workchan/main.cc << 'end'
+int
+main(int argc, char **argv)
 {
-	exit(0);
+	return 0;
 }
 end
 cat > $workchan/config << 'end'
-build_command = "rm -f foo; cc -o foo -D'VERSION=\"$version\"' main.c";
+build_command = "rm -f foo; c++ -o foo -D'VERSION=\"$version\"' main.cc";
 link_integration_directory = true;
 
 history_get_command =
@@ -354,7 +355,7 @@ activity="move file 330"
 $bin/aegis -mv $workchan/old $workchan/new -nl -v -lib $worklib -c 2 -p foo > test.out 2>&1
 if test $? -ne 0 ; then cat test.out; fail; fi
 activity="copy file 333"
-$bin/aegis -cp $workchan/main.c -nl -v -lib $worklib -c 2 -p foo > test.out 2>&1
+$bin/aegis -cp $workchan/main.cc -nl -v -lib $worklib -c 2 -p foo > test.out 2>&1
 if test $? -ne 0 ; then cat test.out; no_result; fi
 
 activity="verify change file state 337"
@@ -362,7 +363,8 @@ cat > ok << 'fubar'
 src =
 [
 	{
-		file_name = "main.c";
+		file_name = "main.cc";
+		uuid = "UUID";
 		action = modify;
 		edit_origin =
 		{
@@ -373,12 +375,19 @@ src =
 	},
 	{
 		file_name = "new";
+		uuid = "UUID";
 		action = create;
+		edit_origin =
+		{
+			revision = "1.1";
+			encoding = none;
+		};
 		usage = source;
 		move = "old";
 	},
 	{
 		file_name = "old";
+		uuid = "UUID";
 		action = remove;
 		edit_origin =
 		{
@@ -440,6 +449,7 @@ src =
 [
 	{
 		file_name = "config";
+		uuid = "UUID";
 		action = create;
 		edit =
 		{
@@ -451,20 +461,17 @@ src =
 			revision = "1.1";
 			encoding = none;
 		};
-		usage = source;
+		usage = config;
 		file_fp =
 		{
 			youngest = TIME;
 			oldest = TIME;
 			crypto = "GUNK";
 		};
-		test =
-		[
-			"test/00/t0001a.sh",
-		];
 	},
 	{
-		file_name = "main.c";
+		file_name = "main.cc";
+		uuid = "UUID";
 		action = create;
 		edit =
 		{
@@ -490,15 +497,16 @@ src =
 	},
 	{
 		file_name = "new";
+		uuid = "UUID";
 		action = create;
 		edit =
 		{
-			revision = "1.1";
+			revision = "1.2";
 			encoding = none;
 		};
 		edit_origin =
 		{
-			revision = "1.1";
+			revision = "1.2";
 			encoding = none;
 		};
 		usage = source;
@@ -512,6 +520,7 @@ src =
 	},
 	{
 		file_name = "old";
+		uuid = "UUID";
 		action = remove;
 		edit =
 		{
@@ -533,6 +542,7 @@ src =
 	},
 	{
 		file_name = "test/00/t0001a.sh";
+		uuid = "UUID";
 		action = create;
 		edit =
 		{

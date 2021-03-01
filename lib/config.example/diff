@@ -45,6 +45,5 @@
  * be produced in addition to these extra tests.
  */
 diff_command =
-	"set +e; "
-	"diff -U10 -a ${quote $original} ${quote $input} > ${quote $output}; "
-	"test $? -le 1";
+	"set +e; diff -U999999 -a ${quote $original} ${quote $input} "
+	"> ${quote $output}; test $? -le 1";

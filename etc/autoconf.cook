@@ -1,6 +1,6 @@
 /*
  *	aegis - project change supervisor
- *	Copyright (C) 2002, 2003 Peter Miller;
+ *	Copyright (C) 2002-2004 Peter Miller;
  *	All rights reserved.
  *
  *	This program is free software; you can redistribute it and/or modify
@@ -19,6 +19,14 @@
  *
  * MANIFEST: autoconf.cook
  */
+
+if [not [defined autoconf]]
+then
+	autoconf=autoconf;
+
+if [not [defined autoheader]]
+then
+	autoheader=autoheader;
 
 [arch]/bin/%: script/%.in: [arch]/config.status
 	set ['if' [not [defined baseline]] 'then' shallow]
@@ -71,7 +79,7 @@ configure: etc/configure.ac install-sh
 	if [not [exists install-sh]] then
 		ln -s [resolve install-sh] install-sh
 			set clearstat;
-	autoconf [resolve etc/configure.ac] > [target];
+	[autoconf] [resolve etc/configure.ac] > [target];
 	chmod 755 [target];
 }
 
@@ -83,7 +91,7 @@ configure: etc/configure.ac install-sh
 loop install-sh-maybe =
     /usr/share/autoconf/install-sh
     [glob /usr/share/automake*/install-sh]
-    /usr/local/share/autoconf/install-sh
+    [glob /usr/local/share/autoconf*/install-sh]
     [glob /usr/local/share/automake*/install-sh]
 {
     if [exists [install-sh-maybe]] then
@@ -108,9 +116,9 @@ install-sh: [install-sh]
 			set clearstat;
 
 	[unsplit " "
-	    [catenate CC\= [cc] ]
-	    [catenate CCFLAGS\= [cc_flags] ]
-	    [catenate LDFLAGS\= [ld_flags] ]
+	    CXX\=[quote [unsplit " " [c++]]]
+	    CXXFLAGS\=[quote [unsplit " " [c++_flags]]]
+	    LDFLAGS\=[quote [unsplit " " [ld_flags]]]
 
 	    [pathname [resolve configure]] --cache-file\=/dev/null --verbose
 	    --no-create --srcdir\=.
@@ -122,7 +130,7 @@ install-sh: [install-sh]
 
 common/config.h.in: etc/configure.ac
 {
-	autoheader [resolve etc/configure.ac] > [target];
+	[autoheader] [resolve etc/configure.ac] > [target];
 }
 
 

@@ -1,6 +1,6 @@
 /*
  *	aegis - project change supervisor
- *	Copyright (C) 1991-1993, 1997, 2002, 2003 Peter Miller;
+ *	Copyright (C) 1991-1993, 1997, 2002-2004 Peter Miller;
  *	All rights reserved.
  *
  *	This program is free software; you can redistribute it and/or modify
@@ -25,20 +25,21 @@
 
 #include <main.h>
 
-void help(const char *progname, void (*usage)(void));
-void generic_argument(void(*usage)(void));
-void bad_argument(void(*usage)(void)) NORETURN;
-void mutually_exclusive_options(int name1, int name2, void(*usage)(void));
+void help(const char *progname, void (*usagefunc)(void));
+void generic_argument(void(*usagefunc)(void));
+void bad_argument(void(*usagefunc)(void)) NORETURN;
+void mutually_exclusive_options(int name1, int name2, void(*usagefunc)(void));
 void mutually_exclusive_options3(int name1, int name2, int name3,
-	void (*usage)(void));
-void duplicate_option(void(*usage)(void));
-void duplicate_option_by_name(int name, void(*usage)(void));
-void option_needs_number(int name, void(*usage)(void));
-void option_needs_string(int name, void(*usage)(void));
-void option_needs_name(int name, void(*usage)(void));
-void option_needs_file(int name, void(*usage)(void));
-void option_needs_dir(int name, void(*usage)(void));
-void option_needs_files(int name, void(*usage)(void));
+	void (*usagefunc)(void));
+void duplicate_option(void(*usagefunc)(void));
+void duplicate_option_by_name(int name, void(*usagefunc)(void));
+void option_needs_number(int name, void(*usagefunc)(void));
+void option_needs_string(int name, void(*usagefunc)(void));
+void option_needs_name(int name, void(*usagefunc)(void));
+void option_needs_file(int name, void(*usagefunc)(void));
+void option_needs_dir(int name, void(*usagefunc)(void));
+void option_needs_files(int name, void(*usagefunc)(void));
+void option_needs_uuid(int name, void(*usagefunc)(void));
 
 struct string_ty; /* forward */
 void fatal_too_many_files(void) NORETURN;

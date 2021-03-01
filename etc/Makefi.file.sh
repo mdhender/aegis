@@ -1,7 +1,7 @@
 #!/bin/sh
 #
 #	aegis - a project change supervisor
-#	Copyright (C) 1990-2003 Peter Miller;
+#	Copyright (C) 1990-2004 Peter Miller;
 #	All rights reserved.
 #
 #	This program is free software; you can redistribute it and/or modify
@@ -76,22 +76,22 @@ case $file in
 	esac
 
 	echo ""
-	echo "${stem}.gen.c ${stem}.gen.h: $file"
+	echo "${stem}.gen.cc ${stem}.gen.h: $file"
 	echo "	@echo Expect $numconf conflicts."
 	echo "	\$(YACC) -d $file"
 	echo "	sed -e 's/[yY][yY]/${yy}_/g'" \
 		"-e '/<stdio.h>/d'" \
 		"-e '/<stdlib.h>/d'" \
 		"-e '/<stddef.h>/d'" \
-		"y.tab.c > ${stem}.gen.c"
+		"y.tab.c > ${stem}.gen.cc"
 	echo "	sed -e 's/[yY][yY]/${yy}_/g' -e 's/Y_TAB_H/${yy}_TAB_H/g' \
 y.tab.h > ${stem}.gen.h"
 	echo "	rm -f y.tab.c y.tab.h"
 	;;
 
-*/*.c)
-	root=`basename $file .c`
-	stem=`echo $file | sed -e 's/\.c$//'`
+*/*.cc)
+	root=`basename $file .cc`
+	stem=`echo $file | sed -e 's/\.cc$//'`
 	dir=`echo $file | sed -e 's|/.*||'`
 
 	dep=
@@ -99,11 +99,9 @@ y.tab.h > ${stem}.gen.h"
 		dep=`sed -e 's_.arch]/__' $depfile`
 	fi
 
-	extra=
-
 	echo ""
 	echo "${stem}.\$(OBJEXT): $file" $dep
-	echo "	\$(CC) \$(CFLAGS)" $extra "-I$dir -Ilibaegis -Icommon -c $file"
+	echo "	\$(CXX) -I$dir -Ilibaegis -Icommon \$(CXXFLAGS) -c $file"
 	echo "	mv ${root}.\$(OBJEXT) \$@"
 	;;
 
@@ -294,15 +292,15 @@ lib/*)
 	fi
 
 	echo ""
-	echo "$stem.c $stem.h: $file bin/fmtgen\$(EXEEXT)" $dep
-	echo "	bin/fmtgen\$(EXEEXT) -I$dir $file $stem.c $stem.h"
+	echo "$stem.cc $stem.h: $file bin/fmtgen\$(EXEEXT)" $dep
+	echo "	bin/fmtgen\$(EXEEXT) -I$dir $file $stem.cc $stem.h"
 	;;
 
 test/*/*.sh)
 	stem=`echo $file | sed -e 's/\.sh$//'`
 	echo ""
 	echo "$stem.ES: $file all-bin etc/test.sh"
-	echo "	CC=\"\$(CC)\" \$(SH) etc/test.sh -shell \$(SH) -run $file \
+	echo "	CXX=\"\$(CXX)\" \$(SH) etc/test.sh -shell \$(SH) -run $file \
 $stem.ES"
 	;;
 

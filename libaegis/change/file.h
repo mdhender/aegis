@@ -1,6 +1,6 @@
 /*
  *	aegis - project change supervisor
- *	Copyright (C) 1991-1997, 1999, 2000, 2002, 2003 Peter Miller;
+ *	Copyright (C) 1991-1997, 1999, 2000, 2002-2004 Peter Miller;
  *	All rights reserved.
  *
  *	This program is free software; you can redistribute it and/or modify
@@ -24,6 +24,7 @@
 #define CHANGE_FILE_H
 
 #include <change.h>
+#include <view_path.h>
 
 struct string_list_ty; /* existence */
 
@@ -33,14 +34,34 @@ struct string_list_ty; /* existence */
  */
 fstate_ty *change_fstate_get(change_ty *);
 
-fstate_src_ty *change_file_find(change_ty *, string_ty *);
+fstate_src_ty *change_file_find(change_ty *, string_ty *, view_path_ty);
 fstate_src_ty *change_file_find_fuzzy(change_ty *, string_ty *);
+
+/**
+  * The change_file_find_uuid is used to find a source file given the UUID.
+  *
+  * @param cp
+  *     The change to search within (and implicitly the project to search,
+  *     for deeper view paths).
+  * @param uuid
+  *     The UUID to search for.
+  * @param view_path
+  *     The style and depth of search for the file.
+  * @returns
+  *     a pointer to the file information, or NULL if no file has the
+  *     specified UUID.
+  */
+fstate_src_ty *change_file_find_uuid(change_ty *cp, string_ty *uuid,
+    view_path_ty view_path);
+
 string_ty *change_file_path(change_ty *, string_ty *);
+string_ty *change_file_version_path(change_ty *cp, fstate_src_ty *src,
+    int *unlink_p);
 string_ty *change_file_source(change_ty *, string_ty *);
 void change_file_remove(change_ty *, string_ty *);
 fstate_src_ty *change_file_new(change_ty *, string_ty *);
 void change_file_remove_all(change_ty *);
-fstate_src_ty *change_file_nth(change_ty *, size_t);
+fstate_src_ty *change_file_nth(change_ty *, size_t, view_path_ty);
 size_t change_file_count(change_ty *);
 void change_file_directory_query(change_ty *cp, string_ty *file_name,
     struct string_list_ty *result_in, struct string_list_ty *result_out);
@@ -67,5 +88,17 @@ struct metric_list_ty *change_file_metrics_get(change_ty *,
 void change_file_list_metrics_check(change_ty *);
 void change_file_template(change_ty *, string_ty *, struct user_ty *, int);
 int change_file_is_config(change_ty *, string_ty *);
+
+/**
+  * The change_file_copy_basic_attributes function is used to copy the
+  * basic change file attributes (usage, attributes and uuid) from one
+  * file to another.  This is a common activity for aecp, et al.
+  *
+  * @param to
+  *     The file meta data to receive the attributes
+  * @param from
+  *     The file meta data from which the attributes are to be taken.
+  */
+void change_file_copy_basic_attributes(fstate_src_ty *to, fstate_src_ty *from);
 
 #endif /* CHANGE_FILE_H */

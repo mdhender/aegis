@@ -1,6 +1,6 @@
 .\"
 .\"	aegis - project change supervisor
-.\"	Copyright (C) 1991-1995, 1998, 2001, 2002 Peter Miller;
+.\"	Copyright (C) 1991-1995, 1998, 2001, 2002, 2004 Peter Miller;
 .\"	All rights reserved.
 .\"
 .\"	This program is free software; you can redistribute it and/or modify
@@ -52,7 +52,7 @@ absolute path of the source file
 absolute path of the history file
 .LP
 The entry in the
-.I "config"
+.I "aegis.conf"
 file looks like this:
 .E(
 history_create_command =
@@ -79,7 +79,7 @@ edit number, as given by history_\%query_\%command
 absolute path of the destination file
 .LP
 The entry in the
-.I "config"
+.I "aegis.conf"
 file looks like this:
 .E(
 history_get_command =
@@ -99,7 +99,7 @@ absolute path of source file
 absolute path of history file
 .LP
 The entry in the
-.I "config"
+.I "aegis.conf"
 file looks like this:
 .E(
 history_put_command =
@@ -133,7 +133,7 @@ The following substitutions are available:
 absolute path of the history file
 .LP
 The entry in the
-.I "config"
+.I "aegis.conf"
 file looks like this:
 .E(
 history_query_command =
@@ -143,13 +143,10 @@ history_query_command =
 Note that "get" reports the edit number on stdout.
 .nh 3 "Templates"
 .LP
-The
-.I lib/config.example/sccs
-file in the Aegis distribution
-contains all of the above commands,
-so that you may readily insert them into your project
-.I config
-file.
+The \fIlib/config.example/sccs\fP file in the Aegis distribution contains
+all of the above commands, so that you may readily insert them into
+your project configuration file (called \fIaegis.conf\fP by default,
+see \fIaepconf(5) for how to call it something else).
 .LP
 Also, there are some subtleties to writing the commands, which are not
 present in the above examples.  In particular, being able to support file

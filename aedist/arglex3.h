@@ -1,6 +1,6 @@
 /*
  *	aegis - project change supervisor
- *	Copyright (C) 1999, 2001, 2002 Peter Miller;
+ *	Copyright (C) 1999, 2001, 2002, 2004 Peter Miller;
  *	All rights reserved.
  *
  *	This program is free software; you can redistribute it and/or modify
@@ -29,6 +29,7 @@ enum
 {
 	arglex_token_ascii_armor = ARGLEX2_MAX,
 	arglex_token_ascii_armor_not,
+	arglex_token_compatibility,
 	arglex_token_compress,
 	arglex_token_compress_not,
 	arglex_token_content_transfer_encoding,

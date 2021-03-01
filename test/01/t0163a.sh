@@ -1,7 +1,7 @@
 #!/bin/sh
 #
 #	aegis - project change supervisor
-#	Copyright (C) 2002 Peter Miller;
+#	Copyright (C) 2002, 2004 Peter Miller;
 #	All rights reserved.
 #
 #	This program is free software; you can redistribute it and/or modify
@@ -60,9 +60,10 @@ check_it()
 		-e 's/20[0-9][0-9]/YYYY/' \
 		-e 's/node = ".*"/node = "NODE"/' \
 		-e 's/crypto = ".*"/crypto = "GUNK"/' \
+		-e 's/uuid = ".*"/uuid = "UUID"/' \
 		< $2 > $work/sed.out
 	if test $? -ne 0; then no_result; fi
-	diff -c $1 $work/sed.out
+	diff $1 $work/sed.out
 	if test $? -ne 0; then fail; fi
 }
 
@@ -228,6 +229,7 @@ src =
 [
 	{
 		file_name = "barney";
+		uuid = "UUID";
 		action = create;
 		edit =
 		{
@@ -256,6 +258,7 @@ src =
 	},
 	{
 		file_name = "config";
+		uuid = "UUID";
 		action = create;
 		edit =
 		{
@@ -267,7 +270,7 @@ src =
 			revision = "1.1";
 			encoding = none;
 		};
-		usage = source;
+		usage = config;
 		file_fp =
 		{
 			youngest = TIME;
@@ -283,6 +286,7 @@ src =
 	},
 	{
 		file_name = "fred";
+		uuid = "UUID";
 		action = create;
 		edit =
 		{
@@ -323,6 +327,7 @@ src =
 [
 	{
 		file_name = "barney";
+		uuid = "UUID";
 		action = create;
 		edit =
 		{
@@ -334,16 +339,18 @@ src =
 	},
 	{
 		file_name = "config";
+		uuid = "UUID";
 		action = create;
 		edit =
 		{
 			revision = "1.1";
 			encoding = none;
 		};
-		usage = source;
+		usage = config;
 	},
 	{
 		file_name = "fred";
+		uuid = "UUID";
 		action = create;
 		edit =
 		{
@@ -395,6 +402,7 @@ src =
 [
 	{
 		file_name = "barney";
+		uuid = "UUID";
 		action = modify;
 		edit_origin =
 		{

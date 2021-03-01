@@ -23,6 +23,9 @@
 #ifndef COMMON_NOW_H
 #define COMMON_NOW_H
 
+/** \addtogroup Date
+  * @{
+  */
 #include <ac/time.h>
 
 /**
@@ -56,4 +59,5 @@ void now_unclearable(void);
   */
 time_t time_max(void);
 
+/** @} */
 #endif /* COMMON_NOW_H */

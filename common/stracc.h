@@ -25,6 +25,11 @@
 
 #include <str.h>
 
+/** \addtogroup String_Accumulator
+  * \brief String Accumulation functions
+  * \ingroup String
+  * @{
+  */
 typedef struct stracc_t stracc_t;
 struct stracc_t
 {
@@ -58,4 +63,5 @@ void stracc_chars(stracc_t *, const char *, size_t);
 	stracc_char((sap), (c)))
 #endif
 
+/** @} */
 #endif /* COMMON_STRACC_H */

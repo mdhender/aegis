@@ -1,6 +1,6 @@
 #
 #	aegis - a project change supervisor
-#	Copyright (C) 1990-1999, 2001, 2002 Peter Miller;
+#	Copyright (C) 1990-1999, 2001, 2002, 2004 Peter Miller;
 #	All rights reserved.
 #
 #	This program is free software; you can redistribute it and/or modify
@@ -53,14 +53,14 @@ INSTALL_SCRIPT = @INSTALL_SCRIPT@
 INSTALL_DATA = @INSTALL_DATA@
 
 #
-# the name of the compiler to use
+# the name of the C++ compiler to use
 #
-CC = @CC@
+CXX = @CXX@
 
 #
 # The compiler flags to use
 #
-CFLAGS = @CPPFLAGS@ @CFLAGS@
+CXXFLAGS = @CPPFLAGS@ @CXXFLAGS@
 
 #
 # The linker flags to use

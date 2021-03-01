@@ -1,7 +1,7 @@
 #!/bin/sh
 #
 #	aegis - project change supervisor
-#	Copyright (C) 1999, 2000, 2002 Peter Miller;
+#	Copyright (C) 1999, 2000, 2002, 2004 Peter Miller;
 #	All rights reserved.
 #
 #	This program is free software; you can redistribute it and/or modify
@@ -243,19 +243,19 @@ Subject: foo.4.2 - The first change
 Content-Name: foo.4.2.C001.ae
 Content-Disposition: attachment; filename=foo.4.2.C001.ae
 
-H4sIAAAAAAAAA61UTW+cMBDNFX7FJLLEbhoCbDZNWpRWOfQQqacoPfUDec0AbsAQ2+RDSf57
-bVjtbmiqLlW5GI9n3rx5M3Z4Ep6EEfRft55GdL7ch4M1GuxP/+A3WKNVHGoWNLL+iUz7gla4
-42Z1fTg/nLnhJo/ZSB6zLXnMNnmwgoocfdFWC5Q7keu+5HA0ikP09t12HCB7hYNCvWPyLyTH
-LElRMckbzWsBZ7B3VSBkXCoNvfNe7P7dg9FWoTnjQqMUtExQmCOGFQoduxqVTvAeq0YbHy1b
-XNoWVGHJBQ4PJeYSlTL5ktdilabaZqN3lGsuclPCLZZ102dTksGZ+9V1Hl3HyXiJie28Jc5q
-kfHc0HUcypbVMIkGzJpaRXPrpupWMmt5PngFo6JcHLIxGN9jd9jr+ahez+aLLXu98jMaBH21
-XZ9bXqYJq6uKitQWgfdcQ2iKMOJfJ7ZpuaS2mCTl0tyVWj6sxO6LS9RDZZ1VssCslph0mCun
-gisblOSo13lcxygOfusR9MBvgBQHt/ABSL23Dliiv4jh4GcmDPwqMI0NRFuW4Ov1P+EdVAyS
-KfC/dJsNyKbV/xXvpkVLdANRlnUOvuwLejJjeA1e8KNAmr4P4LGRRlAgZPbs2bvDs2xTenP1
-4A3GYO1GCslzm9+q0uoY7LSb0I/glwjRMvxoM37SWcBHIJVcAzyBwtRaDZE7QoLUW25uuk0M
-31wHWVGDFx0Q0ngwNSE2ooPp0w801JKqAlVix99kvqNSxIM5Ph73bh4d/8sc9zfOznGwD+Qi
-JbAfuFZiezCZwmOn2mQagx3rSWh+JOpWCghjeP7t7oUj3/pwLOery/OLz58ud3d3LedfvHVQ
-LvAGAAA=
+H4sIAAAAAAAAA61UTU/cMBDlGv+KAVnKQglJlqXQRrTqoQeknhA99SPyOpPEJXGC7fAh4L/X
+Tla7S0oFWzUXx+OZN2/ejB0dR8dRDMPXrycxmy320WiNR/uTv/iN1ngZh4aHrWp+ITeBZDVu
+kbxpDmYHUxKt85huyGP6Sh7TdR68ZLLAQHb1HNVWTMhTDocbcYjfvnsdB8if4aDRbNn8cyUw
+TzPUXInWiEbCKexclAi5UNrA4LyTkJc9OOs02jMhDSrJqhSlPeJYozQJMahNirdYt8b6GNXh
+wjZnGishcXyosFCotc2XPherDTMuG7thwghZ2BKusWraIZtWHE7JN+LdE8/LRYWp67wjzhuZ
+i8LS9TzGF9VwhRbMmTrNCuc2eFnL4/4zGDUT8oC/hKGbTnEcMH4kZNzr2Ua9ns7mr+z10s9q
+EA519H3uRJWlvKlrJjNXBN4KA5Etwop/mbqmFYq5YtJMKHtXGnW3FHsoLtV3tXPW6RzzRmHa
+Yy6dSqFdUFqgWeUhnlUcgs6n6EPQAi33r+ED0GZnFbBAfxIjIMhtGAR1aBsbyq6qIDCrfyp6
+qAQU1xB87TdrkG1n/iveVYeO6BqiqpoCAjUU9GDH8BL88GeJLHsfwn2rrKBA6fTRd3dH5Pm6
+9PbqwRtMwNmtFEoULr9TpTMJuGm3oR8hqBDiRfjhevykt0CAQGu1AngAjZmzWiI3lIaZv9hc
+9ZsEvhMPedmAH+9T2vqwa0NcRA8zpB9paBTTJerUjb/NfMOUTEZzfLTZu3l49C9zPNw4N8fh
+HtCzjMJeSJzE7mCyC/e9apPdBNxYTyL7o9B0SkKUwOMfdy/a8K2PNuV8cf7p7Mvn8+3tbcf5
+NyLw3p/wBgAA
 fubar
 if test $? -ne 0 ; then no_result; fi
 

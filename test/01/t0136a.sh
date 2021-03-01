@@ -93,7 +93,7 @@ AEGIS_PROJECT=foo ; export AEGIS_PROJECT
 #
 # make the directories
 #
-activity="working directory 81"
+activity="working directory 96"
 mkdir $work $work/lib
 if test $? -ne 0 ; then no_result; fi
 chmod 777 $work/lib
@@ -112,14 +112,14 @@ unset LANGUAGE
 #
 # make a new project
 #
-activity="new project 161"
+activity="new project 115"
 $bin/aegis -npr foo -vers "" -dir $workproj > log 2>&1
 if test $? -ne 0 ; then cat log; no_result; fi
 
 #
 # change project attributes
 #
-activity="project attributes 168"
+activity="project attributes 122"
 cat > $tmp << 'end'
 description = "A bogus project created to test the aepatch -send functionality.";
 developer_may_review = true;
@@ -133,7 +133,7 @@ if test $? -ne 0 ; then cat log; no_result; fi
 #
 # create a new change
 #
-activity="new change 183"
+activity="new change 136"
 cat > $tmp << 'end'
 brief_description = "The first change";
 cause = internal_bug;
@@ -145,7 +145,7 @@ if test $? -ne 0 ; then cat log; no_result; fi
 #
 # create a second change
 #
-activity="new change 195"
+activity="new change 148"
 cat > $tmp << 'end'
 brief_description = "The second change";
 cause = internal_bug;
@@ -157,7 +157,7 @@ if test $? -ne 0 ; then cat log; no_result; fi
 #
 # add the staff
 #
-activity="staff 207"
+activity="staff 160"
 $bin/aegis -nd $USER > log 2>&1
 if test $? -ne 0 ; then cat log; no_result; fi
 $bin/aegis -nrv $USER > log 2>&1
@@ -174,10 +174,21 @@ if test $? -ne 0 ; then cat log; no_result; fi
 #
 # add a new files to the change
 #
-activity="new file 224"
-$bin/aegis -nf $workchan/main.c $workchan/test.c $workchan/Makefile \
-	$workchan/nothingmuch \
-	$workchan/config -nl > log 2>&1
+activity="new file 177"
+$bin/aegis -nf $workchan/main.c -nl \
+	-uuid aaaaaaaa-bbbb-4bbb-8ccc-ccccddddddd1 > log 2>&1
+if test $? -ne 0 ; then cat log; no_result; fi
+$bin/aegis -nf $workchan/test.c -nl \
+	-uuid aaaaaaaa-bbbb-4bbb-8ccc-ccccddddddd2 > log 2>&1
+if test $? -ne 0 ; then cat log; no_result; fi
+$bin/aegis -nf $workchan/Makefile -nl \
+	-uuid aaaaaaaa-bbbb-4bbb-8ccc-ccccddddddd3 > log 2>&1
+if test $? -ne 0 ; then cat log; no_result; fi
+$bin/aegis -nf $workchan/nothingmuch -nl \
+	-uuid aaaaaaaa-bbbb-4bbb-8ccc-ccccddddddd4 > log 2>&1
+if test $? -ne 0 ; then cat log; no_result; fi
+$bin/aegis -nf $workchan/config -nl \
+	-uuid aaaaaaaa-bbbb-4bbb-8ccc-ccccddddddd5 > log 2>&1
 if test $? -ne 0 ; then cat log; no_result; fi
 cat > $workchan/main.c << 'end'
 int
@@ -231,7 +242,7 @@ if test $? -ne 0 ; then no_result; fi
 #
 # create a new test
 #
-activity="new test 267"
+activity="new test 234"
 $bin/aegis -nt > log 2>&1
 if test $? -ne 0 ; then cat log; no_result; fi
 cat > $workchan/test/00/t0001a.sh << 'end'
@@ -243,81 +254,84 @@ if test $? -ne 0 ; then no_result; fi
 #
 # build the change
 #
-activity="build 295"
+activity="build 246"
 $bin/aegis -build -nl -v > log 2>&1
 if test $? -ne 0 ; then cat log; fail; fi
 
 #
 # difference the change
 #
-activity="diff 302"
+activity="diff 253"
 $bin/aegis -diff > log 2>&1
 if test $? -ne 0 ; then cat log; no_result; fi
 
 #
 # test the change
 #
-activity="test 309"
+activity="test 260"
 $bin/aegis -t -v > log 2>&1
+if test $? -ne 0 ; then cat log; no_result; fi
+
+$bin/aegis -ca -uuid aaaaaaaa-bbbb-4bbb-8ccc-ccccddddddd6 > LOG 2>&1
 if test $? -ne 0 ; then cat log; no_result; fi
 
 #
 # finish development of the change
 #
-activity="develop end 316"
+activity="develop end 267"
 $bin/aegis -de > log 2>&1
 if test $? -ne 0 ; then cat log; fail; fi
 
 #
 # pass the review
 #
-activity="review pass 323"
+activity="review pass 274"
 $bin/aegis -rpass -c 1 > log 2>&1
 if test $? -ne 0 ; then cat log; no_result; fi
 
 #
 # start integrating
 #
-activity="integrate begin 330"
+activity="integrate begin 281"
 $bin/aegis -ib 1 > log 2>&1
 if test $? -ne 0 ; then cat log; no_result; fi
 
 #
 # integrate build
 #
-activity="build 337"
+activity="build 288"
 $bin/aegis -b -nl -v > log 2>&1
 if test $? -ne 0 ; then cat log; no_result; fi
 
 #
 # integrate test
 #
-activity="test 340"
+activity="test 295"
 $bin/aegis -t -nl -v > log 2>&1
 if test $? -ne 0 ; then cat log; no_result; fi
 
 #
 # pass the integration
 #
-activity="integrate pass 347"
+activity="integrate pass 302"
 $bin/aegis -intpass -nl > log 2>&1
 if test $? -ne 0 ; then cat log; no_result; fi
 
 #
 # start work on change 2
 #
-activity="develop begin 354"
+activity="develop begin 309"
 $bin/aegis -db -c 2 -dir $workchan > log 2>&1
 if test $? -ne 0 ; then cat log; fail; fi
 
 #
 # copy a file into the change
 #
-activity="copy file 361"
+activity="copy file 316"
 $bin/aegis -cp $workchan/main.c -nl > log 2>&1
 if test $? -ne 0 ; then cat log; fail; fi
 
-activity="remove file 361"
+activity="remove file 320"
 $bin/aegis -rm $workchan/nothingmuch -nl > log 2>&1
 if test $? -ne 0 ; then cat log; fail; fi
 
@@ -365,6 +379,14 @@ X
 #	X
 #	The second changeX
 #	X
+# Aegis-Change-Set-BeginX
+# H4sIAAAAAAAAA5WPTWrEMAyF9z5FyLopFGZRCHOL7koJiqIkglgOljztMPTuVUigP3TRPrAXX
+# ek/6pD4zjd1AiplX4yTVuaqfZqqUMMlQ4QwyUd2GP0QQipKbLEZZYOlI3EKKJNYGI7WO3iiuX
+# 5pkRFqWj2IPSwkKfruXiZqYpk6oTu+/Nu60GtuHgFdhYJr/iQktad5xmrM7hOdzCyAt1AnHLX
+# 1hFY7tGXLYWHrQCHmt7VnLbvEREbfzjsevA44HF5TAOPV+9XmLaJmkpG3+b97idKks2+Viw4X
+# /493+srLFNOFfuW9tOEDh9xMer8BAAA=X
+# Aegis-Change-Set-EndX
+#X
 Index: main.cX
 *** main.cX
 --- main.cX

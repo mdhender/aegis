@@ -1,7 +1,7 @@
 #!/bin/sh
 #
 #	aegis - project change supervisor
-#	Copyright (C) 1998, 2000-2001 Peter Miller;
+#	Copyright (C) 1998, 2000, 2001, 2004 Peter Miller;
 #	All rights reserved.
 #
 #	This program is free software; you can redistribute it and/or modify
@@ -47,6 +47,7 @@ check_it()
 		-e 's/20[0-9][0-9]/YYYY/' \
 		-e 's/node = ".*"/node = "NODE"/' \
 		-e 's/crypto = ".*"/crypto = "GUNK"/' \
+		-e 's/uuid = ".*"/uuid = "UUID"/' \
 		< $2 > $work/sed.out
 	if test $? -ne 0; then no_result; fi
 	diff $1 $work/sed.out
@@ -115,25 +116,6 @@ chmod 777 $work/lib
 if test $? -ne 0 ; then no_result; fi
 cd $work
 if test $? -ne 0 ; then no_result; fi
-
-#
-# If the C compiler is called something other than ``cc'', as discovered
-# by the configure script, create a shell script called ``cc'' which
-# invokes the correct C compiler.  Make sure the current directory is in
-# the path, so that it will be invoked.
-#
-if test "$CC" != "" -a "$CC" != "cc"
-then
-	cat >> $work/cc << fubar
-#!/bin/sh
-exec $CC \$*
-fubar
-	if test $? -ne 0 ; then no_result; fi
-	chmod a+rx $work/cc
-	if test $? -ne 0 ; then no_result; fi
-	PATH=${work}:${PATH}
-	export PATH
-fi
 
 #
 # use the built-in error messages
@@ -281,16 +263,18 @@ src =
 [
 	{
 		file_name = "config";
+		uuid = "UUID";
 		action = create;
 		edit =
 		{
 			revision = "1.1";
 			encoding = none;
 		};
-		usage = source;
+		usage = config;
 	},
 	{
 		file_name = "main.c";
+		uuid = "UUID";
 		action = create;
 		edit =
 		{
@@ -317,6 +301,7 @@ src =
 [
 	{
 		file_name = "config";
+		uuid = "UUID";
 		action = create;
 		edit =
 		{
@@ -328,7 +313,7 @@ src =
 			revision = "1.1";
 			encoding = none;
 		};
-		usage = source;
+		usage = config;
 		file_fp =
 		{
 			youngest = TIME;
@@ -338,6 +323,7 @@ src =
 	},
 	{
 		file_name = "main.c";
+		uuid = "UUID";
 		action = create;
 		edit =
 		{

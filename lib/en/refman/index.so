@@ -155,6 +155,20 @@ T}	T{
 .ad l
 aecstate - aegis change state file
 T}
+ae-cvs-ci(1)	\*[Page*Of*ae-cvs-ci(1)]	T{
+.ad r
+
+T}	T{
+.ad l
+ae-cvs-ci - checkin a change set to CVS
+T}
+aecvsserver(1)	\*[Page*Of*aecvsserver(1)]	T{
+.ad r
+
+T}	T{
+.ad l
+aecvsserver - serve CVS client protocol against Aegis projects
+T}
 aedbu(1)	\*[Page*Of*aedbu(1)]	T{
 .ad r
 aegis -Develop Begin Undo - undo the effects of
@@ -182,6 +196,13 @@ aeedit(1)	\*[Page*Of*aeedit(1)]	T{
 T}	T{
 .ad l
 aeedit - edit a change's files
+T}
+aefattr(5)	\*[Page*Of*aefattr(5)]	T{
+.ad r
+
+T}	T{
+.ad l
+aefattr - aegis file attribute file format
 T}
 aefstate(5)	\*[Page*Of*aefstate(5)]	T{
 .ad r
@@ -217,6 +238,13 @@ aexml -
 T}	T{
 .ad l
 Aegis database to XML
+T}
+aecvsserver(1)	\*[Page*Of*aecvsserver(1)]	T{
+.ad r
+aecvsserver - serve CVS client protocol against
+T}	T{
+.ad l
+Aegis projects
 T}
 tkaegis(1)	\*[Page*Of*tkaegis(1)]	T{
 .ad r
@@ -365,6 +393,13 @@ T}	T{
 .ad l
 aexml - Aegis database to XML
 T}
+aecvsserver(1)	\*[Page*Of*aecvsserver(1)]	T{
+.ad r
+aecvsserver - serve CVS client protocol
+T}	T{
+.ad l
+against Aegis projects
+T}
 aenpa(1)	\*[Page*Of*aenpa(1)]	T{
 .ad r
 aegis -New Project Alias - create a new project
@@ -435,6 +470,13 @@ T}	T{
 .ad l
 attribute file
 T}
+aefattr(5)	\*[Page*Of*aefattr(5)]	T{
+.ad r
+aefattr - aegis file
+T}	T{
+.ad l
+attribute file format
+T}
 aecattr(5)	\*[Page*Of*aecattr(5)]	T{
 .ad r
 aecattr - aegis change
@@ -449,6 +491,13 @@ T}	T{
 .ad l
 Attributes - modify the attributes of a change
 T}
+aefa(1)	\*[Page*Of*aefa(1)]	T{
+.ad r
+aegis -File
+T}	T{
+.ad l
+ATtributes - modify the attributes of a file
+T}
 aepa(1)	\*[Page*Of*aepa(1)]	T{
 .ad r
 aegis -Project
@@ -462,6 +511,13 @@ aegis -Change Attributes - modify the
 T}	T{
 .ad l
 attributes of a change
+T}
+aefa(1)	\*[Page*Of*aefa(1)]	T{
+.ad r
+aegis -File ATtributes - modify the
+T}	T{
+.ad l
+attributes of a file
 T}
 aepa(1)	\*[Page*Of*aepa(1)]	T{
 .ad r
@@ -897,6 +953,13 @@ T}	T{
 .ad l
 change sets, using TCL/TK
 T}
+ae-cvs-ci(1)	\*[Page*Of*ae-cvs-ci(1)]	T{
+.ad r
+ae-cvs-ci - checkin a
+T}	T{
+.ad l
+change set to CVS
+T}
 aeedit(1)	\*[Page*Of*aeedit(1)]	T{
 .ad r
 aeedit - edit a
@@ -946,6 +1009,20 @@ T}	T{
 .ad l
 change via tar
 T}
+ae-cvs-ci(1)	\*[Page*Of*ae-cvs-ci(1)]	T{
+.ad r
+ae-cvs-ci -
+T}	T{
+.ad l
+checkin a change set to CVS
+T}
+ae-cvs-ci(1)	\*[Page*Of*ae-cvs-ci(1)]	T{
+.ad r
+ae-cvs-
+T}	T{
+.ad l
+ci - checkin a change set to CVS
+T}
 aeclean(1)	\*[Page*Of*aeclean(1)]	T{
 .ad r
 aegis -
@@ -959,6 +1036,13 @@ aegis -CLEan -
 T}	T{
 .ad l
 clean files from development directory
+T}
+aecvsserver(1)	\*[Page*Of*aecvsserver(1)]	T{
+.ad r
+aecvsserver - serve CVS
+T}	T{
+.ad l
+client protocol against Aegis projects
 T}
 aeclone(1)	\*[Page*Of*aeclone(1)]	T{
 .ad r
@@ -1099,6 +1183,27 @@ ae
 T}	T{
 .ad l
 c - set change number
+T}
+ae-cvs-ci(1)	\*[Page*Of*ae-cvs-ci(1)]	T{
+.ad r
+ae-cvs-ci - checkin a change set to
+T}	T{
+.ad l
+CVS
+T}
+ae-cvs-ci(1)	\*[Page*Of*ae-cvs-ci(1)]	T{
+.ad r
+ae-
+T}	T{
+.ad l
+cvs-ci - checkin a change set to CVS
+T}
+aecvsserver(1)	\*[Page*Of*aecvsserver(1)]	T{
+.ad r
+aecvsserver - serve
+T}	T{
+.ad l
+CVS client protocol against Aegis projects
 T}
 aexml(1)	\*[Page*Of*aexml(1)]	T{
 .ad r
@@ -1394,6 +1499,13 @@ T}	T{
 .ad l
 file
 T}
+aefa(1)	\*[Page*Of*aefa(1)]	T{
+.ad r
+aegis -File ATtributes - modify the attributes of a
+T}	T{
+.ad l
+file
+T}
 aegstate(5)	\*[Page*Of*aegstate(5)]	T{
 .ad r
 aegstate - aegis state
@@ -1471,6 +1583,20 @@ T}	T{
 .ad l
 file as part of a change
 T}
+aefattr(5)	\*[Page*Of*aefattr(5)]	T{
+.ad r
+aefattr - aegis
+T}	T{
+.ad l
+file attribute file format
+T}
+aefa(1)	\*[Page*Of*aefa(1)]	T{
+.ad r
+aegis -
+T}	T{
+.ad l
+File ATtributes - modify the attributes of a file
+T}
 aecp(1)	\*[Page*Of*aecp(1)]	T{
 .ad r
 aegis -CoPy
@@ -1484,6 +1610,13 @@ aegis - calculate
 T}	T{
 .ad l
 file fingerprint
+T}
+aefattr(5)	\*[Page*Of*aefattr(5)]	T{
+.ad r
+aefattr - aegis file attribute
+T}	T{
+.ad l
+file format
 T}
 aegis(5)	\*[Page*Of*aegis(5)]	T{
 .ad r
@@ -1708,6 +1841,13 @@ aegis -Develop End Undo - recall a change
 T}	T{
 .ad l
 for further development
+T}
+aefattr(5)	\*[Page*Of*aefattr(5)]	T{
+.ad r
+aefattr - aegis file attribute file
+T}	T{
+.ad l
+format
 T}
 aegis(5)	\*[Page*Of*aegis(5)]	T{
 .ad r
@@ -2170,6 +2310,13 @@ aegis -Change Attributes -
 T}	T{
 .ad l
 modify the attributes of a change
+T}
+aefa(1)	\*[Page*Of*aefa(1)]	T{
+.ad r
+aegis -File ATtributes -
+T}	T{
+.ad l
+modify the attributes of a file
 T}
 aepa(1)	\*[Page*Of*aepa(1)]	T{
 .ad r
@@ -2710,6 +2857,13 @@ T}	T{
 .ad l
 PRoject - remove project
 T}
+aecvsserver(1)	\*[Page*Of*aecvsserver(1)]	T{
+.ad r
+aecvsserver - serve CVS client protocol against Aegis
+T}	T{
+.ad l
+projects
+T}
 aeintegratq(1)	\*[Page*Of*aeintegratq(1)]	T{
 .ad r
 aegis - integrate changes into
@@ -2723,6 +2877,13 @@ aepstate -
 T}	T{
 .ad l
 project state file
+T}
+aecvsserver(1)	\*[Page*Of*aecvsserver(1)]	T{
+.ad r
+aecvsserver - serve CVS client
+T}	T{
+.ad l
+protocol against Aegis projects
 T}
 ae_p(1)	\*[Page*Of*ae_p(1)]	T{
 .ad r
@@ -3137,6 +3298,13 @@ T}	T{
 .ad l
 send and receive changes as patches
 T}
+aecvsserver(1)	\*[Page*Of*aecvsserver(1)]	T{
+.ad r
+aecvsserver -
+T}	T{
+.ad l
+serve CVS client protocol against Aegis projects
+T}
 ae_c(1)	\*[Page*Of*ae_c(1)]	T{
 .ad r
 ae c -
@@ -3164,6 +3332,13 @@ aegis - GUI tool for reviewing Aegis change
 T}	T{
 .ad l
 sets, using TCL/TK
+T}
+ae-cvs-ci(1)	\*[Page*Of*ae-cvs-ci(1)]	T{
+.ad r
+ae-cvs-ci - checkin a change
+T}	T{
+.ad l
+set to CVS
 T}
 aeedit(1)	\*[Page*Of*aeedit(1)]	T{
 .ad r

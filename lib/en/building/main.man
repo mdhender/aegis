@@ -49,12 +49,12 @@ See the LICENSE section, below, for more details.
 a protection,
 a defence.
 .SH SPACE REQUIREMENTS
-You will need up to 15MB to unpack and build the
+You will need up to 250MB to unpack and build the
 .I aegis
-program.
+package.
 (This is the worst case seen so far,
-most systems have binaries about 60% as big as this,
-10MB is more typical.)
+most systems have binaries smaller than this,
+200MB is more typical.)
 Your mileage may vary.
 .SH SITE CONFIGURATION
 The

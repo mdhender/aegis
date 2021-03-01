@@ -757,14 +757,14 @@ if {$editor == ""} {
         if [file exists /usr/local/bin/emacs"] {
 	    set editor emacs
         } else {
-	    set editor vi
+	    set editor @VI_PROG@
         }
     } else {
     }
 }
 
-if {$editor == "vi"} {
-    set editor "xterm -fn 10x20 -e vi"
+if {$editor == "@VI_PROG@"} {
+    set editor "xterm -fn 10x20 -e @VI_PROG@"
 }
 
 proc run_editor {files} {

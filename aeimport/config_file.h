@@ -1,6 +1,6 @@
 /*
  *	aegis - project change supervisor
- *	Copyright (C) 2001, 2002 Peter Miller;
+ *	Copyright (C) 2001, 2002, 2004 Peter Miller;
  *	All rights reserved.
  *
  *	This program is free software; you can redistribute it and/or modify
@@ -29,6 +29,7 @@
 struct string_ty; /* forward */
 struct format_ty; /* forward */
 
-void config_file(struct string_ty *, struct format_ty *, time_t);
+void config_file(struct string_ty *, struct format_ty *, time_t,
+    struct string_ty *);
 
 #endif /* AEIMPORT_CONFIG_FILE_H */

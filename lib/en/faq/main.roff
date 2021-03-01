@@ -1,6 +1,6 @@
 .\"
 .\"	aegis - project change supervisor
-.\"	Copyright (C) 1995, 1997-1999, 2002 Peter Miller;
+.\"	Copyright (C) 1995, 1997-1999, 2002, 2004 Peter Miller;
 .\"	All rights reserved.
 .\"
 .\"	This program is free software; you can redistribute it and/or modify
@@ -137,56 +137,14 @@ Aegis is available by WWW from
 tab(;);
 l l s
 l l l.
-URL:;http://www.canb.auug.org.au/~millerp/
+URL:;http://aegis.sourceforge.net/
 File:;aegis.\*(v).README;# the README file from the tar set
 File:;aegis.\*(v).faq;# Frequently Asked Questions
 File:;aegis.\*(v).lsm;# description in LSM format
-File:;aegis.\*(v).rm.ps.gz;# PostScript of the Reference Manual
+File:;aegis.\*(v).rm.pdf;# PDF of the Reference Manual
 File:;aegis.\*(v).tar.gz;# the complete source
-File:;aegis.\*(v).ug.ps.gz;# PostScript of the User Guide
+File:;aegis.\*(v).ug.pdf;# PDF of the User Guide
 .TE
-.in -4m
-.sp
-The above site has a very slow network link to the outside world.
-Aegis is also carried by sunsite.unc.edu in its Linux archives.
-You will be able to find Aegis on any of its mirrors.
-.in +4m
-.TS
-tab(;);
-l l s
-l l s
-l l l.
-Host:;sunsite.unc.edu
-Dir:;/pub/Linux/devel/vc
-File:;aegis.\*(v).README;# the README file from the tar set
-File:;aegis.\*(v).faq;# Frequently Asked Questions
-File:;aegis.\*(v).lsm;# description in LSM format
-File:;aegis.\*(v).rm.ps.gz;# PostScript of the Reference Manual
-File:;aegis.\*(v).tar.gz;# the complete source
-File:;aegis.\*(v).ug.ps.gz;# PostScript of the User Guide
-.TE
-.in -4m
-.sp
-For those of you without FTP,
-I recommend the use of a local ftp-by-email server.
-Here is a list of a few (there are many more):
-.in +4m
-.TS
-l l.
-ftpmail@cs.uow.edu.au	Australia
-ftpmail@grasp.insa-lyon.fr	France
-ftpmail@ftp.uni-stuttgart.de	Germany
-ftpmail@doc.ic.ac.uk	Great Britain
-ftpmail@ieunet.ie	Ireland
-ftpmail@decwrl.dec.com	USA
-ftpmail@ftp.uu.net	USA
-ftpmail@sunsite.unc.edu	USA
-.TE
-.in -4m
-.sp
-In general, you can get a help message about how to use each system
-by sending email with a subject of "help"
-and a message body containing just the word "help".
 .H 2 "Is Aegis actively being maintained?"
 Yes, Aegis is actively being maintained by the author.
 You can contact him by email
@@ -270,7 +228,7 @@ not useful to your project,
 the other aspects of Aegis' process still are
 (e.g. concurrent development, mandatory reviews, etc.).
 .H 2 "Can I use something besides a shell script?"
-Yes, the ``test_command'' field of the project config file
+Yes, the ``test_command'' field of the project configuration file
 may be set to whatever command you like,
 see \fIaepconf\fP(5) for more information.
 .sp
@@ -424,7 +382,7 @@ Monitoring review quality is essential to maintain product quality.
 Automating the integration queue potentially denies you this quality
 opportunity.
 .H 2 "How do I enforce coding standards?"
-The ``diff_command'' field of the project config file
+The ``diff_command'' field of the project configuration file
 need not only difference the file,
 it can also be overloaded to do other things.
 If the difference command fails
@@ -441,7 +399,7 @@ diff_command = "cklinlen $in && fcomp -w -s $orig $in -o $out";
 Checking other coding standards are also possible
 using the same basic method.
 .H 2 "How do I get dates printed before and after build commands?"
-Just as the diff_command file of the project config file
+Just as the diff_command file of the project configuration file
 can be extended, so can the build_command field.
 .e(
 build_command = "set +e; date; cook ...; x=$?; date; exit $x";
@@ -456,7 +414,7 @@ In this version, the times are automatically printed as part of the
 verbose commencement and completion messages.
 .H 2 "How do I stop Aegis automatically merging?"
 The merging behavior is controlled by the ``diff_preference'' field
-of the user config file.
+of the user configuration file.
 See \fIaeuconf\fP(5) for more information.
 There are also three command line options
 to the \fIaed\fP(1) command which can override the preferences,
@@ -488,11 +446,11 @@ Because \fIchown\fP(2) does not work over NFS,
 a new development directory owned by the new developer is created,
 and the change files are copied,
 before the old development directory is deleted.
-.H 2 "Do I have to type all the config examples in the User Guide?"
+.H 2 "Do I have to type all the configuration examples in the User Guide?"
 No, you do not.
 The lib/config.example directory contains a number of files
-with the config command from the User Guide ready for inserting into your
-project config file.
+with the configuration command from the User Guide ready for inserting into your
+project configuration file.
 .H 2 "Is there a way to recreate a previous baseline?"
 For example, let's say we have shipped one version to
 a customer and since then made 30 changes to the baseline.
@@ -590,21 +548,21 @@ to sync their clocks with the file server's clock.
 .H 3 "Build Architectures"
 The ``aede'' can also complain about builds when
 you have changed the architecture field
-of the project "config" file,
+of the project configuration file,
 but have not yet updated the change's attributes to match.
 This can also happen when a separate change updates the architecture
 field, and all existing changes suddenly get this mystery error.
 .sp
 It happens because the default architecture is "unspecified"
 in the change attributes (use ``aeca -l'' to take a look).
-When the config file changes, the required architecture,
+When the project configuration file changes, the required architecture,
 according to the change's attributes, is still "unspecified".
 To fix, use ``aeca -e'' and edit the change's attributes
-to match the architecture names in the "config" file.
+to match the architecture names in the project configuration file.
 .sp
 You may wish to upgrade to version 3.0,
 which checks for this, and prints a suitable error message,
-with a suggestion to edit either the project ``config'' file
+with a suggestion to edit either the project configuration file
 or the change attributes.
 .H 1 "Internationalization"
 This section discusses a number of issues surrounding internationalization,

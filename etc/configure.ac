@@ -21,13 +21,13 @@ dnl MANIFEST: how to configure aegis, input to the GNU autoconf program
 dnl
 AC_INIT(install-sh)
 AC_CONFIG_HEADER(common/config.h)
-AC_PROG_CC
+AC_PROG_CXX
 AC_PROG_CPP
 
 dnl
 dnl	Look for an existing Aegis installation, and use the "aegis
 dnl	--configured" command to replicate its configuration.
-dnl	Unless they said --witn-no-aegis-configured
+dnl	Unless they said --with-no-aegis-configured
 dnl
 if test "x$prefix" = "xNONE"
 then
@@ -51,25 +51,6 @@ then
     fi
 fi
 
-dnl
-dnl	Avoid the /usr/ucb/cc compiler, it screws up readdir,
-dnl	some systems seem to have the ucb one early in the path.
-dnl
-dnl	ranlib is unneccessary, but setting it to : will
-dnl	not work, so set it to echo.
-dnl
-dnl	This test must be before the stdarg test
-dnl	and before AC_C_CONST
-dnl
-if test -z "$GCC" ; then
-AC_MSG_CHECKING([for Pyramid])
-AC_EGREP_CPP(yes,[#ifdef __pyrsoft
-  yes
-#endif], CC="/usr/ccs/bin/cc"
-RANLIB="echo no need to ranlib"
-AC_MSG_RESULT(yes),AC_MSG_RESULT(no))
-fi
-
 AC_PROG_INSTALL
 AC_PROG_YACC
 AC_PROG_RANLIB
@@ -91,16 +72,112 @@ AC_CHECK_FUNC(setsockopt, ,
 AC_CHECK_LIB(m, main)
 AC_CHECK_LIB(rx, main)
 AC_CHECK_LIB(z, main)
+AC_CHECK_LIB(crypt, crypt)
 AC_CHECK_LIB(magic, magic_file)
 dnl The -lclu library is for OSF/1 clustering
 AC_CHECK_LIB(clu, main)
 AC_CHECK_LIB(curl, curl_multi_perform)
+
+if test "$ac_cv_lib_curl_curl_multi_perform" = "yes"
+then
+    AC_CHECK_PROGS(CURL_CONFIG, curl-config)
+
+    if test -n "$CURL_CONFIG"
+    then
+	CFLAGS="$CFLAGS `$CURL_CONFIG --cflags`"
+        CXXFLAGS="$CXXFLAGS `$CURL_CONFIG --cflags`"
+	LIBS="$LIBS `$CURL_CONFIG --libs`"
+    fi
+fi
+
+dnl
+dnl Try to detect a library with the UUID functions.
+dnl
+dnl The OSSP variant has uuid_load in -luuid
+dnl The e2fsprogs variant has uuid_generate in -luuid
+dnl The BSD variant has uuid_has in libc (no -l required)
+dnl The DCE compliant variant has uuid_hash in -luuid
+dnl
+AC_CHECK_LIB(uuid, uuid_load)
+AC_CHECK_LIB(uuid, uuid_generate)
+AC_CHECK_LIB(uuid, uuid_hash)
+
+dnl
+dnl If there are no UUID libraries we can roll our own, but first we
+dnl need to see if the Linux kernel will do it for us.
+dnl
+AC_MSG_CHECKING([for Linux /proc/sys/kernel/random/uuid])
+HAVE_LINUX_UUID=no
+if test -f "/proc/sys/kernel/random/uuid"
+then
+        AC_DEFINE(HAVE_LINUX_UUID, 1,
+                  [Define this symbol if your sistem has
+/proc/sys/kernel/random/uuid])
+        AC_DEFINE(LINUX_UUID_FILENAME,["/proc/sys/kernel/random/uuid"],
+                [Define this symbol if your system has
+/proc/sys/kernel/random/uuid])
+        AC_DEFINE(LINUX_UUID_SIZE, 36,
+                [Define this symbol if your system has
+/proc/sys/kernel/random/uuid])
+        HAVE_LINUX_UUID=yes
+fi
+AC_MSG_RESULT([$HAVE_LINUX_UUID])
+
 AC_CHECK_PROGS(MSGFMT, gmsgfmt msgfmt, msgfmt)
 AC_CHECK_PROGS(MSGCAT, gmsgcat msgcat)
 AC_CHECK_PROGS(GROFF, groff roff)
 AC_CHECK_PROGS(SOELIM, roffpp gsoelim soelim)
 AC_CHECK_PROGS(AWK, gawk nawk awk, awk)
+
+dnl
+dnl We need some way to determine the value of the default MANPATH
+dnl setting, so that we can append to it.  There are (at least) two
+dnl incompatible man implementations out there.  The one used by Debian
+dnl Linux has a "manpath -q" command, the one used by RedHat Linux has
+dnl a "man -w" command.  If neither works, assume a constant string.
+dnl
+AC_CHECK_PROGS(MANPATH_PROG, manpath)
+
+if test -n "$MANPATH_PROG"
+then
+    dnl
+    dnl Sometimes manpath prints irritating warnings,
+    dnl but not all versions have -q to silence them.
+    dnl
+    MANPATH_PROG="$MANPATH_PROG 2>/dev/null"
+else
+    dnl
+    dnl Some versions of man have a -w option, but it's short for --whatis
+    dnl and so they print nothing on stdout, and an error message about
+    dnl the missing argument on stderr.  Some versions of man -w do the
+    dnl same thing as manpath.
+    dnl
+    temp_str=`man -w 2>/dev/null`
+    if test -n "$temp_str"
+    then
+	MANPATH_PROG="man -w 2>/dev/null"
+    else
+	MANPATH_PROG="echo /usr/man:/usr/share/man"
+    fi
+fi
+
+AC_CHECK_PROGS(LOCALE_PROG, locale, , [${PATH}:/usr/sbin:/sbin])
+if test -n "$LOCALE_PROG"
+then
+    AC_DEFINE(HAVE_LOCALE_PROG, 1,
+    [Define this symbol if your system has the locale(1) program.])
+fi
+
+AC_CHECK_PROGS(LOCALE_GEN_PROG, locale-gen, , [${PATH}:/usr/sbin:/sbin])
+if test -n "$LOCALE_GEN_PROG"
+then
+    AC_DEFINE(HAVE_LOCALE_GEN_PROG, 1,
+    [Define this symbol if your system has the locale-gen(8) program.])
+fi
+
 AC_PATH_PROG(WISH, wish, /usr/local/bin/wish)
+AC_PATH_PROG(VI_PROG, vi, /bin/vi)
+
 
 AC_PATH_PROG(PERL, perl, /usr/local/bin/perl)
 AC_DEFINE_UNQUOTED(CONF_PERL, ["$PERL"],
@@ -222,21 +299,26 @@ AC_MSG_RESULT(yes),
 AC_MSG_RESULT(no),
 AC_MSG_RESULT(cross))
 
-AC_CHECK_HEADERS(curl/curl.h fcntl.h iso646.h libgettext.h libintl.h limits.h \
-	locale.h magic.h memory.h mntent.h regex.h rxposix.h stddef.h stdlib.h \
-	string.h unistd.h wchar.h wctype.h widec.h zlib.h sys/clu.h \
-	sys/ioctl.h)
+AC_CHECK_HEADERS(curl/curl.h dce/rpc.h dce/uuid.h fcntl.h iso646.h     \
+        libgettext.h libintl.h limits.h locale.h magic.h memory.h      \
+        mntent.h regex.h rxposix.h shadow.h stddef.h stdlib.h string.h \
+        unistd.h wchar.h wctype.h widec.h zlib.h sys/clu.h sys/ioctl.h \
+        sys/prctl.h uuid/uuid.h uuid.h                                 \
+	)
 AC_HEADER_DIRENT
 AC_TYPE_SIGNAL
 AC_TYPE_SIZE_T
 AC_HEADER_TIME
 AC_C_CONST
 AC_SYS_LONG_FILE_NAMES
-AC_CHECK_FUNCS(clu_info getpgrp gettext gettimeofday iswctype magic_file \
-	mbrtowc pathconf regcomp seteuid setlocale setresuid setreuid \
-	sighold sigprocmask snprintf strcasecmp strncasecmp strerror \
-	strftime strsignal strtoul strverscmp tcgetpgrp vsnprintf wcrtomb \
-	wcslen wcwidth)
+AC_CHECK_FUNCS(clu_info crypt curl_easy_strerror curl_multi_strerror   \
+        getpgrp igetspnam initgroups gettext gettimeofday iswctype     \
+        magic_file mbrtowc pathconf prctl regcomp rpc_string_free      \
+        seteuid setlocale setresuid setreuid sighold sigprocmask       \
+        snprintf strcasecmp strncasecmp strerror strftime strsignal    \
+        strtoul strverscmp symlink tcgetpgrp uuid_hash uuid_load       \
+        uuid_generate vsnprintf wcrtomb wcslen wcwidth                 \
+	)
 
 dnl
 dnl	Check to see if wint_t is defined.
@@ -493,11 +575,28 @@ dnl	If the -lz is not present, Aegis will fail to link.
 dnl
 if test "$ac_cv_lib_z_main" != "yes" -o "$ac_cv_header_zlib_h" != "yes"
 then
-  AC_MSG_RESULT([])
-  AC_MSG_RESULT([	You need to install the GNU zlib compression])
-  AC_MSG_RESULT([	library, and then re-run this install script.])
-  AC_MSG_RESULT([	Remember to use \`\`rm config.cache'' before you do.])
-  AC_MSG_RESULT([])
+  AC_MSG_RESULT([
+	You need to install the GNU zlib compression
+	library, and then re-run this install script.
+	Remember to use \`\`rm config.cache'' before you do.])
+fi
+
+dnl
+dnl     If the uuid.h is not present, Aegis will fail to compile.
+dnl     If the -luuid is not preset, Aegis will fail to link.
+dnl	Actually, this is just a warning.
+dnl
+if test "$ac_cv_header_dce_uuid_h" != "yes" -a "$ac_cv_header_uuid_h" != "yes"
+then
+if test "$ac_cv_lib_uuid_load" != "yes"   -a "$ac_cv_lib_uuid_xxx" != "yes" \
+    -a "$ac_cv_lib_uuid_uuid_hash" != "yes" -a "$ac_cv_lib_c_uuid_hash" != "yes"
+then
+  AC_MSG_RESULT([
+	You may wish to install one of the following UUID
+	library flavors:
+	* e2fsprogs implementation
+	* OSSP implementation])
+fi
 fi
 
 dnl
@@ -510,12 +609,11 @@ then
   po_files=yes
 else
   po_files=no
-  AC_MSG_RESULT([])
-  AC_MSG_RESULT([	Aegis will emit much more useful error messages if])
-  AC_MSG_RESULT([	you install GNU \`\`gettext'' and then re-run this])
-  AC_MSG_RESULT([	./configure script.])
-  AC_MSG_RESULT([	Remember to use \`\`rm config.cache'' before you do.])
-  AC_MSG_RESULT([])
+  AC_MSG_RESULT([
+	Aegis will emit much more useful error messages if
+	you install GNU \`\`gettext'' and then re-run this
+	./configure script.
+	Remember to use \`\`rm config.cache'' before you do.])
 fi
 AC_SUBST(po_files)
 
@@ -637,4 +735,4 @@ AH_BOTTOM(
 
 
 AC_OUTPUT(Makefile lib/cshrc lib/profile etc/libdir.so
-	common/libdir.c etc/compat.2.3)
+	common/libdir.cc etc/compat.2.3)

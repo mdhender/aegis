@@ -25,3 +25,10 @@
 This option may be used with most listings
 to specify that the column formatting is not to be performed.
 This is useful for shell scripts.
+.TP 8n
+.B -Page-Headings
+This option requests that page headings be present in listings and reports.
+This is the default.
+.TP 8n
+.B -No-Page-Headings
+This option requests that page headings be omitted from listings and reports.

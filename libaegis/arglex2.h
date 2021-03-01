@@ -1,6 +1,6 @@
 /*
  *	aegis - project change supervisor
- *	Copyright (C) 1991-2003 Peter Miller;
+ *	Copyright (C) 1991-2004 Peter Miller;
  *	All rights reserved.
  *
  *	This program is free software; you can redistribute it and/or modify
@@ -40,6 +40,7 @@ enum
 	arglex_token_clean,
 	arglex_token_clone,
 	arglex_token_configured,
+	arglex_token_configured_not,
 	arglex_token_copy_file,
 	arglex_token_copy_file_undo,
 	arglex_token_current_relative,
@@ -59,6 +60,7 @@ enum
 	arglex_token_edit,
 	arglex_token_edit_bg,
 	arglex_token_file,
+	arglex_token_file_attributes,
 	arglex_token_fix_architecture,
 	arglex_token_force,
 	arglex_token_grandparent,
@@ -147,6 +149,7 @@ enum
 	arglex_token_unchanged,
 	arglex_token_unformatted,
 	arglex_token_user,
+        arglex_token_uuid,
 	arglex_token_verbose,
 	arglex_token_wait,
 	arglex_token_wait_not,

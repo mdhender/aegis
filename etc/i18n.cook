@@ -1,6 +1,6 @@
 /*
  *	aegis - project change supervisor
- *	Copyright (C) 1997, 1999, 2001-2003 Peter Miller;
+ *	Copyright (C) 1997, 1999, 2001-2004 Peter Miller;
  *	All rights reserved.
  *
  *	This program is free software; you can redistribute it and/or modify
@@ -21,13 +21,16 @@
  */
 
 /*
- * Only build the internationalization  targets if you can find the msgcat
+ * Only build the internationalization targets if you can find the msgcat
  * command.  Earlier versions of GNU gettext (or worse, Solaris gettext)
  * that don't have this command, have a version of msgfmt that doesn't
  * grok the --compendium option.
  */
 if [find_command msgcat] then
+{
     all += internationalization ;
+    integration-build-targets += internationalization-int;
+}
 
 /*
  * Figure out the supported languages, by looking at where the message
@@ -53,7 +56,11 @@ internationalization =
 		[match_mask lib/%0%.po [source_files]]]
 	[fromto lib/%0%.po lib/%0%.merge
 		[match_mask lib/%0%.po [source_files]]]
+	    ;
 
+internationalization-int: [internationalization-int];
+
+internationalization-int =
 	/*
 	 * This next file is for the benefit of the Translation Project
 	 * robot.  (Yes, that's right, a bloody robot.)
@@ -93,13 +100,13 @@ internationalization =
 	 * AND ALSO any other documentation, once it is translated.
 	 */
 	po/[project_short].pot
-	/* [prepost "po/"[project_short]"." ".po" [langs]] */
+	[prepost "po/"[project_short]"." ".po" [langs]]
 	;
 
 all,I =
-	[fromto %0%.y %0%.gen.c,I [match_mask %0%.y [source_files]]]
-	[fromto %0%.def %0%.c,I [match_mask %0%.def [source_files]]]
-	[fromto %0%.c %0%.c,I [match_mask %0%.c [source_files]]]
+	[fromto %0%.y %0%.gen.cc,I [match_mask %0%.y [source_files]]]
+	[fromto %0%.def %0%.cc,I [match_mask %0%.def [source_files]]]
+	[fromto %0%.cc %0%.cc,I [match_mask %0%.cc [source_files]]]
 	;
 
 msgmerge = msgmerge;
@@ -176,7 +183,7 @@ i18n-tmp/aegis.pot: [all,I]:
 	sh [resolve etc/i18n.clean.sh] [target];
 }
 
-%0%.c,I: %0%.c
+%0%.cc,I: %0%.cc
 	set no-cascade
 {
 	[xgettext]
@@ -196,7 +203,7 @@ i18n-tmp/aegis.pot: [all,I]:
 		--keyword\=subst_intl
 		--keyword\=input_error_fatal
 		[prepost "--dir=" "" [search_list]]
-		%0%.c;
+		%0%.cc;
 }
 
 
@@ -240,9 +247,39 @@ i18n-tmp/aegis.pot: [all,I]:
  */
 
 po/[project_short].pot: lib/en/LC_MESSAGES/aegis.po i18n-tmp/aegis.pot
+    etc/i18n-munge.awk
+{
+    [msgmerge]
+	    /*
+	     * Personally, I like the "--indent" option, but Emacs'
+	     * PO mode can't cope with it.  Why am I changing my files,
+	     * instead of Emacs' PO mode being fixed?!?
+	     */
+	    --sort-output
+	    --add-location
+	    --force-po
+	    -o po/[project_short].pot.tmp
+	    [resolve lib/en/LC_MESSAGES/aegis.po i18n-tmp/aegis.pot]
+	    ;
+
+    /*
+     * The i18n-munge script is to turn the msgstr values into commands,
+     * and supply and empty msgstr string.  Apparrently the Translation
+     * Project's tools spit the dummy if given anything else.
+     */
+    VERSION\=[version_short]
+    [awk] -f [resolve etc/i18n-munge.awk] po/[project_short].pot.tmp > [target];
+    rm po/[project_short].pot.tmp;
+}
+
+po/[project_short].en.po: lib/en/LC_MESSAGES/aegis.po i18n-tmp/aegis.pot
 {
 	[msgmerge]
-		--indent
+		/*
+		 * Personally, I like the "--indent" option, but Emacs'
+		 * PO mode can't cope with it.  Why am I changing my files,
+		 * instead of Emacs' PO mode being fixed?!?
+		 */
 		--sort-output
 		--add-location
 		--force-po
@@ -251,14 +288,18 @@ po/[project_short].pot: lib/en/LC_MESSAGES/aegis.po i18n-tmp/aegis.pot
 		;
 }
 
-po/[project_short].%.po: lib/%/LC_MESSAGES/aegis.po i18n-tmp/aegis.pot
+po/[project_short].%.po: lib/%/LC_MESSAGES/aegis.po po/[project_short].pot
 {
 	[msgmerge]
-		--indent
+		/*
+		 * Personally, I like the "--indent" option, but Emacs'
+		 * PO mode can't cope with it.  Why am I changing my files,
+		 * instead of Emacs' PO mode being fixed?!?
+		 */
 		--sort-output
 		--add-location
 		--force-po
 		-o [target]
-		[resolve lib/%/LC_MESSAGES/aegis.po i18n-tmp/aegis.pot]
+		[resolve lib/%/LC_MESSAGES/aegis.po po/[project_short].pot]
 		;
 }

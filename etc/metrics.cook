@@ -1,6 +1,6 @@
 /*
  *	aegis - project change supervisor
- *	Copyright (C) 1999, 2002, 2003 Peter Miller;
+ *	Copyright (C) 1999, 2002-2004 Peter Miller;
  *	All rights reserved.
  *
  *	This program is free software; you can redistribute it and/or modify
@@ -52,7 +52,7 @@ dataend
 #if 0
 #if [find_command sw_measure]
 
-%1/%0%2.c,S: %1/%0%2.c
+%1/%0%2.cc,S: %1/%0%2.cc
     set nocascade
 {
 	sw_measure
@@ -61,7 +61,7 @@ dataend
 			[prepost "-I" "/%1" [search_list]]
 			[cc_include_flags]
 		]
-		[resolve %1/%0%2.c] [target];
+		[resolve %1/%0%2.cc] [target];
 }
 
 #endif

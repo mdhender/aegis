@@ -6,18 +6,19 @@
  *
  * The entries for the commands are listed below.  RCS uses a slightly
  * different model than aegis wants, so some maneuvering is required.
- * The command strings in this section assume that the RCS commands ci and co
- * and rcs and rlog are in the command search PATH, but you may like to
- * hard-wire the paths, or set PATH at the start of each.  You should also note
- * that the strings are always handed to the Bourne shell to be executed, and
- * are set to exit with an error immediately a sub-command fails.
+ * The command strings in this section assume that the RCS commands ci
+ * and co and rcs and rlog are in the command search PATH, but you may
+ * like to hard-wire the paths, or set PATH at the start of each.  You
+ * should also note that the strings are always handed to the Bourne
+ * shell to be executed, and are set to exit with an error immediately a
+ * sub-command fails.
  *
- * In these commands, the RCS file is kept unlocked, since only the owner will
- * be checking changes in.  The RCS functionality for coordinating shared
- * access is not required.
+ * In these commands, the RCS file is kept unlocked, since only the
+ * owner will be checking changes in.  The RCS functionality for
+ * coordinating shared access is not required.
  *
- * One advantage of using RCS version 5.6 or later is that binary files are
- * supported, should you want to have binary files in the baseline.
+ * One advantage of using RCS version 5.6 or later is that binary files
+ * are supported, should you want to have binary files in the baseline.
  *
  * The ${quote ...} construct is used to quote filenames which contain
  * shell special characters.  A minimum of quoting is performed, so if
@@ -133,8 +134,7 @@ history_query_command =
 	"rlog -r ${quote $history,v} | awk '/^revision/ {print $$2}'";
 
 /*
- * RCS also provides a merge program, which can be used to provide a three-way
- * merge.  It has an output format some sites prefer to the fmerge output.
+ * Compare three files using merge(1).  Conflicts are marked in the output.
  *
  * This command is used by aed(1) to produce a difference listing when a file
  * in the development directory is out of date compared to the current version
@@ -168,10 +168,11 @@ history_query_command =
  */
 
 merge_command =
-	"set +e; \
-merge -p -L baseline -L C$c ${quote $mostrecent} ${quote $original} \
-${quote $input} > ${quote $output}; \
-test $? -le 1";
+	"set +e; "
+	"merge -p -L baseline -L Historical -L C$c "
+	    "${quote $mostrecent} ${quote $original} ${quote $input} "
+	    "> ${quote $output}; "
+	"test $? -le 1";
 
 /*
  * Many history tools (including RCS) can modify the contents of the file

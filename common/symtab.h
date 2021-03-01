@@ -25,6 +25,12 @@
 
 #include <str.h>
 
+/** \addtogroup Symtab
+  * \brief Symbols table interface
+  * \ingroup Common
+  * @{
+  */
+
 typedef struct symtab_row_ty symtab_row_ty;
 struct symtab_row_ty
 {
@@ -55,4 +61,5 @@ void symtab_dump(symtab_ty *, char *);
 void symtab_walk(symtab_ty *stp, void (*func)(symtab_ty *stp,
     string_ty *key, void *data, void *arg), void *arg);
 
+/** @} */
 #endif /* FMTGEN_SYMTAB_H */

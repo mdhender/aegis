@@ -1,6 +1,6 @@
 .\"
 .\"	aegis - project change supervisor
-.\"	Copyright (C) 2000-2002 Peter Miller;
+.\"	Copyright (C) 2000-2002, 2004 Peter Miller;
 .\"	All rights reserved.
 .\"
 .\"	This program is free software; you can redistribute it and/or modify
@@ -20,6 +20,117 @@
 .\" MANIFEST: document describing lib/en/howto/devel_to_dos
 .\"
 .nh 2 "The To-Do List"
+.\" ========================================================================
+.nh 3 "Web Interface"
+.IP \(bu 2n
+The \fIaeget\fP(1) web interface needs to have all of the
+\fIaegis.cgi\fP(1) functionality added, so that \fIaegis.cgi\fP(1) can
+be retired.
+Submitted: PMiller, 2-Jun-2004
+.IP \(bu 2n
+Add an additonal mode to \fIaedist\fP to query an \fIaeget\fP server for
+change set UUIDs and download and apply missing change sets.
+It needs to be able to be run by \fIcron\fP(8).
+Submitted: PMiller, 1-Jun-2004
+.\" ========================================================================
+.nh 3 "aecvsserver"
+.IP \(bu 2n
+The aecvsserver needs to be extensively tested by users.
+Submitted: PMiller, 1-Jun-2004
+.\" ------------------------------------------------------------------------
+.IP \(bu 2n
+Implement more of the CVS client commands which can be sent to
+the server, usually by saying "yes, bwana" and doing nothing.
+Submitted: PMiller, 1-Jun-2004
+.\" ------------------------------------------------------------------------
+.IP \(bu 2n
+Implement a cvs commit against a project (at the moment this is
+not allowed because you have to use a "module" named after a change set)
+which will create a change set apply the changes and do everything to
+get to aede.
+Submitted: PMiller, 1-Jun-2004
+.\" ------------------------------------------------------------------------
+.IP \(bu 2n
+Is it possible to use the same techinique to write an SVN server?
+Submitted: PMiller, 1-Jun-2004
+.\" ------------------------------------------------------------------------
+.IP \(bu 2n
+Is it possible to use the same techinique to write an arch server?
+Submitted: PMiller, 1-Jun-2004
+.\" ------------------------------------------------------------------------
+.IP \(bu 2n
+Arch has the concept (if not the implementation) of an SCM-neutral
+interchange format.  Implement it.
+Submitted: PMiller, 23-Jan-2004
+.\" ========================================================================
+.nh 3 "Geographically Distributed Development"
+.IP \(bu 2n
+The \fIaedist \-receive\fP command needs to be enhanced to understand
+file attributes.
+Submitted: PMiller, 2-Jun-2004
+.\" ------------------------------------------------------------------------
+.IP \(bu 2n
+The \fIaepatch \-receive\fP command needs to be enhanced to understand
+file attributes.
+Submitted: PMiller, 2-Jun-2004
+.\" ------------------------------------------------------------------------
+.IP \(bu 2n
+Enhance the \fIaedist -receive\fP command to understand incoming files
+with UUIDs.
+Submitted: PMiller, 1-Jun-2004
+.\" ------------------------------------------------------------------------
+.IP \(bu 2n
+Enhance the \fIaepatch -receive\fP command to understand incoming files
+with UUIDs.
+Submitted: PMiller, 1-Jun-2004
+.\" ------------------------------------------------------------------------
+.IP \(bu 2n
+Add an additonal mode to \fIaedist\fP to query an \fIaeget\fP server for
+change set UUIDs and download and apply missing change sets.
+It needs to be able to be run by \fIcron\fP(8).
+Submitted: PMiller, 1-Jun-2004
+.\" ------------------------------------------------------------------------
+.IP \(bu 2n
+Enhance \fIaedist -receive\fP to run tests on changes which require it.
+Submitted: Jerry Pendergraft, May-2004
+.\" ------------------------------------------------------------------------
+.IP \(bu 2n
+Enhance \fIaedist\fP to preserve change history
+(both send and receive will need work).
+Don't forget backwards compatibility.
+Submitted: Jerry Pendergraft, 2003
+.\" ------------------------------------------------------------------------
+.IP \(bu 2n
+Enhance \fIaedist -receive\fP to leave changes in \fIawaiting
+development\fP or \fIbeing developed\fP if that's the state they were in
+at the origin.
+Submitted: Jerry Pendergraft, May-2004
+.\" ------------------------------------------------------------------------
+.IP \(bu 2n
+Enhance \fIaepatch -receive\fP to run tests on changes which require it.
+Submitted: PMiller, 1-Jun-2004
+.\" ------------------------------------------------------------------------
+.IP \(bu 2n
+Enhance \fIaepatch\fP to preserve change history
+(both send and receive will need work).
+Incoming patches with no meta-data obviously can't do this.
+Don't forget meta-data backwards compatibility.
+Submitted: PMiller, 1-Jun-2004
+.\" ------------------------------------------------------------------------
+.IP \(bu 2n
+Enhance \fIaepatch -receive\fP to leave changes in \fIbeing developed\fP
+if that's the state they were in at the origin.  Patches with no
+meta-data stay in \fIbeing developed\fP.
+Submitted: PMiller, 1-Jun-2004
+.\" ------------------------------------------------------------------------
+.IP \(bu 2n
+Enhance \fIaepatch\fP and \fIaedist\fP to automagically sign (send)
+and verify (receive) the contents, using the (revolting) library from
+the \fIgpgme\fP project.  This stupid library spawns an \fIgpg\fP(1)
+instance and talks to it; unlike a sensible library \fIe.g.\fP the
+\fIzlib\fP project; why on earth couldn't they take the common code from
+gpg and make a library of \fIthat?\fP
+Submitted: PMiller, 1-Jun-2004
 .\" ========================================================================
 .nh 3 "Documentation"
 .IP \(bu 2n
@@ -242,6 +353,39 @@ Should also put user name under change state, as in change lists.
 .\" ========================================================================
 .nh 3 "Core Enhancements"
 .IP \(bu 2n
+There is a need for an \fIaediff\fP(1) command to show the difference
+between two changes (be they the current change, the baseline, the
+baseline of some other branch, an historical change or an active
+change).
+Submitted: PMiller, 2-Jun-2004
+.\" ------------------------------------------------------------------------
+.IP \(bu 2n
+The project_file_roll_forward function needs to be enhanced to
+understand file UUIDs.
+Submitted: PMiller, 1-Jun-2004
+.\" ------------------------------------------------------------------------
+.IP \(bu 2n
+Now the sources are all being compiled by a C++ cimpiler, convert the
+various OO portions of the code (inout_ty and its derived classes,
+output_ty, etc) to true C++.  Need a style guide first, so other
+developers know how I want it done.  See SRecord for examples until this
+is done.
+Submitted: PMiller, 1-Jun-2004
+.\" ------------------------------------------------------------------------
+.IP \(bu 2n
+More doxygen comments in the header files.
+Submitted: PMiller, 23-Jan-2004
+.\" ------------------------------------------------------------------------
+.IP \(bu 2n
+Add a "development directory style" configuration option.  The current
+styles are "view path" and two types of "symlink farm", although this
+is well concealed by the code.  Need to add a hard link (arch-ish) /
+copyfile (cvs-ish) style as well, but only for source files.  The code
+which currently maintains the symlinks can be pressed into doing the
+extra work fairly easily.
+Submitted: PMiller, 1-Jun-2004
+.\" ------------------------------------------------------------------------
+.IP \(bu 2n
 It would be nice to have a way to specify a timeout for aegis tests.  If a
 single test does not finish within this time, it should be aborted and
 considered `No Result'.  Then aet should continue with the next test (as
@@ -308,10 +452,8 @@ in the configuring section.
 Submitted: John Huddleston <jhudd@cody.itc.nrcs.usda.gov>, 19 Mar 1999
 .\" ------------------------------------------------------------------------
 .IP \(bu 2n
-[IF there were editable file attributes]
-add coupling between files (as file attribute)
-this means when you aecp, you get a set of files
-(see a command to set it, need to carry it thru integration, etc.)
+Using file attributes, add coupling between files to form file groups;
+this means when you aecp, you get the whole set of related files.
 Submitted: PMiller, 18-Feb-99
 .\" ------------------------------------------------------------------------
 .IP \(bu 2n
@@ -559,22 +701,10 @@ Submitted: Graham Wheeler <gram@cdsec.com> 27 Jan 1999
 .\" ========================================================================
 .nh 3 "Database"
 .IP \(bu 2n
-Should the Aegis database be replaced by XML?
-(This would have \fIhuge\fP backwards compatibility issues.)
-Maybe we need a way to project the Aegis database into XML?
-Submitted: Mark Veltzer <mark2776@yahoo.com>, 16 Aug 2001
-.\" ------------------------------------------------------------------------
-.IP \(bu 2n
 Write an ODBC interface to the database?
 Submitted: P. Miller, 16 Aug 2001
 .\" ------------------------------------------------------------------------
 .IP \(bu 2n
 Does it make sense to have an NNTP interface?
 Would it be any use?
-Submitted: P. Miller, 16 Aug 2001
-.\" ------------------------------------------------------------------------
-.IP \(bu 2n
-Write an interface so that Aegis looks just like a remote CVS server,
-accessed using the normal CVS clients.
-Of course, you would have to do the aede on the Unix server.
 Submitted: P. Miller, 16 Aug 2001

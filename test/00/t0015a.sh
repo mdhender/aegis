@@ -1,7 +1,7 @@
 #!/bin/sh
 #
 #	aegis - project change supervisor
-#	Copyright (C) 1993-1998, 2002 Peter Miller;
+#	Copyright (C) 1993-1998, 2002, 2004 Peter Miller;
 #	All rights reserved.
 #
 #	This program is free software; you can redistribute it and/or modify
@@ -104,19 +104,19 @@ unset LANG
 unset LANGUAGE
 
 #
-# If the C compiler is called something other than ``cc'', as discovered
-# by the configure script, create a shell script called ``cc'' which
-# invokes the correct C compiler.  Make sure the current directory is in
-# the path, so that it will be invoked.
+# If the C++ compiler is called something other than ``c++'', as
+# discovered by the configure script, create a shell script called
+# ``c++'' which invokes the correct C++ compiler.  Make sure the current
+# directory is in the path, so that it will be invoked.
 #
-if test "$CC" != "" -a "$CC" != "cc"
+if test "$CXX" != "" -a "$CXX" != "c++"
 then
-	cat >> cc << fubar
+	cat >> c++ << fubar
 #!/bin/sh
-exec $CC \$*
+exec $CXX \$*
 fubar
 	if test $? -ne 0 ; then no_result; fi
-	chmod a+rx cc
+	chmod a+rx c++
 	if test $? -ne 0 ; then no_result; fi
 	PATH=${work}:${PATH}
 	export PATH
@@ -175,19 +175,19 @@ if test $? -ne 0 ; then no_result; fi
 # add a new files to the change
 #
 activity="new file 157"
-$bin/aegis -new_file $workchan/main.c -nl -lib $worklib -p foo
+$bin/aegis -new_file $workchan/main.cc -nl -lib $worklib -p foo
 if test $? -ne 0 ; then no_result; fi
 $bin/aegis -new_file $workchan/config -nl -lib $worklib -p foo
 if test $? -ne 0 ; then no_result; fi
-cat > $workchan/main.c << 'end'
-void
-main()
+cat > $workchan/main.cc << 'end'
+int
+main(int argc, char **argv)
 {
-	exit(0);
+	return 0;
 }
 end
 cat > $workchan/config << 'end'
-build_command = "rm -f foo; cc -o foo -D'VERSION=\"$v\"' main.c";
+build_command = "rm -f foo; c++ -o foo -D'VERSION=\"$v\"' main.cc";
 link_integration_directory = true;
 
 history_get_command =
@@ -201,8 +201,8 @@ history_query_command =
 
 diff_command = "set +e; diff $orig $i > $out; test $$? -le 1";
 
-diff3_command = "(diff3 -e $mr $orig $i | sed -e '/^w$$/d' -e '/^q$$/d'; \
-	echo '1,$$p' ) | ed - $mr > $out";
+merge_command = "(diff3 -e $i $orig $mr | sed -e '/^w$$/d' -e '/^q$$/d'; \
+	echo '1,$$p' ) | ed - $i > $out";
 end
 if test $? -ne 0 ; then no_result; fi
 
