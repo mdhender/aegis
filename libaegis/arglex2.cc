@@ -39,6 +39,7 @@ static arglex_table_ty argtab[] =
     { "-Change_Owner", arglex_token_change_owner, },
     { "-CLEan", arglex_token_clean, },
     { "-CLOne", arglex_token_clone, },
+    { "-COMMent", arglex_token_reason, },
     { "-CONFIGured", arglex_token_configured, },
     { "-Not_CONFIGured", arglex_token_configured_not, },
     { "-CoPy_file", arglex_token_copy_file, },

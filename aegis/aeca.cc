@@ -574,7 +574,11 @@ change_attributes_main(void)
 	{
 	    cattr_data = (cattr_ty *)cattr_type.alloc();
 	    os_become_orig();
-	    cattr_data->description = read_whole_file(input);
+	    nstring desc = read_whole_file(nstring(input));
+	    if (desc.empty())
+		cattr_data->description = 0;
+	    else
+		cattr_data->description = str_copy(desc.get_ref());
 	    os_become_undo();
 	}
 	else
@@ -584,6 +588,7 @@ change_attributes_main(void)
 	    os_become_undo();
 	}
 	assert(cattr_data);
+	change_attributes_fixup(cattr_data);
     }
     if (!cattr_data && edit == edit_not_set && !fix_architecture)
     {

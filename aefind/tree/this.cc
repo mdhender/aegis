@@ -1,6 +1,6 @@
 //
 //	aegis - project change supervisor
-//	Copyright (C) 1997, 2002, 2004 Peter Miller;
+//	Copyright (C) 1997, 2002, 2004, 2005 Peter Miller;
 //	All rights reserved.
 //
 //	This program is free software; you can redistribute it and/or modify
@@ -30,6 +30,13 @@
 #include <tree/private.h>
 
 
+struct tree_this_ty
+{
+    tree_ty inherited;
+    int resolved;
+};
+
+
 static void
 destructor(tree_ty *tp)
 {
@@ -46,10 +53,16 @@ print(tree_ty *tp)
 
 
 static rpt_value_ty *
-evaluate(tree_ty *tp, string_ty *path, struct stat *st)
+evaluate(tree_ty *tp, string_ty *unresolved_path, string_ty *path,
+    string_ty *resolved_path, struct stat *st)
 {
     assert(path);
     trace(("tree::this::evaluate\n"));
+    tree_this_ty *ttp = (tree_this_ty *)tp;
+    if (ttp->resolved == 0)
+	return rpt_value_string(unresolved_path);
+    if (ttp->resolved > 0)
+	return rpt_value_string(resolved_path);
     return rpt_value_string(path);
 }
 
@@ -72,7 +85,7 @@ constant(tree_ty *tp)
 
 static tree_method_ty method =
 {
-    sizeof(tree_ty),
+    sizeof(tree_this_ty),
     "this",
     destructor,
     print,
@@ -84,7 +97,10 @@ static tree_method_ty method =
 
 
 tree_ty *
-tree_this_new(void)
+tree_this_new(int arg)
 {
-    return tree_new(&method);
+    tree_ty *result = tree_new(&method);
+    tree_this_ty *ttp = (tree_this_ty *)result;
+    ttp->resolved = arg;
+    return result;
 }

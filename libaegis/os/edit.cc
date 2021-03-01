@@ -30,7 +30,7 @@
 
 
 void
-os_edit(string_ty *filename, edit_ty et)
+os_edit(const nstring &filename, edit_ty et)
 {
     string_ty       *cmd;
     string_ty       *cwd;
@@ -61,11 +61,9 @@ os_edit(string_ty *filename, edit_ty et)
     //
     if (et != edit_background && os_background())
     {
-	sub_context_ty  *scp;
-
-	scp = sub_context_new();
-	sub_var_set_charstar(scp, "Name", arglex_token_name(arglex_token_edit));
-	fatal_intl(scp, i18n("may not use $name in the background"));
+	sub_context_ty sc;
+	sc.var_set_charstar("Name", arglex_token_name(arglex_token_edit));
+	sc.fatal_intl(i18n("may not use $name in the background"));
 	// NOTREACHED
     }
 
@@ -76,11 +74,18 @@ os_edit(string_ty *filename, edit_ty et)
     // This is because vi (amongst others) returns a silly exit status.
     //
     os_become_orig();
-    cmd = str_format("%s %s", editor->str_text, filename->str_text);
+    cmd = str_format("%s %s", editor->str_text, filename.c_str());
     cwd = os_curdir();
     assert(cwd);
     os_execute(cmd, OS_EXEC_FLAG_INPUT | OS_EXEC_FLAG_ERROK, cwd);
     os_become_undo();
     str_free(cmd);
     str_free(cwd);
+}
+
+
+void
+os_edit(string_ty *filename, edit_ty et)
+{
+    os_edit(nstring(filename), et);
 }

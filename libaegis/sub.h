@@ -1,6 +1,6 @@
 //
 //	aegis - project change supervisor
-//	Copyright (C) 1991-1993, 1995, 1997, 1999, 2002-2004 Peter Miller;
+//	Copyright (C) 1991-1993, 1995, 1997, 1999, 2002-2005 Peter Miller;
 //	All rights reserved.
 //
 //	This program is free software; you can redistribute it and/or modify
@@ -189,7 +189,7 @@ public:
       * The errno_setx method is used to set the $ERRNO value in the
       * given substitition context.
       *
-      * \Note
+      * \note
       *     There is no method to directly read errno and set it, because
       *     there is at least one malloc() library call and possibly several
       *     others before you get arround to calling this function.
@@ -548,7 +548,7 @@ sub_var_resubstitute(sub_context_ty *scp, const char *name)
 /**
   * Set the $ERRNO value in the given substitition context.
   *
-  * \Note
+  * \note
   *     There is no method to directly read errno and set it, because
   *     there is at least one malloc() library call and possibly several
   *     others before you get around to calling this function.

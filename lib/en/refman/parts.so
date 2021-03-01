@@ -37,7 +37,9 @@
 .so ../man1/aeintegratq.1
 .so ../man1/aeipass.1
 .so ../man1/ael.1
+.so ../man1/aelcf.1
 .so ../man1/aelic.1
+.so ../man1/aelpf.1
 .so ../man1/aels.1
 .so ../man1/aemeasure.1
 .so ../man1/aemt.1
@@ -68,6 +70,7 @@
 .so ../man1/aerbu.1
 .so ../man1/aerd.1
 .so ../man1/aerect.1
+.so ../man1/aerevml.1
 .so ../man1/aerfail.1
 .so ../man1/aeri.1
 .so ../man1/aerm.1
@@ -78,10 +81,13 @@
 .so ../man1/aerpu.1
 .so ../man1/aerrv.1
 .so ../man1/aesub.1
+.so ../man1/aesubunit.1
+.so ../man1/aesvt.1
 .so ../man1/aet.1
 .so ../man1/aetar.1
 .so ../man1/aev.1
 .so ../man1/aexml.1
+.so ../man1/aexver.1
 .so ../man1/tkaeca.1
 .so ../man1/tkaegis.1
 .so ../man1/tkaenc.1

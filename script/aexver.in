@@ -1,0 +1,346 @@
+#!/bin/sh
+#
+#	aegis - project change supervisor
+#	Copyright (C) 2005 Peter Miller;
+#	Copyright (C) 1998-2004 Endocardial Solutions, Inc.
+#	All rights reserved.
+#
+#	This program is free software; you can redistribute it and/or modify
+#	it under the terms of the GNU General Public License as published by
+#	the Free Software Foundation; either version 2 of the License, or
+#	(at your option) any later version.
+#
+#	This program is distributed in the hope that it will be useful,
+#	but WITHOUT ANY WARRANTY; without even the implied warranty of
+#	MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+#	GNU General Public License for more details.
+#
+#	You should have received a copy of the GNU General Public License
+#	along with this program; if not, write to the Free Software
+#	Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111, USA.
+#
+# MANIFEST: aexver.in
+#
+
+# Must deal with various locations of wish on different systems so
+# the next line restarts using wish from path \
+exec wish "$0" -- ${1+"$@"}
+
+#
+# aexver - script to easily view (historical) versions of aegis files.
+#
+# pops a listbox with all (project) filenames in it.
+# when user double-clicks on a file, another box comes up
+# listing all the revisions of that file.
+# selecting any two revisions will bring up a diff comparing
+# those revisions to each other.
+#
+set Pid  [exec /bin/sh -c "echo \$$"]
+set TmpFile "/tmp/aexver.$Pid";
+set RevSort byBranch
+set VersReport File_Version_History
+
+# Process arguments to get project name
+set state flag
+foreach arg $argv {
+  switch -- $state {
+    flag {
+       switch -glob -- $arg {
+         -p*     { set state project }
+
+         default { puts stderr "unknow option $arg" }
+       }
+     }
+     project {
+       set ProjName $arg
+       set state flag
+     }
+  }
+}
+
+# If arguments did not supply the project name
+# then try to get project name from AEGIS_PROJECT environment
+if { ! [info exists ProjName] } {
+    if [info exists env(AEGIS_PROJECT)] {
+	set ProjName $env(AEGIS_PROJECT)
+    } else {
+	if [ catch {exec aesub -bl {$project}} ProjName ] {
+	    puts stderr $ProjName
+	    exit 1
+	}
+    }
+}
+
+# We also need the project trunk name
+if [ catch {exec aesub -bl -p $ProjName {${project trunk_name}}} ProjTrunk ] {
+    puts stderr $ProjTrunk
+    exit 1
+}
+
+# See if user has AE2DIFF set - if not help em out
+# use that set in user AEDIFF.
+# unless unset - then default to xdiff
+if { ! [info exists env(AE2DIFF)] } {
+    if [info exists env(AEDIFF)] {
+        set env(AE2DIFF) $env(AEDIFF)
+    } else {
+        set env(AE2DIFF) xdiff
+    }
+}
+
+
+# A list for each file in the project
+variable FileList
+set SubDir {}
+
+listbox .list -yscroll ".scroll set" -relief raised \
+  -width 45 -height 30 -font {Courier 14}
+
+frame .sort
+pack  .sort -side top
+label .sort.msg -text "sort by: "
+pack  .sort.msg -side left
+
+radiobutton .sort.b -variable RevSort \
+	-text Branch -value byBranch
+pack  .sort.b -side left
+
+radiobutton .sort.r -variable RevSort \
+	-text Revision -value byRevision
+pack  .sort.r -side left
+
+pack .list -side left
+scrollbar .scroll -command ".list yview"
+pack .scroll -side right -fill y
+
+
+proc loadmainwin {dir} {
+    global FileList SubDir
+
+    # clear existing list if any
+    .list delete 0 end
+
+    if { [string compare $dir .] == 0} {
+        wm title . "top"
+        set pat *
+        set field 0
+	set SubDir {}
+    } else {
+        # if too long munge to ...{part} later
+        wm title . $dir
+	set SubDir $dir
+        set pat "$dir/*"
+        set field [llength [file split $dir]]
+	# allow for upward movement
+	.list insert end ".."
+    }
+
+    foreach f [array names FileList $pat] {
+       set name [lindex [file split $f] $field]
+       set display($name) 1
+    }
+
+    foreach f [lsort -ascii [array names display]] {
+        .list insert end $f
+    }
+}
+
+# Sort methods
+proc byRevision {a b} {
+     # revision is first field
+     # split into major and minor parts
+    set ar [split [lindex [split $a { }] 0] .]
+    set br [split [lindex [split $b { }] 0] .]
+    set amaj [lindex $ar 0]
+    set amin [lindex $ar 1]
+    set bmaj [lindex $br 0]
+    set bmin [lindex $br 1]
+
+     # first compare major revs
+    set r [expr $bmaj - $amaj]
+     # if equal then compare minor revs
+    if { $r == 0 } {
+	set r [expr $bmin - $amin]
+    }
+    return $r
+}
+# byBranch is easy - just leave order alone
+proc byBranch {a b} {
+    return 0
+}
+
+# method to turn a proj:chg and delta number into a delta form argument
+#  dws.1.6:232 45  --> -c 1.6.D045
+#  dws:43          --> -c 43
+proc chgArg {pr delta} {
+     # split dws.1.6:232 into dws.1.6 and 232
+    set prch [split $pr :]
+     # take dws. off the pr part
+    regsub {[^.]+.} [lindex $prch 0] {} branch
+     # if any branch part left
+    if { [string length $branch] > 0 } {
+        set ret [format {-c %s.D%03d} $branch $delta]
+    } else {
+        set ret [format {-c %d} [lindex $prch 1]]
+    }
+    return $ret
+}
+
+# Put  the window on the screen and show something
+# before users think the program is hung
+wm title . "Loading"
+.list insert end {Loading Project Files ...}
+
+update
+
+# Now get the project file list - which might take a while
+if [catch {open "|aegis -l pf -ter -p $ProjName" r} pfd ] {
+    puts stderr $pfd
+    exit 1
+}
+
+# Create an array where the names are the filenames
+# and values will be filled in with the version list
+foreach f [split [read $pfd] \n] {
+    if { [string length $f] > 0 } {
+        set FileList($f) {}
+    }
+}
+
+# start at the top
+loadmainwin {.}
+
+bind .list <Double-Button-1> {
+    global FileList SubDir VersReport
+    set select [selection get]
+    # puts stderr "selected:$select"
+    if { [string length $SubDir] > 0 } {
+        set name [file join $SubDir $select];
+    } else {
+        set name $select
+    }
+
+     # first check for the .. symbol to go up a level
+    if { [string compare $select {..}] == 0 } {
+          # going up - trim one level off SubDir
+        set SubDir [file dirname $SubDir]
+        # puts stderr "selected up load:$SubDir"
+        loadmainwin $SubDir
+    } elseif { ! [info exists FileList($name) ] } {
+         # Not in the list - must be a directory
+        # puts stderr "selected dir load:$name"
+        loadmainwin $name
+    } else {
+          # they selected a file so prepare the revision list
+        if { [winfo exists .d] } {
+              # already there - just clean it out
+            .d.lbox delete 0 end
+              # and make sure it is not hidden
+            raise .d
+        } else {
+	      # make up the new widget
+            toplevel .d
+            frame .d.ctrls
+	    pack  .d.ctrls -side bottom -fill x -pady 2m
+            label .d.ctrls.msg -wraplength 1.5i -justify left \
+             -text "select any two versions"
+            button .d.ctrls.go -text "Go"
+
+            pack   .d.ctrls.msg .d.ctrls.go -side left -expand 1
+
+            listbox .d.lbox -selectmode multiple -yscroll ".d.scroll set" \
+		    -relief raised -width 55 -height 30 -font {Courier 14}
+            pack .d.lbox -side left
+
+            scrollbar .d.scroll -command ".d.lbox yview"
+            pack .d.scroll -side right -fill y
+        }
+
+        wm title .d $select
+
+	  # if we have not already done so - get the version list
+	if { [llength $FileList($name)] == 0 } {
+              # going to take time so make it appear - and/or show new title
+            .d.lbox insert end "Getting version history ..."
+            update
+
+	    set cmd [list |aereport $VersReport -p $ProjName -unf $name]
+
+	    if [ catch {open $cmd r} pfid ] {
+		puts stderr "file history $name failed:$pfid";
+	    } else {
+		  # read info from command
+		foreach l [split [read $pfid] \n] {
+		     # get rid of excess spaces and skip any blank lines
+		     # regsub returns the number of matches
+		    if { [regsub -all {[ \t]+} $l { } ln] } {
+			 # split into fields
+			set flds [split $ln { }]
+			 # make up the entry using some of the fields for looks
+			 # example line fields are:
+			 #  0  1   2   3     4      5     6     7
+			 # 42 Mon Dec  6 17:26:00 2004 post:64 1.23
+			 # treat time and revision fields as strings
+			set chgid [lindex $flds 6]
+
+			 # No idea why % must be doubled here (another eval?)
+			set entry [format {%%-6s %%02d%%3s%%4d %%-8s %%s} \
+			   [lindex $flds 7] \
+			   [lindex $flds 3] [lindex $flds 2] [lindex $flds 5] \
+			   [lindex $flds 4] $chgid \
+				  ]
+			 # get the change/delta argument for this file/version
+			set chdelta [chgArg $chgid [lindex $flds 0]]
+			 # stash the change and delta number in argument form
+                         # tacked on the end of the change data
+			lappend FileList($name) "$entry~$chdelta"
+		    }
+		}
+		close $pfid
+	    }
+        }
+         # Clean out any existing messages
+        .d.lbox delete 0 end
+	 # OK lets sort and place in display the data portion
+	foreach change [lsort -command $RevSort $FileList($name)] {
+              # select the first data part - skip delta tag along
+	    .d.lbox insert end [lindex [split $change ~] 0]
+	}
+
+        .d.ctrls.go configure -command "doDiff $name .d.lbox"
+    }
+}
+
+proc doDiff { File lb } {
+    global FileList ProjTrunk
+    set versions [$lb curselection]
+
+    set count [llength $versions]
+    if { $count < 2 } {
+	.d.ctrls.msg configure -text "Please pick TWO versions"
+    } elseif { $count > 2 } {
+	.d.ctrls.msg configure -text "Please, pick only TWO"
+    } else {
+        set cmd [list aediff -p $ProjTrunk]
+
+          # 0 index is higher on list so actually newer revision
+	set newdat [lindex $FileList($File) [lindex $versions 0]]
+        foreach p [split [lindex [split $newdat ~] 1] { }] {
+	    lappend cmd $p
+        }
+          # 1 index is lower on list so older revision
+	set olddat [lindex $FileList($File) [lindex $versions 1]]
+        foreach p [split [lindex [split $olddat ~] 1] { }] {
+	    lappend cmd $p
+        }
+
+	  # Finally add the file name itself
+	lappend cmd $File
+
+        if [ catch {eval exec $cmd} pmsg ] {
+	    puts stderr $pmsg
+        }
+    }
+}
+
+# EOF: scripts/aexver.wsh

@@ -45,7 +45,8 @@ echo 'Icon: aegis.xpm'
 # file-devel or magic-devel, eventually.
 #
 echo 'BuildPrereq: bison, curl-devel, diffutils, gawk, gettext >= 0.11.4'
-echo 'BuildPrereq: groff >= 1.15, perl, tk, zlib-devel'
+echo 'BuildPrereq: groff >= 1.15, perl, libxml2-devel >= 1.8.17, tk'
+echo 'BuildPrereq: zlib-devel'
 
 prefix=/usr
 #

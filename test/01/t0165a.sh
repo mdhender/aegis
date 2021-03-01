@@ -1,7 +1,7 @@
 #!/bin/sh
 #
 #	aegis - project change supervisor
-#	Copyright (C) 2002 Peter Miller;
+#	Copyright (C) 2002, 2005 Peter Miller;
 #	All rights reserved.
 #
 #	This program is free software; you can redistribute it and/or modify
@@ -111,7 +111,7 @@ export PATH
 #
 # make the directories
 #
-activity="working directory 81"
+activity="working directory 114"
 mkdir $work $work/lib
 if test $? -ne 0 ; then no_result; fi
 chmod 777 $work/lib
@@ -130,14 +130,14 @@ unset LANGUAGE
 #
 # make a new project
 #
-activity="new project 161"
+activity="new project 133"
 $bin/aegis -npr foo -vers "" -dir $workproj > log 2>&1
 if test $? -ne 0 ; then cat log; no_result; fi
 
 #
 # change project attributes
 #
-activity="project attributes 168"
+activity="project attributes 140"
 cat > $tmp << 'end'
 description = "A bogus project created to test the aedist functionality.";
 developer_may_review = true;
@@ -152,7 +152,7 @@ if test $? -ne 0 ; then cat log; no_result; fi
 #
 # add the staff
 #
-activity="staff 207"
+activity="staff 155"
 $bin/aegis -nd $USER > log 2>&1
 if test $? -ne 0 ; then cat log; no_result; fi
 $bin/aegis -nrv $USER > log 2>&1
@@ -167,7 +167,7 @@ AEGIS_PROJECT=foo ; export AEGIS_PROJECT
 #
 # create a new change
 #
-activity="new change 183"
+activity="new change 170"
 cat > $tmp << 'end'
 brief_description = "The first change";
 cause = internal_bug;
@@ -185,8 +185,8 @@ if test $? -ne 0 ; then cat log; no_result; fi
 #
 # add a new files to the change
 #
-activity="new file 224"
-$bin/aegis -nf $workchan/main.c $workchan/config -nl > log 2>&1
+activity="new file 188"
+$bin/aegis -nf $workchan/main.c $workchan/aegis.conf -nl > log 2>&1
 if test $? -ne 0 ; then cat log; no_result; fi
 cat > $workchan/main.c << 'end'
 int
@@ -199,7 +199,7 @@ main()
 end
 if test $? -ne 0 ; then no_result; fi
 
-cat > $workchan/config << 'end'
+cat > $workchan/aegis.conf << 'end'
 build_command = "exit 0";
 link_integration_directory = true;
 create_symlinks_before_build = true;
@@ -221,44 +221,44 @@ if test $? -ne 0 ; then no_result; fi
 #
 # build the change
 #
-activity="build 295"
+activity="build 224"
 $bin/aegis -build -nl -v > log 2>&1
 if test $? -ne 0 ; then cat log; fail; fi
 
 #
 # difference the change
 #
-activity="diff 302"
+activity="diff 231"
 $bin/aegis -diff > log 2>&1
 if test $? -ne 0 ; then cat log; no_result; fi
 
 #
 # develop end
 #
-activity="develop end 302"
+activity="develop end 238"
 $bin/aegis -de 1 > log 2>&1
 if test $? -ne 0 ; then cat log; no_result; fi
 
 #
 # review pass
 #
-activity="review pass 302"
+activity="review pass 245"
 $bin/aegis -rpass 1 > log 2>&1
 if test $? -ne 0 ; then cat log; no_result; fi
 
 #
 # integrate
 #
-activity="integrate begin 302"
+activity="integrate begin 252"
 $bin/aegis -ib 1 > log 2>&1
 if test $? -ne 0 ; then cat log; no_result; fi
-activity="integrate diff 302"
+activity="integrate diff 255"
 $bin/aegis -diff 1 > log 2>&1
 if test $? -ne 0 ; then cat log; no_result; fi
-activity="integrate build 302"
+activity="integrate build 258"
 $bin/aegis -b 1 > log 2>&1
 if test $? -ne 0 ; then cat log; no_result; fi
-activity="integrate pass 302"
+activity="integrate pass 261"
 $bin/aegis -ipass 1 > log 2>&1
 if test $? -ne 0 ; then cat log; no_result; fi
 
@@ -267,7 +267,7 @@ if test $? -ne 0 ; then cat log; no_result; fi
 #
 # create a new change
 #
-activity="new change 183"
+activity="new change 270"
 cat > $tmp << 'end'
 brief_description = "The second change";
 cause = internal_bug;
@@ -285,7 +285,7 @@ if test $? -ne 0 ; then cat log; no_result; fi
 #
 # modify a file
 #
-activity="new file 224"
+activity="new file 288"
 $bin/aegis -cp $workchan/main.c -nl > log 2>&1
 if test $? -ne 0 ; then cat log; no_result; fi
 cat > $workchan/main.c << 'end'
@@ -300,28 +300,28 @@ if test $? -ne 0 ; then no_result; fi
 #
 # build the change
 #
-activity="build 295"
+activity="build 303"
 $bin/aegis -build -nl -v > log 2>&1
 if test $? -ne 0 ; then cat log; fail; fi
 
 #
 # difference the change
 #
-activity="diff 302"
+activity="diff 310"
 $bin/aegis -diff > log 2>&1
 if test $? -ne 0 ; then cat log; no_result; fi
 
 #
 # develop end
 #
-activity="develop end 302"
+activity="develop end 317"
 $bin/aegis -de 2 > log 2>&1
 if test $? -ne 0 ; then cat log; no_result; fi
 
 #
 # review pass
 #
-activity="review pass 302"
+activity="review pass 324"
 $bin/aegis -rpass 2 > log 2>&1
 if test $? -ne 0 ; then cat log; no_result; fi
 

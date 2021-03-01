@@ -1,7 +1,7 @@
 #!/bin/sh
 #
 #	aegis - project change supervisor
-#	Copyright (C) 1998, 2000, 2001, 2004 Peter Miller;
+#	Copyright (C) 1998, 2000, 2001, 2004, 2005 Peter Miller;
 #	All rights reserved.
 #
 #	This program is free software; you can redistribute it and/or modify
@@ -109,7 +109,7 @@ AEGIS_PROJECT=foo ; export AEGIS_PROJECT
 #
 # make the directories
 #
-activity="working directory 81"
+activity="working directory 112"
 mkdir $work $work/lib
 if test $? -ne 0 ; then no_result; fi
 chmod 777 $work/lib
@@ -128,14 +128,14 @@ unset LANGUAGE
 #
 # make a new project
 #
-activity="new project 161"
+activity="new project 131"
 $bin/aegis -npr foo -vers "" -dir $workproj > log 2>&1
 if test $? -ne 0 ; then cat log; no_result; fi
 
 #
 # change project attributes
 #
-activity="project attributes 168"
+activity="project attributes 138"
 cat > $tmp << 'end'
 description = "A bogus project created to test the symlink farm functionality.";
 developer_may_review = true;
@@ -150,7 +150,7 @@ if test $? -ne 0 ; then cat log; no_result; fi
 #
 # create a new change
 #
-activity="new change 183"
+activity="new change 153"
 cat > $tmp << 'end'
 brief_description = "The first change";
 cause = internal_bug;
@@ -162,7 +162,7 @@ if test $? -ne 0 ; then cat log; no_result; fi
 #
 # add the staff
 #
-activity="staff 207"
+activity="staff 165"
 $bin/aegis -nd $USER > log 2>&1
 if test $? -ne 0 ; then cat log; no_result; fi
 $bin/aegis -nrv $USER > log 2>&1
@@ -179,15 +179,15 @@ if test $? -ne 0 ; then cat log; no_result; fi
 #
 # add a new files to the change
 #
-activity="new file 224"
-$bin/aegis -nf $workchan/main.c $workchan/config -nl > log 2>&1
+activity="new file 182"
+$bin/aegis -nf $workchan/main.c $workchan/aegis.conf -nl > log 2>&1
 if test $? -ne 0 ; then cat log; no_result; fi
 cat > $workchan/main.c << 'end'
 int main() { test(); exit(0); return 0; }
 end
 if test $? -ne 0 ; then no_result; fi
 
-cat > $workchan/config << 'end'
+cat > $workchan/aegis.conf << 'end'
 build_command = "echo 'metrics=[{name=\"fubar\";value=1;}];' > main.c,S";
 link_integration_directory = true;
 create_symlinks_before_build = true;
@@ -208,61 +208,61 @@ if test $? -ne 0 ; then no_result; fi
 #
 # build the change
 #
-activity="build 295"
+activity="build 211"
 $bin/aegis -build -nl -v > log 2>&1
 if test $? -ne 0 ; then cat log; fail; fi
 
 #
 # difference the change
 #
-activity="diff 302"
+activity="diff 218"
 $bin/aegis -diff > log 2>&1
 if test $? -ne 0 ; then cat log; no_result; fi
 
 #
 # finish development of the change
 #
-activity="develop end 316"
+activity="develop end 225"
 $bin/aegis -de > log 2>&1
 if test $? -ne 0 ; then cat log; fail; fi
 
 #
 # pass the review
 #
-activity="review pass 323"
+activity="review pass 232"
 $bin/aegis -rpass -c 1 > log 2>&1
 if test $? -ne 0 ; then cat log; no_result; fi
 
 #
 # start integrating
 #
-activity="integrate begin 330"
+activity="integrate begin 239"
 $bin/aegis -ib 1 > log 2>&1
 if test $? -ne 0 ; then cat log; no_result; fi
 
 #
 # integrate build
 #
-activity="build 337"
+activity="build 246"
 $bin/aegis -b -nl -v > log 2>&1
 if test $? -ne 0 ; then cat log; no_result; fi
 
 #
 # pass the integration
 #
-activity="integrate pass 347"
+activity="integrate pass 253"
 $bin/aegis -intpass -nl > log 2>&1
 if test $? -ne 0 ; then cat log; fail; fi
 
 #
 # check the file states
 #
-activity="verify change file state 347"
+activity="verify change file state 260"
 cat > ok << 'fubar'
 src =
 [
 	{
-		file_name = "config";
+		file_name = "aegis.conf";
 		uuid = "UUID";
 		action = create;
 		edit =
@@ -295,12 +295,12 @@ fubar
 if test $? -ne 0 ; then cat log; no_result; fi
 check_it ok $work/foo.proj/info/change/0/001.fs
 
-activity="verify project file state 347"
+activity="verify project file state 298"
 cat > ok << 'fubar'
 src =
 [
 	{
-		file_name = "config";
+		file_name = "aegis.conf";
 		uuid = "UUID";
 		action = create;
 		edit =

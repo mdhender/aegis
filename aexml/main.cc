@@ -38,6 +38,7 @@
 #include <progname.h>
 #include <quit.h>
 #include <r250.h>
+#include <rsrc_limits.h>
 #include <str_list.h>
 #include <sub.h>
 #include <trace.h>
@@ -163,7 +164,7 @@ via_table(const char *listname, string_ty *project_name, long change_number,
 	if (outfile && ends_with(outfile, ".gz"))
 	{
 	    op = output_file_binary_open(outfile);
-	    op = new output_gzip_ty(op, true);
+	    op = new output_gzip(op, true);
 	}
 	else
 	    op = output_file_text_open(outfile);
@@ -333,6 +334,7 @@ xml_main(void)
 int
 main(int argc, char **argv)
 {
+    resource_limits_init();
     r250_init();
     os_become_init_mortal();
     arglex2_init(argc, argv);

@@ -266,22 +266,106 @@ generate_include_file(const char *include_file, const char *definition_file)
     indent_printf("#include <str.h>\n");
     indent_printf("#include <meta_type.h>\n");
     indent_putchar('\n');
-    indent_printf("struct output_ty; // existence\n");
+    indent_printf("struct output_ty; // forward\n");
+    indent_printf("class nstring; // forward\n");
     for (j = 0; j < emit_length; ++j)
 	emit_list[j]->gen_include();
     indent_putchar('\n');
+    indent_printf("/**\n");
+    indent_printf("  * The %s_write_file function is used to\n", s->str_text);
+    indent_printf("  * write %s meta data to the named file.\n", s->str_text);
+    indent_printf("  *\n");
+    indent_printf("  * @param filename\n");
+    indent_printf("  *     The name of the file to be written.\n");
+    indent_printf("  * @param value\n");
+    indent_printf("  *     The value of the meta-data to be written.\n");
+    indent_printf("  * @param comp\n");
+    indent_printf("  *     true (non-zero) if data should be compressed.\n");
+    indent_printf("  * @note\n");
+    indent_printf("  *      If any errors are encountered, this\n");
+    indent_printf("  *      function will not return.  All errors\n");
+    indent_printf("  *      will print a fatal error message, and\n");
+    indent_printf("  *      exit with an exit status of 1.\n");
+    indent_printf("  */\n");
     indent_printf
     (
 	"void %s_write_file(string_ty *filename, %s_ty *value, int comp);\n",
 	s->str_text,
 	s->str_text
     );
+
+    indent_putchar('\n');
+    indent_printf("/**\n");
+    indent_printf("  * The %s_write_file function is used to\n", s->str_text);
+    indent_printf("  * write %s meta data to the named file.\n", s->str_text);
+    indent_printf("  *\n");
+    indent_printf("  * @param filnam\n");
+    indent_printf("  *     The name of the file to be written.\n");
+    indent_printf("  * @param value\n");
+    indent_printf("  *     The value of the meta-data to be written.\n");
+    indent_printf("  * @param comp\n");
+    indent_printf("  *     true if data should be compressed.\n");
+    indent_printf("  * @note\n");
+    indent_printf("  *      If any errors are encountered, this\n");
+    indent_printf("  *      function will not return.  All errors\n");
+    indent_printf("  *      will print a fatal error message, and\n");
+    indent_printf("  *      exit with an exit status of 1.\n");
+    indent_printf("  */\n");
+    indent_printf
+    (
+	"void %s_write_file(const nstring &filnam, %s_ty *value, bool comp);\n",
+	s->str_text,
+	s->str_text
+    );
+
+    indent_putchar('\n');
+    indent_printf("/**\n");
+    indent_printf("  * The %s_read_file function is used to\n", s->str_text);
+    indent_printf("  * read %s meta data from the named file.\n", s->str_text);
+    indent_printf("  *\n");
+    indent_printf("  * @param filename\n");
+    indent_printf("  *     The name of the file to be read.\n");
+    indent_printf("  * @returns\n");
+    indent_printf("  *     a pointer to a dynamically allocated\n");
+    indent_printf("  *     value read from the file.\n");
+    indent_printf("  * @note\n");
+    indent_printf("  *      If any errors are encountered, this\n");
+    indent_printf("  *      function will not return.  All errors\n");
+    indent_printf("  *      (including syntax errors) will print a\n");
+    indent_printf("  *      fatal error message, and exit with an\n");
+    indent_printf("  *      exit status of 1.\n");
+    indent_printf("  */\n");
     indent_printf
     (
 	"%s_ty *%s_read_file(string_ty *filename);\n",
 	s->str_text,
 	s->str_text
     );
+
+    indent_putchar('\n');
+    indent_printf("/**\n");
+    indent_printf("  * The %s_read_file function is used to\n", s->str_text);
+    indent_printf("  * read %s meta data from the named file.\n", s->str_text);
+    indent_printf("  *\n");
+    indent_printf("  * @param filename\n");
+    indent_printf("  *     The name of the file to be read.\n");
+    indent_printf("  * @returns\n");
+    indent_printf("  *     a pointer to a dynamically allocated\n");
+    indent_printf("  *     value read from the file.\n");
+    indent_printf("  * @note\n");
+    indent_printf("  *      If any errors are encountered, this\n");
+    indent_printf("  *      function will not return.  All errors\n");
+    indent_printf("  *      (including syntax errors) will print a\n");
+    indent_printf("  *      fatal error message, and exit with an\n");
+    indent_printf("  *      exit status of 1.\n");
+    indent_printf("  */\n");
+    indent_printf
+    (
+	"%s_ty *%s_read_file(const nstring &filename);\n",
+	s->str_text,
+	s->str_text
+    );
+
     indent_printf("void %s__rpt_init(void);\n", s->str_text);
     indent_putchar('\n');
     indent_printf("#endif // %s\n", cp1);
@@ -331,6 +415,12 @@ generate_code_file(const char *code_file, const char *include_file,
     }
     indent_putchar('\n');
     indent_printf("%s_ty *\n", cp1);
+    indent_printf("%s_read_file(const nstring &filename)\n", s->str_text);
+    indent_printf("{\n");
+    indent_printf("return %s_read_file(filename.get_ref());\n", s->str_text);
+    indent_printf("}\n");
+    indent_putchar('\n');
+    indent_printf("%s_ty *\n", cp1);
     indent_printf("%s_read_file(string_ty *filename)\n", s->str_text);
     indent_printf("{\n");
     indent_printf("%s_ty\1*result;\n\n", cp1);
@@ -355,8 +445,24 @@ generate_code_file(const char *code_file, const char *include_file,
     indent_printf("void\n");
     indent_printf
     (
+	"%s_write_file(const nstring &filename, %s_ty *value, "
+	    "bool comp)\n",
+	s->str_text,
+	s->str_text
+    );
+    indent_printf("{\n");
+    indent_printf
+    (
+	"%s_write_file(filename.get_ref(), value, comp);\n",
+	s->str_text
+    );
+    indent_printf("}\n");
+    indent_putchar('\n');
+    indent_printf("void\n");
+    indent_printf
+    (
 	"%s_write_file(string_ty *filename, %s_ty *value, "
-        "int needs_compression)\n",
+	    "int needs_compression)\n",
 	s->str_text,
 	s->str_text
     );
@@ -374,7 +480,7 @@ generate_code_file(const char *code_file, const char *include_file,
     indent_less();
     indent_printf("if (needs_compression)\n{\n");
     indent_printf("fp = output_file_binary_open(filename);\n");
-    indent_printf("fp = new output_gzip_ty(fp, true);\n");
+    indent_printf("fp = new output_gzip(fp, true);\n");
     indent_printf("}\nelse\n{\n");
     indent_printf("fp = output_file_text_open(filename);\n");
     indent_printf("}\n");
@@ -491,7 +597,12 @@ type_name
 field
     : field_name '=' type attributes ';'
 	{
-	    current->parent->type->member_add(current->name_short, $3, $4);
+	    current->parent->type->member_add
+	    (
+		nstring(current->name_short),
+		$3,
+		$4
+	    );
 	    pop_name();
 	}
     | field_name error
@@ -571,7 +682,7 @@ structure
 field_list
     : /* empty */
 	{
-	    current->type = new type_structure_ty(current->name_long);
+	    current->type = new type_structure_ty(nstring(current->name_long));
 	}
     | field_list field
     ;
@@ -584,7 +695,7 @@ list
 	    if (!list)
 		list = str_from_c("list");
 	    push_name(list);
-	    $$ = new type_list_ty(current->name_long, $2);
+	    $$ = new type_list_ty(nstring(current->name_long), $2);
 	    pop_name();
 	}
     ;
@@ -599,7 +710,7 @@ enumeration
 enum_list_begin
     : /* empty */
 	{
-	    $$ = new type_enumeration_ty(current->name_long);
+	    $$ = new type_enumeration_ty(nstring(current->name_long));
 	    current->type = $$;
 	}
     ;
@@ -616,7 +727,7 @@ enum_name
 	    str_free($1);
 	    current->parent->type->member_add
 	    (
-		current->name_short,
+		nstring(current->name_short),
 		(type_ty *)0,
 		1
 	    );

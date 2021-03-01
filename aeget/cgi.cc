@@ -57,5 +57,10 @@ cgi(void)
 	    return;
 	}
     }
-    http_fatal("The \"%s\" method is not supported.", request_method);
+    http_fatal
+    (
+	http_error_method_not_allowed,
+	"The \"%s\" method is not supported.",
+	request_method
+    );
 }

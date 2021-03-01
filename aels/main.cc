@@ -37,6 +37,7 @@
 #include <project.h>
 #include <quit.h>
 #include <r250.h>
+#include <rsrc_limits.h>
 #include <stack.h>
 #include <sub.h>
 #include <user.h>
@@ -120,6 +121,7 @@ main(int argc, char **argv)
     int		    based;
     size_t	    j;
 
+    resource_limits_init();
     r250_init();
     os_become_init_mortal();
     arglex2_init3(argc, argv, argtab);

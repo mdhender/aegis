@@ -23,9 +23,7 @@
 #ifndef AETAR_HEADER_H
 #define AETAR_HEADER_H
 
-#include <str.h>
-
-class nstring; // forward
+#include <nstring.h>
 
 #define TBLOCK 512
 #define NAMSIZ 100
@@ -72,8 +70,8 @@ struct header_ty
     char	devminor[8];
 };
 
-string_ty *header_name_get(header_ty *);
-void header_name_set(header_ty *, string_ty *);
+nstring header_name_get(header_ty *);
+void header_name_set(header_ty *hp, const nstring &arg);
 void header_name_set(header_ty *, const nstring &);
 long header_mode_get(header_ty *);
 void header_mode_set(header_ty *, long);
@@ -89,15 +87,12 @@ long header_checksum_get(header_ty *);
 void header_checksum_set(header_ty *, long);
 int header_linkflag_get(header_ty *);
 void header_linkflag_set(header_ty *, int);
-string_ty *header_linkname_get(header_ty *);
-void header_linkname_set(header_ty *, string_ty *);
-void header_linkname_set(header_ty *, const nstring &);
-string_ty *header_uname_get(header_ty *);
-void header_uname_set(header_ty *, string_ty *);
-void header_uname_set(header_ty *, const nstring &);
-string_ty *header_gname_get(header_ty *);
-void header_gname_set(header_ty *, string_ty *);
-void header_gname_set(header_ty *, const nstring &);
+nstring header_linkname_get(header_ty *);
+void header_linkname_set(header_ty *hp, const nstring &arg);
+nstring header_uname_get(header_ty *);
+void header_uname_set(header_ty *hp, const nstring &arg);
+nstring header_gname_get(header_ty *);
+void header_gname_set(header_ty *hp, const nstring &arg);
 long header_devmajor_get(header_ty *);
 void header_devmajor_set(header_ty *, long);
 long header_devminor_get(header_ty *);

@@ -1,7 +1,7 @@
 #!/bin/sh
 #
 #	aegis - project change supervisor
-#	Copyright (C) 1996-1998, 2000, 2001, 2004 Peter Miller;
+#	Copyright (C) 1996-1998, 2000, 2001, 2004, 2005 Peter Miller;
 #	All rights reserved.
 #
 #	This program is free software; you can redistribute it and/or modify
@@ -96,7 +96,7 @@ check_it()
 	if test $? -ne 0; then fail; fi
 }
 
-activity="working directory 86"
+activity="working directory 99"
 mkdir $work $work/lib
 if test $? -ne 0 ; then no_result; fi
 chmod 777 $work/lib
@@ -120,11 +120,11 @@ unset LANGUAGE
 #
 # test the cross-branch merge functionality
 #
-activity="new project 124"
+activity="new project 123"
 $bin/aegis -npr $AEGIS_PROJECT -vers "" -dir $work/test > log 2>&1
 if test $? -ne 0 ; then cat log; no_result; fi
 
-activity="project attributes 128"
+activity="project attributes 127"
 cat > paf << 'fubar'
 developer_may_review = true;
 reviewer_may_integrate = true;
@@ -135,7 +135,7 @@ if test $? -ne 0 ; then no_result; fi
 $bin/aegis -pa -p $AEGIS_PROJECT -file paf > log 2>&1
 if test $? -ne 0 ; then cat log; no_result; fi
 
-activity="staff 139"
+activity="staff 138"
 $bin/aegis -nd $USER > log 2>&1
 if test $? -ne 0 ; then cat log; no_result; fi
 $bin/aegis -nrv $USER > log 2>&1
@@ -146,7 +146,7 @@ if test $? -ne 0 ; then cat log; no_result; fi
 #
 # the first change established the files and their versions
 #
-activity="new change 150"
+activity="new change 149"
 cat > caf << 'fubar'
 brief_description = "ten";
 cause = internal_enhancement;
@@ -155,15 +155,15 @@ if test $? -ne 0 ; then no_result; fi
 $bin/aegis -nc -f caf -p $AEGIS_PROJECT > log 2>&1
 if test $? -ne 0 ; then cat log; no_result; fi
 
-activity="develop begin 159"
+activity="develop begin 158"
 $bin/aegis -db 10 > log 2>&1
 if test $? -ne 0 ; then cat log; no_result; fi
 
-activity="new file 163"
-$bin/aegis -nf $work/test.C010/config $work/test.C010/fred > log 2>&1
+activity="new file 162"
+$bin/aegis -nf $work/test.C010/aegis.conf $work/test.C010/fred > log 2>&1
 if test $? -ne 0 ; then cat log; no_result; fi
 
-cat > $work/test.C010/config << 'fubar'
+cat > $work/test.C010/aegis.conf << 'fubar'
 build_command = "exit 0";
 history_get_command =
 	"co -u'$e' -p $h,v > $o";
@@ -188,31 +188,31 @@ five
 fubar
 if test $? -ne 0 ; then no_result; fi
 
-activity="build 192"
+activity="build 191"
 $bin/aegis -b > log 2>&1
 if test $? -ne 0 ; then cat log; no_result; fi
 
-activity="diff 196"
+activity="diff 195"
 $bin/aegis -diff > log 2>&1
 if test $? -ne 0 ; then cat log; no_result; fi
 
-activity="develop end 200"
+activity="develop end 199"
 $bin/aegis -de > log 2>&1
 if test $? -ne 0 ; then cat log; no_result; fi
 
-activity="review pass 204"
+activity="review pass 203"
 $bin/aegis -rpass 10 > log 2>&1
 if test $? -ne 0 ; then cat log; no_result; fi
 
-activity="integrate begin 208"
+activity="integrate begin 207"
 $bin/aegis -ib 10 > log 2>&1
 if test $? -ne 0 ; then cat log; no_result; fi
 
-activity="build 212"
+activity="build 211"
 $bin/aegis -b > log 2>&1
 if test $? -ne 0 ; then cat log; no_result; fi
 
-activity="integrate pass 216"
+activity="integrate pass 215"
 $bin/aegis -ipass > log 2>&1
 if test $? -ne 0 ; then cat log; no_result; fi
 
@@ -221,11 +221,11 @@ if test $? -ne 0 ; then cat log; no_result; fi
 # necessitating the cross-branch merge
 # between the trunk and the branch
 #
-activity="new branch 225"
+activity="new branch 224"
 $bin/aegis -nbr -p test > log 2>&1
 if test $? -ne 0 ; then cat log; no_result; fi
 
-activity="change attributes 229"
+activity="change attributes 228"
 cat > caf << 'fubar'
 cause = internal_enhancement;
 test_exempt = true;
@@ -239,7 +239,7 @@ if test $? -ne 0 ; then cat log; no_result; fi
 AEGIS_PROJECT=test.1
 export AEGIS_PROJECT
 
-activity="new change 243"
+activity="new change 242"
 cat > caf << 'fubar'
 brief_description = "one point ten";
 cause = internal_enhancement;
@@ -248,11 +248,11 @@ if test $? -ne 0 ; then no_result; fi
 $bin/aegis -nc -f caf -p $AEGIS_PROJECT > log 2>&1
 if test $? -ne 0 ; then cat log; no_result; fi
 
-activity="develop begin 252"
+activity="develop begin 251"
 $bin/aegis -db 10 > log 2>&1
 if test $? -ne 0 ; then cat log; no_result; fi
 
-activity="copy file 256"
+activity="copy file 255"
 $bin/aegis -cp $work/test.1.C010/fred > log 2>&1
 if test $? -ne 0 ; then cat log; no_result; fi
 
@@ -266,35 +266,35 @@ six
 fubar
 if test $? -ne 0 ; then no_result; fi
 
-activity="build 270"
+activity="build 269"
 $bin/aegis -b > log 2>&1
 if test $? -ne 0 ; then cat log; no_result; fi
 
-activity="diff 274"
+activity="diff 273"
 $bin/aegis -diff > log 2>&1
 if test $? -ne 0 ; then cat log; no_result; fi
 
-activity="develop end 278"
+activity="develop end 277"
 $bin/aegis -de > log 2>&1
 if test $? -ne 0 ; then cat log; no_result; fi
 
-activity="review pass 282"
+activity="review pass 281"
 $bin/aegis -rpass 10 > log 2>&1
 if test $? -ne 0 ; then cat log; no_result; fi
 
-activity="integrate begin 286"
+activity="integrate begin 285"
 $bin/aegis -ib 10 > log 2>&1
 if test $? -ne 0 ; then cat log; no_result; fi
 
-activity="build 290"
+activity="build 289"
 $bin/aegis -b > log 2>&1
 if test $? -ne 0 ; then cat log; no_result; fi
 
-activity="diff 294"
+activity="diff 293"
 $bin/aegis -diff > log 2>&1
 if test $? -ne 0 ; then cat log; no_result; fi
 
-activity="integrate pass 298"
+activity="integrate pass 297"
 $bin/aegis -ipass > log 2>&1
 if test $? -ne 0 ; then cat log; no_result; fi
 
@@ -306,7 +306,7 @@ if test $? -ne 0 ; then cat log; no_result; fi
 AEGIS_PROJECT=test
 export AEGIS_PROJECT
 
-activity="new change 310"
+activity="new change 309"
 cat > caf << 'fubar'
 brief_description = "eleven";
 cause = internal_enhancement;
@@ -315,11 +315,11 @@ if test $? -ne 0 ; then no_result; fi
 $bin/aegis -nc -f caf -p $AEGIS_PROJECT > log 2>&1
 if test $? -ne 0 ; then cat log; no_result; fi
 
-activity="develop begin 319"
+activity="develop begin 318"
 $bin/aegis -db 11 > log 2>&1
 if test $? -ne 0 ; then cat log; no_result; fi
 
-activity="copy file 323"
+activity="copy file 322"
 $bin/aegis -cp $work/test.C011/fred -c 11 > log 2>&1
 if test $? -ne 0 ; then cat log; no_result; fi
 
@@ -330,31 +330,31 @@ five
 fubar
 if test $? -ne 0 ; then no_result; fi
 
-activity="build 334"
+activity="build 333"
 $bin/aegis -b -c 11 > log 2>&1
 if test $? -ne 0 ; then cat log; no_result; fi
 
-activity="diff 338"
+activity="diff 337"
 $bin/aegis -diff -c 11 > log 2>&1
 if test $? -ne 0 ; then cat log; no_result; fi
 
-activity="develop end 342"
+activity="develop end 341"
 $bin/aegis -de -c 11 > log 2>&1
 if test $? -ne 0 ; then cat log; no_result; fi
 
-activity="review pass 346"
+activity="review pass 345"
 $bin/aegis -rpass 11 > log 2>&1
 if test $? -ne 0 ; then cat log; no_result; fi
 
-activity="integrate begin 350"
+activity="integrate begin 349"
 $bin/aegis -ib 11 > log 2>&1
 if test $? -ne 0 ; then cat log; no_result; fi
 
-activity="build 354"
+activity="build 353"
 $bin/aegis -b -c 11 > log 2>&1
 if test $? -ne 0 ; then cat log; no_result; fi
 
-activity="integrate pass 358"
+activity="integrate pass 357"
 $bin/aegis -ipass -c 11 > log 2>&1
 if test $? -ne 0 ; then cat log; no_result; fi
 
@@ -362,12 +362,12 @@ if test $? -ne 0 ; then cat log; no_result; fi
 # At this point the branch is out-of-date with respect to the trunk.
 # Make sure that aede on the branch fails.
 #
-activity="check project file state 366"
+activity="check project file state 365"
 cat > ok << 'fubar'
 src =
 [
 	{
-		file_name = "config";
+		file_name = "aegis.conf";
 		uuid = "UUID";
 		action = create;
 		edit =
@@ -415,7 +415,7 @@ fubar
 if test $? -ne 0 ; then no_result; fi
 check_it ok $work/test/info/trunk.fs
 
-activity="check branch file state 401"
+activity="check branch file state 418"
 cat > ok << 'fubar'
 src =
 [
@@ -452,7 +452,7 @@ fubar
 if test $? -ne 0 ; then no_result; fi
 check_it ok $work/test/info/change/0/001.fs
 
-activity="develop end [fail] 429"
+activity="develop end [fail] 455"
 $bin/aegis -de 1 -v > log 2>&1
 if test $? -ne 1 ; then cat log; no_result; fi
 
@@ -464,7 +464,7 @@ if test $? -ne 1 ; then cat log; no_result; fi
 AEGIS_PROJECT=test.1
 export AEGIS_PROJECT
 
-activity="new change 441"
+activity="new change 467"
 cat > caf << 'fubar'
 brief_description = "one point ten";
 cause = internal_enhancement;
@@ -473,22 +473,22 @@ if test $? -ne 0 ; then no_result; fi
 $bin/aegis -nc -f caf -p $AEGIS_PROJECT > log 2>&1
 if test $? -ne 0 ; then cat log; no_result; fi
 
-activity="develop begin 450"
+activity="develop begin 476"
 $bin/aegis -db 11 > log 2>&1
 if test $? -ne 0 ; then cat log; no_result; fi
 
-activity="copy file 454"
+activity="copy file 480"
 $bin/aegis -cp $work/test.1.C011/fred > log 2>&1
 if test $? -ne 0 ; then cat log; no_result; fi
 
-activity="cross branch merge 458"
+activity="cross branch merge 484"
 $bin/aegis -diff -branch '' -v > log 2>&1
 if test $? -ne 0 ; then cat log; fail; fi
 
 mv $work/test.1.C011/fred,D $work/test.1.C011/fred
 if test $? -ne 0 ; then no_result; fi
 
-activity="check change file state 465"
+activity="check change file state 491"
 cat > ok << 'fubar'
 src =
 [
@@ -513,39 +513,39 @@ fubar
 if test $? -ne 0 ; then no_result; fi
 check_it ok $work/test/info/change/0/001.branch/0/011.fs
 
-activity="build 481"
+activity="build 516"
 $bin/aegis -b -v > log 2>&1
 if test $? -ne 0 ; then cat log; no_result; fi
 
-activity="diff 485"
+activity="diff 520"
 $bin/aegis -diff -v > log 2>&1
 if test $? -ne 0 ; then cat log; no_result; fi
 
-activity="develop end 489"
+activity="develop end 524"
 $bin/aegis -de -v > log 2>&1
 if test $? -ne 0 ; then cat log; no_result; fi
 
-activity="review pass 493"
+activity="review pass 528"
 $bin/aegis -rpass 11 -v > log 2>&1
 if test $? -ne 0 ; then cat log; no_result; fi
 
-activity="integrate begin 497"
+activity="integrate begin 532"
 $bin/aegis -ib 11 -v > log 2>&1
 if test $? -ne 0 ; then cat log; no_result; fi
 
-activity="build 501"
+activity="build 536"
 $bin/aegis -b -v > log 2>&1
 if test $? -ne 0 ; then cat log; no_result; fi
 
-activity="diff 505"
+activity="diff 540"
 $bin/aegis -diff -v > log 2>&1
 if test $? -ne 0 ; then cat log; no_result; fi
 
-activity="integrate pass 509"
+activity="integrate pass 544"
 $bin/aegis -ipass -v > log 2>&1
 if test $? -ne 0 ; then cat log; no_result; fi
 
-activity="check branch file state 513"
+activity="check branch file state 548"
 cat > ok << 'fubar'
 src =
 [

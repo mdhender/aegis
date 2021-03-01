@@ -27,8 +27,9 @@
 
 
 static bool
-is_a_valid_domain_string(const char *s)
+is_a_valid_domain_string(const nstring &candidate)
 {
+    const char *s = candidate.c_str();
     int numdots = 0;
     unsigned char state = '.';
     for (;;)
@@ -75,8 +76,8 @@ try_etc_mailname(nstring &result)
     os_become_orig();
     if (os_exists(mailname.get_ref()))
     {
-	result = read_whole_file(mailname.get_ref());
-	ok = is_a_valid_domain_string(result.c_str());
+	result = read_whole_file(mailname);
+	ok = is_a_valid_domain_string(result);
     }
     os_become_undo();
     return ok;
@@ -87,10 +88,10 @@ static bool
 try_a_command(const char *cmd, nstring &result)
 {
     bool ok = false;
-    nstring temp_file_name = os_edit_filename(0);
+    nstring temp_file_name(os_edit_filename(0));
     nstring command(nstring(cmd) + " > " + temp_file_name + " 2> /dev/null");
     os_become_orig();
-    nstring dir = os_curdir();
+    nstring dir(os_curdir());
     int exit_status =
 	os_execute_retcode
 	(
@@ -100,10 +101,10 @@ try_a_command(const char *cmd, nstring &result)
 	);
     if (exit_status == 0)
     {
-	result = read_whole_file(temp_file_name.get_ref());
-	ok = is_a_valid_domain_string(result.c_str());
+	result = read_whole_file(temp_file_name);
+	ok = is_a_valid_domain_string(result);
     }
-    os_unlink_errok(temp_file_name.get_ref());
+    os_unlink_errok(temp_file_name);
     os_become_undo();
     return ok;
 }
@@ -146,7 +147,7 @@ os_domain_name(void)
 	&&
 	    !try_domainname(cached_answer)
 	)
-	    cached_answer = uname_node_get();
+	    cached_answer = nstring(uname_node_get());
     }
     return cached_answer;
 }

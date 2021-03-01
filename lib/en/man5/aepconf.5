@@ -1,6 +1,6 @@
 '\" t
 .\"	aegis - project change supervisor
-.\"	Copyright (C) 1994-1996, 1998-2004 Peter Miller;
+.\"	Copyright (C) 1994-1996, 1998-2005 Peter Miller;
 .\"	All rights reserved.
 .\"
 .\"	This program is free software; you can redistribute it and/or modify
@@ -810,6 +810,19 @@ This may need to be reworked with the
 and
 .I Basename
 substitutions to yield a string suitable for the history tool in question.
+.TP
+${File_Name}
+The base relative file name of the file for this check-in.
+Note that the file name can vary over the lifetime of the file as it is
+renamed, but the history file name (above) never varies.
+\fIDo not use\fP this as the name of the history file.
+.B "(Optional)"
+.TP
+${UUID}
+The universally unique identifier of the source file.
+This is invariant for the lifetime of the file.
+\fIDo not use\fP use this as the name of the history file.
+.B "(Optional)"
 .PP
 See also the
 .I history_put_trashes_file
@@ -891,6 +904,19 @@ This may need to be reworked with the
 and
 .I Basename
 substitutions to yield a string suitable for the history tool in question.
+.TP
+${File_Name}
+The base relative file name of the file for this check-in.
+Note that the file name can vary over the lifetime of the file as it is
+renamed, but the history file name (above) never varies.
+\fIDo not use\fP this as the name of the history file.
+.B "(Optional)"
+.TP
+${UUID}
+The universally unique identifier of the source file.
+This is invariant for the lifetime of the file.
+\fIDo not use\fP use this as the name of the history file.
+.B "(Optional)"
 .PP
 See also the
 .I history_put_trashes_file
@@ -1291,7 +1317,7 @@ Defaults to "\f[CW]exit 0\fP" if not set.
 The exit status is examined.  An zero exit status (success) means that
 the change will proceed to the \fIawaiting integration\fP state; a
 non-zero exit status (failure) means that the change requires further
-review state, and the \fIdevelop_\%end_\%action\fP is colsulted
+review state, and the \fIdevelop_\%end_\%action\fP is consulted
 to determine the appropriate state (\fIawaiting_\%review\fP or
 \fIbeing_\%reviewed\fP) for the change to move to.
 .PP
@@ -1316,6 +1342,26 @@ review_policy_command =
     ;
 .RE
 This is only one of many ways to implement a project specific review policy.
+.RE
+.TP 8n
+develop_end_policy_command = string;
+.RS
+This field is used to set the command to be executed by the
+\fIaede\fP(1) command.  This command is useful in cases where the
+enterprise has determined that additional pre-conditions must be met (in
+addition to those already imposed by the \fIsaede\gP(1) command) before
+a change may leave the \fIbeing developed\fP state.
+Defaults to "\f[CW]exit 0\fP" if not set.
+.PP
+The exit status is examined.  An zero exit status (success) means that
+the change may leave to the \fIbeing developed\fP state; a non-zero exit
+status (failure) means that the change requires further development.
+.PP
+All of the substitutions described by \fIaesub\fP(5) are available.
+.PP
+Executed as: the developer.
+Current directory: the development directory.
+Exit status: zero indicates success, non-zero indicates failure.
 .RE
 .TP 8n
 test_command = string;
@@ -1889,6 +1935,76 @@ For a description of \f[CW]Signed-off-by\fP see
 http://www.ussg.iu.edu/hypermail/linux/kernel/0405.2/1301.html and
 http://www.osdl.org/newsroom/press_releases/2004/2004_05_24_dco.html
 .RE
+.SH RSS FEEDS
+.RE
+Aegis has the ability to feed RSS channels when changesets transition
+states.  See the User Guide for full details.  Following is a brief
+description of the project-specific attributes used to control this process.
+.RE
+.TP 8n
+Create / Add to a channel
+.RS 8n
+An RSS channel is specified with the rss:feedfilename project_specific
+attribute:
+.TP 8n
+.br
+project_specific =
+[
+  {
+    name = "rss:feedfilename-<filename>";
+    value = "<space-separated list of states>";
+  }
+.br
+]
+.RE
+.TP 8n
+Specify the Description of an RSS channel
+.RS 8n
+The description of an RSS channel is specified with the
+rss:feeddescription project_specific attribute:
+.TP 8n
+.br
+project_specific =
+[
+  {
+    name = "rss:feeddescription-<filename>";
+    value = "<description>";
+  }
+.br
+]
+.RE
+.TP 8n
+Specify the Title of an RSS channel
+.RS 8n
+The title of an RSS channel is specified with the rss:feedtitle
+project_specific attribute:
+.TP 8n
+.br
+project_specific =
+[
+  {
+    name = "rss:feedtitle-<filename>";
+    value = "<title>";
+  }
+.br
+]
+.RE
+.TP 8n
+Specify the Language of an RSS channel
+.RS 8n
+The language of an RSS channel is specified with the rss:feedlanguage
+project_specific attribute:
+.TP 8n
+.br
+project_specific =
+[
+  {
+    name = "rss:feedlanguage-<filename>";
+    value = "<language";
+  }
+.br
+]
+.RE
 .SH OBSOLETE FIELDS
 There are some obsolete fields in the file.
 They are provided for backwards compatibility only, and should not be used.
@@ -1998,6 +2114,22 @@ Defaults to \fBtrue\fP if not set.  This default is intentional.  It is
 important that there are no symlinks in the (new) baseline, because
 they could go stale between integrations.  If you set this field to
 false, \fIcaveat emptor\fP.
+.RE
+.TP 8n
+cache_project_file_list_for_each_delta = boolean;
+.RS
+It is possible to have Aegis cache the list of project files that
+were present at integrate pass for each delta (integrated change
+set).  This is used to optimize all project-history-based
+operations, such as \fIaecp -delta\fP or \fIaepatch\fP(1).
+.PP
+This cache will optimize many operations which would otherwise
+require time to reconstruct the prohect state using the
+roll-foworward data available in each change set.  However, it comes
+at the cost of disk space, and not everyone can afford more and more
+disk.
+.PP
+This field defaults to true if not set.
 .RE
 .SH SEE ALSO
 .TP 8n

@@ -1,30 +1,82 @@
-/*
- *	aegis - project change supervisor
- *	Copyright (C) 2001, 2002 Peter Miller;
- *	All rights reserved.
- *
- *	This program is free software; you can redistribute it and/or modify
- *	it under the terms of the GNU General Public License as published by
- *	the Free Software Foundation; either version 2 of the License, or
- *	(at your option) any later version.
- *
- *	This program is distributed in the hope that it will be useful,
- *	but WITHOUT ANY WARRANTY; without even the implied warranty of
- *	MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
- *	GNU General Public License for more details.
- *
- *	You should have received a copy of the GNU General Public License
- *	along with this program; if not, write to the Free Software
- *	Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111, USA.
- *
- * MANIFEST: interface definition for libaegis/input/quoted_print.c
- */
+//
+//	aegis - project change supervisor
+//	Copyright (C) 2001, 2002, 2005 Peter Miller;
+//	All rights reserved.
+//
+//	This program is free software; you can redistribute it and/or modify
+//	it under the terms of the GNU General Public License as published by
+//	the Free Software Foundation; either version 2 of the License, or
+//	(at your option) any later version.
+//
+//	This program is distributed in the hope that it will be useful,
+//	but WITHOUT ANY WARRANTY; without even the implied warranty of
+//	MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+//	GNU General Public License for more details.
+//
+//	You should have received a copy of the GNU General Public License
+//	along with this program; if not, write to the Free Software
+//	Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111, USA.
+//
+// MANIFEST: interface definition for libaegis/input/quoted_print.c
+//
 
 #ifndef LIBAEGIS_INPUT_QUOTED_PRINT_H
 #define LIBAEGIS_INPUT_QUOTED_PRINT_H
 
 #include <input.h>
 
-input_ty *input_quoted_printable(input_ty *, int);
+class input_quoted_printable:
+    public input_ty
+{
+public:
+    /**
+      * The destructor.
+      */
+    virtual ~input_quoted_printable();
 
-#endif /* LIBAEGIS_INPUT_QUOTED_PRINT_H */
+    /**
+      * The constructor.
+      */
+    input_quoted_printable(input_ty *deeper, bool close_on_close);
+
+    // See base class for documentation.
+    nstring name();
+
+    // See base class for documentation.
+    long length();
+
+    // See base class for documentation.
+    void keepalive();
+
+    // See base class for documentation.
+    long read_inner(void *data, size_t nbytes);
+
+    // See base class for documentation.
+    long ftell_inner();
+
+    // See base class for documentation.
+    bool is_remote() const;
+
+private:
+    input_ty *deeper;
+    bool close_on_close;
+    bool eof;
+    long pos;
+
+    /**
+      * The default constructor.
+      */
+    input_quoted_printable();
+
+    /**
+      * The copy constructor.
+      */
+    input_quoted_printable(const input_quoted_printable &arg);
+
+    /**
+      * The assignment operator.
+      */
+    input_quoted_printable &operator=(const input_quoted_printable &arg);
+};
+
+#endif // LIBAEGIS_INPUT_QUOTED_PRINT_H

@@ -1,6 +1,6 @@
 //
 //	aegis - project change supervisor
-//	Copyright (C) 2004 Peter Miller;
+//	Copyright (C) 2004, 2005 Peter Miller;
 //	All rights reserved.
 //
 //	This program is free software; you can redistribute it and/or modify
@@ -48,15 +48,29 @@ public:
       */
     virtual void operator()(change_ty *cp) = 0;
 
-protected:
     /**
-      * The default constructor.
-      * May ony be called by a derived class.
+      * The include_branches method is sued to determine whether or not
+      * the functor should also be invoked for branches, when performing
+      * a recursive descent.
       */
-    change_functor();
+    bool include_branches() const { return include_branches_flag; }
 
     /**
-      * The copy constructor.
+      * The all_changes method is used to determine whether or not the
+      * functor should be invoked for incomplete changes as well as
+      * completed changes and branches.
+      */
+    bool all_changes() const { return all_changes_flag; }
+
+protected:
+    /**
+      * The constructor.
+      * May ony be called by a derived class.
+      */
+    change_functor(bool include_branches, bool all_changes = false);
+
+    /**
+      * The constructor.
       * May ony be called by a derived class.
       */
     change_functor(const change_functor &);
@@ -66,6 +80,15 @@ protected:
       * May ony be called by a derived class.
       */
     change_functor &operator=(const change_functor &);
+
+private:
+    bool include_branches_flag;
+    bool all_changes_flag;
+
+    /**
+      * The default constructor.  Do not use.
+      */
+    change_functor();
 };
 
 #endif // LIBAEGIS_CHANGE_FUNCTOR_H

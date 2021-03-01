@@ -1,6 +1,6 @@
 //
 //	aegis - project change supervisor
-//	Copyright (C) 1998, 1999, 2001, 2002, 2004 Peter Miller;
+//	Copyright (C) 1998, 1999, 2001, 2002, 2004, 2005 Peter Miller;
 //	All rights reserved.
 //
 //	This program is free software; you can redistribute it and/or modify
@@ -61,7 +61,7 @@ quote_url_run(rpt_expr_ty *ep, size_t argc, rpt_value_ty **argv)
 	str_free(s);
 	return result;
     }
-    nstring a1s = str_copy(rpt_value_string_query(a1));
+    nstring a1s(rpt_value_string_query(a1));
     rpt_value_free(a1);
 
     nstring rs = a1s.url_quote();
@@ -114,7 +114,7 @@ unquote_url_run(rpt_expr_ty *ep, size_t argc, rpt_value_ty **argv)
 	str_free(s);
 	return result;
     }
-    nstring a1s = str_copy(rpt_value_string_query(a1));
+    nstring a1s(rpt_value_string_query(a1));
     rpt_value_free(a1);
 
     nstring rs = a1s.url_unquote();
@@ -165,7 +165,7 @@ quote_html_run(rpt_expr_ty *ep, size_t argc, rpt_value_ty **argv)
 	str_free(s);
 	return result;
     }
-    nstring a1s = str_copy(rpt_value_string_query(a1));
+    nstring a1s(rpt_value_string_query(a1));
     rpt_value_free(a1);
 
     nstring rs = a1s.html_quote();

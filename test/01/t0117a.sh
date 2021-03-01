@@ -1,7 +1,7 @@
 #!/bin/sh
 #
 #	aegis - project change supervisor
-#	Copyright (C) 1999, 2004 Peter Miller;
+#	Copyright (C) 1999, 2004, 2005 Peter Miller;
 #	All rights reserved.
 #
 #	This program is free software; you can redistribute it and/or modify
@@ -109,14 +109,14 @@ unset LANGUAGE
 #
 # test the symlink farm functionality
 #
-activity="new project 111"
+activity="new project 112"
 $bin/aegis -npr example -version - -lib $worklib -dir $work/proj -v > log 2>&1
 if test $? -ne 0 ; then cat log; no_result; fi
 
 #
 # change project attributes
 #
-activity="project attributes 118"
+activity="project attributes 119"
 cat > $tmp << 'TheEnd'
 description = "bogosity";
 developer_may_review = true;
@@ -132,20 +132,20 @@ if test $? -ne 0 ; then cat log; no_result; fi
 #
 # add the staff
 #
-activity="new developer 134"
+activity="new developer 135"
 $bin/aegis -newdev $USER -v > log 2>&1
 if test $? -ne 0 ; then cat log; no_result; fi
-activity="new reviewer 137"
+activity="new reviewer 138"
 $bin/aegis -newrev $USER -v > log 2>&1
 if test $? -ne 0 ; then cat log; no_result; fi
-activity="new integrator 140"
+activity="new integrator 141"
 $bin/aegis -newint $USER -v > log 2>&1
 if test $? -ne 0 ; then cat log; no_result; fi
 
 #
 # Create a new change.
 #
-activity="new change 147"
+activity="new change 148"
 cat > $tmp << 'TheEnd'
 brief_description = "c1";
 description = "c1";
@@ -159,18 +159,18 @@ if test $? -ne 0 ; then cat log; no_result; fi
 #
 # begin development of the change
 #
-activity="develop begin 161"
+activity="develop begin 162"
 $bin/aegis -devbeg 10 -dir $workchan -v > log 2>&1
 if test $? -ne 0 ; then cat log; no_result; fi
 
 #
-# create a suitable config file
+# create a suitable aegis.conf file
 #
-activity="new files 168"
-$bin/aegis -nf $workchan/config $workchan/template.sh -v > log 2>&1
+activity="new files 169"
+$bin/aegis -nf $workchan/aegis.conf $workchan/template.sh -v > log 2>&1
 if test $? -ne 0 ; then cat log; no_result; fi
 
-cat > $workchan/config << 'fubar'
+cat > $workchan/aegis.conf << 'fubar'
 build_command = "exit 0";
 link_integration_directory = true;
 /* I know this next field is obsolete, but I'm leaving it here to make
@@ -191,42 +191,42 @@ history_put_trashes_file = warn;
 fubar
 if test $? -ne 0 ; then no_result; fi
 
-activity="new files 191"
+activity="new files 194"
 $bin/aegis -nf $workchan/fred -v > log 2>&1
 if test $? -ne 0 ; then cat log; no_result; fi
 
 echo fred > $workchan/fred
 if test $? -ne 0 ; then no_result; fi
 
-activity="diff 198"
+activity="diff 201"
 $bin/aegis -diff -v > log 2>&1
 if test $? -ne 0 ; then cat log; no_result; fi
 
-activity="build 202"
+activity="build 205"
 $bin/aegis -build -v > log 2>&1
 if test $? -ne 0 ; then cat log; no_result; fi
 
-activity="develop end 206"
+activity="develop end 209"
 $bin/aegis -de -v > log 2>&1
 if test $? -ne 0 ; then cat log; no_result; fi
 
-activity="review pass 210"
+activity="review pass 213"
 $bin/aegis -rpass 10 -v > log 2>&1
 if test $? -ne 0 ; then cat log; no_result; fi
 
-activity="integrate begin 214"
+activity="integrate begin 217"
 $bin/aegis -ib 10 -v > log 2>&1
 if test $? -ne 0 ; then cat log; no_result; fi
 
-activity="integrate diff 218"
+activity="integrate diff 221"
 $bin/aegis -diff -v > log 2>&1
 if test $? -ne 0 ; then cat log; no_result; fi
 
-activity="integrate build 222"
+activity="integrate build 225"
 $bin/aegis -b -v > log 2>&1
 if test $? -ne 0 ; then cat log; no_result; fi
 
-activity="integrate pass 226"
+activity="integrate pass 229"
 $bin/aegis -ipass -v > log 2>&1
 if test $? -ne 0 ; then cat log; no_result; fi
 
@@ -236,7 +236,7 @@ if test $? -ne 0 ; then cat log; no_result; fi
 AEGIS_CHANGE=11
 export AEGIS_CHANGE
 
-activity="new change 236"
+activity="new change 239"
 cat > $tmp << 'TheEnd'
 brief_description = "c2";
 description = "c2";
@@ -247,11 +247,11 @@ if test $? -ne 0 ; then no_result; fi
 $bin/aegis -nc 11 -f $tmp -project example -v > log 2>&1
 if test $? -ne 0 ; then cat log; no_result; fi
 
-activity="develop begin 247"
+activity="develop begin 250"
 $bin/aegis -devbeg 11 -dir $workchan -v > log 2>&1
 if test $? -ne 0 ; then cat log; no_result; fi
 
-activity="remove files 251"
+activity="remove files 254"
 $bin/aegis -rm $workchan/fred -v > log 2>&1
 if test $? -ne 0 ; then cat log; no_result; fi
 

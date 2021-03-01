@@ -42,7 +42,9 @@ change_functor_inventory_list::~change_functor_inventory_list()
 }
 
 
-change_functor_inventory_list::change_functor_inventory_list(project_ty *pp) :
+change_functor_inventory_list::change_functor_inventory_list(bool arg1,
+	project_ty *pp) :
+    change_functor(arg1),
     colp(0),
     vers_col(0),
     uuid_col(0),

@@ -185,8 +185,19 @@ gonzo_gstate_get(gonzo_ty *gp)
     lock_sync(gp);
     if (!gp->gstate_data)
     {
+	//
+	// The problem here is if we get EACCES (Permission denied)
+	// for the lstat to see if the file exists.  For now, we say
+	// that EACCESS is OK (that's what the second argument says)
+	// because most of the time this means we simply ignore global
+	// state files we can't read.  But if there is a new project
+	// being created (the only time one of these ignored files will
+	// need writing) when the "new" file is opened, the EACCES will
+	// happen again, so nothing will be damaged, and the user will
+	// see an appropriate error.
+	//
 	gonzo_become();
-	gp->is_a_new_file = !os_exists(gp->gstate_filename);
+	gp->is_a_new_file = !os_exists(gp->gstate_filename, true);
 	if (!gp->is_a_new_file)
 	{
 	    os_chown_check

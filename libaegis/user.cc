@@ -27,6 +27,7 @@
 #include <ac/unistd.h>
 
 #include <arglex2.h>
+#include <attribute.h>
 #include <commit.h>
 #include <error.h>
 #include <file.h>
@@ -935,6 +936,38 @@ merge_uconf(uconf_ty *data, uconf_ty *tmp)
     if (!data->pager_command && tmp->pager_command)
     {
 	data->pager_command = str_copy(tmp->pager_command);
+    }
+
+    //
+    // Merge the attribute lists.
+    //
+    if (tmp->attribute && tmp->attribute->length)
+    {
+	if (!data->attribute)
+	{
+	    data->attribute =
+		    (attributes_list_ty *)attributes_list_type.alloc();
+	}
+	for (size_t j = 0; j < tmp->attribute->length; ++j)
+	{
+	    attributes_ty *ap = tmp->attribute->list[j];
+	    if
+	    (
+		ap->name
+	    &&
+		ap->value
+	    &&
+		!attributes_list_find(data->attribute, ap->name->str_text)
+	    )
+	    {
+		attributes_list_append
+	       	(
+		    data->attribute,
+		    ap->name->str_text,
+		    ap->value->str_text
+		);
+	    }
+	}
     }
 }
 
@@ -2783,7 +2816,7 @@ user_email_address(user_ty *up)
     uconf_ty	    *uconf_data;
 
     uconf_data = user_uconf_get(up);
-    if (!uconf_data->email_address)
+    if (!uconf_data->email_address || !uconf_data->email_address->str_length)
     {
 	//
 	// Look for the domain name to go on the right hand side of the @ sign.
@@ -2803,6 +2836,65 @@ user_email_address(user_ty *up)
 		domain.c_str()
 	    );
 	str_free(full_name);
+    }
+    else
+    {
+	//
+        // Even if the user has given us a string, we have to make sure
+        // that it has all the right bits...
+	//
+	const char *s = uconf_data->email_address->str_text;
+	const char *lt = strchr(s, '<');
+	const char *at = strchr(s, '@');
+	const char *gt = strchr(s, '>');
+	if (lt && at && gt)
+	{
+	    // this is what we need, do nothing
+	    if (lt == s)
+	    {
+		// Add their full name.
+		string_ty *temp = uconf_data->email_address;
+		string_ty *full_name = clean_up(user_name2(up));
+		uconf_data->email_address =
+		    str_format("%s %s", full_name->str_text, temp->str_text);
+		str_free(full_name);
+		str_free(temp);
+	    }
+	}
+	else if (at)
+	{
+	    // Add their full name.
+	    string_ty *temp = uconf_data->email_address;
+	    string_ty *full_name = clean_up(user_name2(up));
+	    uconf_data->email_address =
+		str_format("%s <%s>", full_name->str_text, temp->str_text);
+	    str_free(full_name);
+	    str_free(temp);
+	}
+	else
+	{
+            //
+            // Look for the domain name to go on the right hand side of
+            // the @ sign.
+	    //
+	    nstring domain = os_domain_name();
+
+	    //
+	    // Construct the email address.
+	    //
+	    string_ty *full_name = clean_up(user_name2(up));
+	    string_ty *temp = uconf_data->email_address;
+	    uconf_data->email_address =
+		str_format
+		(
+		    "%s <%s@%s>",
+		    full_name->str_text,
+		    temp->str_text,
+		    domain.c_str()
+		);
+	    str_free(full_name);
+	    str_free(temp);
+	}
     }
     return uconf_data->email_address;
 }

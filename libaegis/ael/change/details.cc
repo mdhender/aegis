@@ -194,6 +194,42 @@ list_change_details_columns::list(change_ty *cp, bool recurse)
     col_eoln(colp);
 
     //
+    // List attributes
+    //
+    if (cstate_data->attribute && cstate_data->attribute->length)
+    {
+	col_need(colp, 5);
+	head_col->fputs("ATTRIBUTES");
+	col_eoln(colp);
+
+	//
+	// create the columns
+	//
+	int left = INDENT_WIDTH;
+	output_ty *name_col =
+	    col_create(colp, left, left + ATTR_WIDTH, "Name\n-------");
+	left += ATTR_WIDTH + 1;
+	output_ty *value_col =
+	    col_create(colp, left, 0, "Value\n-------");
+
+	//
+	// list the attributes
+	//
+	attributes_list_ty *alp = cstate_data->attribute;
+	for (size_t j = 0; j < alp->length; ++j)
+	{
+	    attributes_ty *ap = alp->list[j];
+	    if (ap->name)
+		name_col->fputs(ap->name);
+	    if (ap->value)
+		value_col->fputs(ap->value);
+	    col_eoln(colp);
+	}
+	delete name_col;
+	delete value_col;
+    }
+
+    //
     // show the sub-changes of a branch
     //
     if (cstate_data->branch && (recurse || option_verbose_get()))

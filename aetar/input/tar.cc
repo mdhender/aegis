@@ -1,6 +1,6 @@
 //
 //	aegis - project change supervisor
-//	Copyright (C) 2002-2004 Peter Miller;
+//	Copyright (C) 2002-2005 Peter Miller;
 //	All rights reserved.
 //
 //	This program is free software; you can redistribute it and/or modify
@@ -21,97 +21,274 @@
 //
 
 #include <error.h> // for assert
+#include <header.h>
+#include <input/crop.h>
 #include <input/tar.h>
-#include <input/tar_child.h>
-#include <input/private.h>
-#include <str.h>
+#include <trace.h>
 
 
-struct input_tar_ty
+input_tar::~input_tar()
 {
-    input_ty	    inherited;
-    input_ty	    *deeper;
-};
-
-
-static void
-input_tar_destructor(input_ty *fp)
-{
-    input_tar_ty    *this_thing;
-
-    this_thing = (input_tar_ty *)fp;
-    input_delete(this_thing->deeper);
+    trace(("~input_tar()\n"));
+    delete deeper;
+    deeper = 0;
 }
 
 
-static long
-input_tar_read(input_ty *fp, void *data, size_t len)
+input_tar::input_tar(input_ty *arg) :
+    deeper(arg)
 {
+    trace(("input_tar()\n"));
+}
+
+
+long
+input_tar::read_inner(void *data, size_t len)
+{
+    trace(("input_tar::read_inner()\n"));
     assert(0);
     return -1;
 }
 
 
-static long
-input_tar_ftell(input_ty *fp)
+long
+input_tar::ftell_inner()
 {
+    trace(("input_tar::ftell_inner()\n"));
     assert(0);
     return 0;
 }
 
 
-static string_ty *
-input_tar_name(input_ty *fp)
+nstring
+input_tar::name()
 {
-    input_tar_ty    *this_thing;
-
-    this_thing = (input_tar_ty *)fp;
-    return input_name(this_thing->deeper);
+    return deeper->name();
 }
 
 
-static long
-input_tar_length(input_ty *fp)
+long
+input_tar::length()
 {
-    input_tar_ty    *this_thing;
-
-    this_thing = (input_tar_ty *)fp;
-    return input_length(this_thing->deeper);
+    trace(("input_tar::length()\n"));
+    return deeper->length();
 }
 
 
-static input_vtbl_ty vtbl =
+static bool
+all_zero(const char *buf, size_t len)
 {
-    sizeof(input_tar_ty),
-    input_tar_destructor,
-    input_tar_read,
-    input_tar_ftell,
-    input_tar_name,
-    input_tar_length,
-};
+    while (len-- > 0)
+    {
+	if (*buf++)
+	    return false;
+    }
+    return true;
+}
 
 
 input_ty *
-input_tar(input_ty *deeper)
+input_tar::child(nstring &archive_name)
 {
-    input_ty	    *result;
-    input_tar_ty    *this_thing;
+    //
+    // Wade through the garbage until we find something interesting.
+    //
+    trace(("input_tar::child()\n{\n"));
+    nstring longname;
+    for (;;)
+    {
+	//
+	// read the file header
+	//
+	char header[TBLOCK];
+	if
+	(
+	    !deeper->read_strict(header, sizeof(header))
+	||
+	    all_zero(header, sizeof(header))
+	)
+	{
+	    trace(("return NULL\n"));
+	    trace(("}\n"));
+	    return 0;
+	}
+	header_ty *hp = (header_ty *)header;
 
-    result = input_new(&vtbl);
-    this_thing = (input_tar_ty *)result;
-    this_thing->deeper = deeper;
+	//
+	// Verify checksum.
+	//
+	int hchksum = header_checksum_get(hp);
+	if (hchksum < 0)
+	    deeper->fatal_error("tar: corrupted checksum field");
+	int cs2 = header_checksum_calculate(hp);
+	if (hchksum != cs2)
+	{
+	    header_dump(hp);
+	    nstring s =
+		nstring::format
+		(
+		    "tar: checksum does not match "
+			"(calculated 0%o, file has 0%o)",
+		    cs2,
+		    hchksum
+		);
+	    deeper->fatal_error(s.c_str());
+	}
+
+	//
+	// The essential information we want from the header is the
+	// file's name and the file's size.  All that other guff is ignored.
+	//
+	nstring aname;
+	if (!longname.empty())
+	{
+	    aname = longname;
+	    longname.clear();
+	}
+	else
+	{
+	    aname = header_name_get(hp);
+	    if (aname.empty())
+		deeper->fatal_error("tar: corrupted name field");
+	}
+	long hsize = header_size_get(hp);
+	if (hsize < 0)
+	    deeper->fatal_error("tar: corrupted size field");
+
+	//
+	// Work out that to do with it.
+	//
+	switch (header_linkflag_get(hp))
+	{
+	case LF_OLDNORMAL:
+	case LF_NORMAL:
+	    trace(("normal\n"));
+	    if (aname[aname.size() - 1] == '/')
+	    {
+		//
+		// Throw directories away.  Aegis only likes real files.
+		//
+		continue;
+	    }
+	    break;
+
+	case LF_CONTIG:
+	    trace(("contig\n"));
+	    break;
+
+	case LF_LINK:
+	case LF_SYMLINK:
+	case LF_CHR:
+	case LF_BLK:
+	case LF_DIR:
+	case LF_FIFO:
+	    //
+	    // Throw these away.  Aegis only likes real files.
+	    //
+	    trace(("throw this one away\n"));
+	    continue;
+
+	case LF_LONGNAME:
+	    //
+	    // The next real file gets this_thing as its name.
+	    //
+	    trace(("longname\n"));
+	    longname = read_data_as_string(hsize);
+	    continue;
+
+	case LF_LONGLINK:
+	    //
+	    // The next file gets this_thing as its link name.
+	    // (But we toss links, so toss the data).
+	    //
+	    trace(("longlink\n"));
+	    deeper->skip(hsize);
+	    padding();
+	    continue;
+
+	default:
+	    {
+		trace(("mystery file\n"));
+		nstring s =
+		    nstring::format
+		    (
+			"tar: file type \"%c\" unknown",
+			header_linkflag_get(hp)
+		    );
+		deeper->fatal_error(s.c_str());
+	    }
+	    continue;
+	}
+
+	//
+	// Create a new input instance.
+	// the child will read everything.
+	//
+	trace(("real file\n"));
+	archive_name = aname;
+	long asize = (hsize + TBLOCK - 1) & ~(TBLOCK - 1);
+	input_crop *sub = 0;
+	if (asize == hsize)
+	{
+	    sub = new input_crop(deeper, false, hsize);
+	}
+	else
+	{
+	    sub =
+		new input_crop
+		(
+		    new input_crop(deeper, false, asize),
+		    true,
+		    hsize
+		);
+	}
+	sub->set_name
+       	(
+	    nstring::format("%s(%s)", deeper->name().c_str(), aname.c_str())
+       	);
+	trace(("return %08lX\n", (long)sub));
+	trace(("}\n"));
+	return sub;
+    }
+}
+
+
+void
+input_tar::padding()
+{
+    trace(("input_tar::padding()\n"));
+    int n = deeper->ftell();
+    n %= TBLOCK;
+    if (n)
+	deeper->skip(TBLOCK - n);
+    trace(("}\n"));
+}
+
+
+nstring
+input_tar::read_data_as_string(size_t size)
+{
+    trace(("input_tar::read_data_as_string(size = %ld)\n{\n", (long)size));
+    static char	*strbuf;
+    static size_t maximum;
+
+    if (size > maximum)
+    {
+	for (;;)
+	{
+	    maximum = maximum * 2 + 32;
+	    if (maximum >= size)
+		break;
+	}
+	delete strbuf;
+	strbuf = new char [maximum];
+    }
+    deeper->read_strictest(strbuf, size);
+    while (size > 0 && strbuf[size - 1] == 0)
+	--size;
+    padding();
+    nstring result = nstring(strbuf, size);
+    trace(("return \"%s\";\n", result.c_str()));
+    trace(("}\n"));
     return result;
-}
-
-
-input_ty *
-input_tar_child(input_ty *fp, string_ty **archive_name_p)
-{
-    input_tar_ty    *this_thing;
-
-    assert(archive_name_p);
-    if (fp->vptr != &vtbl)
-	return 0;
-    this_thing = (input_tar_ty *)fp;
-    return input_tar_child_open(this_thing->deeper, archive_name_p);
 }

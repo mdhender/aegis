@@ -33,6 +33,7 @@
 #include <progname.h>
 #include <quit.h>
 #include <receive.h>
+#include <rsrc_limits.h>
 #include <send.h>
 #include <version.h>
 
@@ -84,6 +85,7 @@ main(int argc, char **argv)
     signal(SIGCLD, SIG_DFL);
 #endif
 
+    resource_limits_init();
     arglex3_init(argc, argv);
     env_initialize();
     language_init();

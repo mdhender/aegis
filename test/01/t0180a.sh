@@ -1,7 +1,7 @@
 #!/bin/sh
 #
 #	aegis - project change supervisor
-#	Copyright (C) 2003, 2004 Peter Miller;
+#	Copyright (C) 2003-2005 Peter Miller;
 #	All rights reserved.
 #
 #	This program is free software; you can redistribute it and/or modify
@@ -98,7 +98,7 @@ no_result()
 }
 trap \"no_result\" 1 2 3 15
 
-activity="create test directory 100"
+activity="create test directory 101"
 mkdir $work $work/lib
 if test $? -ne 0 ; then no_result; fi
 chmod 777 $work/lib
@@ -133,7 +133,7 @@ unset LANGUAGE
 #
 # Basically, what this script does is:
 # 1. Create a project with a 1.0 branch.
-# 2. Create a changeset that adds a config file.  Develop and integrate.
+# 2. Create a changeset that adds a aegis.conf file.  Develop and integrate.
 # 3. Create a changeset that adds a test and a hosttest source file.  D & I.
 # 4. Roll in the 1.0 branch.
 # 5. Create a 1.1 branch.
@@ -158,7 +158,7 @@ chanDir=$work/chan-dev-dir
 AEGIS_PATH=$AEGIS_PATH:$libDir
 export AEGIS_PATH
 
-activity="create project 159"
+activity="create project 161"
 # Write the project attributes file
 cat > projAttributes << 'EOF'
 description="Test project";
@@ -187,7 +187,7 @@ AEGIS_PROJECT=$theProject.1.0
 export AEGIS_PROJECT
 
 # Add staff
-activity="add staff 188"
+activity="add staff 190"
 $bin/aegis -nd $USER -v > LOG 2>&1
 if test $? -ne 0 ; then cat LOG; no_result; fi
 
@@ -200,7 +200,7 @@ if test $? -ne 0 ; then cat LOG; no_result; fi
 $bin/aegis -ni $USER -v -p $theProject.1 > LOG 2>&1
 if test $? -ne 0 ; then cat LOG; no_result; fi
 
-###### Create the first change  -- adds config file ######
+###### Create the first change  -- adds aegis.conf file ######
 
 # Attributes common to all changesets
 cat > commonChangeAttributes << 'EOF'
@@ -211,10 +211,10 @@ regression_test_exempt = true;
 EOF
 if test $? -ne 0 ; then no_result; fi
 
-activity="new change 212"
+activity="new change 214"
 cat > changeAttributes << 'EOF'
-description = "Change 1 - create config";
-brief_description = "Change 1 - create config";
+description = "Change 1 - create aegis.conf";
+brief_description = "Change 1 - create aegis.conf";
 EOF
 if test $? -ne 0 ; then no_result; fi
 
@@ -225,16 +225,16 @@ if test $? -ne 0 ; then no_result; fi
 $bin/aegis -nc 10 -file changeAttributes -p $theProject.1.0 -v > LOG 2>&1
 if test $? -ne 0 ; then cat LOG; no_result; fi
 
-activity="develop begin 226"
+activity="develop begin 228"
 $bin/aegis -db 10 -v -dir $chanDir > LOG 2>&1
 if test $? -ne 0 ; then cat LOG; no_result; fi
 
-# Add the config file
-activity="new file 231"
-$bin/aegis -nf $chanDir/config -v -c 10 > LOG 2>&1
+# Add the aegis.conf file
+activity="new file 233"
+$bin/aegis -nf $chanDir/aegis.conf -v -c 10 > LOG 2>&1
 if test $? -ne 0 ; then cat LOG; no_result; fi
 
-cat > $chanDir/config << 'EOF'
+cat > $chanDir/aegis.conf << 'EOF'
 build_command = "exit 0";
 link_integration_directory = true;
 history_create_command = "ci -f -u -m$c -t/dev/null $i $h,v; rcs -U $h,v";
@@ -263,41 +263,41 @@ if test $? -ne 0 ; then no_result; fi
 sleep 2
 
 # build
-activity="build 261"
+activity="build 266"
 $bin/aegis -build -c 10 -v > LOG 2>&1
 if test $? -ne 0 ; then cat LOG; no_result; fi
 
 # diff
-activity="diff 266"
+activity="diff 271"
 $bin/aegis -diff -c 10 -v > LOG 2>&1
 if test $? -ne 0 ; then cat LOG; no_result; fi
 
 # develop end
-activity="develop end 271"
+activity="develop end 276"
 $bin/aegis -de -c 10 -v > LOG 2>&1
 if test $? -ne 0 ; then cat LOG; no_result; fi
 
 # integrate
-activity="integrate begin 276"
+activity="integrate begin 281"
 $bin/aegis -ib -c 10 -v > LOG 2>&1
 if test $? -ne 0 ; then cat LOG; no_result; fi
 
-activity="integrate build 280"
+activity="integrate build 285"
 $bin/aegis -build -c 10 -v > LOG 2>&1
 if test $? -ne 0 ; then cat LOG; no_result; fi
 
-activity="integrate diff 284"
+activity="integrate diff 289"
 $bin/aegis -diff -c 10 -v > LOG 2>&1
 if test $? -ne 0 ; then cat LOG; no_result; fi
 
-activity="integrate pass 288"
+activity="integrate pass 293"
 $bin/aegis -ipass -c 10 -v > LOG 2>&1
 if test $? -ne 0 ; then cat LOG; no_result; fi
 
 
 ###### Create the second change -- add a test and a hosttest source file ######
 
-activity="new change 295"
+activity="new change 300"
 cat > changeAttributes << 'EOF'
 description = "Change 2 - add test and hosttest source";
 brief_description = "Change 2";
@@ -311,11 +311,11 @@ if test $? -ne 0 ; then no_result; fi
 $bin/aegis -nc 11 -file changeAttributes -p $theProject.1.0 -v > LOG 2>&1
 if test $? -ne 0 ; then cat LOG; no_result; fi
 
-activity="develop begin 309"
+activity="develop begin 314"
 $bin/aegis -db 11 -v -dir $chanDir > LOG 2>&1
 if test $? -ne 0 ; then cat LOG; no_result; fi
 
-activity="new test 313"
+activity="new test 318"
 $bin/aegis -nt $chanDir/test/00/t0001a.sh -v > LOG 2>&1
 if test $? -ne 0 ; then cat LOG; no_result; fi
 
@@ -325,7 +325,7 @@ exit 0
 EOF
 if test $? -ne 0 ; then no_result; fi
 
-activity="new file 323"
+activity="new file 328"
 $bin/aegis -nf $chanDir/hosttest/0001/main.cc -v > LOG 2>&1
 if test $? -ne 0 ; then cat LOG; no_result; fi
 
@@ -335,82 +335,82 @@ EOF
 if test $? -ne 0 ; then no_result; fi
 
 # turn off "test -bl"
-activity="change attributes 333"
+activity="change attributes 338"
 $bin/aegis -ca -file changeAttributes -c 11 > LOG 2>&1
 if test $? -ne 0 ; then cat LOG; no_result; fi
 
 sleep 2
 
 # build
-activity="build 340"
+activity="build 345"
 $bin/aegis -build -c 11 -v > LOG 2>&1
 if test $? -ne 0 ; then cat LOG; no_result; fi
 
 # diff
-activity="diff 345"
+activity="diff 350"
 $bin/aegis -diff -c 11 -v > LOG 2>&1
 if test $? -ne 0 ; then cat LOG; no_result; fi
 
 # test
-activity="test 350"
+activity="test 355"
 $bin/aegis -test -c 11 -v > LOG 2>&1
 if test $? -ne 0 ; then cat LOG; no_result; fi
 
 # develop end
-activity="develop end 355"
+activity="develop end 360"
 $bin/aegis -de -c 11 -v > LOG 2>&1
 if test $? -ne 0 ; then cat LOG; no_result; fi
 
 # integrate
-activity="integrate begin 360"
+activity="integrate begin 365"
 $bin/aegis -ib -c 11 -v > LOG 2>&1
 if test $? -ne 0 ; then cat LOG; no_result; fi
 
-activity="integrate build 364"
+activity="integrate build 369"
 $bin/aegis -build -c 11 -v > LOG 2>&1
 if test $? -ne 0 ; then cat LOG; no_result; fi
 
-activity="integrate diff 368"
+activity="integrate diff 373"
 $bin/aegis -diff -c 11 -v > LOG 2>&1
 if test $? -ne 0 ; then cat LOG; no_result; fi
 
-activity="integrate test 372"
+activity="integrate test 377"
 $bin/aegis -test -c 11 -v > LOG 2>&1
 if test $? -ne 0 ; then cat LOG; no_result; fi
 
-activity="integrate pass 376"
+activity="integrate pass 381"
 $bin/aegis -ipass -c 11 -v > LOG 2>&1
 if test $? -ne 0 ; then cat LOG; no_result; fi
 
 # Roll in the branch
-activity="branch develop end 381"
+activity="branch develop end 386"
 $bin/aegis -de -c 0 -p $theProject.1 -v > LOG 2>&1
 if test $? -ne 0 ; then cat LOG; no_result; fi
 
-activity="branch integrate begin 385"
+activity="branch integrate begin 390"
 $bin/aegis -ib -c 0 -p $theProject.1 -v > LOG 2>&1
 if test $? -ne 0 ; then cat LOG; no_result; fi
 
-activity="branch integrate build 389"
+activity="branch integrate build 394"
 $bin/aegis -build -c 0 -p $theProject.1 -v > LOG 2>&1
 if test $? -ne 0 ; then cat LOG; no_result; fi
 
-activity="branch integrate diff 393"
+activity="branch integrate diff 398"
 $bin/aegis -diff -c 0 -p $theProject.1 -v > LOG 2>&1
 if test $? -ne 0 ; then cat LOG; no_result; fi
 
-activity="branch integrate pass 397"
+activity="branch integrate pass 402"
 $bin/aegis -ipass -c 0 -p $theProject.1 -v > LOG 2>&1
 if test $? -ne 0 ; then cat LOG; no_result; fi
 
 
 ###### Create a new branch ######
 
-activity="new branch 404"
+activity="new branch 409"
 $bin/aegis -nbr 1 -p $theProject.1 -v > LOG 2>&1
 if test $? -ne 0 ; then cat LOG; no_result; fi
 
-activity="branch staff 408"
+activity="branch staff 413"
 $bin/aegis -nd $USER -p $theProject.1.1 -v > LOG 2>&1
 if test $? -ne 0 ; then cat LOG; no_result; fi
 
@@ -419,7 +419,7 @@ export AEGIS_PROJECT
 
 ###### Create a new change -- removes the hosttest ######
 
-activity="new change 417"
+activity="new change 422"
 cat > changeAttributes << 'EOF'
 description = "Change 1 -- removes the hosttest";
 brief_description = "Change 1";
@@ -434,60 +434,60 @@ if test $? -ne 0 ; then no_result; fi
 $bin/aegis -nc 10 -file changeAttributes -p $theProject.1.1 -v > LOG 2>&1
 if test $? -ne 0 ; then cat LOG; no_result; fi
 
-activity="develop begin 432"
+activity="develop begin 437"
 $bin/aegis -db 10 -v -dir $chanDir > LOG 2>&1
 if test $? -ne 0 ; then cat LOG; no_result; fi
 
-activity="remove file 436"
+activity="remove file 441"
 $bin/aegis -rm $chanDir/hosttest/0001/main.cc > LOG 2>&1
 if test $? -ne 0 ; then cat LOG; no_result; fi
 
 sleep 2
 
 # build
-activity="build 443"
+activity="build 448"
 $bin/aegis -build -c 10 -v > LOG 2>&1
 if test $? -ne 0 ; then cat LOG; no_result; fi
 
 # diff
-activity="diff 448"
+activity="diff 453"
 $bin/aegis -diff -c 10 -v > LOG 2>&1
 if test $? -ne 0 ; then cat LOG; no_result; fi
 
 # test -reg
-activity="test -reg 453"
+activity="test -reg 458"
 $bin/aegis -test -reg -c 10 -v > LOG 2>&1
 if test $? -ne 0 ; then cat LOG; no_result; fi
 
 # develop end
-activity="develop end 458"
+activity="develop end 463"
 $bin/aegis -de -c 10 -v > LOG 2>&1
 if test $? -ne 0 ; then cat LOG; no_result; fi
 
 # integrate
-activity="integrate begin 463"
+activity="integrate begin 468"
 $bin/aegis -ib -c 10 -v > LOG 2>&1
 if test $? -ne 0 ; then cat LOG; no_result; fi
 
-activity="integrate build 467"
+activity="integrate build 472"
 $bin/aegis -build -c 10 -v > LOG 2>&1
 if test $? -ne 0 ; then cat LOG; no_result; fi
 
-activity="integrate diff 471"
+activity="integrate diff 476"
 $bin/aegis -diff -c 10 -v > LOG 2>&1
 if test $? -ne 0 ; then cat LOG; no_result; fi
 
-activity="integrate test reg 475"
+activity="integrate test reg 480"
 $bin/aegis -test -reg -c 10 -v > LOG 2>&1
 if test $? -ne 0 ; then cat LOG; no_result; fi
 
-activity="integrate pass 479"
+activity="integrate pass 484"
 $bin/aegis -ipass -c 10 -v > LOG 2>&1
 if test $? -ne 0 ; then cat LOG; no_result; fi
 
 ###### Create a new change -- reinstates the removed hosttest file ######
 
-activity="new change 485"
+activity="new change 490"
 cat > changeAttributes << EOF
 description = "Change 2 - reinstates the removed hosttest";
 brief_description = "Change 2";
@@ -502,11 +502,11 @@ if test $? -ne 0 ; then no_result; fi
 $bin/aegis -nc 11 -file changeAttributes -p $theProject.1.1 -v > LOG 2>&1
 if test $? -ne 0 ; then cat LOG; no_result; fi
 
-activity="develop begin 500"
+activity="develop begin 505"
 $bin/aegis -db 11 -v -dir $chanDir > LOG 2>&1
 if test $? -ne 0 ; then cat LOG; no_result; fi
 
-activity="new file 504"
+activity="new file 509"
 $bin/aegis -nf $chanDir/hosttest/0001/main.cc -c 11 -v > LOG 2>&1
 if test $? -ne 0 ; then cat LOG; no_result; fi
 
@@ -519,17 +519,17 @@ if test $? -ne 0 ; then no_result; fi
 sleep 2
 
 # build
-activity="build 517"
+activity="build 522"
 $bin/aegis -build -c 11 -v > LOG 2>&1
 if test $? -ne 0 ; then cat LOG; no_result; fi
 
 # diff
-activity="diff 522"
+activity="diff 527"
 $bin/aegis -diff -c 11 -v > LOG 2>&1
 if test $? -ne 0 ; then cat LOG; no_result; fi
 
 # test -reg
-activity="test reg 527"
+activity="test reg 532"
 $bin/aegis -test -reg -c 11 -v > LOG 2>&1
 if test $? -ne 0 ; then cat LOG; no_result; fi
 
@@ -538,7 +538,7 @@ cat > ok << 'EOF'
 src =
 [
 	{
-		file_name = "config";
+		file_name = "aegis.conf";
 		uuid = "UUID";
 		action = create;
 		edit =
@@ -666,7 +666,7 @@ EOF
 check_it ok $projectDir/info/change/0/001.branch/0/001.fs
 
 # develop end
-activity="develop end 660"
+activity="develop end 669"
 $bin/aegis -de -c 11 -v > LOG 2>&1
 if test $? -ne 0 ; then cat LOG; no_result; fi
 
@@ -709,21 +709,21 @@ if test $? -ne 0 ; then no_result; fi
 check_it ok $projectDir/info/change/0/001.branch/0/001.fs
 
 # integrate
-activity="integrate begin 702"
+activity="integrate begin 712"
 $bin/aegis -ib -c 11 -v > LOG 2>&1
 if test $? -ne 0 ; then cat LOG; no_result; fi
 
-activity="integrate build 706"
+activity="integrate build 716"
 $bin/aegis -build -c 11 -v > LOG 2>&1
 if test $? -ne 0 ; then cat LOG; no_result; fi
 
-activity="integrate diff 710"
+activity="integrate diff 720"
 $bin/aegis -diff -c 11 -v > LOG 2>&1
 if test $? -ne 0 ; then cat LOG; no_result; fi
 
 #### The test -reg command will fail, if the bug is present. ####
 
-activity="integrate test reg 716"
+activity="integrate test reg 726"
 $bin/aegis -test -reg -c 11 -v \
 	--trace aet change file nth find list_get \
 	> LOG 2>&1

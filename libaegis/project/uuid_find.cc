@@ -1,6 +1,6 @@
 //
 //	aegis - project change supervisor
-//	Copyright (C) 2004 Peter Miller;
+//	Copyright (C) 2004, 2005 Peter Miller;
 //	All rights reserved.
 //
 //	This program is free software; you can redistribute it and/or modify
@@ -21,6 +21,7 @@
 //
 
 #include <change/branch.h>
+#include <change/list.h>
 #include <project.h>
 
 
@@ -29,5 +30,11 @@ project_uuid_find(project_ty *pp, string_ty *uuid)
 {
     while (pp->parent)
 	pp = pp->parent;
-    return change_branch_uuid_find(project_change_get(pp), uuid);
+    change_list_ty result;
+    change_branch_uuid_find(project_change_get(pp), uuid, result);
+    if (result.size() == 1)
+	return result[0];
+    for (size_t j = 0; j < result.size(); ++j)
+	 change_free(result[j]);
+    return 0;
 }

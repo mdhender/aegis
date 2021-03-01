@@ -1,6 +1,6 @@
 /*
  *	aegis - project change supervisor
- *	Copyright (C) 1991-1993, 1996, 1999, 2001, 2002 Peter Miller;
+ *	Copyright (C) 1991-1993, 1996, 1999, 2001, 2002, 2005 Peter Miller;
  *	All rights reserved.
  *
  *	This program is free software; you can redistribute it and/or modify
@@ -20,23 +20,23 @@
  * MANIFEST: project attributes file contents definition
  *
  * If you add a new project attribute, you must edit all of these files...
- *	libaegis/project/new_branch.c	Where it is copied
- *	libaegis/project/pattr/set.c	Where it is copied
- *	libaegis/project/pattr/get.c	Where it is copied
- *	aegis/aenpr.c		Where it is defaulted (if not zero)
- *	aegis/aenrls.c		Where it is defaulted (if not zero)
- *	lib/en/man5/aecstate.5	Where it is documented
- *	lib/en/man5/aepattr.5	Where it is documented
- *	libaegis/change/cstate/improve.c	Where it is defaulted
- *	libaegis/change/branch/*.c	Where it is set&get
+ *	aegis/aenpr.cc		Where it is defaulted (if not zero)
+ *	aegis/aenrls.cc		Where it is defaulted (if not zero)
+ *	libaegis/change/branch/*.cc	Where it is set&get
  *	libaegis/change/branch.h	Where it is in a prototype
+ *	libaegis/change/cstate/improve.cc	Where it is defaulted
  *	libaegis/cstate.def	Where it is defined
  *	libaegis/pattr.def	Where it is defined
- *	libaegis/project/*.c	Where it is set&get
+ *	libaegis/project/*.cc	Where it is set&get
  *	libaegis/project.h	Where it is in a prototype
- *	script/tkaepa.in	Where it is edited.
+ *	libaegis/project/new_branch.cc	Where it is copied
+ *	libaegis/project/pattr/get.cc	Where it is copied
+ *	libaegis/project/pattr/set.cc	Where it is copied
+ *	lib/en/man5/aecstate.5	Where it is documented
+ *	lib/en/man5/aepattr.5	Where it is documented
  *	lib/wish/proj_attr.rpt	Where it is read
- * You will also have to fix a while bunch of tests.
+ *	script/tkaepa.in	Where it is edited.
+ * You will also have to fix a whole bunch of tests.
  */
 
 #include <common.def>
@@ -239,6 +239,12 @@ umask = integer;
  * no test exemption specified.
  */
 default_test_exemption = boolean;
+
+/*
+ * This field contains what to do when a change is created with no
+ * regression test exemption specified.  Defaults to true if not set.
+ */
+default_test_regression_exemption = boolean;
 
 /*
  * This field contains a list of copyright years, for use in copyright

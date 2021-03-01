@@ -1,6 +1,6 @@
 .\"
 .\"	aegis - project change supervisor
-.\"	Copyright (C) 1994-1996, 1998, 2002, 2004 Peter Miller;
+.\"	Copyright (C) 1994-1996, 1998, 2002, 2004, 2005 Peter Miller;
 .\"	All rights reserved.
 .\"
 .\"	This program is free software; you can redistribute it and/or modify
@@ -134,11 +134,11 @@ they ask Aegis for the source files of the project and change
 so that make can determine what needs to be compiled and linked.
 .E(
 project_files := \e
-  $(shell aegis -l pf -terse -p \e
-    $(project) -c $(change))
+  $(shell aelpf -p $(project) \e
+    -c $(change))
 change_files := \e
-  $(shell aegis -l cf -terse -p \e
-    $(project) -c $(change))
+  $(shell aelcf -p $(project) \e
+    -c $(change))
 source_files := \e
   $(sort $(project_files) \e
     $(change_files))

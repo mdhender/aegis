@@ -116,12 +116,12 @@ list(void)
     //
     // It may be compressed.
     //
-    ifp = input_gunzip(ifp);
+    ifp = input_gunzip_open(ifp);
 
     //
     // Now treat it as a tar archive.
     //
-    ifp = input_tar(ifp);
+    input_tar *itp = new input_tar(ifp);
 
     //
     // Write the file names to the output.
@@ -129,17 +129,18 @@ list(void)
     ofp = output_file_text_open(ofn);
     for (;;)
     {
-	input_ty	*ip;
-	string_ty	*archive_name;
-
-	ip = input_tar_child(ifp, &archive_name);
+	nstring archive_name;
+	input_ty *ip = itp->child(archive_name);
 	if (!ip)
 	    break;
 	ofp->fputs(archive_name);
 	ofp->fputc('\n');
-	input_delete(ip);
+#ifdef DEBUG
+	ofp->flush();
+#endif
+	delete ip;
     }
     delete ofp;
-    input_delete(ifp);
+    delete ifp;
     os_become_undo();
 }

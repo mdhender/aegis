@@ -195,22 +195,21 @@ change_test_batch(change_ty *cp, string_list_ty *wlp, user_ty *up,
     //
     if (total > 0)
     {
-	scp = sub_context_new();
-	sub_var_set_long(scp, "Current", current + 1);
-	sub_var_set_long(scp, "Total", total);
+	sub_context_ty sc;
+	sc.var_set_long("Current", current + 1);
+	sc.var_set_long("Total", total);
 	if (wlp->nstrings == 1)
-	    change_error(cp, scp, i18n("test $current of $total"));
+	    change_error(cp, &sc, i18n("test $current of $total"));
 	else
 	{
-	    sub_var_set_long(scp, "Last", current + wlp->nstrings);
+	    sc.var_set_long("Last", current + wlp->nstrings);
 	    change_error
 	    (
 		cp,
-		scp,
+		&sc,
 		i18n("batch test from $current to $last of $total")
 	    );
 	}
-	sub_context_delete(scp);
     }
 
     //
@@ -251,7 +250,20 @@ change_test_batch(change_ty *cp, string_list_ty *wlp, user_ty *up,
 	//
 	p = tstrslt_data->test_result->list[j];
 	if (!p->file_name)
-	    goto yuck;
+	{
+	    sub_context_ty sc;
+	    sc.var_set_string("File_Name", output_file_name);
+	    sc.var_set_charstar("FieLD_Name", "test_result.file_name");
+	    sc.var_set_charstar("REASON", " (no file_name field)");
+	    sc.var_append_if_unused("REASON");
+	    change_fatal
+	    (
+		cp,
+		&sc,
+		i18n("$filename: corrupted \"$field_name\" field")
+	    );
+	    // NOTREACHED
+	}
 	for (k = 0; k < wlp->nstrings; ++k)
 	{
 	    if (str_equal(p->file_name, wl2.string[k]))
@@ -264,25 +276,50 @@ change_test_batch(change_ty *cp, string_list_ty *wlp, user_ty *up,
 		break;
 	    }
 	}
-	if
-	(
-	    !wlp->member(p->file_name)
-	||
-	    batch_result_list_member(result, p->file_name)
-	)
+	if (!wlp->member(p->file_name))
 	{
-	    yuck:
-	    scp = sub_context_new();
-	    sub_var_set_string(scp, "File_Name", output_file_name);
-	    sub_var_set_charstar(scp, "FieLD_Name", "test_result.file_name");
+	    sub_context_ty sc;
+	    sc.var_set_string("File_Name", output_file_name);
+	    sc.var_set_charstar("FieLD_Name", "test_result.file_name");
+	    sc.var_set_string
+    	    (
+		"REASON",
+		" (filename \"" + nstring(p->file_name) + "\" not in the list)"
+	    );
+	    sc.var_append_if_unused("REASON");
 	    change_fatal
 	    (
 		cp,
-		scp,
+		&sc,
 		i18n("$filename: corrupted \"$field_name\" field")
 	    );
 	    // NOTREACHED
-	    sub_context_delete(scp);
+	}
+
+	if (batch_result_list_member(result, p->file_name, p->architecture))
+	{
+	    sub_context_ty sc;
+	    sc.var_set_string("File_Name", output_file_name);
+	    sc.var_set_charstar("FieLD_Name", "test_result.file_name");
+	    sc.var_set_string
+    	    (
+		"REASON",
+		(
+		    " (filename \""
+		+
+		    nstring(p->file_name)
+		+
+		    "\" named more than once)"
+		)
+	    );
+	    sc.var_append_if_unused("REASON");
+	    change_fatal
+	    (
+		cp,
+		&sc,
+		i18n("$filename: corrupted \"$field_name\" field")
+	    );
+	    // NOTREACHED
 	}
 
 	//
@@ -304,18 +341,50 @@ change_test_batch(change_ty *cp, string_list_ty *wlp, user_ty *up,
 	case 1:
 	    if (baseline_flag)
 	    {
-		scp = sub_context_new();
-		sub_var_set_string(scp, "File_Name", p->file_name);
-		change_verbose(cp, scp, i18n("$filename baseline fail, good"));
-		sub_context_delete(scp);
+		sub_context_ty sc;
+		sc.var_set_string("File_Name", p->file_name);
+		if (p->architecture)
+		{
+		    sc.var_set_string("ARCHitecture", p->architecture);
+		    sc.var_override("ARCHitecture");
+		    change_verbose
+	    	    (
+			cp,
+			&sc,
+			i18n
+			(
+		     "$filename baseline fail, architecture $architecture, good"
+			)
+		    );
+		}
+		else
+		{
+		    change_verbose
+	    	    (
+			cp,
+			&sc,
+			i18n("$filename baseline fail, good")
+		    );
+		}
 		result->pass_count++;
 	    }
 	    else
 	    {
-		scp = sub_context_new();
-		sub_var_set_string(scp, "File_Name", p->file_name);
-		change_verbose(cp, scp, i18n("$filename fail"));
-		sub_context_delete(scp);
+		sub_context_ty sc;
+		sc.var_set_string("File_Name", p->file_name);
+		if (p->architecture)
+		{
+		    sc.var_set_string("ARCHitecture", p->architecture);
+		    sc.var_override("ARCHitecture");
+		    change_verbose
+		    (
+			cp,
+			&sc,
+			i18n("$filename fail, architecture $architecture")
+		    );
+		}
+		else
+		    change_verbose(cp, &sc, i18n("$filename fail"));
 		result->fail_count++;
 	    }
 	    break;
@@ -323,33 +392,73 @@ change_test_batch(change_ty *cp, string_list_ty *wlp, user_ty *up,
 	case 0:
 	    if (baseline_flag)
 	    {
-		scp = sub_context_new();
-		sub_var_set_string(scp, "File_Name", p->file_name);
-		change_verbose
-		(
-		    cp,
-		    scp,
-		    i18n("$filename baseline pass, not good")
-		);
-		sub_context_delete(scp);
+		sub_context_ty sc;
+		sc.var_set_string("File_Name", p->file_name);
+		if (p->architecture)
+		{
+		    sc.var_set_string("ARCHitecture", p->architecture);
+		    sc.var_override("ARCHitecture");
+		    change_verbose
+		    (
+			cp,
+			&sc,
+			i18n
+			(
+		 "$filename baseline pass, architecture $architecture, not good"
+			)
+		    );
+		}
+		else
+		{
+		    change_verbose
+		    (
+			cp,
+			&sc,
+			i18n("$filename baseline pass, not good")
+		    );
+		}
 		result->fail_count++;
 	    }
 	    else
 	    {
-		scp = sub_context_new();
-		sub_var_set_string(scp, "File_Name", p->file_name);
-		change_verbose(cp, scp, i18n("$filename pass"));
-		sub_context_delete(scp);
+		sub_context_ty sc;
+		sc.var_set_string("File_Name", p->file_name);
+		if (p->architecture)
+		{
+		    sc.var_set_string("ARCHitecture", p->architecture);
+		    sc.var_override("ARCHitecture");
+		    change_verbose
+	    	    (
+			cp,
+			&sc,
+			i18n("$filename pass, architecture $architecture")
+		    );
+		}
+		else
+		    change_verbose(cp, &sc, i18n("$filename pass"));
 		result->pass_count++;
 	    }
 	    break;
 
 	default:
-	    scp = sub_context_new();
-	    sub_var_set_string(scp, "File_Name", p->file_name);
-	    change_verbose(cp, scp, i18n("$filename no result"));
-	    sub_context_delete(scp);
-	    result->no_result_count++;
+	    {
+		sub_context_ty sc;
+		sc.var_set_string("File_Name", p->file_name);
+		if (p->architecture)
+		{
+		    sc.var_set_string("ARCHitecture", p->architecture);
+		    sc.var_override("ARCHitecture");
+		    change_verbose
+	    	    (
+			cp,
+			&sc,
+			i18n("$filename no result, architecture $architecture")
+		    );
+		}
+		else
+		    change_verbose(cp, &sc, i18n("$filename no result"));
+		result->no_result_count++;
+	    }
 	    break;
 	}
     }

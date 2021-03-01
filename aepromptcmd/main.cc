@@ -37,6 +37,7 @@
 #include <project.h>
 #include <quit.h>
 #include <r250.h>
+#include <rsrc_limits.h>
 #include <trace.h>
 #include <user.h>
 #include <version.h>
@@ -255,6 +256,7 @@ prompt_main(void)
 int
 main(int argc, char **argv)
 {
+    resource_limits_init();
     clear_attributes();
     r250_init();
     os_become_init_mortal();

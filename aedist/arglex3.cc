@@ -43,6 +43,7 @@ static arglex_table_ty argtab[] =
         { "-PATch", arglex_token_patch, },
 	{ "-Not_PATch", arglex_token_patch_not, },
 	{ "-Partial_Source", arglex_token_entire_source_not, },
+        { "-PENding", arglex_token_pending },
         { "-IGnore_UUID", arglex_token_ignore_uuid, },
         { "-Not_IGnore_UUID", arglex_token_ignore_uuid_not, },
         { "-Receive", arglex_token_receive, },

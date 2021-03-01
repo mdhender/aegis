@@ -30,6 +30,7 @@
 #include <os.h>
 #include <quit.h>
 #include <r250.h>
+#include <rsrc_limits.h>
 
 
 int
@@ -43,6 +44,7 @@ main(int argc, char **argv)
     arglex2_init(argc, argv);
     env_initialize();
     language_init();
+    resource_limits_init();
 
     //
     // Process the request

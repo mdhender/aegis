@@ -1,7 +1,7 @@
 #!/bin/sh
 #
 #	aegis - project change supervisor
-#	Copyright (C) 1991-1998, 2004 Peter Miller;
+#	Copyright (C) 1991-1998, 2004, 2005 Peter Miller;
 #	All rights reserved.
 #
 #	This program is free software; you can redistribute it and/or modify
@@ -93,7 +93,7 @@ AEGIS_PROJECT=foo ; export AEGIS_PROJECT
 #
 # make the directories
 #
-activity="working directory 81"
+activity="working directory 96"
 mkdir $work $work/lib
 if test $? -ne 0 ; then no_result; fi
 chmod 777 $work/lib
@@ -132,14 +132,14 @@ fi
 # make a new project
 #	and check files it should have made
 #
-activity="new project 115"
+activity="new project 135"
 $bin/aegis -newpro foo -vers "" -dir $workproj -lib $worklib
 if test $? -ne 0 ; then no_result; fi
 
 #
 # change project attributes
 #
-activity="project attributes 122"
+activity="project attributes 142"
 cat > $tmp << 'end'
 description = "test recreation of deleted files";
 developer_may_review = true;
@@ -153,7 +153,7 @@ if test $? -ne 0 ; then no_result; fi
 #
 # create a new change
 #
-activity="new change 136"
+activity="new change 156"
 cat > $tmp << 'end'
 brief_description = "create initial files";
 cause = internal_bug;
@@ -165,7 +165,7 @@ if test $? -ne 0 ; then no_result; fi
 #
 # create a second change
 #
-activity="new change 148"
+activity="new change 168"
 cat > $tmp << 'end'
 brief_description = "delete a file";
 cause = internal_bug;
@@ -177,7 +177,7 @@ if test $? -ne 0 ; then no_result; fi
 #
 # create a third change
 #
-activity="new change 160"
+activity="new change 180"
 cat > $tmp << 'end'
 brief_description = "recreate a file";
 cause = internal_bug;
@@ -188,7 +188,7 @@ if test $? -ne 0 ; then no_result; fi
 #
 # add the staff
 #
-activity="staff 171"
+activity="staff 191"
 $bin/aegis -newdev $USER
 if test $? -ne 0 ; then no_result; fi
 $bin/aegis -newrev $USER
@@ -199,17 +199,17 @@ if test $? -ne 0 ; then no_result; fi
 #
 # begin development of change 1
 #
-activity="develop begin 182"
+activity="develop begin 202"
 $bin/aegis -devbeg 1 -dir $workchan
 if test $? -ne 0 ; then no_result; fi
 
 #
 # add a few files to the change
 #
-activity="new file 189"
+activity="new file 209"
 $bin/aegis -new_file $workchan/main.cc $workchan/junk -nl
 if test $? -ne 0 ; then no_result; fi
-$bin/aegis -new_file $workchan/config -nl
+$bin/aegis -new_file $workchan/aegis.conf -nl
 if test $? -ne 0 ; then no_result; fi
 $bin/aegis -new_file -list -lib $worklib -p foo
 if test $? -ne 0 ; then no_result; fi
@@ -221,7 +221,7 @@ main(int argc, char **argv)
 }
 end
 if test $? -ne 0 ; then no_result; fi
-cat > $workchan/config << 'end'
+cat > $workchan/aegis.conf << 'end'
 build_command = "rm -f foo; c++ -o foo -D'VERSION=\"$v\"' main.cc";
 
 history_get_command =
@@ -242,41 +242,41 @@ end
 #
 # build the change
 #
-activity="build 221"
+activity="build 245"
 $bin/aegis -b -nl > /dev/null 2>&1
 if test $? -ne 0 ; then no_result; fi
 
 #
 # difference the change
 #
-activity="diff 228"
+activity="diff 252"
 $bin/aegis -diff -nl > /dev/null 2>&1
 if test $? -ne 0 ; then no_result; fi
 
 #
 # finish development of the change
 #
-activity="develop end 235"
+activity="develop end 259"
 $bin/aegis -de
 if test $? -ne 0 ; then no_result; fi
 
 #
 # pass the review
 #
-activity="review pass 242"
+activity="review pass 266"
 $bin/aegis -rpass 1
 if test $? -ne 0 ; then no_result; fi
 
 #
 # integrate
 #
-activity="integrate begin 249"
+activity="integrate begin 273"
 $bin/aegis -ib 1
 if test $? -ne 0 ; then no_result; fi
-activity="build 252"
+activity="build 276"
 $bin/aegis -build -nl > /dev/null 2>&1
 if test $? -ne 0 ; then no_result; fi
-activity="integrate pass 255"
+activity="integrate pass 279"
 $bin/aegis -ipass -nl > /dev/null 2>&1
 if test $? -ne 0 ; then no_result; fi
 
@@ -284,38 +284,38 @@ if test $? -ne 0 ; then no_result; fi
 # develop change 2
 #	remove a file
 #
-activity="develop begin 263"
+activity="develop begin 287"
 $bin/aegis -db 2 -dir $workchan
 if test $? -ne 0 ; then no_result; fi
-activity="remove file 266"
+activity="remove file 290"
 $bin/aegis -rm $workchan/junk -nl
 if test $? -ne 0 ; then no_result; fi
-activity="copy file 269"
+activity="copy file 293"
 $bin/aegis -cp $workchan/main.cc -nl
 if test $? -ne 0 ; then no_result; fi
-activity="build 272"
+activity="build 296"
 $bin/aegis -b -nl > /dev/null 2>&1
 if test $? -ne 0 ; then no_result; fi
-activity="diff 275"
+activity="diff 299"
 $bin/aegis -diff -nl > /dev/null 2>&1
 if test $? -ne 0 ; then no_result; fi
-activity="develop end 278"
+activity="develop end 302"
 $bin/aegis -de
 if test $? -ne 0 ; then no_result; fi
-activity="review pass 281"
+activity="review pass 305"
 $bin/aegis -rpass 2
 if test $? -ne 0 ; then no_result; fi
 
 #
 # integrate change 2
 #
-activity="integrate begin 288"
+activity="integrate begin 312"
 $bin/aegis -ib 2
 if test $? -ne 0 ; then no_result; fi
-activity="build 291"
+activity="build 315"
 $bin/aegis -b -nl > /dev/null 2>&1
 if test $? -ne 0 ; then no_result; fi
-activity="integrate pass 294"
+activity="integrate pass 318"
 $bin/aegis -ipass -nl > /dev/null 2>&1
 if test $? -ne 0 ; then no_result; fi
 
@@ -323,38 +323,38 @@ if test $? -ne 0 ; then no_result; fi
 # develop change 3
 #	recreate a file
 #
-activity="develop begin 302"
+activity="develop begin 326"
 $bin/aegis -db 3 -dir $workchan
 if test $? -ne 0 ; then no_result; fi
-activity="new file 305"
+activity="new file 329"
 $bin/aegis -nf $workchan/junk -nl
 if test $? -ne 0 ; then fail; fi
-activity="copy file 308"
+activity="copy file 332"
 $bin/aegis -cp $workchan/main.cc -nl
 if test $? -ne 0 ; then no_result; fi
-activity="build 311"
+activity="build 335"
 $bin/aegis -b -nl > /dev/null 2>&1
 if test $? -ne 0 ; then no_result; fi
-activity="diff 314"
+activity="diff 338"
 $bin/aegis -diff -nl > /dev/null 2>&1
 if test $? -ne 0 ; then fail; fi
-activity="develop end 317"
+activity="develop end 341"
 $bin/aegis -de
 if test $? -ne 0 ; then fail; fi
-activity="review pass 320"
+activity="review pass 344"
 $bin/aegis -rpass 3
 if test $? -ne 0 ; then no_result; fi
 
 #
 # integrate change 3
 #
-activity="integrate begin 327"
+activity="integrate begin 351"
 $bin/aegis -ib 3
 if test $? -ne 0 ; then no_result; fi
-activity="build 330"
+activity="build 354"
 $bin/aegis -b -nl > /dev/null 2>&1
 if test $? -ne 0 ; then no_result; fi
-activity="integrate pass 333"
+activity="integrate pass 357"
 $bin/aegis -ipass -nl > LOG 2>&1
 if test $? -ne 0 ; then cat LOG; fail; fi
 

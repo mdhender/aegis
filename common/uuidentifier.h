@@ -23,7 +23,7 @@
 #ifndef COMMON_UUIDENTIFIER_H
 #define COMMON_UUIDENTIFIER_H
 
-#include <main.h>
+#include <nstring.h>
 
 /** \addtogroup UUID
   * \brief UUID wrapper
@@ -42,7 +42,24 @@ string_ty *universal_unique_identifier(void);
 /**
   * \brief Check if the UUID passed as input is valid.
   */
-int universal_unique_identifier_valid(string_ty *);
+bool universal_unique_identifier_valid(string_ty *);
+
+/**
+  * \brief Check if the UUID passed as input is valid.
+  */
+bool universal_unique_identifier_valid(const nstring &arg);
+
+/**
+  * \brief Check if the UUID passed as input is valid, or a valid
+  * leading partial prefix.
+  */
+bool universal_unique_identifier_valid_partial(string_ty *);
+
+/**
+  * \brief Check if the UUID passed as input is valid, or a valid
+  * leading partial prefix.
+  */
+bool universal_unique_identifier_valid_partial(const nstring &arg);
 
 /** @} */
 #endif /* COMMON_UUIDENTIFIER_H */

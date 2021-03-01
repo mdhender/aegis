@@ -1,7 +1,7 @@
 #!/bin/sh
 #
 #	aegis - project change supervisor
-#	Copyright (C) 1996-1998, 2000, 2002-2004 Peter Miller;
+#	Copyright (C) 1996-1998, 2000, 2002-2005 Peter Miller;
 #	All rights reserved.
 #
 #	This program is free software; you can redistribute it and/or modify
@@ -93,7 +93,7 @@ check_it()
 	if test $? -ne 0; then fail; fi
 }
 
-activity="working directory 84"
+activity="working directory 96"
 mkdir $work $work/lib
 if test $? -ne 0 ; then no_result; fi
 chmod 777 $work/lib
@@ -117,14 +117,14 @@ unset LANGUAGE
 #
 # make a new project
 #
-activity="new project 122"
+activity="new project 120"
 $bin/aegis -newpro foo -version "" -dir $workproj -lib $worklib
 if test $? -ne 0 ; then no_result; fi
 
 #
 # change project attributes
 #
-activity="project attributes 129"
+activity="project attributes 127"
 cat > $tmp << 'end'
 developer_may_review = true;
 developer_may_integrate = true;
@@ -137,7 +137,7 @@ if test $? -ne 0 ; then no_result; fi
 #
 # create a new change
 #
-activity="new change 142"
+activity="new change 140"
 cat > $tmp << 'end'
 brief_description = "one";
 cause = internal_bug;
@@ -149,25 +149,25 @@ if test $? -ne 0 ; then no_result; fi
 #
 # add a new developer
 #
-activity="new developer 153"
+activity="new developer 152"
 $bin/aegis -newdev $USER -p foo -lib $worklib
 if test $? -ne 0 ; then no_result; fi
 
 #
 # begin development of a change
 #
-activity="develop begin 160"
+activity="develop begin 159"
 $bin/aegis -devbeg 1 -p foo -dir $workchan -lib $worklib
 if test $? -ne 0 ; then no_result; fi
 
 #
 # add a new files to the change
 #
-activity="new file 167"
-$bin/aegis -new_file $workchan/config $workchan/main.c -nl -lib $worklib -p foo
+activity="new file 166"
+$bin/aegis -new_file $workchan/aegis.conf $workchan/main.c -nl -lib $worklib -p foo
 if test $? -ne 0 ; then no_result; fi
 
-cat > $workchan/config << 'end'
+cat > $workchan/aegis.conf << 'end'
 build_command = "exit 0";
 history_get_command = "exit 0";
 history_create_command = "exit 0";
@@ -181,14 +181,14 @@ if test $? -ne 0 ; then no_result; fi
 #
 # new file undo
 #
-activity="new file undo 185"
+activity="new file undo 184"
 $bin/aegis -nfu $workchan/main.c -lib $worklib -p foo
 if test $? -ne 0 ; then fail; fi
 
 #
 # check the change state
 #
-activity="check change state 192"
+activity="check change state 191"
 cat > ok << 'fubar'
 brief_description = "one";
 description = "one";
@@ -229,7 +229,7 @@ cat > ok << 'fubar'
 src =
 [
 	{
-		file_name = "config";
+		file_name = "aegis.conf";
 		action = create;
 		usage = config;
 	},

@@ -1,21 +1,21 @@
 //
-//	aegis - project change supervisor
-//	Copyright (C) 2003, 2004 Peter Miller;
-//	All rights reserved.
+//      aegis - project change supervisor
+//      Copyright (C) 2003, 2004 Peter Miller;
+//      All rights reserved.
 //
-//	This program is free software; you can redistribute it and/or modify
-//	it under the terms of the GNU General Public License as published by
-//	the Free Software Foundation; either version 2 of the License, or
-//	(at your option) any later version.
+//      This program is free software; you can redistribute it and/or modify
+//      it under the terms of the GNU General Public License as published by
+//      the Free Software Foundation; either version 2 of the License, or
+//      (at your option) any later version.
 //
-//	This program is distributed in the hope that it will be useful,
-//	but WITHOUT ANY WARRANTY; without even the implied warranty of
-//	MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-//	GNU General Public License for more details.
+//      This program is distributed in the hope that it will be useful,
+//      but WITHOUT ANY WARRANTY; without even the implied warranty of
+//      MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+//      GNU General Public License for more details.
 //
-//	You should have received a copy of the GNU General Public License
-//	along with this program; if not, write to the Free Software
-//	Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111, USA.
+//      You should have received a copy of the GNU General Public License
+//      along with this program; if not, write to the Free Software
+//      Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111, USA.
 //
 // MANIFEST: functions to manipulate projects
 //
@@ -39,6 +39,7 @@
 #include <get/project/progress.h>
 #include <get/project/staff.h>
 #include <get/project/statistics.h>
+#include <get/rss.h>
 #include <http.h>
 #include <project.h>
 #include <str_list.h>
@@ -82,6 +83,7 @@ static const table_ty table[] =
     { "progress", get_project_progress },
     { "staff", get_project_staff },
     { "statistics", get_project_statistics },
+    { "rss", get_rss },
 };
 
 
@@ -99,20 +101,20 @@ whine(project_ty *pp, string_list_ty *modifier)
     printf("Project information selector ");
     if (modifier->nstrings)
     {
-	printf("&ldquo;<tt>");
-	html_encode_string(modifier->string[0]);
-	printf("</tt>&rdquo; ");
+        printf("&ldquo;<tt>");
+        html_encode_string(modifier->string[0]);
+        printf("</tt>&rdquo; ");
     }
     printf("not recognised.\n");
     printf("Please select one of the following:\n");
     printf("<ul>\n");
     for (const table_ty *tp = table; tp < ENDOF(table); ++tp)
     {
-	string_ty *s = str_format("project+%s", tp->name);
-	printf("<li>");
-	emit_project_href(pp, "%s", s->str_text);
-	printf("%s</a>\n", tp->name);
-	str_free(s);
+        string_ty *s = str_format("project+%s", tp->name);
+        printf("<li>");
+        emit_project_href(pp, "%s", s->str_text);
+        printf("%s</a>\n", tp->name);
+        str_free(s);
     }
     printf("</ul>\n");
 
@@ -136,21 +138,21 @@ get_project(project_ty *pp, string_ty *filename, string_list_ty *modifier)
     //
     if (modifier->nstrings && 0 == strcmp(filename->str_text, "."))
     {
-	for (const table_ty *tp = table; tp < ENDOF(table); ++tp)
-	{
-	    if (modifier_test_and_clear(modifier, tp->name))
-	    {
+        for (const table_ty *tp = table; tp < ENDOF(table); ++tp)
+        {
+            if (modifier_test_and_clear(modifier, tp->name))
+            {
     fprintf(stderr, "%s: %d: get_project %s\n", __FILE__, __LINE__, tp->name);
-		tp->action(pp, filename, modifier);
-		return;
-	    }
-	}
+                tp->action(pp, filename, modifier);
+                return;
+            }
+        }
 
-	//
-	// Whine about bogus requests.
-	//
-	whine(pp, modifier);
-	return;
+        //
+        // Whine about bogus requests.
+        //
+        whine(pp, modifier);
+        return;
     }
 
     //

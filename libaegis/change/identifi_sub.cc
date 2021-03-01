@@ -31,10 +31,10 @@
 change_identifier_subset::~change_identifier_subset()
 {
     trace(("change_identifier_subset::~change_identifier_subset()\n{\n"));
-    if (historian)
+    if (historian_p)
     {
-	delete historian;
-	historian = 0;
+	delete historian_p;
+	historian_p = 0;
     }
     if (cp)
     {
@@ -54,7 +54,7 @@ change_identifier_subset::change_identifier_subset(
     delta_date(NO_TIME_SET),
     delta_number(-1),
     cp(0),
-    historian(0)
+    historian_p(0)
 {
     trace(("change_identifier_subset::change_identifier_subset()\n"));
 }

@@ -1,6 +1,6 @@
 //
 //	aegis - project change supervisor
-//	Copyright (C) 1999, 2001, 2002, 2004 Peter Miller;
+//	Copyright (C) 1999, 2001, 2002, 2004, 2005 Peter Miller;
 //	All rights reserved.
 //
 //	This program is free software; you can redistribute it and/or modify
@@ -69,16 +69,24 @@ str_quote_shell(string_ty *s)
 	    needs_quoting = 1;
 	    break;
 
+	case '$':
+	case '`':
+	    // prefer single quotes to suppress substitutions
+	    if (!mode)
+	       	mode = '\'';
+	    needs_quoting = 1;
+	    break;
+
 	case '\'':
 	    if (!mode)
 	       	mode = '"';
 	    needs_quoting = 1;
 	    break;
 
-	case '"': case '#': case '$': case '&':
+	case '"': case '#': case '&':
 	case '(': case ')': case '*': case ':': case ';': case '<':
 	case '=': case '>': case '?': case '[': case '\\': case ']':
-	case '^': case '`': case '{': case '|': case '}': case '~':
+	case '^': case '{': case '|': case '}': case '~':
 	    needs_quoting = 1;
 	    break;
 	}

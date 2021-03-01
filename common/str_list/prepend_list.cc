@@ -1,6 +1,6 @@
 //
 //	aegis - project change supervisor
-//	Copyright (C) 2003, 2004 Peter Miller;
+//	Copyright (C) 2003-2005 Peter Miller;
 //	All rights reserved.
 //
 //	This program is free software; you can redistribute it and/or modify
@@ -38,11 +38,11 @@ string_list_ty::push_front(const string_list_ty &arg)
 	for (;;)
 	{
 	    new_nstrings_max = new_nstrings_max * 2 + 8;
-	    if (nstrings + nstrings <= new_nstrings_max)
+	    if (nstrings + arg.size() <= new_nstrings_max)
 		break;
 	}
 	string_ty **new_string = new string_ty * [new_nstrings_max];
-	memcpy(new_string + arg.size(), string, nstrings);
+	memcpy(new_string + arg.size(), string, nstrings * sizeof(string[0]));
 	delete [] string;
 	string = new_string;
 	nstrings_max = new_nstrings_max;
@@ -50,7 +50,7 @@ string_list_ty::push_front(const string_list_ty &arg)
     else
     {
 	for (size_t k = nstrings; k > 0; --k)
-	    string[k + nstrings - 1] = string[k - 1];
+	    string[k + arg.size() - 1] = string[k - 1];
     }
     for (size_t j = 0; j < arg.size(); ++j)
 	string[j] = str_copy(arg[j]);

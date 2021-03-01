@@ -1,6 +1,7 @@
 //
 //	aegis - project change supervisor
-//	Copyright (C) 2004 Walter Franzini;
+//	Copyright (C) 2005 Peter Miller,
+//	Copyright (C) 2004, 2005 Walter Franzini;
 //	All rights reserved.
 //
 //	This program is free software; you can redistribute it and/or modify
@@ -63,6 +64,7 @@ replay_main(void)
     nstring_list include_uuid_list;
     nstring_list exclude_version_list;
     nstring_list include_version_list;
+    bool all_changes = false;
     arglex();
     while (arglex_token != arglex_token_eoln)
     {
@@ -164,6 +166,10 @@ replay_main(void)
 	case arglex_token_persevere_not:
 	    user_persevere_argument(usage);
 	    break;
+
+	case arglex_token_maximum:
+	    all_changes = true;
+	    break;
         }
         arglex();
     }
@@ -180,7 +186,10 @@ replay_main(void)
     user_ty *up = user_executing(pp);
 
     symtab<change_ty> local_inventory;
-    change_functor_inventory_builder cf(pp, &local_inventory);
+    bool include_branches = true;
+    bool ignore_original_uuid = false;
+    change_functor_inventory_builder cf(include_branches, all_changes,
+	ignore_original_uuid, pp, &local_inventory);
     project_inventory_walk(pp, cf);
 
     //
@@ -195,7 +204,7 @@ replay_main(void)
     {
 	smart_url.set_path_if_empty
 	(
-	    nstring::format("/cgi-bin/aeget/%s", project_name->str_text)
+	    nstring::format("/cgi-bin/aeget/%s", project_name_get(pp)->str_text)
 	);
 	smart_url.set_query_if_empty("inventory");
 	ifn = smart_url.reassemble();
@@ -212,12 +221,12 @@ replay_main(void)
     nstring_list remote_change;
     for (;;)
     {
+	nstring line;
         os_become_orig();
-        string_ty *line_p = input_one_line(ifp);
+        bool ok = ifp->one_line(line);
         os_become_undo();
-        if (!line_p)
+        if (!ok)
             break;
-	nstring line(line_p);
 
 	replay_line parts;
 	if (!parts.extract(line))
@@ -267,7 +276,7 @@ replay_main(void)
     trace(("remote_change.size() = %d;\n", remote_change.size()));
 
     os_become_orig();
-    nstring dot = os_curdir();
+    nstring dot(os_curdir());
     os_become_undo();
 
     //
@@ -294,16 +303,18 @@ replay_main(void)
 	    relative.set_host_part_from(smart_url);
 	    url_abs = relative.reassemble();
 	}
+        nstring trace_options(trace_args());
         nstring aedist_cmd =
             nstring::format
             (
-                "aedist -receive -project=%s -change=%ld -file '%s'%s",
-                project_name->str_text,
+                "aedist -receive -project=%s -change=%ld -file %s%s%s",
+                nstring(project_name_get(pp2)).quote_shell().c_str(),
                 change_number,
-                url_abs.c_str(),
-                trojan.c_str()
+                url_abs.quote_shell().c_str(),
+                trojan.c_str(),
+                trace_options.c_str()
             );
-        trace_string(aedist_cmd.c_str());
+        trace_nstring(aedist_cmd);
         os_become_orig();
         int rc =
             os_execute_retcode
@@ -366,11 +377,11 @@ replay_main(void)
             nstring::format
             (
                 "aeintegratq -p %s -c %ld",
-                project_name->str_text,
+                nstring(project_name_get(pp2)).quote_shell().c_str(),
                 change_number
             );
 
-        trace_string(aeintq_cmd.c_str());
+        trace_nstring(aeintq_cmd);
         os_become_orig();
         rc =
             os_execute_retcode
@@ -395,9 +406,6 @@ replay_main(void)
         case cstate_state_being_reviewed:
         case cstate_state_awaiting_integration:
         case cstate_state_being_integrated:
-            assert(0);
-            // FALLTHROUGH
-
         case cstate_state_being_developed:
 #ifndef DEBUG
         default:

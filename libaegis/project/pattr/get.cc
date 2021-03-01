@@ -1,6 +1,6 @@
 //
 //	aegis - project change supervisor
-//	Copyright (C) 1999, 2001-2004 Peter Miller;
+//	Copyright (C) 1999, 2001-2005 Peter Miller;
 //	All rights reserved.
 //
 //	This program is free software; you can redistribute it and/or modify
@@ -69,6 +69,12 @@ project_pattr_get(project_ty *pp, pattr_ty *a)
     if (!(a->mask & pattr_default_test_exemption_mask))
     {
 	a->default_test_exemption = project_default_test_exemption_get(pp);
+    }
+    if (!(a->mask & pattr_default_test_regression_exemption_mask))
+    {
+	a->default_test_regression_exemption =
+	    project_default_test_regression_exemption_get(pp);
+	a->mask |= pattr_default_test_regression_exemption_mask;
     }
     if (!(a->mask & pattr_skip_unlucky_mask))
     {

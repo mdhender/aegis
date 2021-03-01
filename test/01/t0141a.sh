@@ -1,7 +1,7 @@
 #!/bin/sh
 #
 #	aegis - project change supervisor
-#	Copyright (C) 2003, 2004 Peter Miller;
+#	Copyright (C) 2003-2005 Peter Miller;
 #	All rights reserved.
 #
 #	This program is free software; you can redistribute it and/or modify
@@ -191,7 +191,7 @@ activity="new file 190"
 $bin/aegis -nf  $workchan/bogus -nl \
 	-uuid "aaaaaaaa-bbbb-4bbb-8ccc-ccccddddddd1" > log 2>&1
 if test $? -ne 0 ; then cat log; no_result; fi
-$bin/aegis -nf  $workchan/config -nl \
+$bin/aegis -nf  $workchan/aegis.conf -nl \
 	-uuid "aaaaaaaa-bbbb-4bbb-8ccc-ccccddddddd2" > log 2>&1
 if test $? -ne 0 ; then cat log; no_result; fi
 
@@ -200,7 +200,7 @@ the trunk version
 end
 if test $? -ne 0 ; then no_result; fi
 
-cat > $workchan/config << 'end'
+cat > $workchan/aegis.conf << 'end'
 build_command = "exit 0";
 create_symlinks_before_build = true;
 remove_symlinks_after_build = false;
@@ -224,58 +224,80 @@ if test $? -ne 0 ; then no_result; fi
 #
 # build the change
 #
-activity="build 223"
+activity="build 227"
 $bin/aegis -build -nl -v > log 2>&1
 if test $? -ne 0 ; then cat log; no_result; fi
 
 #
 # difference the change
 #
-activity="diff 230"
+activity="diff 234"
 $bin/aegis -diff > log 2>&1
 if test $? -ne 0 ; then cat log; no_result; fi
 
 #
 # finish development of the change
 #
-activity="develop end 237"
+activity="develop end 241"
 $bin/aegis -de > log 2>&1
 if test $? -ne 0 ; then cat log; no_result; fi
 
 #
 # pass the review
 #
-activity="review pass 244"
+activity="review pass 248"
 $bin/aegis -rpass -c 1 > log 2>&1
 if test $? -ne 0 ; then cat log; no_result; fi
 
 #
 # start integrating
 #
-activity="integrate begin 251"
+activity="integrate begin 255"
 $bin/aegis -ib 1 > log 2>&1
 if test $? -ne 0 ; then cat log; no_result; fi
 
 #
 # integrate build
 #
-activity="build 258"
+activity="build 262"
 $bin/aegis -b -nl -v > log 2>&1
 if test $? -ne 0 ; then cat log; no_result; fi
 
 #
 # pass the integration
 #
-activity="integrate pass 265"
+activity="integrate pass 269"
 $bin/aegis -intpass -nl > log 2>&1
 if test $? -ne 0 ; then cat log; no_result; fi
 
 # --------------------------------------------------------------------------
 
-activity="check project file state 271"
+activity="check project file state 275"
 cat > ok << fubar
 src =
 [
+	{
+		file_name = "aegis.conf";
+		uuid = "aaaaaaaa-bbbb-4bbb-8ccc-ccccddddddd2";
+		action = create;
+		edit =
+		{
+			revision = "1.1";
+			encoding = none;
+		};
+		edit_origin =
+		{
+			revision = "1.1";
+			encoding = none;
+		};
+		usage = config;
+		file_fp =
+		{
+			youngest = TIME;
+			oldest = TIME;
+			crypto = "GUNK";
+		};
+	},
 	{
 		file_name = "bogus";
 		uuid = "aaaaaaaa-bbbb-4bbb-8ccc-ccccddddddd1";
@@ -298,8 +320,108 @@ src =
 			crypto = "GUNK";
 		};
 	},
+];
+fubar
+if test $? -ne 0 ; then no_result; fi
+
+check_it ok $workproj/info/trunk.fs
+
+# --------------------------------------------------------------------------
+
+#
+# create a new change
+#
+activity="new change 334"
+cat > $tmp << 'end'
+brief_description = "The second change";
+cause = internal_bug;
+test_baseline_exempt = true;
+end
+if test $? -ne 0 ; then no_result; fi
+$bin/aegis -nc 42 -f $tmp -p foo > log 2>&1
+if test $? -ne 0 ; then cat log; no_result; fi
+
+#
+# begin development of a change
+#
+$bin/aegis -db 42 -dir $workchan > log 2>&1
+if test $? -ne 0 ; then cat log; no_result; fi
+
+#
+# add files to the change
+# remove and then add, to change type
+#
+activity="copy file 354"
+$bin/aegis -rm $workchan/bogus -nl > log 2>&1
+if test $? -ne 0 ; then cat log; no_result; fi
+$bin/aegis -nt $workchan/bogus -nl > log 2>&1
+if test $? -ne 0 ; then cat log; no_result; fi
+
+echo "exit 0" > $workchan/bogus
+if test $? -ne 0 ; then no_result; fi
+
+#
+# build the change
+#
+activity="build 366"
+$bin/aegis -build -nl -v > log 2>&1
+if test $? -ne 0 ; then cat log; no_result; fi
+
+#
+# test the change
+#
+activity="test 373"
+$bin/aegis -test -nl -v > log 2>&1
+if test $? -ne 0 ; then cat log; no_result; fi
+
+#
+# difference the change
+#
+activity="diff 380"
+$bin/aegis -diff > log 2>&1
+if test $? -ne 0 ; then cat log; no_result; fi
+
+$bin/aegis -ca -f $tmp;
+if test $? -ne 0 ; then cat log; no_result; fi
+
+#
+# finish development of the change
+#
+activity="develop end 390"
+$bin/aegis -de > log 2>&1
+if test $? -ne 0 ; then cat log; no_result; fi
+
+activity="review pass 394"
+$bin/aegis -rpass 42 > log 2>&1
+if test $? -ne 0 ; then cat log; no_result; fi
+
+#
+# integrate the change
+#
+activity="integrate begin 401"
+$bin/aegis -ib 42 > log 2>&1
+if test $? -ne 0 ; then cat log; no_result; fi
+
+activity="integrate build 405"
+$bin/aegis -b > log 2>&1
+if test $? -ne 0 ; then cat log; no_result; fi
+
+activity="integrate test 409"
+$bin/aegis -test > log 2>&1
+if test $? -ne 0 ; then cat log; no_result; fi
+
+activity="integrate pass 413"
+$bin/aegis -ipass > log 2>&1
+if test $? -ne 0 ; then cat log; no_result; fi
+
+# --------------------------------------------------------------------------
+
+activity="check project file state 419"
+cat > ok << fubar
+src =
+[
 	{
-		file_name = "config";
+		file_name = "aegis.conf";
 		uuid = "aaaaaaaa-bbbb-4bbb-8ccc-ccccddddddd2";
 		action = create;
 		edit =
@@ -320,106 +442,6 @@ src =
 			crypto = "GUNK";
 		};
 	},
-];
-fubar
-if test $? -ne 0 ; then no_result; fi
-
-check_it ok $workproj/info/trunk.fs
-
-# --------------------------------------------------------------------------
-
-#
-# create a new change
-#
-activity="new change 328"
-cat > $tmp << 'end'
-brief_description = "The second change";
-cause = internal_bug;
-test_baseline_exempt = true;
-end
-if test $? -ne 0 ; then no_result; fi
-$bin/aegis -nc 42 -f $tmp -p foo > log 2>&1
-if test $? -ne 0 ; then cat log; no_result; fi
-
-#
-# begin development of a change
-#
-$bin/aegis -db 42 -dir $workchan > log 2>&1
-if test $? -ne 0 ; then cat log; no_result; fi
-
-#
-# add files to the change
-# remove and then add, to change type
-#
-activity="copy file 348"
-$bin/aegis -rm $workchan/bogus -nl > log 2>&1
-if test $? -ne 0 ; then cat log; no_result; fi
-$bin/aegis -nt $workchan/bogus -nl > log 2>&1
-if test $? -ne 0 ; then cat log; no_result; fi
-
-echo "exit 0" > $workchan/bogus
-if test $? -ne 0 ; then no_result; fi
-
-#
-# build the change
-#
-activity="build 360"
-$bin/aegis -build -nl -v > log 2>&1
-if test $? -ne 0 ; then cat log; no_result; fi
-
-#
-# test the change
-#
-activity="test 367"
-$bin/aegis -test -nl -v > log 2>&1
-if test $? -ne 0 ; then cat log; no_result; fi
-
-#
-# difference the change
-#
-activity="diff 374"
-$bin/aegis -diff > log 2>&1
-if test $? -ne 0 ; then cat log; no_result; fi
-
-$bin/aegis -ca -f $tmp;
-if test $? -ne 0 ; then cat log; no_result; fi
-
-#
-# finish development of the change
-#
-activity="develop end 384"
-$bin/aegis -de > log 2>&1
-if test $? -ne 0 ; then cat log; no_result; fi
-
-activity="review pass 388"
-$bin/aegis -rpass 42 > log 2>&1
-if test $? -ne 0 ; then cat log; no_result; fi
-
-#
-# integrate the change
-#
-activity="integrate begin 395"
-$bin/aegis -ib 42 > log 2>&1
-if test $? -ne 0 ; then cat log; no_result; fi
-
-activity="integrate build 399"
-$bin/aegis -b > log 2>&1
-if test $? -ne 0 ; then cat log; no_result; fi
-
-activity="integrate test 403"
-$bin/aegis -test > log 2>&1
-if test $? -ne 0 ; then cat log; no_result; fi
-
-activity="integrate pass 407"
-$bin/aegis -ipass > log 2>&1
-if test $? -ne 0 ; then cat log; no_result; fi
-
-# --------------------------------------------------------------------------
-
-activity="check project file state 413"
-cat > ok << fubar
-src =
-[
 	{
 		file_name = "bogus";
 		uuid = "aaaaaaaa-bbbb-4bbb-8ccc-ccccddddddd1";
@@ -448,28 +470,6 @@ src =
 				test_time = TIME;
 			},
 		];
-	},
-	{
-		file_name = "config";
-		uuid = "aaaaaaaa-bbbb-4bbb-8ccc-ccccddddddd2";
-		action = create;
-		edit =
-		{
-			revision = "1.1";
-			encoding = none;
-		};
-		edit_origin =
-		{
-			revision = "1.1";
-			encoding = none;
-		};
-		usage = config;
-		file_fp =
-		{
-			youngest = TIME;
-			oldest = TIME;
-			crypto = "GUNK";
-		};
 	},
 ];
 fubar

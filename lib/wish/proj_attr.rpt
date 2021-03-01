@@ -1,6 +1,6 @@
 /*
  *	aegis - project change supervisor
- *	Copyright (C) 1999, 2001, 2002 Peter Miller;
+ *	Copyright (C) 1999, 2001, 2002, 2005 Peter Miller;
  *	All rights reserved.
  *
  *	This program is free software; you can redistribute it and/or modify
@@ -84,6 +84,8 @@ print("set proj_minimum_branch_number " ## (0 + ps.minimum_branch_number));
 print("set proj_skip_unlucky " ## (0 + ps.skip_unlucky));
 print("set proj_compress_database " ## (0 + ps.compress_database));
 print("set proj_default_test_required " ## (ps.default_test_exemption ? 0 : 1));
+print("set proj_default_test_regression_required " ##
+    (ps.default_test_regression_exemption ? 0 : 1));
 print("set proj_develop_end_action \"" ## ps.develop_end_action ## "\"");
 print("set proj_protect_development_directory " ##
     (0 + ps.protect_development_directory));

@@ -131,7 +131,7 @@ wcslen(const wchar_t *wcs)
 //
 //	[ The section ends with a compliant-but-non-standard way a
 //	standard C library implementor may choose to do this.  You can't
-//	relie on it being there, and you can't relie on the suggested
+//	rely on it being there, and you can't rely on the suggested
 //	semantics being used, so don't even bother having ./configure go
 //	look for it. ]
 //

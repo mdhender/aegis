@@ -30,9 +30,11 @@
 #include <list.h>
 #include <missing.h>
 #include <os.h>
+#include <pending.h>
 #include <quit.h>
 #include <receive.h>
 #include <replay.h>
+#include <rsrc_limits.h>
 #include <send.h>
 #include <usage.h>
 #include <version.h>
@@ -62,6 +64,7 @@ main(int argc, char **argv)
     signal(SIGCLD, SIG_DFL);
 #endif
 
+    resource_limits_init();
     arglex3_init(argc, argv);
     env_initialize();
     language_init();
@@ -72,6 +75,7 @@ main(int argc, char **argv)
         { arglex_token_send, send_main },
         { arglex_token_receive, receive_main },
         { arglex_token_missing, missing_main },
+        { arglex_token_pending, pending_main },
         { arglex_token_replay, replay_main },
         { arglex_token_version, version },
         { arglex_token_help, aedist_help },

@@ -1,6 +1,6 @@
 //
 //	aegis - project change supervisor
-//	Copyright (C) 2002-2004 Peter Miller;
+//	Copyright (C) 2002-2005 Peter Miller;
 //	All rights reserved.
 //
 //	This program is free software; you can redistribute it and/or modify
@@ -50,7 +50,8 @@ struct auxilliary
 
 
 static void
-func(void *arg, dir_walk_message_ty msg, string_ty *path, struct stat *st)
+func(void *arg, dir_walk_message_ty msg, string_ty *path,
+    const struct stat *st)
 {
     //
     // If they are using one of the more interesting development

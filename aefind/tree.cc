@@ -1,6 +1,6 @@
 //
 //	aegis - project change supervisor
-//	Copyright (C) 1997, 2002, 2004 Peter Miller;
+//	Copyright (C) 1997, 2002, 2004, 2005 Peter Miller;
 //	All rights reserved.
 //
 //	This program is free software; you can redistribute it and/or modify
@@ -64,11 +64,20 @@ tree_print(tree_ty *tp)
 
 
 rpt_value_ty *
-tree_evaluate(tree_ty *tp, string_ty *pathname, struct stat *st)
+tree_evaluate(tree_ty *tp, string_ty *pathname_unresolved, string_ty *pathname,
+    string_ty *pathname_resolved, struct stat *st)
 {
     assert(tp->reference_count > 0);
     assert(tp->method->evaluate);
-    return tp->method->evaluate(tp, pathname, st);
+    return
+       	tp->method->evaluate
+	(
+	    tp,
+	    pathname_unresolved,
+	    pathname,
+	    pathname_resolved,
+	    st
+	);
 }
 
 
@@ -81,7 +90,7 @@ tree_evaluate_constant(tree_ty *tp)
 
     pathname = str_from_c("\377");
     memset(&st, 0, sizeof(st));
-    vp = tree_evaluate(tp, pathname, &st);
+    vp = tree_evaluate(tp, pathname, pathname, pathname, &st);
     str_free(pathname);
     return vp;
 }

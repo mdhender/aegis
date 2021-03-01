@@ -1,7 +1,7 @@
 #!/bin/sh
 #
 #	aegis - project change supervisor
-#	Copyright (C) 2003 Peter Miller;
+#	Copyright (C) 2003, 2005 Peter Miller;
 #	All rights reserved.
 #
 #	This program is free software; you can redistribute it and/or modify
@@ -173,10 +173,10 @@ if test $? -ne 0 ; then cat log; no_result; fi
 # add a new files to the change
 #
 activity="new file 175"
-$bin/aegis -nf  $workchan/config -nl > log 2>&1
+$bin/aegis -nf  $workchan/aegis.conf -nl > log 2>&1
 if test $? -ne 0 ; then cat log; no_result; fi
 
-cat > $workchan/config << 'end'
+cat > $workchan/aegis.conf << 'end'
 build_command = "exit 0";
 link_integration_directory = true;
 history_get_command =
@@ -207,7 +207,7 @@ the trunk version
 end
 if test $? -ne 0 ; then no_result; fi
 
-cat > $workchan/config << 'end'
+cat > $workchan/aegis.conf << 'end'
 build_command = "exit 0";
 link_integration_directory = true;
 history_get_command =
@@ -312,7 +312,7 @@ if test $? -ne 0 ; then cat log; no_result; fi
 # copy a file into the change
 #
 activity="change_file_command (cp) 314"
-$bin/aegis -cp  $workchan/config $workchan/bogus2 -nl > log 2>&1
+$bin/aegis -cp  $workchan/aegis.conf $workchan/bogus2 -nl > log 2>&1
 if test $? -ne 0 ; then cat log; no_result; fi
 
 test $workchan/change_file_command || fail
@@ -324,7 +324,7 @@ if test $? -ne 0 ; then cat log; no_result; fi
 
 test $workchan/change_file_command || fail
 
-cat > $workchan/config << 'end'
+cat > $workchan/aegis.conf << 'end'
 build_command = "exit 0";
 link_integration_directory = true;
 history_get_command =
@@ -449,13 +449,13 @@ test -f $workchan/change_file_command || fail
 rm $workchan/change_file_command || no_result
 
 #
-# update the project config file
+# update the project aegis.conf file
 #
 activity="copy file 454"
-$bin/aegis -cp  $workchan/config -nl > log 2>&1
+$bin/aegis -cp  $workchan/aegis.conf -nl > log 2>&1
 if test $? -ne 0 ; then cat log; no_result; fi
 
-cat > $workchan/config << 'end'
+cat > $workchan/aegis.conf << 'end'
 build_command = "exit 0";
 link_integration_directory = true;
 history_get_command =

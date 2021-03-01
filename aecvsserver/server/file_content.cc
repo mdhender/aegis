@@ -1,6 +1,6 @@
 //
 //	aegis - project change supervisor
-//	Copyright (C) 2004 Peter Miller;
+//	Copyright (C) 2004, 2005 Peter Miller;
 //	All rights reserved.
 //
 //	This program is free software; you can redistribute it and/or modify
@@ -30,7 +30,6 @@
 input_ty *
 server_file_contents_get(server_ty *sp)
 {
-    string_ty       *s;
     long            length;
     int             gunzip;
     const char      *cp;
@@ -38,10 +37,10 @@ server_file_contents_get(server_ty *sp)
     input_ty        *ip;
 
     gunzip = 0;
-    s = server_getline(sp);
-    if (!s)
+    nstring s;
+    if (!server_getline(sp, s))
 	goto yuck;
-    cp = s->str_text;
+    cp = s.c_str();
     if (*cp == 'z')
     {
 	gunzip = 1;
@@ -51,13 +50,11 @@ server_file_contents_get(server_ty *sp)
     if (end == cp || *end || length < 0)
     {
 	yuck:
-	server_error(sp, "file length \"%s\" invalid", (s ? s->str_text : ""));
-	if (s)
-	    str_free(s);
+	server_error(sp, "file length \"%s\" invalid", s.c_str());
 	length = 0;
     }
     ip = sp->np->in_crop(length);
     if (gunzip)
-	ip = input_gunzip(ip);
+	ip = new input_gunzip(ip);
     return ip;
 }

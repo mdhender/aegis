@@ -121,11 +121,11 @@ export AEGIS_PATH
 #
 # test for the symlink bug
 #
-activity="new project 121"
+activity="new project 124"
 $bin/aegis -npr test -version '' -v -dir $work/test > log 2>&1
 if test $? -ne 0 ; then cat log; no_result; fi
 
-activity="project attributes 125"
+activity="project attributes 128"
 cat > paf << 'fubar'
 developer_may_review = true;
 developer_may_integrate = true;
@@ -136,7 +136,7 @@ if test $? -ne 0 ; then no_result; fi
 $bin/aegis -pa -f paf -v > log 2>&1
 if test $? -ne 0 ; then cat log; no_result; fi
 
-activity="staff 136"
+activity="staff 139"
 $bin/aegis -nd $USER -v > log 2>&1
 if test $? -ne 0 ; then cat log; no_result; fi
 $bin/aegis -nrv $USER -v > log 2>&1
@@ -144,7 +144,7 @@ if test $? -ne 0 ; then cat log; no_result; fi
 $bin/aegis -ni $USER -v > log 2>&1
 if test $? -ne 0 ; then cat log; no_result; fi
 
-activity="new change 144"
+activity="new change 147"
 cat > caf << 'fubar'
 brief_description = "one";
 cause = internal_enhancement;
@@ -154,15 +154,15 @@ if test $? -ne 0 ; then no_result; fi
 $bin/aegis -nc -f caf -v -p test > log 2>&1
 if test $? -ne 0 ; then cat log; no_result; fi
 
-activity="develop begin 154"
+activity="develop begin 157"
 $bin/aegis -db 10 -dir $work/test.C010 -v > log 2>&1
 if test $? -ne 0 ; then cat log; no_result; fi
 
-activity="new file 158"
-$bin/aegis -nf $work/test.C010/config $work/test.C010/fred \
+activity="new file 161"
+$bin/aegis -nf $work/test.C010/aegis.conf $work/test.C010/fred \
 	$work/test.C010/barney -v > log 2>&1
 if test $? -ne 0 ; then cat log; no_result; fi
-cat > $work/test.C010/config << 'fubar'
+cat > $work/test.C010/aegis.conf << 'fubar'
 build_command = "make";
 history_get_command =
 	"co -u'$e' -p $h,v > $o";
@@ -221,39 +221,39 @@ if test $? -ne 0 ; then cat log; no_result; fi
 
 ulimit -c unlimited
 
-activity="build 221"
+activity="build 224"
 $bin/aegis -b -v > log 2>&1
 if test $? -ne 0 ; then cat log; no_result; fi
 
-activity="diff 225"
+activity="diff 228"
 $bin/aegis -diff -v > log 2>&1
 if test $? -ne 0 ; then cat log; no_result; fi
 
-activity="develop end 229"
+activity="develop end 232"
 $bin/aegis -de -v > log 2>&1
 if test $? -ne 0 ; then cat log; no_result; fi
 
-activity="review pass 233"
+activity="review pass 236"
 $bin/aegis -rpass 10 -v > log 2>&1
 if test $? -ne 0 ; then cat log; no_result; fi
 
-activity="integrate begin 237"
+activity="integrate begin 240"
 $bin/aegis -ib 10 -v > log 2>&1
 if test $? -ne 0 ; then cat log; no_result; fi
 
-activity="integrate build 241"
+activity="integrate build 244"
 $bin/aegis -b -v > log 2>&1
 if test $? -ne 0 ; then cat log; no_result; fi
 
-activity="integrate diff 245"
+activity="integrate diff 248"
 $bin/aegis -diff -v > log 2>&1
 if test $? -ne 0 ; then cat log; no_result; fi
 
-activity="integrate pass 249"
+activity="integrate pass 252"
 $bin/aegis -ipass -v > log 2>&1
 if test $? -ne 0 ; then cat log; no_result; fi
 
-activity="new change 253"
+activity="new change 256"
 cat > caf << 'fubar'
 brief_description = "the second change";
 cause = internal_enhancement;
@@ -264,11 +264,11 @@ if test $? -ne 0 ; then cat log; no_result; fi
 
 ulimit -c unlimited
 
-activity="develop begin 264"
+activity="develop begin 267"
 $bin/aegis -db 11 -v > log 2>&1
 if test $? -ne 0 ; then cat log; no_result; fi
 
-activity="after aedb 268"
+activity="after aedb 271"
 test -h $work/test.C011/b.lnk && fail
 test -h $work/test.C011/c.lnk && fail
 
@@ -276,11 +276,11 @@ test -h $work/test.C011/c.lnk && fail
 # we copy fred to make aeb work, we do *not* copy barney to test the
 # symlinks farm's behaviour with derived symlinks.
 #
-activity="copy file 276"
+activity="copy file 279"
 $bin/aegis -cp $work/test.C011/fred -v > log 2>&1
 if test $? -ne 0 ; then cat log; no_result; fi
 
-activity="build the change 280"
+activity="build the change 283"
 $bin/aegis -b -v > log 2>&1
 if test $? -ne 0 ; then cat log; fail; fi
 
@@ -288,9 +288,9 @@ if test $? -ne 0 ; then cat log; fail; fi
 # b.lnk is built as a side effect of a makefile's rule not executed, so
 # after this build it should be unchanged and removed.
 #
-activity="after aeb 288"
+activity="after aeb 291"
 test -h $work/test.C011/b.lnk && fail
-activity="after aeb 290"
+activity="after aeb 293"
 test -h $work/test.C011/c.lnk || fail
 
 #

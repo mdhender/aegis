@@ -212,19 +212,45 @@ universal_unique_identifier(void)
 }
 
 
-int
+static const char uuid_charset[] = "0123456789abcdefABCDEF";
+
+
+bool
 universal_unique_identifier_valid(string_ty *uuid)
 {
-    static const char uuid_charset[] = "0123456789abcdefABCDEF";
-    int		    i;
+    return universal_unique_identifier_valid(nstring(str_copy(uuid)));
+}
 
-    if (!uuid || uuid->str_length != 36)
-	return 0;
+
+bool
+universal_unique_identifier_valid(const nstring &uuid)
+{
+    return
+	(
+	    uuid.size() == 36
+	&&
+	    universal_unique_identifier_valid_partial(uuid)
+	);
+}
+
+
+bool
+universal_unique_identifier_valid_partial(string_ty *uuid)
+{
+    return universal_unique_identifier_valid_partial(nstring(str_copy(uuid)));
+}
+
+
+bool
+universal_unique_identifier_valid_partial(const nstring &uuid)
+{
+    if (uuid.size() < 4 || uuid.size() > 36)
+	return false;
 
     //
     // Syntax check
     //
-    for (i = 0; i < 36; ++i)
+    for (size_t i = 0; i < uuid.size(); ++i)
     {
 	switch (i)
 	{
@@ -232,15 +258,15 @@ universal_unique_identifier_valid(string_ty *uuid)
 	case 13:
 	case 18:
 	case 23:
-	    if (uuid->str_text[i] != '-')
-		return 0;
+	    if (uuid[i] != '-')
+		return false;
 	    break;
 
 	default:
-	    if (0 == strchr(uuid_charset, uuid->str_text[i]))
-		return 0;
+	    if (0 == strchr(uuid_charset, uuid[i]))
+		return false;
 	    break;
 	}
     }
-    return 1;
+    return true;
 }

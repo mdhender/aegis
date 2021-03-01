@@ -1,6 +1,6 @@
 //
 //	aegis - project change supervisor
-//	Copyright (C) 2004 Peter Miller;
+//	Copyright (C) 2004, 2005 Peter Miller;
 //	All rights reserved.
 //
 //	This program is free software; you can redistribute it and/or modify
@@ -34,7 +34,6 @@ run(server_ty *sp)
 {
     for (;;)
     {
-	string_ty       *s;
 	const char      *cp;
 	string_ty       *request_name;
 	const request_ty *rp;
@@ -42,17 +41,17 @@ run(server_ty *sp)
 	//
 	// Get the next request.
 	//
-	s = server_getline(sp);
-	if (!s)
+	nstring s;
+	if (!server_getline(sp, s))
 	    break;
 
 	//
 	// Extract the request name (the first word).
 	//
-	cp = s->str_text;
+	cp = s.c_str();
 	while (*cp && !isspace((unsigned char)*cp))
 	    ++cp;
-	request_name = str_n_from_c(s->str_text, cp - s->str_text);
+	request_name = str_n_from_c(s.c_str(), cp - s.c_str());
 
 	//
 	// Locate the request function.
@@ -69,12 +68,12 @@ run(server_ty *sp)
 	    // Note: only skip one white space character, not as many
 	    // white space characters as you can find.
 	    //
-	    cp = s->str_text;
+	    cp = s.c_str();
 	    while (*cp && !isspace((unsigned char)*cp))
 		++cp;
 	    if (*cp && isspace((unsigned char)*cp))
 		++cp;
-	    argument = str_n_from_c(cp, s->str_text + s->str_length - cp);
+	    argument = str_n_from_c(cp, s.c_str() + s.size() - cp);
 
 	    //
 	    // Perform the request.
@@ -82,7 +81,6 @@ run(server_ty *sp)
 	    request_run(rp, sp, argument);
 	    str_free(argument);
 	}
-	str_free(s);
 	str_free(request_name);
     }
 }

@@ -112,7 +112,7 @@ unset LANGUAGE
 #
 # make a new project
 #
-activity="new project 133"
+activity="new project 115"
 $bin/aegis -npr foo -vers "" -lib $work/lib -dir $workproj > log 2>&1
 if test $? -ne 0 ; then cat log; no_result; fi
 
@@ -122,7 +122,7 @@ export AEGIS_PROJECT
 #
 # change project attributes
 #
-activity="project attributes 140"
+activity="project attributes 125"
 cat > $tmp << 'end'
 description = "A bogus project created to test the aefa functionality.";
 developer_may_review = true;
@@ -137,7 +137,7 @@ if test $? -ne 0 ; then cat log; no_result; fi
 #
 # add the staff
 #
-activity="staff 155"
+activity="staff 140"
 $bin/aegis -nd $USER > log 2>&1
 if test $? -ne 0 ; then cat log; no_result; fi
 $bin/aegis -nrv $USER > log 2>&1
@@ -148,7 +148,7 @@ if test $? -ne 0 ; then cat log; no_result; fi
 #
 # create a new change
 #
-activity="new change 166"
+activity="new change 151"
 cat > $tmp << 'end'
 brief_description = "The first change";
 cause = internal_bug;
@@ -166,8 +166,8 @@ if test $? -ne 0 ; then cat log; no_result; fi
 #
 # add a new files to the change
 #
-activity="new file 184"
-$bin/aegis -nf  $workchan/config $workchan/bogus -nl > log 2>&1
+activity="new file 169"
+$bin/aegis -nf  $workchan/aegis.conf $workchan/bogus -nl > log 2>&1
 if test $? -ne 0 ; then cat log; no_result; fi
 
 cat > $workchan/bogus << 'end'
@@ -175,7 +175,7 @@ the trunk version
 end
 if test $? -ne 0 ; then no_result; fi
 
-cat > $workchan/config << 'end'
+cat > $workchan/aegis.conf << 'end'
 build_command = "exit 0";
 create_symlinks_before_build = true;
 remove_symlinks_after_build = false;
@@ -199,63 +199,63 @@ if test $? -ne 0 ; then no_result; fi
 #
 # build the change
 #
-activity="build 217"
+activity="build 202"
 $bin/aegis -build -nl -v > log 2>&1
 if test $? -ne 0 ; then cat log; fail; fi
 
 #
 # difference the change
 #
-activity="diff 224"
+activity="diff 209"
 $bin/aegis -diff > log 2>&1
 if test $? -ne 0 ; then cat log; no_result; fi
 
 #
 # finish development of the change
 #
-activity="develop end 231"
+activity="develop end 216"
 $bin/aegis -de > log 2>&1
 if test $? -ne 0 ; then cat log; fail; fi
 
 #
 # Create the archive in backward compatible mode
 #
-activity="create dist archive 238"
+activity="create dist archive 223"
 $bin/aedist -s -c 1 -compatibility 4.6 -o arch.ae > log 2>&1
 if test $? -ne 0 ; then cat log; no_result; fi
 
 #
 # pass the review
 #
-activity="review pass 245"
+activity="review pass 230"
 $bin/aegis -rpass -c 1 > log 2>&1
 if test $? -ne 0 ; then cat log; no_result; fi
 
 #
 # start integrating
 #
-activity="integrate begin 252"
+activity="integrate begin 237"
 $bin/aegis -ib 1 > log 2>&1
 if test $? -ne 0 ; then cat log; no_result; fi
 
 #
 # integrate build
 #
-activity="build 259"
+activity="build 244"
 $bin/aegis -b -nl -v > log 2>&1
 if test $? -ne 0 ; then cat log; no_result; fi
 
 #
 # pass the integration
 #
-activity="integrate pass 266"
+activity="integrate pass 251"
 $bin/aegis -intpass -nl > log 2>&1
 if test $? -ne 0 ; then cat log; no_result; fi
 
 #
 # Receive the archive
 #
-activity="receive the archive 273"
+activity="receive the archive 258"
 $bin/aedist -rec -f arch.ae > log 2>&1
 if test $? -ne 0; then cat log; fail; fi
 

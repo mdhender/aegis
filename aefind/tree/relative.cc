@@ -1,6 +1,6 @@
 //
 //	aegis - project change supervisor
-//	Copyright (C) 1997, 1999, 2001-2004 Peter Miller;
+//	Copyright (C) 1997, 1999, 2001-2005 Peter Miller;
 //	All rights reserved.
 //
 //	This program is free software; you can redistribute it and/or modify
@@ -40,7 +40,8 @@
 
 
 static rpt_value_ty *
-lt_evaluate(tree_ty *tp, string_ty *path, struct stat *st)
+lt_evaluate(tree_ty *tp, string_ty *path_unres, string_ty *path,
+    string_ty *path_res, struct stat *st)
 {
     tree_diadic_ty  *this_thing;
     sub_context_ty  *scp;
@@ -56,7 +57,7 @@ lt_evaluate(tree_ty *tp, string_ty *path, struct stat *st)
     //
     trace(("lt::evaluate()\n{\n"));
     this_thing = (tree_diadic_ty *)tp;
-    lv1 = tree_evaluate(this_thing->left, path, st);
+    lv1 = tree_evaluate(this_thing->left, path_unres, path, path_res, st);
     if (lv1->method->type == rpt_value_type_error)
     {
 	trace(("}\n"));
@@ -72,7 +73,7 @@ lt_evaluate(tree_ty *tp, string_ty *path, struct stat *st)
     //
     // evaluate the right hand side
     //
-    rv1 = tree_evaluate(this_thing->right, path, st);
+    rv1 = tree_evaluate(this_thing->right, path_unres, path, path_res, st);
     if (rv1->method->type == rpt_value_type_error)
     {
 	rpt_value_free(lv1);
@@ -199,7 +200,8 @@ tree_lt_new(tree_ty *left, tree_ty *right)
 
 
 static rpt_value_ty *
-le_evaluate(tree_ty *tp, string_ty *path, struct stat *st)
+le_evaluate(tree_ty *tp, string_ty *path_unres, string_ty *path,
+    string_ty *path_res, struct stat *st)
 {
     tree_diadic_ty  *this_thing;
     sub_context_ty  *scp;
@@ -215,7 +217,7 @@ le_evaluate(tree_ty *tp, string_ty *path, struct stat *st)
     //
     trace(("le::evaluate()\n{\n"));
     this_thing = (tree_diadic_ty *)tp;
-    lv1 = tree_evaluate(this_thing->left, path, st);
+    lv1 = tree_evaluate(this_thing->left, path_unres, path, path_res, st);
     if (lv1->method->type == rpt_value_type_error)
     {
 	trace(("}\n"));
@@ -231,7 +233,7 @@ le_evaluate(tree_ty *tp, string_ty *path, struct stat *st)
     //
     // evaluate the right hand side
     //
-    rv1 = tree_evaluate(this_thing->right, path, st);
+    rv1 = tree_evaluate(this_thing->right, path_unres, path, path_res, st);
     if (rv1->method->type == rpt_value_type_error)
     {
 	rpt_value_free(lv1);
@@ -358,7 +360,8 @@ tree_le_new(tree_ty *left, tree_ty *right)
 
 
 static rpt_value_ty *
-gt_evaluate(tree_ty *tp, string_ty *path, struct stat *st)
+gt_evaluate(tree_ty *tp, string_ty *path_unres, string_ty *path,
+    string_ty *path_res, struct stat *st)
 {
     tree_diadic_ty  *this_thing;
     sub_context_ty  *scp;
@@ -374,7 +377,7 @@ gt_evaluate(tree_ty *tp, string_ty *path, struct stat *st)
     //
     trace(("gt::evaluate()\n{\n"));
     this_thing = (tree_diadic_ty *)tp;
-    lv1 = tree_evaluate(this_thing->left, path, st);
+    lv1 = tree_evaluate(this_thing->left, path_unres, path, path_res, st);
     if (lv1->method->type == rpt_value_type_error)
     {
 	trace(("}\n"));
@@ -390,7 +393,7 @@ gt_evaluate(tree_ty *tp, string_ty *path, struct stat *st)
     //
     // evaluate the right hand side
     //
-    rv1 = tree_evaluate(this_thing->right, path, st);
+    rv1 = tree_evaluate(this_thing->right, path_unres, path, path_res, st);
     if (rv1->method->type == rpt_value_type_error)
     {
 	rpt_value_free(lv1);
@@ -517,7 +520,8 @@ tree_gt_new(tree_ty *left, tree_ty *right)
 
 
 static rpt_value_ty *
-ge_evaluate(tree_ty *tp, string_ty *path, struct stat *st)
+ge_evaluate(tree_ty *tp, string_ty *path_unres, string_ty *path,
+    string_ty *path_res, struct stat *st)
 {
     tree_diadic_ty  *this_thing;
     sub_context_ty  *scp;
@@ -533,7 +537,7 @@ ge_evaluate(tree_ty *tp, string_ty *path, struct stat *st)
     //
     trace(("ge::evaluate()\n{\n"));
     this_thing = (tree_diadic_ty *)tp;
-    lv1 = tree_evaluate(this_thing->left, path, st);
+    lv1 = tree_evaluate(this_thing->left, path_unres, path, path_res, st);
     if (lv1->method->type == rpt_value_type_error)
     {
 	trace(("}\n"));
@@ -549,7 +553,7 @@ ge_evaluate(tree_ty *tp, string_ty *path, struct stat *st)
     //
     // evaluate the right hand side
     //
-    rv1 = tree_evaluate(this_thing->right, path, st);
+    rv1 = tree_evaluate(this_thing->right, path_unres, path, path_res, st);
     if (rv1->method->type == rpt_value_type_error)
     {
 	rpt_value_free(lv1);
@@ -676,7 +680,8 @@ tree_ge_new(tree_ty *left, tree_ty *right)
 
 
 static rpt_value_ty *
-eq_evaluate(tree_ty *tp, string_ty *path, struct stat *st)
+eq_evaluate(tree_ty *tp, string_ty *path_unres, string_ty *path,
+    string_ty *path_res, struct stat *st)
 {
     tree_diadic_ty  *this_thing;
     sub_context_ty  *scp;
@@ -692,7 +697,7 @@ eq_evaluate(tree_ty *tp, string_ty *path, struct stat *st)
     //
     trace(("eq::evaluate()\n{\n"));
     this_thing = (tree_diadic_ty *)tp;
-    lv1 = tree_evaluate(this_thing->left, path, st);
+    lv1 = tree_evaluate(this_thing->left, path_unres, path, path_res, st);
     if (lv1->method->type == rpt_value_type_error)
     {
 	trace(("}\n"));
@@ -708,7 +713,7 @@ eq_evaluate(tree_ty *tp, string_ty *path, struct stat *st)
     //
     // evaluate the right hand side
     //
-    rv1 = tree_evaluate(this_thing->right, path, st);
+    rv1 = tree_evaluate(this_thing->right, path_unres, path, path_res, st);
     if (rv1->method->type == rpt_value_type_error)
     {
 	rpt_value_free(lv1);
@@ -833,7 +838,8 @@ tree_eq_new(tree_ty *left, tree_ty *right)
 
 
 static rpt_value_ty *
-ne_evaluate(tree_ty *tp, string_ty *path, struct stat *st)
+ne_evaluate(tree_ty *tp, string_ty *path_unres, string_ty *path,
+    string_ty *path_res, struct stat *st)
 {
     tree_diadic_ty  *this_thing;
     sub_context_ty  *scp;
@@ -849,7 +855,7 @@ ne_evaluate(tree_ty *tp, string_ty *path, struct stat *st)
     //
     trace(("ne::evaluate()\n{\n"));
     this_thing = (tree_diadic_ty *)tp;
-    lv1 = tree_evaluate(this_thing->left, path, st);
+    lv1 = tree_evaluate(this_thing->left, path_unres, path, path_res, st);
     if (lv1->method->type == rpt_value_type_error)
     {
 	trace(("}\n"));
@@ -865,7 +871,7 @@ ne_evaluate(tree_ty *tp, string_ty *path, struct stat *st)
     //
     // evaluate the right hand side
     //
-    rv1 = tree_evaluate(this_thing->right, path, st);
+    rv1 = tree_evaluate(this_thing->right, path_unres, path, path_res, st);
     if (rv1->method->type == rpt_value_type_error)
     {
 	rpt_value_free(lv1);

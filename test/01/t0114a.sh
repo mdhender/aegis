@@ -1,7 +1,7 @@
 #!/bin/sh
 #
 #	aegis - project change supervisor
-#	Copyright (C) 2002, 2004 Peter Miller;
+#	Copyright (C) 2002, 2004, 2005 Peter Miller;
 #	All rights reserved.
 #
 #	This program is free software; you can redistribute it and/or modify
@@ -108,14 +108,14 @@ unset LANGUAGE
 #
 # make a new project
 #
-activity="new project 129"
+activity="new project 111"
 $bin/aegis -npr foo -vers "" -dir $workproj  > log 2>&1
 if test $? -ne 0 ; then cat log; no_result; fi
 
 #
 # change project attributes
 #
-activity="project attributes 131"
+activity="project attributes 118"
 cat > $tmp << 'end'
 description = "A bogus project created to test the aeb -minimum functionality.";
 developer_may_review = true;
@@ -129,7 +129,7 @@ if test $? -ne 0 ; then cat log; no_result; fi
 #
 # create a new change
 #
-activity="new change 143"
+activity="new change 132"
 cat > $tmp << 'end'
 brief_description = "The first change";
 cause = internal_bug;
@@ -145,7 +145,7 @@ if test $? -ne 0 ; then cat log; no_result; fi
 #
 # add the staff
 #
-activity="staff 155"
+activity="staff 148"
 $bin/aegis -nd $USER > log 2>&1
 if test $? -ne 0 ; then cat log; no_result; fi
 $bin/aegis -nrv $USER > log 2>&1
@@ -159,7 +159,7 @@ if test $? -ne 0 ; then cat log; no_result; fi
 $bin/aegis -db 10 -dir $workchan > log 2>&1
 if test $? -ne 0 ; then cat log; no_result; fi
 
-cat > $workchan/config << 'end'
+cat > $workchan/aegis.conf << 'end'
 build_command = "echo Hello > non-source-file && exit 0";
 link_integration_directory = true;
 history_get_command =
@@ -178,47 +178,47 @@ remove_symlinks_after_integration_build = false;
 end
 if test $? -ne 0 ; then no_result; fi
 
-activity="New file 194"
-$bin/aegis -nf $workchan/config > log 2>&1
+activity="New file 181"
+$bin/aegis -nf $workchan/aegis.conf > log 2>&1
 if test $? -ne 0 ; then cat log; no_result; fi
 
-activity="Build 198"
+activity="Build 185"
 $bin/aegis -b > log 2>&1
 if test $? -ne 0 ; then cat log; no_result; fi
 
-activity="Diff 202"
+activity="Diff 189"
 $bin/aegis -diff > log 2>&1
 if test $? -ne 0 ; then cat log; no_result; fi
 
 
-activity="Develop end 207"
+activity="Develop end 194"
 $bin/aegis -de > log 2>&1
 if test $? -ne 0 ; then cat log; no_result; fi
 
-activity="Review Pass 214"
+activity="Review Pass 198"
 $bin/aegis -rpass 10 > log 2>&1
 if test $? -ne 0 ; then cat log; no_result; fi
 
-activity="Integrate Begin 218"
+activity="Integrate Begin 202"
 $bin/aegis -ib  10 > log 2>&1
 if test $? -ne 0 ; then cat log; no_result; fi
 
-activity="Integrate Build 222"
+activity="Integrate Build 206"
 $bin/aegis -b 10 > log 2>&1
 if test $? -ne 0 ; then cat log; no_result; fi
 
-activity="Integrate Pass 227"
+activity="Integrate Pass 210"
 $bin/aegis -ipass 10 > log 2>&1
 if test $? -ne 0 ; then cat log; no_result; fi
 
 
-activity="new branch 233"
+activity="new branch 215"
 $bin/aegis -nbr  1 -p foo > log 2>&1
 if test $? -ne 0 ; then cat log; no_result; fi
 
 
 # The second change
-activity="new change 239"
+activity="new change 221"
 cat > $tmp << 'end'
 brief_description = "The second change";
 cause = internal_bug;
@@ -229,58 +229,58 @@ end
 if test $? -ne 0 ; then no_result; fi
 
 
-activity="new change 243"
+activity="new change 232"
 $bin/aegis -nc 11 -f $tmp -p foo.1 > log 2>&1
 if test $? -ne 0 ; then cat log; no_result; fi
 
-activity="Develop Begin 247"
+activity="Develop Begin 236"
 $bin/aegis -db 11 -dir $workchan -p foo.1 > log 2>&1
 if test $? -ne 0 ; then cat log; no_result; fi
 
-activity="Change Dir 252"
+activity="Change Dir 240"
 devdir=`$bin/aegis -cd 11  -p foo.1`
 if test $? -ne 0 ; then no_result; fi
 cd $devdir
 if test $? -ne 0 ; then no_result; fi
 
-activity="Copy File 258"
-$bin/aegis -cp config  -p foo.1 > log 2>&1
+activity="Copy File 246"
+$bin/aegis -cp aegis.conf  -p foo.1 > log 2>&1
 if test $? -ne 0 ; then cat log; no_result; fi
 
 # Change the build command to not create any non source files
-activity="Mutate config 262"
-grep -v 'build_command' config > tmpConfig
+activity="Mutate aegis.conf 251"
+grep -v 'build_command' aegis.conf > tmpConfig
 if test $? -ne 0 ; then cat log; no_result; fi
 echo 'build_command = "exit 0";' >> tmpConfig
 if test $? -ne 0 ; then cat log; no_result; fi
-mv tmpConfig config
+mv tmpConfig aegis.conf
 if test $? -ne 0 ; then cat log; no_result; fi
 
-activity="Build 263"
+activity="Build 259"
 $bin/aegis -b 11  -p foo.1 > log 2>&1
 if test $? -ne 0 ; then cat log; no_result; fi
 
-activity="Diff 269"
+activity="Diff 263"
 $bin/aegis -diff 11  -p foo.1 > log 2>&1
 if test $? -ne 0 ; then cat log; no_result; fi
 
-activity="Develop End 273"
+activity="Develop End 267"
 $bin/aegis -de 11  -p foo.1 > log 2>&1
 if test $? -ne 0 ; then cat log; no_result; fi
 
-activity="Review Pass 277"
+activity="Review Pass 271"
 $bin/aegis -rpass 11  -p foo.1 > log 2>&1
 if test $? -ne 0 ; then cat log; no_result; fi
 
-activity="Integrate Begin 276"
+activity="Integrate Begin 275"
 $bin/aegis -ib -minimum 11  -p foo.1 > log 2>&1
 if test $? -ne 0 ; then cat log; no_result; fi
 
-activity="Aesub  280"
+activity="Aesub  279"
 intdir=`$bin/aesub '$intdir' -c 11 -p foo.1`
 if test $? -ne 0 ; then cat log; no_result; fi
 
-activity="Integrate Build 289"
+activity="Integrate Build 283"
 $bin/aegis -b -minimum 11  -p foo.1 > log 2>&1
 if test $? -ne 0 ; then cat log; no_result; fi
 

@@ -1,7 +1,7 @@
 #!/bin/sh
 #
 #	aegis - project change supervisor
-#	Copyright (C) 1997, 1998, 2004 Peter Miller;
+#	Copyright (C) 1997, 1998, 2004, 2005 Peter Miller;
 #	All rights reserved.
 #
 #	This program is free software; you can redistribute it and/or modify
@@ -118,14 +118,14 @@ fi
 workproj=$work/proj
 workchan=$work/chan
 worklib=$work/lib
-activity="new project 134"
+activity="new project 121"
 $bin/aegis -newpro foo -dir $workproj -lib $worklib -vers ''
 if test $? -ne 0 ; then no_result; fi
 
 #
 # change project attributes
 #
-activity="project attributes 141"
+activity="project attributes 128"
 cat > tmp << 'end'
 description = "A bogus project.";
 developer_may_review = true;
@@ -139,7 +139,7 @@ if test $? -ne 0 ; then no_result; fi
 #
 # create a new change
 #
-activity="new change 155"
+activity="new change 142"
 cat > tmp << 'end'
 brief_description = "change one";
 cause = internal_bug;
@@ -150,21 +150,21 @@ if test $? -ne 0 ; then no_result; fi
 #
 # add staff
 #
-activity="staff 166"
+activity="staff 153"
 $bin/aegis -newdev $USER -p foo -lib $worklib
 if test $? -ne 0 ; then no_result; fi
 
 #
 # begin development of a change
 #
-activity="develop begin 177"
+activity="develop begin 160"
 $bin/aegis -devbeg 1 -p foo -dir $workchan -lib $worklib
 if test $? -ne 0 ; then no_result; fi
-activity="new file 180"
-$bin/aegis -new_file $workchan/config $workchan/template -nl -lib $worklib -Pro foo
+activity="new file 163"
+$bin/aegis -new_file $workchan/aegis.conf $workchan/template -nl -lib $worklib -Pro foo
 if test $? -ne 0 ; then no_result; fi
 
-cat > $workchan/config << 'end'
+cat > $workchan/aegis.conf << 'end'
 build_command =
     "rm -f foo; c++ -o foo -D'VERSION=\"$v\"' -D'PATH=\"$sp\"' main.cc";
 
@@ -212,7 +212,7 @@ if test $? -ne 0 ; then no_result; fi
 # create another new file,
 # it should use the template
 #
-activity="new file with template 227"
+activity="new file with template 215"
 $bin/aegis -nf $workchan/fred -lib $worklib -p foo
 if test $? -ne 0 ; then fail; fi
 

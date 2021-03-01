@@ -1,7 +1,7 @@
 #!/bin/sh
 #
 #	aegis - project change supervisor
-#	Copyright (C) 2004 Peter Miller;
+#	Copyright (C) 2004, 2005 Peter Miller;
 #	All rights reserved.
 #
 #	This program is free software; you can redistribute it and/or modify
@@ -100,7 +100,7 @@ AEGIS_PROJECT=foo ; export AEGIS_PROJECT
 #
 # make the directories
 #
-activity="working directory 118"
+activity="working directory 103"
 mkdir $work $work/lib
 if test $? -ne 0 ; then no_result; fi
 chmod 777 $work/lib
@@ -119,14 +119,14 @@ unset LANGUAGE
 #
 # make a new project
 #
-activity="new project 137"
+activity="new project 122"
 $bin/aegis -npr foo -vers "" -dir $workproj > log 2>&1
 if test $? -ne 0 ; then cat log; no_result; fi
 
 #
 # change project attributes
 #
-activity="project attributes 144"
+activity="project attributes 129"
 cat > $tmp << 'end'
 description = "A bogus project created to test the change_file_nth functionality.";
 developer_may_review = true;
@@ -141,7 +141,7 @@ if test $? -ne 0 ; then cat log; no_result; fi
 #
 # add the staff
 #
-activity="staff 159"
+activity="staff 144"
 $bin/aegis -nd $USER > log 2>&1
 if test $? -ne 0 ; then cat log; no_result; fi
 $bin/aegis -nrv $USER > log 2>&1
@@ -154,7 +154,7 @@ if test $? -ne 0 ; then cat log; no_result; fi
 #
 # create a new change
 #
-activity="new change 172"
+activity="new change 157"
 cat > $tmp << 'end'
 brief_description = "The first change";
 cause = internal_bug;
@@ -172,8 +172,8 @@ if test $? -ne 0 ; then cat log; no_result; fi
 #
 # add a new files to the change
 #
-activity="new file 190"
-$bin/aegis -nf  $workchan/config \
+activity="new file 175"
+$bin/aegis -nf  $workchan/aegis.conf \
 	$workchan/bogus \
 	$workchan/slightly-bogus \
 	-nl > log 2>&1
@@ -187,7 +187,7 @@ the trunk version
 end
 if test $? -ne 0 ; then no_result; fi
 
-cat > $workchan/config << 'end'
+cat > $workchan/aegis.conf << 'end'
 build_command = "exit 0";
 create_symlinks_before_build = true;
 remove_symlinks_after_build = false;
@@ -211,49 +211,49 @@ if test $? -ne 0 ; then no_result; fi
 #
 # build the change
 #
-activity="build 221"
+activity="build 214"
 $bin/aegis -build -nl -v > log 2>&1
 if test $? -ne 0 ; then cat log; fail; fi
 
 #
 # difference the change
 #
-activity="diff 228"
+activity="diff 221"
 $bin/aegis -diff > log 2>&1
 if test $? -ne 0 ; then cat log; no_result; fi
 
 #
 # finish development of the change
 #
-activity="develop end 235"
+activity="develop end 228"
 $bin/aegis -de > log 2>&1
 if test $? -ne 0 ; then cat log; fail; fi
 
 #
 # pass the review
 #
-activity="review pass 242"
+activity="review pass 235"
 $bin/aegis -rpass -c 1 > log 2>&1
 if test $? -ne 0 ; then cat log; no_result; fi
 
 #
 # start integrating
 #
-activity="integrate begin 249"
+activity="integrate begin 242"
 $bin/aegis -ib 1 > log 2>&1
 if test $? -ne 0 ; then cat log; no_result; fi
 
 #
 # integrate build
 #
-activity="build 256"
+activity="build 249"
 $bin/aegis -b -nl -v > log 2>&1
 if test $? -ne 0 ; then cat log; no_result; fi
 
 #
 # pass the integration
 #
-activity="integrate pass 263"
+activity="integrate pass 256"
 $bin/aegis -intpass -nl > log 2>&1
 if test $? -ne 0 ; then cat log; no_result; fi
 
@@ -262,7 +262,7 @@ if test $? -ne 0 ; then cat log; no_result; fi
 #
 # create a branch
 #
-activity="new branch 272"
+activity="new branch 265"
 $bin/aegis -nbr -p foo 2 > log 2>&1
 if test $? -ne 0 ; then cat log; no_result; fi
 
@@ -274,7 +274,7 @@ export AEGIS_PROJECT
 #
 # create a new change
 #
-activity="new change 284"
+activity="new change 277"
 cat > $tmp << 'end'
 brief_description = "The second change";
 cause = internal_bug;
@@ -292,7 +292,7 @@ if test $? -ne 0 ; then cat log; no_result; fi
 #
 # add files to the change
 #
-activity="copy file 302"
+activity="copy file 295"
 $bin/aegis -cp  $workchan/bogus -nl > log 2>&1
 if test $? -ne 0 ; then cat log; no_result; fi
 
@@ -301,63 +301,63 @@ the branch version
 end
 if test $? -ne 0 ; then no_result; fi
 
-activity="remove file 302"
+activity="remove file 304"
 $bin/aegis -rm  $workchan/slightly-bogus -nl > log 2>&1
 if test $? -ne 0 ; then cat log; no_result; fi
 
 #
 # build the change
 #
-activity="build 314"
+activity="build 311"
 $bin/aegis -build -nl -v > log 2>&1
 if test $? -ne 0 ; then cat log; fail; fi
 
 #
 # difference the change
 #
-activity="diff 321"
+activity="diff 318"
 $bin/aegis -diff > log 2>&1
 if test $? -ne 0 ; then cat log; no_result; fi
 
 #
 # finish development of the change
 #
-activity="develop end 328"
+activity="develop end 325"
 $bin/aegis -de > log 2>&1
 if test $? -ne 0 ; then cat log; fail; fi
 
 #
 # pass the review
 #
-activity="review pass 335"
+activity="review pass 332"
 $bin/aegis -rpass -c 3 > log 2>&1
 if test $? -ne 0 ; then cat log; no_result; fi
 
 #
 # start integrating
 #
-activity="integrate begin 342"
+activity="integrate begin 339"
 $bin/aegis -ib 3 > log 2>&1
 if test $? -ne 0 ; then cat log; no_result; fi
 
 #
 # integrate build
 #
-activity="build 349"
+activity="build 346"
 $bin/aegis -b -nl -v > log 2>&1
 if test $? -ne 0 ; then cat log; no_result; fi
 
 #
 # integrate diff
 #
-activity="diff 356"
+activity="diff 353"
 $bin/aegis -diff -nl -v > log 2>&1
 if test $? -ne 0 ; then cat log; no_result; fi
 
 #
 # pass the integration
 #
-activity="integrate pass 363"
+activity="integrate pass 360"
 $bin/aegis -intpass -nl > log 2>&1
 if test $? -ne 0 ; then cat log; no_result; fi
 
@@ -366,7 +366,7 @@ if test $? -ne 0 ; then cat log; no_result; fi
 #
 # create a new change
 #
-activity="new change 372"
+activity="new change 369"
 cat > $tmp << 'end'
 brief_description = "The third change";
 cause = internal_bug;
@@ -384,7 +384,7 @@ if test $? -ne 0 ; then cat log; no_result; fi
 #
 # add files to the change
 #
-activity="make transparent 390"
+activity="make transparent 387"
 $bin/aegis -mt $workchan/bogus -nl > log 2>&1
 if test $? -ne 0 ; then cat log; fail; fi
 
@@ -403,8 +403,8 @@ diff ok test.out
 if test $? -ne 0 ; then cat log; fail; fi
 
 cat > ok << 'fubar'
+config create aegis.conf
 source transparent bogus
-config create config
 source remove slightly-bogus
 fubar
 if test $? -ne 0 ; then no_result; fi
@@ -416,8 +416,8 @@ diff ok test.out
 if test $? -ne 0 ; then cat log; fail; fi
 
 cat > ok << 'fubar'
+config create aegis.conf
 source create bogus
-config create config
 source remove slightly-bogus
 fubar
 if test $? -ne 0 ; then no_result; fi
@@ -429,8 +429,8 @@ diff ok test.out
 if test $? -ne 0 ; then cat log; fail; fi
 
 cat > ok << 'fubar'
+config create aegis.conf
 source create bogus
-config create config
 fubar
 if test $? -ne 0 ; then no_result; fi
 

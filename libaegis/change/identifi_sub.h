@@ -1,6 +1,6 @@
 //
 //	aegis - project change supervisor
-//	Copyright (C) 2004 Peter Miller;
+//	Copyright (C) 2004, 2005 Peter Miller;
 //	All rights reserved.
 //
 //	This program is free software; you can redistribute it and/or modify
@@ -28,12 +28,13 @@
 #include <file_revision.h>
 #include <project/identifi_sub/branch.h>
 
-struct change_ty; // forward
-struct project_ty; // forward
-class project_file_roll_forward; // forward
-struct string_ty; // forward
-struct user_ty; // forward
 class change_functor; // forward
+struct change_ty; // forward
+struct fstate_src_ty; // forward
+class nstring_list; // forward
+class project_file_roll_forward; // forward
+struct project_ty; // forward
+struct user_ty; // forward
 
 /**
   * The change_identifier_subset class is used to represent a change
@@ -70,15 +71,15 @@ public:
       *
       * It understands all of the following command line options:
       *     -BaseLine
-      *     [ -Change] <number>
+      *     [ -Change] number
       *     -Development_Directory
-      *     -BRanch <number>
+      *     -BRanch number
       *     -TRunk
       *     -GrandParent
-      *     -DELta <number>
-      *     -DELta <name>
-      *     -DELta_Date <when>
-      *     [ -Project ] <string>
+      *     -DELta number
+      *     -DELta name
+      *     -DELta_Date when
+      *     [ -Project ] string
       *
       * \note
       *     There is no need to pass all of these command line options to
@@ -137,6 +138,29 @@ public:
 	change_functor &bad_state);
 
     /**
+      * The get_project_files method is used to obtain a list of the
+      * project's file, taking --delta options into account if specified.
+      *
+      * \param results
+      *     The string list to which the file names are appended.
+      *
+      * \note
+      *     You can't specify a view path, it defaults to view_path_simple.
+      */
+    void get_project_file_names(nstring_list &results);
+
+    /**
+      * The get_project_file method is used to obtain the details about
+      * a named file, taking any --delta* options into account.
+      *
+      * \param file_name
+      *     The name of the file of interest.
+      * \returns
+      *     pointer to file details, or NULL of the file does not exist.
+      */
+    fstate_src_ty *get_project_file(const nstring &file_name);
+
+    /**
       * The set_project_name method is used to set the name of the
       * project to be accessed.
       */
@@ -181,6 +205,17 @@ public:
       * command line.
       */
     void error_if_no_explicit_change_number();
+
+    /**
+      * The get_historian method is used to obtain the location of the
+      * historical file reconstructor.
+      *
+      * \note
+      *     This function is a failure of the API to conceal this.
+      *     Eventually it would be nice if all the users of this could
+      *     be refactored to hide it again.
+      */
+    project_file_roll_forward *get_historian();
 
 private:
     /**
@@ -235,10 +270,18 @@ private:
     change_ty *cp;
 
     /**
-      * The historian instance variable is used to remember the location
-      * of the historical file reconstructor.
+      * The historian_p instance variable is used to remember the
+      * location of the historical file reconstructor.  Shall only be
+      * accessed by the get_historian method.
       */
-    project_file_roll_forward *historian;
+    project_file_roll_forward *historian_p;
+
+    /**
+      * The need_historical_perspective method is used to determine
+      * whether or not access to project files should be direct (false)
+      * or via the historian (false).
+      */
+    bool need_historical_perspective() const;
 
     /**
       * The default constructor.  Do not use.

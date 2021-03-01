@@ -1,6 +1,6 @@
 //
 //	aegis - project change supervisor
-//	Copyright (C) 1997, 2002-2004 Peter Miller;
+//	Copyright (C) 1997, 2002-2005 Peter Miller;
 //	All rights reserved.
 //
 //	This program is free software; you can redistribute it and/or modify
@@ -32,14 +32,15 @@
 
 
 static rpt_value_ty *
-evaluate(tree_ty *tp, string_ty *path, struct stat *st)
+evaluate(tree_ty *tp, string_ty *path1, string_ty *path2, string_ty *path3,
+    struct stat *st)
 {
     tree_monadic_ty *this_thing;
     rpt_value_ty    *vp;
     rpt_value_ty    *svp;
 
     this_thing = (tree_monadic_ty *)tp;
-    vp = tree_evaluate(this_thing->arg, path, st);
+    vp = tree_evaluate(this_thing->arg, path1, path2, path3, st);
     svp = rpt_value_stringize(vp);
     rpt_value_free(vp);
     printf("%s\n", rpt_value_string_query(svp)->str_text);

@@ -1,6 +1,6 @@
 .\"
 .\"	aegis - project change supervisor
-.\"	Copyright (C) 1991, 1992, 1993, 1994 Peter Miller.
+.\"	Copyright (C) 1991-1994, 2005 Peter Miller.
 .\"	All rights reserved.
 .\"
 .\"	This program is free software; you can redistribute it and/or modify
@@ -23,7 +23,7 @@
 .B -Keep
 .br
 This option may be used to retain files and/or directories
-usually deleted by the command.
+usually deleted or replaced by the command.
 Defaults to the user's
 .I delete_file_preference
 if not specified, see
@@ -33,7 +33,7 @@ for more information.
 .B -No_Keep
 .br
 This option may be used to ensure that the files and/or directories
-are deleted by the command.
+are deleted or replaced by the command.
 Defaults to the user's
 .I delete_file_preference
 if not specified, see

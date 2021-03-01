@@ -1,0 +1,124 @@
+/*
+ *	aegis - project change supervisor
+ *	Copyright (C) 2005 Peter Miller;
+ *	All rights reserved.
+ *
+ *	This program is free software; you can redistribute it and/or modify
+ *	it under the terms of the GNU General Public License as published by
+ *	the Free Software Foundation; either version 2 of the License, or
+ *	(at your option) any later version.
+ *
+ *	This program is distributed in the hope that it will be useful,
+ *	but WITHOUT ANY WARRANTY; without even the implied warranty of
+ *	MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ *	GNU General Public License for more details.
+ *
+ *	You should have received a copy of the GNU General Public License
+ *	along with this program; if not, write to the Free Software
+ *	Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111, USA.
+ *
+ * MANIFEST: report the history of files
+ */
+
+title("The File Version History Report");
+columns
+(
+    { name = "File Name\n-----------"; right = 0; },
+    { name = "Delta\n-----";                 width = 5; },
+    { name = "Time and Date\n-------------"; width = 24; },
+    { name = "ChangeID\n------"; right = 1;  width = 10; },
+    { name = "Edit\n------";                 width = 6; }
+);
+
+auto pn, ps, pt;
+pn = project_name();
+
+ps = project[pn].state;
+
+/* set up the provenance map */
+auto provenance;
+provenance["dws.1.3"] = "dws.1.1";
+provenance["dws.1.6"] = "dws.1.1";
+provenance["dws.1.7"] = "dws.1.1";
+provenance["dws.1.8"] = "dws.1.1";
+provenance["dws_aux.5"] = "dws_aux.1.1.1";
+
+/*
+ * use the files named on the command line,
+ * or all project files if not specified
+ */
+auto file;
+if (count(arg) == 0)
+{
+    for (file in ps.src)
+       	arg ##= file.file_name;
+}
+
+/*
+ * create an empty history for each file
+ */
+auto hist;
+for (file in arg)
+    hist[file] = [];
+
+while (pn != "")
+{
+    ps = project[pn].state;
+    pn = ps.name;             /* resolve potential aliases */
+
+    /*
+     * scan all completed changes
+     * for any of the named files
+     */
+    auto ph, cs, cf, hc;
+    hc = count(ps.branch.history);
+    while ( hc >= 0 )
+    {
+        ph = ps.branch.history[hc];
+        cs = ps.branch.change[ph.change_number];
+        for (cf in cs.src)
+        {
+            if (cf.file_name in arg)
+            {
+                if (cf.usage == build && cf.action == modify)
+                    continue;
+                hist[cf.file_name] ##=
+                    {
+                        edit = cf.edit.revision;
+                        delta = ph.delta_number;
+                        when = cs.history[count(cs.history) - 1].when;
+                        changeID = pn ## ":" ## ph.change_number;
+                        description = cs.brief_description;
+                    };
+            }
+        }
+        hc--;
+    }
+
+    if ( pn in keys(provenance) ) {
+	pn = provenance[pn];
+    } else {
+        pn = ps.parent_name;
+    }
+}
+
+/*
+ * print the accumulated history
+ */
+auto fh, actions, usages;
+for (file in sort(keys(hist)))
+{
+    need(4);
+    print(file);
+    for (fh in hist[file])
+    {
+	print
+	(
+	    "",
+	    sprintf("%4d", fh.delta),
+	    fh.when,
+	    sprintf("%8s", fh.changeID),
+	    sprintf("%4s", fh.edit)
+	);
+    }
+}

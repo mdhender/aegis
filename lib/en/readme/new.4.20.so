@@ -17,16 +17,332 @@
 .\"	along with this program; if not, write to the Free Software
 .\"	Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111, USA.
 .\"
-.\" MANIFEST: document describing new 4.19 features
+.\" MANIFEST: document describing new 4.20 features
 .\"
 .\" you can create the initial cut of this file using the
-.\"	aereport -f bl/bl/lib/report/chan_so.rpt -p aegis.4 -c 19 -unf
+.\"	aereport -f bl/bl/lib/report/chan_so.rpt -p aegis.4 -c 20 -unf
 .\" command, and then editing it to be more appropriate.
 .\"
+.PP
+You must have the \fIGnome libxml2\fP library
+(\f[CW]http://xmlsoft.org/\fP) installed in order to build Aegis.
+Please install the xml2 library version 1.8.17 or later.  You do not
+have to install the rest of Gnome, the library can be used on its
+own.  If you are using a package based install, you will need the
+\fIlibxml2-devel\fP or \fIlibxml2-dev\fP package in addition to the
+\fIlibxml2\fP package.
+.PP
+Ideally, you would also install the \fIlibmagic\fP package, used
+to determine file types, just as \fIfile\fP(1) does.  (This is
+not to be confused with the \f[CW]libmagic6\fP image manipluation
+library.  If you are using a package based install, you will need the
+\fIlibmagic-devel\fP or \fIlibmagic-dev\fP package in addition to the
+\fIlibmagic\fP package.
 .\" .PP
 .\" .if n *
 .\" .if t \(bu
 .\" .\" Change NN
+.\" ------------------ last update was 4.20.D166 ---------------------------
+.PP
+.if n *
+.if t \(bu
+.\" Change 200
+A bug has been fixed in the \fIaecp -independent -output\fP option,
+which resulted in an error when Aegis tried to chmod nothing.
+.PP
+.if n *
+.if t \(bu
+.\" Change 189
+The auto file promote feature previously available in \fIaed\fP(1)
+has been added to the \fIaeb\fP(1), \fIaecp\fP(1), \fIaerm\fP(1) and
+\fIaenf\fP(1) commands.
+.PP
+.if n *
+.if t \(bu
+.\" Change 190
+The \fIaedist \-pending\fP and \fIaedist \-missing\fP commands now print
+the number of changes in the remote inventory.
+.PP
+.if n *
+.if t \(bu
+.\" Change 179
+A bug was fixed in the \fIaecp\fP command which caused a segfault
+sometimes when the user tries to copy a removed file.
+.PP
+.if n *
+.if t \(bu
+.\" Change 181
+The \fIaedist \-replay\fP command now accepts a \fI\-maximum\fP option,
+which includes change sets not yet completed in the local change set
+inventory when considering what to download.
+.PP
+.if n *
+.if t \(bu
+.\" Change 170
+There is a new \fIdevelop_end_policy_command\fP field in the project
+configuration file. It can be used to add addition constrains to
+change sets before they can complete \fIaede\fP(1) successfully.
+.PP
+.if n *
+.if t \(bu
+.\" Change 161
+The \fIaedist \-receive\fP command now annotates remote change sets
+(typically, change sets downloaded via the \fIaedist \-replay\fP
+command) with their origin URL.
+.PP
+.if n *
+.if t \(bu
+.\" Change 169
+A bug has been fixed in the \fIaebuffy\fP command where it would display
+incorrectly when the brief_description of a change contained double
+quotes.
+.PP
+.if n *
+.if t \(bu
+.\" Change 166
+It is now possible to attach a comment to all commands which involve a
+change state transition, e.g. \fIaenc\fP, \fIaede\fP, etc.  This is done
+using the \fB\-reason\fP command line option, just as you are able to do
+for review fail, etc.
+.PP
+.if n *
+.if t \(bu
+.\" Change 637
+A bug has been fixed in aenc, where it did
+not correctly copy user defined attributes.
+.PP
+.if n *
+.if t \(bu
+.\" Change 160
+There is a new \fIaelcf\fP(1) command to efficiently generate lists of
+change source files for use by your build tool.
+.PP
+.if n *
+.if t \(bu
+.\" Change 133
+There is a new \fIaelpf\fP(1) command to efficiently generate lists of
+project source files for use by your build tool.
+.PP
+.if n *
+.if t \(bu
+.\" Change 53
+There is a new cache of state information attached to each
+delta, the project file state at the time of the delta. This has
+the potential to accelerate aecp -delta, and all other
+project_file_roll_forward-based operations.
+Large projects may want to turn this off, because each delta will produce
+another large project file state cache.
+.PP
+.if n *
+.if t \(bu
+.\" Change 40, 45, 46, 49, 97, 98, 117, 130, 131, 132, 136, 137, 151,
+.\" 158, 163, 165, 180, 186, 196, 197, 198, 201
+There is support for generating RSS feeds from Aegis.
+See the Aegis project pages on the Aegis web interface for an example.
+See \fIaepconf\fP(5) and \fIaeget\fP(1) for more information.
+.PP
+.if n *
+.if t \(bu
+.\" Change 153
+The ${change delta_uuid} substitution now allows access to the delta_uuid in
+the \fIbeing integrated\fP state.
+.PP
+.if n *
+.if t \(bu
+.\" Change 152
+The "wrong file" error message from aedist has been improved, to
+say what was expected.
+.PP
+.if n *
+.if t \(bu
+.\" Change 150
+There is a new optional \fI$filename\fP substitution for
+the \fIhistory_\%put_\%command\fP, so that you can attach the current name of
+the check-in to the history file meta-data.
+There is a new optional \fI$uuid\fP substitution for
+history_put_command, so you can attach that as mete-data, too.
+.PP
+.if n *
+.if t \(bu
+.\" Change 116, 139, 167
+There is a new history tool bundled with Aegis.
+See \fIaesvt\fP(1) for more information.
+.PP
+.if n *
+.if t \(bu
+.\" Change 96, 138
+There is a new \fIdefault_\%regression_\%test_\%exempt\fP
+project attribute.
+.PP
+.if n *
+.if t \(bu
+.\" Change 27, 129, 175
+The \fIaedist \-receive\fP delta selection mechanism has been improved:
+previously the edit-origin-UUID attribute was considered in favour of
+the original-UUID attribute, with this change it is used the change
+set, bounded to the edit-origin-UUID or to original-UUID, more recently
+integrated.  This should reduce the frequency of logical conflicts.
+.PP
+.if n *
+.if t \(bu
+.\" Change 11, 16, 23, 28, 128
+There is a new \fIaerevml\fP(1) command, which can be used to send
+change sets in the RevML format.
+See \fIaerevml\fP(1) for more information.
+The \fIaeget\fP(1) web interface is also able to serve change sets in
+this format.
+.PP
+.if n *
+.if t \(bu
+.\" Change 121
+A problem has been fixed which caused Aegis to fail on the hppa port
+of Debian.
+.PP
+.if n *
+.if t \(bu
+.\" Change 120
+The \fIaetar \-receive\fP program now uses the archive name as the brief
+description.
+.PP
+.if n *
+.if t \(bu
+.\" Change 115
+A bug was fixed in \fIaedist \-send\fP which caused segfaults when
+processing some files.
+.PP
+.if n *
+.if t \(bu
+.\" Change 111
+A bug was fixed which caused \fIaedist \-send\fP to produce an archive
+that can not be \fIaedist \-receive\fP because of an operation
+impossible to replicate in a change set.
+.PP
+.if n *
+.if t \(bu
+.\" Change 100
+There is an implementation of Robert Collins' subunit testing
+framework available.  See \fIaesubunit\fP(1) for more information.
+.PP
+.if n *
+.if t \(bu
+.\" Change 107
+A bug was fixed in \fIaedist\fP that caused an error when receiving a branch's
+archive generated with the \fIaedist \-send \-entire-source\fP option.
+.PP
+.if n *
+.if t \(bu
+.\" Change 106
+A bug has been fixed in \fIaedist \-receive\fP that caused a segfault in
+the rename handling code.
+.PP
+.if n *
+.if t \(bu
+.\" Change 105
+The \fIaedist \-missing\fP listing (and the \fIaedist \-replay\fP
+behaviour) now check for branch UUIDs as well, just in case someone
+fetched a branch as a change set and applied it.  However, \fIaeget\fP
+does not report these UUIDs, because that would be too confusing.
+.PP
+.if n *
+.if t \(bu
+.\" Change 95
+It is now possible to specify any sufficiently unique leading
+prefix of a UUID rather than the full 36 characters.
+.PP
+.if n *
+.if t \(bu
+.\" Change 91
+There is a new \fI${History_Path}\fP substitution available.  It gives
+you the path name of the history file corresponding to the given
+filenames.
+.PP
+.if n *
+.if t \(bu
+.\" Change 576
+A bug in \fIaedist \-receive\fP which caused incorrect delta selection
+has been fixed.
+.PP
+.if n *
+.if t \(bu
+.\" Change 88
+There is a new \fIaedist \-pending\fP option which can print the list of
+local change sets missing from a remote repository.
+.PP
+.if n *
+.if t \(bu
+.\" Change 79
+The \fIaedist \-receive\fP command is now able to use the
+edit-origin-UUID attribute to copy modified files from the right origin.
+.PP
+.if n *
+.if t \(bu
+.\" Change 73
+A bug has been fixed in \fIaedist \-send\fP where some types of
+incomplete changes would fail an assert.
+.PP
+.if n *
+.if t \(bu
+.\" Change 58, 69
+There is a new \fIaexver\fP(1) command which can be used to view
+historical versions of files in an Aegis repository.
+See \fIaexver\fP(1) for more information.
+.PP
+.if n *
+.if t \(bu
+.\" Change 61
+A bug as been fixed which caused \fIaemv\fP(1) to incorrectly rename a
+file to an existing directory
+.PP
+.if n *
+.if t \(bu
+.\" Change 52
+It is now possible to specify user-defined user attributes in
+the \f[CW]~/.aegisrc\fP file.
+.PP
+.if n *
+.if t \(bu
+.\" Change 55
+The \fIaenf\fP(1) command now gives a warning if you specify the "config"
+file without the "\-config" option. This is the old name for the
+project configuration file, the new name is "aegis.conf".
+.PP
+.if n *
+.if t \(bu
+.\" Change 51
+The \fIaefind\fP(1) command now understands \f[CW]{+}\fP to mean the
+resolved file name, and \f[CW]{-}\fP as the unresolved file name.
+.PP
+.if n *
+.if t \(bu
+.\" Change 33
+There was a bug where Aegis would exit with a fatal error if one
+of the directories on the AEGIS_PATH was read-only. Such
+directories are now ignored.
+.PP
+.if n *
+.if t \(bu
+.\" Change 504
+The \fIaetar\fP(1) command has been improved to process modified and
+created files in a batched way; this improves the speed.
+.PP
+.if n *
+.if t \(bu
+.\" Change 19
+Additional explanatory text has been added to the message
+printed when error message translation files can't be found.
+.PP
+.if n *
+.if t \(bu
+.\" Change 18
+The \fIaenf\fP(1) command now understands the \fI\-keep\fP and
+\fI\-no-keep\fP options, to explicitly control the creation of new files
+in the development directory.
+.PP
+.if n *
+.if t \(bu
+.\" Change 506
+A bug has been fixed in \fIaemv\fP91) which failed to check the new name
+against the filename charset, \fIetc\fP.
 .\" ------------------------------------------------------------------------
 .\" Place new text above this line.
 .SS Version 4.20 (28-Jan-2005)

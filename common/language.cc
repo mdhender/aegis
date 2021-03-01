@@ -1,6 +1,6 @@
 //
 //	aegis - project change supervisor
-//	Copyright (C) 1995, 2002-2004 Peter Miller;
+//	Copyright (C) 1995, 2002-2005 Peter Miller;
 //	All rights reserved.
 //
 //	This program is free software; you can redistribute it and/or modify
@@ -55,7 +55,9 @@ static const char *const trial_locales[] =
     "en_US",
     "en",
     "en_US.UTF-8",
-    "en_US.utf8"
+    "en_US.utf8",
+    "en_US.ISO8859-1",
+    "en_US.iso8859-1",
 };
 
 
@@ -327,24 +329,30 @@ language_check_translations()
 		    {
 			error_raw
 			(
-			    "Warning: You are seeing the short form "
-			    "of the error messages.  You may need to "
-			    "check the settings of your LC_ALL and LANG "
-			    "environment variables."
+                            "Warning: You are seeing the short form "
+                            "of the error messages.  The message "
+                            "catalogues may not have been installed "
+                            "correctly, or you may need to check "
+                            "the settings of your LC_ALL and LANG "
+                            "environment variables."
 			);
 		    }
 		    else
 		    {
 			error_raw
 			(
-			    "Warning: You are seeing the short form of the "
-			    "error messages.  Longer and more informative "
-			    "error messages are available using the "
-			    "English message catalogue available via the "
-			    "GNU Gettext facilities; use the command "
-			    "\"LANG=en_US; export LANG\" to enable them.  "
-			    "A number of alternate message catalogues "
-			    "in other languages are also available."
+                            "Warning: You are seeing the short form "
+                            "of the error messages.  Longer and "
+                            "more informative error messages are "
+                            "available using the English message "
+                            "catalogue available via the GNU Gettext "
+                            "facilities; use the command \"LANG=en_US; "
+                            "export LANG\" to enable them.  The "
+                            "message catalogues (including the English "
+                            "catalogue) may not have been installed "
+                            "correctly.  A number of alternate message "
+                            "catalogues in other languages are also "
+                            "available."
 			);
 		    }
 		}

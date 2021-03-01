@@ -1,6 +1,6 @@
 //
 //	aegis - project change supervisor
-//	Copyright (C) 2004 Peter Miller;
+//	Copyright (C) 2004, 2005 Peter Miller;
 //	All rights reserved.
 //
 //	This program is free software; you can redistribute it and/or modify
@@ -45,7 +45,7 @@ public:
     /**
       * The constructor.
       */
-    change_functor_inventory(project_ty *pp);
+    change_functor_inventory(bool incbr, project_ty *pp);
 
     // See base class for documentation.
     void operator()(change_ty *);

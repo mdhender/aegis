@@ -130,6 +130,7 @@ change_owner_main(void)
     change_number = 0;
     new_developer = 0;
     devdir = 0;
+    string_ty *reason = 0;
     while (arglex_token != arglex_token_eoln)
     {
 	switch (arglex_token)
@@ -184,6 +185,22 @@ change_owner_main(void)
 	case arglex_token_wait:
 	case arglex_token_wait_not:
 	    user_lock_wait_argument(change_owner_usage);
+	    break;
+
+	case arglex_token_reason:
+	    if (reason)
+		duplicate_option(change_owner_usage);
+	    switch (arglex())
+	    {
+	    default:
+		option_needs_string(arglex_token_reason, change_owner_usage);
+		// NOTREACHED
+
+	    case arglex_token_string:
+	    case arglex_token_number:
+		reason = str_from_c(arglex_value.alv_string);
+		break;
+	    }
 	    break;
 	}
 	arglex();
@@ -278,14 +295,18 @@ change_owner_main(void)
     //
     // add to history for state change
     //
+    string_ty *reason2 =
+	str_format("Forced by administrator \"%s\".", user_name(up)->str_text);
+    if (reason)
+	reason = str_format("%s\n%s", reason->str_text, reason2->str_text);
+    else
+	reason = reason2;
     history_data = change_history_new(cp, up1);
     history_data->what = cstate_history_what_develop_begin_undo;
-    history_data->why =
-	str_format("Forced by administrator \"%s\".", user_name(up)->str_text);
+    history_data->why = str_copy(reason);
     history_data = change_history_new(cp, up2);
     history_data->what = cstate_history_what_develop_begin;
-    history_data->why =
-	str_format("Forced by administrator \"%s\".", user_name(up)->str_text);
+    history_data->why = reason;
 
     //
     // Clear the build-time field.

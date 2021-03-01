@@ -1,6 +1,6 @@
 //
 //	aegis - project change supervisor
-//	Copyright (C) 2003, 2004 Peter Miller;
+//	Copyright (C) 2003-2005 Peter Miller;
 //	All rights reserved.
 //
 //	This program is free software; you can redistribute it and/or modify
@@ -27,7 +27,9 @@
 #include <emit/project.h>
 #include <get/project/menu.h>
 #include <http.h>
+#include <os.h>
 #include <project.h>
+#include <rss.h>
 #include <str_list.h>
 
 
@@ -141,32 +143,92 @@ get_project_menu(project_ty *pp, string_ty *filename, string_list_ty *modifier)
 
     printf("<p>\n");
     printf("Change lists are also available broken down by change state:\n");
-    printf("<ul>\n");
-    printf("<li>");
+
+    printf("<table>\n");
+    printf("<tr><td><ul><li>\n");
     emit_project_href(pp, "changes+awaiting_development");
-    printf("awaiting development</a>\n");
-    printf("<li>");
+    printf("awaiting development</a>");
+    printf("</ul></td><td>\n");
+    nstring rss_filename = rss_feed_filename(pp, "awaiting_development");
+    if (!rss_filename.empty())
+    {
+        emit_rss_icon_with_link(pp, os_basename(rss_filename));
+    }
+    printf("</td></tr>\n");
+
+    printf("<tr><td><ul><li>\n");
     emit_project_href(pp, "changes+being_developed");
-    printf("being developed</a>\n");
-    printf("<li>");
+    printf("being developed</a>");
+    printf("</ul></td><td>\n");
+    rss_filename = rss_feed_filename(pp, "being_developed");
+    if (!rss_filename.empty())
+    {
+        emit_rss_icon_with_link(pp, os_basename(rss_filename));
+    }
+    printf("</td></tr>\n");
+
+    printf("<tr><td><ul><li>\n");
     emit_project_href(pp, "changes+awaiting_review");
-    printf("awaiting review</a>\n");
-    printf("<li>");
+    printf("awaiting review</a>");
+    printf("</ul></td><td>\n");
+    rss_filename = rss_feed_filename(pp, "awaiting_review");
+    if (!rss_filename.empty())
+    {
+        emit_rss_icon_with_link(pp, os_basename(rss_filename));
+    }
+    printf("</td></tr>\n\n");
+
+    printf("<tr><td><ul><li>\n");
     emit_project_href(pp, "changes+being_reviewed");
-    printf("being reviewed</a>\n");
-    printf("<li>");
+    printf("being reviewed</a>");
+    printf("</ul></td><td>\n");
+    rss_filename = rss_feed_filename(pp, "being_reviewed");
+    if (!rss_filename.empty())
+    {
+        emit_rss_icon_with_link(pp, os_basename(rss_filename));
+    }
+    printf("</td></tr>\n");
+
+    printf("<tr><td><ul><li>\n");
     emit_project_href(pp, "changes+awaiting_integration");
-    printf("awaiting integration</a>\n");
-    printf("<li>");
+    printf("awaiting integration</a>");
+    printf("</ul></td><td>\n");
+    rss_filename = rss_feed_filename(pp, "awaiting_integration");
+    if (!rss_filename.empty())
+    {
+        emit_rss_icon_with_link(pp, os_basename(rss_filename));
+    }
+    printf("</td></tr>\n");
+
+    printf("<tr><td><ul><li>\n");
     emit_project_href(pp, "changes+being_integrated");
-    printf("being integrated</a>\n");
-    printf("<li>");
+    printf("being integrated</a>");
+    printf("</ul></td><td>\n");
+    rss_filename = rss_feed_filename(pp, "being_integrated");
+    if (!rss_filename.empty())
+    {
+        emit_rss_icon_with_link(pp, os_basename(rss_filename));
+    }
+    printf("</td></tr>\n\n");
+
+    printf("<tr><td><ul><li>\n");
     emit_project_href(pp, "changes+completed");
-    printf("completed</a>\n");
-    printf("<li>");
+    printf("completed</a>");
+    printf("</ul></td><td>\n");
+    rss_filename = rss_feed_filename(pp, "completed");
+    if (!rss_filename.empty())
+    {
+        emit_rss_icon_with_link(pp, os_basename(rss_filename));
+    }
+    printf("</td></tr>\n\n");
+
+    printf("<tr><td><ul><li>\n");
     emit_project_href(pp, "changes+not+completed");
     printf("not completed</a>\n");
-    printf("</ul>\n");
+    printf("</ul></td><td>\n");
+    printf("</td></tr>\n");
+
+    printf("</table>\n");
     printf("<p>\n");
 
     printf("<dt>");

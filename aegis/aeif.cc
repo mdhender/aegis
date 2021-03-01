@@ -1,21 +1,21 @@
 //
-//	aegis - project change supervisor
-//	Copyright (C) 1991-2005 Peter Miller;
-//	All rights reserved.
+//      aegis - project change supervisor
+//      Copyright (C) 1991-2005 Peter Miller;
+//      All rights reserved.
 //
-//	This program is free software; you can redistribute it and/or modify
-//	it under the terms of the GNU General Public License as published by
-//	the Free Software Foundation; either version 2 of the License, or
-//	(at your option) any later version.
+//      This program is free software; you can redistribute it and/or modify
+//      it under the terms of the GNU General Public License as published by
+//      the Free Software Foundation; either version 2 of the License, or
+//      (at your option) any later version.
 //
-//	This program is distributed in the hope that it will be useful,
-//	but WITHOUT ANY WARRANTY; without even the implied warranty of
-//	MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-//	GNU General Public License for more details.
+//      This program is distributed in the hope that it will be useful,
+//      but WITHOUT ANY WARRANTY; without even the implied warranty of
+//      MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+//      GNU General Public License for more details.
 //
-//	You should have received a copy of the GNU General Public License
-//	along with this program; if not, write to the Free Software
-//	Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111, USA.
+//      You should have received a copy of the GNU General Public License
+//      along with this program; if not, write to the Free Software
+//      Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111, USA.
 //
 // MANIFEST: functions for implementing integrate fail
 //
@@ -46,6 +46,7 @@
 #include <project/file.h>
 #include <project/history.h>
 #include <quit.h>
+#include <rss.h>
 #include <sub.h>
 #include <trace.h>
 #include <undo.h>
@@ -60,27 +61,27 @@ integrate_fail_usage(void)
     progname = progname_get();
     fprintf
     (
-	stderr,
-	"usage: %s -Integrate_FAIL -File <reason-file> [ <option>... ]\n",
-	progname
+        stderr,
+        "usage: %s -Integrate_FAIL -File <reason-file> [ <option>... ]\n",
+        progname
     );
     fprintf
     (
-	stderr,
-	"       %s -Integrate_FAIL -REAson '<text>' [ <option>... ]\n",
-	progname
+        stderr,
+        "       %s -Integrate_FAIL -REAson '<text>' [ <option>... ]\n",
+        progname
     );
     fprintf
     (
-	stderr,
-	"       %s -Integrate_FAIL -Edit [ <option>... ]\n",
-	progname
+        stderr,
+        "       %s -Integrate_FAIL -Edit [ <option>... ]\n",
+        progname
     );
     fprintf
     (
-	stderr,
-	"       %s -Integrate_FAIL -List [ <option>... ]\n",
-	progname
+        stderr,
+        "       %s -Integrate_FAIL -List [ <option>... ]\n",
+        progname
     );
     fprintf(stderr, "       %s -Integrate_FAIL -Help\n", progname);
     quit(1);
@@ -97,36 +98,36 @@ integrate_fail_help(void)
 static void
 integrate_fail_list(void)
 {
-    string_ty	    *project_name;
+    string_ty       *project_name;
 
     trace(("integrate_fail_list()\n{\n"));
     arglex();
     project_name = 0;
     while (arglex_token != arglex_token_eoln)
     {
-	switch (arglex_token)
-	{
-	default:
-	    generic_argument(integrate_fail_usage);
-	    continue;
+        switch (arglex_token)
+        {
+        default:
+            generic_argument(integrate_fail_usage);
+            continue;
 
-	case arglex_token_project:
-	    arglex();
-	    // fall through...
+        case arglex_token_project:
+            arglex();
+            // fall through...
 
-	case arglex_token_string:
-	    arglex_parse_project(&project_name, integrate_fail_usage);
-	    continue;
-	}
-	arglex();
+        case arglex_token_string:
+            arglex_parse_project(&project_name, integrate_fail_usage);
+            continue;
+        }
+        arglex();
     }
     list_changes_in_state_mask
     (
-	project_name,
-	1 << cstate_state_being_integrated
+        project_name,
+        1 << cstate_state_being_integrated
     );
     if (project_name)
-	str_free(project_name);
+        str_free(project_name);
     trace(("}\n"));
 }
 
@@ -134,12 +135,12 @@ integrate_fail_list(void)
 static void
 check_directory(change_ty *cp)
 {
-    string_ty	    *dir;
+    string_ty       *dir;
 
     dir = change_integration_directory_get(cp, 1);
     os_become_orig();
     if (os_below_dir(dir, os_curdir()))
-	change_fatal(cp, 0, i18n("leave int dir"));
+        change_fatal(cp, 0, i18n("leave int dir"));
     os_become_undo();
 }
 
@@ -155,193 +156,187 @@ check_permissions(change_ty *cp, user_ty *up)
     // it is an error if the change is not in the 'being_integrated' state.
     //
     if (cstate_data->state != cstate_state_being_integrated)
-	change_fatal(cp, 0, i18n("bad if state"));
+        change_fatal(cp, 0, i18n("bad if state"));
     if (!str_equal(change_integrator_name(cp), user_name(up)))
-	change_fatal(cp, 0, i18n("not integrator"));
+        change_fatal(cp, 0, i18n("not integrator"));
 }
 
 
 static void
 integrate_fail_main(void)
 {
-    string_ty	    *s;
     sub_context_ty  *scp;
     cstate_ty       *cstate_data;
     cstate_history_ty *history_data;
-    string_ty	    *comment =	    0;
-    const char      *reason =	    0;
-    string_ty	    *dir;
-    int		    j;
-    string_ty	    *project_name;
-    project_ty	    *pp;
-    long	    change_number;
-    change_ty	    *cp;
-    user_ty	    *up;
-    user_ty	    *devup;
-    edit_ty	    edit;
+    const char      *reason =       0;
+    string_ty       *dir;
+    int             j;
+    string_ty       *project_name;
+    project_ty      *pp;
+    long            change_number;
+    change_ty       *cp;
+    user_ty         *up;
+    user_ty         *devup;
+    edit_ty         edit;
 
     trace(("integrate_fail_main()\n{\n"));
     arglex();
     project_name = 0;
     change_number = 0;
     edit = edit_not_set;
+    nstring comment;
     while (arglex_token != arglex_token_eoln)
     {
-	switch (arglex_token)
-	{
-	default:
-	    generic_argument(integrate_fail_usage);
-	    continue;
+        switch (arglex_token)
+        {
+        default:
+            generic_argument(integrate_fail_usage);
+            continue;
 
-	case arglex_token_string:
-	    scp = sub_context_new();
-	    sub_var_set_charstar
-	    (
-		scp,
-		"Name",
-		arglex_token_name(arglex_token_file)
-	    );
-	    error_intl(scp, i18n("warning: use $name option"));
-	    sub_context_delete(scp);
-	    if (comment)
-		fatal_too_many_files();
-	    goto read_reason_file;
+        case arglex_token_string:
+            scp = sub_context_new();
+            sub_var_set_charstar
+            (
+                scp,
+                "Name",
+                arglex_token_name(arglex_token_file)
+            );
+            error_intl(scp, i18n("warning: use $name option"));
+            sub_context_delete(scp);
+            if (!comment.empty())
+                fatal_too_many_files();
+            goto read_reason_file;
 
-	case arglex_token_file:
-	    if (comment)
-		duplicate_option(integrate_fail_usage);
-	    switch (arglex())
-	    {
-	    default:
-		option_needs_file(arglex_token_file, integrate_fail_usage);
-		// NOTREACHED
+        case arglex_token_file:
+            if (!comment.empty())
+                duplicate_option(integrate_fail_usage);
+            switch (arglex())
+            {
+            default:
+                option_needs_file(arglex_token_file, integrate_fail_usage);
+                // NOTREACHED
 
-	    case arglex_token_string:
-		read_reason_file:
-		os_become_orig();
-		s = str_from_c(arglex_value.alv_string);
-		comment = read_whole_file(s);
-		str_free(s);
-		os_become_undo();
-		break;
+            case arglex_token_string:
+                read_reason_file:
+                os_become_orig();
+                comment = read_whole_file(nstring(arglex_value.alv_string));
+                os_become_undo();
+                break;
 
-	    case arglex_token_stdio:
-		os_become_orig();
-		comment = read_whole_file((string_ty *)0);
-		os_become_undo();
-		break;
-	    }
-	    assert(comment);
-	    break;
+            case arglex_token_stdio:
+                os_become_orig();
+                comment = read_whole_file(nstring());
+                os_become_undo();
+                break;
+            }
+            assert(!comment.empty());
+            break;
 
-	case arglex_token_reason:
-	    if (reason)
-		duplicate_option(integrate_fail_usage);
-	    if (arglex() != arglex_token_string)
-		option_needs_string(arglex_token_reason, integrate_fail_usage);
-	    reason = arglex_value.alv_string;
-	    break;
+        case arglex_token_reason:
+            if (reason)
+                duplicate_option(integrate_fail_usage);
+            if (arglex() != arglex_token_string)
+                option_needs_string(arglex_token_reason, integrate_fail_usage);
+            reason = arglex_value.alv_string;
+            break;
 
-	case arglex_token_change:
-	    arglex();
-	    // fall through...
+        case arglex_token_change:
+            arglex();
+            // fall through...
 
-	case arglex_token_number:
-	    arglex_parse_change
-	    (
-		&project_name,
-		&change_number,
-		integrate_fail_usage
-	    );
-	    continue;
+        case arglex_token_number:
+            arglex_parse_change
+            (
+                &project_name,
+                &change_number,
+                integrate_fail_usage
+            );
+            continue;
 
-	case arglex_token_project:
-	    arglex();
-	    arglex_parse_project(&project_name, integrate_fail_usage);
-	    continue;
+        case arglex_token_project:
+            arglex();
+            arglex_parse_project(&project_name, integrate_fail_usage);
+            continue;
 
-	case arglex_token_edit:
-	    if (edit == edit_foreground)
-		duplicate_option(integrate_fail_usage);
-	    if (edit != edit_not_set)
-	    {
-		too_many_edits:
-		mutually_exclusive_options
-		(
-		    arglex_token_edit,
-		    arglex_token_edit_bg,
-		    integrate_fail_usage
-		);
-	    }
-	    edit = edit_foreground;
-	    break;
+        case arglex_token_edit:
+            if (edit == edit_foreground)
+                duplicate_option(integrate_fail_usage);
+            if (edit != edit_not_set)
+            {
+                too_many_edits:
+                mutually_exclusive_options
+                (
+                    arglex_token_edit,
+                    arglex_token_edit_bg,
+                    integrate_fail_usage
+                );
+            }
+            edit = edit_foreground;
+            break;
 
-	case arglex_token_edit_bg:
-	    if (edit == edit_background)
-		duplicate_option(integrate_fail_usage);
-	    if (edit != edit_not_set)
-		goto too_many_edits;
-	    edit = edit_background;
-	    break;
+        case arglex_token_edit_bg:
+            if (edit == edit_background)
+                duplicate_option(integrate_fail_usage);
+            if (edit != edit_not_set)
+                goto too_many_edits;
+            edit = edit_background;
+            break;
 
-	case arglex_token_wait:
-	case arglex_token_wait_not:
-	    user_lock_wait_argument(integrate_fail_usage);
-	    break;
-	}
-	arglex();
+        case arglex_token_wait:
+        case arglex_token_wait_not:
+            user_lock_wait_argument(integrate_fail_usage);
+            break;
+        }
+        arglex();
     }
-    if (comment && reason)
+    if (!comment.empty() && reason)
     {
-	mutually_exclusive_options
-	(
-	    arglex_token_file,
-	    arglex_token_reason,
-	    integrate_fail_usage
-	);
+        mutually_exclusive_options
+        (
+            arglex_token_file,
+            arglex_token_reason,
+            integrate_fail_usage
+        );
     }
-    if (edit != edit_not_set && (comment || reason))
+    if (edit != edit_not_set && (!comment.empty() || reason))
     {
-	mutually_exclusive_options
-	(
-	    (
-		edit == edit_foreground
-	    ?
-		arglex_token_edit
-	    :
-		arglex_token_edit_bg
-	    ),
-	    (comment ? arglex_token_file : arglex_token_reason),
-	    integrate_fail_usage
-	);
+        mutually_exclusive_options
+        (
+            (
+                edit == edit_foreground
+            ?
+                arglex_token_edit
+            :
+                arglex_token_edit_bg
+            ),
+            (!comment.empty() ? arglex_token_file : arglex_token_reason),
+            integrate_fail_usage
+        );
     }
-    if (edit == edit_not_set && !(comment || reason))
+    if (edit == edit_not_set && comment.empty() && !reason)
     {
-	scp = sub_context_new();
-	sub_var_set_charstar
-	(
-	    scp,
-	    "Name1",
-	    arglex_token_name(arglex_token_file)
-	);
-	sub_var_set_charstar
-	(
-	    scp,
-	    "Name2",
-	    arglex_token_name(arglex_token_edit)
-	);
-	error_intl(scp, i18n("warning: no $name1, assuming $name2"));
-	sub_context_delete(scp);
-	edit = edit_foreground;
+        sub_context_ty sc;
+        sc.var_set_charstar
+        (
+            "Name1",
+            arglex_token_name(arglex_token_file)
+        );
+        sc.var_set_charstar
+        (
+            "Name2",
+            arglex_token_name(arglex_token_edit)
+        );
+        sc.error_intl(i18n("warning: no $name1, assuming $name2"));
+        edit = edit_foreground;
     }
     if (reason)
-	comment = str_from_c(reason);
+        comment = nstring(reason);
 
     //
     // locate project data
     //
     if (!project_name)
-	project_name = user_default_project();
+        project_name = user_default_project();
     pp = project_alloc(project_name);
     str_free(project_name);
     project_bind_existing(pp);
@@ -355,7 +350,7 @@ integrate_fail_main(void)
     // locate change data
     //
     if (!change_number)
-	change_number = user_default_change(up);
+        change_number = user_default_change(up);
     cp = change_alloc(pp, change_number);
     change_bind_existing(cp);
 
@@ -364,18 +359,18 @@ integrate_fail_main(void)
     //
     if (edit != edit_not_set)
     {
-	//
-	// make sure they are not in the integration directory,
-	// to avoid a wasted edit
-	//
-	check_directory(cp);
+        //
+        // make sure they are not in the integration directory,
+        // to avoid a wasted edit
+        //
+        check_directory(cp);
 
-	//
-	// make sure they are allowed to first,
-	// to avoid a wasted edit
-	//
-	check_permissions(cp, up);
-	comment = os_edit_new(edit);
+        //
+        // make sure they are allowed to first,
+        // to avoid a wasted edit
+        //
+        check_permissions(cp, up);
+        comment = nstring(os_edit_new(edit));
     }
 
     //
@@ -399,13 +394,14 @@ integrate_fail_main(void)
     //
     history_data = change_history_new(cp, up);
     history_data->what = cstate_history_what_integrate_fail;
-    history_data->why = comment;
+    if (!comment.empty())
+        history_data->why = str_copy(comment.get_ref());
     change_build_times_clear(cp);
     cstate_data->delta_number = 0;
     if (cstate_data->delta_uuid)
     {
-	str_free(cstate_data->delta_uuid);
-	cstate_data->delta_uuid = 0;
+        str_free(cstate_data->delta_uuid);
+        cstate_data->delta_uuid = 0;
     }
     dir = str_copy(change_integration_directory_get(cp, 1));
     change_integration_directory_clear(cp);
@@ -437,65 +433,65 @@ integrate_fail_main(void)
     //
     for (j = 0;; ++j)
     {
-	fstate_src_ty   *c_src_data;
-	fstate_src_ty   *p_src_data;
+        fstate_src_ty   *c_src_data;
+        fstate_src_ty   *p_src_data;
 
-	c_src_data = change_file_nth(cp, j, view_path_first);
-	if (!c_src_data)
-	    break;
-	p_src_data =
-	    project_file_find(pp, c_src_data->file_name, view_path_none);
-	if (!p_src_data)
-	{
-	    // This is actualy a bug.
-	    continue;
-	}
-	p_src_data->locked_by = 0;
+        c_src_data = change_file_nth(cp, j, view_path_first);
+        if (!c_src_data)
+            break;
+        p_src_data =
+            project_file_find(pp, c_src_data->file_name, view_path_none);
+        if (!p_src_data)
+        {
+            // This is actualy a bug.
+            continue;
+        }
+        p_src_data->locked_by = 0;
 
-	//
-	// Remove the file if it is about_to_be_created
-	// by the change we are rescinding.
-	//
-	if
-	(
-	    p_src_data->about_to_be_created_by
-	||
-	    p_src_data->about_to_be_copied_by
-	)
-	{
-	    assert(!p_src_data->about_to_be_created_by ||
-		p_src_data->about_to_be_created_by==change_number);
-	    assert(!p_src_data->about_to_be_copied_by ||
-		p_src_data->about_to_be_copied_by==change_number);
-	    if (p_src_data->deleted_by)
-	    {
-		assert(!p_src_data->about_to_be_copied_by);
-		p_src_data->about_to_be_created_by = 0;
-	    }
-	    else
-		project_file_remove(pp, c_src_data->file_name);
-	}
+        //
+        // Remove the file if it is about_to_be_created
+        // by the change we are rescinding.
+        //
+        if
+        (
+            p_src_data->about_to_be_created_by
+        ||
+            p_src_data->about_to_be_copied_by
+        )
+        {
+            assert(!p_src_data->about_to_be_created_by ||
+                p_src_data->about_to_be_created_by==change_number);
+            assert(!p_src_data->about_to_be_copied_by ||
+                p_src_data->about_to_be_copied_by==change_number);
+            if (p_src_data->deleted_by)
+            {
+                assert(!p_src_data->about_to_be_copied_by);
+                p_src_data->about_to_be_created_by = 0;
+            }
+            else
+                project_file_remove(pp, c_src_data->file_name);
+        }
 
-	//
-	// remove the integrate difference time
-	//
-	if (c_src_data->idiff_file_fp)
-	{
-	    fingerprint_type.free(c_src_data->idiff_file_fp);
-	    c_src_data->idiff_file_fp = 0;
-	}
+        //
+        // remove the integrate difference time
+        //
+        if (c_src_data->idiff_file_fp)
+        {
+            fingerprint_type.free(c_src_data->idiff_file_fp);
+            c_src_data->idiff_file_fp = 0;
+        }
 
-	//
-	// remove file test times
-	//
-	if (c_src_data->architecture_times)
-	{
-	    fstate_src_architecture_times_list_type.free
-	    (
-		c_src_data->architecture_times
-	    );
-	    c_src_data->architecture_times = 0;
-	}
+        //
+        // remove file test times
+        //
+        if (c_src_data->architecture_times)
+        {
+            fstate_src_architecture_times_list_type.free
+            (
+                c_src_data->architecture_times
+            );
+            c_src_data->architecture_times = 0;
+        }
     }
 
     //
@@ -534,6 +530,11 @@ integrate_fail_main(void)
     change_run_integrate_fail_notify_command(cp);
 
     //
+    // Update the RSS feed file if necessary.
+    //
+    rss_add_item_by_change(pp, cp);
+
+    //
     // verbose success message
     //
     change_verbose(cp, 0, i18n("integrate fail complete"));
@@ -550,8 +551,8 @@ integrate_fail(void)
 {
     static arglex_dispatch_ty dispatch[] =
     {
-	{arglex_token_help, integrate_fail_help, },
-	{arglex_token_list, integrate_fail_list, },
+        {arglex_token_help, integrate_fail_help, },
+        {arglex_token_list, integrate_fail_list, },
     };
 
     trace(("integrate_fail()\n{\n"));

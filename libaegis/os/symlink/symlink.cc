@@ -1,6 +1,6 @@
 //
 //	aegis - project change supervisor
-//	Copyright (C) 1991-2004 Peter Miller;
+//	Copyright (C) 1991-2005 Peter Miller;
 //	All rights reserved.
 //
 //	This program is free software; you can redistribute it and/or modify
@@ -36,32 +36,35 @@
 void
 os_symlink(string_ty *src, string_ty *dst)
 {
-    trace(("os_symlink()\n{\n"));
+    os_symlink(nstring(str_copy(src)), nstring(str_copy(dst)));
+}
+
+
+void
+os_symlink(const nstring &src, const nstring &dst)
+{
+    trace(("os_symlink(src = \"%s\", dst - \"%s\")\n{\n", src.c_str(),
+       	dst.c_str()));
     os_become_must_be_active();
 #ifdef S_IFLNK
-    if (glue_symlink(src->str_text, dst->str_text))
+    if (glue_symlink(src.c_str(), dst.c_str()))
     {
-	sub_context_ty  *scp;
-	int             errno_old;
-
-	errno_old = errno;
-	scp = sub_context_new();
-	sub_errno_setx(scp, errno_old);
-	sub_var_set_string(scp, "File_Name1", src);
-	sub_var_set_string(scp, "File_Name2", dst);
-	fatal_intl
+	int errno_old = errno;
+	sub_context_ty sc;
+	sc.errno_setx(errno_old);
+	sc.var_set_string("File_Name1", src);
+	sc.var_set_string("File_Name2", dst);
+	sc.fatal_intl
 	(
-	    scp,
 	    i18n("symlink(\"$filename1\", \"$filename2\"): $errno")
 	);
-	sub_context_delete(scp);
     }
 #else
     fatal_raw
     (
 	"symlink(\"%s\", \"%s\"): symbolic links not available",
-	src->str_text,
-	dst->str_text
+	src.c_str(),
+	dst.c_str()
     );
 #endif
     trace(("}\n"));

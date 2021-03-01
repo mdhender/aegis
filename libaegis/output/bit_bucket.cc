@@ -24,7 +24,7 @@
 #include <output/bit_bucket.h>
 
 
-output_bit_bucket_ty::~output_bit_bucket_ty()
+output_bit_bucket::~output_bit_bucket()
 {
     //
     // Make sure all buffered data has been passed to our write_inner
@@ -34,7 +34,7 @@ output_bit_bucket_ty::~output_bit_bucket_ty()
 }
 
 
-output_bit_bucket_ty::output_bit_bucket_ty() :
+output_bit_bucket::output_bit_bucket() :
     file_name("/dev/null"),
     pos(0)
 {
@@ -42,7 +42,7 @@ output_bit_bucket_ty::output_bit_bucket_ty() :
 
 
 string_ty *
-output_bit_bucket_ty::filename()
+output_bit_bucket::filename()
     const
 {
     return file_name.get_ref();
@@ -50,7 +50,7 @@ output_bit_bucket_ty::filename()
 
 
 long
-output_bit_bucket_ty::ftell_inner()
+output_bit_bucket::ftell_inner()
     const
 {
     return pos;
@@ -58,14 +58,14 @@ output_bit_bucket_ty::ftell_inner()
 
 
 void
-output_bit_bucket_ty::write_inner(const void *data, size_t len)
+output_bit_bucket::write_inner(const void *data, size_t len)
 {
     pos += len;
 }
 
 
 int
-output_bit_bucket_ty::page_width()
+output_bit_bucket::page_width()
     const
 {
     return page_width_get(DEFAULT_PRINTER_WIDTH);
@@ -73,7 +73,7 @@ output_bit_bucket_ty::page_width()
 
 
 int
-output_bit_bucket_ty::page_length()
+output_bit_bucket::page_length()
     const
 {
     return page_length_get(DEFAULT_PRINTER_LENGTH);
@@ -81,13 +81,13 @@ output_bit_bucket_ty::page_length()
 
 
 void
-output_bit_bucket_ty::end_of_line_inner()
+output_bit_bucket::end_of_line_inner()
 {
 }
 
 
 const char *
-output_bit_bucket_ty::type_name()
+output_bit_bucket::type_name()
     const
 {
     return file_name.c_str();

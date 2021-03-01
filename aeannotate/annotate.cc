@@ -191,17 +191,15 @@ process(project_ty *pp, string_ty *filename, line_list_t *buffer)
 	    ifp = input_file_text_open(ifn);
 	    for (linum = 0;; ++linum)
 	    {
-		string_ty	*s;
-
-		s = input_one_line(ifp);
-		if (!s)
+		nstring s;
+		if (!ifp->one_line(s))
 		    break;
-		line_list_insert(buffer, linum, fep->cp, s);
+		line_list_insert(buffer, linum, fep->cp, s.get_ref());
 		assert(buffer->item[linum].cp == fep->cp);
-		assert(str_equal(buffer->item[linum].text, s));
-		str_free(s);
+		assert(str_equal(buffer->item[linum].text, s.get_ref()));
 	    }
-	    input_delete(ifp);
+	    delete ifp;
+	    ifp = 0;
 	    os_become_undo();
 	    break;
 
@@ -234,7 +232,8 @@ process(project_ty *pp, string_ty *filename, line_list_t *buffer)
 	    os_become_orig();
 	    ifp = input_file_text_open(output_file_name);
 	    plp = patch_read(ifp, 0);
-	    input_delete(ifp);
+	    delete ifp;
+	    ifp = 0;
 	    os_become_undo();
 	    assert(plp);
 
@@ -306,47 +305,39 @@ process(project_ty *pp, string_ty *filename, line_list_t *buffer)
 	    linum = 1;
 	    for (m = 0 ; m < buffer->length1; ++m, ++linum)
 	    {
-		string_ty	*s;
-		line_t		*lp;
-
-		lp = buffer->item + buffer->start1 + m;
-		s = input_one_line(ifp);
-		if (!s)
+		line_t *lp = buffer->item + buffer->start1 + m;
+		nstring s;
+		if (!ifp->one_line(s))
 		{
 		    trace(("line %d: file too short\n", linum));
 		    assert(0);
 		    break;
 		}
-		if (!str_equal(lp->text, s))
+		if (nstring(lp->text) != s)
 		{
 		    trace(("line %d: lp->text %08lX != s %08lX\n", linum,
-			(long)lp->text, (long)s));
+			(long)lp->text, (long)s.c_str()));
 		    assert(0);
 		}
-		str_free(s);
 	    }
 	    for (m = 0 ; m < buffer->length2; ++m, ++linum)
 	    {
-		string_ty	*s;
-		line_t		*lp;
-
-		lp = buffer->item + buffer->start2 + m;
-		s = input_one_line(ifp);
-		if (!s)
+		line_t *lp = buffer->item + buffer->start2 + m;
+		nstring s;
+		if (!ifp->one_line(s))
 		{
 		    trace(("line %d: file too short\n", linum));
 		    assert(0);
 		    break;
 		}
-		if (!str_equal(lp->text, s))
+		if (nstring(lp->text) != s)
 		{
 		    trace(("line %d: lp->text %08lX != s %08lX\n", linum,
 			(long)lp->text, (long)s));
 		    assert(0);
 		}
-		str_free(s);
 	    }
-	    input_delete(ifp);
+	    delete ifp;
 	    os_become_undo();
 #endif
 	    break;

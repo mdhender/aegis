@@ -1,6 +1,6 @@
 //
 //	aegis - project change supervisor
-//	Copyright (C) 1991-1995, 1998, 1999, 2001-2004 Peter Miller;
+//	Copyright (C) 1991-1995, 1998, 1999, 2001-2005 Peter Miller;
 //	All rights reserved.
 //
 //	This program is free software; you can redistribute it and/or modify
@@ -295,7 +295,7 @@ void str_dump(void);
   *
   * \param str
   *	The string from which the field is to be extracted.  Will not
-  *	be modified (the operation >not</b> performed <i>in situ</i>).
+  *	be modified (the operation <b>not</b> performed <i>in situ</i>).
   * \param sep
   *	The string which separates each field.
   * \param nth
@@ -502,7 +502,7 @@ string_ty *str_identifier(string_ty *str);
   * one constant substring with another.
   *
   * @note
-  *     The replacement is <i>not</b> done <i>in situ</i>.  The original
+  *     The replacement is <b>not</b> done <i>in situ</i>.  The original
   *     \a str is unaltered.
   *
   * @param str

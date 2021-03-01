@@ -1,6 +1,6 @@
 #
 # 	aegis - project change supervisor
-# 	Copyright (C) 2002-2004 Peter Miller;
+# 	Copyright (C) 2002-2005 Peter Miller;
 # 	All rights reserved.
 #
 # 	This program is free software; you can redistribute it and/or modify
@@ -52,7 +52,7 @@
 # -------------------------------------------------------------------------
 #
 msgid	""
-msgstr	"PO-Revision-Date: 2004-10-20\n"
+msgstr	"PO-Revision-Date: 2005-11-06\n"
 	"Last-Translator: Alexey Voinov <voins@voins.program.ru>\n"
 	"MIME-Version: 1.0\n"
 	"Content-Type: text/plain; charset=KOI8-R\n"
@@ -74,7 +74,7 @@ msgstr	"значение переменной окружения $name должно быть положительным "
 # This error message is issued when the parameter of the -UUid switch is
 # not a valid uuid.
 #
-#	$Name		The -UUid switch
+# 	$Name		The -UUid switch
 #
 msgid	"$Name needs an uuid"
 msgstr	"Для опции $Name требуется указание правильного UUID"
@@ -93,8 +93,8 @@ msgstr	"файл \"$filename\" был изменён"
 #
 # This message is issued when an aefa is successfully completed.
 #
-msgid  "$filename attributes changed"
-msgstr "атрибуты файла \"$filename\" изменены"
+msgid	"$filename attributes changed"
+msgstr	"атрибуты файла \"$filename\" изменены"
 
 #
 # This error message is issued when aenf is invoked on a file which is
@@ -106,6 +106,22 @@ msgid	"$filename bad nf type"
 msgstr	"Файл \"$filename\" неподходящего типа. Эту команду можно "
 	"применять только к обычным файлам. Символические ссылки и  файлы "
 	"других специальных типов должны создаваться при сборке."
+
+# TRANSLATION REQUIRED
+#
+# This progress message is issued when a test run against the baseline
+# fails.  This is what it is meant to do because either (a) it is new
+# functionality, and will fail because it is not in the baseline, or (b)
+# it is a bug fix, and failing against the baseline demonstrates that
+# the test reproduces the bug.
+#
+# 	$File_Name	The name of the test file.
+# 	$ARCHitecture	The name of the architecture.
+#
+#, fuzzy
+msgid	"$filename baseline fail, architecture $architecture, good"
+msgstr	"test \"$filename\" on $architecture on baseline failed (as it "
+	"should)"
 
 #
 # This progress message is issued when a test run against the baseline
@@ -119,6 +135,19 @@ msgstr	"Файл \"$filename\" неподходящего типа. Эту команду можно "
 msgid	"$filename baseline fail, good"
 msgstr	"при тестировании базы проекта тест \"$filename\" завершился "
 	"неудачно (как и должен)"
+
+# TRANSLATION REQUIRED
+#
+# This error message is issued when a test run against the baseline
+# passes.  See above for why this is not good.
+#
+# 	$File_Name	The name of the test file.
+# 	$ARCHitecture	The name of the architecture.
+#
+#, fuzzy
+msgid	"$filename baseline pass, architecture $architecture, not good"
+msgstr	"test \"$filename\" on $architecture on baseline passed (it must "
+	"fail)"
 
 #
 # This error message is issued when a test run against the baseline
@@ -180,6 +209,17 @@ msgstr	"файл \"$filename\" устарел, результат слияния с новой версией "
 msgid	"$filename fail"
 msgstr	"тест \"$filename\" завершился неудачно"
 
+# TRANSLATION REQUIRED
+#
+# This error message is issued when a test against the change fails.
+#
+# 	$File_Name	The name of the test file.
+# 	$ARCHitecture	The name of the architecture tesed on.
+#
+#, fuzzy
+msgid	"$filename fail, architecture $architecture"
+msgstr	"test \"$filename\" failed on $architecture"
+
 #
 # This error message is issued when an aed is performed on a change
 # which contains a new file which has been added to the baseline
@@ -240,6 +280,20 @@ msgid	"$filename no result"
 msgstr	"тест \"$filename\" завершился без результата; это могло "
 	"произойти из-за какой-то другой проблемы"
 
+# TRANSLATION REQUIRED
+#
+# This error message is issued when aet runs a test which returns a ``no
+# result'' exit status.
+#
+# 	$File_Name	The name of the offending file.
+# 	$ARCHitecture	The name of the architecture.
+#
+#, fuzzy
+msgid	"$filename no result, architecture $architecture"
+msgstr	"test \"$filename\" on $architecture returned no result; some  "
+	"other problem prevented the functionality under test from being "
+	"exercised"
+
 #
 # This error message is issued when aede cannot find a file in the
 # development directory corresponding to a file listed as part of the
@@ -267,8 +321,19 @@ msgstr	"файл \"$filename\" не является тестом"
 msgid	"$filename pass"
 msgstr	"тест \"$filename\" завершился успешно"
 
-#
 # TRANSLATION REQUIRED
+#
+# This progress message is issued when a test against the change passes.
+#
+# 	$File_Name	The name of the test file.
+# 	$ARCHitecture	The name of the architecture.
+#
+#, fuzzy
+msgid	"$filename pass, architecture $architecture"
+msgstr	"test \"$filename\" passed on $architecture"
+
+# TRANSLATION REQUIRED
+#
 # This error message is issued when a file named on the command
 # cannot be related to the change being operated on.
 #
@@ -284,7 +349,7 @@ msgstr	"path \"$filename\" is not within any change or project directory "
 # This fatal error message is issued by the aefa -uuid command if the
 # file already has a UUID set.
 #
-#	$File_Name	the offending filename
+# 	$File_Name	the offending filename
 #
 #, fuzzy
 msgid	"$filename uuid already set"
@@ -295,13 +360,13 @@ msgstr	"the \"$filename\" file alreday has a UUID"
 # This fatal error message is issued by the aefa -uuid command if the
 # file already has a UUID set.
 #
-#	$File_Name	the offending filename
-#	$Other		the other filename using the UUID (optional)
+# 	$File_Name	the offending filename
+# 	$Other		the other filename using the UUID (optional)
 #
 #, fuzzy
 msgid	"$filename uuid duplicate"
 msgstr	"the UUID specified for the \"$filename\" file is already in use "
-        "by the \"$other\" file"
+	"by the \"$other\" file"
 
 #
 # This error message is issued when a substitution function is formed
@@ -409,6 +474,19 @@ msgid	"$filename: arch needs name and pattern"
 msgstr	"$filename: в описании архитектуры должны присутствовать как "
 	"название(name), так и шаблон(pattern)"
 
+# TRANSLATION REQUIRED
+#
+# This error message is issued when aesvt is checking a file checksum,
+# and finds something incorrect.
+#
+# 	$File_Name	The name of the offending file.
+# 	$Number1	The checksum in the history header.
+# 	$Number2	The checksum calculated when reading the data.
+#
+#, fuzzy
+msgid	"$filename: checksum mismatch ($number1 != $number2)"
+msgstr	"$filename: checksum mismatch ($number1 != $number2)"
+
 #
 # This error message is issued when an Aegis database file is missing a
 # field which should be present.
@@ -491,6 +569,15 @@ msgid	"$filename: has errors"
 msgstr	"найден${pl $n о а} $number серьёзн${plf $n ая ые ых} ошиб${plf "
 	"$n ка ки ок} в файле $filename"
 
+# TRANSLATION REQUIRED
+#
+# This error message is issued by aesvt when the file header within a
+# history file is not in a legal RFC822 format.
+#
+#, fuzzy
+msgid	"$filename: malformed RFC 822 header line"
+msgstr	"$filename: malformed RFC 822 header line"
+
 #
 # This error message is issued when Aegis is checking a file's modes,
 # and finds something incorrect.
@@ -535,6 +622,42 @@ msgstr	"$filename: идентификатор владельца(UID) этого файла слишком мал "
 	"файлов. Для исправления следует воспользоваться командой ``chown "
 	"-R <user> $filename'', с указанием подходящей группы.  "
 	"[Необходимы полномочия администратора(root).]"
+
+# TRANSLATION REQUIRED
+#
+# This fatal error message is issued by the aesvt -checkin command if
+# the history file already contains a particular version.
+#
+# 	$File_Name	the offending filename
+# 	$Number		the offending version number
+#
+#, fuzzy
+msgid	"$filename: version $number already exists"
+msgstr	"$filename: version \"$number\" already exists"
+
+# TRANSLATION REQUIRED
+#
+# This error message is issued when aesvt -checkin finds an
+# inappropriate user-specified version number.
+#
+# 	$File_Name	the history file name
+# 	$Number		the offending version number
+#
+#, fuzzy
+msgid	"$filename: version $number invalid"
+msgstr	"$filename: version number \"$number\" not appropriate"
+
+# TRANSLATION REQUIRED
+#
+# This error message is issued when aesvt -checkout cannot find a
+# version in the history files.
+#
+# 	$File_Name	The name of the history file.
+# 	$Number		the offending version number
+#
+#, fuzzy
+msgid	"$filename: version $number not found"
+msgstr	"$filename: version \"$number\" not found"
 
 #
 # This error message is issued when a generic error in a function is required.
@@ -934,7 +1057,7 @@ msgstr	"Проект \"$name\", Блок изменений $number"
 #
 # 	$Name		The name of a project.
 # 	$Number		The number of a change.
-#	$File_Name	The name of the file.
+# 	$File_Name	The name of the file.
 #
 msgid	"Project $name, Change $number, File $filename"
 msgstr	"Проект \"$name\", Блок изменений $number, Файл \"$filename\""
@@ -1223,8 +1346,8 @@ msgstr	"UUID блока изменений уже установлен"
 # This error message is issued when a user attempts to set a change's
 # UUID and the given UUID has already be used by another change.
 #
-#	$Other	The version of change using the specified UUID.
-#		Optional.
+# 	$Other	The version of change using the specified UUID.
+# 		Optional.
 #
 msgid	"bad ca, uuid duplicate"
 msgstr	"указанный UUID уже используется в $other"
@@ -3086,7 +3209,7 @@ msgstr	"недопустимое соответствие ($name1 ~ $name2)"
 # 	$Name1		The type name of the left operand.
 # 	$Name2		The type name of the right operand.
 #
-#,  no-c-format
+#, no-c-format
 msgid	"illegal modulo ($name1 % $name2)"
 msgstr	"недопустимое деление ($name1 % $name2)"
 
@@ -3877,6 +4000,15 @@ msgid	"no $name project, closest is $guess"
 msgstr	"неизвестный проект \"$name\", есть проект с похожим названием "
 	"\"$guess\""
 
+# TRANSLATION REQUIRED
+#
+# This error message is issued if no action was specified on the aesvt
+# command line.  Exactly one is required.
+#
+#, fuzzy
+msgid	"no action specified"
+msgstr	"no action specified"
+
 #
 # This fatal error message is issued when an attempt is made to aechown
 # a branch.
@@ -4013,6 +4145,15 @@ msgid	"no files uncopied"
 msgstr	"найден${pl $n о а} $number серьёзн${plf $n ая ые ых} ошиб${plf "
 	"$n ка ки ок}, ни один файл не был удалён из блока изменений"
 
+# TRANSLATION REQUIRED
+#
+# This fatal error message is issued when aesvt finds no history
+# file on the command line.
+#
+#, fuzzy
+msgid	"no history file name specified"
+msgstr	"no history file name specified"
+
 #
 # This fatal error message is issued when aeimport finds no history
 # files in the directory tree specified on the command line.
@@ -4028,6 +4169,15 @@ msgstr	"в указанной директории не обнаружено файлов истории"
 #
 msgid	"no info $name"
 msgstr	"неизвестное название раздела \"$name\" информации о версии"
+
+# TRANSLATION REQUIRED
+#
+# This error message is issued if the assvt -checkin command is not
+# given an input file name on the command line.
+#
+#, fuzzy
+msgid	"no input file"
+msgstr	"no input file name specified"
 
 #
 # This error message is issued when a request is made which requires the
@@ -4081,6 +4231,15 @@ msgstr	"нельзя указывать опции слияния вместе с -ANticipate"
 msgid	"no new files"
 msgstr	"найден${pl $n о а} $number серьёзн${plf $n ая ые ых} ошиб${plf "
 	"$n ка ки ок}, ни один файл не был добавлен"
+
+# TRANSLATION REQUIRED
+#
+# This error message is issued if output file name was specified on the
+# aesvt -checkout command line.
+#
+#, fuzzy
+msgid	"no output file"
+msgstr	"no output file name specified"
 
 #
 # This error message is issued when a command which requires an explicit
@@ -5477,6 +5636,20 @@ msgstr	"предупреждение: не удаётся использовать патч для файла "
 	"потребуется ручное устранение конфликтов"
 
 #
+# This warning message is issued when the the old project configuration
+# file name if given to the aenf command, without a -config or -noconfig
+# option.  This has been obsoleted, and users are encouraged to use the
+# new project configuration filename instead.
+#
+# 	$File_Name1	The name of the old project configuration file.
+# 	$File_Name2	The name of the new project configuration file default.
+#
+msgid	"warning: $filename1 deprecated, use $filename2 file instead"
+msgstr	"Warning: The \"$filename1\" file has been deprecated, it is "
+	"suggested that you use the \"$filename2\" file instead.  See aenf"
+	"(1) for more information."
+
+#
 # This warning message is issued when the AEGIS environment is observed.
 # This has been obsoleted, and users are encouraged to use the
 # AEGIS_PATH environment variable instead.
@@ -5544,7 +5717,7 @@ msgstr	"предупреждение: у выражения отсутствуют побочные эффекты, "
 # This warning message is issued when aeclean notices that a file needs
 # to be differenced.
 #
-# 	$FileName	The name of the offending file.
+# 	$File_Name	The name of the offending file.
 #
 msgid	"warning: file \"$filename\" needs diff"
 msgstr	"предупреждение: для файла \"$filename\" следует выполнить "
@@ -5554,7 +5727,7 @@ msgstr	"предупреждение: для файла \"$filename\" следует выполнить "
 # This warning message is issued when aeclean notices that a file needs
 # to be merged.
 #
-# 	$FileName	The name of the offending file.
+# 	$File_Name	The name of the offending file.
 #
 msgid	"warning: file \"$filename\" needs merge"
 msgstr	"предупреждение: для файла \"$filename\" следует выполнить слияние"
@@ -5754,3 +5927,19 @@ msgstr	"невозможно определить что имелось ввиду, слишком сложное "
 #
 msgid	"you must create a \"$filename\" file"
 msgstr	"необходимо создать файл \"$filename\""
+
+#
+# TRANSLATION REQUIRED
+# This warning message is issued when the the old project configuration
+# file name if given to the aenf command, without a -config or -noconfig
+# option.  This has been obsoleted, and users are encouraged to use the
+# new project configuration filename instead.
+#
+# 	$Name1	The name of the old project configuration file.
+# 	$Name2	The name of the new project configuration file default.
+#
+#, fuzzy
+#~ msgid	"warning: $name1 deprecated, use $name2 file instead"
+#~ msgstr	"Warning: The \"$name1\" file has been deprecated, it is "
+#~ 	"suggested that you use the \"$name2\" file instead.  See aenf(1) "
+#~ 	"for more information."

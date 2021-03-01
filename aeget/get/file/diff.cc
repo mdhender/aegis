@@ -171,7 +171,7 @@ get_file_diff(change_ty *master_cp, string_ty *filename,
 	assert(fep->src);
 	if (fep->src)
 	    emit_file_href(fep->cp, fep->src->file_name, 0);
-	nstring s = change_version_get(fep->cp);
+	nstring s(change_version_get(fep->cp));
 	html_encode_charstar(s.c_str());
 	if (fep->src)
 	    printf("</a>");
@@ -229,7 +229,7 @@ get_file_diff(change_ty *master_cp, string_ty *filename,
 	printf("<td align=center>");
 	file_event_ty *fep = felp->item + x;
 	bool strong = same_change(fep->cp, master_cp);
-	nstring s = change_version_get(fep->cp);
+	nstring s(change_version_get(fep->cp));
 	if (strong)
 	    printf("<strong>");
 	emit_change_href(fep->cp, "menu");
@@ -256,7 +256,7 @@ get_file_diff(change_ty *master_cp, string_ty *filename,
 	printf("<td valign=top>");
 	file_event_ty *y_fep = felp->item + y;
 	bool y_strong = same_change(y_fep->cp, master_cp);
-	nstring s = change_version_get(y_fep->cp);
+	nstring s(change_version_get(y_fep->cp));
 	if (y_strong)
 	    printf("<strong>");
 	emit_change_href(y_fep->cp, "menu");
@@ -282,7 +282,7 @@ get_file_diff(change_ty *master_cp, string_ty *filename,
 	    }
 	    else
 	    {
-		nstring rs = change_version_get(x_fep->cp);
+		nstring rs(change_version_get(x_fep->cp));
 		nstring target = nstring::format("diff+rhs=%s", rs.c_str());
 		emit_file_href(y_fep->cp, filename, target.c_str());
 		printf("diff</a> / ");

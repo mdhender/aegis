@@ -1,6 +1,6 @@
 .\"
 .\"	aegis - project change supervisor
-.\"	Copyright (C) 2001-2003 Peter Miller;
+.\"	Copyright (C) 2001-2003, 2005 Peter Miller;
 .\"	All rights reserved.
 .\"
 .\"	This program is free software; you can redistribute it and/or modify
@@ -49,7 +49,22 @@ there are some example projects available.
 <tt>example-make-rcs</tt></a>
 </td><td valign=top>
 This template project uses GNU Make for its build tool,
-and RCS as its history tool.
+and RCS for its history tool.
+</td></tr>
+.br
+<tr><td valign=top>
+.\" make sure there is no newline inserted after any of the hyphens in
+.\" the following!
+.br
+<a href="example-cook-aesvt.html">
+<tt>example-cook-aesvt</tt></a>
+</td><td valign=top>
+This template project uses
+.br
+<a href="http://www.canb.auug.org.au/~millerp/cook/">
+Cook</a> for its build tool, and <i>aesvt</i>(1) for its history tool.
+This template project scales better than the Make-RCS example.
+The <i>aesvt</i>(1) program is distributed with Aegis.
 </td></tr>
 .br
 <tr><td valign=top>
@@ -61,11 +76,11 @@ and RCS as its history tool.
 </td><td valign=top>
 This template project uses
 .br
-<a href="http://www.canb.auug.org.au/~millerp/cook/">Cook</a> for its
-build tool, and
+<a href="http://www.canb.auug.org.au/~millerp/cook/">
+Cook</a> for its build tool, and
 .br
 <a href="http://www.canb.auug.org.au/~millerp/fhist.html">FHist</a>
-as its history tool.
+for its history tool.
 It scales better than the Make-RCS example.
 </td></tr>
 .br

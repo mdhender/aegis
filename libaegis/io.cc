@@ -24,6 +24,7 @@
 #include <ac/string.h>
 
 #include <io.h>
+#include <nstring.h>
 #include <output.h>
 #include <sub.h>
 #include <str_list.h>
@@ -98,8 +99,7 @@ integer_write_xml(output_ty *fp, const char *name, long this_thing, int show)
 	else
     	    fp->fprintf("%ld", this_thing);
     }
-    fp->fprintf("</%s>", name);
-    fp->fputc('\n');
+    fp->fprintf("</%s>\n", name);
 }
 
 
@@ -276,6 +276,108 @@ string_write(output_ty *fp, const char *name, string_ty *this_thing)
 
 
 void
+string_write(output_ty *fp, const char *name, const nstring &value)
+{
+    if (name)
+	fp->fprintf("%s = ", name);
+    fp->fputc('"');
+    int count = 0;
+    for (const char *s = value.c_str(); *s; ++s)
+    {
+	switch (*s)
+	{
+	case '(':
+	case '[':
+	case '{':
+	    ++count;
+	    break;
+
+	case ')':
+	case ']':
+	case '}':
+	    --count;
+	    break;
+	}
+    }
+    if (count > 0)
+	count = -count;
+    else
+	count = 0;
+    for (const char *s = value.c_str(); *s; ++s)
+    {
+	unsigned char c = *s;
+	// always in the C locale
+	if (!isprint(c))
+	{
+	    const char      *cp;
+
+	    cp = strchr("\bb\ff\nn\rr\tt", c);
+	    if (cp)
+	    {
+		fp->fputc('\\');
+		fp->fputc(cp[1]);
+		if (c == '\n')
+		    fp->fputs("\\\n");
+	    }
+	    else
+	    {
+		escape:
+		if (isdigit((unsigned char)s[1]))
+		{
+		    //
+		    // I'd prefer to use "\\%03o"
+		    // but that isn't entirely
+		    // portable (the glibc people
+		    // interpreted the standard
+		    // completely differently to
+		    // everyone else on the planet).
+		    // And "\\3.3o" isn't any better
+		    // (for the exact opposite reason).
+		    //
+		    fp->fputc('\\');
+		    fp->fputc('0' + ((c>>6)&3));
+		    fp->fputc('0' + ((c>>3)&7));
+		    fp->fputc('0' + ( c    &7));
+		}
+		else
+		    fp->fprintf("\\%o", c);
+	    }
+	}
+	else
+	{
+	    switch (c)
+	    {
+	    case '(':
+	    case '[':
+	    case '{':
+		++count;
+		if (count <= 0)
+		    goto escape;
+		break;
+
+	    case ')':
+	    case ']':
+	    case '}':
+		--count;
+		if (count < 0)
+		    goto escape;
+		break;
+
+	    case '\\':
+	    case '"':
+		fp->fputc('\\');
+		break;
+	    }
+	    fp->fputc(c);
+	}
+    }
+    fp->fputc('"');
+    if (name)
+	fp->fputs(";\n");
+}
+
+
+void
 string_write_xml(output_ty *fp, const char *name, string_ty *this_thing)
 {
     if (!this_thing && name)
@@ -284,46 +386,18 @@ string_write_xml(output_ty *fp, const char *name, string_ty *this_thing)
 	name = "string";
     fp->fprintf("<%s>", name);
     if (this_thing)
-    {
-	char            *s;
+	fp->fputs_xml(this_thing);
+    fp->fprintf("</%s>\n", name);
+}
 
-	for (s = this_thing->str_text; *s; ++s)
-	{
-	    unsigned char c;
 
-	    c = *s;
-	    switch (c)
-	    {
-	    case '<':
-		fp->fputs("&lt;");
-		break;
-
-	    case '>':
-		fp->fputs("&gt;");
-		break;
-
-	    case '&':
-		fp->fputs("&amp;");
-		break;
-
-	    case '"':
-		fp->fputs("&quot;");
-		break;
-
-	    case '\n':
-		fp->fputc('\n');
-		break;
-
-	    default:
-		// always in the C locale
-		if (isprint(c))
-		    fp->fputc(c);
-		else
-		    fp->fprintf("&#%d;", c);
-		break;
-	    }
-	}
-    }
+void
+string_write_xml(output_ty *fp, const char *name, const nstring &value)
+{
+    if (!name)
+	name = "string";
+    fp->fprintf("<%s>", name);
+    fp->fputs_xml(value);
     fp->fprintf("</%s>\n", name);
 }
 

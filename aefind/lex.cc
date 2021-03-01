@@ -1,6 +1,6 @@
 //
 //	aegis - project change supervisor
-//	Copyright (C) 1997-1999, 2002-2004 Peter Miller;
+//	Copyright (C) 1997-1999, 2002-2005 Peter Miller;
 //	All rights reserved.
 //
 //	This program is free software; you can redistribute it and/or modify
@@ -88,6 +88,8 @@ static arglex_table_ty argtab[] =
     { "_NOW", arglex_token_now, },
     { "_TRue", arglex_token_true, },
     { "{}", arglex_token_this, },
+    { "{+}", arglex_token_this_resolved, },
+    { "{-}", arglex_token_this_unresolved, },
     { "|", arglex_token_bit_or, },
     { "||", arglex_token_or, },
     { "~", arglex_token_tilde, },
@@ -313,6 +315,17 @@ cmdline_lex()
 
     case arglex_token_this:
 	trace(("arglex_token_this\n"));
+	cmdline_lval.lv_number = -1;
+	return THIS;
+
+    case arglex_token_this_unresolved:
+	trace(("arglex_token_this\n"));
+	cmdline_lval.lv_number = 0;
+	return THIS;
+
+    case arglex_token_this_resolved:
+	trace(("arglex_token_this\n"));
+	cmdline_lval.lv_number = 1;
 	return THIS;
 
     case arglex_token_tilde:

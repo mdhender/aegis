@@ -579,7 +579,7 @@ patch_send(void)
     ofp->fputc('\n');
     ofp = output_content_encoding(ofp, ascii_armor);
     if (needs_compression)
-	ofp = new output_gzip_ty(ofp, true);
+	ofp = new output_gzip(ofp, true);
 
     //
     // Add the change details to the archive.
@@ -722,7 +722,7 @@ patch_send(void)
 	ofp->fputs("# Aegis-Change-Set-Begin\n");
 	t1 = new output_prefix_ty(ofp, false, "# ");
 	t2 = new output_base64_ty(t1, true);
-	t2 = new output_gzip_ty(t2, true);
+	t2 = new output_gzip(t2, true);
 	cstate_write(t2, change_set);
 	delete t2;
 	ofp->fputs("# Aegis-Change-Set-End\n#\n");
@@ -997,16 +997,15 @@ patch_send(void)
 	//
 	trace(("open \"%s\"\n", output_file_name->str_text));
 	os_become_orig();
-	ifp = input_file_open(output_file_name);
-	input_file_unlink_on_close(ifp);
-	if (input_length(ifp) != 0)
+	ifp = input_file_open(output_file_name, true);
+	if (ifp->length() != 0)
 	{
 	    ofp->fputs("Index: ");
 	    ofp->fputs(csrc->file_name);
 	    ofp->fputc('\n');
 	    input_to_output(ifp, ofp);
 	}
-	input_delete(ifp);
+	delete ifp;
 	ifp = 0;
 	os_become_undo();
 	str_free(output_file_name);

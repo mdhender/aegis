@@ -1,7 +1,7 @@
 #!/bin/sh
 #
 #	aegis - project change supervisor
-#	Copyright (C) 2004 Peter Miller;
+#	Copyright (C) 2004, 2005 Peter Miller;
 #	All rights reserved.
 #
 #	This program is free software; you can redistribute it and/or modify
@@ -197,10 +197,10 @@ the trunk version
 end
 if test $? -ne 0 ; then no_result; fi
 
-$bin/aegis -nf $workchan/config -nl > log 2>&1
+$bin/aegis -nf $workchan/aegis.conf -nl > log 2>&1
 if test $? -ne 0 ; then cat log; no_result; fi
 
-cat > $workchan/config << 'end'
+cat > $workchan/aegis.conf << 'end'
 build_command = "exit 0";
 link_integration_directory = true;
 history_get_command =
@@ -295,14 +295,14 @@ cat > test.ok <<EOF
 src =
 [
 	{
+		file_name = "aegis.conf";
+		action = create;
+		usage = config;
+	},
+	{
 		file_name = "bogus";
 		action = create;
 		usage = source;
-	},
-	{
-		file_name = "config";
-		action = create;
-		usage = config;
 	},
 ];
 EOF
@@ -318,7 +318,7 @@ cat > test.ok << 'fubar'
 src =
 [
 	{
-		file_name = "bogus";
+		file_name = "aegis.conf";
 		uuid = "UUID";
 		action = modify;
 		edit_origin =
@@ -326,7 +326,7 @@ src =
 			revision = "1.1";
 			encoding = none;
 		};
-		usage = source;
+		usage = config;
 		file_fp =
 		{
 			youngest = TIME;
@@ -341,7 +341,7 @@ src =
 		};
 	},
 	{
-		file_name = "config";
+		file_name = "bogus";
 		uuid = "UUID";
 		action = modify;
 		edit_origin =
@@ -349,7 +349,7 @@ src =
 			revision = "1.1";
 			encoding = none;
 		};
-		usage = config;
+		usage = source;
 		file_fp =
 		{
 			youngest = TIME;

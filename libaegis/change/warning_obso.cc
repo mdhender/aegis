@@ -1,6 +1,6 @@
 //
 //	aegis - project change supervisor
-//	Copyright (C) 2004 Peter Miller;
+//	Copyright (C) 2004, 2005 Peter Miller;
 //	All rights reserved.
 //
 //	This program is free software; you can redistribute it and/or modify
@@ -29,7 +29,7 @@ change_warning_obsolete_field(change_ty *cp, string_ty *errpos,
     const char *old_field, const char *new_field)
 {
     sub_context_ty *scp = sub_context_new();
-    sub_var_set_string(scp, "FileName", errpos);
+    sub_var_set_string(scp, "File_Name", errpos);
     sub_var_set_charstar(scp, "Name1", old_field);
     sub_var_set_charstar(scp, "Name2", new_field);
     change_warning

@@ -1,6 +1,7 @@
 //
 //	aegis - project change supervisor
 //	Copyright (C) 1999-2005 Peter Miller;
+//	Copyright (C) 2005 Walter Franzini;
 //	All rights reserved.
 //
 //	This program is free software; you can redistribute it and/or modify
@@ -33,10 +34,12 @@
 #include <change/attributes.h>
 #include <change/branch.h>
 #include <change/file.h>
+#include <change/functor/invent_build.h>
 #include <error.h>	// for assert
 #include <fattr.h>
 #include <help.h>
 #include <input/cpio.h>
+#include <project/invento_walk.h>
 #include <move_list.h>
 #include <nstring.h>
 #include <open.h>
@@ -52,24 +55,13 @@
 #include <str.h>
 #include <str_list.h>
 #include <sub.h>
+#include <symtab/template.h>
 #include <undo.h>
 #include <user.h>
 #include <usage.h>
 #include <uuidentifier.h>
+#include <version_stmp.h>
 #include <trace.h>
-
-
-static long
-to_long(string_ty *s)
-{
-    char            *end;
-    long            result;
-
-    result = strtol(s->str_text, &end, 10);
-    if (*end)
-	result = 0;;
-    return result;
-}
 
 
 static void
@@ -208,8 +200,7 @@ project_file_find_by_meta2(project_ty *pp, cstate_src_ty *c_src_data,
 }
 
 
-static
-cstate_src_ty *
+static cstate_src_ty *
 find_src(cstate_ty *cs, string_ty *filename)
 {
     assert(cs);
@@ -224,6 +215,36 @@ find_src(cstate_ty *cs, string_ty *filename)
 }
 
 
+static void
+wrong_file(input_ty *ifp, const nstring &expected)
+{
+    nstring message =
+	nstring::format
+	(
+    	    "wrong file, expected \"%s\", "
+    	    "maybe the sender needs to use the --compatibility=%s option",
+    	    expected.c_str(),
+    	    version_stamp()
+	);
+    ifp->fatal_error(message.c_str());
+}
+
+
+static void
+missing_file(input_ty *ifp, const nstring &expected)
+{
+    nstring message =
+	nstring::format
+	(
+    	    "missing file, expected \"%s\", "
+    	    "maybe the sender needs to use the --compatibility=%s option",
+    	    expected.c_str(),
+    	    version_stamp()
+	);
+    ifp->fatal_error(message.c_str());
+}
+
+
 void
 receive_main(void)
 {
@@ -232,9 +253,6 @@ receive_main(void)
     long            change_number;
     string_ty       *ifn;
     input_ty        *ifp;
-    input_ty        *cpio_p;
-    string_ty       *archive_name;
-    string_ty       *s;
     project_ty      *pp;
     change_ty       *cp;
     string_ty       *dd;
@@ -388,6 +406,7 @@ receive_main(void)
 	        goto too_many_patchs;
 	    use_patch = 0;
 	    break;
+
         case arglex_token_ignore_uuid:
             if (ignore_uuid > 0)
                 duplicate_option(usage);
@@ -403,6 +422,7 @@ receive_main(void)
             }
             ignore_uuid = 1;
             break;
+
         case arglex_token_ignore_uuid_not:
             if (ignore_uuid == 0)
                 duplicate_option(usage);
@@ -417,33 +437,39 @@ receive_main(void)
     //
     // Open the input file and verify the format.
     //
-    cpio_p = aedist_open(ifn, (string_ty **) 0);
+    input_cpio *cpio_p = aedist_open(ifn, (string_ty **) 0);
     assert(cpio_p);
+
+    //
+    // Calculate the --reason option to use with the
+    // "aegis --new-change" command, if any.
+    //
+    nstring reason;
+    if (cpio_p->is_remote())
+    {
+	reason =
+    	    " --reason=" + ("Downloaded from " + cpio_p->name()).quote_shell();
+    }
 
     //
     // read the project name from the archive,
     // and use it to default the project if not given
     //
     os_become_orig();
-    archive_name = 0;
-    ifp = input_cpio_child(cpio_p, &archive_name);
+    nstring archive_name;
+    ifp = cpio_p->child(archive_name);
     if (!ifp)
-	input_fatal_error(cpio_p, "missing file");
-    assert(archive_name);
-    s = str_from_c("etc/project-name");
-    if (!str_equal(archive_name, s))
-	input_fatal_error(ifp, "wrong file");
-    str_free(s);
-    s = input_one_line(ifp);
-    if (!s || !s->str_length)
-	input_fatal_error(ifp, "short file");
+	missing_file(cpio_p, "etc/project-name");
+    assert(!archive_name.empty());
+    if (archive_name != "etc/project-name")
+	wrong_file(ifp, "etc/project-name");
+    nstring s;
+    if (!ifp->one_line(s) || s.empty())
+	ifp->fatal_error("short file");
     if (!project_name)
-	project_name = s;
-    else
-	str_free(s);
-    input_delete(ifp);
+	project_name = str_copy(s.get_ref());
+    delete ifp;
     os_become_undo();
-    str_free(archive_name);
 
     //
     // locate project data
@@ -459,25 +485,20 @@ receive_main(void)
     // and (b) that number is available.
     //
     os_become_orig();
-    archive_name = 0;
-    ifp = input_cpio_child(cpio_p, &archive_name);
+    archive_name.clear();
+    ifp = cpio_p->child(archive_name);
     if (!ifp)
-	input_fatal_error(cpio_p, "missing file");
+	missing_file(cpio_p, "etc/change-set");
     assert(archive_name);
-    s = str_from_c("etc/change-number");
-    if (str_equal(archive_name, s))
+    if (archive_name == "etc/change-number")
     {
-	long            proposed_change_number;
-
-	str_free(s);
-	s = input_one_line(ifp);
-	if (!s || !s->str_length)
-	    input_fatal_error(ifp, "short file");
-	proposed_change_number = to_long(s);
-	str_free(s);
-	input_delete(ifp);
+	s.clear();
+	if (!ifp->one_line(s) || s.empty())
+	    ifp->fatal_error("short file");
+	long proposed_change_number = s.to_long();
+	delete ifp;
+	ifp = 0;
 	os_become_undo();
-	str_free(archive_name);
 
 	//
 	// Make sure the change number is available.
@@ -496,12 +517,11 @@ receive_main(void)
 	// Start the next file, so we are in the same state as when
 	// there is no change number included.
 	//
-	archive_name = 0;
+	archive_name.clear();
 	os_become_orig();
-	ifp = input_cpio_child(cpio_p, &archive_name);
+	ifp = cpio_p->child(archive_name);
 	if (!ifp)
-	    input_fatal_error(cpio_p, "missing file");
-	assert(archive_name);
+	    missing_file(cpio_p, "etc/change-set");
     }
     os_become_undo();
 
@@ -515,14 +535,11 @@ receive_main(void)
     // get the change details from the input
     //
     os_become_orig();
-    s = str_from_c("etc/change-set");
-    if (!str_equal(s, archive_name))
-	input_fatal_error(ifp, "wrong file");
-    str_free(s);
+    if (archive_name != "etc/change-set")
+	wrong_file(ifp, "etc/change-set");
     change_set = (cstate_ty *)parse_input(ifp, &cstate_type);
     ifp = 0;	// parse_input input_delete()ed it for us
     os_become_undo();
-    str_free(archive_name);
 
     //
     // Make sure we like the change set at a macro level.
@@ -537,7 +554,7 @@ receive_main(void)
     ||
 	!change_set->src->length
     )
-	input_fatal_error(cpio_p, "bad change set");
+	cpio_p->fatal_error("bad change set");
     for (j = 0; j < change_set->src->length; ++j)
     {
 	cstate_src_ty   *src_data;
@@ -553,7 +570,7 @@ receive_main(void)
 	||
 	    !(src_data->mask & cstate_src_usage_mask)
 	)
-	    input_fatal_error(cpio_p, "bad change info");
+	    cpio_p->fatal_error("bad change info");
     }
 
     //
@@ -564,12 +581,21 @@ receive_main(void)
     // The -ignore-uuid option is here to handle UUID clash, if any.
     //
     nstring branch;
+    nstring original_uuid;
+    time_t original_ipass_when = 0;
+    symtab<change_ty> local_inventory;
+    bool include_branches = true;
+    bool all_changes = false;
+    bool ignore_original_uuid = true;
+    change_functor_inventory_builder cf(include_branches, all_changes,
+	ignore_original_uuid, pp, &local_inventory);
+    project_inventory_walk(pp, cf);
     if (ignore_uuid <= 0)
     {
         if (change_set->uuid)
         {
             assert(universal_unique_identifier_valid(change_set->uuid));
-            change_ty *c = project_uuid_find(pp, change_set->uuid);
+            change_ty *c = local_inventory.query(change_set->uuid);
             if (c)
             {
                 assert(c->cstate_data->uuid);
@@ -585,53 +611,71 @@ receive_main(void)
         }
 
         //
+        // We now add to the local inventory also the original-UUIDs.
+        //
+	ignore_original_uuid = false;
+        change_functor_inventory_builder cf2(include_branches, all_changes,
+	    ignore_original_uuid, pp, &local_inventory);
+        project_inventory_walk(pp, cf2);
+
+        //
         // If the user has not specified a delta to copy file from, we
         // try to guess using the original-UUID attribute of the
         // change, if any.
         //
         if (delta.empty() && change_set->attribute)
         {
-            nstring     original_uuid(ORIGINAL_UUID);
-
             //
             // Using the 'original-UUID' of the received change we look
             // for a completed change with a matching 'uuid'.
-            // Should we search for a matching 'original-UUID'?
             //
             for (size_t i = 0; i < change_set->attribute->length; ++i)
             {
-                attributes_ty   *current = change_set->attribute->list[i];
-
+                attributes_ty *current = change_set->attribute->list[i];
                 if (!current || !current->name || !current->value)
                     continue;
-                if (!str_equal (current->name, original_uuid.get_ref()))
+                if (0 != strcasecmp(current->name->str_text, ORIGINAL_UUID))
                     continue;
                 if (!universal_unique_identifier_valid(current->value))
                     continue;
-                change_ty *ancestor =
-                    project_uuid_find(pp, current->value);
+                change_ty *ancestor = local_inventory.query(current->value);
                 if (!ancestor || !change_is_completed(ancestor))
                     continue;
                 trace_string(current->value->str_text);
 
                 //
-                // This doesn't work only if the ancestor change is
+                // We must keep track of the original-uuid and of the
+                // timestamp of the change completion for later use in
+                // the delta selection stage.
+                //
+                original_uuid = nstring(current->value);
+                original_ipass_when =
+                    change_when_get
+                    (
+                        ancestor,
+                        cstate_history_what_integrate_pass
+                    );
+
+                //
+                // This works even if the ancestor change is
                 // in the trunk.
                 //
-                nstring change_version(change_version_get(ancestor));
-                assert(!change_version.empty());
-                nstring delta_num(change_version.field('D', 1));
-                assert(!delta_num.empty());
-                nstring branch_num(change_version.field('D', 0));
-
-                delta = nstring::format(" --delta=%s", delta_num.c_str());
+		assert(change_delta_number_get(ancestor) > 0);
+                delta =
+	    	    nstring::format
+		    (
+			" --delta=%ld",
+			change_delta_number_get(ancestor)
+		    );
                 trace_string(delta.c_str());
-                if (!branch.empty())
-                {
-                    branch = nstring::format(" --branch=%s", branch.c_str());
-                    trace_string(branch.c_str());
-                }
 
+                if (ancestor->pp)
+                    branch = nstring(project_version_short_get(ancestor->pp));
+                if (!branch.empty())
+                    branch = " --branch=" + branch;
+                else
+                    branch = " --trunk";
+                trace_nstring(branch);
                 break;
             }
         }
@@ -702,23 +746,23 @@ receive_main(void)
     nstring trace_options(trace_args());
     dot = os_curdir();
     s =
-	str_format
+	nstring::format
 	(
-	    "aegis --new-change %ld --project=%s --file=%s --verbose%s",
+	    "aegis --new-change %ld --project=%s --file=%s --verbose%s%s",
 	    change_number,
 	    project_name->str_text,
 	    attribute_file_name->str_text,
+	    reason.c_str(),
             trace_options.c_str()
 	);
-    os_execute(s, OS_EXEC_FLAG_INPUT, dot);
-    str_free(s);
+    os_execute(s.get_ref(), OS_EXEC_FLAG_INPUT, dot);
     os_unlink_errok(attribute_file_name);
 
     //
     // Begin development of the new change.
     //
     s =
-	str_format
+	nstring::format
 	(
 	    "aegis --develop-begin %ld --project %s --verbose%s%s",
 	    change_number,
@@ -726,8 +770,7 @@ receive_main(void)
 	    (devdir ? devdir->str_text : ""),
             trace_options.c_str()
 	);
-    os_execute(s, OS_EXEC_FLAG_INPUT, dot);
-    str_free(s);
+    os_execute(s.get_ref(), OS_EXEC_FLAG_INPUT, dot);
     os_become_undo();
 
     //
@@ -756,8 +799,8 @@ receive_main(void)
 	cstate_src_ty *src1 = change_set->src->list[j];
 	if (!src1->move)
 	    continue;
-	trace(("%s \"%s\", move=\"%s\"\n", file_action_ename(src1->action),
-	    src1->file_name->str_text, src1->move->str_text));
+        trace(("%s \"%s\", move=\"%s\"\n", file_action_ename(src1->action),
+               src1->file_name->str_text, src1->move->str_text));
 	cstate_src_ty *src2 = find_src(change_set, src1->move);
 	if (!src2)
 	{
@@ -822,8 +865,9 @@ receive_main(void)
 	cstate_src_ty   *src_data;
 	fstate_src_ty   *p_src_data;
 
-	src_data = change_set->src->list[j];
-	assert(src_data->file_name);
+        src_data = change_set->src->list[j];
+        assert(src_data);
+        assert(src_data->file_name);
 	trace(("%d %s %s\n", j, src_data->file_name->str_text,
 	    file_action_ename(src_data->action)));
 	p_src_data =
@@ -1010,14 +1054,19 @@ receive_main(void)
 			if (str_equal(src_data->move, src2->file_name))
 			{
 			    assert(src2->action == file_action_remove);
-			    break;
+                            cstate_src_type.free(src2);
+                            break;
 			}
 		    }
 		    assert(m < change_set->src->length);
 		    for (size_t k = m + 1; k < change_set->src->length; ++k)
 			change_set->src->list[k - 1] = change_set->src->list[k];
-		    cstate_src_type.free(src_data);
-		    --j;
+                    //
+                    // We need to go back one step only if the remove
+                    // half was before the current file.
+                    //
+                    if (m < j)
+                        --j;
 		    change_set->src->length--;
 		}
 		else
@@ -1129,9 +1178,10 @@ receive_main(void)
 	// For now, we are only removing files.
 	//
 	src_data = change_set->src->list[j];
+        assert(src_data);
+        assert(src_data->file_name);
         p_src_data =
 	    project_file_find_by_meta2(pp, src_data, view_path_extreme);
-	assert(src_data->file_name);
 	switch (src_data->action)
 	{
 	case file_action_remove:
@@ -1212,15 +1262,14 @@ receive_main(void)
     if (files_source.nstrings)
     {
 	s =
-	    str_format
+	    nstring::format
 	    (
 		"aegis --remove-file --project=%s --change=%ld%s --verbose",
 		project_name->str_text,
 		change_number,
                 trace_options.c_str()
 	    );
-	os_xargs(s, &files_source, dd);
-	str_free(s);
+	os_xargs(s.get_ref(), &files_source, dd);
     }
 
     //
@@ -1228,6 +1277,7 @@ receive_main(void)
     //
     trace(("look for modified files\n"));
     files_source.clear();
+    symtab<string_list_ty> files_source_by_origin;
     for (j = 0; j < change_set->src->length; ++j)
     {
 	cstate_src_ty   *src_data;
@@ -1252,8 +1302,113 @@ receive_main(void)
 
 	    case file_usage_source:
 	    case file_usage_config:
-		files_source.push_back_unique(src_data->file_name);
-		break;
+                //
+                // We must initialize the origin with the information
+                // from previous processing.
+                //
+                nstring origin = branch + delta;
+
+                //
+                // We have selected an origin delta using the
+                // original-UUID attribute contained in the archive.
+                // If we are receiving a branch that also contain the
+                // entire_source we must check that the change set
+                // that the UUID identify contains every single file.
+                //
+                if (!original_uuid.empty() && !branch.empty())
+                {
+                    change_ty *ancestor = local_inventory.query(original_uuid);
+                    assert(ancestor);
+                    fstate_src_ty *fsrc =
+                        change_file_find
+                        (
+                            ancestor,
+                            src_data->file_name,
+                            view_path_first
+                        );
+                    //
+                    // We reset the origin if the ancestor change does
+                    // not contain the file.
+                    //
+                    if (!fsrc)
+                        origin = "";
+                }
+
+                if (src_data->attribute)
+                {
+                    attributes_ty *edit_origin_UUID =
+                        attributes_list_find
+                        (
+                            src_data->attribute,
+                            EDIT_ORIGIN_UUID
+                        );
+                    if (edit_origin_UUID)
+                    {
+                        change_ty *ancestor =
+                            local_inventory.query(edit_origin_UUID->value);
+
+                        if (ancestor)
+                        {
+			    assert(change_delta_number_get(ancestor) > 0);
+                            time_t ancestor_ipass_when =
+                                change_when_get
+                                (
+                                    ancestor,
+                                    cstate_history_what_integrate_pass
+                                );
+
+                            //
+                            // We select the delta to merge with using
+                            // the most recently integrated change set.
+                            //
+                            if (ancestor_ipass_when > original_ipass_when)
+                            {
+                                //
+                                // We cannot reuse existing delta and
+                                // branch variables, which used to
+                                // contains data from previous processing,
+                                // originl-UUID or options related,
+                                // because this will cause wrong origin
+                                // selection.
+                                //
+                                nstring ancestor_delta =
+                                    nstring::format
+                                    (
+                                        " --delta=%ld",
+                                        change_delta_number_get(ancestor)
+                                    );
+                                trace_string(ancestor_delta.c_str());
+
+                                nstring ancestor_branch =
+                                    nstring
+                                    (
+                                        project_version_short_get(ancestor->pp)
+                                    );
+                                if (!ancestor_branch.empty())
+                                    ancestor_branch =
+                                        " --branch=" + ancestor_branch;
+                                else
+                                    ancestor_branch = " --trunk";
+                                trace_nstring(ancestor_branch);
+                                origin = ancestor_branch + ancestor_delta;
+                            }
+                        }
+                    }
+                }
+
+                //
+                // We create a hash table with origin as the key and
+                // with the list of files to be copied as the value.
+                //
+                string_list_ty *file_list =
+                    files_source_by_origin.query(origin);
+                if (!file_list)
+                {
+                    file_list = new string_list_ty;
+                    files_source_by_origin.assign(origin, file_list);
+                }
+                file_list->push_back_unique(src_data->file_name);
+                break;
 	    }
 	    break;
 
@@ -1277,21 +1432,35 @@ receive_main(void)
 	//
     }
     uncopy = 0;
-    if (files_source.nstrings)
+
+    //
+    // We copy modified files from the baseline grouping them using
+    // the origin.
+    //
+    if (!files_source_by_origin.empty())
     {
-	uncopy = 1;
-	s =
-	    str_format
-	    (
-		"aegis --copy-file --project=%s --change=%ld%s --verbose%s%s",
-		project_name->str_text,
-		change_number,
-                trace_options.c_str(),
-		delta.c_str(),
-                branch.c_str()
-	    );
-	os_xargs(s, &files_source, dd);
-	str_free(s);
+        uncopy = 1;
+        nstring_list origin;
+
+        files_source_by_origin.keys(origin);
+        assert(!origin.empty());
+        for (size_t c = 0; c < origin.size(); ++c)
+        {
+            string_list_ty *files_list =
+                files_source_by_origin.query(origin[c]);
+            assert(files_list->nstrings);
+            s =
+                nstring::format
+                (
+                    "aegis --copy-file --project=%s --change=%ld%s "
+                    "--verbose%s",
+                    project_name->str_text,
+                    change_number,
+                    trace_options.c_str(),
+                    origin[c].c_str()
+                );
+            os_xargs(s.get_ref(), files_list, dd);
+        }
     }
 
     //
@@ -1369,7 +1538,7 @@ receive_main(void)
     if (files_build.nstrings)
     {
 	s =
-	    str_format
+	    nstring::format
 	    (
 		"aegis --new-file --build --project=%s --change=%ld%s "
 		    "--verbose --no-template",
@@ -1377,13 +1546,12 @@ receive_main(void)
 		change_number,
                 trace_options.c_str()
 	    );
-	os_xargs(s, &files_build, dd);
-	str_free(s);
+	os_xargs(s.get_ref(), &files_build, dd);
     }
     if (files_test_auto.nstrings)
     {
 	s =
-	    str_format
+	    nstring::format
 	    (
 		"aegis --new-test --automatic --project=%s --change=%ld%s "
 		    "--verbose --no-template",
@@ -1391,13 +1559,12 @@ receive_main(void)
 		change_number,
                 trace_options.c_str()
 	    );
-	os_xargs(s, &files_test_auto, dd);
-	str_free(s);
+	os_xargs(s.get_ref(), &files_test_auto, dd);
     }
     if (files_test_manual.nstrings)
     {
 	s =
-	    str_format
+	    nstring::format
 	    (
 		"aegis --new-test --manual --project=%s --change=%ld%s "
 		    "--verbose --no-template",
@@ -1405,26 +1572,24 @@ receive_main(void)
 		change_number,
                 trace_options.c_str()
 	    );
-	os_xargs(s, &files_test_manual, dd);
-	str_free(s);
+	os_xargs(s.get_ref(), &files_test_manual, dd);
     }
     if (files_source.nstrings)
     {
-	s = str_from_c(THE_CONFIG_FILE_OLD);
+	s = nstring(THE_CONFIG_FILE_OLD);
 	// FIXME: need to use the "is a config file" function
-	if (files_source.member(s))
+	if (files_source.member(s.get_ref()))
 	{
 	    //
 	    // The project config file must be created in the last set
 	    // of files created, so move it to the end of the list.
 	    //
-	    files_source.remove(s);
-	    files_config.push_back(s);
+	    files_source.remove(s.get_ref());
+	    files_config.push_back(s.get_ref());
 	}
-	str_free(s);
 
 	s =
-	    str_format
+	    nstring::format
 	    (
 		"aegis --new-file --project=%s --change=%ld%s --verbose "
 		    "--no-template",
@@ -1432,8 +1597,7 @@ receive_main(void)
 		change_number,
                 trace_options.c_str()
 	    );
-	os_xargs(s, &files_source, dd);
-	str_free(s);
+	os_xargs(s.get_ref(), &files_source, dd);
     }
 
     //
@@ -1446,7 +1610,7 @@ receive_main(void)
     if (files_config.nstrings)
     {
 	s =
-	    str_format
+	    nstring::format
 	    (
 		"aegis --new-file --config --project=%s --change=%ld%s "
 		    "--verbose --no-template",
@@ -1454,8 +1618,7 @@ receive_main(void)
 		change_number,
                 trace_options.c_str()
 	    );
-	os_xargs(s, &files_config, dd);
-	str_free(s);
+	os_xargs(s.get_ref(), &files_config, dd);
     }
 
     //
@@ -1526,27 +1689,30 @@ receive_main(void)
 	case file_usage_source:
 	    break;
 	}
-	archive_name = 0;
-	ifp = input_cpio_child(cpio_p, &archive_name);
+	archive_name.clear();
+	ifp = cpio_p->child(archive_name);
 	if (!ifp)
-	    input_fatal_error(cpio_p, "missing file");
+	{
+	    missing_file
+	    (
+		cpio_p,
+		nstring::format("src/%s", src_data->file_name->str_text)
+	    );
+       	}
 	assert(archive_name);
 	need_whole_source = 1;
-	s = str_format("patch/%s", src_data->file_name->str_text);
-	if (str_equal(archive_name, s))
+	s = nstring::format("patch/%s", src_data->file_name->str_text);
+	if (archive_name == s)
 	{
-	    patch_list_ty   *plp;
-
-	    str_free(s);
-
 	    //
 	    // We have a patch file, but we also know that a
 	    // complete source follows.  We can apply the patch
 	    // or discard it.  If we fail to apply it cleanly,
 	    // we can always use the complete source which follows.
 	    //
-	    plp = patch_read(ifp, 0);
-	    input_delete(ifp);
+	    patch_list_ty *plp = patch_read(ifp, 0);
+	    delete ifp;
+	    ifp = 0;
 
 	    switch (src_data->action)
 	    {
@@ -1673,24 +1839,28 @@ receive_main(void)
 	    //
 	    // The src file should be next.
 	    //
-	    archive_name = 0;
-	    ifp = input_cpio_child(cpio_p, &archive_name);
+	    archive_name.clear();
+	    ifp = cpio_p->child(archive_name);
 	    if (!ifp)
-		input_fatal_error(cpio_p, "missing file");
+	    {
+		missing_file
+		(
+	    	    cpio_p,
+	    	    nstring::format("src/%s", src_data->file_name->str_text)
+		);
+	    }
 	    assert(archive_name);
 	}
-	s = str_format("src/%s", src_data->file_name->str_text);
-	if (!str_equal(archive_name, s))
-	    input_fatal_error(ifp, "wrong file");
-	str_free(s);
+	s = nstring::format("src/%s", src_data->file_name->str_text);
+	if (archive_name != s)
+	    wrong_file(ifp, s);
 	if (need_whole_source)
 	    ofp = output_file_binary_open(src_data->file_name);
 	else
-	    ofp = output_bit_bucket();
+	    ofp = new output_bit_bucket();
 	input_to_output(ifp, ofp);
 	delete ofp;
-	input_delete(ifp);
-	str_free(archive_name);
+	delete ifp;
     }
     os_become_undo();
 
@@ -1723,7 +1893,7 @@ receive_main(void)
 	    fattr_type.free(fattr_data);
 	    s2 = str_quote_shell(src_data->file_name);
 	    s =
-		str_format
+		nstring::format
 		(
 		    "aegis --file-attributes --change=%ld --project=%s "
 			"--file=%s --verbose %s --base-rel%s",
@@ -1734,8 +1904,7 @@ receive_main(void)
                     trace_options.c_str()
 		);
 	    str_free(s2);
-	    os_execute(s, OS_EXEC_FLAG_INPUT, dd);
-	    str_free(s);
+	    os_execute(s.get_ref(), OS_EXEC_FLAG_INPUT, dd);
 	    os_unlink_errok(attribute_file_name);
 	}
 
@@ -1750,7 +1919,7 @@ receive_main(void)
 		//
 		string_ty *qfn = str_quote_shell(src_data->file_name);
 		s =
-		    str_format
+		    nstring::format
 		    (
 			"aegis --file-attributes --uuid %s --change=%ld "
 			    "--project=%s --verbose %s --base-rel%s",
@@ -1761,8 +1930,7 @@ receive_main(void)
 			trace_options.c_str()
 		    );
 		str_free(qfn);
-		os_execute(s, OS_EXEC_FLAG_INPUT, dd);
-		str_free(s);
+		os_execute(s.get_ref(), OS_EXEC_FLAG_INPUT, dd);
 	    }
 	    break;
 
@@ -1856,11 +2024,11 @@ receive_main(void)
     // should be at end of input
     //
     os_become_orig();
-    archive_name = 0;
-    ifp = input_cpio_child(cpio_p, &archive_name);
+    archive_name.clear();
+    ifp = cpio_p->child(archive_name);
     if (ifp)
-	input_fatal_error(cpio_p, "archive too long");
-    input_delete(cpio_p);
+	cpio_p->fatal_error("archive too long");
+    delete cpio_p;
     os_become_undo();
 
     //
@@ -1871,8 +2039,8 @@ receive_main(void)
     // before, so we don't complain (OS_EXEC_FLAG_ERROK) if the command
     // fails.
     //
-    // We intentionally set the UUID before the aecpu -unch.  The aechu
-    // -unch will clear the UUID if the chnage's file inventory changes,
+    // We intentionally set the UUID before the aecpu -unch.  The aecpu
+    // -unch will clear the UUID if the change's file inventory changes,
     // because it is no longer the same change set.
     //
     if (change_set->uuid)
@@ -1881,7 +2049,7 @@ receive_main(void)
 
 	quoted_uuid = str_quote_shell(change_set->uuid);
 	s =
-	    str_format
+	    nstring::format
 	    (
 		"aegis --change-attr --uuid %s -change=%ld --project=%s%s",
 		quoted_uuid->str_text,
@@ -1891,10 +2059,18 @@ receive_main(void)
 	    );
 	str_free(quoted_uuid);
 	os_become_orig();
-	os_execute(s, OS_EXEC_FLAG_INPUT | OS_EXEC_FLAG_ERROK, dd);
+	os_execute(s.get_ref(), OS_EXEC_FLAG_INPUT | OS_EXEC_FLAG_ERROK, dd);
 	os_become_undo();
-	str_free(s);
     }
+
+    //
+    // If we are receiving a change set with an UUID, and the user has
+    // not used the --ignore-uuid option we avoid the uncopy files so
+    // the UUID is preserved and we don't need a new one.  This should
+    // reduce the UUID proliferation and some related side effects.
+    //
+    if (change_set->uuid && ignore_uuid <= 0)
+        uncopy = 0;
 
     //
     // Un-copy any files which did not change.
@@ -1902,14 +2078,14 @@ receive_main(void)
     // The idea is, if there are no files left, there is nothing
     // for this change to do, so cancel it.
     //
-    // We intentionally set the UUID before the aecpu -unch.  The aechu
-    // -unch will clear the UUID if the chnage's file inventory changes,
+    // We intentionally set the UUID before the aecpu -unch.  The aecpu
+    // -unch will clear the UUID if the change's file inventory changes,
     // because it is no longer the same change set.
     //
     if (uncopy)
     {
 	s =
-	    str_format
+	    nstring::format
 	    (
 		"aegis --copy-file-undo --unchanged --change=%ld --project=%s "
 		    "--verbose%s",
@@ -1918,9 +2094,8 @@ receive_main(void)
                 trace_options.c_str()
 	    );
 	os_become_orig();
-	os_execute(s, OS_EXEC_FLAG_INPUT, dd);
+	os_execute(s.get_ref(), OS_EXEC_FLAG_INPUT, dd);
 	os_become_undo();
-	str_free(s);
 
 	//
 	// If there are no files left, we already have this change.
@@ -1936,7 +2111,7 @@ receive_main(void)
 	    // stop developing the change
 	    //
 	    s =
-		str_format
+		nstring::format
 		(
 		    "aegis --develop-begin-undo --change=%ld --project=%s "
 			"--verbose%s",
@@ -1945,14 +2120,13 @@ receive_main(void)
                     trace_options.c_str()
 		);
 	    os_become_orig();
-	    os_execute(s, OS_EXEC_FLAG_INPUT, dot);
-	    str_free(s);
+	    os_execute(s.get_ref(), OS_EXEC_FLAG_INPUT, dot);
 
 	    //
 	    // cancel the change
 	    //
 	    s =
-		str_format
+		nstring::format
 		(
 		    "aegis --new-change-undo --change=%ld --project=%s "
 			"--verbose%s",
@@ -1960,9 +2134,8 @@ receive_main(void)
 		    project_name->str_text,
                     trace_options.c_str()
 		);
-	    os_execute(s, OS_EXEC_FLAG_INPUT, dot);
+	    os_execute(s.get_ref(), OS_EXEC_FLAG_INPUT, dot);
 	    os_become_undo();
-	    str_free(s);
 
 	    //
 	    // run away, run away!
@@ -2006,7 +2179,7 @@ receive_main(void)
 	// one of the commonest problems when seeding an empty repository.
 	//
 	s =
-	    str_format
+	    nstring::format
 	    (
 		"aegis --change-attr --fix-arch --change=%ld --project=%s%s",
 		change_number,
@@ -2014,9 +2187,8 @@ receive_main(void)
                 trace_options.c_str()
 	    );
 	os_become_orig();
-	os_execute(s, OS_EXEC_FLAG_INPUT, dd);
+	os_execute(s.get_ref(), OS_EXEC_FLAG_INPUT, dd);
 	os_become_undo();
-	str_free(s);
 	return;
     }
 
@@ -2024,22 +2196,21 @@ receive_main(void)
     // now merge the change
     //
     s =
-	str_format
+	nstring::format
 	(
 	    "aegis --diff --only-merge --change=%ld --project=%s --verbose",
 	    change_number,
 	    project_name->str_text
         );
     os_become_orig();
-    os_execute(s, OS_EXEC_FLAG_INPUT, dd);
+    os_execute(s.get_ref(), OS_EXEC_FLAG_INPUT, dd);
     os_become_undo();
-    str_free(s);
 
     //
     // now diff the change
     //
     s =
-	str_format
+	nstring::format
 	(
 	    "aegis --diff --no-merge --change=%ld --project=%s --verbose%s",
 	    change_number,
@@ -2047,9 +2218,8 @@ receive_main(void)
             trace_options.c_str()
 	);
     os_become_orig();
-    os_execute(s, OS_EXEC_FLAG_INPUT, dd);
+    os_execute(s.get_ref(), OS_EXEC_FLAG_INPUT, dd);
     os_become_undo();
-    str_free(s);
 
     //
     // If the change could have a trojan horse in it, stop here with
@@ -2077,7 +2247,7 @@ receive_main(void)
     // now build the change
     //
     s =
-	str_format
+	nstring::format
 	(
 	    "aegis --build --change=%ld --project=%s --verbose%s",
 	    change_number,
@@ -2085,9 +2255,8 @@ receive_main(void)
             trace_options.c_str()
 	);
     os_become_orig();
-    os_execute(s, OS_EXEC_FLAG_INPUT, dd);
+    os_execute(s.get_ref(), OS_EXEC_FLAG_INPUT, dd);
     os_become_undo();
-    str_free(s);
 
     //
     // Sleep for a second to make sure the aet timestamps will be
@@ -2108,7 +2277,7 @@ receive_main(void)
     if (need_to_test && !cstate_data->test_exempt)
     {
 	s =
-	    str_format
+	    nstring::format
 	    (
 		"aegis --test --change=%ld --project=%s --verbose%s",
 		change_number,
@@ -2116,14 +2285,13 @@ receive_main(void)
                 trace_options.c_str()
 	    );
 	os_become_orig();
-	os_execute(s, OS_EXEC_FLAG_INPUT, dd);
+	os_execute(s.get_ref(), OS_EXEC_FLAG_INPUT, dd);
 	os_become_undo();
-	str_free(s);
     }
     if (need_to_test && !cstate_data->test_baseline_exempt)
     {
 	s =
-	    str_format
+	    nstring::format
 	    (
 		"aegis --test --baseline --change=%ld --project=%s "
                 "--verbose%s",
@@ -2132,16 +2300,15 @@ receive_main(void)
                 trace_options.c_str()
 	    );
 	os_become_orig();
-	os_execute(s, OS_EXEC_FLAG_INPUT, dd);
+	os_execute(s.get_ref(), OS_EXEC_FLAG_INPUT, dd);
 	os_become_undo();
-	str_free(s);
     }
 
     // always to a regession test?
     if (!cstate_data->regression_test_exempt)
     {
 	s =
-	    str_format
+	    nstring::format
 	    (
 		"aegis --test --regression --change=%ld --project=%s "
                 "--verbose%s",
@@ -2150,9 +2317,8 @@ receive_main(void)
                 trace_options.c_str()
 	    );
 	os_become_orig();
-	os_execute(s, OS_EXEC_FLAG_INPUT, dd);
+	os_execute(s.get_ref(), OS_EXEC_FLAG_INPUT, dd);
 	os_become_undo();
-	str_free(s);
     }
 
     change_free(cp);
@@ -2164,7 +2330,7 @@ receive_main(void)
     // end development (if we got this far!)
     //
     s =
-	str_format
+	nstring::format
 	(
 	    "aegis --develop-end --change=%ld --project=%s --verbose%s",
 	    change_number,
@@ -2172,9 +2338,8 @@ receive_main(void)
             trace_options.c_str()
 	);
     os_become_orig();
-    os_execute(s, OS_EXEC_FLAG_INPUT, dd);
+    os_execute(s.get_ref(), OS_EXEC_FLAG_INPUT, dd);
     os_become_undo();
-    str_free(s);
 
     // verbose success message here?
 }

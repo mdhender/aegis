@@ -1,6 +1,6 @@
 //
 //	aegis - project change supervisor
-//	Copyright (C) 2001, 2002, 2004 Peter Miller;
+//	Copyright (C) 2001, 2002, 2004, 2005 Peter Miller;
 //	All rights reserved.
 //
 //	This program is free software; you can redistribute it and/or modify
@@ -50,6 +50,7 @@ patch_slurp(string_ty *ifn)
     //
     os_become_orig();
     ifp = input_file_open(ifn);
+    bool is_remote = ifp->is_remote();
 
     //
     // Look for an RFC822 header.
@@ -93,21 +94,21 @@ patch_slurp(string_ty *ifn)
 	    //
 	    // The rest of the input is in base64 encoding.
 	    //
-	    ifp = input_base64(ifp, 1);
+	    ifp = new input_base64(ifp, true);
 	}
 	else if (str_equal(s, uuencode))
 	{
 	    //
 	    // The rest of the input is uuencoded.
 	    //
-	    ifp = input_uudecode(ifp, 1);
+	    ifp = new input_uudecode(ifp, true);
 	}
 	else if (str_equal(s, quotprin))
 	{
 	    //
 	    // The rest of the input is uuencoded.
 	    //
-	    ifp = input_quoted_printable(ifp, 1);
+	    ifp = new input_quoted_printable(ifp, true);
 	}
 	else if
 	(
@@ -133,7 +134,7 @@ patch_slurp(string_ty *ifn)
 	    	    scp,
 		    i18n("content transfer encoding $name unknown")
 		);
-	    input_fatal_error(ifp, tmp->str_text);
+	    ifp->fatal_error(tmp->str_text);
 	    str_free(tmp);
 	    sub_context_delete(scp);
 	}
@@ -142,12 +143,12 @@ patch_slurp(string_ty *ifn)
     //
     // The contents could be gzipped.
     //
-    ifp = input_gunzip(ifp);
+    ifp = input_gunzip_open(ifp);
 
     //
     // Filter out any CRLF sequences.
     //
-    ifp = input_crlf(ifp, 1);
+    ifp = new input_crlf(ifp, true);
 
     //
     // Read the patch body.
@@ -155,6 +156,8 @@ patch_slurp(string_ty *ifn)
     plp = patch_read(ifp, 1);
     os_become_undo();
     assert(plp);
+    if (is_remote)
+	plp->comment = str_copy(ifn);
 
     //
     // Pull useful information out of the patch header.

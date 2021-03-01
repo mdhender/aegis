@@ -1,6 +1,6 @@
 //
 //	aegis - project change supervisor
-//	Copyright (C) 1995-2004 Peter Miller;
+//	Copyright (C) 1995-2005 Peter Miller;
 //	All rights reserved.
 //
 //	This program is free software; you can redistribute it and/or modify
@@ -58,6 +58,7 @@ struct change_ty
 	fstate_ty	*fstate_data;
 	struct symtab_ty *fstate_stp;
 	string_ty	*fstate_filename;
+	string_ty	*pfstate_filename;
 	int		fstate_is_a_new_file;
 	string_ty	*top_path_unresolved;
 	string_ty	*top_path_resolved;
@@ -241,6 +242,22 @@ void change_run_build_command(change_ty *);
 void change_run_build_time_adjust_notify_command(change_ty *);
 void change_run_development_build_command(change_ty *, struct user_ty *,
 	struct string_list_ty *);
+
+/**
+  * The change_run_develop_end_policy_command function is used to
+  * run the develop_end_policy_command specified in the project
+  * configuration file.
+  *
+  * @param cp
+  *     The change in question.
+  * @param up
+  *     The developer of the change.
+  * @note
+  *     This function does not return if the command exits with a
+  *     non-zero exit status.
+  */
+void change_run_develop_end_policy_command(change_ty *cp, user_ty *up);
+
 string_ty *change_file_whiteout(change_ty *, string_ty *);
 void change_file_whiteout_write(change_ty *, string_ty *, struct user_ty *);
 void change_become(change_ty *);
@@ -298,7 +315,32 @@ void change_remove_symlinks_to_baseline(change_ty *, struct user_ty *,
 
 void change_rescind_test_exemption(change_ty *);
 string_ty *change_cstate_filename_get(change_ty *);
-string_ty *change_fstate_filename_get(change_ty *);
+
+/**
+  * The change_fstate_filename_get function is used to obtain the
+  * absolute path of the file which holds the change's file state.
+  *
+  * @param cp
+  *     The change being operated on.
+  * @returns
+  *     a string.  DO NOT str_free it when you are done with it,
+  *     it is cached.
+  */
+string_ty *change_fstate_filename_get(change_ty *cp);
+
+/**
+  * The change_pfstate_filename_get function is used to obtain the
+  * absolute path of the file which holds the delta's cache of the
+  * project file state.
+  *
+  * @param cp
+  *     The change being operated on.
+  * @returns
+  *     a string.  DO NOT str_free it when you are done with it,
+  *     it is cached.
+  */
+string_ty *change_pfstate_filename_get(change_ty *cp);
+
 void change_rescind_test_exemption_undo(change_ty *);
 void change_force_regression_test_exemption(change_ty *);
 void change_force_regression_test_exemption_undo(change_ty *);
@@ -370,5 +412,18 @@ void change_reviewer_list(change_ty *cp, string_list_ty &result);
   *     bool; true if the user has reviewed already, false if not.
   */
 bool change_reviewer_already(change_ty *cp, string_ty *login);
+
+/**
+  * The change_when_get function is used to obtain the last (most
+  * recent) time for the given state transition.
+  *
+  * @param cp
+  *     The change in qiestion.
+  * @param what
+  *     The state transition to look for.
+  * @returns
+  *     time_t; the time of the event, or 0 if not found.
+  */
+time_t change_when_get(change_ty *cp, cstate_history_what_ty what);
 
 #endif // LIBAEGIS_CHANGE_H

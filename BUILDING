@@ -62,6 +62,11 @@ SITE CONFIGURATION
 	script.	 (Note:	test 81	will fail if the POSIX regular expression
 	functions are not available.)
 
+	The GNOME libxml2 library (http://xmlsoft.org/)	is used	to parse XML,
+	you will need version 1.8.17 or	later.	You do not have	to install the
+	rest of	GNOME as this library is able to be used by itself.  This
+	package	is not optional, you need it to	successfully build Aegis.
+
    Running Configure
 	Normally, you just cd to the directory containing aegis' source	code
 	and type
@@ -333,6 +338,13 @@ OTHER USEFUL SOFTWARE
 	Before describing how to test aegis, you may need to grab some other
 	free software, because the tests require it in some cases, and because
 	it is generally	useful in others.
+
+	GNOME libxml2
+		The GNOME libxml2 library (http://xmlsoft.org/)	is used	to
+		parse XML.  Version 1.8.17 or later.  You do not have to
+		install	the rest of GNOME as this library is able to be	used
+		by itself.  This package is not	optional, you need it to
+		successfully build Aegis.
 
 	cook	This is	a dependency maintenance tool (DMT).  An example of a
 		well-known DMT is make(1), however this	old faithful is	mostly

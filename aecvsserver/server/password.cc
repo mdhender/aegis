@@ -1,6 +1,6 @@
 //
 //	aegis - project change supervisor
-//	Copyright (C) 2004 Peter Miller;
+//	Copyright (C) 2004, 2005 Peter Miller;
 //	All rights reserved.
 //
 //	This program is free software; you can redistribute it and/or modify
@@ -146,16 +146,7 @@ check_system_password(const char *username, const char *password)
 static void
 run(server_ty *sp)
 {
-    server_password_ty *spp;
-    int             verify;
-    int             ok;
-    string_ty       *s;
-    struct passwd   *pw;
-    string_ty       *user_name;
-    string_ty       *scrambled_password;
-    string_ty       *password;
-
-    spp = (server_password_ty *)sp;
+    server_password_ty *spp = (server_password_ty *)sp;
 
     //
     // cvsclient.texi:
@@ -168,9 +159,10 @@ run(server_ty *sp)
     //    linefeed,
     //  + the string END AUTH REQUEST, and a linefeed.
     //
-    verify = 0;
-    s = server_getline(sp);
-    if (!s)
+    bool verify = false;
+    bool ok = false;
+    nstring s;
+    if (!server_getline(sp, s))
     {
 	protocol_failure:
 	server_e(sp, "authentication protocol error");
@@ -179,27 +171,24 @@ run(server_ty *sp)
 	server_response_flush(sp);
 	return;
     }
-    if (!strcmp(s->str_text, "BEGIN GSSAPI REQUEST"))
+    if (!strcmp(s.c_str(), "BEGIN GSSAPI REQUEST"))
     {
-	str_free(s);
 	server_error(sp, "GSSAPI authentication not supported by this server");
 	goto auth_failure;
     }
-    if (!strcmp(s->str_text, "BEGIN VERIFICATION REQUEST"))
+    if (!strcmp(s.c_str(), "BEGIN VERIFICATION REQUEST"))
     {
-	ok = 1;
-	verify = 1;
+	ok = true;
+	verify = true;
     }
     else
-	ok = !strcmp(s->str_text, "BEGIN AUTH REQUEST");
-    str_free(s);
+	ok = !strcmp(s.c_str(), "BEGIN AUTH REQUEST");
     if (!ok)
 	goto protocol_failure;
 
-    s = server_getline(sp);
-    if (!s)
+    if (!server_getline(sp, s))
 	goto protocol_failure;
-    ok = !strcmp(s->str_text, ROOT_PATH);
+    ok = !strcmp(s.c_str(), ROOT_PATH);
     if (!ok)
     {
 	//
@@ -211,37 +200,32 @@ run(server_ty *sp)
         // We only allow one Root specification, exactly ROOT_PATH,
         // and we check it in both places.
 	//
-	server_e(sp, "%s: no such repository", s->str_text);
-	str_free(s);
+	server_e(sp, "%s: no such repository", s.c_str());
 	goto auth_failure;
     }
-    str_free(s);
 
-    user_name = server_getline(sp);
-    if (!user_name)
+    nstring user_name;
+    if (!server_getline(sp, user_name))
 	goto protocol_failure;
-    scrambled_password = server_getline(sp);
-    if (!scrambled_password)
+    nstring scrambled_password;
+    if (!server_getline(sp, scrambled_password))
 	goto protocol_failure;
 
-    s = server_getline(sp);
-    if (!s)
+    if (!server_getline(sp, s))
 	goto protocol_failure;
     if (verify)
-	ok = !strcmp(s->str_text, "END VERIFICATION REQUEST");
+	ok = !strcmp(s.c_str(), "END VERIFICATION REQUEST");
     else
-	ok = !strcmp(s->str_text, "END AUTH REQUEST");
-    str_free(s);
+	ok = !strcmp(s.c_str(), "END AUTH REQUEST");
     if (!ok)
 	goto protocol_failure;
 
     //
     // Check that the user name and password are acceptable.
     //
-    password = descramble(scrambled_password);
-    str_free(scrambled_password);
-    scrambled_password = 0;
-    pw = check_system_password(user_name->str_text, password->str_text);
+    nstring password = descramble(scrambled_password);
+    struct passwd *pw =
+	check_system_password(user_name.c_str(), password.c_str());
     if (!pw)
 	goto auth_failure;
 
@@ -250,9 +234,6 @@ run(server_ty *sp)
     //
     server_response_queue(sp, response_love_new());
     server_response_flush(sp);
-
-    str_free(password);
-    password = 0;
 
     if (!verify)
     {
@@ -310,8 +291,8 @@ run(server_ty *sp)
 	//
 	// Set some environment variables.
 	//
-	env_set("LOGNAME", user_name->str_text);
-	env_set("USER", user_name->str_text);
+	env_set("LOGNAME", user_name.c_str());
+	env_set("USER", user_name.c_str());
 
 	//
 	// Now run the simple server.
@@ -320,7 +301,6 @@ run(server_ty *sp)
 	    spp->simple = server_simple_new(sp->np);
 	server_run(spp->simple);
     }
-    str_free(user_name);
 }
 
 

@@ -1,6 +1,6 @@
 //
 //	aegis - project change supervisor
-//	Copyright (C) 1999, 2003, 2004 Peter Miller;
+//	Copyright (C) 1999, 2003-2005 Peter Miller;
 //	All rights reserved.
 //
 //	This program is free software; you can redistribute it and/or modify
@@ -24,12 +24,36 @@
 #include <ac/string.h>
 
 #include <error.h> // for assert
-#include <input/private.h>
+#include <input.h>
 #include <mem.h>
 
 
+input_ty::~input_ty()
+{
+    assert(buffer);
+    mem_free(buffer);
+    buffer = 0;
+    buffer_position = 0;
+    buffer_end = 0;
+    buffer_size = 0;
+}
+
+
+input_ty::input_ty() :
+    buffer(0),
+    buffer_size(0),
+    buffer_position(0),
+    buffer_end(0)
+{
+    buffer_size = (size_t)1 << 14;
+    buffer = (unsigned char *)mem_alloc(buffer_size);
+    buffer_position = buffer;
+    buffer_end = buffer;
+}
+
+
 long
-input_read(input_ty *ip, void *data, size_t len)
+input_ty::read(void *data, size_t len)
 {
     //
     // If they asked for nothing, give them nothing.
@@ -41,16 +65,13 @@ input_read(input_ty *ip, void *data, size_t len)
     // If there is anything in the buffer, return the contents of
     // the buffer.
     //
-    assert(ip);
-    if (ip->buffer_position < ip->buffer_end)
+    if (buffer_position < buffer_end)
     {
-	size_t		nbytes;
-
-	nbytes = ip->buffer_end - ip->buffer_position;
+	size_t nbytes = buffer_end - buffer_position;
 	if (nbytes > len)
 	    nbytes = len;
-	memcpy(data, ip->buffer_position, nbytes);
-	ip->buffer_position += nbytes;
+	memcpy(data, buffer_position, nbytes);
+	buffer_position += nbytes;
 	return nbytes;
     }
 
@@ -58,46 +79,39 @@ input_read(input_ty *ip, void *data, size_t len)
     // The buffer is empty.  Read the data directly into the
     // destination.  There is no profit in double handling.
     //
-    assert(ip->vptr);
-    assert(ip->vptr->read);
-    return ip->vptr->read(ip, data, len);
+    return read_inner(data, len);
 }
 
 
 int
-input_getc_complicated(input_ty *ip)
+input_ty::getc_complicated()
 {
-    long	    nbytes;
-
     //
-    // If there is anything in the buffer, return the first byte of
-    // the buffer.  This should never happen, because the #define
+    // If there is anything in the buffer, return the first byte of the
+    // buffer.  This should never happen, because the inline getc method
     // is supposed to make it go away.
     //
-    assert(ip);
-    if (ip->buffer_position < ip->buffer_end)
+    if (buffer_position < buffer_end)
     {
 	assert(0);
-	return *ip->buffer_position++;
+	return *buffer_position++;
     }
 
     //
     // Fill the buffer with data, and then return the first byte of
     // the new buffer.
     //
-    assert(ip->vptr);
-    assert(ip->vptr->read);
-    nbytes = ip->vptr->read(ip, ip->buffer, ip->buffer_size);
+    long nbytes = read_inner(buffer, buffer_size);
     if (nbytes <= 0)
 	return (-1);
-    ip->buffer_position = ip->buffer;
-    ip->buffer_end = ip->buffer + nbytes;
-    return *ip->buffer_position++;
+    buffer_position = buffer;
+    buffer_end = buffer + nbytes;
+    return *buffer_position++;
 }
 
 
 void
-input_ungetc_complicated(input_ty *ip, int c)
+input_ty::ungetc_complicated(int c)
 {
     if (c < 0)
     {
@@ -106,109 +120,104 @@ input_ungetc_complicated(input_ty *ip, int c)
 	//
 	return;
     }
-    if (ip->buffer_position > ip->buffer)
+    if (buffer_position > buffer)
     {
 	//
-	// If there is room in the buffer, back up and put the
-	// character in the buffer.  The #define is supposed to
-	// have taken care of this already.
+        // If there is room in the buffer, back up and put the character
+        // in the buffer.  The inline ungetc method is supposed to have
+        // taken care of this already.
 	//
 	assert(0);
     }
-    else if (ip->buffer_position >= ip->buffer_end)
+    else if (buffer_position >= buffer_end)
     {
 	//
-	// If the buffer is empty, just mangle the pointers to
-	// make it possible to push the character back.
-	//
-	ip->buffer_end = ip->buffer + ip->buffer_size;
-	ip->buffer_position = ip->buffer_end;
+        // If the buffer is empty, just mangle the pointers to make it
+        // possible to push the character back.
+        //
+	buffer_end = buffer + buffer_size;
+	buffer_position = buffer_end;
     }
     else
     {
-	unsigned char   *tmp;
-	size_t          nbytes;
-
 	//
 	// Double the size of the buffer, moving the current
 	// data into the second half.  That way, there will
 	// always be enough room for the old data and always
 	// enough room for the character to be pushed back.
 	//
-	// By doubling the buffer size every time,
-	// it is still O(1) overall.
+        // By doubling the buffer size every time (and halving the
+        // probability we will need to grow again) it is still O(1)
+        // overall.
 	//
-	ip->buffer_size *= 2;
-	tmp = (unsigned char *)mem_alloc(ip->buffer_size);
-	nbytes = ip->buffer_end - ip->buffer_position;
-	memcpy(tmp + ip->buffer_size - nbytes, ip->buffer_position, nbytes);
-	mem_free(ip->buffer);
-	ip->buffer = tmp;
-	ip->buffer_end = ip->buffer + ip->buffer_size;
-	ip->buffer_position = ip->buffer_end - nbytes;
+	buffer_size *= 2;
+	unsigned char *tmp = (unsigned char *)mem_alloc(buffer_size);
+	size_t nbytes = buffer_end - buffer_position;
+	memcpy(tmp + buffer_size - nbytes, buffer_position, nbytes);
+	mem_free(buffer);
+	buffer = tmp;
+	buffer_end = buffer + buffer_size;
+	buffer_position = buffer_end - nbytes;
     }
 
     //
     // The character goes before the current pointer,
     // and the current pointer is moved back by one.
     //
-    ip->buffer_position--;
-    *ip->buffer_position = c;
+    *--buffer_position = c;
 }
 
 
 void
-input_unread(input_ty *ip, const void *data, size_t len)
+input_ty::unread(const void *data, size_t len)
 {
-    if (ip->buffer_position >= ip->buffer_end)
+    if (buffer_position >= buffer_end)
     {
 	//
 	// If the buffer is empty, just mangle the pointers to
 	// make it possible to push the characters back.
 	//
-	ip->buffer_end = ip->buffer + ip->buffer_size;
-	ip->buffer_position = ip->buffer_end - len;
-	memcpy(ip->buffer_position, data, len);
+	buffer_end = buffer + buffer_size;
+	buffer_position = buffer_end - len;
+	memcpy(buffer_position, data, len);
 	return;
     }
 
     //
     // Make the buffer large enough to hold the pushback.
     //
-    while (ip->buffer_position - len < ip->buffer)
+    while (buffer_position - len < buffer)
     {
-	unsigned char	*tmp;
-	size_t		nbytes;
-
 	//
 	// Double the size of the buffer, moving the current
 	// data into the second half.  That way, there will
 	// always be enough room for the old data and always
 	// enough room for the character to be pushed back.
 	//
-	// By doubling the buffer size every time,
-	// it is still O(1) overall.
+        // By doubling the buffer size every time (and halving the
+        // probability we will need to grow again) it is still O(1)
+        // overall.
 	//
-	ip->buffer_size *= 2;
-	tmp = (unsigned char *)mem_alloc(ip->buffer_size);
-	nbytes = ip->buffer_end - ip->buffer_position;
-	memcpy(tmp + ip->buffer_size - nbytes, ip->buffer_position, nbytes);
-	mem_free(ip->buffer);
-	ip->buffer = tmp;
-	ip->buffer_end = ip->buffer + ip->buffer_size;
-	ip->buffer_position = ip->buffer_end - nbytes;
+	buffer_size *= 2;
+	unsigned char *tmp = (unsigned char *)mem_alloc(buffer_size);
+	size_t nbytes = buffer_end - buffer_position;
+	memcpy(tmp + buffer_size - nbytes, buffer_position, nbytes);
+	mem_free(buffer);
+	buffer = tmp;
+	buffer_end = buffer + buffer_size;
+	buffer_position = buffer_end - nbytes;
     }
 
     //
     // Copy the data into the buffer, before the current position.
     //
-    ip->buffer_position -= len;
-    memcpy(ip->buffer_position, data, len);
+    buffer_position -= len;
+    memcpy(buffer_position, data, len);
 }
 
 
 long
-input_ftell(input_ty *fp)
+input_ty::ftell()
 {
     //
     // The underlying file is going to thinks we are further along
@@ -218,37 +227,26 @@ input_ftell(input_ty *fp)
     // To correct for this, we subtract what's left in the buffer
     // from where the underlying file thinks we are.
     //
-    assert(fp);
-    assert(fp->vptr);
-    assert(fp->vptr->ftell);
-    return fp->vptr->ftell(fp) + fp->buffer_position - fp->buffer_end;
+    return ftell_inner() + buffer_position - buffer_end;
 }
 
 
 void
-input_delete(input_ty *ip)
+input_ty::keepalive()
 {
-    assert(ip);
-    assert(ip->vptr);
-    if (ip->vptr->destruct)
-	ip->vptr->destruct(ip);
-    assert(ip->buffer);
-    mem_free(ip->buffer);
-    ip->vptr = 0;
-    ip->buffer = 0;
-    ip->buffer_position = 0;
-    ip->buffer_end = 0;
-    ip->buffer_size = 0;
-    mem_free(ip);
 }
 
 
-
-void
-input_keepalive(input_ty *ip)
+bool
+input_ty::at_end()
 {
-    assert(ip);
-    assert(ip->vptr);
-    if (ip->vptr->keepalive)
-	ip->vptr->keepalive(ip);
+    return (peek() < 0);
+}
+
+
+bool
+input_ty::is_remote()
+    const
+{
+    return false;
 }

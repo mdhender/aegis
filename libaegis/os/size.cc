@@ -33,32 +33,23 @@
 long
 os_file_size(string_ty *path)
 {
-	struct stat	st;
-	int		oret;
+    trace(("os_mtime_actual(path = %08lX)\n{\n", (long)path));
+    os_become_must_be_active();
+    trace_string(path->str_text);
 
-	trace(("os_mtime_actual(path = %08lX)\n{\n", (long)path));
-	os_become_must_be_active();
-	trace_string(path->str_text);
+    struct stat	st;
+    int oret = glue_stat(path->str_text, &st);
+    if (oret)
+    {
+	int errno_old = errno;
+	sub_context_ty sc;
+	sc.errno_setx(errno_old);
+	sc.var_set_string("File_Name", path);
+	sc.fatal_intl(i18n("stat $filename: $errno"));
+	// NOTREACHED
+    }
 
-#ifdef S_IFLNK
-	oret = glue_lstat(path->str_text, &st);
-#else
-	oret = glue_stat(path->str_text, &st);
-#endif
-	if (oret)
-	{
-		sub_context_ty	*scp;
-		int             errno_old;
-
-		errno_old = errno;
-		scp = sub_context_new();
-		sub_errno_setx(scp, errno_old);
-		sub_var_set_string(scp, "File_Name", path);
-		fatal_intl(scp, i18n("stat $filename: $errno"));
-		// NOTREACHED
-	}
-
-	trace(("return %ld;\n", (long)st.st_size));
-	trace(("}\n"));
-	return st.st_size;
+    trace(("return %ld;\n", (long)st.st_size));
+    trace(("}\n"));
+    return st.st_size;
 }

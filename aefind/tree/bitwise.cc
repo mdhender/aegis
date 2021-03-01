@@ -1,6 +1,6 @@
 //
 //	aegis - project change supervisor
-//	Copyright (C) 1997, 1999, 2002-2004 Peter Miller;
+//	Copyright (C) 1997, 1999, 2002-2005 Peter Miller;
 //	All rights reserved.
 //
 //	This program is free software; you can redistribute it and/or modify
@@ -31,7 +31,8 @@
 
 
 static rpt_value_ty *
-bitwise_and_evaluate(tree_ty *tp, string_ty *path, struct stat *st)
+bitwise_and_evaluate(tree_ty *tp, string_ty *path_unres, string_ty *path,
+    string_ty *path_res, struct stat *st)
 {
     tree_diadic_ty  *this_thing;
     rpt_value_ty    *v1;
@@ -41,7 +42,7 @@ bitwise_and_evaluate(tree_ty *tp, string_ty *path, struct stat *st)
     rpt_value_ty    *result;
 
     this_thing = (tree_diadic_ty *)tp;
-    v1 = tree_evaluate(this_thing->left, path, st);
+    v1 = tree_evaluate(this_thing->left, path_unres, path, path_res, st);
     if (v1->method->type == rpt_value_type_error)
 	return v1;
     v1i = rpt_value_integerize(v1);
@@ -67,7 +68,7 @@ bitwise_and_evaluate(tree_ty *tp, string_ty *path, struct stat *st)
     }
     rpt_value_free(v1);
 
-    v2 = tree_evaluate(this_thing->right, path, st);
+    v2 = tree_evaluate(this_thing->right, path_unres, path, path_res, st);
     if (v2->method->type == rpt_value_type_error)
     {
 	rpt_value_free(v1i);
@@ -129,7 +130,8 @@ tree_bitwise_and_new(tree_ty *left, tree_ty *right)
 
 
 static rpt_value_ty *
-bitwise_xor_evaluate(tree_ty *tp, string_ty *path, struct stat *st)
+bitwise_xor_evaluate(tree_ty *tp, string_ty *path_unres, string_ty *path,
+    string_ty *path_res, struct stat *st)
 {
     tree_diadic_ty  *this_thing;
     rpt_value_ty    *v1;
@@ -139,7 +141,7 @@ bitwise_xor_evaluate(tree_ty *tp, string_ty *path, struct stat *st)
     rpt_value_ty    *result;
 
     this_thing = (tree_diadic_ty *)tp;
-    v1 = tree_evaluate(this_thing->left, path, st);
+    v1 = tree_evaluate(this_thing->left, path_unres, path, path_res, st);
     if (v1->method->type == rpt_value_type_error)
 	return v1;
     v1i = rpt_value_integerize(v1);
@@ -165,7 +167,7 @@ bitwise_xor_evaluate(tree_ty *tp, string_ty *path, struct stat *st)
     }
     rpt_value_free(v1);
 
-    v2 = tree_evaluate(this_thing->right, path, st);
+    v2 = tree_evaluate(this_thing->right, path_unres, path, path_res, st);
     if (v2->method->type == rpt_value_type_error)
     {
 	rpt_value_free(v1i);
@@ -227,7 +229,8 @@ tree_bitwise_xor_new(tree_ty *left, tree_ty *right)
 
 
 static rpt_value_ty *
-bitwise_or_evaluate(tree_ty *tp, string_ty *path, struct stat *st)
+bitwise_or_evaluate(tree_ty *tp, string_ty *path_unres, string_ty *path,
+    string_ty *path_res, struct stat *st)
 {
     tree_diadic_ty  *this_thing;
     rpt_value_ty    *v1;
@@ -237,7 +240,7 @@ bitwise_or_evaluate(tree_ty *tp, string_ty *path, struct stat *st)
     rpt_value_ty    *result;
 
     this_thing = (tree_diadic_ty *)tp;
-    v1 = tree_evaluate(this_thing->left, path, st);
+    v1 = tree_evaluate(this_thing->left, path_unres, path, path_res, st);
     if (v1->method->type == rpt_value_type_error)
 	return v1;
     v1i = rpt_value_integerize(v1);
@@ -263,7 +266,7 @@ bitwise_or_evaluate(tree_ty *tp, string_ty *path, struct stat *st)
     }
     rpt_value_free(v1);
 
-    v2 = tree_evaluate(this_thing->right, path, st);
+    v2 = tree_evaluate(this_thing->right, path_unres, path, path_res, st);
     if (v2->method->type == rpt_value_type_error)
     {
 	rpt_value_free(v1i);
@@ -325,7 +328,8 @@ tree_bitwise_or_new(tree_ty *left, tree_ty *right)
 
 
 static rpt_value_ty *
-bitwise_not_evaluate(tree_ty *tp, string_ty *path, struct stat *st)
+bitwise_not_evaluate(tree_ty *tp, string_ty *path_unres, string_ty *path,
+    string_ty *path_res, struct stat *st)
 {
     tree_monadic_ty *this_thing;
     rpt_value_ty    *v1;
@@ -337,7 +341,7 @@ bitwise_not_evaluate(tree_ty *tp, string_ty *path, struct stat *st)
     //
     trace(("not::evaluate()\n{\n"));
     this_thing = (tree_monadic_ty *)tp;
-    v1 = tree_evaluate(this_thing->arg, path, st);
+    v1 = tree_evaluate(this_thing->arg, path_unres, path, path_res, st);
     if (v1->method->type == rpt_value_type_error)
     {
 	trace(("}\n"));
@@ -397,7 +401,8 @@ tree_bitwise_not_new(tree_ty *arg)
 
 
 static rpt_value_ty *
-shift_left_evaluate(tree_ty *tp, string_ty *path, struct stat *st)
+shift_left_evaluate(tree_ty *tp, string_ty *path_unres, string_ty *path,
+    string_ty *path_res, struct stat *st)
 {
     tree_diadic_ty  *this_thing;
     sub_context_ty  *scp;
@@ -410,13 +415,13 @@ shift_left_evaluate(tree_ty *tp, string_ty *path, struct stat *st)
     rpt_value_ty    *result;
 
     this_thing = (tree_diadic_ty *)tp;
-    v1 = tree_evaluate(this_thing->left, path, st);
+    v1 = tree_evaluate(this_thing->left, path_unres, path, path_res, st);
     if (v1->method->type == rpt_value_type_error)
 	return v1;
     v1i = rpt_value_integerize(v1);
     rpt_value_free(v1);
 
-    v2 = tree_evaluate(this_thing->right, path, st);
+    v2 = tree_evaluate(this_thing->right, path_unres, path, path_res, st);
     if (v2->method->type == rpt_value_type_error)
 	return v2;
     v2i = rpt_value_integerize(v2);
@@ -470,7 +475,8 @@ tree_shift_left_new(tree_ty *left, tree_ty *right)
 
 
 static rpt_value_ty *
-shift_right_evaluate(tree_ty *tp, string_ty *path, struct stat *st)
+shift_right_evaluate(tree_ty *tp, string_ty *path_unres, string_ty *path,
+    string_ty *path_res, struct stat *st)
 {
     tree_diadic_ty  *this_thing;
     sub_context_ty  *scp;
@@ -483,13 +489,13 @@ shift_right_evaluate(tree_ty *tp, string_ty *path, struct stat *st)
     rpt_value_ty    *result;
 
     this_thing = (tree_diadic_ty *)tp;
-    v1 = tree_evaluate(this_thing->left, path, st);
+    v1 = tree_evaluate(this_thing->left, path_unres, path, path_res, st);
     if (v1->method->type == rpt_value_type_error)
 	return v1;
     v1i = rpt_value_integerize(v1);
     rpt_value_free(v1);
 
-    v2 = tree_evaluate(this_thing->right, path, st);
+    v2 = tree_evaluate(this_thing->right, path_unres, path, path_res, st);
     if (v2->method->type == rpt_value_type_error)
 	return v2;
     v2i = rpt_value_integerize(v2);

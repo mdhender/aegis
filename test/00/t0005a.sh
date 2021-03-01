@@ -1,7 +1,7 @@
 #!/bin/sh
 #
 #	aegis - project change supervisor
-#	Copyright (C) 1991-1998, 2004 Peter Miller;
+#	Copyright (C) 1991-1998, 2004, 2005 Peter Miller;
 #	All rights reserved.
 #
 #	This program is free software; you can redistribute it and/or modify
@@ -95,7 +95,7 @@ tmp=$work/tmp
 #
 # make the directories
 #
-activity="working directory 82"
+activity="working directory 98"
 mkdir $work $work/lib
 if test $? -ne 0 ; then no_result; fi
 chmod 777 $work/lib
@@ -133,14 +133,14 @@ fi
 #
 # make a new project
 #
-activity="new project 116"
+activity="new project 136"
 $bin/aegis -newpro foo -version "" -dir $workproj -v -lib $worklib > log 2>&1
 if test $? -ne 0 ; then cat log; no_result; fi
 
 #
 # change project attributes
 #
-activity="project attributes 123"
+activity="project attributes 143"
 cat > $tmp << 'end'
 description = "A bogus project created to test things.";
 developer_may_review = true;
@@ -154,7 +154,7 @@ if test $? -ne 0 ; then cat log; no_result; fi
 # create a new change
 #	make sure it creates the files it should
 #
-activity="new change 137"
+activity="new change 157"
 cat > $tmp << 'end'
 brief_description = "This change is used to test the aegis functionality \
 with respect to change descriptions.";
@@ -167,7 +167,7 @@ if test $? -ne 0 ; then cat log; no_result; fi
 # create a second change
 #	make sure it creates the files it should
 #
-activity="new change 150"
+activity="new change 170"
 cat > $tmp << 'end'
 brief_description = "This change was added to make the various listings \
 much more interesting.";
@@ -179,26 +179,26 @@ if test $? -ne 0 ; then cat log; no_result; fi
 #
 # add a new developer
 #
-activity="new developer 162"
+activity="new developer 182"
 $bin/aegis -newdev $USER -p foo -v -lib $worklib > log 2>&1
 if test $? -ne 0 ; then cat log; no_result; fi
 
 #
 # begin development of a change
 #
-activity="develop begin 169"
+activity="develop begin 189"
 $bin/aegis -devbeg 10 -p foo -dir $workchan -v -lib $worklib > log 2>&1
 if test $? -ne 0 ; then cat log; no_result; fi
 
 #
 # add a new files to the change
 #
-activity="new file 176"
+activity="new file 196"
 $bin/aegis -new_file $workchan/main.cc -nl -v -lib $worklib -p foo > log 2>&1
 if test $? -ne 0 ; then cat log; no_result; fi
 $bin/aegis -new_file $workchan/fubar -nl -v -lib $worklib -p foo > log 2>&1
 if test $? -ne 0 ; then cat log; no_result; fi
-$bin/aegis -new_file $workchan/config -nl -v -lib $worklib -p foo > log 2>&1
+$bin/aegis -new_file $workchan/aegis.conf -nl -v -lib $worklib -p foo > log 2>&1
 if test $? -ne 0 ; then cat log; no_result; fi
 
 #
@@ -215,7 +215,7 @@ end
 #
 # put something in 'config'
 #
-cat > $workchan/config << 'end'
+cat > $workchan/aegis.conf << 'end'
 build_command = "rm -f foo; c++ -o foo -D'VERSION=\"$vers\"' main.cc";
 link_integration_directory = true;
 
@@ -238,7 +238,7 @@ if test $? -ne 0 ; then no_result; fi
 #
 # create a new test
 #
-activity="new test 220"
+activity="new test 241"
 $bin/aegis -nt -v -lib $worklib -p foo > log 2>&1
 if test $? -ne 0 ; then cat log; no_result; fi
 
@@ -275,98 +275,98 @@ if test $? -ne 0 ; then no_result; fi
 #
 # build the change
 #
-activity="build 262"
+activity="build 278"
 $bin/aegis -build -nl -v -lib $worklib -p foo > log 2>&1
 if test $? -ne 0 ; then cat log; no_result; fi
 
 #
 # difference the change
 #
-activity="diff 269"
+activity="diff 285"
 $bin/aegis -diff -nl -v -lib $worklib -p foo > log 2>&1
 if test $? -ne 0 ; then cat log; no_result; fi
 
 #
 # test the change
 #
-activity="test 276"
+activity="test 292"
 $bin/aegis -test -nl -v -lib $worklib -p foo > log 2>&1
 if test $? -ne 0 ; then cat log; no_result; fi
 
 #
 # finish development of the change
 #
-activity="develop end 283"
+activity="develop end 299"
 $bin/aegis -dev_end -v -lib $worklib -p foo > log 2>&1
 if test $? -ne 0 ; then cat log; no_result; fi
 
 #
 # add a new reviewer
 #
-activity="new reviewer 290"
+activity="new reviewer 306"
 $bin/aegis -newrev $USER -p foo -v -lib $worklib > log 2>&1
 if test $? -ne 0 ; then cat log; no_result; fi
 
 #
 # pass the review
 #
-activity="review pass 297"
+activity="review pass 313"
 $bin/aegis -review_pass -chan 10 -proj foo -v -lib $worklib > log 2>&1
 if test $? -ne 0 ; then cat log; no_result; fi
 
 #
 # add an integrator
 #
-activity="new integrator 304"
+activity="new integrator 320"
 $bin/aegis -newint $USER -p foo -v -lib $worklib > log 2>&1
 if test $? -ne 0 ; then cat log; no_result; fi
 
 #
 # start integrating
 #
-activity="integrate begin 311"
+activity="integrate begin 327"
 $bin/aegis -intbeg 10 -p foo -v -lib $worklib > log 2>&1
 if test $? -ne 0 ; then cat log; no_result; fi
 
 #
 # integrate build
 #
-activity="build 318"
+activity="build 334"
 $bin/aegis -build -nl -v -lib $worklib -p foo > log 2>&1
 if test $? -ne 0 ; then cat log; no_result; fi
 
 #
 # integrate test
 #
-activity="test 325"
+activity="test 341"
 $bin/aegis -test -nl -v -lib $worklib -p foo > log 2>&1
 if test $? -ne 0 ; then cat log; no_result; fi
 
 #
 # integration pass
 #
-activity="integrate pass 332"
+activity="integrate pass 348"
 $bin/aegis -intpass -nl -v -lib $worklib -p foo > log 2>&1
 if test $? -ne 0 ; then cat log; no_result; fi
 
 #
 # start work on change 2
 #
-activity="develop begin 339"
+activity="develop begin 355"
 $bin/aegis -devbeg 11 -p foo -v -dir $workchan -lib $worklib > log 2>&1
 if test $? -ne 0 ; then cat log; no_result; fi
 
 #
 # copy a file into the change
 #
-activity="copy file 346"
+activity="copy file 362"
 $bin/aegis -cp $workchan/main.cc -nl -v -lib $worklib -p foo > log 2>&1
 if test $? -ne 0 ; then cat log; no_result; fi
 
 #
 # remove a file with the change
 #
-activity="remove file 353"
+activity="remove file 369"
 $bin/aegis -rm $workchan/fubar -nl -p foo -v -lib $worklib > log 2>&1
 if test $? -ne 0 ; then cat log; no_result; fi
 
@@ -394,7 +394,7 @@ if test $? -ne 0 ; then no_result; fi
 #
 # need another test
 #
-activity="new test 382"
+activity="new test 397"
 $bin/aegis -nt -v -lib $worklib -p foo > log 2>&1
 if test $? -ne 0 ; then cat log; no_result; fi
 cat > $workchan/test/00/t0002a.sh << 'end'
@@ -432,21 +432,21 @@ if test $? -ne 0 ; then no_result; fi
 #
 # We are testing aede for correctness here.
 #
-activity="diff 422"
+activity="diff 435"
 $bin/aegis -diff -nl -v -lib $worklib -p foo > log 2>&1
 if test $? -ne 0 ; then cat log; fail; fi
 
 #
 # build the change
 #
-activity="build 431"
+activity="build 442"
 $bin/aegis -build -nl -v -lib $worklib -p foo > log 2>&1
 if test $? -ne 0 ; then cat log; no_result; fi
 
 #
 # test the change
 #
-activity="test 438"
+activity="test 449"
 $bin/aegis -test -nl -v -lib $worklib -p foo > log 2>&1
 if test $? -ne 0 ; then cat log; no_result; fi
 $bin/aegis -test -bl -nl -v -lib $worklib -p foo > log 2>&1
@@ -457,7 +457,7 @@ if test $? -ne 0 ; then cat log; no_result; fi
 #
 # We are testing aede for correctness here.
 #
-activity="develop end 447"
+activity="develop end 460"
 $bin/aegis -devend -v -lib $worklib -p foo > log 2>&1
 if test $? -ne 0 ; then cat log; fail; fi
 

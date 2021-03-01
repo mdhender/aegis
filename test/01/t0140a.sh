@@ -1,7 +1,7 @@
 #!/bin/sh
 #
 #	aegis - project change supervisor
-#	Copyright (C) 2003, 2004 Peter Miller;
+#	Copyright (C) 2003-2005 Peter Miller;
 #	All rights reserved.
 #
 #	This program is free software; you can redistribute it and/or modify
@@ -108,11 +108,11 @@ export projdir
 AEGIS_PROJECT=test
 export AEGIS_PROJECT
 
-activity="new project 125"
+activity="new project 111"
 $bin/aegis -npr $AEGIS_PROJECT -version - -dir $projdir > log 2>&1
 if test $? -ne 0 ; then cat log; no_result; fi
 
-activity="project attributes 130"
+activity="project attributes 115"
 cat > paf << 'fubar'
 developer_may_review = true;
 developer_may_integrate = true;
@@ -132,7 +132,7 @@ if test $? -ne 0 ; then no_result; fi
 $bin/aegis -ni $USER
 if test $? -ne 0 ; then no_result; fi
 
-activity="new change 167"
+activity="new change 135"
 cat > caf << 'fubar'
 brief_description = "one";
 cause = internal_enhancement;
@@ -144,14 +144,14 @@ if test $? -ne 0 ; then cat log; no_result; fi
 changedir=$projdir/changedir
 export changedir
 
-activity="develop begin 176"
+activity="develop begin 147"
 $bin/aegis -db 10 -v  -dir $changedir > log 2>&1
 if test $? -ne 0 ; then cat log; no_result; fi
 
-activity="new file 180"
-$bin/aegis -nf $changedir/config $changedir/fred -v > log 2>&1
+activity="new file 151"
+$bin/aegis -nf $changedir/aegis.conf $changedir/fred -v > log 2>&1
 if test $? -ne 0 ; then cat log; no_result; fi
-cat > $changedir/config << 'fubar'
+cat > $changedir/aegis.conf << 'fubar'
 build_command = "exit 0";
 history_get_command =
 	"co -u'$e' -p $h,v > $o";
@@ -169,7 +169,7 @@ if test $? -ne 0 ; then no_result; fi
 echo hello > $changedir/fred
 if test $? -ne 0 ; then no_result; fi
 
-activity="new test 190"
+activity="new test 172"
 $bin/aegis -nt -v > log 2>&1
 if test $? -ne 0 ; then cat log; no_result; fi
 cat > $changedir/test/00/t0001a.sh << 'fubar'
@@ -182,50 +182,50 @@ fi
 fubar
 if test $? -ne 0 ; then cat log; no_result; fi
 
-activity="build 201"
+activity="build 185"
 $bin/aegis -b -v > log 2>&1
 if test $? -ne 0 ; then cat log; no_result; fi
 
-activity="diff 205"
+activity="diff 189"
 $bin/aegis -diff -v > log 2>&1
 if test $? -ne 0 ; then cat log; no_result; fi
 
-activity="test 205"
+activity="test 193"
 $bin/aegis -test -v > log 2>&1
 if test $? -ne 0 ; then cat log; no_result; fi
 
-activity="develop end 209"
+activity="develop end 197"
 $bin/aegis -de -v > log 2>&1
 if test $? -ne 0 ; then cat log; no_result; fi
 
-activity="review pass 213"
+activity="review pass 201"
 $bin/aegis -rpass 10 -v > log 2>&1
 if test $? -ne 0 ; then cat log; no_result; fi
 
-activity="integrate begin 217"
+activity="integrate begin 205"
 $bin/aegis -ib 10 -v > log 2>&1
 if test $? -ne 0 ; then cat log; no_result; fi
 
-activity="integrate build 221"
+activity="integrate build 209"
 $bin/aegis -b -v > log 2>&1
 if test $? -ne 0 ; then cat log; no_result; fi
 
-activity="integrate diff 225"
+activity="integrate diff 213"
 $bin/aegis -diff -v > log 2>&1
 if test $? -ne 0 ; then cat log; no_result; fi
 
-activity="test 241"
+activity="test 217"
 $bin/aegis -test -v > log 2>&1
 if test $? -ne 0 ; then cat log; no_result; fi
 
-activity="integrate pass 245"
+activity="integrate pass 221"
 $bin/aegis -ipass -v > log 2>&1
 if test $? -ne 0 ; then cat log; no_result; fi
 
 #
 # Next change
 #
-activity="new change 253"
+activity="new change 228"
 cat > caf << 'fubar'
 brief_description = "two";
 cause = internal_bug;
@@ -237,48 +237,48 @@ if test $? -ne 0 ; then no_result; fi
 $bin/aegis -nc -p $AEGIS_PROJECT -f caf -v > log 2>&1
 if test $? -ne 0 ; then cat log; no_result; fi
 
-activity="develop begin 262"
+activity="develop begin 240"
 $bin/aegis -db 11 -v  -dir $changedir > log 2>&1
 if test $? -ne 0 ; then cat log; no_result; fi
 
-activity="new file 265"
+activity="new file 244"
 $bin/aegis -nf -baserel foo -v  > log 2>&1
 if test $? -ne 0 ; then cat log; no_result; fi
 echo Hi There > $changedir/foo
 if test $? -ne 0 ; then no_result; fi
 
-activity="copy file 267"
+activity="copy file 250"
 $bin/aegis -cp -baserel test/00/t0001a.sh  -v  > log 2>&1
 if test $? -ne 0 ; then cat log; no_result; fi
 echo \# comment  >> $changedir/test/00/t0001a.sh
 if test $? -ne 0 ; then no_result; fi
 
-activity="diff 275"
+activity="diff 256"
 $bin/aegis -diff -v > log 2>&1
 if test $? -ne 0 ; then cat log; no_result; fi
 
-activity="build 287"
+activity="build 260"
 $bin/aegis -b -v > log 2>&1
 if test $? -ne 0 ; then cat log; no_result; fi
 
 # develop end should fail (test -reg required)
-activity="develop end 293"
+activity="develop end 265"
 $bin/aegis -de -v > log 2>&1
 if test $? -eq 0 ; then cat log; fail; fi
 
 grep 'test required' log > /dev/null
 if test $? -ne 0 ; then cat log; fail; fi
 
-activity="copy undo 302"
+activity="copy undo 272"
 $bin/aegis -cpu $changedir/test/00/t0001a.sh -v > log 2>&1
 if test $? -ne 0 ; then cat log; no_result; fi
 
-activity="build 304"
+activity="build 276"
 $bin/aegis -b -v > log 2>&1
 if test $? -ne 0 ; then cat log; no_result; fi
 
 # develop end should be OK now
-activity="develop end 308"
+activity="develop end 281"
 $bin/aegis -de -v > log 2>&1
 if test $? -ne 0 ; then cat log; fail; fi
 

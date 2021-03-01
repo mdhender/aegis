@@ -1,7 +1,7 @@
 #!/bin/sh
 #
 #	aegis - project change supervisor
-#	Copyright (C) 2004 Peter Miller;
+#	Copyright (C) 2004, 2005 Peter Miller;
 #	All rights reserved.
 #
 #	This program is free software; you can redistribute it and/or modify
@@ -170,10 +170,10 @@ $bin/aegis -db 10 -v > log 2>&1
 if test $? -ne 0 ; then cat log; no_result; fi
 
 activity="new file 172"
-$bin/aegis -nf $work/test.C010/config $work/test.C010/fred \
+$bin/aegis -nf $work/test.C010/aegis.conf $work/test.C010/fred \
 	$work/test.C010/barney -v > log 2>&1
 if test $? -ne 0 ; then cat log; no_result; fi
-cat > $work/test.C010/config << 'fubar'
+cat > $work/test.C010/aegis.conf << 'fubar'
 build_command = "date > derived1 && date > derived2";
 history_get_command =
 	"co -u'$e' -p $h,v > $o";
@@ -246,7 +246,7 @@ if test $? -ne 0 ; then no_result; fi
 $bin/aegis -nc 2 -f caf -p test -v > log 2>&1
 if test $? -ne 0 ; then cat log; no_result; fi
 
-activity="develop begin 243"
+activity="develop begin 249"
 $bin/aegis -db 2 -v -nl > log 2>&1
 if test $? -ne 0 ; then cat log; fail; fi
 

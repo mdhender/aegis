@@ -2,7 +2,7 @@
 #
 #	aegis - project change supervisor
 #	Copyright (C) 2005 Peter Miller
-#	Copyright (C) 2004 Walter Franzini;
+#	Copyright (C) 2004, 2005 Walter Franzini;
 #	All rights reserved.
 #
 #	This program is free software; you can redistribute it and/or modify
@@ -90,7 +90,7 @@ no_result()
 }
 trap \"no_result\" 1 2 3 15
 
-activity="create test directory 92"
+activity="create test directory 93"
 mkdir $work $work/lib
 if test $? -ne 0 ; then no_result; fi
 chmod 777 $work/lib
@@ -146,14 +146,14 @@ AEGIS_PROJECT=example ; export AEGIS_PROJECT
 #
 # make a new project
 #
-activity="new project 148"
+activity="new project 149"
 $bin/aegis -npr $AEGIS_PROJECT -vers "" -dir $workproj > log 2>&1
 if test $? -ne 0 ; then cat log; no_result; fi
 
 #
 # change project attributes
 #
-activity="project attributes 155"
+activity="project attributes 156"
 cat > tmp << 'end'
 description = "A bogus project created to test the aedist/aemv "
     "functionality.";
@@ -169,7 +169,7 @@ if test $? -ne 0 ; then cat log; no_result; fi
 #
 # add the staff
 #
-activity="staff 171"
+activity="staff 172"
 $bin/aegis -nd $USER > log 2>&1
 if test $? -ne 0 ; then cat log; no_result; fi
 $bin/aegis -nrv $USER > log 2>&1
@@ -182,7 +182,7 @@ if test $? -ne 0 ; then cat log; no_result; fi
 #
 # create a new change
 #
-activity="new change 184"
+activity="new change 185"
 cat > tmp << 'end'
 brief_description = "The first change";
 cause = internal_bug;
@@ -201,14 +201,14 @@ if test $? -ne 0 ; then cat log; no_result; fi
 #
 # add a new files to the change
 #
-activity="new files 203"
+activity="new files 204"
 $bin/aegis -nf  $workchan/bogus1 -nl \
         --uuid aaaaaaaa-bbbb-4bbb-8ccc-ccccddddddd1 > log 2>&1
 if test $? -ne 0 ; then cat log; no_result; fi
 $bin/aegis -nf  $workchan/bogus2 -nl \
         --uuid aaaaaaaa-bbbb-4bbb-8ccc-ccccddddddd2 > log 2>&1
 if test $? -ne 0 ; then cat log; no_result; fi
-$bin/aegis -nf  $workchan/config -nl \
+$bin/aegis -nf  $workchan/aegis.conf -nl \
         --uuid aaaaaaaa-bbbb-4bbb-8ccc-ccccddddddd3 > log 2>&1
 if test $? -ne 0 ; then cat log; no_result; fi
 
@@ -224,7 +224,7 @@ line three
 end
 if test $? -ne 0 ; then no_result; fi
 
-cat > $workchan/config << 'end'
+cat > $workchan/aegis.conf << 'end'
 build_command = "exit 0";
 link_integration_directory = true;
 history_get_command =
@@ -246,56 +246,56 @@ if test $? -ne 0 ; then no_result; fi
 #
 # build the change
 #
-activity="build 248"
+activity="build 249"
 $bin/aegis -build -nl -v > log 2>&1
 if test $? -ne 0 ; then cat log; no_result; fi
 
 #
 # difference the change
 #
-activity="diff 255"
+activity="diff 256"
 $bin/aegis -diff > log 2>&1
 if test $? -ne 0 ; then cat log; no_result; fi
 
 #
 # finish development of the change
 #
-activity="develop end 262"
+activity="develop end 263"
 $bin/aegis -de > log 2>&1
 if test $? -ne 0 ; then cat log; no_result; fi
 
 #
 # pass the review
 #
-activity="review pass 269"
+activity="review pass 270"
 $bin/aegis -rpass -c 1 > log 2>&1
 if test $? -ne 0 ; then cat log; no_result; fi
 
 #
 # start integrating
 #
-activity="integrate begin 276"
+activity="integrate begin 277"
 $bin/aegis -ib 1 > log 2>&1
 if test $? -ne 0 ; then cat log; no_result; fi
 
 #
 # integrate build
 #
-activity="build 283"
+activity="build 284"
 $bin/aegis -b -nl -v > log 2>&1
 if test $? -ne 0 ; then cat log; no_result; fi
 
 #
 # pass the integration
 #
-activity="integrate pass 290"
+activity="integrate pass 291"
 $bin/aegis -intpass -nl > log 2>&1
 if test $? -ne 0 ; then cat log; no_result; fi
 
 #
 # create a new change
 #
-activity="new change 297"
+activity="new change 298"
 cat > tmp << 'end'
 brief_description = "The second change";
 cause = internal_bug;
@@ -307,21 +307,21 @@ if test $? -ne 0 ; then cat log; no_result; fi
 #
 # begin development of a change
 #
-activity="develop begin 309"
+activity="develop begin 310"
 $bin/aegis -db 2 -dir $workchan > log 2>&1
 if test $? -ne 0 ; then cat log; no_result; fi
 
 #
 # Use the second change to move bogus2 to bogus3 and bogus1 to bogus4
 #
-activity="move files 316"
+activity="move files 317"
 $bin/aegis -c 2 -mv -baserel bogus2 bogus3 bogus1 bogus4 > log 2>&1
 if test $? -ne 0 ; then cat log; no_result; fi
 
 #
 # Modify bogus4
 #
-activity="modify bogus4 323"
+activity="modify bogus4 324"
 cat > $workchan/bogus4 <<EOF
 this file is now named bogus4
 EOF
@@ -330,34 +330,34 @@ if test $? -ne 0 ; then no_result; fi
 #
 # difference the change
 #
-activity="aed 332"
+activity="aed 333"
 $bin/aegis --diff > log 2>&1
 if test $? -ne 0 ; then cat log; no_result; fi
 
 #
 # build the change
 #
-activity="build 339"
+activity="build 340"
 $bin/aegis -build 2 -nl -verb > log 2>&1
 if test $? -ne 0 ; then cat log; no_result; fi
 
 #
 # Set the change uuid
 #
-activity="change uuid 346"
+activity="change uuid 347"
 $bin/aegis -change-attr \
         --uuid aaaaaaaa-bbbb-4bbb-8ccc-ccccddddddd0 -c 2 > log 2>&1
 if test $? -ne 0; then cat log; no_result; fi
 
-activity="end the change 351"
+activity="end the change 352"
 $bin/aegis -de 2 -verb > log 2>&1
 if test $? -ne 0 ; then cat log; no_result; fi
 
-activity="send the outstanding change 355"
+activity="send the outstanding change 356"
 $bin/aedist -send -c 2 -ndh -out $work/c02dev.ae > log 2>&1
 if test $? -ne 0 ; then cat log ; no_result; fi
 
-activity="review pass 359"
+activity="review pass 360"
 $bin/aegis -rpass 2 -verb > log 2>&1
 if test $? -ne 0 ; then cat log; no_result; fi
 
@@ -365,49 +365,213 @@ acctivity="integrate begin"
 $bin/aegis -ibegin 2 -verb > log 2>&1
 if test $? -ne 0 ; then cat log; no_result; fi
 
-activity="build the change 367"
+activity="build the change 368"
 $bin/aegis -build 2 -verb -nl > log 2>&1
 if test $? -ne 0 ; then cat log; no_result; fi
 
-activity="diff the change 371"
+activity="diff the change 372"
 $bin/aegis -diff 2 -verb -nl > log 2>&1
 if test $? -ne 0 ; then cat log; no_result; fi
 
-activity="integrate the change 375"
+activity="integrate the change 376"
 $bin/aegis -ipass 2 -verb > log 2>&1
 if test $? -ne 0 ; then cat log; no_result; fi
 
-activity="send the completed change 379"
+activity="send the completed change 380"
 $bin/aedist -send -c 2 -ndh -out $work/c02.ae > log 2>&1
 if test $? -ne 0 ; then cat log ; no_result; fi
 
-cat > $work/ok.ae <<EOF
+#
+# Prepare reference data
+#
+activity="header 387"
+cat > $work/header.ok <<EOF
 MIME-Version: 1.0
 Content-Type: application/aegis-change-set
 Content-Transfer-Encoding: base64
 Subject: example - The second change
 Content-Name: example.C002.ae
 Content-Disposition: attachment; filename=example.C002.ae
-
-H4sIAAAAAAAAA7WUS2+jMBCAueJf4fQY1SomtIkU9bCHHirtqepttULGTMArsJFtmkqr/vfa
-QKIG9QGNOlKYMfP68NiJ1tE6oriXTm8oS4Z1NNJ0tN58EDfS9JgHll81Wv0DbolkNQQInlnd
-VICitxzxTI54Ikf8loOXTBZAZFtnoIMYoVOG1SyGVcymMeDdOwwGbOD6Z1rALs3BcC0aK5TE
-t/jisQRsgCuZ4z76YosmhHDWGnBOIS1oyao0a4stsmBsCs9QN9b5rG5heJcxA5WQMHZqKDQY
-4xql7+Uay6zvwvZMWCELB/8ElWpqkHaL2lbkno8NQjInJPGPDeecuB/Pe4kcstEc36I/KPyP
-wnAnKkj9EfEFMlW0hrqQMJxRs09gfNgmDbV6gq6GYYWva1SreffGe46NEp/3cvkRRzyXI/4m
-x+pzjtWZHFyDG94EjvhzjuTMuUzmoAPH3+34riYz/y+m6vywbpjl5VW/7cFp7+t5vWk+sXd2
-WLtrceyMkL+kWEnoDbtXg1FqADTel5t5bDf5GfuSBGi5XOLeRoSQg7k8lS6K4s5c9DH0Encf
-Qbs0it2TOJ8thcH+vGGnpdpjf+zyQ9nxt65nzgG+PYfEz+EruBO26IfO55Ht8eHX/e+7h8Vi
-4dleAc4uwz3UBwAA
 EOF
+if test $? -ne 0; then no_result; fi
 
-activity="test archive of outstanding change 403"
-cmp $work/c02dev.ae $work/ok.ae > log
-if test $? -ne 0 ; then cat log; fail ; fi
+activity="file-list 398"
+cat > $work/file-list.ok <<EOF
+.../etc/change-number
+.../etc/change-set
+.../etc/project-name
+.../patch/bogus3
+.../patch/bogus4
+.../src/bogus3
+.../src/bogus4
+EOF
+if test $? -ne 0; then no_result; fi
 
-activity="test archive of complete change 407"
-cmp $work/c02.ae $work/ok.ae > log
-if test $? -ne 0 ; then cat log; fail ; fi
+activity="project-name 410"
+cat > $work/project-name.ok <<EOF
+$AEGIS_PROJECT
+EOF
+if test $? -ne 0; then no_result; fi
+
+activity="change-number 416"
+cat > $work/change-number.ok <<EOF
+2
+EOF
+if test $? -ne 0; then no_result; fi
+
+activity="change-set 422"
+cat > $work/change-set.ok <<EOF
+brief_description = "The second change";
+description = "The second change";
+cause = internal_bug;
+test_exempt = true;
+test_baseline_exempt = true;
+regression_test_exempt = true;
+state = awaiting_development;
+uuid = "aaaaaaaa-bbbb-4bbb-8ccc-ccccddddddd0";
+src =
+[
+	{
+		file_name = "bogus1";
+		uuid = "aaaaaaaa-bbbb-4bbb-8ccc-ccccddddddd1";
+		action = remove;
+		usage = source;
+		move = "bogus4";
+	},
+	{
+		file_name = "bogus2";
+		uuid = "aaaaaaaa-bbbb-4bbb-8ccc-ccccddddddd2";
+		action = remove;
+		usage = source;
+		move = "bogus3";
+	},
+	{
+		file_name = "bogus3";
+		uuid = "aaaaaaaa-bbbb-4bbb-8ccc-ccccddddddd2";
+		action = create;
+		usage = source;
+		move = "bogus2";
+	},
+	{
+		file_name = "bogus4";
+		uuid = "aaaaaaaa-bbbb-4bbb-8ccc-ccccddddddd1";
+		action = create;
+		usage = source;
+		move = "bogus1";
+	},
+];
+EOF
+if test $? -ne 0; then no_result; fi
+
+#
+# Check the archive from the outstanding change
+#
+activity="archive header check 469"
+head -6 $work/c02dev.ae > header.c02dev
+diff $work/header.ok header.c02dev
+if test $? -ne 0; then fail; fi
+
+activity="output dir create 474"
+mkdir $work/c02dev.d > log 2>&1
+if test $? -ne 0; then cat log; no_result; fi
+
+activity="archive extract 478"
+$bin/test_cpio -extract -change-dir $work/c02dev.d \
+    -f $work/c02dev.ae > log 2>&1
+if test $? -ne 0; then cat log; no_result; fi
+
+#
+# Check the archive structure
+#
+activity="check the file list 486"
+find $work/c02dev.d -type f -print | sed -e "s!^${work}/c02dev.d!...!g" \
+    | sort > $work/file-list.c02dev
+diff $work/file-list.ok $work/file-list.c02dev
+if test $? -ne 0; then fail; fi
+
+#
+# Check the metadata
+#
+activity="project-name  495"
+diff $work/project-name.ok $work/c02dev.d/etc/project-name
+if test $? -ne 0; then fail; fi
+
+activity="change-number 499"
+diff $work/change-number.ok $work/c02dev.d/etc/change-number
+if test $? -ne 0; then fail; fi
+
+activity="change-set  503"
+diff $work/change-set.ok $work/c02dev.d/etc/change-set
+if test $? -ne 0; then fail; fi
+
+#
+# Add some check for the patch/ dir
+#
+
+#
+# Check the src/ dir
+#
+activity="check the src/ dir content 514"
+diff $work/c02dev.d/src/bogus3 $workproj/baseline/bogus3
+if test $? -ne 0; then fail; fi
+diff $work/c02dev.d/src/bogus4 $workproj/baseline/bogus4
+if test $? -ne 0; then fail; fi
+
+#
+# Check the archive from the completed change
+#
+activity="archive header check 523"
+head -6 $work/c02dev.ae > header.c02dev
+diff $work/header.ok header.c02dev
+if test $? -ne 0; then fail; fi
+
+activity="output dir create 528"
+mkdir $work/c02.d > log 2>&1
+if test $? -ne 0; then cat log; no_result; fi
+
+activity="extract the archive 532"
+$bin/test_cpio -extract -change-dir $work/c02.d \
+    -f $work/c02.ae > log 2>&1
+if test $? -ne 0; then cat log; no_result; fi
+
+#
+# Check the archive structure
+#
+activity="check the file list 540"
+find $work/c02.d -type f -print | sed -e "s!^${work}/c02.d!...!g" \
+    | sort > $work/file-list.c02
+if test $? -ne 0; then no_result; fi
+diff $work/file-list.ok $work/file-list.c02
+if test $? -ne 0; then fail; fi
+
+#
+# Check the metadata
+#
+activity="etc/project-name 550"
+diff $work/project-name.ok $work/c02.d/etc/project-name
+if test $? -ne 0; then fail; fi
+
+activity="etc/change-number  554"
+diff $work/change-number.ok $work/c02.d/etc/change-number
+if test $? -ne 0; then fail; fi
+
+activity="etc/change-set 558"
+diff $work/change-set.ok $work/c02.d/etc/change-set
+if test $? -ne 0; then fail; fi
+
+#
+# Add some check against the patch/ dir
+#
+activity="check the patch/ dir 565"
+
+#
+# Check the src/ dir
+#
+activity="check the src/ dir content 570"
+diff $work/c02.d/src/bogus3 $workproj/baseline/bogus3
+if test $? -ne 0; then fail; fi
+diff $work/c02.d/src/bogus4 $workproj/baseline/bogus4
+if test $? -ne 0; then fail; fi
 
 #
 # Only definite negatives are possibe.

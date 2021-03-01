@@ -72,14 +72,12 @@ patch_apply(patch_ty *pp, string_ty *ifn, string_ty *ofn)
 	ifp = input_file_text_open(ifn);
 	for (;;)
 	{
-	    string_ty       *s;
-
-	    s = input_one_line(ifp);
-	    if (!s)
+	    nstring s;
+	    if (!ifp->one_line(s))
 		break;
-	    buffer.push_back(s);
+	    buffer.push_back(s.get_ref());
 	}
-	input_delete(ifp);
+	delete ifp;
 	ifp = 0;
 
 	//

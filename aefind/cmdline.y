@@ -1,6 +1,6 @@
 /*
  *	aegis - project change supervisor
- *	Copyright (C) 1997-1999, 2001-2004 Peter Miller;
+ *	Copyright (C) 1997-1999, 2001-2005 Peter Miller;
  *	All rights reserved.
  *
  *	This program is free software; you can redistribute it and/or modify
@@ -151,7 +151,7 @@
 }
 
 %type <comparator>  comparator
-%type <lv_number>   NUMBER
+%type <lv_number>   NUMBER THIS
 %type <lv_real>	    REAL
 %type <lv_string>   STRING
 %type <lv_string>   number_or_string
@@ -206,7 +206,8 @@ report_error(rpt_value_ty *vp)
 
 
 static void
-walker(void *p, descend_message_ty msg, string_ty *pathname, struct stat *st)
+walker(void *p, descend_message_ty msg, string_ty *path_unres,
+    string_ty *path_maybe, string_ty *path_res, struct stat *st)
 {
     rpt_value_ty    *vp;
 
@@ -214,7 +215,7 @@ walker(void *p, descend_message_ty msg, string_ty *pathname, struct stat *st)
     {
     case descend_message_file:
     case descend_message_dir_before:
-       	vp = tree_evaluate(tp, pathname, st);
+       	vp = tree_evaluate(tp, path_unres, path_maybe, path_res, st);
        	if (vp->method->type == rpt_value_type_error)
 	    report_error(vp);
        	rpt_value_free(vp);
@@ -605,7 +606,7 @@ strings
 tree1
     : THIS
        	{
-	    $$ = tree_this_new();
+	    $$ = tree_this_new($1);
 	}
     | NOW
        	{

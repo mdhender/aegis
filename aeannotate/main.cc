@@ -31,6 +31,7 @@
 #include <list.h>
 #include <os.h>
 #include <quit.h>
+#include <rsrc_limits.h>
 #include <usage.h>
 #include <version.h>
 
@@ -66,6 +67,7 @@ main(int argc, char **argv)
     signal(SIGCLD, SIG_DFL);
 #endif
 
+    resource_limits_init();
     arglex3_init(argc, argv);
     env_initialize();
     language_init();

@@ -1,6 +1,6 @@
 //
 //	aegis - project change supervisor
-//	Copyright (C) 2004 Peter Miller;
+//	Copyright (C) 2004, 2005 Peter Miller;
 //	All rights reserved.
 //
 //	This program is free software; you can redistribute it and/or modify
@@ -187,7 +187,6 @@
 static void
 run(server_ty *sp, string_ty *client_side)
 {
-    string_ty       *server_side;
     static const char root_path[] = ROOT_PATH;
     size_t          root_path_len;
 
@@ -196,8 +195,8 @@ run(server_ty *sp, string_ty *client_side)
     if (server_root_required(sp, "Directory"))
 	return;
 
-    server_side = sp->np->getline();
-    if (!server_side)
+    nstring server_side;
+    if (!sp->np->getline(server_side))
     {
 	server_error(sp, "Directory: additional data required");
 	return;
@@ -210,37 +209,32 @@ run(server_ty *sp, string_ty *client_side)
     root_path_len = strlen(root_path);
     if
     (
-	server_side->str_length == root_path_len
+	server_side.size() == root_path_len
     &&
-	0 == memcmp(server_side->str_text, root_path, root_path_len)
+	0 == memcmp(server_side.c_str(), root_path, root_path_len)
     )
     {
-	str_free(server_side);
-	server_side = str_from_c(".");
+	server_side = ".";
     }
     else if
     (
-	server_side->str_length > root_path_len
+	server_side.size() > root_path_len
     &&
-	0 == memcmp(server_side->str_text, root_path, root_path_len)
+	0 == memcmp(server_side.c_str(), root_path, root_path_len)
     &&
-	server_side->str_text[root_path_len] == '/'
+	server_side[root_path_len] == '/'
     )
     {
-	string_ty       *s;
-
 	//
-	// Strip out the Root part, we don't need it.  It's fake,
+	// Strip out the Root part, we don't need it because it's fake,
 	// and it makes some of the other processing cumbersome.
 	//
-	s =
-	    str_n_from_c
+	server_side =
+	    nstring
 	    (
-		server_side->str_text   + (root_path_len + 1),
-		server_side->str_length - (root_path_len + 1)
+		server_side.c_str() + (root_path_len + 1),
+		server_side.size()  - (root_path_len + 1)
 	    );
-	str_free(server_side);
-	server_side = s;
     }
     else
     {
@@ -248,8 +242,7 @@ run(server_ty *sp, string_ty *client_side)
 	return;
     }
 
-    sp->np->directory_set(client_side, server_side);
-    str_free(server_side);
+    sp->np->directory_set(client_side, server_side.get_ref());
 }
 
 

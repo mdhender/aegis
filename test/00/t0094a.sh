@@ -108,14 +108,14 @@ unset LANGUAGE
 #
 # make a new project
 #
-activity="new project 161"
+activity="new project 111"
 $bin/aegis -npr foo -vers "" -dir $workproj > log 2>&1
 if test $? -ne 0 ; then cat log; no_result; fi
 
 #
 # change project attributes
 #
-activity="project attributes 168"
+activity="project attributes 118"
 cat > $tmp << 'end'
 description = "A bogus project created to test the label_history \
 functionality.";
@@ -130,7 +130,7 @@ if test $? -ne 0 ; then cat log; no_result; fi
 #
 # create a new change
 #
-activity="new change 183"
+activity="new change 133"
 cat > $tmp << 'end'
 brief_description = "The first change";
 cause = internal_bug;
@@ -142,7 +142,7 @@ if test $? -ne 0 ; then cat log; no_result; fi
 #
 # create a second change
 #
-activity="new change 195"
+activity="new change 145"
 cat > $tmp << 'end'
 brief_description = "The second change";
 cause = internal_bug;
@@ -156,7 +156,7 @@ if test $? -ne 0 ; then cat log; no_result; fi
 #
 # add the staff
 #
-activity="staff 207"
+activity="staff 159"
 $bin/aegis -nd $USER > log 2>&1
 if test $? -ne 0 ; then cat log; no_result; fi
 $bin/aegis -nrv $USER > log 2>&1
@@ -173,9 +173,9 @@ if test $? -ne 0 ; then cat log; no_result; fi
 #
 # add a new files to the change
 #
-activity="new file 224"
+activity="new file 176"
 $bin/aegis -nf $workchan/main.c $workchan/test.c $workchan/Makefile \
-	$workchan/config -nl > log 2>&1
+	$workchan/aegis.conf -nl > log 2>&1
 if test $? -ne 0 ; then cat log; no_result; fi
 cat > $workchan/main.c << 'end'
 int main() { test(); exit(0); return 0; }
@@ -193,7 +193,7 @@ foo: main.o test.o
 	date > $@
 end
 if test $? -ne 0 ; then no_result; fi
-cat > $workchan/config << 'end'
+cat > $workchan/aegis.conf << 'end'
 build_command = "exit 0";
 link_integration_directory = true;
 history_get_command =
@@ -219,7 +219,7 @@ if test $? -ne 0 ; then no_result; fi
 #
 # create a new test
 #
-activity="new test 267"
+activity="new test 222"
 $bin/aegis -nt > log 2>&1
 if test $? -ne 0 ; then cat log; fail; fi
 
@@ -232,63 +232,63 @@ if test $? -ne 0 ; then no_result; fi
 #
 # build the change
 #
-activity="build 295"
+activity="build 235"
 $bin/aegis -build -nl -v > log 2>&1
 if test $? -ne 0 ; then cat log; fail; fi
 
 #
 # difference the change
 #
-activity="diff 302"
+activity="diff 242"
 $bin/aegis -diff > log 2>&1
 if test $? -ne 0 ; then cat log; no_result; fi
 
 #
 # test the change
 #
-activity="test 309"
+activity="test 249"
 $bin/aegis -t -v > log 2>&1
 if test $? -ne 0 ; then cat log; no_result; fi
 
 #
 # finish development of the change
 #
-activity="develop end 316"
+activity="develop end 256"
 $bin/aegis -de > log 2>&1
 if test $? -ne 0 ; then cat log; fail; fi
 
 #
 # pass the review
 #
-activity="review pass 323"
+activity="review pass 263"
 $bin/aegis -rpass -c 1 > log 2>&1
 if test $? -ne 0 ; then cat log; no_result; fi
 
 #
 # start integrating
 #
-activity="integrate begin 330"
+activity="integrate begin 270"
 $bin/aegis -ib 1 > log 2>&1
 if test $? -ne 0 ; then cat log; no_result; fi
 
 #
 # integrate build
 #
-activity="build 337"
+activity="build 277"
 $bin/aegis -b -nl -v > log 2>&1
 if test $? -ne 0 ; then cat log; no_result; fi
 
 #
 # integrate test
 #
-activity="test 340"
+activity="test 284"
 $bin/aegis -t -nl -v > log 2>&1
 if test $? -ne 0 ; then cat log; no_result; fi
 
 #
 # pass the integration
 #
-activity="integrate pass 347"
+activity="integrate pass 291"
 $bin/aegis -intpass -nl  > log 2>&1
 if test $? -ne 0 ; then cat log; no_result; fi
 
@@ -298,14 +298,14 @@ if test $? -ne 0 ; then cat log; fail; fi
 #
 # start work on change 2
 #
-activity="develop begin 354"
+activity="develop begin 301"
 $bin/aegis -db -c 2 -dir $workchan > log 2>&1
 if test $? -ne 0 ; then cat log; fail; fi
 
 #
 # copy a file into the change
 #
-activity="copy file 361"
+activity="copy file 308"
 $bin/aegis -cp $workchan/main.c -nl > log 2>&1
 if test $? -ne 0 ; then cat log; fail; fi
 
@@ -336,42 +336,42 @@ if test $? -ne 0 ; then no_result; fi
 #
 # build the change
 #
-activity="build 395"
+activity="build 339"
 $bin/aegis -build -nl -v > log 2>&1
 if test $? -ne 0 ; then cat log; fail; fi
 
 #
 # difference the change
 #
-activity="diff 402"
+activity="diff 346"
 $bin/aegis -diff > log 2>&1
 if test $? -ne 0 ; then cat log; no_result; fi
 
 #
 # finish development of the change
 #
-activity="develop end 416"
+activity="develop end 353"
 $bin/aegis -de > log 2>&1
 if test $? -ne 0 ; then cat log; fail; fi
 
 #
 # pass the review
 #
-activity="review pass 423"
+activity="review pass 360"
 $bin/aegis -rpass -c 2 > log 2>&1
 if test $? -ne 0 ; then cat log; no_result; fi
 
 #
 # start integrating
 #
-activity="integrate begin 430"
+activity="integrate begin 367"
 $bin/aegis -ib 2 > log 2>&1
 if test $? -ne 0 ; then cat log; no_result; fi
 
 #
 # integrate build
 #
-activity="build 437"
+activity="build 374"
 $bin/aegis -b -nl -v > log 2>&1
 if test $? -ne 0 ; then cat log; no_result; fi
 
@@ -379,7 +379,7 @@ if test $? -ne 0 ; then cat log; no_result; fi
 #
 # pass the integration
 #
-activity="integrate pass 447"
+activity="integrate pass 382"
 $bin/aegis -intpass -nl  > log 2>&1
 if test $? -ne 0 ; then cat log; no_result; fi
 
@@ -391,7 +391,7 @@ if test $? -ne 0 ; then cat log; fail; fi
 #
 # label the HEAD of the history
 #
-activity="label history head 449"
+activity="label history head 394"
 $bin/aegis -delta_name XyZZY  > log 2>&1
 if test $? -ne 0 ; then cat log; no_result; fi
 
@@ -403,7 +403,7 @@ if test $? -ne 0 ; then cat log; fail; fi
 #
 # label Delta 1  of the history
 #
-activity="label history delta 1 455"
+activity="label history delta 1 406"
 $bin/aegis -delta_name 1 Foobar > log 2>&1
 if test $? -ne 0 ; then cat log; no_result; fi
 

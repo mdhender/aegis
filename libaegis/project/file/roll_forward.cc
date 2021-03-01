@@ -676,7 +676,6 @@ project_file_roll_forward::recapitulate(project_ty *pp, time_t limit,
     for (;;)
     {
 	playback_ty     *pbp;
-	size_t          idx;
 	change_ty       *cp;
 	time_t          pb_when;
 
@@ -734,7 +733,8 @@ project_file_roll_forward::recapitulate(project_ty *pp, time_t limit,
 	// We are replaying all of the ancestors in parallel, to simulate
 	// what really happened.
 	//
-	pbp = playback_list_next(&stack, &idx);
+        size_t idx = 0;
+        pbp = playback_list_next(&stack, &idx);
 	trace(("pbp = %08lX;\n", (long)pbp));
 	if (!pbp)
 	    break;

@@ -215,17 +215,33 @@ process_body::per_file(const nstring &filename)
 	    << file << "\n";
 	print << "\tmv " << root << ".$(OBJEXT) $@\n";
     }
-    else if (file.gmatch("lib/*.gif.uue"))
+    else if (file.gmatch("lib/icon2/*.uue"))
     {
-	nstring rest(file.c_str() + 4, file.size() - 8);
-	nstring dir(dirname(file));
-	print << "\n";
-	print << "lib/" << rest << ": " << file << "\n";
-	print << "\tuudecode " << file << "\n";
-	print << "\n";
-	print << "$(RPM_BUILD_ROOT)$(IconRoot)/" << rest << ": lib/" << rest
-	    << " " << dir << "/.mkdir.script\n";
-	print << "\t$(INSTALL_DATA) " << file << " $@\n";
+        nstring rest(file.c_str() + 10, file.size() - 14);
+	nstring tmp = "lib/icon/" + rest;
+        print << "\n";
+        print << tmp << ": " << file << " bin/test_base64\n";
+        print << "\tbin/test_base64 -uu -i -nh " << file << " $@\n";
+        print << "\n";
+        print << "$(RPM_BUILD_ROOT)$(datadir)/icon/" << rest << ": " << tmp
+	      << " " << dirname(tmp) << "/.mkdir.datadir\n";
+        print << "\t$(INSTALL_DATA) " << tmp << " $@\n";
+    }
+    else if (file.gmatch("lib/icon/*.uue"))
+    {
+        nstring rest(file.c_str() + 9, file.size() - 13);
+        nstring dir(dirname(file));
+        print << "\n";
+        print << "lib/icon/" << rest << ": " << file << " bin/test_base64\n";
+        print << "\tbin/test_base64 -uu -i -nh " << file << " $@\n";
+        print << "\n";
+        print << "$(RPM_BUILD_ROOT)$(datadir)/icon/" << rest << ": lib/icon/"
+	      << rest << " " << dir << "/.mkdir.datadir\n";
+        print << "\t$(INSTALL_DATA) " << "lib/icon/" << rest << " $@\n";
+    }
+    else if (file.gmatch("lib/*.uue"))
+    {
+	// do nothing
     }
     else if (file == "lib/cshrc" || file == "lib/profile")
     {

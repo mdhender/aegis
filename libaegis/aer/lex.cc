@@ -1,6 +1,6 @@
 //
 //	aegis - project change supervisor
-//	Copyright (C) 1991-1996, 1998, 1999, 2001-2004 Peter Miller;
+//	Copyright (C) 1991-1996, 1998, 1999, 2001-2005 Peter Miller;
 //	All rights reserved.
 //
 //	This program is free software; you can redistribute it and/or modify
@@ -176,20 +176,24 @@ rpt_lex_close(void)
 	sub_context_ty	*scp;
 
 	scp = sub_context_new();
-	sub_var_set_string(scp, "File_Name", input_name(ip));
+	sub_var_set_string(scp, "File_Name", ip->name());
 	sub_var_set_long(scp, "Number", error_count);
 	sub_var_optional(scp, "Number");
 	fatal_intl(scp, i18n("$filename: has errors"));
 	// NOTREACHED
 	sub_context_delete(scp);
     }
-    input_delete(ip);
+    delete ip;
     ip = 0;
 }
 
 
-#define lex_getc_undo(c) \
-    ((c) >= 0 ? input_ungetc(ip, (c)) : (void)0)
+static inline void
+lex_getc_undo(int c)
+{
+    if (c >= 0)
+	ip->ungetc(c);
+}
 
 
 int
@@ -204,7 +208,7 @@ aer_report_lex(void)
 
     for (;;)
     {
-	c = input_getc(ip);
+	c = ip->getc();
 	switch (c)
 	{
 	case -1:
@@ -218,7 +222,7 @@ aer_report_lex(void)
 
 	case '0':
 	    n = 0;
-	    c = input_getc(ip);
+	    c = ip->getc();
 	    if (c == '.')
 	    {
 		buffer.clear();
@@ -233,7 +237,7 @@ aer_report_lex(void)
 		for (;;)
 		{
 		    ++ndigits;
-		    c = input_getc(ip);
+		    c = ip->getc();
 		    switch (c)
 		    {
 		    case '0':
@@ -295,7 +299,7 @@ aer_report_lex(void)
 		case '6':
 		case '7':
 		    n = 8 * n + c - '0';
-		    c = input_getc(ip);
+		    c = ip->getc();
 		    continue;
 
 		default:
@@ -320,7 +324,7 @@ aer_report_lex(void)
 	    for (;;)
 	    {
 		buffer.push_back(c);
-		c = input_getc(ip);
+		c = ip->getc();
 		if (c < 0)
 		    break;
 		if (!isdigit((unsigned char)c))
@@ -340,7 +344,7 @@ aer_report_lex(void)
 		for (;;)
 		{
 		    buffer.push_back(c);
-		    c = input_getc(ip);
+		    c = ip->getc();
 		    if (c < 0)
 			break;
 		    if (!isdigit((unsigned char)c))
@@ -350,11 +354,11 @@ aer_report_lex(void)
 	    if (c == 'e' || c == 'E')
 	    {
 		buffer.push_back(c);
-		c = input_getc(ip);
+		c = ip->getc();
 		if (c == '+' || c == '-')
 		{
 		    buffer.push_back(c);
-		    c = input_getc(ip);
+		    c = ip->getc();
 		}
 		if (c < 0 || !isdigit((unsigned char)c))
 		{
@@ -366,7 +370,7 @@ aer_report_lex(void)
 		    for (;;)
 		    {
 			buffer.push_back(c);
-			c = input_getc(ip);
+			c = ip->getc();
 			if (c < 0)
 			    break;
 			if (!isdigit((unsigned char)c))
@@ -386,7 +390,7 @@ aer_report_lex(void)
 	    buffer.clear();
 	    for (;;)
 	    {
-		c = input_getc(ip);
+		c = ip->getc();
 		if (c < 0)
 		{
 		    str_eof:
@@ -402,7 +406,7 @@ aer_report_lex(void)
 		    break;
 		if (c == '\\')
 		{
-		    c = input_getc(ip);
+		    c = ip->getc();
 		    switch (c)
 		    {
 		    default:
@@ -457,7 +461,7 @@ aer_report_lex(void)
 			    for (nc = 0; nc < 3; ++nc)
 			    {
 				v = v * 8 + c - '0';
-				c = input_getc(ip);
+				c = ip->getc();
 				switch (c)
 				{
 				case '0':
@@ -546,7 +550,7 @@ aer_report_lex(void)
 	    for (;;)
 	    {
 		buffer.push_back(c);
-		c = input_getc(ip);
+		c = ip->getc();
 		switch (c)
 		{
 		case '0':
@@ -631,13 +635,13 @@ aer_report_lex(void)
 	    return NAME;
 
 	case '/':
-	    c = input_getc(ip);
+	    c = ip->getc();
 	    if (c == '/')
 	    {
 		eoln_comment:
 		for (;;)
 		{
-		    c = input_getc(ip);
+		    c = ip->getc();
 		    if (c < 0)
 			goto bad_comment;
 		    if (c == '\n')
@@ -655,7 +659,7 @@ aer_report_lex(void)
 	    {
 		for (;;)
 		{
-		    c = input_getc(ip);
+		    c = ip->getc();
 		    if (c < 0)
 		    {
 			bad_comment:
@@ -667,7 +671,7 @@ aer_report_lex(void)
 		}
 		for (;;)
 		{
-		    c = input_getc(ip);
+		    c = ip->getc();
 		    if (c < 0)
 			goto bad_comment;
 		    if (c != '*')
@@ -679,7 +683,7 @@ aer_report_lex(void)
 	    break;
 
 	case '#':
-	    c = input_getc(ip);
+	    c = ip->getc();
 	    if (c == '!')
 		goto eoln_comment;
 	    lex_getc_undo(c);
@@ -687,7 +691,7 @@ aer_report_lex(void)
 	    goto normal;
 
 	case '.':
-	    c = input_getc(ip);
+	    c = ip->getc();
 	    lex_getc_undo(c);
 	    if (c < 0 || !isdigit((unsigned char)c))
 	    {
@@ -717,7 +721,7 @@ aer_report_lex(void)
 		    break;
 		}
 		str_free(s);
-		c = input_getc(ip);
+		c = ip->getc();
 	    }
 	    s = buffer.mkstr();
 	    tok = reserved(s);
@@ -739,20 +743,18 @@ rpt_pos_ty *
 rpt_lex_pos_get(void)
 {
     static rpt_pos_ty *curpos;
-    string_ty	    *s;
-
-    s = input_name(ip);
+    nstring s = ip->name();
     if (curpos)
     {
 	//
 	// The file name includes the line number.
 	//
-	if (str_equal(curpos->file_name, s))
+	if (str_equal(curpos->file_name, s.get_ref()))
 	    return rpt_pos_copy(curpos);
 	rpt_pos_free(curpos);
 	curpos = 0;
     }
-    curpos = rpt_pos_alloc(s, 0);
+    curpos = rpt_pos_alloc(s.get_ref(), 0);
     return rpt_pos_copy(curpos);
 }
 
@@ -780,7 +782,7 @@ aer_lex_error(sub_context_ty *scp, rpt_pos_ty *p, const char *fmt)
     ++error_count;
     if (error_count >= 20)
     {
-	sub_var_set_string(scp, "File_Name", input_name(ip));
+	sub_var_set_string(scp, "File_Name", ip->name());
 	fatal_intl(scp, i18n("$filename: too many errors"));
 	// NOTREACHED
     }
@@ -804,7 +806,7 @@ rpt_lex_error(rpt_pos_ty *p, const char *fmt)
 	sub_context_ty	*scp;
 
 	scp = sub_context_new();
-	sub_var_set_string(scp, "File_Name", input_name(ip));
+	sub_var_set_string(scp, "File_Name", ip->name());
 	fatal_intl(scp, i18n("$filename: too many errors"));
 	// NOTREACHED
 	sub_context_delete(scp);

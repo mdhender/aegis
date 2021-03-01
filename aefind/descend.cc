@@ -1,6 +1,6 @@
 //
 //	aegis - project change supervisor
-//	Copyright (C) 1997, 1999, 2002-2004 Peter Miller;
+//	Copyright (C) 1997, 1999, 2002-2005 Peter Miller;
 //	All rights reserved.
 //
 //	This program is free software; you can redistribute it and/or modify
@@ -160,7 +160,9 @@ descend(string_ty *path, int resolve, descend_callback_ty callback, void *arg)
 	(
 	    arg,
 	    descend_message_dir_before,
+	    path,
 	    (resolve ? resolved_path : path),
+	    resolved_path,
 	    &st
 	);
 	string_list_ty wl;
@@ -176,7 +178,9 @@ descend(string_ty *path, int resolve, descend_callback_ty callback, void *arg)
 	(
 	    arg,
 	    descend_message_dir_after,
+	    path,
 	    (resolve ? resolved_path : path),
+	    resolved_path,
 	    &st
 	);
     }
@@ -186,7 +190,9 @@ descend(string_ty *path, int resolve, descend_callback_ty callback, void *arg)
 	(
     	    arg,
     	    descend_message_file,
-    	    (resolve ? resolved_path : path),
+	    path,
+	    (resolve ? resolved_path : path),
+	    resolved_path,
     	    &st
 	);
     }

@@ -1,6 +1,6 @@
 //
 //	aegis - project change supervisor
-//	Copyright (C) 2004 Peter Miller;
+//	Copyright (C) 2004, 2005 Peter Miller;
 //	All rights reserved.
 //
 //	This program is free software; you can redistribute it and/or modify
@@ -44,10 +44,12 @@ public:
     /**
       * The constructor.
       *
+      * \param incbr
+      *     Include branches in the result.
       * \param arg
       *     The attribute list to hold the UUIDs.
       */
-    change_functor_attribute_list(attributes_list_ty *arg);
+    change_functor_attribute_list(bool incbr, attributes_list_ty *arg);
 
     // See base class for documentation.
     void operator()(change_ty *cp);

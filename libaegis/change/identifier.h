@@ -1,6 +1,6 @@
 //
 //	aegis - project change supervisor
-//	Copyright (C) 2004 Peter Miller;
+//	Copyright (C) 2004, 2005 Peter Miller;
 //	All rights reserved.
 //
 //	This program is free software; you can redistribute it and/or modify
@@ -68,15 +68,15 @@ public:
       *
       * It understands all of the following command line options:
       *     -BaseLine
-      *     [ -Change] <number>
-      *     -BRanch <number>
+      *     [ -Change] number
+      *     -BRanch number
       *     -TRunk
       *     -GrandParent
-      *     -DELta <number>
-      *     -DELta <name>
-      *     -DELta_Date <when>
+      *     -DELta number
+      *     -DELta name
+      *     -DELta_Date when
       *     -Developmen_Directory
-      *     [ -Project ] <string>
+      *     [ -Project ] string
       *
       * \note
       *     There is no need to pass all of these command line options to
@@ -125,6 +125,46 @@ public:
     get_file_revision(const nstring &filename, change_functor &bad_state)
     {
 	return change_id.get_file_revision(filename, bad_state);
+    }
+
+    /**
+      * The get_project_file_names method is used to obtain the list of
+      * project file names, taking into account and --delta* options.
+      */
+    void
+    get_project_file_names(nstring_list &results)
+    {
+	change_id.get_project_file_names(results);
+    }
+
+    /**
+      * The get_project_file method is used to obtain the details about
+      * a named file, taking any --delta* options into account.
+      *
+      * \param file_name
+      *     The name of the file of interest.
+      * \returns
+      *     pointer to file details, or NULL of the file does not exist.
+      */
+    fstate_src_ty *
+    get_project_file(const nstring &file_name)
+    {
+	return change_id.get_project_file(file_name);
+    }
+
+    /**
+      * The get_historian method is used to obtain the location fo the
+      * historical file records reconstruction.
+      *
+      * \note
+      *     This function is a failure of the API to conceal this.
+      *     Eventually it would be nice if all the users of this could
+      *     be refactored to hide it again.
+      */
+    project_file_roll_forward *
+    get_historian()
+    {
+	return change_id.get_historian();
     }
 
     /**

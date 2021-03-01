@@ -1,7 +1,7 @@
 #!/bin/sh
 #
 #	aegis - project change supervisor
-#	Copyright (C) 2002, 2004 Peter Miller;
+#	Copyright (C) 2002, 2004, 2005 Peter Miller;
 #	All rights reserved.
 #
 #	This program is free software; you can redistribute it and/or modify
@@ -119,11 +119,11 @@ export AEGIS_PATH
 #
 # test the aecp -delta functionality
 #
-activity="new project 121"
+activity="new project 122"
 $bin/aegis -npr test -version '' -v -dir $work/test > log 2>&1
 if test $? -ne 0 ; then cat log; no_result; fi
 
-activity="project attributes 125"
+activity="project attributes 126"
 cat > paf << 'fubar'
 developer_may_review = true;
 developer_may_integrate = true;
@@ -134,7 +134,7 @@ if test $? -ne 0 ; then no_result; fi
 $bin/aegis -pa -f paf -v > log 2>&1
 if test $? -ne 0 ; then cat log; no_result; fi
 
-activity="staff 136"
+activity="staff 137"
 $bin/aegis -nd $USER -v > log 2>&1
 if test $? -ne 0 ; then cat log; no_result; fi
 $bin/aegis -nrv $USER -v > log 2>&1
@@ -142,7 +142,7 @@ if test $? -ne 0 ; then cat log; no_result; fi
 $bin/aegis -ni $USER -v > log 2>&1
 if test $? -ne 0 ; then cat log; no_result; fi
 
-activity="new change 144"
+activity="new change 145"
 cat > caf << 'fubar'
 brief_description = "one";
 cause = internal_enhancement;
@@ -152,15 +152,15 @@ if test $? -ne 0 ; then no_result; fi
 $bin/aegis -nc -f caf -v -p test > log 2>&1
 if test $? -ne 0 ; then cat log; no_result; fi
 
-activity="develop begin 154"
+activity="develop begin 155"
 $bin/aegis -db 10 -v > log 2>&1
 if test $? -ne 0 ; then cat log; no_result; fi
 
-activity="new file 158"
-$bin/aegis -nf $work/test.C010/config $work/test.C010/fred \
+activity="new file 159"
+$bin/aegis -nf $work/test.C010/aegis.conf $work/test.C010/fred \
 	$work/test.C010/barney -v > log 2>&1
 if test $? -ne 0 ; then cat log; no_result; fi
-cat > $work/test.C010/config << 'fubar'
+cat > $work/test.C010/aegis.conf << 'fubar'
 build_command = "exit 0";
 history_get_command =
 	"co -u'$e' -p $h,v > $o";
@@ -183,42 +183,42 @@ if test $? -ne 0 ; then no_result; fi
 echo one > $work/test.C010/barney
 if test $? -ne 0 ; then no_result; fi
 
-activity="build 185"
+activity="build 186"
 $bin/aegis -b -v > log 2>&1
 if test $? -ne 0 ; then cat log; no_result; fi
 
-activity="diff 189"
+activity="diff 190"
 $bin/aegis -diff -v > log 2>&1
 if test $? -ne 0 ; then cat log; no_result; fi
 
-activity="develop end 193"
+activity="develop end 194"
 $bin/aegis -de -v > log 2>&1
 if test $? -ne 0 ; then cat log; no_result; fi
 
-activity="review pass 197"
+activity="review pass 198"
 $bin/aegis -rpass 10 -v > log 2>&1
 if test $? -ne 0 ; then cat log; no_result; fi
 
-activity="integrate begin 201"
+activity="integrate begin 202"
 $bin/aegis -ib 10 -v > log 2>&1
 if test $? -ne 0 ; then cat log; no_result; fi
 
-activity="integrate build 205"
+activity="integrate build 206"
 $bin/aegis -b -v > log 2>&1
 if test $? -ne 0 ; then cat log; no_result; fi
 
-activity="integrate diff 209"
+activity="integrate diff 210"
 $bin/aegis -diff -v > log 2>&1
 if test $? -ne 0 ; then cat log; no_result; fi
 
-activity="integrate pass 213"
+activity="integrate pass 214"
 $bin/aegis -ipass -v > log 2>&1
 if test $? -ne 0 ; then cat log; no_result; fi
 
 #
 # now create a branch
 #
-activity="new branch 220"
+activity="new branch 221"
 $bin/aegis -nbr -p test 1 -v > log 2>&1
 if test $? -ne 0 ; then cat log; no_result; fi
 
@@ -229,7 +229,7 @@ export AEGIS_PROJECT
 # The first change on the branch edits barney,
 # and leaves fred alone.
 #
-activity="new change 231"
+activity="new change 232"
 cat > caf << 'fubar'
 brief_description = "the second change";
 cause = internal_enhancement;
@@ -238,46 +238,46 @@ if test $? -ne 0 ; then no_result; fi
 $bin/aegis -nc -f caf -v -p test.1 > log 2>&1
 if test $? -ne 0 ; then cat log; no_result; fi
 
-activity="develop begin 240"
+activity="develop begin 241"
 $bin/aegis -db 10 -v > log 2>&1
 if test $? -ne 0 ; then cat log; no_result; fi
 
-activity="copy file 244"
+activity="copy file 245"
 $bin/aegis -cp $work/test.1.C010/barney -v > log 2>&1
 if test $? -ne 0 ; then cat log; no_result; fi
 
 echo two > $work/test.1.C010/barney
 if test $? -ne 0 ; then no_result; fi
 
-activity="build 251"
+activity="build 252"
 $bin/aegis -b -v > log 2>&1
 if test $? -ne 0 ; then cat log; no_result; fi
 
-activity="diff 255"
+activity="diff 256"
 $bin/aegis -diff -v > log 2>&1
 if test $? -ne 0 ; then cat log; no_result; fi
 
-activity="develop end 259"
+activity="develop end 260"
 $bin/aegis -de -v > log 2>&1
 if test $? -ne 0 ; then cat log; no_result; fi
 
-activity="review pass 263"
+activity="review pass 264"
 $bin/aegis -rpass 10 -v > log 2>&1
 if test $? -ne 0 ; then cat log; no_result; fi
 
-activity="integrate begin 267"
+activity="integrate begin 268"
 $bin/aegis -ib 10 -v > log 2>&1
 if test $? -ne 0 ; then cat log; no_result; fi
 
-activity="integrate build 271"
+activity="integrate build 272"
 $bin/aegis -b -v > log 2>&1
 if test $? -ne 0 ; then cat log; no_result; fi
 
-activity="integrate diff 275"
+activity="integrate diff 276"
 $bin/aegis -diff -v > log 2>&1
 if test $? -ne 0 ; then cat log; no_result; fi
 
-activity="integrate pass 279"
+activity="integrate pass 280"
 $bin/aegis -ipass -v > log 2>&1
 if test $? -ne 0 ; then cat log; no_result; fi
 
@@ -285,7 +285,7 @@ if test $? -ne 0 ; then cat log; no_result; fi
 # The second change on the branch edits fred,
 # and leaves barney alone.
 #
-activity="new change 287"
+activity="new change 288"
 cat > caf << 'fubar'
 brief_description = "the third change";
 cause = internal_enhancement;
@@ -294,53 +294,53 @@ if test $? -ne 0 ; then no_result; fi
 $bin/aegis -nc -f caf -v -p test.1 > log 2>&1
 if test $? -ne 0 ; then cat log; no_result; fi
 
-activity="develop begin 296"
+activity="develop begin 297"
 $bin/aegis -db 11 -v > log 2>&1
 if test $? -ne 0 ; then cat log; no_result; fi
 
-activity="copy file 300"
+activity="copy file 301"
 $bin/aegis -cp $work/test.1.C011/fred -v > log 2>&1
 if test $? -ne 0 ; then cat log; no_result; fi
 
 echo two > $work/test.1.C011/fred
 if test $? -ne 0 ; then no_result; fi
 
-activity="build 307"
+activity="build 308"
 $bin/aegis -b -v > log 2>&1
 if test $? -ne 0 ; then cat log; no_result; fi
 
-activity="diff 311"
+activity="diff 312"
 $bin/aegis -diff -v > log 2>&1
 if test $? -ne 0 ; then cat log; no_result; fi
 
-activity="develop end 315"
+activity="develop end 316"
 $bin/aegis -de -v > log 2>&1
 if test $? -ne 0 ; then cat log; no_result; fi
 
-activity="review pass 319"
+activity="review pass 320"
 $bin/aegis -rpass 11 -v > log 2>&1
 if test $? -ne 0 ; then cat log; no_result; fi
 
-activity="integrate begin 323"
+activity="integrate begin 324"
 $bin/aegis -ib 11 -v > log 2>&1
 if test $? -ne 0 ; then cat log; no_result; fi
 
-activity="integrate build 327"
+activity="integrate build 328"
 $bin/aegis -b -v > log 2>&1
 if test $? -ne 0 ; then cat log; no_result; fi
 
-activity="integrate diff 331"
+activity="integrate diff 332"
 $bin/aegis -diff -v > log 2>&1
 if test $? -ne 0 ; then cat log; no_result; fi
 
-activity="integrate pass 335"
+activity="integrate pass 336"
 $bin/aegis -ipass -v > log 2>&1
 if test $? -ne 0 ; then cat log; no_result; fi
 
 #
 # The third change on the branch edits both fred and barney.
 #
-activity="new change 342"
+activity="new change 343"
 cat > caf << 'fubar'
 brief_description = "the fourth change";
 cause = internal_enhancement;
@@ -349,11 +349,11 @@ if test $? -ne 0 ; then no_result; fi
 $bin/aegis -nc -f caf -v -p test.1 > log 2>&1
 if test $? -ne 0 ; then cat log; no_result; fi
 
-activity="develop begin 351"
+activity="develop begin 352"
 $bin/aegis -db 12 -v > log 2>&1
 if test $? -ne 0 ; then cat log; no_result; fi
 
-activity="copy file 355"
+activity="copy file 356"
 $bin/aegis -cp $work/test.1.C012/fred $work/test.1.C012/barney -v > log 2>&1
 if test $? -ne 0 ; then cat log; no_result; fi
 
@@ -363,41 +363,41 @@ if test $? -ne 0 ; then no_result; fi
 echo three > $work/test.1.C012/barney
 if test $? -ne 0 ; then no_result; fi
 
-activity="build 365"
+activity="build 366"
 $bin/aegis -b -v > log 2>&1
 if test $? -ne 0 ; then cat log; no_result; fi
 
-activity="diff 369"
+activity="diff 370"
 $bin/aegis -diff -v > log 2>&1
 if test $? -ne 0 ; then cat log; no_result; fi
 
-activity="develop end 373"
+activity="develop end 374"
 $bin/aegis -de -v > log 2>&1
 if test $? -ne 0 ; then cat log; no_result; fi
 
-activity="review pass 377"
+activity="review pass 378"
 $bin/aegis -rpass 12 -v > log 2>&1
 if test $? -ne 0 ; then cat log; no_result; fi
 
-activity="integrate begin 381"
+activity="integrate begin 382"
 $bin/aegis -ib 12 -v > log 2>&1
 if test $? -ne 0 ; then cat log; no_result; fi
 
-activity="integrate build 385"
+activity="integrate build 386"
 $bin/aegis -b -v > log 2>&1
 if test $? -ne 0 ; then cat log; no_result; fi
 
-activity="integrate diff 389"
+activity="integrate diff 390"
 $bin/aegis -diff -v > log 2>&1
 if test $? -ne 0 ; then cat log; no_result; fi
 
-activity="integrate pass 393"
+activity="integrate pass 394"
 $bin/aegis -ipass -v > log 2>&1
 if test $? -ne 0 ; then cat log; no_result; fi
 
 # ------------------------------------------------------------------------------
 
-activity="check project file state 399"
+activity="check project file state 400"
 cat > ok << 'fubar'
 src =
 [
@@ -467,7 +467,7 @@ check_it ok $work/test/info/change/0/001.fs
 #
 # now copy an old delta
 #
-activity="new change 467"
+activity="new change 470"
 cat > caf << 'fubar'
 brief_description = "the acid test";
 cause = internal_enhancement;
@@ -476,18 +476,29 @@ if test $? -ne 0 ; then no_result; fi
 $bin/aegis -nc -f caf -v -p test.1 > log 2>&1
 if test $? -ne 0 ; then cat log; no_result; fi
 
-activity="develop begin 476"
+activity="develop begin 479"
 $bin/aegis -db 13 -v > log 2>&1
 if test $? -ne 0 ; then cat log; no_result; fi
 
-activity="copy historical file 480"
+activity="copy historical file 483"
 $bin/aegis -cp $work/test.1.C013 -delta 1 -v > log 2>&1
 if test $? -ne 0 ; then cat log; fail; fi
 
-activity="check change file state 484"
+activity="check change file state 487"
 cat > ok << 'fubar'
 src =
 [
+	{
+		file_name = "aegis.conf";
+		uuid = "UUID";
+		action = modify;
+		edit_origin =
+		{
+			revision = "1.1";
+			encoding = none;
+		};
+		usage = config;
+	},
 	{
 		file_name = "barney";
 		uuid = "UUID";
@@ -498,17 +509,6 @@ src =
 			encoding = none;
 		};
 		usage = source;
-	},
-	{
-		file_name = "config";
-		uuid = "UUID";
-		action = modify;
-		edit_origin =
-		{
-			revision = "1.1";
-			encoding = none;
-		};
-		usage = config;
 	},
 	{
 		file_name = "fred";

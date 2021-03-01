@@ -1,6 +1,6 @@
 //
 //	aegis - project change supervisor
-//	Copyright (C) 2004 Peter Miller;
+//	Copyright (C) 2004, 2005 Peter Miller;
 //	All rights reserved.
 //
 //	This program is free software; you can redistribute it and/or modify
@@ -55,7 +55,7 @@ public:
       * change.  The position will be advanced past all relevant tokens.
       *
       * It understands all of the following command line options:
-      *     [ -Project ] <string>
+      *     [ -Project ] string
       */
     virtual void command_line_parse(usage_t) = 0;
 

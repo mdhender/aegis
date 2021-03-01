@@ -151,8 +151,8 @@ while (project_pos < count(project_list))
 	print(sprintf(".frame.blurb insert end \"%-4.4s\"",
 	    abbrev[q.q_state] != "" ? abbrev[q.q_state] : q.q_state));
 	print(sprintf(".frame.blurb insert end \"%6.2f  \"", q.q_elapsed));
-	print(".frame.blurb insert end \"" ## split(q.q_description, "\n")[0]
-	    ## "\\n\"");
+	print(".frame.blurb insert end \"" ##
+	    quote_tcl(split(q.q_description, "\n")[0]) ## "\\n\"");
 
 	/* Set the background color of the change number only */
 	t = sprintf("\"#%2.2X%2.2X%2.2X\"", clr[0], clr[1], clr[2]),

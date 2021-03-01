@@ -45,7 +45,7 @@
 static void
 no_such_file(string_ty *filename)
 {
-    http_fatal("%s: no such file", filename->str_text);
+    http_fatal(http_error_not_found, "%s: no such file", filename->str_text);
 }
 
 
@@ -763,7 +763,7 @@ get_file_contents(change_ty *cp, string_ty *filename, string_list_ty *modifier)
 	break;
 
     default:
-	http_fatal("Not an appropriate file.");
+	http_fatal(http_error_not_acceptable, "Not an appropriate file.");
     }
     str_free(absolute_path);
 }

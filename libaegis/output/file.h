@@ -29,17 +29,17 @@
 struct string; // forward
 
 /**
-  * The output_file_ty class is used to represent the state of an output
+  * The output_file class is used to represent the state of an output
   * stream to a regular file.
   */
-class output_file_ty:
+class output_file:
     public output_ty
 {
 public:
     /**
       * The destructor.
       */
-    virtual ~output_file_ty();
+    virtual ~output_file();
 
     /**
       * The constructor
@@ -50,7 +50,7 @@ public:
       * \param binary
       *     Whether the file is binary (true) or text (false).
       */
-    output_file_ty(string_ty *file_name, bool binary = false);
+    output_file(const nstring &file_name, bool binary = false);
 
     // See base class for documentation.
     string_ty *filename() const;
@@ -101,17 +101,17 @@ private:
     /**
       * The default constructor.  Do not use.
       */
-    output_file_ty();
+    output_file();
 
     /**
       * The copy constructor.  Do not use.
       */
-    output_file_ty(const output_file_ty &);
+    output_file(const output_file &);
 
     /**
       * The assignment operator.  Do not use.
       */
-    output_file_ty &operator=(const output_file_ty &);
+    output_file &operator=(const output_file &);
 };
 
 /**
@@ -123,7 +123,7 @@ private:
   * \param binary
   *     Wherther or not the file is binary.  Defaults to false (i.e. text).
   */
-output_ty *output_file_open(string_ty *fn = 0, bool binary = false);
+output_ty *output_file_open(const nstring &fn, bool binary = false);
 
 /**
   * The output_file_text_open function is used to open a text output file.
@@ -135,7 +135,7 @@ output_ty *output_file_open(string_ty *fn = 0, bool binary = false);
 inline output_ty *
 output_file_text_open(string_ty *fn)
 {
-    return output_file_open(fn, false);
+    return output_file_open(nstring(fn), false);
 }
 
 /**
@@ -148,7 +148,7 @@ output_file_text_open(string_ty *fn)
 inline output_ty *
 output_file_binary_open(string_ty *fn)
 {
-    return output_file_open(fn, true);
+    return output_file_open(nstring(fn), true);
 }
 
 #endif // LIBAEGIS_OUTPUT_FILE_H

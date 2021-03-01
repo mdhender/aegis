@@ -303,7 +303,7 @@ output_pager_open()
 	singleton
     )
     {
-	output_ty *result = new output_stdout_ty();
+	output_ty *result = new output_stdout();
 	trace(("return %08lX;\n}\n", (long)result));
 	return result;
     }

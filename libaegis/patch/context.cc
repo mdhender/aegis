@@ -1,6 +1,6 @@
 //
 //	aegis - project change supervisor
-//	Copyright (C) 2001, 2003, 2004 Peter Miller;
+//	Copyright (C) 2001, 2003-2005 Peter Miller;
 //	All rights reserved.
 //
 //	This program is free software; you can redistribute it and/or modify
@@ -41,11 +41,10 @@ patch_context_ty::getline(int n)
 	return 0;
     while (n >= (int)buffer.nstrings)
     {
-	string_ty *s = input_one_line(input);
-	if (!s)
+	nstring s;
+	if (!input->one_line(s))
 	    return 0;
-	buffer.push_back(s);
-	str_free(s);
+	buffer.push_back(s.get_ref());
     }
     return buffer.string[n];
 }

@@ -1,6 +1,6 @@
 /*
  *	aegis - project change supervisor
- *	Copyright (C) 1991-1994, 1999, 2001, 2002 Peter Miller;
+ *	Copyright (C) 1991-1994, 1999, 2001, 2002, 2005 Peter Miller;
  *	All rights reserved.
  *
  *	This program is free software; you can redistribute it and/or modify
@@ -23,10 +23,38 @@
 #ifndef FILE_H
 #define FILE_H
 
-#include <str.h>
+#include <nstring.h>
 
 void copy_whole_file(string_ty *from, string_ty *to, int cmt);
-string_ty *read_whole_file(string_ty *);
+
+/**
+  * The read_whole_file function is used to read a file into a string.
+  * The file is assumed to be a text file.
+  *
+  * @param filename
+  *     pathname of file to be read
+  * @returns
+  *     Pointer to string in dynamic memory containing text of file.
+  *     Any trailing white space will have been removed.
+  * @note
+  *     Assumes the user has already been set.
+  */
+string_ty *read_whole_file(string_ty *filename) DEPRECATED;
+
+/**
+  * The read_whole_file function is used to read a file into a string.
+  * The file is assumed to be a text file.
+  *
+  * @param filename
+  *     pathname of file to be read
+  * @returns
+  *     Pointer to string in dynamic memory containing text of file.
+  *     Any trailing white space will have been removed.
+  * @note
+  *     Assumes the user has already been set.
+  */
+nstring read_whole_file(const nstring &filename);
+
 int files_are_different(string_ty *, string_ty *);
 void file_from_string(string_ty *, string_ty *, int);
 void cat_string_to_stdout(string_ty *);

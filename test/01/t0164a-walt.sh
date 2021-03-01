@@ -138,14 +138,14 @@ export AEGIS_PROJECT
 #
 # make a new project
 #
-activity="new project 159"
+activity="new project 141"
 $bin/aegis -npr $AEGIS_PROJECT -vers "" -dir $workproj > log 2>&1
 if test $? -ne 0 ; then cat log; no_result; fi
 
 #
 # change project attributes
 #
-activity="project attributes 166"
+activity="project attributes 148"
 cat > $tmp << 'end'
 description = "A bogus project created to test the aepatch -send "
 	"functionality.";
@@ -160,7 +160,7 @@ if test $? -ne 0 ; then cat log; no_result; fi
 #
 # add the staff
 #
-activity="staff 180"
+activity="staff 163"
 $bin/aegis -nd $USER > log 2>&1
 if test $? -ne 0 ; then cat log; no_result; fi
 $bin/aegis -nrv $USER > log 2>&1
@@ -171,7 +171,7 @@ if test $? -ne 0 ; then cat log; no_result; fi
 #
 # create a new change
 #
-activity="new change 191"
+activity="new change 174"
 cat > $tmp << 'end'
 brief_description = "The first change";
 cause = internal_bug;
@@ -189,12 +189,12 @@ if test $? -ne 0 ; then cat log; no_result; fi
 #
 # add a new files to the change
 #
-activity="new file 209"
-$bin/test_uuid -gen > config.uuid
+activity="new file 192"
+$bin/test_uuid -gen > aegis.conf.uuid
 if test $? -ne 0 ; then no_result; fi
-$bin/aegis -nf $workchan/config -uuid `cat config.uuid` -nl > log 2>&1
+$bin/aegis -nf $workchan/aegis.conf -uuid `cat aegis.conf.uuid` -nl > log 2>&1
 if test $? -ne 0 ; then cat log; fail; fi
-cat > $workchan/config << 'end'
+cat > $workchan/aegis.conf << 'end'
 build_command = "date > this_file_is_build";
 link_integration_directory = true;
 history_get_command =
@@ -211,7 +211,7 @@ diff3_command = "(diff3 -e $mr $orig $i | sed -e '/^w$$/d' -e '/^q$$/d'; \
 end
 if test $? -ne 0 ; then no_result; fi
 
-activity="new source file 231"
+activity="new source file 214"
 $bin/test_uuid -gen > source.uuid
 if test $? -ne 0; then no_result; fi
 $bin/aegis -nf -uuid `cat source.uuid` $workchan/foo -nl > log 2>&1
@@ -222,20 +222,20 @@ This is a source file
 EOF
 if test $? -ne 0; then no_result; fi
 
-activity="new build file 242"
+activity="new build file 225"
 $bin/test_uuid -gen >build.uuid
 if test $? -ne 0; then no_result; fi
 $bin/aegis -nf -build -uuid `cat build.uuid` $workchan/this_file_is_build \
     -nl > log 2>&1
 if test $? -ne 0; then cat log; fail; fi
 
-activity="check config fstate 249"
+activity="check aegis.conf fstate 232"
 cat > ok <<EOF
 src =
 [
 	{
-		file_name = "config";
-		uuid = "`cat config.uuid`";
+		file_name = "aegis.conf";
+		uuid = "`cat aegis.conf.uuid`";
 		action = create;
 		usage = config;
 	},

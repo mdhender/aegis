@@ -1,6 +1,6 @@
 //
 //	aegis - project change supervisor
-//	Copyright (C) 1999, 2000, 2002-2004 Peter Miller;
+//	Copyright (C) 1999, 2000, 2002-2005 Peter Miller;
 //	All rights reserved.
 //
 //	This program is free software; you can redistribute it and/or modify
@@ -93,7 +93,6 @@ void
 change_file_template(change_ty *cp, string_ty *filename, user_ty *up,
     int use_template)
 {
-    int		    ok;
     string_ty	    *dd;
     string_ty	    *path;
     pconf_file_template_ty *tp;
@@ -113,15 +112,42 @@ change_file_template(change_ty *cp, string_ty *filename, user_ty *up,
     //
     user_become(up);
     os_mkdir_between(dd, filename, 02755);
+    bool exists = false;
     if (os_symlink_query(path))
+    {
+        //
+        // Source files can't be symbolic links, and we are about to
+        // create a source file, so remove any symlink that may be
+        // present.  It's probably left-over from the development
+        // directory style.
+	//
 	os_unlink(path);
-    ok = os_exists(path);
+    }
+    else
+    {
+	//
+        // Test to see if the file exists.
+	//
+	exists = os_exists(path);
+    }
+
     user_become_undo();
-    if (use_template < 0)
-	use_template = !ok;
-    else if (use_template)
-	ok = 0;
-    if (!ok)
+    int keep = 0;
+    if (exists)
+	keep = user_delete_file_query(up, filename, 0);
+
+    //
+    // The logic here is controlled by the following truth table:
+    //
+    // exists keep use_template | action
+    // -------------------------+-------
+    //   0      X        0      | create, empty
+    //   0      X        !=0    | create, template
+    //   1      0        0      | create, empty
+    //   1      0        !=0    | create, template
+    //   1      1        X      | do nothing
+    //
+    if (!exists || !keep)
     {
 	//
 	// Find the template to be used to construct the new file.
@@ -146,8 +172,10 @@ change_file_template(change_ty *cp, string_ty *filename, user_ty *up,
 	    flags = OS_EXEC_FLAG_NO_INPUT;
 	    change_env_set(cp, 1);
 	    user_become(up);
+	    if (exists)
+		os_unlink_errok(path);
 	    os_execute(the_command, flags, dd);
-	    ok = os_exists(path);
+	    exists = os_exists(path);
 	    user_become_undo();
 	    str_free(the_command);
 
@@ -155,7 +183,7 @@ change_file_template(change_ty *cp, string_ty *filename, user_ty *up,
 	    // It is an error if the command didn't create
 	    // the file.
 	    //
-	    if (!ok)
+	    if (!exists)
 	    {
 		scp = sub_context_new();
 		sub_var_set_string(scp, "File_Name", filename);

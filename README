@@ -97,11 +97,11 @@ ARCHIVE	SITE
 
 		URL:	http://www.canb.auug.org.au/~millerp/
 		File:	aegis.html	    # the Aegis	page
-		File:	aegis.4.20.README   # Description, from	tar file
-		File:	aegis.4.20.lsm	    # Description, in LSM format
-		File:	aegis.4.20.ae	    # the complete source, aedist format
-		File:	aegis.4.20.spec	    # RedHat package specification
-		File:	aegis.4.20.tar.gz   # the complete source
+		File:	aegis.4.21.README   # Description, from	tar file
+		File:	aegis.4.21.lsm	    # Description, in LSM format
+		File:	aegis.4.21.ae	    # the complete source, aedist format
+		File:	aegis.4.21.spec	    # RedHat package specification
+		File:	aegis.4.21.tar.gz   # the complete source
 
 	This directory also contains a few other pieces	of software written by
 	me.  Some are referred to in the Aegis documentation.  Please have a
@@ -114,11 +114,11 @@ ARCHIVE	SITE
 	will be	able to	find Aegis on any of its mirrors.
 
 		URL:	ftp://metalab.unc.edu/pub/Linux/devel/vc/
-		File:	aegis.4.20.README   # Description, from	tar file
-		File:	aegis.4.20.lsm	    # Description, in LSM format
-		File:	aegis.4.20.spec	    # RedHat package specification
-		File:	aegis.4.20.ae	    # the complete source, aedist format
-		File:	aegis.4.20.tar.gz   # the complete source
+		File:	aegis.4.21.README   # Description, from	tar file
+		File:	aegis.4.21.lsm	    # Description, in LSM format
+		File:	aegis.4.21.spec	    # RedHat package specification
+		File:	aegis.4.21.ae	    # the complete source, aedist format
+		File:	aegis.4.21.tar.gz   # the complete source
 	This site is extensively mirrored around the world, so look for	a copy
 	near you (you will get much better response).
 
@@ -250,6 +250,183 @@ RELEASE	NOTES
 	same release of	Aegis.	While the database format is backwards
 	compatible, it is rarely forwards compatible in	the face of new
 	capabilities.
+
+   Version 4.21	(10-Nov-2005)
+	You must have the Gnome	libxml2	library	(http://xmlsoft.org/)
+	installed in order to build Aegis.  Please install the xml2 library
+	version	1.8.17 or later.  You do not have to install the rest of
+	Gnome, the library can be used on its own.  If you are using a package
+	based install, you will	need the libxml2-devel or libxml2-dev package
+	in addition to the libxml2 package.
+
+	Ideally, you would also	install	the libmagic package, used to
+	determine file types, just as file(1) does.  (This is not to be
+	confused with the libmagic6 image manipluation library.	 If you	are
+	using a	package	based install, you will	need the libmagic-devel	or
+	libmagic-dev package in	addition to the	libmagic package.
+
+	* A bug	has been fixed in the aecp -independent	-output	option,	which
+	resulted in an error when Aegis	tried to chmod nothing.
+
+	* The auto file	promote	feature	previously available in	aed(1) has
+	been added to the aeb(1), aecp(1), aerm(1) and aenf(1) commands.
+
+	* The aedist -pending and aedist -missing commands now print the
+	number of changes in the remote	inventory.
+
+	* A bug	was fixed in the aecp command which caused a segfault
+	sometimes when the user	tries to copy a	removed	file.
+
+	* The aedist -replay command now accepts a -maximum option, which
+	includes change	sets not yet completed in the local change set
+	inventory when considering what	to download.
+
+	* There	is a new develop_end_policy_command field in the project
+	configuration file. It can be used to add addition constrains to
+	change sets before they	can complete aede(1) successfully.
+
+	* The aedist -receive command now annotates remote change sets
+	(typically, change sets	downloaded via the aedist -replay command)
+	with their origin URL.
+
+	* A bug	has been fixed in the aebuffy command where it would display
+	incorrectly when the brief_description of a change contained double
+	quotes.
+
+	* It is	now possible to	attach a comment to all	commands which involve
+	a change state transition, e.g.	aenc, aede, etc.  This is done using
+	the -reason command line option, just as you are able to do for	review
+	fail, etc.
+
+	* A bug	has been fixed in aenc,	where it did not correctly copy	user
+	defined	attributes.
+
+	* There	is a new aelcf(1) command to efficiently generate lists	of
+	change source files for	use by your build tool.
+
+	* There	is a new aelpf(1) command to efficiently generate lists	of
+	project	source files for use by	your build tool.
+
+	* There	is a new cache of state	information attached to	each delta,
+	the project file state at the time of the delta. This has the
+	potential to accelerate	aecp -delta, and all other
+	project_file_roll_forward-based	operations.  Large projects may	want
+	to turn	this off, because each delta will produce another large
+	project	file state cache.
+
+	* There	is support for generating RSS feeds from Aegis.	 See the Aegis
+	project	pages on the Aegis web interface for an	example.  See
+	aepconf(5) and aeget(1)	for more information.
+
+	* The ${change delta_uuid} substitution	now allows access to the
+	delta_uuid in the being	integrated state.
+
+	* The "wrong file" error message from aedist has been improved,	to say
+	what was expected.
+
+	* There	is a new optional $filename substitution for the history_put_-
+	command, so that you can attach	the current name of the	check-in to
+	the history file meta-data.  There is a	new optional $uuid
+	substitution for history_put_command, so you can attach	that as	mete-
+	data, too.
+
+	* There	is a new history tool bundled with Aegis.  See aesvt(1)	for
+	more information.
+
+	* There	is a new default_regression_test_exempt	project	attribute.
+
+	* The aedist -receive delta selection mechanism	has been improved:
+	previously the edit-origin-UUID	attribute was considered in favour of
+	the original-UUID attribute, with this change it is used the change
+	set, bounded to	the edit-origin-UUID or	to original-UUID, more
+	recently integrated.  This should reduce the frequency of logical
+	conflicts.
+
+	* There	is a new aerevml(1) command, which can be used to send change
+	sets in	the RevML format.  See aerevml(1) for more information.	 The
+	aeget(1) web interface is also able to serve change sets in this
+	format.
+
+	* A problem has	been fixed which caused	Aegis to fail on the hppa port
+	of Debian.
+
+	* The aetar -receive program now uses the archive name as the brief
+	description.
+
+	* A bug	was fixed in aedist -send which	caused segfaults when
+	processing some	files.
+
+	* A bug	was fixed which	caused aedist -send to produce an archive that
+	can not	be aedist -receive because of an operation impossible to
+	replicate in a change set.
+
+	* There	is an implementation of	Robert Collins'	subunit	testing
+	framework available.  See aesubunit(1) for more	information.
+
+	* A bug	was fixed in aedist that caused	an error when receiving	a
+	branch's archive generated with	the aedist -send -entire-source
+	option.
+
+	* A bug	has been fixed in aedist -receive that caused a	segfault in
+	the rename handling code.
+
+	* The aedist -missing listing (and the aedist -replay behaviour) now
+	check for branch UUIDs as well,	just in	case someone fetched a branch
+	as a change set	and applied it.	 However, aeget	does not report	these
+	UUIDs, because that would be too confusing.
+
+	* It is	now possible to	specify	any sufficiently unique	leading	prefix
+	of a UUID rather than the full 36 characters.
+
+	* There	is a new ${History_Path} substitution available.  It gives you
+	the path name of the history file corresponding	to the given
+	filenames.
+
+	* A bug	in aedist -receive which caused	incorrect delta	selection has
+	been fixed.
+
+	* There	is a new aedist	-pending option	which can print	the list of
+	local change sets missing from a remote	repository.
+
+	* The aedist -receive command is now able to use the edit-origin-UUID
+	attribute to copy modified files from the right	origin.
+
+	* A bug	has been fixed in aedist -send where some types	of incomplete
+	changes	would fail an assert.
+
+	* There	is a new aexver(1) command which can be	used to	view
+	historical versions of files in	an Aegis repository.  See aexver(1)
+	for more information.
+
+	* A bug	as been	fixed which caused aemv(1) to incorrectly rename a
+	file to	an existing directory
+
+	* It is	now possible to	specify	user-defined user attributes in	the
+	~/.aegisrc file.
+
+	* The aenf(1) command now gives	a warning if you specify the "config"
+	file without the "-config" option. This	is the old name	for the
+	project	configuration file, the	new name is "aegis.conf".
+
+	* The aefind(1)	command	now understands	{+} to mean the	resolved file
+	name, and {-} as the unresolved	file name.
+
+	* There	was a bug where	Aegis would exit with a	fatal error if one of
+	the directories	on the AEGIS_PATH was read-only. Such directories are
+	now ignored.
+
+	* The aetar(1) command has been	improved to process modified and
+	created	files in a batched way;	this improves the speed.
+
+	* Additional explanatory text has been added to	the message printed
+	when error message translation files can't be found.
+
+	* The aenf(1) command now understands the -keep	and -no-keep options,
+	to explicitly control the creation of new files	in the development
+	directory.
+
+	* A bug	has been fixed in aemv91) which	failed to check	the new	name
+	against	the filename charset, etc.
 
    Version 4.20	(28-Jan-2005)
 	Please Note: Users are advised to check	the history command settings

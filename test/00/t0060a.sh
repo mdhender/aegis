@@ -1,7 +1,7 @@
 #!/bin/sh
 #
 #	aegis - project change supervisor
-#	Copyright (C) 1997, 1998, 2000, 2004 Peter Miller;
+#	Copyright (C) 1997, 1998, 2000, 2004, 2005 Peter Miller;
 #	All rights reserved.
 #
 #	This program is free software; you can redistribute it and/or modify
@@ -118,11 +118,11 @@ export AEGIS_PATH
 #
 # test the aecp -indep functionality
 #
-activity="new project 123"
+activity="new project 121"
 $bin/aegis -npr test -version '' -v -dir $work/test > log 2>&1
 if test $? -ne 0 ; then cat log; no_result; fi
 
-activity="project attributes 127"
+activity="project attributes 125"
 cat > paf << 'fubar'
 developer_may_review = true;
 developer_may_integrate = true;
@@ -133,7 +133,7 @@ if test $? -ne 0 ; then no_result; fi
 $bin/aegis -pa -f paf -v > log 2>&1
 if test $? -ne 0 ; then cat log; no_result; fi
 
-activity="staff 138"
+activity="staff 136"
 $bin/aegis -nd $USER -v > log 2>&1
 if test $? -ne 0 ; then cat log; no_result; fi
 $bin/aegis -nrv $USER -v > log 2>&1
@@ -141,7 +141,7 @@ if test $? -ne 0 ; then cat log; no_result; fi
 $bin/aegis -ni $USER -v > log 2>&1
 if test $? -ne 0 ; then cat log; no_result; fi
 
-activity="new change 146"
+activity="new change 144"
 cat > caf << 'fubar'
 brief_description = "one";
 cause = internal_enhancement;
@@ -151,14 +151,14 @@ if test $? -ne 0 ; then no_result; fi
 $bin/aegis -nc -f caf -v -p test > log 2>&1
 if test $? -ne 0 ; then cat log; no_result; fi
 
-activity="develop begin 156"
+activity="develop begin 154"
 $bin/aegis -db 10 -v > log 2>&1
 if test $? -ne 0 ; then cat log; no_result; fi
 
-activity="new file 160"
-$bin/aegis -nf $work/test.C010/config $work/test.C010/fred -v > log 2>&1
+activity="new file 158"
+$bin/aegis -nf $work/test.C010/aegis.conf $work/test.C010/fred -v > log 2>&1
 if test $? -ne 0 ; then cat log; no_result; fi
-cat > $work/test.C010/config << 'fubar'
+cat > $work/test.C010/aegis.conf << 'fubar'
 build_command = "exit 0";
 history_get_command =
 	"co -u'$e' -p $h,v > $o";
@@ -177,57 +177,57 @@ if test $? -ne 0 ; then no_result; fi
 echo hello > $work/test.C010/fred
 if test $? -ne 0 ; then no_result; fi
 
-activity="new test 182"
+activity="new test 180"
 $bin/aegis -nt -v > log 2>&1
 echo exit 0 > $work/test.C010/test/00/t0001a.sh
 if test $? -ne 0 ; then no_result; fi
 $bin/aegis -ca -f caf -v > log 2>&1
 if test $? -ne 0 ; then cat log; no_result; fi
 
-activity="build 189"
+activity="build 187"
 $bin/aegis -b -v > log 2>&1
 if test $? -ne 0 ; then cat log; no_result; fi
 
-activity="diff 193"
+activity="diff 191"
 $bin/aegis -diff -v > log 2>&1
 if test $? -ne 0 ; then cat log; no_result; fi
 
-activity="test 197"
+activity="test 195"
 $bin/aegis -test -v > log 2>&1
 if test $? -ne 0 ; then cat log; no_result; fi
 
-activity="develop end 201"
+activity="develop end 199"
 $bin/aegis -de -v > log 2>&1
 if test $? -ne 0 ; then cat log; no_result; fi
 
-activity="review pass 205"
+activity="review pass 203"
 $bin/aegis -rpass 10 -v > log 2>&1
 if test $? -ne 0 ; then cat log; no_result; fi
 
-activity="integrate begin 209"
+activity="integrate begin 207"
 $bin/aegis -ib 10 -v > log 2>&1
 if test $? -ne 0 ; then cat log; no_result; fi
 
-activity="integrate build 213"
+activity="integrate build 211"
 $bin/aegis -b -v > log 2>&1
 if test $? -ne 0 ; then cat log; no_result; fi
 
-activity="integrate diff 217"
+activity="integrate diff 215"
 $bin/aegis -diff -v > log 2>&1
 if test $? -ne 0 ; then cat log; no_result; fi
 
-activity="integrate test 221"
+activity="integrate test 219"
 $bin/aegis -test -v > log 2>&1
 if test $? -ne 0 ; then cat log; no_result; fi
 
-activity="integrate pass 225"
+activity="integrate pass 223"
 $bin/aegis -ipass -v > log 2>&1
 if test $? -ne 0 ; then cat log; no_result; fi
 
 #
 # change a file
 #
-activity="new change 232"
+activity="new change 230"
 cat > caf << 'fubar'
 brief_description = "two";
 cause = internal_enhancement;
@@ -236,53 +236,53 @@ if test $? -ne 0 ; then no_result; fi
 $bin/aegis -nc -f caf -v -p test > log 2>&1
 if test $? -ne 0 ; then cat log; no_result; fi
 
-activity="develop begin 241"
+activity="develop begin 239"
 $bin/aegis -db 11 -v > log 2>&1
 if test $? -ne 0 ; then cat log; no_result; fi
 
-activity="copy file 245"
+activity="copy file 243"
 $bin/aegis -cp $work/test.C011/fred -v > log 2>&1
 if test $? -ne 0 ; then cat log; no_result; fi
 
 echo "fred mark 2" > $work/test.C011/fred
 if test $? -ne 0 ; then no_result; fi
 
-activity="build 252"
+activity="build 250"
 $bin/aegis -b -v > log 2>&1
 if test $? -ne 0 ; then cat log; no_result; fi
 
-activity="diff 256"
+activity="diff 254"
 $bin/aegis -diff -v > log 2>&1
 if test $? -ne 0 ; then cat log; no_result; fi
 
-activity="develop end 260"
+activity="develop end 258"
 $bin/aegis -de -v > log 2>&1
 if test $? -ne 0 ; then cat log; no_result; fi
 
-activity="review pass 264"
+activity="review pass 262"
 $bin/aegis -rpass 11 -v > log 2>&1
 if test $? -ne 0 ; then cat log; no_result; fi
 
-activity="integrate begin 268"
+activity="integrate begin 266"
 $bin/aegis -ib 11 -v > log 2>&1
 if test $? -ne 0 ; then cat log; no_result; fi
 
-activity="integrate build 272"
+activity="integrate build 270"
 $bin/aegis -b -v > log 2>&1
 if test $? -ne 0 ; then cat log; no_result; fi
 
-activity="integrate diff 276"
+activity="integrate diff 274"
 $bin/aegis -diff -v > log 2>&1
 if test $? -ne 0 ; then cat log; no_result; fi
 
-activity="integrate pass 280"
+activity="integrate pass 278"
 $bin/aegis -ipass -v > log 2>&1
 if test $? -ne 0 ; then cat log; no_result; fi
 
 #
 # now copy independently
 #
-activity="aecp -independent 287"
+activity="aecp -independent 285"
 mkdir $work/i1
 if test $? -ne 0 ; then no_result; fi
 cd $work/i1
@@ -291,7 +291,7 @@ $bin/aegis -cp -indep . -v > log 2>&1
 if test $? -ne 0 ; then cat log; fail; fi
 diff $work/test/baseline/fred fred
 if test $? -ne 0 ; then fail; fi
-diff $work/test/baseline/config config
+diff $work/test/baseline/aegis.conf aegis.conf
 if test $? -ne 0 ; then fail; fi
 diff $work/test/baseline/test/00/t0001a.sh test/00/t0001a.sh
 if test $? -ne 0 ; then fail; fi
@@ -299,7 +299,7 @@ if test $? -ne 0 ; then fail; fi
 #
 # now copy independently with delta
 #
-activity="aecp -independent -delta 304"
+activity="aecp -independent -delta 302"
 mkdir $work/i2
 if test $? -ne 0 ; then no_result; fi
 cd $work/i2
@@ -311,7 +311,7 @@ echo hello > ok
 if test $? -ne 0 ; then no_result; fi
 diff ok fred
 if test $? -ne 0 ; then fail; fi
-diff $work/test/baseline/config config
+diff $work/test/baseline/aegis.conf aegis.conf
 if test $? -ne 0 ; then fail; fi
 diff $work/test/baseline/test/00/t0001a.sh test/00/t0001a.sh
 if test $? -ne 0 ; then fail; fi

@@ -1,7 +1,7 @@
 #!/bin/sh
 #
 #	aegis - project change supervisor
-#	Copyright (C) 2004 Peter Miller;
+#	Copyright (C) 2004, 2005 Peter Miller;
 #	All rights reserved.
 #
 #	This program is free software; you can redistribute it and/or modify
@@ -192,7 +192,7 @@ if test $? -ne 0 ; then cat log; no_result; fi
 $bin/aegis -nf  $workchan/bogus2 -nl \
 	--uuid aaaaaaaa-bbbb-4bbb-8ccc-ccccddddddd2 > log 2>&1
 if test $? -ne 0 ; then cat log; no_result; fi
-$bin/aegis -nf  $workchan/config -nl \
+$bin/aegis -nf  $workchan/aegis.conf -nl \
 	--uuid aaaaaaaa-bbbb-4bbb-8ccc-ccccddddddd3 > log 2>&1
 if test $? -ne 0 ; then cat log; no_result; fi
 
@@ -208,7 +208,7 @@ line three
 end
 if test $? -ne 0 ; then no_result; fi
 
-cat > $workchan/config << 'end'
+cat > $workchan/aegis.conf << 'end'
 build_command = "exit 0";
 link_integration_directory = true;
 history_get_command =

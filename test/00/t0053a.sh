@@ -1,7 +1,7 @@
 #!/bin/sh
 #
 #	aegis - project change supervisor
-#	Copyright (C) 1996-1998, 2000, 2001, 2004 Peter Miller;
+#	Copyright (C) 1996-1998, 2000, 2001, 2004, 2005 Peter Miller;
 #	All rights reserved.
 #
 #	This program is free software; you can redistribute it and/or modify
@@ -101,7 +101,7 @@ check_it()
 	if test $? -ne 0; then fail; fi
 }
 
-activity="working directory 91"
+activity="working directory 104"
 mkdir $work $work/lib
 if test $? -ne 0 ; then no_result; fi
 chmod 777 $work/lib
@@ -120,11 +120,11 @@ unset LANGUAGE
 #
 # test the project_file_dir function
 #
-activity="new project 124"
+activity="new project 123"
 $bin/aegis -npr test -v -dir $work/test > log 2>&1
 if test $? -ne 0 ; then cat log; no_result; fi
 
-activity="project attributes 128"
+activity="project attributes 127"
 cat > paf << 'fubar'
 developer_may_review = true;
 developer_may_integrate = true;
@@ -135,7 +135,7 @@ if test $? -ne 0 ; then no_result; fi
 $bin/aegis -pa -f paf -v > log 2>&1
 if test $? -ne 0 ; then cat log; no_result; fi
 
-activity="staff 139"
+activity="staff 138"
 $bin/aegis -nd $USER -v > log 2>&1
 if test $? -ne 0 ; then cat log; no_result; fi
 $bin/aegis -nrv $USER -v > log 2>&1
@@ -143,7 +143,7 @@ if test $? -ne 0 ; then cat log; no_result; fi
 $bin/aegis -ni $USER -v > log 2>&1
 if test $? -ne 0 ; then cat log; no_result; fi
 
-activity="new change 147"
+activity="new change 146"
 cat > caf << 'fubar'
 brief_description = "one";
 cause = internal_enhancement;
@@ -152,14 +152,14 @@ if test $? -ne 0 ; then no_result; fi
 $bin/aegis -nc -f caf -v -p test.1.0 > log 2>&1
 if test $? -ne 0 ; then cat log; no_result; fi
 
-activity="develop begin 156"
+activity="develop begin 155"
 $bin/aegis -db 10 -v > log 2>&1
 if test $? -ne 0 ; then cat log; no_result; fi
 
-activity="new file 160"
-$bin/aegis -nf $work/test.1.0.C010/config $work/test.1.0.C010/fred/fred -v > log 2>&1
+activity="new file 159"
+$bin/aegis -nf $work/test.1.0.C010/aegis.conf $work/test.1.0.C010/fred/fred -v > log 2>&1
 if test $? -ne 0 ; then cat log; no_result; fi
-cat > $work/test.1.0.C010/config << 'fubar'
+cat > $work/test.1.0.C010/aegis.conf << 'fubar'
 build_command = "exit 0";
 history_get_command =
 	"co -u'$e' -p $h,v > $o";
@@ -177,42 +177,42 @@ if test $? -ne 0 ; then no_result; fi
 echo hello > $work/test.1.0.C010/fred/fred
 if test $? -ne 0 ; then no_result; fi
 
-activity="build 181"
+activity="build 180"
 $bin/aegis -b -v > log 2>&1
 if test $? -ne 0 ; then cat log; no_result; fi
 
-activity="diff 185"
+activity="diff 184"
 $bin/aegis -diff -v > log 2>&1
 if test $? -ne 0 ; then cat log; no_result; fi
 
-activity="develop end 189"
+activity="develop end 188"
 $bin/aegis -de -v > log 2>&1
 if test $? -ne 0 ; then cat log; no_result; fi
 
-activity="review pass 193"
+activity="review pass 192"
 $bin/aegis -rpass 10 -v > log 2>&1
 if test $? -ne 0 ; then cat log; no_result; fi
 
-activity="integrate begin 197"
+activity="integrate begin 196"
 $bin/aegis -ib 10 -v > log 2>&1
 if test $? -ne 0 ; then cat log; no_result; fi
 
-activity="integrate build 201"
+activity="integrate build 200"
 $bin/aegis -b -v > log 2>&1
 if test $? -ne 0 ; then cat log; no_result; fi
 
-activity="integrate diff 205"
+activity="integrate diff 204"
 $bin/aegis -diff -v > log 2>&1
 if test $? -ne 0 ; then cat log; no_result; fi
 
-activity="integrate pass 209"
+activity="integrate pass 208"
 $bin/aegis -ipass -v > log 2>&1
 if test $? -ne 0 ; then cat log; no_result; fi
 
 #
 # now copy a directory
 #
-activity="new change 216"
+activity="new change 215"
 cat > caf << 'fubar'
 brief_description = "two";
 cause = internal_enhancement;
@@ -221,15 +221,15 @@ if test $? -ne 0 ; then no_result; fi
 $bin/aegis -nc -f caf -v -p test.1.0 > log 2>&1
 if test $? -ne 0 ; then cat log; no_result; fi
 
-activity="develop begin 225"
+activity="develop begin 224"
 $bin/aegis -db 11 -v > log 2>&1
 if test $? -ne 0 ; then cat log; no_result; fi
 
-activity="copy directory 229"
+activity="copy directory 228"
 $bin/aegis -cp $work/test.1.0.C011/fred -v > log 2>&1
 if test $? -ne 0 ; then cat log; no_result; fi
 
-activity="check change file state 233"
+activity="check change file state 232"
 cat > ok << 'fubar'
 src =
 [

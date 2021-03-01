@@ -1,7 +1,7 @@
 #!/bin/sh
 #
 #	aegis - project change supervisor
-#	Copyright (C) 2004 Peter Miller;
+#	Copyright (C) 2004, 2005 Peter Miller;
 #	All rights reserved.
 #
 #	This program is free software; you can redistribute it and/or modify
@@ -103,7 +103,7 @@ check_it()
 	if test $? -ne 0; then fail; fi
 }
 
-activity="create test directory 91"
+activity="create test directory 106"
 mkdir $work $work/lib
 if test $? -ne 0 ; then no_result; fi
 chmod 777 $work/lib
@@ -131,14 +131,14 @@ AEGIS_PROJECT=example ; export AEGIS_PROJECT
 #
 # make a new project
 #
-activity="new project 119"
+activity="new project 134"
 $bin/aegis -npr $AEGIS_PROJECT -vers "" -dir $workproj > log 2>&1
 if test $? -ne 0 ; then cat log; no_result; fi
 
 #
 # change project attributes
 #
-activity="project attributes 126"
+activity="project attributes 141"
 cat > tmp << 'end'
 description = "A bogus project created to test the aemv/merge "
     "functionality.";
@@ -154,7 +154,7 @@ if test $? -ne 0 ; then cat log; no_result; fi
 #
 # add the staff
 #
-activity="staff 142"
+activity="staff 157"
 $bin/aegis -nd $USER > log 2>&1
 if test $? -ne 0 ; then cat log; no_result; fi
 $bin/aegis -nrv $USER > log 2>&1
@@ -167,7 +167,7 @@ if test $? -ne 0 ; then cat log; no_result; fi
 #
 # create a new change
 #
-activity="new change 155"
+activity="new change 170"
 cat > tmp << 'end'
 brief_description = "The first change";
 cause = internal_bug;
@@ -185,14 +185,14 @@ if test $? -ne 0 ; then cat log; no_result; fi
 #
 # add a new files to the change
 #
-activity="new file 173"
+activity="new file 188"
 $bin/aegis -nf  $workchan/bogus1 -nl \
 	--uuid aaaaaaaa-bbbb-4bbb-8ccc-ccccddddddd1 > log 2>&1
 if test $? -ne 0 ; then cat log; no_result; fi
 $bin/aegis -nf  $workchan/bogus2 -nl \
 	--uuid aaaaaaaa-bbbb-4bbb-8ccc-ccccddddddd2 > log 2>&1
 if test $? -ne 0 ; then cat log; no_result; fi
-$bin/aegis -nf  $workchan/config -nl \
+$bin/aegis -nf  $workchan/aegis.conf -nl \
 	--uuid aaaaaaaa-bbbb-4bbb-8ccc-ccccddddddd3 > log 2>&1
 if test $? -ne 0 ; then cat log; no_result; fi
 
@@ -208,7 +208,7 @@ line three
 end
 if test $? -ne 0 ; then no_result; fi
 
-cat > $workchan/config << 'end'
+cat > $workchan/aegis.conf << 'end'
 build_command = "exit 0";
 link_integration_directory = true;
 history_get_command =
@@ -230,49 +230,49 @@ if test $? -ne 0 ; then no_result; fi
 #
 # build the change
 #
-activity="build 218"
+activity="build 233"
 $bin/aegis -build -nl -v > log 2>&1
 if test $? -ne 0 ; then cat log; no_result; fi
 
 #
 # difference the change
 #
-activity="diff 225"
+activity="diff 240"
 $bin/aegis -diff > log 2>&1
 if test $? -ne 0 ; then cat log; no_result; fi
 
 #
 # finish development of the change
 #
-activity="develop end 232"
+activity="develop end 247"
 $bin/aegis -de > log 2>&1
 if test $? -ne 0 ; then cat log; no_result; fi
 
 #
 # pass the review
 #
-activity="review pass 239"
+activity="review pass 254"
 $bin/aegis -rpass -c 1 > log 2>&1
 if test $? -ne 0 ; then cat log; no_result; fi
 
 #
 # start integrating
 #
-activity="integrate begin 246"
+activity="integrate begin 261"
 $bin/aegis -ib 1 > log 2>&1
 if test $? -ne 0 ; then cat log; no_result; fi
 
 #
 # integrate build
 #
-activity="build 253"
+activity="build 268"
 $bin/aegis -b -nl -v > log 2>&1
 if test $? -ne 0 ; then cat log; no_result; fi
 
 #
 # pass the integration
 #
-activity="integrate pass 260"
+activity="integrate pass 275"
 $bin/aegis -intpass -nl > log 2>&1
 if test $? -ne 0 ; then cat log; no_result; fi
 
@@ -281,10 +281,32 @@ if test $? -ne 0 ; then cat log; no_result; fi
 #
 # Make sure the project looks the way we expect
 #
-activity="check project file state"
+activity="check project file state 284"
 cat > ok << 'fubar'
 src =
 [
+	{
+		file_name = "aegis.conf";
+		uuid = "aaaaaaaa-bbbb-4bbb-8ccc-ccccddddddd3";
+		action = create;
+		edit =
+		{
+			revision = "1.1";
+			encoding = none;
+		};
+		edit_origin =
+		{
+			revision = "1.1";
+			encoding = none;
+		};
+		usage = config;
+		file_fp =
+		{
+			youngest = TIME;
+			oldest = TIME;
+			crypto = "GUNK";
+		};
+	},
 	{
 		file_name = "bogus1";
 		uuid = "aaaaaaaa-bbbb-4bbb-8ccc-ccccddddddd1";
@@ -329,28 +351,6 @@ src =
 			crypto = "GUNK";
 		};
 	},
-	{
-		file_name = "config";
-		uuid = "aaaaaaaa-bbbb-4bbb-8ccc-ccccddddddd3";
-		action = create;
-		edit =
-		{
-			revision = "1.1";
-			encoding = none;
-		};
-		edit_origin =
-		{
-			revision = "1.1";
-			encoding = none;
-		};
-		usage = config;
-		file_fp =
-		{
-			youngest = TIME;
-			oldest = TIME;
-			crypto = "GUNK";
-		};
-	},
 ];
 fubar
 if test $? -ne 0 ; then no_result; fi
@@ -362,7 +362,7 @@ check_it ok $workproj/info/trunk.fs
 #
 # create a new change
 #
-activity="new change 270"
+activity="new change 365"
 cat > tmp << 'end'
 brief_description = "The second change";
 cause = internal_bug;
@@ -374,21 +374,21 @@ if test $? -ne 0 ; then cat log; no_result; fi
 #
 # begin development of a change
 #
-activity="develop begin"
+activity="develop begin 377"
 $bin/aegis -db 2 -dir $workchan > log 2>&1
 if test $? -ne 0 ; then cat log; no_result; fi
 
 #
 # Use the second change to move bogus2 to bogus3
 #
-activity="move file"
+activity="move file 384"
 $bin/aegis -c 2 -mv -baserel bogus2 bogus3 > log 2>&1
 if test $? -ne 0 ; then cat log; no_result; fi
 
 #
 # Make sure change 2 looks the way we expect
 #
-activity="check change file state"
+activity="check change file state 391"
 cat > ok << 'fubar'
 src =
 [
@@ -427,7 +427,7 @@ check_it ok $workproj/info/change/0/002.fs
 #
 # Create a third change to modify bogus2
 #
-activity="new change 296"
+activity="new change 430"
 cat > tmp << 'end'
 brief_description = "The third change.";
 cause = internal_bug;
@@ -436,11 +436,11 @@ if test $? -ne 0 ; then no_result; fi
 $bin/aegis -nc 3 -f tmp -p example > log 2>&1
 if test $? -ne 0 ; then cat log; no_result; fi
 
-activity="develop begin 305"
+activity="develop begin 439"
 $bin/aegis -db 3 -dir ${workchan}3 > log 2>&1
 if test $? -ne 0 ; then cat log; no_result; fi
 
-activity="copy file 309"
+activity="copy file 443"
 $bin/aegis -cp 3 -baserel bogus2 > log 2>&1
 if test $? -ne 0 ; then cat log; no_result; fi
 
@@ -452,31 +452,31 @@ line three
 end
 if test $? -ne 0 ; then no_result; fi
 
-activity="build 321"
+activity="build 455"
 $bin/aegis -build 3 > log 2>&1
 if test $? -ne 0 ; then cat log; no_result; fi
 
-activity="diff 325"
+activity="diff 459"
 $bin/aegis -diff 3 > log 2>&1
 if test $? -ne 0 ; then cat log; no_result; fi
 
-activity="develop end 329"
+activity="develop end 463"
 $bin/aegis -de 3 > log 2>&1
 if test $? -ne 0 ; then cat log; no_result; fi
 
-activity="review pass 333"
+activity="review pass 467"
 $bin/aegis -rpass -c 3 > log 2>&1
 if test $? -ne 0 ; then cat log; no_result; fi
 
-activity="integrate begin 337"
+activity="integrate begin 471"
 $bin/aegis -ib 3 > log 2>&1
 if test $? -ne 0 ; then cat log; no_result; fi
 
-activity="build 341"
+activity="build 475"
 $bin/aegis -b -nl -v 3 > log 2>&1
 if test $? -ne 0 ; then cat log; no_result; fi
 
-activity="integrate pass 345"
+activity="integrate pass 479"
 $bin/aegis -intpass -nl 3 > log 2>&1
 if test $? -ne 0 ; then cat log; no_result; fi
 
@@ -485,10 +485,32 @@ if test $? -ne 0 ; then cat log; no_result; fi
 #
 # Make sure the project looks the way we expect
 #
-activity="check project file state"
+activity="check project file state 488"
 cat > ok << 'fubar'
 src =
 [
+	{
+		file_name = "aegis.conf";
+		uuid = "aaaaaaaa-bbbb-4bbb-8ccc-ccccddddddd3";
+		action = create;
+		edit =
+		{
+			revision = "1.1";
+			encoding = none;
+		};
+		edit_origin =
+		{
+			revision = "1.1";
+			encoding = none;
+		};
+		usage = config;
+		file_fp =
+		{
+			youngest = TIME;
+			oldest = TIME;
+			crypto = "GUNK";
+		};
+	},
 	{
 		file_name = "bogus1";
 		uuid = "aaaaaaaa-bbbb-4bbb-8ccc-ccccddddddd1";
@@ -533,28 +555,6 @@ src =
 			crypto = "GUNK";
 		};
 	},
-	{
-		file_name = "config";
-		uuid = "aaaaaaaa-bbbb-4bbb-8ccc-ccccddddddd3";
-		action = create;
-		edit =
-		{
-			revision = "1.1";
-			encoding = none;
-		};
-		edit_origin =
-		{
-			revision = "1.1";
-			encoding = none;
-		};
-		usage = config;
-		file_fp =
-		{
-			youngest = TIME;
-			oldest = TIME;
-			crypto = "GUNK";
-		};
-	},
 ];
 fubar
 if test $? -ne 0 ; then no_result; fi
@@ -568,7 +568,7 @@ ulimit -c unlimited
 #
 # Resume change 2, make sure that aed --merge works.
 #
-activity="aed --merge 354"
+activity="aed --merge 571"
 $bin/aegis --diff --merge-only > log 2>&1
 if test $? -ne 0 ; then cat log; fail; fi
 
@@ -577,7 +577,7 @@ if test $? -ne 0 ; then cat log; fail; fi
 #
 # Make sure the change looks the way we expect
 #
-activity="check change file state"
+activity="check change file state 580"
 cat > ok << 'fubar'
 src =
 [
@@ -587,7 +587,7 @@ src =
 		action = remove;
 		edit_origin =
 		{
-			revision = "1.1";
+			revision = "1.2";
 			encoding = none;
 		};
 		usage = source;

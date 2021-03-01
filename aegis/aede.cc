@@ -1,21 +1,21 @@
 //
-//	aegis - project change supervisor
-//	Copyright (C) 1991-2004 Peter Miller;
-//	All rights reserved.
+//      aegis - project change supervisor
+//      Copyright (C) 1991-2005 Peter Miller;
+//      All rights reserved.
 //
-//	This program is free software; you can redistribute it and/or modify
-//	it under the terms of the GNU General Public License as published by
-//	the Free Software Foundation; either version 2 of the License, or
-//	(at your option) any later version.
+//      This program is free software; you can redistribute it and/or modify
+//      it under the terms of the GNU General Public License as published by
+//      the Free Software Foundation; either version 2 of the License, or
+//      (at your option) any later version.
 //
-//	This program is distributed in the hope that it will be useful,
-//	but WITHOUT ANY WARRANTY; without even the implied warranty of
-//	MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-//	GNU General Public License for more details.
+//      This program is distributed in the hope that it will be useful,
+//      but WITHOUT ANY WARRANTY; without even the implied warranty of
+//      MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+//      GNU General Public License for more details.
 //
-//	You should have received a copy of the GNU General Public License
-//	along with this program; if not, write to the Free Software
-//	Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111, USA.
+//      You should have received a copy of the GNU General Public License
+//      along with this program; if not, write to the Free Software
+//      Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111, USA.
 //
 // MANIFEST: functions to implement develop end
 //
@@ -52,6 +52,7 @@
 #include <project/file.h>
 #include <project/history.h>
 #include <quit.h>
+#include <rss.h>
 #include <sub.h>
 #include <trace.h>
 #include <undo.h>
@@ -81,32 +82,32 @@ develop_end_help(void)
 static void
 develop_end_list(void)
 {
-    string_ty	    *project_name;
+    string_ty       *project_name;
 
     trace(("develop_end_list()\n{\n"));
     project_name = 0;
     arglex();
     while (arglex_token != arglex_token_eoln)
     {
-	switch (arglex_token)
-	{
-	default:
-	    generic_argument(develop_end_usage);
-	    continue;
+        switch (arglex_token)
+        {
+        default:
+            generic_argument(develop_end_usage);
+            continue;
 
-	case arglex_token_project:
-	    arglex();
-	    // fall through...
+        case arglex_token_project:
+            arglex();
+            // fall through...
 
-	case arglex_token_string:
-	    arglex_parse_project(&project_name, develop_end_usage);
-	    continue;
-	}
-	arglex();
+        case arglex_token_string:
+            arglex_parse_project(&project_name, develop_end_usage);
+            continue;
+        }
+        arglex();
     }
     list_changes_in_state_mask(project_name, 1 << cstate_state_being_developed);
     if (project_name)
-	str_free(project_name);
+        str_free(project_name);
     trace(("}\n"));
 }
 
@@ -115,74 +116,91 @@ static void
 develop_end_main(void)
 {
     sub_context_ty  *scp;
-    string_ty	    *dd;
+    string_ty       *dd;
     cstate_ty       *cstate_data;
-    int		    j;
+    int             j;
     cstate_history_ty *history_data;
-    string_ty	    *project_name;
-    project_ty	    *pp;
-    long	    change_number;
-    change_ty	    *cp;
-    user_ty	    *up;
-    user_ty	    *up_admin;
-    int		    diff_whine;
-    int		    errs;
-    time_t	    youngest;
-    string_ty	    *youngest_name;
-    int		    config_seen;
-    int		    is_a_branch;
+    string_ty       *project_name;
+    project_ty      *pp;
+    long            change_number;
+    change_ty       *cp;
+    user_ty         *up;
+    user_ty         *up_admin;
+    int             diff_whine;
+    int             errs;
+    time_t          youngest;
+    string_ty       *youngest_name;
+    int             config_seen;
+    int             is_a_branch;
 
     trace(("develop_end_main()\n{\n"));
     arglex();
     project_name = 0;
     change_number = 0;
+    string_ty *reason = 0;
     while (arglex_token != arglex_token_eoln)
     {
-	switch (arglex_token)
-	{
-	default:
-	    generic_argument(develop_end_usage);
-	    continue;
+        switch (arglex_token)
+        {
+        default:
+            generic_argument(develop_end_usage);
+            continue;
 
-	case arglex_token_change:
-	    arglex();
-	    // fall through...
+        case arglex_token_change:
+            arglex();
+            // fall through...
 
-	case arglex_token_number:
-	    arglex_parse_change
-	    (
-		&project_name,
-		&change_number,
-		develop_end_usage
-	    );
-	    continue;
+        case arglex_token_number:
+            arglex_parse_change
+            (
+                &project_name,
+                &change_number,
+                develop_end_usage
+            );
+            continue;
 
-	case arglex_token_project:
-	    arglex();
-	    // fall through...
+        case arglex_token_project:
+            arglex();
+            // fall through...
 
-	case arglex_token_string:
-	    arglex_parse_project(&project_name, develop_end_usage);
-	    continue;
+        case arglex_token_string:
+            arglex_parse_project(&project_name, develop_end_usage);
+            continue;
 
-	case arglex_token_wait:
-	case arglex_token_wait_not:
-	    user_lock_wait_argument(develop_end_usage);
+        case arglex_token_wait:
+        case arglex_token_wait_not:
+            user_lock_wait_argument(develop_end_usage);
+            break;
+
+        case arglex_token_signed_off_by:
+        case arglex_token_signed_off_by_not:
+            option_signed_off_by_argument(develop_end_usage);
+            break;
+
+	case arglex_token_reason:
+	    if (reason)
+	    duplicate_option(develop_end_usage);
+	    switch (arglex())
+	    {
+	    default:
+		option_needs_string(arglex_token_reason, develop_end_usage);
+		// NOTREACHED
+
+	    case arglex_token_string:
+	    case arglex_token_number:
+		reason = str_from_c(arglex_value.alv_string);
+		break;
+	    }
 	    break;
-
-	case arglex_token_signed_off_by:
-	case arglex_token_signed_off_by_not:
-	    option_signed_off_by_argument(develop_end_usage);
-	    break;
-	}
-	arglex();
+        }
+        arglex();
     }
 
     //
     // locate project data
     //
     if (!project_name)
-	project_name = user_default_project();
+        project_name = user_default_project();
     pp = project_alloc(project_name);
     str_free(project_name);
     project_bind_existing(pp);
@@ -197,7 +215,7 @@ develop_end_main(void)
     // locate change data
     //
     if (!change_number)
-	change_number = user_default_change(up);
+        change_number = user_default_change(up);
     cp = change_alloc(pp, change_number);
     change_bind_existing(cp);
 
@@ -207,15 +225,15 @@ develop_end_main(void)
     //
     if
     (
-	change_is_a_branch(cp)
+        change_is_a_branch(cp)
     &&
-	!str_equal(change_developer_name(cp), user_name(up))
+        !str_equal(change_developer_name(cp), user_name(up))
     &&
-	project_administrator_query(pp, user_name(up))
+        project_administrator_query(pp, user_name(up))
     )
     {
-	up_admin = up;
-	up = user_symbolic(pp, change_developer_name(cp));
+        up_admin = up;
+        up = user_symbolic(pp, change_developer_name(cp));
     }
 
     //
@@ -239,11 +257,11 @@ develop_end_main(void)
     // It is an error if the change has no new test associated with it.
     //
     if (cstate_data->state != cstate_state_being_developed)
-	change_fatal(cp, 0, i18n("bad de state"));
+        change_fatal(cp, 0, i18n("bad de state"));
     if (!str_equal(change_developer_name(cp), user_name(up)))
-	change_fatal(cp, 0, i18n("not developer"));
+        change_fatal(cp, 0, i18n("not developer"));
     if (!change_file_nth(cp, (size_t)0, view_path_first))
-	change_fatal(cp, 0, i18n("no files"));
+        change_fatal(cp, 0, i18n("no files"));
     errs = 0;
     diff_whine = 0;
     config_seen = 0;
@@ -263,478 +281,478 @@ develop_end_main(void)
     is_a_branch = change_is_a_branch(cp);
     for (j = 0;; ++j)
     {
-	fstate_src_ty   *c_src_data;
-	fstate_src_ty   *p_src_data;
-	string_ty	*path;
-	string_ty	*path_d;
-	int		same;
-	int		same_d;
-	int		file_required;
-	int		diff_file_required;
+        fstate_src_ty   *c_src_data;
+        fstate_src_ty   *p_src_data;
+        string_ty       *path;
+        string_ty       *path_d;
+        int             same;
+        int             same_d;
+        int             file_required;
+        int             diff_file_required;
 
-	c_src_data = change_file_nth(cp, j, view_path_first);
-	if (!c_src_data)
-	    break;
-	trace(("file_name = \"%s\"\n", c_src_data->file_name->str_text));
+        c_src_data = change_file_nth(cp, j, view_path_first);
+        if (!c_src_data)
+            break;
+        trace(("file_name = \"%s\"\n", c_src_data->file_name->str_text));
 
-	file_required = 1;
-	diff_file_required = 1;
-	switch (c_src_data->action)
-	{
-	case file_action_create:
-	case file_action_modify:
-	case file_action_insulate:
-	    break;
+        file_required = 1;
+        diff_file_required = 1;
+        switch (c_src_data->action)
+        {
+        case file_action_create:
+        case file_action_modify:
+        case file_action_insulate:
+            break;
 
-	case file_action_remove:
-	    file_required = 0;
-	    if (is_a_branch)
-	    {
-		fstate_src_ty   *src;
-
-		src =
-		    project_file_find
-		    (
-			pp,
-			c_src_data->file_name,
-			view_path_extreme
-		    );
-		if (!src)
-		{
-		    diff_file_required = 0;
-		}
-	    }
-
-	    //
-	    // The removed half of a move is not differenced.
-	    //
-	    if
-	    (
-		c_src_data->move
-	    &&
-		change_file_find(cp, c_src_data->move, view_path_first)
-	    )
-		diff_file_required = 0;
-	    break;
-
-	case file_action_transparent:
-	    //
-	    // Don't check anything for branches (the file is going).
-	    // For changes, make sure it's the same as the ancestor.
-	    //
-	    diff_file_required = 0;
-	    file_required = 0;
-	    if (!is_a_branch)
-	    {
-		assert(pp->parent);
-		if (pp->parent)
-		{
-		    fstate_src_ty   *pp_src;
-
-		    pp_src =
-			project_file_find
-			(
-			    pp->parent,
-			    c_src_data->file_name,
-			    view_path_extreme
-			);
-		    if (pp_src)
-		    {
-			string_ty       *blf;
-			int             different;
-
-			path = change_file_path(cp, c_src_data->file_name);
-			blf =
-			    project_file_path
-			    (
-				pp->parent,
-				c_src_data->file_name
-			    );
-			assert(blf);
-			user_become(up);
-			different = files_are_different(path, blf);
-			user_become_undo();
-			str_free(blf);
-			str_free(path);
-			if (different)
-			{
-		    	    scp = sub_context_new();
-			    sub_var_set_string
-			    (
-				scp,
-				"File_Name",
-				c_src_data->file_name
-			    );
-			    change_error(cp, scp, i18n("$filename altered"));
-			    sub_context_delete(scp);
-			    ++errs;
-			}
-		    }
-		}
-	    }
-	    break;
-	}
-	switch (c_src_data->usage)
-	{
-	case file_usage_build:
-	    file_required = 0;
-	    diff_file_required = 0;
-	    break;
-
-	case file_usage_source:
-	case file_usage_config:
-	case file_usage_test:
-	case file_usage_manual_test:
-	    break;
-	}
-
-	//
-	// the config file in a change
-	// implies additional tests
-	//
-	if (change_file_is_config(cp, c_src_data->file_name))
-	    config_seen++;
-
-	//
-	// make sure the file exists and has not altered
-	//
-	path = change_file_path(cp, c_src_data->file_name);
-	if (file_required)
-	{
-	    if (!c_src_data->file_fp)
+        case file_action_remove:
+            file_required = 0;
+            if (is_a_branch)
             {
-		c_src_data->file_fp =
+                fstate_src_ty   *src;
+
+                src =
+                    project_file_find
+                    (
+                        pp,
+                        c_src_data->file_name,
+                        view_path_extreme
+                    );
+                if (!src)
+                {
+                    diff_file_required = 0;
+                }
+            }
+
+            //
+            // The removed half of a move is not differenced.
+            //
+            if
+            (
+                c_src_data->move
+            &&
+                change_file_find(cp, c_src_data->move, view_path_first)
+            )
+                diff_file_required = 0;
+            break;
+
+        case file_action_transparent:
+            //
+            // Don't check anything for branches (the file is going).
+            // For changes, make sure it's the same as the ancestor.
+            //
+            diff_file_required = 0;
+            file_required = 0;
+            if (!is_a_branch)
+            {
+                assert(pp->parent);
+                if (pp->parent)
+                {
+                    fstate_src_ty   *pp_src;
+
+                    pp_src =
+                        project_file_find
+                        (
+                            pp->parent,
+                            c_src_data->file_name,
+                            view_path_extreme
+                        );
+                    if (pp_src)
+                    {
+                        string_ty       *blf;
+                        int             different;
+
+                        path = change_file_path(cp, c_src_data->file_name);
+                        blf =
+                            project_file_path
+                            (
+                                pp->parent,
+                                c_src_data->file_name
+                            );
+                        assert(blf);
+                        user_become(up);
+                        different = files_are_different(path, blf);
+                        user_become_undo();
+                        str_free(blf);
+                        str_free(path);
+                        if (different)
+                        {
+                            scp = sub_context_new();
+                            sub_var_set_string
+                            (
+                                scp,
+                                "File_Name",
+                                c_src_data->file_name
+                            );
+                            change_error(cp, scp, i18n("$filename altered"));
+                            sub_context_delete(scp);
+                            ++errs;
+                        }
+                    }
+                }
+            }
+            break;
+        }
+        switch (c_src_data->usage)
+        {
+        case file_usage_build:
+            file_required = 0;
+            diff_file_required = 0;
+            break;
+
+        case file_usage_source:
+        case file_usage_config:
+        case file_usage_test:
+        case file_usage_manual_test:
+            break;
+        }
+
+        //
+        // the config file in a change
+        // implies additional tests
+        //
+        if (change_file_is_config(cp, c_src_data->file_name))
+            config_seen++;
+
+        //
+        // make sure the file exists and has not altered
+        //
+        path = change_file_path(cp, c_src_data->file_name);
+        if (file_required)
+        {
+            if (!c_src_data->file_fp)
+            {
+                c_src_data->file_fp =
                     (fingerprint_ty *)fingerprint_type.alloc();
             }
-	    assert(c_src_data->file_fp->youngest>=0);
-	    assert(c_src_data->file_fp->oldest>=0);
-	    user_become(up);
-	    same = change_fingerprint_same(c_src_data->file_fp, path, 0);
-	    user_become_undo();
-	    assert(c_src_data->file_fp->youngest>0);
-	    assert(c_src_data->file_fp->oldest>0);
-	    trace(("same = %d\n", same));
+            assert(c_src_data->file_fp->youngest>=0);
+            assert(c_src_data->file_fp->oldest>=0);
+            user_become(up);
+            same = change_fingerprint_same(c_src_data->file_fp, path, 0);
+            user_become_undo();
+            assert(c_src_data->file_fp->youngest>0);
+            assert(c_src_data->file_fp->oldest>0);
+            trace(("same = %d\n", same));
 
-	    if (!c_src_data->file_fp || !c_src_data->file_fp->youngest)
-	    {
-		scp = sub_context_new();
-		sub_var_set_string(scp, "File_Name", c_src_data->file_name);
-		change_error(cp, scp, i18n("$filename not found"));
-		sub_context_delete(scp);
-		str_free(path);
-		errs++;
-		continue;
-	    }
-
-	    if (c_src_data->file_fp->oldest > youngest)
-	    {
-		youngest = c_src_data->file_fp->oldest;
-		youngest_name = c_src_data->file_name;
-	    }
-	}
-	else
-	    same = 1;
-
-	//
-	// make sure the filename conforms to length limits
-	//
-	// Scenario: user copies "config", alters filename
-	// constraints, creates file, uncopies "config".
-	// Reviewer will not necessarily notice, especially when
-	// expecting aegis to notice for him.
-	//
-	if (!is_a_branch && file_required)
-	{
-	    string_ty	    *e;
-
-	    e = change_filename_check(cp, c_src_data->file_name);
-	    if (e)
-	    {
-		scp = sub_context_new();
-		sub_var_set_string(scp, "MeSsaGe", e);
-		str_free(e);
-		change_error(cp, scp, i18n("$message"));
-		sub_context_delete(scp);
-		++errs;
-	    }
-	}
-
-	//
-	// make sure the difference file exists and has not been altered
-	//
-	if (diff_file_required)
-	{
-	    path_d = str_format("%s,D", path->str_text);
-	    if (!c_src_data->diff_file_fp)
+            if (!c_src_data->file_fp || !c_src_data->file_fp->youngest)
             {
-		c_src_data->diff_file_fp =
+                scp = sub_context_new();
+                sub_var_set_string(scp, "File_Name", c_src_data->file_name);
+                change_error(cp, scp, i18n("$filename not found"));
+                sub_context_delete(scp);
+                str_free(path);
+                errs++;
+                continue;
+            }
+
+            if (c_src_data->file_fp->oldest > youngest)
+            {
+                youngest = c_src_data->file_fp->oldest;
+                youngest_name = c_src_data->file_name;
+            }
+        }
+        else
+            same = 1;
+
+        //
+        // make sure the filename conforms to length limits
+        //
+        // Scenario: user copies "config", alters filename
+        // constraints, creates file, uncopies "config".
+        // Reviewer will not necessarily notice, especially when
+        // expecting aegis to notice for him.
+        //
+        if (!is_a_branch && file_required)
+        {
+            string_ty       *e;
+
+            e = change_filename_check(cp, c_src_data->file_name);
+            if (e)
+            {
+                scp = sub_context_new();
+                sub_var_set_string(scp, "MeSsaGe", e);
+                str_free(e);
+                change_error(cp, scp, i18n("$message"));
+                sub_context_delete(scp);
+                ++errs;
+            }
+        }
+
+        //
+        // make sure the difference file exists and has not been altered
+        //
+        if (diff_file_required)
+        {
+            path_d = str_format("%s,D", path->str_text);
+            if (!c_src_data->diff_file_fp)
+            {
+                c_src_data->diff_file_fp =
                     (fingerprint_ty *)fingerprint_type.alloc();
             }
-	    user_become(up);
-	    same_d =
-		change_fingerprint_same(c_src_data->diff_file_fp, path_d, 0);
-	    user_become_undo();
-	    trace(("same_d = %d\n", same_d));
-	    str_free(path_d);
+            user_become(up);
+            same_d =
+                change_fingerprint_same(c_src_data->diff_file_fp, path_d, 0);
+            user_become_undo();
+            trace(("same_d = %d\n", same_d));
+            str_free(path_d);
 
-	    if
-	    (
-		!c_src_data->diff_file_fp
-	    ||
-		!c_src_data->diff_file_fp->youngest
-	    )
-	    {
-		scp = sub_context_new();
-		sub_var_set_format
-		(
-		    scp,
-		    "File_Name",
-		    "%s,D",
-		    c_src_data->file_name->str_text
-		);
-		change_error(cp, scp, i18n("$filename not found"));
-		sub_context_delete(scp);
-		errs++;
-	    }
-	}
-	else
-	    same_d = 1;
-	str_free(path);
+            if
+            (
+                !c_src_data->diff_file_fp
+            ||
+                !c_src_data->diff_file_fp->youngest
+            )
+            {
+                scp = sub_context_new();
+                sub_var_set_format
+                (
+                    scp,
+                    "File_Name",
+                    "%s,D",
+                    c_src_data->file_name->str_text
+                );
+                change_error(cp, scp, i18n("$filename not found"));
+                sub_context_delete(scp);
+                errs++;
+            }
+        }
+        else
+            same_d = 1;
+        str_free(path);
 
-	//
-	// check that a difference has been done,
-	// and that no files have been modified since.
-	//
-	if (!diff_whine)
-	{
-	    if (file_required && !same && c_src_data->file_fp->oldest)
-	    {
-		scp = sub_context_new();
-		sub_var_set_string(scp, "File_Name", c_src_data->file_name);
-		change_error(cp, scp, i18n("$filename changed after diff"));
-		sub_context_delete(scp);
-		diff_whine++;
-		errs++;
-	    }
-	    else if
-	    (
-		diff_file_required
-	    &&
-		!same_d
-	    &&
-		c_src_data->diff_file_fp->youngest
-	    )
-	    {
-		scp = sub_context_new();
-		sub_var_set_format
-		(
-		    scp,
-		    "File_Name",
-		    "%s,D",
-		    c_src_data->file_name->str_text
-		);
-		change_error(cp, scp, i18n("$filename changed after diff"));
-		sub_context_delete(scp);
-		diff_whine++;
-		errs++;
-	    }
-	    else if
-	    (
-		(file_required && !same)
-	    ||
-		(diff_file_required && !same_d)
-	    )
-	    {
-		change_error(cp, 0, i18n("diff required"));
-		diff_whine++;
-		errs++;
-	    }
-	}
+        //
+        // check that a difference has been done,
+        // and that no files have been modified since.
+        //
+        if (!diff_whine)
+        {
+            if (file_required && !same && c_src_data->file_fp->oldest)
+            {
+                scp = sub_context_new();
+                sub_var_set_string(scp, "File_Name", c_src_data->file_name);
+                change_error(cp, scp, i18n("$filename changed after diff"));
+                sub_context_delete(scp);
+                diff_whine++;
+                errs++;
+            }
+            else if
+            (
+                diff_file_required
+            &&
+                !same_d
+            &&
+                c_src_data->diff_file_fp->youngest
+            )
+            {
+                scp = sub_context_new();
+                sub_var_set_format
+                (
+                    scp,
+                    "File_Name",
+                    "%s,D",
+                    c_src_data->file_name->str_text
+                );
+                change_error(cp, scp, i18n("$filename changed after diff"));
+                sub_context_delete(scp);
+                diff_whine++;
+                errs++;
+            }
+            else if
+            (
+                (file_required && !same)
+            ||
+                (diff_file_required && !same_d)
+            )
+            {
+                change_error(cp, 0, i18n("diff required"));
+                diff_whine++;
+                errs++;
+            }
+        }
 
-	//
-	// For each change file that is acting on a project file
-	// from a deeper level than the immediate parent
-	// project, the file needs to be added to the immediate
-	// parent project.
-	//
-	// This is where the about_to_be_copied_by attribute comes from.
-	// Nothing is done for files being created.
-	//
-	trace(("shallowing \"%s\"\n", c_src_data->file_name->str_text));
-	project_file_shallow(pp, c_src_data->file_name, change_number);
+        //
+        // For each change file that is acting on a project file
+        // from a deeper level than the immediate parent
+        // project, the file needs to be added to the immediate
+        // parent project.
+        //
+        // This is where the about_to_be_copied_by attribute comes from.
+        // Nothing is done for files being created.
+        //
+        trace(("shallowing \"%s\"\n", c_src_data->file_name->str_text));
+        project_file_shallow(pp, c_src_data->file_name, change_number);
 
-	//
-	// Find the project after ``shallowing'' it, as this
-	// gives the project file on the immediate branch,
-	// rather than deeper down the family tree.
-	//
-	p_src_data =
-	    project_file_find(pp, c_src_data->file_name, view_path_none);
+        //
+        // Find the project after ``shallowing'' it, as this
+        // gives the project file on the immediate branch,
+        // rather than deeper down the family tree.
+        //
+        p_src_data =
+            project_file_find(pp, c_src_data->file_name, view_path_none);
 
-	//
-	// It is an error if any files in the change
-	// file table have different edit numbers to the
-	// baseline file table edit numbers.
-	//
-	switch (c_src_data->action)
-	{
-	case file_action_remove:
-	    //
-	    // file being removed
-	    //
-	    if
-	    (
-		!is_a_branch
-	    &&
-		!project_file_find(pp, c_src_data->file_name, view_path_extreme)
-	    )
-	    {
-		scp = sub_context_new();
-		sub_var_set_string(scp, "File_Name", c_src_data->file_name);
-		change_error(cp, scp, i18n("no $filename in baseline"));
-		sub_context_delete(scp);
-		errs++;
-	    }
+        //
+        // It is an error if any files in the change
+        // file table have different edit numbers to the
+        // baseline file table edit numbers.
+        //
+        switch (c_src_data->action)
+        {
+        case file_action_remove:
+            //
+            // file being removed
+            //
+            if
+            (
+                !is_a_branch
+            &&
+                !project_file_find(pp, c_src_data->file_name, view_path_extreme)
+            )
+            {
+                scp = sub_context_new();
+                sub_var_set_string(scp, "File_Name", c_src_data->file_name);
+                change_error(cp, scp, i18n("no $filename in baseline"));
+                sub_context_delete(scp);
+                errs++;
+            }
 
-	    //
-	    // Make sure the file exists in the project.
-	    //
-	    // This can happen for aede on branches which
-	    // have had a new file created and then deleted;
-	    // thus the file will not exist in the branch's
-	    // project.
-	    //
-	    if (!p_src_data)
-	    {
-		p_src_data = project_file_new(pp, c_src_data->file_name);
-		change_file_copy_basic_attributes(p_src_data, c_src_data);
-		p_src_data->action = file_action_transparent;
-		p_src_data->about_to_be_created_by = change_number;
-		assert(c_src_data->edit || c_src_data->edit_origin);
-		p_src_data->edit =
-		    history_version_copy
-		    (
-			c_src_data->edit
-		    ?
-			c_src_data->edit
-		    :
-			c_src_data->edit_origin
-		    );
-		p_src_data->edit_origin =
-		    history_version_copy(p_src_data->edit);
-		break;
-	    }
+            //
+            // Make sure the file exists in the project.
+            //
+            // This can happen for aede on branches which
+            // have had a new file created and then deleted;
+            // thus the file will not exist in the branch's
+            // project.
+            //
+            if (!p_src_data)
+            {
+                p_src_data = project_file_new(pp, c_src_data->file_name);
+                change_file_copy_basic_attributes(p_src_data, c_src_data);
+                p_src_data->action = file_action_transparent;
+                p_src_data->about_to_be_created_by = change_number;
+                assert(c_src_data->edit || c_src_data->edit_origin);
+                p_src_data->edit =
+                    history_version_copy
+                    (
+                        c_src_data->edit
+                    ?
+                        c_src_data->edit
+                    :
+                        c_src_data->edit_origin
+                    );
+                p_src_data->edit_origin =
+                    history_version_copy(p_src_data->edit);
+                break;
+            }
 
-	    //
-	    // Make sure the edit numbers match.  If it
-	    // matches any of the ancestral edits, it does
-	    // not require a merge.
-	    //
-	    if (file_required && !change_file_up_to_date(pp, c_src_data))
-	    {
-		scp = sub_context_new();
-		sub_var_set_string(scp, "File_Name", c_src_data->file_name);
-		if (is_a_branch)
-		{
-		    change_error
-		    (
-			cp,
-			scp,
-			i18n("baseline $filename changed, merge in new change")
-		    );
-		}
-		else
-		{
-		    change_error(cp, scp, i18n("baseline $filename changed"));
-		}
-		sub_context_delete(scp);
-		errs++;
-	    }
+            //
+            // Make sure the edit numbers match.  If it
+            // matches any of the ancestral edits, it does
+            // not require a merge.
+            //
+            if (file_required && !change_file_up_to_date(pp, c_src_data))
+            {
+                scp = sub_context_new();
+                sub_var_set_string(scp, "File_Name", c_src_data->file_name);
+                if (is_a_branch)
+                {
+                    change_error
+                    (
+                        cp,
+                        scp,
+                        i18n("baseline $filename changed, merge in new change")
+                    );
+                }
+                else
+                {
+                    change_error(cp, scp, i18n("baseline $filename changed"));
+                }
+                sub_context_delete(scp);
+                errs++;
+            }
 
-	    //
-	    // make sure we can lock the file
-	    //
-	    if (p_src_data->locked_by)
-	    {
-		scp = sub_context_new();
-		sub_var_set_string(scp, "File_Name", c_src_data->file_name);
-		sub_var_set_long(scp, "Number", p_src_data->locked_by);
-		change_error
-		(
-		    cp,
-		    scp,
-		    i18n("file \"$filename\" locked for change $number")
-		);
-		sub_context_delete(scp);
-		errs++;
-	    }
-	    else
-		p_src_data->locked_by = change_number;
-	    break;
+            //
+            // make sure we can lock the file
+            //
+            if (p_src_data->locked_by)
+            {
+                scp = sub_context_new();
+                sub_var_set_string(scp, "File_Name", c_src_data->file_name);
+                sub_var_set_long(scp, "Number", p_src_data->locked_by);
+                change_error
+                (
+                    cp,
+                    scp,
+                    i18n("file \"$filename\" locked for change $number")
+                );
+                sub_context_delete(scp);
+                errs++;
+            }
+            else
+                p_src_data->locked_by = change_number;
+            break;
 
-	case file_action_transparent:
-	    //
-	    // Do absolutely nothing for transparent branch files.
-	    //
-	    if (change_was_a_branch(cp))
-		break;
-	    // fall through...
+        case file_action_transparent:
+            //
+            // Do absolutely nothing for transparent branch files.
+            //
+            if (change_was_a_branch(cp))
+                break;
+            // fall through...
 
-	case file_action_modify:
-	    //
-	    // file being modified
-	    //
-	    if
-	    (
-		!is_a_branch
-	    &&
-		!project_file_find(pp, c_src_data->file_name, view_path_extreme)
-	    )
-	    {
-		scp = sub_context_new();
-		sub_var_set_string(scp, "File_Name", c_src_data->file_name);
-		change_error(cp, scp, i18n("no $filename in baseline"));
-		sub_context_delete(scp);
-		errs++;
-		continue;
-	    }
+        case file_action_modify:
+            //
+            // file being modified
+            //
+            if
+            (
+                !is_a_branch
+            &&
+                !project_file_find(pp, c_src_data->file_name, view_path_extreme)
+            )
+            {
+                scp = sub_context_new();
+                sub_var_set_string(scp, "File_Name", c_src_data->file_name);
+                change_error(cp, scp, i18n("no $filename in baseline"));
+                sub_context_delete(scp);
+                errs++;
+                continue;
+            }
 
-	    //
-	    // Make sure the file exists in the project.
-	    //
-	    // This can happen for aede on branches which
-	    // have had a new file created and then modified;
-	    // thus the file will not exist in the branch's
-	    // project.
-	    //
-	    if (!p_src_data)
-	    {
-		p_src_data = project_file_new(pp, c_src_data->file_name);
-		change_file_copy_basic_attributes(p_src_data, c_src_data);
-		p_src_data->action = file_action_transparent;
-		p_src_data->about_to_be_created_by = change_number;
-		assert(c_src_data->edit || c_src_data->edit_origin);
-		p_src_data->edit =
-		    history_version_copy
-		    (
-			c_src_data->edit
-		    ?
-			c_src_data->edit
-		    :
-			c_src_data->edit_origin
-		    );
-		p_src_data->edit_origin =
-		    history_version_copy(p_src_data->edit);
-		break;
-	    }
+            //
+            // Make sure the file exists in the project.
+            //
+            // This can happen for aede on branches which
+            // have had a new file created and then modified;
+            // thus the file will not exist in the branch's
+            // project.
+            //
+            if (!p_src_data)
+            {
+                p_src_data = project_file_new(pp, c_src_data->file_name);
+                change_file_copy_basic_attributes(p_src_data, c_src_data);
+                p_src_data->action = file_action_transparent;
+                p_src_data->about_to_be_created_by = change_number;
+                assert(c_src_data->edit || c_src_data->edit_origin);
+                p_src_data->edit =
+                    history_version_copy
+                    (
+                        c_src_data->edit
+                    ?
+                        c_src_data->edit
+                    :
+                        c_src_data->edit_origin
+                    );
+                p_src_data->edit_origin =
+                    history_version_copy(p_src_data->edit);
+                break;
+            }
 
-	    //
-	    // Make sure the edit numbers match.  If it
-	    // matches any of the ancestral edits, it does
-	    // not require a merge.
-	    //
-	    if (!change_file_up_to_date(pp, c_src_data))
-	    {
+            //
+            // Make sure the edit numbers match.  If it
+            // matches any of the ancestral edits, it does
+            // not require a merge.
+            //
+            if (!change_file_up_to_date(pp, c_src_data))
+            {
                 switch (c_src_data->usage) {
                 //
                 // Build files can't be merged so they must pass
@@ -757,92 +775,92 @@ develop_end_main(void)
                     errs++;
                     break;
                 }
-	    }
+            }
 
-	    //
-	    // make sure we can lock the file
-	    //
-	    if (p_src_data->locked_by)
-	    {
-		scp = sub_context_new();
-		sub_var_set_string(scp, "File_Name", c_src_data->file_name);
-		sub_var_set_long(scp, "Number", p_src_data->locked_by);
-		change_error
-		(
-		    cp,
-		    scp,
-		    i18n("file \"$filename\" locked for change $number")
-		);
-		sub_context_delete(scp);
-		errs++;
-	    }
-	    else
-		p_src_data->locked_by = change_number;
-	    break;
+            //
+            // make sure we can lock the file
+            //
+            if (p_src_data->locked_by)
+            {
+                scp = sub_context_new();
+                sub_var_set_string(scp, "File_Name", c_src_data->file_name);
+                sub_var_set_long(scp, "Number", p_src_data->locked_by);
+                change_error
+                (
+                    cp,
+                    scp,
+                    i18n("file \"$filename\" locked for change $number")
+                );
+                sub_context_delete(scp);
+                errs++;
+            }
+            else
+                p_src_data->locked_by = change_number;
+            break;
 
-	case file_action_create:
-	    //
-	    // file being created
-	    //
-	    if (p_src_data)
-	    {
-		if (p_src_data->about_to_be_created_by)
-		{
-		    scp = sub_context_new();
-		    sub_var_set_string(scp, "File_Name", c_src_data->file_name);
-		    sub_var_set_long
-		    (
-			scp,
-			"Number",
-			c_src_data->about_to_be_created_by
-		    );
-		    change_error
-		    (
-			cp,
-			scp,
-			i18n("file \"$filename\" locked for change $number")
-		    );
-		    sub_context_delete(scp);
-		    ++errs;
-		}
-		else if (!p_src_data->deleted_by)
-		{
-		    scp = sub_context_new();
-		    sub_var_set_string(scp, "File_Name", c_src_data->file_name);
-		    change_error(cp, scp, i18n("$filename in baseline"));
-		    sub_context_delete(scp);
-		    ++errs;
-		}
-	    }
-	    else
-	    {
-		//
-		// add a new entry to the pstate src list,
-		// and mark it as "about to be created".
-		//
-		p_src_data = project_file_new(pp, c_src_data->file_name);
-		change_file_copy_basic_attributes(p_src_data, c_src_data);
-		p_src_data->action = file_action_transparent;
-		p_src_data->about_to_be_created_by = change_number;
-	    }
-	    p_src_data->locked_by = change_number;
-	    break;
+        case file_action_create:
+            //
+            // file being created
+            //
+            if (p_src_data)
+            {
+                if (p_src_data->about_to_be_created_by)
+                {
+                    scp = sub_context_new();
+                    sub_var_set_string(scp, "File_Name", c_src_data->file_name);
+                    sub_var_set_long
+                    (
+                        scp,
+                        "Number",
+                        c_src_data->about_to_be_created_by
+                    );
+                    change_error
+                    (
+                        cp,
+                        scp,
+                        i18n("file \"$filename\" locked for change $number")
+                    );
+                    sub_context_delete(scp);
+                    ++errs;
+                }
+                else if (!p_src_data->deleted_by)
+                {
+                    scp = sub_context_new();
+                    sub_var_set_string(scp, "File_Name", c_src_data->file_name);
+                    change_error(cp, scp, i18n("$filename in baseline"));
+                    sub_context_delete(scp);
+                    ++errs;
+                }
+            }
+            else
+            {
+                //
+                // add a new entry to the pstate src list,
+                // and mark it as "about to be created".
+                //
+                p_src_data = project_file_new(pp, c_src_data->file_name);
+                change_file_copy_basic_attributes(p_src_data, c_src_data);
+                p_src_data->action = file_action_transparent;
+                p_src_data->about_to_be_created_by = change_number;
+            }
+            p_src_data->locked_by = change_number;
+            break;
 
-	case file_action_insulate:
-	    //
-	    // There should be no insulation files in the
-	    // change at develop end time.  This is because
-	    // if the change is still being insulated from
-	    // the baseline, something could easily be
-	    // overlooked.
-	    //
-	    scp = sub_context_new();
-	    sub_var_set_string(scp, "File_Name", c_src_data->file_name);
-	    change_error(cp, scp, i18n("$filename is insulation"));
-	    sub_context_delete(scp);
-	    errs++;
-	    break;
-	}
+        case file_action_insulate:
+            //
+            // There should be no insulation files in the
+            // change at develop end time.  This is because
+            // if the change is still being insulated from
+            // the baseline, something could easily be
+            // overlooked.
+            //
+            scp = sub_context_new();
+            sub_var_set_string(scp, "File_Name", c_src_data->file_name);
+            change_error(cp, scp, i18n("$filename is insulation"));
+            sub_context_delete(scp);
+            errs++;
+            break;
+        }
     }
 
     //
@@ -850,7 +868,7 @@ develop_end_main(void)
     // changes outstanding on the branch.
     //
     if (is_a_branch)
-	project_active_check_branch(cp, 0);
+        project_active_check_branch(cp, 0);
 
     //
     // if the config file changes,
@@ -858,28 +876,28 @@ develop_end_main(void)
     //
     if (config_seen)
     {
-	for (j = 0;; ++j)
-	{
-	    fstate_src_ty   *p_src_data;
-	    string_ty	    *e;
+        for (j = 0;; ++j)
+        {
+            fstate_src_ty   *p_src_data;
+            string_ty       *e;
 
-	    p_src_data = project_file_nth(pp, j, view_path_extreme);
-	    if (!p_src_data)
-		break;
-	    if (change_file_find(cp, p_src_data->file_name, view_path_first))
-		continue;
+            p_src_data = project_file_nth(pp, j, view_path_extreme);
+            if (!p_src_data)
+                break;
+            if (change_file_find(cp, p_src_data->file_name, view_path_first))
+                continue;
 
-	    e = change_filename_check(cp, p_src_data->file_name);
-	    if (e)
-	    {
-		scp = sub_context_new();
-		sub_var_set_string(scp, "Message", e);
-		str_free(e);
-		change_error(cp, scp, i18n("project $message"));
-		sub_context_delete(scp);
-		++errs;
-	    }
-	}
+            e = change_filename_check(cp, p_src_data->file_name);
+            if (e)
+            {
+                scp = sub_context_new();
+                sub_var_set_string(scp, "Message", e);
+                str_free(e);
+                change_error(cp, scp, i18n("project $message"));
+                sub_context_delete(scp);
+                ++errs;
+            }
+        }
     }
 
     //
@@ -888,99 +906,99 @@ develop_end_main(void)
     //
     if (!cstate_data->build_time || youngest >= cstate_data->build_time)
     {
-	if (youngest_name && cstate_data->build_time)
-	{
-	    scp = sub_context_new();
-	    sub_var_set_charstar
-	    (
-		scp,
-		"Outstanding",
-		change_outstanding_builds(cp, youngest)
-	    );
-	    sub_var_optional(scp, "Outstanding");
-	    sub_var_set_string(scp, "File_Name", youngest_name);
-	    change_error(cp, scp, i18n("$filename changed after build"));
-	    sub_context_delete(scp);
-	}
-	else
-	{
-	    scp = sub_context_new();
-	    sub_var_set_charstar
-	    (
-		scp,
-		"Outstanding",
-		change_outstanding_builds(cp, youngest)
-	    );
-	    sub_var_optional(scp, "Outstanding");
-	    change_error(cp, scp, i18n("build required"));
-	    sub_context_delete(scp);
-	}
-	++errs;
+        if (youngest_name && cstate_data->build_time)
+        {
+            scp = sub_context_new();
+            sub_var_set_charstar
+            (
+                scp,
+                "Outstanding",
+                change_outstanding_builds(cp, youngest)
+            );
+            sub_var_optional(scp, "Outstanding");
+            sub_var_set_string(scp, "File_Name", youngest_name);
+            change_error(cp, scp, i18n("$filename changed after build"));
+            sub_context_delete(scp);
+        }
+        else
+        {
+            scp = sub_context_new();
+            sub_var_set_charstar
+            (
+                scp,
+                "Outstanding",
+                change_outstanding_builds(cp, youngest)
+            );
+            sub_var_optional(scp, "Outstanding");
+            change_error(cp, scp, i18n("build required"));
+            sub_context_delete(scp);
+        }
+        ++errs;
     }
     if
     (
-	!cstate_data->test_exempt
+        !cstate_data->test_exempt
     &&
-	(!cstate_data->test_time || youngest >= cstate_data->test_time)
+        (!cstate_data->test_time || youngest >= cstate_data->test_time)
     )
     {
-	scp = sub_context_new();
-	sub_var_set_charstar
-	(
-	    scp,
-	    "Outstanding",
-	    change_outstanding_tests(cp, youngest)
-	);
-	sub_var_optional(scp, "Outstanding");
-	change_error(cp, scp, i18n("test required"));
-	sub_context_delete(scp);
-	++errs;
+        scp = sub_context_new();
+        sub_var_set_charstar
+        (
+            scp,
+            "Outstanding",
+            change_outstanding_tests(cp, youngest)
+        );
+        sub_var_optional(scp, "Outstanding");
+        change_error(cp, scp, i18n("test required"));
+        sub_context_delete(scp);
+        ++errs;
     }
     if
     (
-	!cstate_data->test_baseline_exempt
+        !cstate_data->test_baseline_exempt
     &&
-	(
-	    !cstate_data->test_baseline_time
-	||
-	    youngest >= cstate_data->test_baseline_time
-	)
+        (
+            !cstate_data->test_baseline_time
+        ||
+            youngest >= cstate_data->test_baseline_time
+        )
     )
     {
-	scp = sub_context_new();
-	sub_var_set_charstar
-	(
-	    scp,
-	    "Outstanding",
-	    change_outstanding_tests_baseline(cp, youngest)
-	);
-	sub_var_optional(scp, "Outstanding");
-	change_error(cp, scp, i18n("test -bl required"));
-	sub_context_delete(scp);
-	++errs;
+        scp = sub_context_new();
+        sub_var_set_charstar
+        (
+            scp,
+            "Outstanding",
+            change_outstanding_tests_baseline(cp, youngest)
+        );
+        sub_var_optional(scp, "Outstanding");
+        change_error(cp, scp, i18n("test -bl required"));
+        sub_context_delete(scp);
+        ++errs;
     }
     if
     (
-	!cstate_data->regression_test_exempt
+        !cstate_data->regression_test_exempt
     &&
-	(
-	    !cstate_data->regression_test_time
-	||
-	    youngest >= cstate_data->regression_test_time
-	)
+        (
+            !cstate_data->regression_test_time
+        ||
+            youngest >= cstate_data->regression_test_time
+        )
     )
     {
-	scp = sub_context_new();
-	sub_var_set_charstar
-	(
-	    scp,
-	    "Outstanding",
-	    change_outstanding_tests_regression(cp, youngest)
-	);
-	sub_var_optional(scp, "Outstanding");
-	change_error(cp, scp, i18n("test -reg required"));
-	sub_context_delete(scp);
-	++errs;
+        scp = sub_context_new();
+        sub_var_set_charstar
+        (
+            scp,
+            "Outstanding",
+            change_outstanding_tests_regression(cp, youngest)
+        );
+        sub_var_optional(scp, "Outstanding");
+        change_error(cp, scp, i18n("test -reg required"));
+        sub_context_delete(scp);
+        ++errs;
     }
 
     //
@@ -989,14 +1007,19 @@ develop_end_main(void)
     //
     if (errs)
     {
-	scp = sub_context_new();
-	sub_var_set_long(scp, "Number", errs);
-	sub_var_optional(scp, "Number");
-	change_fatal(cp, scp, i18n("develop end fail"));
-	sub_context_delete(scp);
+        scp = sub_context_new();
+        sub_var_set_long(scp, "Number", errs);
+        sub_var_optional(scp, "Number");
+        change_fatal(cp, scp, i18n("develop end fail"));
+        sub_context_delete(scp);
     }
     dd = str_copy(change_development_directory_get(cp, 1));
     str_free(dd);
+
+    //
+    // As a last line of defence, run the develop_end_policy_command
+    //
+    change_run_develop_end_policy_command(cp, up);
 
     //
     // add to history for state change
@@ -1008,29 +1031,39 @@ develop_end_main(void)
     switch (project_develop_end_action_get(pp))
     {
     case cstate_branch_develop_end_action_goto_being_reviewed:
-	history_data->what = cstate_history_what_develop_end;
-	cstate_data->state = cstate_state_being_reviewed;
-	break;
+        history_data->what = cstate_history_what_develop_end;
+        cstate_data->state = cstate_state_being_reviewed;
+        break;
 
     case cstate_branch_develop_end_action_goto_awaiting_review:
-	history_data->what = cstate_history_what_develop_end_2ar;
-	cstate_data->state = cstate_state_awaiting_review;
-	break;
+        history_data->what = cstate_history_what_develop_end_2ar;
+        cstate_data->state = cstate_state_awaiting_review;
+        break;
 
     case cstate_branch_develop_end_action_goto_awaiting_integration:
-	history_data->what = cstate_history_what_develop_end_2ai;
-	cstate_data->state = cstate_state_awaiting_integration;
-	break;
+        history_data->what = cstate_history_what_develop_end_2ai;
+        cstate_data->state = cstate_state_awaiting_integration;
+        break;
     }
     if (up_admin)
     {
-	history_data->why =
-	    str_format
-	    (
-		"Forced by administrator \"%s\".",
-		user_name(up_admin)->str_text
-	    );
+	string_ty *r2 =
+            str_format
+            (
+                "Forced by administrator \"%s\".",
+                user_name(up_admin)->str_text
+            );
+	if (reason)
+	{
+	    string_ty *r1 = reason;
+	    reason = str_format("%s\n%s", r1->str_text, r2->str_text);
+	    str_free(r1);
+	    str_free(r2);
+	}
+	else
+	    reason = r2;
     }
+    history_data->why = reason;
 
     //
     // It is tempting to call
@@ -1072,13 +1105,13 @@ develop_end_main(void)
     //
     if
     (
-	cstate_data->uuid
+        cstate_data->uuid
     ?
-	option_signed_off_by_get(false)
+        option_signed_off_by_get(false)
     :
-	change_signed_off_by_get(cp)
+        change_signed_off_by_get(cp)
     )
-	change_signed_off_by(cp, up);
+        change_signed_off_by(cp, up);
 
     //
     // Write the change table row.
@@ -1097,6 +1130,11 @@ develop_end_main(void)
     change_run_develop_end_notify_command(cp);
 
     //
+    // Update the RSS feed file if necessary.
+    //
+    rss_add_item_by_change(pp, cp);
+
+    //
     // verbose success message
     //
     change_verbose(cp, 0, i18n("development completed"));
@@ -1112,8 +1150,8 @@ develop_end(void)
 {
     static arglex_dispatch_ty dispatch[] =
     {
-	{arglex_token_help, develop_end_help, },
-	{arglex_token_list, develop_end_list, },
+        {arglex_token_help, develop_end_help, },
+        {arglex_token_list, develop_end_list, },
     };
 
     trace(("develop_end()\n{\n"));

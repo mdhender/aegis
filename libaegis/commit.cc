@@ -1,6 +1,6 @@
 //
 //	aegis - project change supervisor
-//	Copyright (C) 1991-1995, 2002-2004 Peter Miller;
+//	Copyright (C) 1991-1995, 2002-2005 Peter Miller;
 //	All rights reserved.
 //
 //	This program is free software; you can redistribute it and/or modify
@@ -22,8 +22,8 @@
 
 #include <commit.h>
 #include <dir.h>
+#include <dir/functor/rm_dir_tree.h>
 #include <interrupt.h>
-#include <mem.h>
 #include <os.h>
 #include <trace.h>
 #include <undo.h>
@@ -52,18 +52,29 @@ enum what_ty
     what_rmdir_errok,
     what_rmdir_tree_bg,
     what_rmdir_tree_errok,
+    what_hard_link,
     what_symlink
 };
 
 struct action_ty
 {
     what_ty         what;
-    string_ty       *path1;
-    string_ty       *path2;
+    nstring         path1;
+    nstring         path2;
     action_ty       *next;
     int             uid;
     int             gid;
     int             umask;
+
+    action_ty() :
+	what((what_ty)-1),
+	next(0),
+	uid(0),
+	gid(0),
+	umask(0)
+    {
+	os_become_query(&uid, &gid, &umask);
+    }
 };
 
 static action_ty *head1;
@@ -71,39 +82,26 @@ static action_ty *tail1;
 static action_ty *head2;
 
 
-//
-// NAME
-//	link1
-//
-// SYNOPSIS
-//	void link1(what_ty action, string_ty *path1, string_ty *path2);
-//
-// DESCRIPTION
-//	The link1 function is used to
-//	add an new item to the head of chain1.
-//
-// ARGUMENTS
-//	action	- what to do
-//	path1	- mandatory argument
-//	path2	- optional argument (NULL if not used)
-//
+/**
+  * The link1 function is used to add an new item to the head of chain1.
+  *
+  * @param action
+  *     what to do
+  * @param path1
+  *     mandatory argument
+  * @param path2
+  *     optional argument
+  */
 
 static void
-link1(what_ty what, string_ty *path1, string_ty *path2)
+link1(what_ty what, const nstring &path1, const nstring &path2)
 {
-    action_ty       *new_thing;
-
     trace(("commit::link1(what = %d, path1 = %08lX, path2 = %08lX)\n{\n",
 	what, (long)path1, (long)path2));
-    new_thing = (action_ty *) mem_alloc(sizeof(action_ty));
+    action_ty *new_thing = new action_ty;
     new_thing->what = what;
-    os_become_query(&new_thing->uid, &new_thing->gid, &new_thing->umask);
-    new_thing->path1 = str_copy(path1);
-    if (path2)
-	new_thing->path2 = str_copy(path2);
-    else
-	new_thing->path2 = 0;
-    new_thing->next = 0;
+    new_thing->path1 = path1;
+    new_thing->path2 = path2;
     if (head1)
     {
 	tail1->next = new_thing;
@@ -115,38 +113,26 @@ link1(what_ty what, string_ty *path1, string_ty *path2)
 }
 
 
-//
-// NAME
-//	link2
-//
-// SYNOPSIS
-//	void link2(what_ty action, string_ty *path1, string_ty *path2);
-//
-// DESCRIPTION
-//	The link2 function is used to
-//	add an new item to the head of chain2
-//
-// ARGUMENTS
-//	action	- what to do
-//	path1	- mandatory argument
-//	path2	- optional argument (NULL if not used)
-//
+/**
+  * The link2 function is used to add an new item to the head of chain2
+  *
+  * @param action
+  *     what to do
+  * @param path1
+  *     mandatory argument
+  * @param path2
+  *     optional argument
+  */
 
 static void
-link2(what_ty what, string_ty *path1, string_ty *path2)
+link2(what_ty what, const nstring &path1, const nstring &path2)
 {
-    action_ty      *new_thing;
-
     trace(("commit::link2(what = %d, path1 = %08lX, path2 = %08lX)\n{\n",
 	what, (long)path1, (long)path2));
-    new_thing = (action_ty *) mem_alloc(sizeof(action_ty));
+    action_ty *new_thing = new action_ty;
     new_thing->what = what;
-    os_become_query(&new_thing->uid, &new_thing->gid, &new_thing->umask);
-    new_thing->path1 = str_copy(path1);
-    if (path2)
-	new_thing->path2 = str_copy(path2);
-    else
-	new_thing->path2 = 0;
+    new_thing->path1 = path1;
+    new_thing->path2 = path2;
     new_thing->next = head2;
     head2 = new_thing;
     trace(("}\n"));
@@ -156,10 +142,15 @@ link2(what_ty what, string_ty *path1, string_ty *path2)
 void
 commit_rename(string_ty *from, string_ty *to)
 {
-    trace(("commit_rename(from = %08lX, to = %08lX)\n{\n", (long)from,
-	(long)to));
-    trace_string(from->str_text);
-    trace_string(to->str_text);
+    commit_rename(nstring(str_copy(from)), nstring(str_copy(to)));
+}
+
+
+void
+commit_rename(const nstring &from, const nstring &to)
+{
+    trace(("commit_rename(from = \"%s\", to = \"%s\")\n{\n", from.c_str(),
+	to.c_str()));
     link1(what_rename, from, to);
     trace(("}\n"));
 }
@@ -168,11 +159,33 @@ commit_rename(string_ty *from, string_ty *to)
 void
 commit_symlink(string_ty *from, string_ty *to)
 {
-    trace(("commit_symlink(from = %08lX, to = %08lX)\n{\n", (long)from,
-	(long)to));
-    trace_string(from->str_text);
-    trace_string(to->str_text);
+    commit_symlink(nstring(str_copy(from)), nstring(str_copy(to)));
+}
+
+
+void
+commit_symlink(const nstring &from, const nstring &to)
+{
+    trace(("commit_symlink(from = \"%s\", to = \"%s\")\n{\n", from.c_str(),
+	to.c_str()));
     link1(what_symlink, from, to);
+    trace(("}\n"));
+}
+
+
+void
+commit_hard_link(string_ty *from, string_ty *to)
+{
+    commit_hard_link(nstring(str_copy(from)), nstring(str_copy(to)));
+}
+
+
+void
+commit_hard_link(const nstring &from, const nstring &to)
+{
+    trace(("commit_hard_link(from = \"%s\", to = \"%s\")\n{\n", from.c_str(),
+	to.c_str()));
+    link1(what_hard_link, from, to);
     trace(("}\n"));
 }
 
@@ -180,9 +193,15 @@ commit_symlink(string_ty *from, string_ty *to)
 void
 commit_unlink_errok(string_ty *path)
 {
-    trace(("commit_unlink_errok(path = %08lX)\n{\n", (long)path));
-    trace_string(path->str_text);
-    link2(what_unlink_errok, path, (string_ty *) 0);
+    commit_unlink_errok(nstring(str_copy(path)));
+}
+
+
+void
+commit_unlink_errok(const nstring &path)
+{
+    trace(("commit_unlink_errok(path = \"%s\")\n{\n", path.c_str()));
+    link2(what_unlink_errok, path, "");
     trace(("}\n"));
 }
 
@@ -190,9 +209,15 @@ commit_unlink_errok(string_ty *path)
 void
 commit_rmdir_errok(string_ty *path)
 {
-    trace(("commit_rmdir_errok(path = %08lX)\n{\n", (long)path));
-    trace_string(path->str_text);
-    link2(what_rmdir_errok, path, (string_ty *) 0);
+    commit_rmdir_errok(nstring(str_copy(path)));
+}
+
+
+void
+commit_rmdir_errok(const nstring &path)
+{
+    trace(("commit_rmdir_errok(path = \"%s\")\n{\n", path.c_str()));
+    link2(what_rmdir_errok, path, "");
     trace(("}\n"));
 }
 
@@ -200,9 +225,15 @@ commit_rmdir_errok(string_ty *path)
 void
 commit_rmdir_tree_bg(string_ty *path)
 {
-    trace(("commit_rmdir_tree_bg(path = %08lX)\n{\n", (long)path));
-    trace_string(path->str_text);
-    link2(what_rmdir_tree_bg, path, (string_ty *) 0);
+    commit_rmdir_tree_bg(nstring(str_copy(path)));
+}
+
+
+void
+commit_rmdir_tree_bg(const nstring &path)
+{
+    trace(("commit_rmdir_tree_bg(path = \"%s\")\n{\n", path.c_str()));
+    link2(what_rmdir_tree_bg, path, "");
     trace(("}\n"));
 }
 
@@ -210,93 +241,26 @@ commit_rmdir_tree_bg(string_ty *path)
 void
 commit_rmdir_tree_errok(string_ty *path)
 {
-    trace(("commit_rmdir_tree_errok(path = %08lX)\n{\n", (long)path));
-    trace_string(path->str_text);
-    link2(what_rmdir_tree_errok, path, (string_ty *) 0);
-    trace(("}\n"));
+    commit_rmdir_tree_errok(nstring(str_copy(path)));
 }
 
 
-//
-// NAME
-//	rmdir_tree_callback
-//
-// SYNOPSIS
-//	void rmdir_tree_callback(void * arg, dir_walk_message_ty message,
-//		string_ty *path, struct stat *st);
-//
-// DESCRIPTION
-//	The rmdir_tree_callback function is used to perform an action
-//	while walking a directory tree's structure.
-//
-//	This function is the one that actually deletes things out of the
-//	directory tree as it is walked.  Note that the directory should
-//	be deleted last, after all contents have been nuked.
-//
-//	Some sleight-of-hand is involved here, as this function pushes
-//	extra stuff onto the lists of things to be deleted, rather than
-//	really doing it itself.
-//
-// ARGUMENTS
-//	arg	- argument given to dir_walk for us
-//	message	- what sort of file system entity we are looking at
-//	path	- the absolute path of the file system entity
-//	st	- pointer to stat structure describing file system entity
-//
-
-static void
-rmdir_tree_callback(void *arg, dir_walk_message_ty message, string_ty *path,
-    struct stat *theStat)
+void
+commit_rmdir_tree_errok(const nstring &path)
 {
-    trace(("rmdir_tree_callback(message = %d, path = %08lX, "
-           "theStat = %08lX)\n{\n",
-           message, (long)path, (long)theStat));
-    trace_string(path->str_text);
-    switch (message)
-    {
-    case dir_walk_dir_before:
-	commit_rmdir_errok(path);
-	os_chmod_errok(path, 0750);
-	break;
-
-    case dir_walk_dir_after:
-	break;
-
-    case dir_walk_file:
-    case dir_walk_special:
-    case dir_walk_symlink:
-	commit_unlink_errok(path);
-	break;
-    }
+    trace(("commit_rmdir_tree_errok(path = \"%s\")\n{\n", path.c_str()));
+    link2(what_rmdir_tree_errok, path, "");
     trace(("}\n"));
 }
 
-
-//
-// NAME
-//	commit
-//
-// SYNOPSIS
-//	void commit(void);
-//
-// DESCRIPTION
-//	The commit function is used to
-//	perform all the actions queued using the commit_* functions.
-//
-//	After it has completed successfully, further calls to commit()
-//	will be NOPs, until new commit_* functions are used.
-//
-//	When the commit has succeeded, the undo list is cancelled,
-//	since there is now no reason to undo anything.
-//
 
 void
 commit(void)
 {
     //
     // Disable interrupts (such as ^C) for the duration.  Note that
-    // commit cosists solely of file renames and removes.  No long
-    // writes are perfomed at this time.  Sometimes there is a lot
+    // commit consists solely of file renames and removes.  No long
+    // writes are performed at this time.  Sometimes there is a lot
     // to do.
     //
     trace(("commit()\n{\n"));
@@ -307,12 +271,11 @@ commit(void)
     //
     while (head1 || head2)
     {
-	action_ty      *action;
-
 	//
 	// Take the first item off the list.
 	// Note that actions may append more items to the list.
 	//
+	action_ty *action = 0;
 	if (head1)
 	{
 	    action = head1;
@@ -342,6 +305,11 @@ commit(void)
 	    undo_unlink_errok(action->path2);
 	    break;
 
+	case what_hard_link:
+	    os_link(action->path1, action->path2);
+	    undo_unlink_errok(action->path2);
+	    break;
+
 	case what_unlink_errok:
 	    os_unlink_errok(action->path1);
 	    break;
@@ -356,18 +324,18 @@ commit(void)
 
 	case what_rmdir_tree_errok:
 	    if (os_exists(action->path1))
-		dir_walk(action->path1, rmdir_tree_callback, 0);
+	    {
+		dir_functor_rm_dir_tree eraser;
+		dir_walk(action->path1, eraser);
+	    }
 	    break;
 	}
 	os_become_undo();
 
 	//
-	// Free the list element.
+	// Delete the list element.
 	//
-	str_free(action->path1);
-	if (action->path2)
-	    str_free(action->path2);
-	mem_free((char *)action);
+	delete action;
     }
 
     //

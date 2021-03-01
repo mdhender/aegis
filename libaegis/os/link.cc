@@ -30,24 +30,27 @@
 
 
 void
-os_link(string_ty *from, string_ty *to)
+os_link(const nstring &from, const nstring &to)
 {
-    trace(("os_link(from = %08lX, to = %08lX)\n{\n", (long)from, (long)to));
+    trace(("os_link(from = \"%s\", to = \"%s\")\n{\n",
+	from.c_str(), to.c_str()));
     os_become_must_be_active();
-    trace_string(from->str_text);
-    trace_string(to->str_text);
-    if (glue_link(from->str_text, to->str_text))
+    if (glue_link(from.c_str(), to.c_str()))
     {
-	sub_context_ty  *scp;
-	int             errno_old;
-
-	errno_old = errno;
-	scp = sub_context_new();
-	sub_errno_setx(scp, errno_old);
-	sub_var_set_string(scp, "File_Name1", from);
-	sub_var_set_string(scp, "File_Name2", to);
-	fatal_intl(scp, i18n("link(\"$filename1\", \"$filename2\"): $errno"));
+	int errno_old = errno;
+	sub_context_ty sc;
+	sc.errno_setx(errno_old);
+	sc.var_set_string("File_Name1", from);
+	sc.var_set_string("File_Name2", to);
+	sc.fatal_intl(i18n("link(\"$filename1\", \"$filename2\"): $errno"));
 	// NOTREACHED
     }
     trace(("}\n"));
+}
+
+
+void
+os_link(string_ty *from, string_ty *to)
+{
+    os_link(nstring(from), nstring(to));
 }

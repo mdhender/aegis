@@ -1,7 +1,7 @@
 #!/bin/sh
 #
 #	aegis - project change supervisor
-#	Copyright (C) 1999, 2000, 2004 Peter Miller;
+#	Copyright (C) 1999, 2000, 2004, 2005 Peter Miller;
 #	All rights reserved.
 #
 #	This program is free software; you can redistribute it and/or modify
@@ -93,7 +93,7 @@ AEGIS_PROJECT=foo ; export AEGIS_PROJECT
 #
 # make the directories
 #
-activity="working directory 81"
+activity="working directory 96"
 mkdir $work $work/lib
 if test $? -ne 0 ; then no_result; fi
 chmod 777 $work/lib
@@ -112,14 +112,14 @@ unset LANGUAGE
 #
 # make a new project
 #
-activity="new project 161"
+activity="new project 115"
 $bin/aegis -npr foo -vers "" -dir $workproj > log 2>&1
 if test $? -ne 0 ; then cat log; no_result; fi
 
 #
 # change project attributes
 #
-activity="project attributes 168"
+activity="project attributes 122"
 cat > $tmp << 'end'
 description = "A bogus project created to test the integrate pass functionality.";
 developer_may_review = true;
@@ -134,7 +134,7 @@ if test $? -ne 0 ; then cat log; no_result; fi
 #
 # add the staff
 #
-activity="staff 207"
+activity="staff 137"
 $bin/aegis -nd $USER > log 2>&1
 if test $? -ne 0 ; then cat log; no_result; fi
 $bin/aegis -nrv $USER > log 2>&1
@@ -153,7 +153,7 @@ AEGIS_PROJECT=foo.4.2 ; export AEGIS_PROJECT
 #
 # create a new change
 #
-activity="new change 183"
+activity="new change 156"
 cat > $tmp << 'end'
 brief_description = "The first change";
 cause = internal_bug;
@@ -171,8 +171,8 @@ if test $? -ne 0 ; then cat log; no_result; fi
 #
 # add a new files to the change
 #
-activity="new file 224"
-$bin/aegis -nf $workchan/main.c $workchan/config -nl > log 2>&1
+activity="new file 174"
+$bin/aegis -nf $workchan/main.c $workchan/aegis.conf -nl > log 2>&1
 if test $? -ne 0 ; then cat log; no_result; fi
 cat > $workchan/main.c << 'end'
 /* $Id$ */
@@ -180,7 +180,7 @@ int main() { test(); exit(0); return 0; }
 end
 if test $? -ne 0 ; then no_result; fi
 
-cat > $workchan/config << 'end'
+cat > $workchan/aegis.conf << 'end'
 build_command = "exit 0";
 link_integration_directory = true;
 create_symlinks_before_build = true;
@@ -201,49 +201,49 @@ if test $? -ne 0 ; then no_result; fi
 #
 # build the change
 #
-activity="build 295"
+activity="build 204"
 $bin/aegis -build -nl -v > log 2>&1
 if test $? -ne 0 ; then cat log; fail; fi
 
 #
 # difference the change
 #
-activity="diff 302"
+activity="diff 211"
 $bin/aegis -diff > log 2>&1
 if test $? -ne 0 ; then cat log; no_result; fi
 
 #
 # finish development of the change
 #
-activity="develop end 316"
+activity="develop end 218"
 $bin/aegis -de > log 2>&1
 if test $? -ne 0 ; then cat log; fail; fi
 
 #
 # pass the review
 #
-activity="review pass 323"
+activity="review pass 225"
 $bin/aegis -rpass -c 1 > log 2>&1
 if test $? -ne 0 ; then cat log; no_result; fi
 
 #
 # start integrating
 #
-activity="integrate begin 330"
+activity="integrate begin 232"
 $bin/aegis -ib 1 > log 2>&1
 if test $? -ne 0 ; then cat log; no_result; fi
 
 #
 # integrate build
 #
-activity="build 337"
+activity="build 239"
 $bin/aegis -b -nl -v > log 2>&1
 if test $? -ne 0 ; then cat log; no_result; fi
 
 #
 # integrate diff
 #
-activity="diff 337"
+activity="diff 246"
 $bin/aegis -diff -nl -v > log 2>&1
 if test $? -ne 0 ; then cat log; no_result; fi
 

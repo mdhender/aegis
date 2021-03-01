@@ -1,6 +1,6 @@
 //
 //	aegis - project change supervisor
-//	Copyright (C) 1991-1994, 1999, 2002-2004 Peter Miller;
+//	Copyright (C) 1991-1994, 1999, 2002-2005 Peter Miller;
 //	All rights reserved.
 //
 //	This program is free software; you can redistribute it and/or modify
@@ -24,6 +24,7 @@
 #include <ac/string.h>
 #include <ac/stdlib.h>
 #include <ac/errno.h>
+#include <ac/new.h>
 
 #include <mem.h>
 #include <error.h>
@@ -97,19 +98,16 @@ aix_touch(void *vp, size_t nbytes)
 void *
 mem_alloc(size_t n)
 {
-    void            *cp;
-    int             old_errno;
-
     if (n < 1)
 	n = 1;
-    old_errno = errno;
+    int old_errno = errno;
     errno = 0;
-    cp = malloc(n);
+    void *cp = malloc(n);
     if (!cp)
     {
 	if (!errno)
 	    errno = ENOMEM;
-	nfatal("malloc");
+	nfatal("malloc(%ld)", (long)n);
     }
 #ifdef _AIX
     //
@@ -118,7 +116,7 @@ mem_alloc(size_t n)
     if (aix_touch(cp, n))
     {
 	errno = ENOMEM;
-	nfatal("malloc");
+	nfatal("malloc(%ld)", (long)n);
     }
 #endif
     errno = old_errno;
@@ -129,9 +127,7 @@ mem_alloc(size_t n)
 void *
 mem_alloc_clear(size_t n)
 {
-    void            *cp;
-
-    cp = mem_alloc(n);
+    void *cp = mem_alloc(n);
     memset(cp, 0, n);
     return cp;
 }
@@ -140,11 +136,9 @@ mem_alloc_clear(size_t n)
 void *
 mem_change_size(void *cp, size_t n)
 {
-    int         old_errno;
-
     if (n < 1)
 	n = 1;
-    old_errno = errno;
+    int old_errno = errno;
     errno = 0;
     if (!cp)
 	cp = malloc(n);
@@ -154,7 +148,7 @@ mem_change_size(void *cp, size_t n)
     {
 	if (!errno)
 	    errno = ENOMEM;
-	nfatal("realloc");
+	nfatal("realloc(%ld)", (long)n);
     }
 
     errno = old_errno;
@@ -185,3 +179,83 @@ mem_copy_string(const char *s)
 {
     return mem_copy_string(s, (s ? strlen(s) : 0));
 }
+
+
+#if HAVE_HEADER_NEW || HAVE_NEW_H
+#define THROW_BAD_ALLOC throw(std::bad_alloc)
+#else
+#define THROW_BAD_ALLOC
+#endif
+
+
+void *
+operator new(size_t nbytes)
+    THROW_BAD_ALLOC
+{
+    return mem_alloc(nbytes);
+}
+
+
+void *
+operator new[](size_t nbytes)
+    THROW_BAD_ALLOC
+{
+    return mem_alloc(nbytes);
+}
+
+
+void
+operator delete(void *ptr)
+    throw()
+{
+    if (ptr)
+	mem_free(ptr);
+}
+
+
+void
+operator delete[](void *ptr)
+    throw()
+{
+    if (ptr)
+	mem_free(ptr);
+}
+
+
+#if HAVE_HEADER_NEW || HAVE_NEW_H
+
+
+void *
+operator new(size_t nbytes, std::nothrow_t &)
+    throw()
+{
+    return mem_alloc(nbytes);
+}
+
+
+void *
+operator new[](size_t nbytes, std::nothrow_t &)
+    throw()
+{
+    return mem_alloc(nbytes);
+}
+
+
+void
+operator delete(void *ptr, std::nothrow_t const &)
+    throw()
+{
+    if (ptr)
+	mem_free(ptr);
+}
+
+
+void
+operator delete[](void *ptr, std::nothrow_t const &)
+    throw()
+{
+    if (ptr)
+	mem_free(ptr);
+}
+
+#endif

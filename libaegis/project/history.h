@@ -1,6 +1,6 @@
 /*
  *	aegis - project change supervisor
- *	Copyright (C) 1995-1998, 2001-2003 Peter Miller;
+ *	Copyright (C) 1995-1998, 2001-2003, 2005 Peter Miller;
  *	All rights reserved.
  *
  *	This program is free software; you can redistribute it and/or modify
@@ -113,7 +113,50 @@ void project_integrate_fail_notify_command_set(project_ty *, string_ty *);
 string_ty *project_integrate_fail_notify_command_get(project_ty *);
 void project_default_development_directory_set(project_ty *, string_ty *);
 string_ty *project_default_development_directory_get(project_ty *);
-void project_default_test_exemption_set(project_ty *, bool);
-bool project_default_test_exemption_get(project_ty *);
+
+/**
+  * The project_default_test_exemption_set function is used to set the
+  * test exemption attribute of a project.
+  *
+  * @param pp
+  *     The project being operated on
+  * @param yesno
+  *     The state to set the attribute
+  */
+void project_default_test_exemption_set(project_ty *pp, bool yesno);
+
+/**
+  * The project_default_test_exemption_get function is used to obtain
+  * the current setting of the test exemption attribute of a project.
+  *
+  * @param pp
+  *     The project being queried
+  * @returns
+  *     The current state of the attribute
+  */
+bool project_default_test_exemption_get(project_ty *pp);
+
+/**
+  * The project_default_test_regression_exemption_set function is used
+  * to set the regression test exemption attribute of a project.
+  *
+  * @param pp
+  *     The project being operated on
+  * @param yesno
+  *     The state to set the attribute
+  */
+void project_default_test_regression_exemption_set(project_ty *pp, bool yesno);
+
+/**
+  * The project_default_test_regression_exemption_get function is used
+  * to obtain the current setting of the regression test exemption
+  * attribute of a project.
+  *
+  * @param pp
+  *     The project being queried
+  * @returns
+  *     The current state of the attribute
+  */
+bool project_default_test_regression_exemption_get(project_ty *pp);
 
 #endif /* AEGIS_PROJECT_HISTORY_H */

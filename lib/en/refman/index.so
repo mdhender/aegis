@@ -281,6 +281,20 @@ T}	T{
 .ad l
 aeib command
 T}
+aelcf(1)	\*[Page*Of*aelcf(1)]	T{
+.ad r
+
+T}	T{
+.ad l
+aelcf - list change files
+T}
+aelpf(1)	\*[Page*Of*aelpf(1)]	T{
+.ad r
+
+T}	T{
+.ad l
+aelpf - list project files
+T}
 aemeasure(1)	\*[Page*Of*aemeasure(1)]	T{
 .ad r
 
@@ -344,6 +358,13 @@ T}	T{
 .ad l
 aerect - draw a rectangle
 T}
+aerevml(1)	\*[Page*Of*aerevml(1)]	T{
+.ad r
+
+T}	T{
+.ad l
+aerevml - send and receive RevML change sets
+T}
 aerptidx(5)	\*[Page*Of*aerptidx(5)]	T{
 .ad r
 
@@ -371,6 +392,20 @@ aesub(1)	\*[Page*Of*aesub(1)]	T{
 T}	T{
 .ad l
 aesub - substitute and echo strings
+T}
+aesubunit(1)	\*[Page*Of*aesubunit(1)]	T{
+.ad r
+
+T}	T{
+.ad l
+aesubunit - run SubUnit tests
+T}
+aesvt(1)	\*[Page*Of*aesvt(1)]	T{
+.ad r
+
+T}	T{
+.ad l
+aesvt - simple version tool
 T}
 aetar(1)	\*[Page*Of*aetar(1)]	T{
 .ad r
@@ -406,6 +441,13 @@ aexml(1)	\*[Page*Of*aexml(1)]	T{
 T}	T{
 .ad l
 aexml - Aegis database to XML
+T}
+aexver(1)	\*[Page*Of*aexver(1)]	T{
+.ad r
+
+T}	T{
+.ad l
+aexver - graphical file history
 T}
 aecvsserver(1)	\*[Page*Of*aecvsserver(1)]	T{
 .ad r
@@ -869,6 +911,13 @@ T}	T{
 .ad l
 Change Directory - change directory
 T}
+aelcf(1)	\*[Page*Of*aelcf(1)]	T{
+.ad r
+aelcf - list
+T}	T{
+.ad l
+change files
+T}
 aedeu(1)	\*[Page*Of*aedeu(1)]	T{
 .ad r
 aegis -Develop End Undo - recall a
@@ -973,6 +1022,13 @@ aegis - send and receive
 T}	T{
 .ad l
 changes as patches
+T}
+aerevml(1)	\*[Page*Of*aerevml(1)]	T{
+.ad r
+aerevml - send and receive RevML
+T}	T{
+.ad l
+change sets
 T}
 tkaer(1)	\*[Page*Of*tkaer(1)]	T{
 .ad r
@@ -1702,6 +1758,13 @@ T}	T{
 .ad l
 file format
 T}
+aexver(1)	\*[Page*Of*aexver(1)]	T{
+.ad r
+aexver - graphical
+T}	T{
+.ad l
+file history
+T}
 aecp(1)	\*[Page*Of*aecp(1)]	T{
 .ad r
 aegis -CoPy file - copy a
@@ -1733,6 +1796,20 @@ T}
 aeedit(1)	\*[Page*Of*aeedit(1)]	T{
 .ad r
 aeedit - edit a change's
+T}	T{
+.ad l
+files
+T}
+aelcf(1)	\*[Page*Of*aelcf(1)]	T{
+.ad r
+aelcf - list change
+T}	T{
+.ad l
+files
+T}
+aelpf(1)	\*[Page*Of*aelpf(1)]	T{
+.ad r
+aelpf - list project
 T}	T{
 .ad l
 files
@@ -2038,6 +2115,13 @@ T}	T{
 .ad l
 give version information
 T}
+aexver(1)	\*[Page*Of*aexver(1)]	T{
+.ad r
+aexver -
+T}	T{
+.ad l
+graphical file history
+T}
 tkaeca(1)	\*[Page*Of*tkaeca(1)]	T{
 .ad r
 aegis -
@@ -2079,6 +2163,13 @@ aegis - search for files in directory
 T}	T{
 .ad l
 hierarchy
+T}
+aexver(1)	\*[Page*Of*aexver(1)]	T{
+.ad r
+aexver - graphical file
+T}	T{
+.ad l
+history
 T}
 aelock(5)	\*[Page*Of*aelock(5)]	T{
 .ad r
@@ -2269,6 +2360,13 @@ T}	T{
 .ad l
 language definition
 T}
+aelcf(1)	\*[Page*Of*aelcf(1)]	T{
+.ad r
+aelcf -
+T}	T{
+.ad l
+list change files
+T}
 aeannotate(1)	\*[Page*Of*aeannotate(1)]	T{
 .ad r
 aeannotate - annotated source file
@@ -2296,6 +2394,13 @@ aegis -List -
 T}	T{
 .ad l
 list (possibly) interesting things
+T}
+aelpf(1)	\*[Page*Of*aelpf(1)]	T{
+.ad r
+aelpf -
+T}	T{
+.ad l
+list project files
 T}
 aelock(5)	\*[Page*Of*aelock(5)]	T{
 .ad r
@@ -2920,6 +3025,13 @@ T}	T{
 .ad l
 project delta
 T}
+aelpf(1)	\*[Page*Of*aelpf(1)]	T{
+.ad r
+aelpf - list
+T}	T{
+.ad l
+project files
+T}
 aenrls(1)	\*[Page*Of*aenrls(1)]	T{
 .ad r
 aegis -New ReLeaSe - create a new
@@ -3003,6 +3115,13 @@ aegis - send and
 T}	T{
 .ad l
 receive changes as patches
+T}
+aerevml(1)	\*[Page*Of*aerevml(1)]	T{
+.ad r
+aerevml - send and
+T}	T{
+.ad l
+receive RevML change sets
 T}
 aerect(1)	\*[Page*Of*aerect(1)]	T{
 .ad r
@@ -3347,6 +3466,20 @@ T}	T{
 .ad l
 Review Pass Undo - rescind a change review pass
 T}
+aerevml(1)	\*[Page*Of*aerevml(1)]	T{
+.ad r
+aerevml - send and receive
+T}	T{
+.ad l
+RevML change sets
+T}
+aesubunit(1)	\*[Page*Of*aesubunit(1)]	T{
+.ad r
+aesubunit -
+T}	T{
+.ad l
+run SubUnit tests
+T}
 aet(1)	\*[Page*Of*aet(1)]	T{
 .ad r
 aegis -Test -
@@ -3389,6 +3522,13 @@ T}	T{
 .ad l
 send and receive changes as patches
 T}
+aerevml(1)	\*[Page*Of*aerevml(1)]	T{
+.ad r
+aerevml -
+T}	T{
+.ad l
+send and receive RevML change sets
+T}
 aecvsserver(1)	\*[Page*Of*aecvsserver(1)]	T{
 .ad r
 aecvsserver -
@@ -3417,6 +3557,13 @@ T}	T{
 .ad l
 set project name
 T}
+aerevml(1)	\*[Page*Of*aerevml(1)]	T{
+.ad r
+aerevml - send and receive RevML change
+T}	T{
+.ad l
+sets
+T}
 tkaer(1)	\*[Page*Of*tkaer(1)]	T{
 .ad r
 aegis - GUI tool for reviewing Aegis change
@@ -3444,6 +3591,13 @@ aemeasure -
 T}	T{
 .ad l
 simple file metrics
+T}
+aesvt(1)	\*[Page*Of*aesvt(1)]	T{
+.ad r
+aesvt -
+T}	T{
+.ad l
+simple version tool
 T}
 aeannotate(1)	\*[Page*Of*aeannotate(1)]	T{
 .ad r
@@ -3536,6 +3690,13 @@ T}	T{
 .ad l
 substitutions
 T}
+aesubunit(1)	\*[Page*Of*aesubunit(1)]	T{
+.ad r
+aesubunit - run
+T}	T{
+.ad l
+SubUnit tests
+T}
 aegis(1)	\*[Page*Of*aegis(1)]	T{
 .ad r
 aegis - project change
@@ -3620,6 +3781,13 @@ T}	T{
 .ad l
 tests
 T}
+aesubunit(1)	\*[Page*Of*aesubunit(1)]	T{
+.ad r
+aesubunit - run SubUnit
+T}	T{
+.ad l
+tests
+T}
 aentu(1)	\*[Page*Of*aentu(1)]	T{
 .ad r
 aegis -New Test Undo - remove new
@@ -3689,6 +3857,13 @@ aegis - GUI tool for reviewing Aegis change sets, using TCL/
 T}	T{
 .ad l
 TK
+T}
+aesvt(1)	\*[Page*Of*aesvt(1)]	T{
+.ad r
+aesvt - simple version
+T}	T{
+.ad l
+tool
 T}
 tkaer(1)	\*[Page*Of*tkaer(1)]	T{
 .ad r
@@ -3920,6 +4095,13 @@ aegis -VERSion - give
 T}	T{
 .ad l
 version information
+T}
+aesvt(1)	\*[Page*Of*aesvt(1)]	T{
+.ad r
+aesvt - simple
+T}	T{
+.ad l
+version tool
 T}
 aetar(1)	\*[Page*Of*aetar(1)]	T{
 .ad r

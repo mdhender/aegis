@@ -1,6 +1,6 @@
 //
 //	aegis - project change supervisor
-//	Copyright (C) 2004 Peter Miller;
+//	Copyright (C) 2004, 2005 Peter Miller;
 //	All rights reserved.
 //
 //	This program is free software; you can redistribute it and/or modify
@@ -23,7 +23,7 @@
 #ifndef AE_CVS_SERVER_SERVER_H
 #define AE_CVS_SERVER_SERVER_H
 
-#include <str.h>
+#include <nstring.h>
 #include <net.h>
 
 struct response_ty; // forward
@@ -71,7 +71,7 @@ void server_response_flush(server_ty *);
   * not included in the returned string.  Returns NULL if end-of-file
   * is reached.
   */
-string_ty *server_getline(server_ty *);
+bool server_getline(server_ty *sp, nstring &result);
 
 /**
   * The server_file_mode_get function is used to read a file mode line

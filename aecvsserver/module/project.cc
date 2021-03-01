@@ -1,6 +1,6 @@
 //
 //	aegis - project change supervisor
-//	Copyright (C) 2004 Peter Miller;
+//	Copyright (C) 2004, 2005 Peter Miller;
 //	All rights reserved.
 //
 //	This program is free software; you can redistribute it and/or modify
@@ -175,9 +175,7 @@ update(module_ty *mp, server_ty *sp, string_ty *client_side_0,
 	//
 	path = project_file_version_path(mpp->pp, src, &need_to_unlink);
 	os_become_orig();
-	ip = input_file_open(path);
-	if (need_to_unlink)
-	    input_file_unlink_on_close(ip);
+	ip = input_file_open(path, need_to_unlink);
 	os_become_undo();
 	str_free(path);
 

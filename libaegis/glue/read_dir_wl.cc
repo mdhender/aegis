@@ -1,6 +1,6 @@
 //
 //	aegis - project change supervisor
-//	Copyright (C) 2004 Peter Miller;
+//	Copyright (C) 2004, 2005 Peter Miller;
 //	All rights reserved.
 //
 //	This program is free software; you can redistribute it and/or modify
@@ -21,7 +21,7 @@
 //
 
 #include <glue.h>
-#include <str_list.h>
+#include <nstring/list.h>
 
 
 int
@@ -68,4 +68,30 @@ read_whole_dir__wl(const char *path, string_list_ty *result)
     }
     // do NOT free what data is pointing to
     return 0;
+}
+
+
+int
+read_whole_dir__wla(const nstring &path, nstring_list &result)
+{
+    char *data = 0;
+    long data_len = 0;
+    if (glue_read_whole_dir(path.c_str(), &data, &data_len))
+	return -1;
+    for (char *cp = data; cp < data + data_len; )
+    {
+	nstring s(cp);
+	cp += s.size() + 1;
+	result.push_back_unique(s);
+    }
+    // do NOT free what data is pointing to
+    return 0;
+}
+
+
+int
+read_whole_dir__wl(const nstring &path, nstring_list &result)
+{
+    result.clear();
+    return read_whole_dir__wla(path, result);
 }

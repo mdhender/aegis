@@ -1,6 +1,6 @@
 //
 //	aegis - project change supervisor
-//	Copyright (C) 1999, 2003, 2004 Peter Miller;
+//	Copyright (C) 1999, 2003-2005 Peter Miller;
 //	All rights reserved.
 //
 //	This program is free software; you can redistribute it and/or modify
@@ -21,28 +21,27 @@
 //
 
 #include <input.h>
-#include <stracc.h>
+#include <nstring/accumulator.h>
 
 
-string_ty *
-input_one_line(input_ty *fp)
+bool
+input_ty::one_line(nstring &result)
 {
-    int             c;
-    static stracc_t buffer;
-
-    buffer.clear();
+    static nstring_accumulator line_buffer;
+    line_buffer.clear();
     for (;;)
     {
-	c = input_getc(fp);
+	int c = getc();
 	if (c < 0)
 	{
-	    if (buffer.empty())
-	       	return 0;
+	    if (line_buffer.empty())
+	       	return false;
 	    break;
 	}
 	if (c == '\n')
 	    break;
-	buffer.push_back(c);
+	line_buffer.push_back(c);
     }
-    return buffer.mkstr();
+    result = line_buffer.mkstr();
+    return true;
 }

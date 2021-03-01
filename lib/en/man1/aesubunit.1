@@ -1,0 +1,112 @@
+'\" t
+.\"	aegis - project change supervisor
+.\"	Copyright (C) 2005 Peter Miller;
+.\"	All rights reserved.
+.\"
+.\"	This program is free software; you can redistribute it and/or modify
+.\"	it under the terms of the GNU General Public License as published by
+.\"	the Free Software Foundation; either version 2 of the License, or
+.\"	(at your option) any later version.
+.\"
+.\"	This program is distributed in the hope that it will be useful,
+.\"	but WITHOUT ANY WARRANTY; without even the implied warranty of
+.\"	MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+.\"	GNU General Public License for more details.
+.\"
+.\"	You should have received a copy of the GNU General Public License
+.\"	along with this program; if not, write to the Free Software
+.\"	Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111, USA.
+.\"
+.\" MANIFEST: manual page describing the lib/en/man1/aesubunit command.
+.\"
+.so z_name.so
+.ds n) aesubunit
+.TH "aesubunit" 1 \*(N) "Reference Manual" ""
+.SH NAME
+aesubunit \- run SubUnit tests
+.XX "aesubunit(1)" "run SubUnit tests"
+.SH SYNOPSIS
+.B aesubunit
+[
+.IR option \&...
+]
+.IR filename \&...
+.br
+.B aesubunit
+.B -Help
+.br
+.B aesubunit
+.B -VERSion
+.SH DESCRIPTION
+The \fPaesubunit\fP command is used to invoke tests via the
+http://\%www.robertcollins.net/\%unittest/\%subunit unit testing interface.
+.SH
+The shape of the external unittest should not need to be known a-priori.
+After the test has run, tests should still exist as discrete objects, so that
+anything taking a reference to them doesn't get 50 copies of the same object.
+.SH
+The \fIaesubunit\fP command may be used to replace the
+\fItest_command\fP or \fIbatch_test_command\fP fields of the project
+configuration file.
+.SS Control Protocol
+The results of the test are obtained by examining the standard output of
+the tests as they run.
+The text is meant to be human readable, so that tests may run stand-alone.
+.PP
+Tests should ideally print a header of the form
+.RS
+.nf
+\f[CW]test\fP
+\f[CW]testing\fP
+\f[CW]test:\fP \fItest label\fP
+\f[CW]testing:\fP \fItest label\fP
+.fi
+.RE
+A successful test will produce lines of the form
+.RS
+.nf
+\f[CW]success\fP
+\f[CW]success:\fP
+\f[CW]successful\fP \fItest label\fP
+\f[CW]successful:\fP \fItest label\fP
+.fi
+.RE
+A test failure will produce text of the form
+.RS
+\f[CW]failure\fP \fItest label\fP
+\f[CW]failure:\fP \fItest label\fP
+\f[CW]failure\fP \fItest label\fP \f[CW][
+...
+]\fP
+\f[CW]failure:\fP \fItest label\fP \f[CW][
+...
+]\fP
+.RE
+The square brackets indicate text which may describe the test in more detail.
+It will be printed on the standartd output by the \fIaesubunit\fP program.
+.PP
+A test which produces no result (neither succes nor failure)
+uses the following forms
+.RS
+\f[CW]error:\fP \fItest label\fP
+\f[CW]error:\fP \fItest label\fP \f[CW][
+...
+]\fP
+.RE
+In general, unexpected output from the test will be sent through to the
+\fIaesubunit\fP standard output.
+.PP
+If a subunit test terminates with an exit status other than zero,
+this is taken to be a no result indication for that test.
+.SH OPTIONS
+The following options are understood:
+.TP 8n
+\fB\-Batch\fP
+This option may be useed to specify that a batch test should be performed,
+and produce results in the appropriate form.
+.so o_change.so
+.so o_project.so
+.so o_help.so
+.so o__rules.so
+.so z_exit.so
+.so z_cr.so

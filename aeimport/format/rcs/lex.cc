@@ -1,6 +1,6 @@
 //
 //      aegis - project change supervisor
-//      Copyright (C) 2001, 2002, 2004 Peter Miller;
+//      Copyright (C) 2001, 2002, 2004, 2005 Peter Miller;
 //      All rights reserved.
 //
 //      This program is free software; you can redistribute it and/or modify
@@ -99,7 +99,7 @@ rcs_lex_close(void)
 {
     if (error_count)
         quit(1);
-    input_delete(ip);
+    delete ip;
     ip = 0;
 }
 
@@ -113,14 +113,14 @@ rcs_lex_error(sub_context_ty *scp, const char *s)
 
     // re-use substitution context
     sub_var_set_string(scp, "Message", msg);
-    sub_var_set_string(scp, "File_Name", input_name(ip));
+    sub_var_set_string(scp, "File_Name", ip->name());
     error_intl(scp, i18n("$filename: $message"));
     str_free(msg);
 
     if (++error_count >= 20)
     {
         // re-use substitution context
-        sub_var_set_string(scp, "File_Name", input_name(ip));
+        sub_var_set_string(scp, "File_Name", ip->name());
         fatal_intl(scp, i18n("$filename: too many errors"));
     }
 }
@@ -422,7 +422,7 @@ format_rcs_gram_lex(void)
 
     for (;;)
     {
-        c = input_getc(ip);
+        c = ip->getc();
         if (c < 0)
         {
             trace(("EOF\n"));
@@ -443,7 +443,7 @@ format_rcs_gram_lex(void)
             for (;;)
             {
                 buffer.push_back(c);
-                c = input_getc(ip);
+                c = ip->getc();
                 if (c < 0)
                     break;
                 d = ctab[c];
@@ -455,7 +455,7 @@ format_rcs_gram_lex(void)
 
                 default:
                     if (c >= 0)
-                        input_ungetc(ip, c);
+                        ip->ungetc(c);
                     break;
                 }
                 break;
@@ -484,7 +484,7 @@ format_rcs_gram_lex(void)
             for (;;)
             {
                 buffer.push_back(c);
-                c = input_getc(ip);
+                c = ip->getc();
                 if (c < 0)
                     break;
                 d = ctab[c];
@@ -495,7 +495,7 @@ format_rcs_gram_lex(void)
 
                 default:
                     if (c >= 0)
-                        input_ungetc(ip, c);
+                        ip->ungetc(c);
                     break;
                 }
                 break;
@@ -509,19 +509,19 @@ format_rcs_gram_lex(void)
             buffer.clear();
             for (;;)
             {
-                c = input_getc(ip);
+                c = ip->getc();
                 if (c < 0)
                         break;
                 d = ctab[c];
                 if (d == ctab_is_string)
                 {
-                    c = input_getc(ip);
+                    c = ip->getc();
                     if (c < 0)
                         break;
                     d = ctab[c];
                     if (d != ctab_is_string)
                     {
-                        input_ungetc(ip, c);
+                        ip->ungetc(c);
                         break;
                     }
                 }

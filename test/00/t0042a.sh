@@ -1,7 +1,7 @@
 #!/bin/sh
 #
 #	aegis - project change supervisor
-#	Copyright (C) 1996-1998, 2000, 2004 Peter Miller;
+#	Copyright (C) 1996-1998, 2000, 2004, 2005 Peter Miller;
 #	All rights reserved.
 #
 #	This program is free software; you can redistribute it and/or modify
@@ -95,7 +95,7 @@ check_it()
 	if test $? -ne 0; then fail; fi
 }
 
-activity="working directory 86"
+activity="working directory 98"
 mkdir $work $work/lib
 if test $? -ne 0 ; then no_result; fi
 chmod 777 $work/lib
@@ -119,11 +119,11 @@ unset LANGUAGE
 #
 # test the aed directory functionality
 #
-activity="new project 124"
+activity="new project 122"
 $bin/aegis -npr $AEGIS_PROJECT -vers "" -v -dir $work/test > log 2>&1
 if test $? -ne 0 ; then cat log; no_result; fi
 
-activity="project attributes 128"
+activity="project attributes 126"
 cat > paf << 'fubar'
 developer_may_review = true;
 developer_may_integrate = true;
@@ -134,7 +134,7 @@ if test $? -ne 0 ; then no_result; fi
 $bin/aegis -pa -f paf -v > log 2>&1
 if test $? -ne 0 ; then cat log; no_result; fi
 
-activity="new change 139"
+activity="new change 137"
 cat > caf << 'fubar'
 brief_description = "ten";
 cause = internal_enhancement;
@@ -143,7 +143,7 @@ if test $? -ne 0 ; then no_result; fi
 $bin/aegis -nc -p $AEGIS_PROJECT -f caf -v > log 2>&1
 if test $? -ne 0 ; then cat log; no_result; fi
 
-activity="staff 148"
+activity="staff 146"
 $bin/aegis -nd $USER -v > log 2>&1
 if test $? -ne 0 ; then cat log; no_result; fi
 $bin/aegis -nrv $USER -v > log 2>&1
@@ -151,16 +151,16 @@ if test $? -ne 0 ; then cat log; no_result; fi
 $bin/aegis -ni $USER -v > log 2>&1
 if test $? -ne 0 ; then cat log; no_result; fi
 
-activity="develop begin 156"
+activity="develop begin 154"
 $bin/aegis -db 10 -v > log 2>&1
 if test $? -ne 0 ; then cat log; no_result; fi
 
-activity="new file 160"
-$bin/aegis -nf $work/test.C010/config $work/test.C010/a \
+activity="new file 158"
+$bin/aegis -nf $work/test.C010/aegis.conf $work/test.C010/a \
 	$work/test.C010/b/c $work/test.C010/b/d -v > log 2>&1
 if test $? -ne 0 ; then cat log; no_result; fi
 
-cat > $work/test.C010/config << 'fubar'
+cat > $work/test.C010/aegis.conf << 'fubar'
 build_command = "exit 0";
 diff_command = "echo $orig $input > $output";
 diff3_command = "exit 0; echo $orig $mr $input $output";
@@ -171,11 +171,11 @@ history_query_command = "echo 1.1; exit 0; echo $history";
 fubar
 if test $? -ne 0 ; then no_result; fi
 
-activity="diff directory 176"
+activity="diff directory 174"
 $bin/aegis -diff $work/test.C010/b -v > log 2>&1
 if test $? -ne 0 ; then cat log; fail; fi
 
-activity="check change file state 180"
+activity="check change file state 178"
 cat > ok << 'fubar'
 src =
 [
@@ -183,6 +183,11 @@ src =
 		file_name = "a";
 		action = create;
 		usage = source;
+	},
+	{
+		file_name = "aegis.conf";
+		action = create;
+		usage = config;
 	},
 	{
 		file_name = "b/c";
@@ -217,11 +222,6 @@ src =
 			oldest = TIME;
 			crypto = "GUNK";
 		};
-	},
-	{
-		file_name = "config";
-		action = create;
-		usage = config;
 	},
 ];
 fubar

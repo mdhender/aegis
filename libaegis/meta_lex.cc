@@ -1,6 +1,6 @@
 //
 //	aegis - project change supervisor
-//	Copyright (C) 1991-1996, 1998, 1999, 2001-2004 Peter Miller;
+//	Copyright (C) 1991-1996, 1998, 1999, 2001-2005 Peter Miller;
 //	All rights reserved.
 //
 //	This program is free software; you can redistribute it and/or modify
@@ -52,26 +52,24 @@ static stracc_t buffer;
 void
 lex_open(string_ty *s)
 {
-    input_ty	    *fp;
-
     //
     // Open the underlying binary file.
     //
-    fp = input_file_open(s);
+    input_ty *fp = input_file_open(s);
 
     //
     // Decompress the input stream.  If it *isn't* compressed, this
     // incurs NO overhead, because the gunzip code gets itself out
     // of the way, and returns the original fp.
     //
-    fp = input_gunzip(fp);
+    fp = input_gunzip_open(fp);
 
     //
     // Get rid of CRLF sequences in the input.
     // This happens, for instance, when the file is created on
     // windows nt, but used on Unix.
     //
-    fp = input_crlf(fp, 1);
+    fp = new input_crlf(fp, true);
 
     //
     // Now that we've completely messed with your mind, parse the
@@ -103,18 +101,23 @@ lex_close(void)
 	sub_context_ty	*scp;
 
 	scp = sub_context_new();
-	sub_var_set_string(scp, "File_Name", input_name(input));
+	sub_var_set_string(scp, "File_Name", input->name());
 	sub_var_set_long(scp, "Number", error_count);
 	sub_var_optional(scp, "Number");
 	fatal_intl(scp, i18n("$filename: has errors"));
 	// NOTREACHED
     }
-    input_delete(input);
+    delete input;
     input = 0;
 }
 
 
-#define lex_getc_undo(c) ((c) >= 0 ? input_ungetc(input, (c)) : (void)0)
+static inline void
+lex_getc_undo(int c)
+{
+    if (c >= 0)
+	input->ungetc(c);
+}
 
 
 int
@@ -126,7 +129,7 @@ gram_lex(void)
 
     for (;;)
     {
-	c = input_getc(input);
+	c = input->getc();
 	switch (c)
 	{
 	case ' ':
@@ -138,14 +141,14 @@ gram_lex(void)
 	case '0':
 	    buffer.clear();
 	    buffer.push_back('0');
-	    c = input_getc(input);
+	    c = input->getc();
 	    if (c == 'x' || c == 'X')
 	    {
 		buffer.push_back(c);
 		ndigits = 0;
 		for (;;)
 		{
-		    c = input_getc(input);
+		    c = input->getc();
 		    switch (c)
 		    {
 		    case '0':
@@ -211,7 +214,7 @@ gram_lex(void)
 		case '6':
 		case '7':
 		    buffer.push_back(c);
-		    c = input_getc(input);
+		    c = input->getc();
 		    continue;
 
 		default:
@@ -237,7 +240,7 @@ gram_lex(void)
 	    for (;;)
 	    {
 		buffer.push_back(c);
-		c = input_getc(input);
+		c = input->getc();
 		if (c < 0)
 		    break;
 		if (!isdigit((unsigned char)c))
@@ -255,12 +258,12 @@ gram_lex(void)
 	    gram_lval.lv_integer = strtoul(buffer.get_data(), (char **)0, 10);
 	    assert(gram_lval.lv_integer >= 0);
 	    integer_return:
-	    trace(("%s: INTEGER %ld\n", input_name(input)->str_text,
+	    trace(("%s: INTEGER %ld\n", input->name().c_str(),
 		gram_lval.lv_integer));
 	    return INTEGER;
 
 	case '.':
-	    c = input_getc(input);
+	    c = input->getc();
 	    if (c < 0 || !isdigit((unsigned char)c))
 	    {
 		lex_getc_undo(c);
@@ -273,7 +276,7 @@ gram_lex(void)
 	    fraction:
 	    for (;;)
 	    {
-		c = input_getc(input);
+		c = input->getc();
 		if (c < 0 || !isdigit((unsigned char)c))
 		    break;
 		buffer.push_back(c);
@@ -282,16 +285,16 @@ gram_lex(void)
 	    {
 		exponent:
 		buffer.push_back(c);
-		c = input_getc(input);
+		c = input->getc();
 		if (c == '+' || c == '-')
 		{
 		    buffer.push_back(c);
-		    c = input_getc(input);
+		    c = input->getc();
 		}
 		ndigits = 0;
 		for (;;)
 		{
-		    c = input_getc(input);
+		    c = input->getc();
 		    if (c < 0 || !isdigit((unsigned char)c))
 			break;
 		    ++ndigits;
@@ -301,14 +304,14 @@ gram_lex(void)
 		{
 		    gram_error(i18n("malformed exponent"));
 		    gram_lval.lv_real = 0;
-		    trace(("%s: REAL 0\n", input_name(input)->str_text));
+		    trace(("%s: REAL 0\n", input->name().c_str()));
 		    return REAL;
 		}
 	    }
 	    lex_getc_undo(c);
 	    buffer.push_back('\0');
 	    gram_lval.lv_real = atof(buffer.get_data());
-	    trace(("%s: REAL %g\n", input_name(input)->str_text,
+	    trace(("%s: REAL %g\n", input->name().c_str(),
 		gram_lval.lv_real));
 	    return REAL;
 
@@ -316,7 +319,7 @@ gram_lex(void)
 	    buffer.clear();
 	    for (;;)
 	    {
-		c = input_getc(input);
+		c = input->getc();
 		if (c == EOF)
 		{
 		    str_eof:
@@ -332,7 +335,7 @@ gram_lex(void)
 		    break;
 		if (c == '\\')
 		{
-		    c = input_getc(input);
+		    c = input->getc();
 		    switch (c)
 		    {
 		    default:
@@ -389,7 +392,7 @@ gram_lex(void)
 			    for (n = 0; n < 3; ++n)
 			    {
 				v = v * 8 + c - '0';
-				c = input_getc(input);
+				c = input->getc();
 				switch (c)
 				{
 				case '0':
@@ -417,7 +420,7 @@ gram_lex(void)
 		    buffer.push_back(c);
 	    }
 	    gram_lval.lv_string = buffer.mkstr();
-	    trace(("%s: STRING \"%s\"\n", input_name(input)->str_text,
+	    trace(("%s: STRING \"%s\"\n", input->name().c_str(),
 		gram_lval.lv_string->str_text));
 	    return STRING;
 
@@ -425,19 +428,19 @@ gram_lex(void)
 	    buffer.clear();
 	    for (;;)
 	    {
-		c = input_getc(input);
+		c = input->getc();
 		switch (c)
 		{
 		case EOF:
 		    goto str_eof;
 
 		case '@':
-		    c = input_getc(input);
+		    c = input->getc();
 		    if (c == EOF)
 			break;
 		    if (c != '@')
 		    {
-			input_ungetc(input, c);
+			input->ungetc(c);
 			break;
 		    }
 		    // fall through...
@@ -449,7 +452,7 @@ gram_lex(void)
 		break;
 	    }
 	    gram_lval.lv_string = buffer.mkstr();
-	    trace(("%s: STRING \"%s\"\n", input_name(input)->str_text,
+	    trace(("%s: STRING \"%s\"\n", input->name().c_str(),
 		gram_lval.lv_string->str_text));
 	    return STRING;
 
@@ -510,7 +513,7 @@ gram_lex(void)
 	    for (;;)
 	    {
 		buffer.push_back(c);
-		c = input_getc(input);
+		c = input->getc();
 		switch (c)
 		{
 		case '0':
@@ -590,7 +593,7 @@ gram_lex(void)
 		goto integer_return;
 	    }
 	    gram_lval.lv_string = buffer.mkstr();
-	    trace(("%s: NAME \"%s\"\n", input_name(input)->str_text,
+	    trace(("%s: NAME \"%s\"\n", input->name().c_str(),
 		gram_lval.lv_string->str_text));
 	    return NAME;
 
@@ -601,7 +604,7 @@ gram_lex(void)
 	    single_line_comment:
 	    for (;;)
 	    {
-		c = input_getc(input);
+		c = input->getc();
 		if (c == EOF || c == '\n')
 		    break;
 	    }
@@ -611,7 +614,7 @@ gram_lex(void)
 	    //
 	    // C and C++ style comments
 	    //
-	    c = input_getc(input);
+	    c = input->getc();
 	    if (c == '/')
 	    {
 		//
@@ -626,14 +629,14 @@ gram_lex(void)
 		// just return the slash.
 		//
 		lex_getc_undo(c);
-		trace(("%s: '/'\n", input_name(input)->str_text));
+		trace(("%s: '/'\n", input->name().c_str()));
 		return '/';
 	    }
 	    for (;;)
 	    {
 		for (;;)
 		{
-		    c = input_getc(input);
+		    c = input->getc();
 		    if (c == EOF)
 		    {
 			bad_comment:
@@ -645,7 +648,7 @@ gram_lex(void)
 		}
 		for (;;)
 		{
-		    c = input_getc(input);
+		    c = input->getc();
 		    if (c == EOF)
 			goto bad_comment;
 		    if (c != '*')
@@ -657,11 +660,11 @@ gram_lex(void)
 	    break;
 
 	case EOF:
-	    trace(("%s: end of file\n", input_name(input)->str_text));
+	    trace(("%s: end of file\n", input->name().c_str()));
 	    return 0;
 
 	default:
-	    trace(("%s: '%c'\n", input_name(input)->str_text, c));
+	    trace(("%s: '%c'\n", input->name().c_str(), c));
 	    return c;
 	}
     }
@@ -688,13 +691,13 @@ lex_error(sub_context_ty *scp, const char *s)
 
     // re-use substitution context
     sub_var_set_string(scp, "Message", msg);
-    sub_var_set_string(scp, "File_Name", input_name(input));
+    sub_var_set_string(scp, "File_Name", input->name());
     error_intl(scp, i18n("$filename: $message"));
     str_free(msg);
     if (++error_count >= 20)
     {
 	// re-use substitution context
-	sub_var_set_string(scp, "File_Name", input_name(input));
+	sub_var_set_string(scp, "File_Name", input->name());
 	fatal_intl(scp, i18n("$filename: too many errors"));
     }
 
@@ -716,7 +719,7 @@ lex_position(void)
     static string_ty *s;
 
     if (input)
-	return input_name(input);
+	return input->name().get_ref();
     if (!s)
 	s = str_from_c("end-of-input");
     return s;

@@ -83,9 +83,8 @@ public:
       *     project itself are visited.  If this is true, all branches
       *     completed within the limt will be visited.
       *
-      * \caveat
+      * \note
       *    This function is one really big memory leak.
-      *	   You can't do this to two projects at the same time.
       */
     void set(project_ty *pp, time_t limit, int detailed);
 
@@ -101,7 +100,7 @@ public:
       * \returns
       *    Pointer to the event list for the named file, or NULL if the
       *    file has never existed at the time (delta) specified.
-      * \caveat
+      * \note
       *    Do not free the change pointed to, as it may be referenced by
       *    other files' histories.
       */
@@ -117,7 +116,7 @@ public:
       * \returns
       *    Pointer to the event list for the named file, or NULL if the
       *    file has never existed at the time (delta) specified.
-      * \caveat
+      * \note
       *    Do not free the change pointed to, as it may be referenced by
       *    other files' histories.
       */

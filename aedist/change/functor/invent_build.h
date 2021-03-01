@@ -1,6 +1,6 @@
 //
 //	aegis - project change supervisor
-//	Copyright (C) 2004 Walter Franzini;
+//	Copyright (C) 2004, 2005 Walter Franzini;
 //	All rights reserved.
 //
 //	This program is free software; you can redistribute it and/or modify
@@ -44,27 +44,42 @@ public:
 
     /**
       * The constructor.
+      *
+      * @param incbr
+      *     Include branches in calls to the functor.  (Branches are
+      *     recursed regardless of this setting.)
+      * @param all_changes
+      *     Traverse all changes if true, or only completed changes if
+      *     false.
+      * @param inou
+      *     Ignore original-UUID attributes of true.
+      * @param pp
+      *     The project in question.
+      * @param stp
+      *     The symbol table to populate.
       */
-    change_functor_inventory_builder(project_ty *, symtab<change_ty> *);
+    change_functor_inventory_builder(bool incbr, bool all_changes, bool inou,
+       	project_ty *pp, symtab<change_ty> *stp);
 
-
+    // See base class for documentation.
     void operator()(change_ty *);
 
 private:
+    bool inou;                  // ignore original-UUID fields
     symtab<change_ty> *stp;
     project_ty *pp;
 
     /**
       * The copy constructor.
       */
-    change_functor_inventory_builder
-        (const change_functor_inventory_builder &);
+    change_functor_inventory_builder(
+	const change_functor_inventory_builder &);
 
     /**
       * The assignment operator.
       */
-    change_functor_inventory_builder
-        &operator=(const change_functor_inventory_builder &);
+    change_functor_inventory_builder &operator=(
+	const change_functor_inventory_builder &);
 };
 
 #endif // AEDIST_CHANGE_FUNCTOR_INVENT_BUILD_H

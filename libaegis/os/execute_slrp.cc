@@ -28,19 +28,14 @@
 string_ty *
 os_execute_slurp(string_ty *cmd, int flags, string_ty *dir)
 {
-    string_ty       *s1;
-    string_ty       *s2;
-
     trace(("os_execute_slurp()\n{\n"));
-    s1 = os_edit_filename(0);
-    trace_string(s1->str_text);
-    s2 = str_format("( %s ) > %s", cmd->str_text, s1->str_text);
-    os_execute(s2, flags, dir);
-    str_free(s2);
+    nstring s1(os_edit_filename(0));
+    trace_nstring(s1);
+    nstring s2 = nstring::format("( %s ) > %s", cmd->str_text, s1.c_str());
+    os_execute(s2.get_ref(), flags, dir);
     s2 = read_whole_file(s1);
     os_unlink(s1);
-    str_free(s1);
-    trace_string(s2->str_text);
+    trace_nstring(s2);
     trace(("}\n"));
-    return s2;
+    return str_copy(s2.get_ref());
 }

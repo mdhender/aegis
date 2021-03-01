@@ -1,6 +1,6 @@
 //
 //	aegis - project change supervisor
-//	Copyright (C) 2001-2004 Peter Miller;
+//	Copyright (C) 2001-2005 Peter Miller;
 //	All rights reserved.
 //
 //	This program is free software; you can redistribute it and/or modify
@@ -176,29 +176,23 @@
 #include <ac/string.h>
 
 #include <input/quoted_print.h>
-#include <input/private.h>
 #include <mem.h>
 
 
-struct input_quoted_printable_ty
+input_quoted_printable::~input_quoted_printable()
 {
-    input_ty	    inherited;
-    input_ty	    *deeper;
-    int		    close_on_close;
-    int		    eof;
-    long	    pos;
-};
+    if (close_on_close)
+	delete deeper;
+    deeper = 0;
+}
 
 
-static void
-input_quoted_printable_destructor(input_ty *fp)
+input_quoted_printable::input_quoted_printable(input_ty *arg1, bool arg2) :
+    deeper(arg1),
+    close_on_close(arg2),
+    eof(false),
+    pos(0)
 {
-    input_quoted_printable_ty *this_thing;
-
-    this_thing = (input_quoted_printable_ty *)fp;
-    if (this_thing->close_on_close)
-	input_delete(this_thing->deeper);
-    this_thing->deeper = 0; // paranoia
 }
 
 
@@ -241,37 +235,26 @@ hex(int c)
 }
 
 
-static long
-input_quoted_printable_read(input_ty *fp, void *data, size_t len)
+long
+input_quoted_printable::read_inner(void *data, size_t len)
 {
-    input_quoted_printable_ty *this_thing;
-    unsigned char   *cp;
-    unsigned char   *end;
-    long	    nbytes;
-
-    this_thing = (input_quoted_printable_ty *)fp;
-    if (this_thing->eof)
+    if (eof)
 	return 0;
-    cp = (unsigned char *)data;
-    end = cp + len;
+    unsigned char *cp = (unsigned char *)data;
+    unsigned char *end = cp + len;
+    next_char:
     while (cp < end)
     {
-	int		c;
-	int		n1;
-	int      	n2;
-
-	c = input_getc(this_thing->deeper);
+	int c = deeper->getc();
 	if (c < 0)
 	{
-	    this_thing->eof = 1;
+	    eof = true;
 	    break;
 	}
 	if (c == ' ' || c == '\t')
 	{
-	    static char	    *buffer;
-	    static size_t   bufmax;
-	    size_t	    bufpos;
-	    size_t	    nchars;
+	    static char	*buf;
+	    static size_t bufmax;
 
 	    //
 	    // We are supposed to suppress white space on
@@ -281,7 +264,7 @@ input_quoted_printable_read(input_ty *fp, void *data, size_t len)
 	    // (Our corresponding encoding escapes trailing
 	    // spaces and tabs.)
 	    //
-	    bufpos = 0;
+	    size_t bufpos = 0;
 	    for (;;)
 	    {
 		//
@@ -290,14 +273,14 @@ input_quoted_printable_read(input_ty *fp, void *data, size_t len)
 		if (bufpos >= bufmax)
 		{
 		    bufmax = bufmax * 2 + 8;
-		    buffer = (char *)mem_change_size(buffer, bufmax);
+		    buf = (char *)mem_change_size(buf, bufmax);
 		}
-		buffer[bufpos++] = c;
+		buf[bufpos++] = c;
 
 		//
 		// See what comes next.
 		//
-		c = input_getc(this_thing->deeper);
+		c = deeper->getc();
 		if (c < 0)
 		    break;
 		if (c == '\n')
@@ -307,7 +290,7 @@ input_quoted_printable_read(input_ty *fp, void *data, size_t len)
 		}
 		if (c != ' ' && c != '\t')
 		{
-		    input_ungetc(this_thing->deeper, c);
+		    deeper->ungetc(c);
 		    break;
 		}
 	    }
@@ -318,10 +301,10 @@ input_quoted_printable_read(input_ty *fp, void *data, size_t len)
 	    // double handle them (actually, we would O(n**2)
 	    // handle them).
 	    //
-	    nchars = end - cp;
+	    size_t nchars = end - cp;
 	    if (nchars > bufpos)
 		nchars = bufpos;
-	    memcpy(cp, buffer, nchars);
+	    memcpy(cp, buf, nchars);
 	    cp += nchars;
 
 	    //
@@ -335,13 +318,13 @@ input_quoted_printable_read(input_ty *fp, void *data, size_t len)
 	    while (bufpos > nchars)
 	    {
 		--bufpos;
-		input_ungetc(this_thing->deeper, buffer[bufpos]);
+		deeper->ungetc(buf[bufpos]);
 	    }
 
 	    //
 	    // Don't fall into the next statement, but start
 	    // this loop from the top.	(We could have run
-	    // out of output buffer).
+	    // out of output buf).
 	    //
 	    continue;
 	}
@@ -362,112 +345,77 @@ input_quoted_printable_read(input_ty *fp, void *data, size_t len)
 	//
 	// Except for trailing white space; that we ignore.
 	//
-	c = input_getc(this_thing->deeper);
+	c = deeper->getc();
 	if (c < 0)
 	    break;
 	if (c == ' ' || c == '\t')
 	{
 	    for (;;)
 	    {
-		c = input_getc(this_thing->deeper);
+		c = deeper->getc();
 		if (c == '\n')
 		    break;
 		if (c != ' ' && c != '\t')
 		{
-		    input_fatal_error
-		    (
-			this_thing->deeper,
-			"quoted printable: invalid character"
-		    );
+		    deeper->fatal_error("quoted printable: invalid character");
 		    // NOTREACHED
 		}
 	    }
 	}
 	if (c == '\n')
 	    continue;
-	n1 = hex(c);
+	int n1 = hex(c);
 	if (n1 < 0)
 	{
-	    input_fatal_error(fp, "quoted printable: invalid hex character");
+	    deeper->fatal_error("quoted printable: invalid hex character");
 	    // NOTREACHED
 	}
-	c = input_getc(this_thing->deeper);
-	n2 = hex(c);
+	c = deeper->getc();
+	int n2 = hex(c);
 	if (n2 < 0)
 	{
-	    input_fatal_error(fp, "quoted printable: invalid hex character");
+	    deeper->fatal_error("quoted printable: invalid hex character");
 	    // NOTREACHED
 	}
 	*cp++ = ((n1 << 4) | n2);
-	next_char:
-	;
     }
-    nbytes = (cp - (unsigned char *)data);
-    this_thing->pos += nbytes;
+    long nbytes = (cp - (unsigned char *)data);
+    pos += nbytes;
     return nbytes;
 }
 
 
-static long
-input_quoted_printable_ftell(input_ty *deeper)
+long
+input_quoted_printable::ftell_inner()
 {
-    input_quoted_printable_ty *this_thing;
-
-    this_thing = (input_quoted_printable_ty *)deeper;
-    return this_thing->pos;
+    return pos;
 }
 
 
-static struct string_ty *
-input_quoted_printable_name(input_ty *fp)
+nstring
+input_quoted_printable::name()
 {
-    input_quoted_printable_ty *this_thing;
-
-    this_thing = (input_quoted_printable_ty *)fp;
-    return input_name(this_thing->deeper);
+    return deeper->name();
 }
 
 
-static long
-input_quoted_printable_length(input_ty *fp)
+long
+input_quoted_printable::length()
 {
     return -1;
 }
 
 
-static void
-input_quoted_printable_keepalive(input_ty *fp)
+void
+input_quoted_printable::keepalive()
 {
-    input_quoted_printable_ty *ip;
-
-    ip = (input_quoted_printable_ty *)fp;
-    input_keepalive(ip->deeper);
+    deeper->keepalive();
 }
 
 
-static input_vtbl_ty vtbl =
+bool
+input_quoted_printable::is_remote()
+    const
 {
-    sizeof(input_quoted_printable_ty),
-    input_quoted_printable_destructor,
-    input_quoted_printable_read,
-    input_quoted_printable_ftell,
-    input_quoted_printable_name,
-    input_quoted_printable_length,
-    input_quoted_printable_keepalive,
-};
-
-
-input_ty *
-input_quoted_printable(input_ty *deeper, int coc)
-{
-    input_ty	    *result;
-    input_quoted_printable_ty *this_thing;
-
-    result = input_new(&vtbl);
-    this_thing = (input_quoted_printable_ty *)result;
-    this_thing->deeper = deeper;
-    this_thing->close_on_close = coc;
-    this_thing->eof = 0;
-    this_thing->pos = 0;
-    return result;
+    return deeper->is_remote();
 }

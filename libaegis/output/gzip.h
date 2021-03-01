@@ -28,17 +28,17 @@
 #include <output.h>
 
 /**
-  * The output_gzip_ty class is used to represent an output filter which
+  * The output_gzip class is used to represent an output filter which
   * compresses the data before writing it to the deeper output stream.
   */
-class output_gzip_ty:
+class output_gzip:
     public output_ty
 {
 public:
     /**
       * The destructor.
       */
-    virtual ~output_gzip_ty();
+    virtual ~output_gzip();
 
     /**
       * The constructor.
@@ -49,7 +49,7 @@ public:
       *     whether or not the deeper output stream should be deleted on
       *     the destructor.
       */
-    output_gzip_ty(output_ty *deeper, bool close_on_close);
+    output_gzip(output_ty *deeper, bool close_on_close);
 
     // See base class for documentation.
     string_ty *filename() const;
@@ -125,23 +125,17 @@ private:
     /**
       * The default constructor.  Do not use.
       */
-    output_gzip_ty();
+    output_gzip();
 
     /**
       * The copy constructor.  Do not use.
       */
-    output_gzip_ty(const output_gzip_ty &);
+    output_gzip(const output_gzip &);
 
     /**
       * The assignment operator.  Do not use.
       */
-    output_gzip_ty &operator=(const output_gzip_ty &);
+    output_gzip &operator=(const output_gzip &);
 };
-
-inline DEPRECATED output_ty *
-output_gzip(output_ty *deeper)
-{
-    return new output_gzip_ty(deeper, true);
-}
 
 #endif // LIBAEGIS_OUTPUT_GZIP_H

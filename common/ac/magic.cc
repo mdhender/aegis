@@ -115,4 +115,10 @@ magic_error(magic_t cookie)
     return "no error";
 }
 
+int
+magic_load(magic_t cookie, const char *filename)
+{
+    return 0;
+}
+
 #endif // HAVE_MAGIC_FILE

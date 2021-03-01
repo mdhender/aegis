@@ -1,6 +1,6 @@
 //
 //	aegis - project change supervisor
-//	Copyright (C) 1999, 2002, 2004 Peter Miller;
+//	Copyright (C) 1999, 2002, 2004, 2005 Peter Miller;
 //	All rights reserved.
 //
 //	This program is free software; you can redistribute it and/or modify
@@ -20,8 +20,8 @@
 // MANIFEST: interface definition for aedist/rfc822header.c
 //
 
-#ifndef AEDIST_HEADER_H
-#define AEDIST_HEADER_H
+#ifndef LIBAEGIS_RFC822HEADER_H
+#define LIBAEGIS_RFC822HEADER_H
 
 #include <main.h>
 
@@ -38,4 +38,4 @@ rfc822_header_ty *rfc822_header_read(struct input_ty *);
 struct string_ty *rfc822_header_query(rfc822_header_ty *, const char *);
 void rfc822_header_delete(rfc822_header_ty *);
 
-#endif // AEDIST_HEADER_H
+#endif // LIBAEGIS_RFC822HEADER_H

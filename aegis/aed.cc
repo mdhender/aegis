@@ -389,14 +389,11 @@ anticipate(string_ty *project_name, long change_number, const char *branch,
 	//
 	if (number_of_errors > 0)
 	{
-	    sub_context_ty  *scp;
-
-	    scp = sub_context_new();
-	    sub_var_set_long(scp, "Number", number_of_errors);
-	    sub_var_optional(scp, "Number");
-	    change_fatal(cp, scp, i18n("diff fail"));
+	    sub_context_ty sc;
+	    sc.var_set_long("Number", number_of_errors);
+	    sc.var_optional("Number");
+	    change_fatal(cp, &sc, i18n("diff fail"));
 	    // NOTREACHED
-	    sub_context_delete(scp);
 	}
     }
 
@@ -631,13 +628,10 @@ difference_main(void)
 	    os_become_undo();
 	    if (wl.member(s2))
 	    {
-		sub_context_ty  *scp;
-
-		scp = sub_context_new();
-		sub_var_set_string(scp, "File_Name", s1);
-		fatal_intl(scp, i18n("too many $filename"));
+		sub_context_ty sc;
+		sc.var_set_string("File_Name", s1);
+		sc.fatal_intl(i18n("too many $filename"));
 		// NOTREACHED
-		sub_context_delete(scp);
 	    }
 	    wl.push_back(s2);
 	    str_free(s1);
@@ -679,13 +673,10 @@ difference_main(void)
 		cn2 = MAGIC_ZERO;
 	    else if (cn2 < 1)
 	    {
-		sub_context_ty  *scp;
-
-		scp = sub_context_new();
-		sub_var_set_long(scp, "Number", cn2);
-		fatal_intl(scp, i18n("change $number out of range"));
+		sub_context_ty sc;
+		sc.var_set_long("Number", cn2);
+		sc.fatal_intl(i18n("change $number out of range"));
 		// NOTREACHED
-		sub_context_delete(scp);
 	    }
 	    break;
 
@@ -880,6 +871,35 @@ difference_main(void)
     {
 	if (!str_equal(change_developer_name(cp), user_name(up)))
 	    change_fatal(cp, 0, i18n("not developer"));
+
+	//
+	// Look at the change files and make sure that a recent integration
+	// hasn't invalidated them in some way.
+	//
+	trace(("mark\n"));
+	if (change_file_promote(cp))
+	{
+	    //
+	    // May need to cope with other baseline changes, as well.
+	    //
+	    trace(("The change_file_promote found somthing to do.\n"));
+	    change_run_project_file_command(cp, up);
+
+            //
+            // Write out the file state, and then let go of the locks
+            // and take them again.  This ensures the data is consistent
+            // for the next stage of processing.
+	    //
+	    trace(("Write out what we've done so far.\n"));
+	    change_cstate_write(cp);
+	    commit();
+	    lock_release();
+
+	    trace(("Take the locks again.\n"));
+	    change_cstate_lock_prepare(cp);
+	    project_baseline_read_lock_prepare(pp);
+	    lock_take();
+	}
     }
 
     //
@@ -1038,13 +1058,11 @@ difference_main(void)
 	//
 	if (number_of_errors > 0)
 	{
-	    sub_context_ty  *scp;
-
-	    scp = sub_context_new();
-	    sub_var_set_long(scp, "Number", number_of_errors);
-	    sub_var_optional(scp, "Number");
-	    change_fatal(cp, scp, i18n("diff fail"));
-	    sub_context_delete(scp);
+	    sub_context_ty sc;
+	    sc.var_set_long("Number", number_of_errors);
+	    sc.var_optional("Number");
+	    change_fatal(cp, &sc, i18n("diff fail"));
+	    // NOTREACHED
 	}
     }
 
@@ -1258,8 +1276,6 @@ difference_main(void)
 		project_file_find_by_meta(pp2, src1_data, view_path_extreme);
 	    if (!src2_data)
 	    {
-		sub_context_ty  *scp;
-
 		//
 		// If we are doing a cross branch merge, and this file
 		// isn't in the other branch, treat it like a new file
@@ -1268,10 +1284,10 @@ difference_main(void)
 		if (pp != pp2)
 		    continue;
 
-		scp = sub_context_new();
-		sub_var_set_string(scp, "File_Name", s1);
-		change_fatal(cp, scp, i18n("no $filename in baseline"));
-		sub_context_delete(scp);
+		sub_context_ty sc;
+		sc.var_set_string("File_Name", s1);
+		change_fatal(cp, &sc, i18n("no $filename in baseline"));
+		// NOTREACHED
 	    }
 	    if (change_file_up_to_date(pp2, src1_data))
 	    {
@@ -1548,15 +1564,26 @@ difference_main(void)
 	    //
 	    // find the relevant change src data
 	    //
+	    trace(("j = %ld\n", (long)j));
 	    s1 = wl.string[j];
+	    trace(("file name \"%s\"\n", s1->str_text));
 	    src1_data = change_file_find(cp, s1, view_path_first);
 	    if (!src1_data)
 		this_is_a_bug();
+	    trace(("src1_data = %08lX\n", (long)src1_data));
+	    trace(("action = %s\n", file_action_ename(src1_data->action)));
+	    trace(("usage = %s\n", file_usage_ename(src1_data->usage)));
 
             //
 	    // locate the equivalent project file
 	    //
 	    src2_data = project_file_find(pp2bl, s1, view_path_extreme);
+	    trace(("src2_data = %08lX\n", (long)src2_data));
+	    if (src2_data)
+	    {
+		trace(("action2 = %s\n", file_action_ename(src2_data->action)));
+		trace(("usage2 = %s\n", file_usage_ename(src2_data->usage)));
+	    }
 
             //
 	    // generated files are not differenced
@@ -1588,7 +1615,6 @@ difference_main(void)
                 case file_action_transparent:
                     break;
                 }
-
 		continue;
 
 	    case file_usage_source:
@@ -1632,9 +1658,9 @@ difference_main(void)
 	    //
 	    path = change_file_path(cp, s1);
 	    assert(path);
-	    trace_string(path->str_text);
+	    trace(("change file path \"%s\"\n", path->str_text));
 	    path_d = str_format("%s,D", path->str_text);
-	    trace_string(path_d->str_text);
+	    trace(("change file,D path \"%s\"\n", path_d->str_text));
 
 	    //
 	    // Check the file's fingerprint.  This will zap
@@ -1692,6 +1718,7 @@ difference_main(void)
 	    user_become_undo();
 	    if (ignore)
 	    {
+		trace(("ignore\n"));
 		str_free(path);
 		str_free(path_d);
 		continue;
@@ -1701,46 +1728,10 @@ difference_main(void)
 	    {
 	    case file_action_create:
 		//
-		// check if someone created it ahead of you
-		//
-		if (src2_data && !integrating)
-		{
-		    sub_context_ty *scp;
-
-		    scp = sub_context_new();
-		    sub_var_set_string(scp, "File_Name", s1);
-		    change_verbose
-		    (
-			cp,
-			scp,
-			i18n("warning: $filename in baseline, copying")
-		    );
-		    sub_context_delete(scp);
-		    src1_data->action = file_action_modify;
-		    if (src2_data->edit_origin)
-		    {
-			src1_data->edit_origin =
-			    history_version_copy(src2_data->edit);
-		    }
-                    if (!src1_data->uuid && src2_data->uuid)
-                        src1_data->uuid = str_copy(src2_data->uuid);
-                    if (!str_equal(src1_data->uuid, src2_data->uuid))
-                    {
-                        // fixme: we come here if an UUID clash is
-                        // present (the previous test failed).  Must
-                        // think a better way to handle it.
-                        assert(0);
-                    }
-                    goto modifying_file;
-		}
-		if (src2_data && integrating)
-		    goto modifying_file;
-
-		//
 		// difference the file
 		// from nothing
 		//
-	      creating_file:
+	        pseudo_create:
 		{
 		    string_ty *original;
 		    int org_unlink = 0;
@@ -1825,19 +1816,6 @@ difference_main(void)
 
 	    case file_action_remove:
 		//
-		// check if someone deleted it ahead of you
-		//
-		if (!src2_data && !integrating)
-		{
-		    sub_context_ty  *scp;
-
-		    scp = sub_context_new();
-		    sub_var_set_string(scp, "File_Name", s1);
-		    change_fatal(cp, scp, i18n("no $filename in baseline"));
-		    sub_context_delete(scp);
-		}
-
-		//
 		// create directory for diff file
 		//
 		user_become(diff_user_p);
@@ -1912,29 +1890,36 @@ difference_main(void)
 		}
 		goto set_fingerprint;
 
-	    case file_action_modify:
+	    case file_action_insulate:
 		//
-		// Check that nobody has
-		// deleted it from under you.
+		// At integration time, ignore read only entries.
 		//
-		if (!src2_data && !integrating)
-		{
-		    sub_context_ty  *scp;
+		assert(!integrating);
+		if (integrating)
+		    break;
+		// Fall through...
 
-		    scp = sub_context_new();
-		    sub_var_set_string(scp, "File_Name", s1);
-		    change_verbose
-		    (
-			cp,
-			scp,
-			i18n("warning: no $filename in baseline, creating")
-		    );
-		    sub_context_delete(scp);
-		    src1_data->action = file_action_create;
-		    goto creating_file;
+	    case file_action_transparent:
+		// Fall through...
+
+	    case file_action_modify:
+		trace(("%s\n", file_action_ename(src1_data->action)));
+		if (integrating && !src2_data)
+		{
+		    //
+                    // If a file is created on the trunk, then is is
+                    // possible that the project file pointer is NULL
+                    // here, because we are trying to difference it
+                    // against the trunk's non-existent parent branch,
+                    // which is completely empty.
+                    //
+                    // Something similar can happen for deeper branches,
+                    // too, because we used the view_path_extreme
+                    // option.
+		    //
+		    goto pseudo_create;
 		}
-		if (!src2_data && integrating)
-		    goto creating_file;
+		assert(src2_data);
 
 		//
 		// we did merges earlier,
@@ -1945,12 +1930,12 @@ difference_main(void)
 		//
 		// use the diff-command
 		//
-		modifying_file:
 		{
-		    trace(("project file path %s\n", s1->str_text));
+		    trace(("project file path \"%s\"\n", s1->str_text));
 		    string_ty *original;
 		    int org_unlink = 0;
 		    original = project_file_path(pp2bl, s1);
+		    trace_string(original->str_text);
 
 		    //
 		    // The following code is needed to make it
@@ -1970,6 +1955,7 @@ difference_main(void)
 				src2_data,
 				&org_unlink
 			    );
+			trace_string(original->str_text);
 		    }
 
 		    assert(original);
@@ -1991,35 +1977,6 @@ difference_main(void)
 		    str_free(original);
 		}
 		goto set_fingerprint;
-
-	    case file_action_transparent:
-		trace(("transparent\n"));
-		goto modifying_file;
-
-	    case file_action_insulate:
-		//
-		// At integration time, ignore read only
-		// entries.
-		//
-		if (integrating)
-		    break;
-
-		//
-		// If the file has been deleted from the
-		// baseline since the read only copy was
-		// taken, pretend we are creating it.
-		//
-		if (!src2_data)
-		    goto creating_file;
-
-		//
-		// Pretend we are modifying the file.
-		// This file is part of the change to
-		// insulate the change from the
-		// baseline.  Any modifications are a
-		// Bad Thing.
-		//
-		goto modifying_file;
 	    }
             str_free(path);
 	    str_free(path_d);

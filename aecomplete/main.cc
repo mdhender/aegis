@@ -30,6 +30,7 @@
 #include <os.h>
 #include <quit.h>
 #include <r250.h>
+#include <rsrc_limits.h>
 #include <shell.h>
 
 
@@ -43,6 +44,7 @@ main(int argc, char **argv)
     //
     // initialize everything
     //
+    resource_limits_init();
     arglex_init(argc, argv, 0);
     r250_init();
     os_become_init_mortal();

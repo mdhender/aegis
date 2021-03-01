@@ -52,6 +52,12 @@ aedist \- remotely distribute a change
 ] -f \fIURL\fP
 .br
 .B \*(n)
+.B -PENding
+[
+.IR option \&...
+] -f \fIURL\fP
+.br
+.B \*(n)
 .B -List
 [
 .IR option \&...
@@ -339,6 +345,12 @@ matched against the version as displayed in the inventory.  This
 option may be used more than once.
 .so o_file_cs.so
 .TP 8n
+.B \-MAXimum
+This option may be used to download as many changes as possible by
+exclusing the maximum number of local changes sets, by excluding both
+local change sets UUIDs (the default) but also excluding UUIDs mentioned
+in change "original-uuid" attributes.
+.TP 8n
 .B -PErsevere
 This option may be used to specify that all relevant change sets
 should be downloaded, even if some fail.  Defaults to the user's
@@ -358,7 +370,7 @@ This option is passed to any \fIaedist\fP(1) commands spawned by this command.
 \-No_Trojan
 This option is passed to any \fIaedist\fP(1) commands spawned by this command.
 .SH MISSING
-If you want to see the change sets that \fIaedist \-missing\fP may
+If you want to see the change sets that \fIaedist \-replay\fP may
 download before it goes ahead and does it, you can use a command such as:
 .RS
 .ft CW
@@ -386,6 +398,41 @@ displayed in the inventory.  This option may be used more than once.
 .TP 8n
 \fB\-INclude_Version\fP \fIpattern\fP
 This option may be used to explicitly list change sets to be listed,
+to the exclusion of all others.  The \fIpattern\fP is matched against
+the version as displayed in the inventory.  This option may be used
+more than once.
+.TP 8n
+.B \-MAXimum
+This option may be used to download as many changes as possible by
+exclusing the maximum number of local changes sets, by excluding both
+local change sets UUIDs (the default) but also excluding UUIDs mentioned
+in change "original-uuid" attributes.
+.SH PENDING
+If you want to see the change sets that a remote repository is missing
+with respect to yours, you can use a command such as:
+.RS
+.ft R
+aedist --pending -f aegis.sf.net
+.ft R
+.RE
+.SS Options
+The following options are understood by this varian:
+\fB\-EXclude_UUID\fP \fIUUID\fP
+This option may be used to exclude some local change sets from being
+listed.  This option may be used more than once.
+.TP 8n
+\fB\-No_EXclude_UUID\fP \fIUUID\fP
+This option may be used to explicitly list local change sets to be listed,
+to the exclusion of all others.  This option may be used more than
+once.
+.TP 8n
+\fB\-EXclude_version\fP \fIpattern\fP
+This option may be used to explicitly exclude some local change set from
+being listed.  The \fIpattern\fP is matched against the version as
+displayed in the inventory.  This option may be used more than once.
+.TP 8n
+\fB\-INclude_Version\fP \fIpattern\fP
+This option may be used to explicitly list local change sets to be listed,
 to the exclusion of all others.  The \fIpattern\fP is matched against
 the version as displayed in the inventory.  This option may be used
 more than once.
@@ -425,9 +472,20 @@ The \fIcpio\fP archive is used to store
 This contains the project name to apply the package to,
 unless over-ridden by the --project command line option.
 .TP 8n
+\f(CWetc/change-number\fP
+This contains the change number of the original change, this may be
+preserved if available on the target repository unless over-ridden by
+the --change command line option.
+.TP 8n
 \f(CWetc/change-set\fP
 This contains the change attributes and the list of source files and
 usages, in \fIaecstate\fP(5) format.
+.TP 8n
+\f(CWpatch/\fP\fIfilename\fP
+Each modified or renamed file in the package (named in
+\fIetc/change-set\fP) appears under the \fIpatch\fP directory.
+The file may be empty unless some edits was done on the source
+repository.
 .TP 8n
 \f(CWsrc/\fP\fIfilename\fP
 Each source file in the package (named in \fIetc/change-set\fP)

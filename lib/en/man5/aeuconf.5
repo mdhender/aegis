@@ -290,6 +290,25 @@ pager_command = string;
 This is the command used to paginate report and listing output.
 Defaults to the PAGER environment variable if not set,
 or to "more" if not set.
+.TP 8n
+attribute = [ { ... } ];
+.RS
+This is a list of \fI(name,value)\fP pairs, defining user specified attributes.
+.TP 8n
+name = string;
+.RS
+The name of the attribute.
+By convention, names which start with an upper-case letter will appear
+in listings, and lower-case will not.
+Attribute names are case-insensitive.
+.RE
+.TP 8n
+value = string;
+The value of the attribute.
+.PP
+Arguably, most user attributes which may be altered by the user (and
+some that can't) should be of this form.  Due to an accident of history,
+this is not the case.
 .SH SEE ALSO
 .TP 8n
 .IR aegis (5)

@@ -28,6 +28,7 @@
 #include <error.h>
 #include <progname.h>
 #include <quit.h>
+#include <rsrc_limits.h>
 
 
 enum
@@ -61,6 +62,7 @@ main(int argc, char **argv)
     const char	    *infile;
     const char	    *outfile;
 
+    resource_limits_init();
     arglex_init(argc, argv, argtab);
     arglex();
 

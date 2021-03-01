@@ -31,6 +31,7 @@ struct patch_list_ty
     long            change_number;
     string_ty       *brief_description;
     string_ty       *description;
+    string_ty       *comment;
 
     size_t          length;
     size_t          maximum;

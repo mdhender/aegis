@@ -69,13 +69,11 @@ sub_read_file(sub_context_ty *scp, wstring_list_ty *arg)
 	return 0;
     }
 
-    string_ty *s1 = wstr_to_str(arg->get(1));
+    nstring s1(wstr_to_str(arg->get(1)));
     os_become_orig();
-    string_ty *s2 = read_whole_file(s1);
+    nstring s2 = read_whole_file(s1);
     os_become_undo();
-    str_free(s1);
-    wstring_ty *result = str_to_wstr(s2);
-    str_free(s2);
+    wstring_ty *result = str_to_wstr(s2.get_ref());
     trace(("return %8.8lX;\n", (long)result));
     trace(("}\n"));
     return result;

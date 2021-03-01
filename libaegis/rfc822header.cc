@@ -1,6 +1,6 @@
 //
 //	aegis - project change supervisor
-//	Copyright (C) 1999, 2001-2004 Peter Miller;
+//	Copyright (C) 1999, 2001-2005 Peter Miller;
 //	All rights reserved.
 //
 //	This program is free software; you can redistribute it and/or modify
@@ -57,7 +57,7 @@ has_a_header(input_ty *ifp)
     stracc_t buffer;
 
     //
-    // MH (a mail handler) has a tendancy to add a line if the form
+    // MH (a mail handler) has a tendancy to add a line of the form
     //	    (Message <folder>:<num>)
     // to the start of the message.  This is particularly irritating
     // when you want to say
@@ -71,7 +71,7 @@ has_a_header(input_ty *ifp)
     {
 	int		c;
 
-	c = input_getc(ifp);
+	c = ifp->getc();
 	if (c < 0)
 	    break;
 	buffer.push_back(c);
@@ -98,7 +98,7 @@ has_a_header(input_ty *ifp)
     else
     {
 	// give the line back
-	input_unread(ifp, buffer.get_data(), buffer.size());
+	ifp->unread(buffer.get_data(), buffer.size());
 	buffer.clear();
     }
 
@@ -115,7 +115,7 @@ has_a_header(input_ty *ifp)
     {
 	int		c;
 
-	c = input_getc(ifp);
+	c = ifp->getc();
 	if (c >= 0)
 	    buffer.push_back(c);
 	if (c < 0)
@@ -225,9 +225,8 @@ has_a_header(input_ty *ifp)
 	    break;
 	}
     }
-    input_unread
+    ifp->unread
     (
-	ifp,
 	buffer.get_data() + length_of_garbage,
 	buffer.size() - length_of_garbage
     );
@@ -253,7 +252,7 @@ is_binary(input_ty *ifp)
     stracc_t buffer;
     while (buffer.size() < 800)
     {
-	c = input_getc(ifp);
+	c = ifp->getc();
 	if (c < 0)
 	    break;
 	buffer.push_back(c);
@@ -263,7 +262,7 @@ is_binary(input_ty *ifp)
 	    break;
 	}
     }
-    input_unread(ifp, buffer.get_data(), buffer.size());
+    ifp->unread(buffer.get_data(), buffer.size());
     return result;
 }
 
@@ -319,8 +318,8 @@ rfc822_header_read(input_ty *ifp)
     //
     // Do the end-of-line wrapping transparently.
     //
-    ifp = input_crlf(ifp, 0);
-    ifp = input_822wrap(ifp, 1);
+    ifp = new input_crlf(ifp, false);
+    ifp = new input_822wrap(ifp, true);
     stracc_t buffer;
 
     //
@@ -334,7 +333,7 @@ rfc822_header_read(input_ty *ifp)
     {
 	int		c;
 
-	c = input_getc(ifp);
+	c = ifp->getc();
 	if (c < 0)
 	    break;
 	buffer.push_back(c);
@@ -355,7 +354,7 @@ rfc822_header_read(input_ty *ifp)
     else
     {
 	// give the line back
-	input_unread(ifp, buffer.get_data(), buffer.size());
+	ifp->unread(buffer.get_data(), buffer.size());
     }
     buffer.clear();
 
@@ -371,7 +370,7 @@ rfc822_header_read(input_ty *ifp)
 	//
 	// EOF or a blank line stops us.
 	//
-	c = input_getc(ifp);
+	c = ifp->getc();
 	if (c < 0)
 	    break;
 	if (c == '\n')
@@ -387,22 +386,22 @@ rfc822_header_read(input_ty *ifp)
 	    if (c == ':')
 		break;
 	    if (c < 0 || (c != '-' && !isalnum((unsigned char)c)))
-		input_fatal_error(ifp, "malformed RFC822 header");
+		ifp->fatal_error("malformed RFC822 header");
 	    if (isupper((unsigned char)c))
 		c = tolower((unsigned char)c);
 	    buffer.push_back(c);
-	    c = input_getc(ifp);
+	    c = ifp->getc();
 	}
 	name = buffer.mkstr();
 	if (name->str_length < 1)
-	    input_fatal_error(ifp, "malformed RFC822 header (no name)");
+	    ifp->fatal_error("malformed RFC822 header (no name)");
 
 	//
 	// Skip the white space after the colon.
 	//
 	for (;;)
 	{
-	    c = input_getc(ifp);
+	    c = ifp->getc();
 	    if (c != ' ' && c != '\t')
 		break;
 	}
@@ -417,7 +416,7 @@ rfc822_header_read(input_ty *ifp)
 	    if (c < 0 || c == '\n')
 		break;
 	    buffer.push_back(c);
-	    c = input_getc(ifp);
+	    c = ifp->getc();
 	}
 	value = buffer.mkstr();
 
@@ -427,7 +426,7 @@ rfc822_header_read(input_ty *ifp)
 	hp->stp->assign(name, value);
 	str_free(name);
     }
-    input_delete(ifp);
+    delete ifp;
     trace(("}\n"));
     trace(("return %08lX\n", (long)hp));
     return hp;

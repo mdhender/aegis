@@ -1,7 +1,7 @@
 #!/bin/sh
 #
 #	aegis - project change supervisor
-#	Copyright (C) 1999 Peter Miller;
+#	Copyright (C) 1999, 2005 Peter Miller;
 #	All rights reserved.
 #
 #	This program is free software; you can redistribute it and/or modify
@@ -50,7 +50,22 @@ export AEGIS_THROTTLE
 here=`pwd`
 if test $? -ne 0 ; then exit 2; fi
 
-bin=$here/${1-.}/bin
+if test "$1" != "" ; then bin="$here/$1/bin"; else bin="$here/bin"; fi
+
+check_it()
+{
+	sed	-e "s|$work|...|g" \
+		-e 's|= [0-9][0-9]*; /.*|= TIME;|' \
+		-e "s/\"$USER\"/\"USER\"/g" \
+		-e 's/19[0-9][0-9]/YYYY/' \
+		-e 's/20[0-9][0-9]/YYYY/' \
+		-e 's/node = ".*"/node = "NODE"/' \
+		-e 's/crypto = ".*"/crypto = "GUNK"/' \
+		< $2 > $work/sed.out
+	if test $? -ne 0; then no_result; fi
+	diff $1 $work/sed.out
+	if test $? -ne 0; then fail; fi
+}
 
 pass()
 {
@@ -108,12 +123,54 @@ if test $? -ne 0 ; then cat LOG; no_result; fi
 cat > ca << 'fubar'
 brief_description = "none";
 cause = external_bug;
+attribute =
+[
+    {
+        name = "Attribute1";
+        value = "Value1";
+    },
+];
 fubar
 if test $? -ne 0 ; then no_result; fi
 
-$bin/aegis -nc -f ca -p junk.1.0 > LOG 2>&1
+activity="new change 136"
+$bin/aegis -nc 1 -f ca -p junk.1.0 > LOG 2>&1
 if test $? -ne 0 ; then cat LOG; no_result; fi
 
+activity="check the cstate file 140"
+cat > ok <<EOF
+brief_description = "none";
+description = "none";
+cause = internal_enhancement;
+test_exempt = false;
+test_baseline_exempt = true;
+regression_test_exempt = true;
+architecture =
+[
+	"unspecified",
+];
+attribute =
+[
+	{
+		name = "Attribute1";
+		value = "Value1";
+	},
+];
+state = awaiting_development;
+given_regression_test_exemption = true;
+history =
+[
+	{
+		when = TIME;
+		what = new_change;
+		who = "USER";
+	},
+];
+EOF
+
+check_it ok $work/junk/info/change/0/001.branch/0/000.branch/0/001
+
+activity="new change undo 173"
 $bin/aegis -ncu -l -p junk.1.0 > LOG 2>&1
 if test $? -ne 0 ; then cat LOG; fail; fi
 

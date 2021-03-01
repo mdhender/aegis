@@ -1,6 +1,6 @@
 /*
  *	aegis - project change supervisor
- *	Copyright (C) 1997-2004 Peter Miller;
+ *	Copyright (C) 1997-2005 Peter Miller;
  *	All rights reserved.
  *
  *	This program is free software; you can redistribute it and/or modify
@@ -21,8 +21,6 @@
  */
 
 integration-build-targets +=
-	/* archive/Part.01.gz */
-	/* archive/[project_minus].patch.gz */
 	archive/change_log.txt
 	archive/[project_minus].README
 	archive/[project_minus].ae
@@ -39,15 +37,20 @@ if [find_command tardy] then
 	archive/[project_minus].tar.gz
 	;
 
+    /*
+     * PMiller's build machine is Debian, not RedHat any more.
+     */
+#if 0
     if [find_command rpm] then
     if [find_command ppmtoxpm] then /* have to be able to build icon */
     {
-	rpm-arch = [collect rpm --showrc | awk "'/^build arch/{print $4}'" ];
+	rpm-arch = [collect rpm --showrc | [awk] "'/^build arch/{print $4}'" ];
 	if [matches %1.D%2 [version]] then
 	if [in [fromto %1.D%2 %2 [version]] 001 002] then
 	if [matches linux%1 [arch]] then
 	    integration-build-targets += RPM;
     }
+#endif
 }
 
 if [find_command png2ico] then
@@ -76,9 +79,8 @@ html-targets =
 		[html-sources]
 	]
 	archive/index.html
+	archive/[project_short].png;
 	;
-if [find_command uudecode] then
-	html-targets += archive/[project_short].png;
 
 if [count [html-sources]] then
 cascade [html-sources] = etc/version.so;
@@ -264,6 +266,8 @@ MANIFEST: [arch]/bin/aemanifest(exists)
 	[addprefix "--dir=" [search_list]]
 	[source_file_order]
 	-o [target];
+    ls -l [target];
+    chmod a+r [target];
 }
 
 archive/Part.01.gz: [source_file_order]
@@ -342,9 +346,10 @@ archive/[project_minus].spec: [project_short].spec
 	rm patch.orig;
 }
 
-lib/%0%: lib/%0%.uue
+lib/%0%: lib/%0%.uue: [arch]/bin/test_base64
 {
-	uudecode -o [target] [resolve [need]];
+	[resolve [arch]/bin/test_base64] -uu -i -nh
+	    [resolve lib/%0%.uue] [target];
 }
 
 archive/[project_short].png: lib/icon2/64x64.png
@@ -418,6 +423,34 @@ archive/[project_minus].ae: [source_files]
 }
 
 
+example-cook-aesvt-version = 1.0;
+example-cook-aesvt-baseline =
+     [collect aegis -cd -bl -p example-cook-aesvt.[example-cook-aesvt-version]
+	'2>/dev/null' || true];
+
+if [example-cook-aesvt-baseline] then
+{
+    html-targets +=
+	archive/example-cook-aesvt.html
+	archive/example-cook-aesvt.ae
+	;
+
+    archive/example-cook-aesvt.html: [example-cook-aesvt-baseline]/README.html
+	set shallow
+    {
+	cp [need] [target];
+    }
+
+    archive/example-cook-aesvt.ae:
+	[example-cook-aesvt-baseline
+			]/example-cook-aesvt.[example-cook-aesvt-version].ae
+	set shallow
+    {
+	cp [need] [target];
+    }
+}
+
+
 example-cook-fhist-version = 1.0;
 example-cook-fhist-baseline =
      [collect aegis -cd -bl -p example-cook-fhist.[example-cook-fhist-version]
@@ -483,4 +516,13 @@ archive/change_log.txt: lib/en/change_log/change_log.txt
     set shallow
 {
     cp [resolve [need]] [target];
+}
+
+check-tarball: [project_short]-sf.tgz;
+
+[project_short]-sf.tgz: archive/[project_minus].tar.gz
+{
+    sh [resolve etc/check-tar-gz.sh]
+	[pathname [resolve archive/[project_minus].tar.gz]]
+	[pathname [target]];
 }

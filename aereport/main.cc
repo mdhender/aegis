@@ -37,6 +37,7 @@
 #include <progname.h>
 #include <quit.h>
 #include <r250.h>
+#include <rsrc_limits.h>
 #include <sub.h>
 #include <trace.h>
 #include <str_list.h>
@@ -241,6 +242,7 @@ report_main(void)
 int
 main(int argc, char **argv)
 {
+    resource_limits_init();
     r250_init();
     os_become_init_mortal();
     arglex2_init(argc, argv);

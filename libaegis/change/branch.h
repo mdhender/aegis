@@ -1,31 +1,32 @@
-/*
- *	aegis - project change supervisor
- *	Copyright (C) 1995-1999, 2001, 2002, 2004 Peter Miller;
- *	All rights reserved.
- *
- *	This program is free software; you can redistribute it and/or modify
- *	it under the terms of the GNU General Public License as published by
- *	the Free Software Foundation; either version 2 of the License, or
- *	(at your option) any later version.
- *
- *	This program is distributed in the hope that it will be useful,
- *	but WITHOUT ANY WARRANTY; without even the implied warranty of
- *	MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
- *	GNU General Public License for more details.
- *
- *	You should have received a copy of the GNU General Public License
- *	along with this program; if not, write to the Free Software
- *	Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111, USA.
- *
- * MANIFEST: interface definition for aegis/change_bran.c
- */
+//
+//	aegis - project change supervisor
+//	Copyright (C) 1995-1999, 2001, 2002, 2004, 2005 Peter Miller;
+//	All rights reserved.
+//
+//	This program is free software; you can redistribute it and/or modify
+//	it under the terms of the GNU General Public License as published by
+//	the Free Software Foundation; either version 2 of the License, or
+//	(at your option) any later version.
+//
+//	This program is distributed in the hope that it will be useful,
+//	but WITHOUT ANY WARRANTY; without even the implied warranty of
+//	MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+//	GNU General Public License for more details.
+//
+//	You should have received a copy of the GNU General Public License
+//	along with this program; if not, write to the Free Software
+//	Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111, USA.
+//
+// MANIFEST: interface definition for aegis/change_bran.c
+//
 
-#ifndef AEGIS_CHANGE_BRAN_H
-#define AEGIS_CHANGE_BRAN_H
+#ifndef AEGIS_CHANGE_BRANCH_H
+#define AEGIS_CHANGE_BRANCH_H
 
 #include <change.h>
 
-struct string_list_ty; /* existence */
+struct string_list_ty; // forward
+struct change_list_ty; // forward
 
 bool change_is_a_branch(change_ty *);
 bool change_was_a_branch(change_ty *);
@@ -119,8 +120,55 @@ string_ty *change_branch_integrate_fail_notify_command_get(change_ty *);
 void change_branch_default_development_directory_set(change_ty *,
 	string_ty *);
 string_ty *change_branch_default_development_directory_get(change_ty *);
-void change_branch_default_test_exemption_set(change_ty *, bool);
+
+/**
+  * The change_branch_default_test_exemption_set function is used to set
+  * the default_test_exemption attribute of a branch.
+  *
+  * @param cp
+  *     The branch being modified.
+  * @param yesno
+  *     The state to set the attribute.
+  */
+void change_branch_default_test_exemption_set(change_ty *cp, bool yesno);
+
+/**
+  * The change_branch_default_test_exemption_get function is used to
+  * obtain the current state of a branch's default_test_exemption
+  * attribute.
+  *
+  * @param cp
+  *     The branch being quesried.
+  * @returns
+  *     The state of the attribute.
+  */
 bool change_branch_default_test_exemption_get(change_ty *);
+
+/**
+  * The change_branch_default_test_regression_exemption_set function is
+  * used to set the default_test_regression_exemption attribute of a
+  * branch.
+  *
+  * @param cp
+  *     The branch being modified.
+  * @param yesno
+  *     The state to set the attribute.
+  */
+void change_branch_default_test_regression_exemption_set(change_ty *cp,
+    bool yesno);
+
+/**
+  * The change_branch_default_test_regression_exemption_get
+  * function is used to obtain the current state of a branch's
+  * default_test_regression_exemption attribute.
+  *
+  * @param cp
+  *     The branch being quesried.
+  * @returns
+  *     The state of the attribute.
+  */
+bool change_branch_default_test_regression_exemption_get(change_ty *);
+
 long change_branch_minimum_change_number_get(change_ty *);
 void change_branch_minimum_change_number_set(change_ty *, long);
 bool change_branch_reuse_change_numbers_get(change_ty *);
@@ -140,16 +188,19 @@ time_t change_completion_timestamp(change_ty *);
 
 /**
   * The change_branch_uuid_find function is used to locate a change by
-  * its UUID.  This function will recurse down the branch tree.
+  * its UUID.  This function will recurse down the branch tree.  It is
+  * possible to give a leading prefix - this is shorter, and easier for
+  * humans to type.  We return all such matches, although usually it's
+  * an error if there is more than one.
   *
   * @param pp
   *     The change or branch to search.
   * @param uuid
   *     The change UUID to search for.
-  * @returns
-  *     a pointer to the change with th given UUID, or NULL if no change
-  *     has the given UUID.
+  * @param result
+  *     This is the list of changes which match this (partial) UUID specified.
   */
-change_ty *change_branch_uuid_find(change_ty *pp, string_ty *uuid);
+void change_branch_uuid_find(change_ty *pp, string_ty *uuid,
+    change_list_ty &result);
 
-#endif /* AEGIS_CHANGE_BRAN_H */
+#endif // AEGIS_CHANGE_BRANCH_H

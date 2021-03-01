@@ -20,12 +20,60 @@
 // MANIFEST: implementation of the nstring::replace method
 //
 
+#include <ac/string.h>
+
 #include <nstring.h>
+#include <nstring/accumulator.h>
 
 
 nstring
 nstring::replace(const nstring &lhs, const nstring &rhs, int maximum)
     const
 {
-    return str_replace(get_ref(), lhs.get_ref(), rhs.get_ref(), maximum);
+    static nstring_accumulator sa;
+    sa.clear();
+
+    //
+    // Deal with some trivial cases.
+    //
+    if (lhs.size() == 0 || maximum == 0)
+	return *this;
+
+    //
+    // Default the number of times, if necessary.
+    //
+    if (maximum < 0)
+	maximum = size() + 1;
+
+    //
+    // Walk along the string replacing things.
+    //
+    const char *ip = c_str();
+    const char *ip_end = ip + size();
+    while (ip < ip_end && (size_t)(ip_end - ip) >= lhs.size())
+    {
+	if (0 == memcmp(ip, lhs.c_str(), lhs.size()))
+	{
+	    sa.push_back(rhs);
+	    ip += lhs.size();
+	    if (--maximum <= 0)
+		break;
+	}
+	else
+	{
+	    char c = *ip++;
+	    sa.push_back(c);
+	}
+    }
+
+    //
+    // Collect the tail-end of the input.
+    //
+    if (ip < ip_end)
+	sa.push_back(ip, (size_t)(ip_end - ip));
+
+    //
+    // Build ther answer.
+    //
+    return sa.mkstr();
 }

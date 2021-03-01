@@ -1,6 +1,6 @@
 //
 //	aegis - project change supervisor
-//	Copyright (C) 2002-2004 Peter Miller;
+//	Copyright (C) 2002-2005 Peter Miller;
 //	All rights reserved.
 //
 //	This program is free software; you can redistribute it and/or modify
@@ -21,28 +21,21 @@
 //
 
 #include <input.h>
-#include <str.h>
 
 
 void
-input_read_strictest(input_ty *ip, void *buf, size_t len)
+input_ty::read_strictest(void *buf, size_t len)
 {
-    long	asked;
-    long	got;
-
-    asked = len;
-    got = 0;
+    long asked = len;
+    long got = 0;
     while (len > 0)
     {
-	long            result;
-
-	result = input_read(ip, buf, len);
+	long result = read(buf, len);
 	if (result <= 0)
 	{
-	    string_ty       *s;
-
-	    s = str_format("short read (asked %ld, got %ld)", asked, got);
-	    input_fatal_error(ip, s->str_text);
+	    nstring s =
+		nstring::format("short read (asked %ld, got %ld)", asked, got);
+	    fatal_error(s.c_str());
 	}
 	len -= result;
 	got += result;

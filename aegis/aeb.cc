@@ -1,6 +1,6 @@
 //
 //	aegis - project change supervisor
-//	Copyright (C) 1991-2004 Peter Miller;
+//	Copyright (C) 1991-2005 Peter Miller;
 //	All rights reserved.
 //
 //	This program is free software; you can redistribute it and/or modify
@@ -252,6 +252,7 @@ build_main(void)
     // It is an error if the change is not assigned to the current user.
     // It is an error if the change has no files assigned.
     //
+    bool integrating = false;
     switch (cstate_data->state)
     {
     case cstate_state_awaiting_development:
@@ -293,8 +294,41 @@ build_main(void)
 	    change_fatal(cid.get_cp(), 0, i18n("not integrator"));
 	if (partial.nstrings)
 	    change_fatal(cid.get_cp(), 0, i18n("bad build, partial"));
+	integrating = true;
 	break;
     }
+
+    if
+    (
+	!integrating
+    &&
+	!partial.nstrings
+    &&
+	change_file_promote(cid.get_cp())
+    )
+    {
+	//
+	// May need to cope with other baseline changes, as well.
+	//
+	trace(("The change_file_promote found somthing to do.\n"));
+	change_run_project_file_command(cid.get_cp(), cid.get_up());
+
+	//
+	// Write out the file state, and then let go of the locks
+	// and take them again.  This ensures the data is consistent
+	// for the next stage of processing.
+	//
+	trace(("Write out what we've done so far.\n"));
+	change_cstate_write(cid.get_cp());
+	commit();
+	lock_release();
+
+	trace(("Take the locks again.\n"));
+	change_cstate_lock_prepare(cid.get_cp());
+	project_baseline_read_lock_prepare(cid.get_pp());
+	lock_take();
+    }
+    cstate_data = change_cstate_get(cid.get_cp());
 
     //
     // Resolve relative filenames into project filenames.

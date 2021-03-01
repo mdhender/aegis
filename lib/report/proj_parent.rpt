@@ -1,0 +1,54 @@
+/*
+ *	aegis - project change supervisor
+ *	Copyright (C) 2005 Peter Miller;
+ *	All rights reserved.
+ *
+ *	This program is free software; you can redistribute it and/or modify
+ *	it under the terms of the GNU General Public License as published by
+ *	the Free Software Foundation; either version 2 of the License, or
+ *	(at your option) any later version.
+ *
+ *	This program is distributed in the hope that it will be useful,
+ *	but WITHOUT ANY WARRANTY; without even the implied warranty of
+ *	MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ *	GNU General Public License for more details.
+ *
+ *	You should have received a copy of the GNU General Public License
+ *	along with this program; if not, write to the Free Software
+ *	Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111, USA.
+ *
+ * MANIFEST: report the lib/report/proj_parent.rpt
+ */
+title("Project Parentage Report", sprintf("Project \"%s\"", project_name()));
+columns
+(
+    { name = "Project Branch\n---------------"; width = 15; },
+    { name = "State\n-------"; width = 15; },
+    { name = "Start\n-------"; width = 11; },
+    { name = "Finish\n-------"; width = 11; },
+    { name = "Description\n-----------"; right = 0; }
+);
+auto pn, ps;
+pn = project_name();
+while (pn != "")
+{
+    /*
+     * If we print "pn" we could get an alias.
+     * By printing "ps.name" we get the actual name of the project.
+     */
+    ps = project[pn].state;
+
+    auto start, finish;
+    start = strftime("%Y-%b-%d", ps.history[0].when);
+    if (ps.state == completed)
+    {
+	finish = ps.history[count(ps.history) - 1].when;
+	finish = strftime("%Y-%b-%d", finish);
+    }
+    print(ps.name, ps.state, start, finish, ps.brief_description);
+
+    /*
+     * Move on up the tree.
+     */
+    pn = ps.parent_name;
+}

@@ -1,6 +1,6 @@
 /*
  *	aegis - project change supervisor
- *	Copyright (C) 1991-1997, 1999, 2001-2004 Peter Miller;
+ *	Copyright (C) 1991-1997, 1999, 2001-2005 Peter Miller;
  *	All rights reserved.
  *
  *	This program is free software; you can redistribute it and/or modify
@@ -568,6 +568,13 @@ branch =
      * no test exemption specified.
      */
     default_test_exemption = boolean;
+
+    /*
+     * This field contains what to do when a change is created with
+     * no regression test exemption specified.
+     */
+    default_test_regression_exemption = boolean
+	show_if_default;
 
     /*
      * This field may be set to true if you want to skip various

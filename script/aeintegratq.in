@@ -152,7 +152,9 @@ hash_option("-R", $Option{Ready},    \%Ready)    if defined($Option{Ready});
 hash_option("-c", $Option{change},   \%Ready)    if defined($Option{change});
 
   # define some locations for logging and such
-if ( -d "$ComDir/integrations" ) {
+if ( defined( $ENV{'AEGIS_TEST_DIR'} ) ) {
+    $LogFile  = "$ENV{'AEGIS_TEST_DIR'}/integrate.log";
+} elsif ( -d "$ComDir/integrations" ) {
     $LogFile  = "$ComDir/integrations/integrate.log";
 }else{
     $LogFile  = "$ENV{'HOME'}/integrate.log";
@@ -967,15 +969,18 @@ sub ready
       # but doing it first guarantees that automount is complete
       # to prevent error of delta directory being created root:root ownership
       #
-    chomp(@i = `aegis -ib -list -p $project -terse`);
+    chomp(@i = `aegis -ibegin -list -p $project -terse`);
 
     if( scalar( keys %Ready ) )	# a subset was requested
     {
+          # Need to also consider changes being integrated
+  	chomp(my @ci = `aegis -ipass -list -p $project -terse`);
+
 	@i = sort {
 	    $Ready{$a} cmp $Ready{$b}
 	} grep {
 	    defined($Ready{$_})
-	} @i;
+	} @i, @ci;
     }
       #
       # this is where to check for requested -minimum integrations

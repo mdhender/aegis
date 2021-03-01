@@ -1,6 +1,6 @@
 //
 //	aegis - project change supervisor
-//	Copyright (C) 1991-1999, 2001-2004 Peter Miller;
+//	Copyright (C) 1991-1999, 2001-2005 Peter Miller;
 //	All rights reserved.
 //
 //	This program is free software; you can redistribute it and/or modify
@@ -42,6 +42,7 @@
 #include <progname.h>
 #include <project.h>
 #include <quit.h>
+#include <rss.h>
 #include <sub.h>
 #include <trace.h>
 #include <undo.h>
@@ -130,6 +131,7 @@ review_pass_undo_main(void)
     arglex();
     project_name = 0;
     change_number = 0;
+    string_ty *reason = 0;
     while (arglex_token != arglex_token_eoln)
     {
 	switch (arglex_token)
@@ -162,6 +164,26 @@ review_pass_undo_main(void)
 	case arglex_token_wait:
 	case arglex_token_wait_not:
 	    user_lock_wait_argument(review_pass_undo_usage);
+	    break;
+
+	case arglex_token_reason:
+	    if (reason)
+		duplicate_option(review_pass_undo_usage);
+	    switch (arglex())
+	    {
+	    default:
+		option_needs_string
+	       	(
+		    arglex_token_reason,
+		    review_pass_undo_usage
+		);
+		// NOTREACHED
+
+	    case arglex_token_string:
+	    case arglex_token_number:
+		reason = str_from_c(arglex_value.alv_string);
+		break;
+	    }
 	    break;
 	}
 	arglex();
@@ -247,6 +269,7 @@ review_pass_undo_main(void)
     cstate_data->state = cstate_state_being_reviewed;
     history_data = change_history_new(cp, up);
     history_data->what = cstate_history_what_review_pass_undo;
+    history_data->why = reason;
 
     //
     // write out the data and release the locks
@@ -259,6 +282,11 @@ review_pass_undo_main(void)
     // run the notify command
     //
     change_run_review_pass_undo_notify_command(cp);
+
+    //
+    // Update the RSS feed file if necessary.
+    //
+    rss_add_item_by_change(pp, cp);
 
     //
     // verbose success message

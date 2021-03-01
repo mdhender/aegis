@@ -179,7 +179,7 @@ archive/%2.pdf: lib/en/%2/main.ms etc/page-list.awk
 		set meter;
 	rm archive/%2.groff
 		set silent;
-	psselect -p`awk -f [resolve etc/page-list.awk] archive/%2.ps.tmp`
+	psselect -p`[awk] -f [resolve etc/page-list.awk] archive/%2.ps.tmp`
 		archive/%2.ps.tmp > archive/%2.ps;
 	rm archive/%2.ps.tmp
 		set silent;
@@ -203,7 +203,7 @@ archive/%2-%3.pdf: lib/%3/%2/main.ms etc/page-list.awk
 		set meter;
 	rm archive/%2-%3.groff
 		set silent;
-	psselect -p`awk -f [resolve etc/page-list.awk] archive/%2-%3.ps.tmp`
+	psselect -p`[awk] -f [resolve etc/page-list.awk] archive/%2-%3.ps.tmp`
 		archive/%2-%3.ps.tmp > archive/%2-%3.ps;
 	rm archive/%2-%3.ps.tmp
 		set silent;
@@ -242,7 +242,7 @@ archive/%2.pdf: lib/en/%2/main.mm etc/page-list.awk
 		set meter;
 	rm archive/%2.groff
 		set silent;
-	psselect -p`awk -f [resolve etc/page-list.awk] archive/%2.ps.tmp`
+	psselect -p`[awk] -f [resolve etc/page-list.awk] archive/%2.ps.tmp`
 		archive/%2.ps.tmp > archive/%2.ps;
 	rm archive/%2.ps.tmp
 		set silent;
@@ -295,7 +295,7 @@ archive/%2.pdf: lib/en/%2/main.man
 		set meter;
 	rm archive/%2.groff
 		set silent;
-	psselect -p`awk -f [resolve etc/page-list.awk] archive/%2.ps.tmp`
+	psselect -p`[awk] -f [resolve etc/page-list.awk] archive/%2.ps.tmp`
 		archive/%2.ps.tmp > archive/%2.ps;
 	rm archive/%2.ps.tmp
 		set silent;

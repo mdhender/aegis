@@ -1,6 +1,6 @@
 .\"
 .\"	aegis - project change supervisor
-.\"	Copyright (C) 1991-1994, 1998-2000, 2002 Peter Miller;
+.\"	Copyright (C) 1991-1994, 1998-2000, 2002, 2005 Peter Miller;
 .\"	All rights reserved.
 .\"
 .\"	This program is free software; you can redistribute it and/or modify
@@ -24,52 +24,52 @@
 .nh 1 "The Project Attributes"
 .LP
 The project attributes are manipulated using the
-.I aepa (1)
+\fIaepa\fP(1)
 command.
 This command reads a project attributes file to set the project attributes.
 This file can be thought of as having several sections,
 each of which will be covered by this chapter.
 You should see the
-.I aepattr (5)
+\fIaepattr\fP(5)
 manual entry for more details.
 .nh 2 "Description and Access"
 .LP
 The
-.I description
+\fIdescription\fP
 field is a string which contains
 a description of the project.
 Large amounts of prose are not required;
 a single line is sufficient.
 .LP
 The
-.I default_development_directory
+\fIdefault_development_directory\dP
 field is a string which contains
 the pathname of where to place new development directories.
 The pathname must be absolute.
 This field is only
 consulted if the
-.I uconf (5)
+\fIuconf\fP(5)
 field of the same name is not set.
 Defaults to
-.I $HOME .
+\fI$HOME\fP.
 .LP
 The
-.I umask
+\fIumask\fP
 field is an integer which is set to the
 file permission mode mask.
 See
-.I umask (2)
+\fIumask\fP(2)
 for more information.
 This value will always be OR'ed with 022,
 because aegis is paranoid.
 .nh 2 "Notification Commands"
 .LP
 The
-.I develop_end_notify_command
+\fIdevelop_end_notify_command\fP
 field is a string which contains a command to be used to
 notify that a change requires reviewing.
 All of the substitutions described in
-.I aesub (5)
+\fIaesub\fP(5)
 are available.
 This field is optional, if it is not specified no notification will be issued.
 This command could also be used to notify other management systems,
@@ -77,12 +77,12 @@ such as progress and defect tracking,
 in addition to notifying users.
 .LP
 The
-.I develop_end_undo_notify_command
+\fIdevelop_end_undo_notify_command\fP
 field is a string containing a command used to
 notify that a change has been withdrawn from review
 for further development.
 All of the substitutions described in
-.I aesub (5)
+\fIaesub\fP(5)
 are available.
 This field is optional, if it is not specified no notification will be issued.
 This command could also be used to notify other management systems,
@@ -90,11 +90,11 @@ such as progress and defect tracking,
 in addition to notifying users.
 .LP
 The
-.I review_pass_notify_command
+\fIreview_pass_notify_command\fP
 field is a string containing the command to
 notify that the review has passed.
 All of the substitutions described in
-.I aesub (5)
+\fIaesub\fP(5)
 are available.
 This field is optional, if it is not specified no notification will be issued.
 This command could also be used to notify other management systems,
@@ -102,14 +102,14 @@ such as progress and defect tracking,
 in addition to notifying users.
 .LP
 The
-.I review_pass_undo_notify_command
+\fIreview_pass_undo_notify_command\fP
 field is a string containing the command to
 notify that a review pass has has been rescinded.
 All of the substitutions described in
-.I aesub (5)
+\fIaesub\fP(5)
 are available.
 This field is optional, and defaults to the
-.I develop_end_notify_command
+\fIdevelop_end_notify_command\fP
 field if not specified.
 If neither is specified, no notification will be issued.
 This command could also be used to notify other management systems,
@@ -117,11 +117,11 @@ such as progress and defect tracking,
 in addition to notifying users.
 .LP
 The
-.I review_fail_notify_command
+\fIreview_fail_notify_command\fP
 field is a string containing the command to
 notify that the review has failed.
 All of the substitutions described in
-.I aesub (5)
+\fIaesub\fP(5)
 are available.
 This field is optional, if it is not specified no notification will be issued.
 This command could also be used to notify other management systems,
@@ -129,11 +129,11 @@ such as progress and defect tracking,
 in addition to notifying users.
 .LP
 The
-.I integrate_pass_notify_command
+\fIintegrate_pass_notify_command\fP
 field is a string containing the command to
 notify that the integration has passed.
 All of the substitutions described in
-.I aesub (5)
+\fIaesub\fP(5)
 are available.
 This field is optional, if it is not specified no notification will be issued.
 This command could also be used to notify other management systems,
@@ -141,11 +141,11 @@ such as progress and defect tracking,
 in addition to notifying users.
 .LP
 The
-.I integrate_fail_notify_command
+\fIintegrate_fail_notify_command\fP
 field is a string containing the command to
 notify that the integration has failed.
 All of the substitutions described in
-.I aesub (5)
+\fIaesub\fP(5)
 are available.
 This field is optional, if it is not specified no notification will be issued.
 This command could also be used to notify other management systems,
@@ -156,10 +156,10 @@ in addition to notifying users.
 The aegis command is distributed with a set of shell scripts to
 perform these notifications by email.
 They are installed into the
-.I \*(L)
+\fI\*(L)\fP
 directory, by default;
 the actual installed directory at your site is available as the
-.I ${DATa_DIRectory}
+\fI${DATa_DIRectory}\fP
 substitution.
 The entries in the project attribute file look like this:
 .E(
@@ -190,10 +190,10 @@ Please note: the exit status of all these commands will be ignored.
 The aegis command is distributed with a set of shell scripts to
 perform these notifications by USENET.
 They are installed into the
-.I \*(L)
+\fI\*(L)\fP
 directory, by default;
 the actual installed directory at your site is available as the
-.I ${DATa_DIRectory}
+\fI${DATa_DIRectory}\fP
 substitution.
 The entries in the project attribute file look like this:
 .E(
@@ -220,7 +220,7 @@ and "$c" is an abbreviation for "$change".
 .nh 2 "Exemption Controls"
 .LP
 The
-.I developer_may_review
+\fIdeveloper_may_review\fP
 field is a boolean.
 If this field is true,
 then a developer may review her own change.
@@ -228,7 +228,7 @@ This is probably only a good idea for projects of less than 3 people.
 The idea is for as many people as possible to critically examine a change.
 .LP
 The
-.I developer_may_integrate
+\fIdeveloper_may_integrate\fP
 field is a boolean.
 If this field is true,
 then a developer may integrate her own change.
@@ -236,7 +236,7 @@ This is probably only a good idea for projects of less than 3 people.
 The idea is for as many people as possible to critically examine a change.
 .LP
 The
-.I reviewer_may_integrate
+\fIreviewer_may_integrate\fP
 field is a boolean.
 If this field is true,
 then a reviewer may integrate a change she reviewed.
@@ -244,7 +244,7 @@ This is probably only a good idea for projects of less than 3 people.
 The idea is for as many people as possible to critically examine a change.
 .LP
 The
-.I developers_may_create_changes
+\fIdevelopers_may_create_changes\fP
 field is a boolean.
 If this field is true then developers may create changes,
 in addition to administrators.
@@ -252,7 +252,7 @@ This tends to be a very useful thing,
 since developers find most of the bugs.
 .LP
 The
-.I default_test_exemption
+\fIdefault_test_exemption\fP
 field is a boolean.
 This field contains what to do when a change is created with
 no test exemption specified.
@@ -316,3 +316,123 @@ everyone may be a reviewer.
 As the teams get larger,
 the more experienced staff are often the reviewers,
 rather than everyone.
+.nh 3 "RSS Feeds"
+.LP
+Aegis has the ability to publish RSS 2.0 items to an RSS channel when
+changesets transition to a new state.  This is an optional feature that
+must be enabled and configured via the project-specific attributes.
+.LP
+Project administrators can configure each change of state to cause an RSS
+item to be added to a specified RSS channel.  Each transition is
+individually controlled, allowing each transition to be recorded in
+separate channels, or all transitions in the same channel, or some
+combination thereof.
+.LP
+Generating RSS items for particular state transitions is enabled by the
+\fIrss:feedfilename\fP
+project-specific attibute.  The format of this attribute is:
+.E(
+name = "rss:feedfilename-<filename>";
+value = "<state> [<state> <state>]";
+.E)
+The
+\fIname\fP
+part of this attribute includes a
+\fIfilename,\fP
+which is the name of the RSS feed file (channel) to which the item is to
+be added.  The
+\fIvalue\fP
+part of the attribute is a space-separated list of states that will cause
+an RSS item to be added to the specified file.  For example,
+.E(
+name = "rss:feedfilename-foo.xml";
+value = "awaiting_review
+         awaiting_integration";
+.E)
+will cause items to be added to the channel stored in the file "foo.xml"
+when a changeset transitions
+\fIinto\fP
+the awaiting_review and awaiting_integration states.
+.LP
+The channel description can be specified using the
+\fIrss:feeddescription\fP
+attribute.  The format of this attribute is:
+.E(
+name = "rss:feeddescription-<filenane>";
+value = "<Some description>";
+.E)
+For example,
+.E(
+name = "rss:feeddescription-foo.xml";
+value = "This is a description";
+.E)
+will cause the <description> sub-element of the <channel> element stored in
+the file foo.xml to have the value
+"\fIThis is a description\fP".
+If this attribute is not used, the default description is:
+"\fIFeed of changes in state...\fP"
+.LP
+The channel title can be specified using the
+\fIrss:feedtitle\fP
+attribute.  The format of this attribute is:
+.E(
+name = "rss:feedtitle-<filename>";
+value = <Some title>;
+.E)
+For example,
+.E(
+name = "rss:feedtitle-foo.xml";
+value = "This is a title";
+.E)
+will cause the <title> sub-element of the <channel> element stored in the
+file foo.xml to have the value
+"\fPProject ...: This is a title\fP"
+The title will always start with the word "Project" and the project name.
+If this attribute is supplied, this default title is appended with the
+test provided.
+.LP
+The channel language can be specified using the
+\fIrss:feedlanguage\fP
+attribute.  The format of this attribute is:
+.E(
+name = "rss:feedlanguage-\fIfilename\fP";
+value = "\fIlanguage\fP";
+.E)
+For example,
+.E(
+name = "rss:feedlanguage-foo.xml";
+value = "en-AU";
+.E)
+will cause the <language> sub-element of the <channel> element stored in
+the file foo.xml to have the value
+\fIen-AU\fP
+If not specified, the default value of the language sub-element is "en-US".
+.nh 4 "Serving RSS Channels"
+.LP
+aeget is able to serve up RSS channels, with an appropriate URL.  An example
+URL is
+.E(
+http://somehost/cgi-bin/aeget/proj.1.0/?rss+foo.xml
+.E)
+The key aspect of the URL shown is the
+"\fI?rss+foo.xml\fP"
+modifier.
+"\fIfoo.xml\fP"
+should obviously be replaced with the name of your RSS channel feed
+(that is, the filename specified with the
+"\fIrss:feedfilename\fP"
+project-specified attribute(s).
+.LP
+In order to read the RSS channels, it is recommended to point your RSS
+aggregator of choice to the appropriate URL.  In order to make determining
+the URL easy, aeget will also place "RSS" icons next to the individual state
+links on the main project web page (\fI"proj.1.0/?menu"\fP)
+if there is an RSS channel configured to include that changeset state.
+.nh 4 "Links in RSS Channels"
+.LP
+Links within RSS feed files are stored using a placeholder ("@@SCRIPTNAME@@")
+instead of the serving script in URLs.  This is done because the code that
+knows about hte URL of a particular installation is encapsulated within aeget.
+.LP
+The placeholder is replaced with the real scriptname when the file is served
+by aeget.

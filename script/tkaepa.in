@@ -2,7 +2,7 @@
 #-*-tcl-*-
 #
 #	aegis - project change supervisor
-#	Copyright (C) 2001, 2002 Peter Miller;
+#	Copyright (C) 2001, 2002, 2005 Peter Miller;
 #	All rights reserved.
 #
 #	This program is free software; you can redistribute it and/or modify
@@ -48,6 +48,7 @@ set proj_minimum_branch_number 0
 set proj_skip_unlucky 0
 set proj_compress_database 0
 set proj_default_test_required 0
+set proj_default_test_regression_required 0
 set proj_develop_end_action "goto_being_reviewed"
 set proj_protect_development_directory 0
 set i_am_admin 0
@@ -148,6 +149,7 @@ proc project_name_changed { } {
 	global proj_skip_unlucky
 	global proj_compress_database
 	global proj_default_test_required
+	global proj_default_test_regression_required
 	global proj_develop_end_action
 	global proj_protect_development_directory
 	global i_am_admin
@@ -292,6 +294,11 @@ checkbutton .bottom.misc.dtr -text "Tests Required By Default" \
     -variable proj_default_test_required -onvalue 1 -offvalue 0
 pack .bottom.misc.dtr -side top -anchor w
 
+# proj_default_test_regression_required
+checkbutton .bottom.misc.dtrr -text "Regression Tests Required By Default" \
+    -variable proj_default_test_regression_required -onvalue 1 -offvalue 0
+pack .bottom.misc.dtrr -side top -anchor w
+
 # proj_umask
 # proj_minimum_change_number
 # proj_minimum_branch_number
@@ -378,6 +385,7 @@ proc apply { } {
 	global proj_skip_unlucky
 	global proj_compress_database
 	global proj_default_test_required
+	global proj_default_test_regression_required
 	global proj_develop_end_action
 	global proj_protect_development_directory
 
@@ -436,6 +444,11 @@ proc apply { } {
 	    puts $fd "default_test_exemption = false;"
 	} else {
 	    puts $fd "default_test_exemption = true;"
+	}
+	if { $proj_default_test_regression_required } {
+	    puts $fd "default_test_regression_exemption = false;"
+	} else {
+	    puts $fd "default_test_regression_exemption = true;"
 	}
 	puts $fd "develop_end_action = $proj_develop_end_action;"
 	if { $proj_protect_development_directory } {

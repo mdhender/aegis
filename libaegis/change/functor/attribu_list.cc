@@ -1,6 +1,6 @@
 //
 //	aegis - project change supervisor
-//	Copyright (C) 2004 Peter Miller;
+//	Copyright (C) 2004, 2005 Peter Miller;
 //	All rights reserved.
 //
 //	This program is free software; you can redistribute it and/or modify
@@ -22,6 +22,8 @@
 
 #pragma implementation "change_functor_attribute_list"
 
+#include <ac/string.h>
+
 #include <change/functor/attribu_list.h>
 #include <error.h> // for assert
 #include <attribute.h>
@@ -36,8 +38,9 @@ change_functor_attribute_list::~change_functor_attribute_list()
 
 
 change_functor_attribute_list::change_functor_attribute_list(
-	attributes_list_ty *arg) :
-    alp(arg)
+	bool arg1, attributes_list_ty *arg2) :
+    change_functor(arg1),
+    alp(arg2)
 {
     assert(alp);
 }
@@ -70,6 +73,10 @@ change_functor_attribute_list::operator()(change_ty *cp)
 	assert(ap->value);
 	if
 	(
+	    ap->name
+	&&
+	    0 == strcasecmp(ORIGINAL_UUID, ap->name->str_text)
+	&&
 	    ap->value
 	&&
 	    // users can edit, we will check

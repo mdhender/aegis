@@ -1,6 +1,6 @@
 //
 //	aegis - project change supervisor
-//	Copyright (C) 2003, 2004 Peter Miller;
+//	Copyright (C) 2003-2005 Peter Miller;
 //	All rights reserved.
 //
 //	This program is free software; you can redistribute it and/or modify
@@ -44,8 +44,6 @@ not_awaiting_development(change_ty *cp)
 void
 get_change_download(change_ty *cp, string_ty *fn, string_list_ty *modifier)
 {
-    int             ok;
-
     html_header(0, cp);
     printf("<title>Project\n");
     html_encode_string(project_name_get(cp->pp));
@@ -58,7 +56,7 @@ get_change_download(change_ty *cp, string_ty *fn, string_list_ty *modifier)
     printf(",<br>\nDownload</h1>\n");
     printf("<dl>\n");
 
-    ok = not_awaiting_development(cp);
+    int ok = not_awaiting_development(cp);
 
     printf("<dt>");
     emit_change_href(cp, "aedist");
@@ -89,12 +87,32 @@ get_change_download(change_ty *cp, string_ty *fn, string_list_ty *modifier)
 	printf("patch</a> (");
 	emit_change_href(cp, "aepatch+compat=4.16");
         printf("no meta data</a>)<dd>This item allows you to\n");
-        printf("download a change set as a conventional patch.\n");
-        printf("It even preserves most of the meta-data for the\n");
-        printf("change set.  You unpack this format using one\n");
-        printf("of the &ldquo;<i>zcat | patch -p0</i>&rdquo; or\n");
-        printf("&ldquo;<i>aepatch -receive</i>&rdquo; commands.\n");
+        printf("download a change set as a conventional patch.  You\n");
+        printf("unpack this format using one of the &ldquo;<i>zcat\n");
+        printf("| patch -p0</i>&rdquo; or &ldquo;<i>aepatch\n");
+        printf("-receive</i>&rdquo; commands.  The second command\n");
+        printf("even preserves most of the meta-data for the change\n");
+        printf("set.\n");
 	printf("<p>\n");
+
+	printf("<dt>");
+	emit_change_href(cp, "aerevml");
+	printf("RevML</a> (");
+	emit_change_href(cp, "aerevml+es");
+        printf("entire source</a>)<dd>This item allows you to\n");
+        printf("download change sets as a <a\n");
+        printf("href=\"http://public.perforce.com/public/revml/index.html\"\n");
+	printf(">RevML</a> formatted change set, conforming to the <a\n");
+	printf("href=\"http://public.perforce.com/public/revml/revml.dtd\"\n");
+        printf(">RevML DTD</a>.  This is a VC/SCM-agnostic format\n");
+        printf("designed to be used to exchange change sets between\n");
+        printf("repositories using unlike VC/SCM systems.  It\n");
+        printf("preserves most of the meta-data for the change set,\n");
+        printf("although how much depends on what VC/SCM system you\n");
+        printf("drop it into.  You unpack this format using one of\n");
+        printf("the &ldquo;<i>vcp</i>&rdquo; or &ldquo;<i>aerevml\n");
+        printf("-receive</i>&rdquo; commands.\n");
+        printf("<p>\n");
 
 	printf("<dt>");
 	emit_change_href(cp, "aetar");
@@ -118,8 +136,9 @@ get_change_download(change_ty *cp, string_ty *fn, string_list_ty *modifier)
     }
 
     printf("<dt> ");
+    printf("Compatibility:\n");
     emit_change_href(cp, "aedist+compat=4.6");
-    printf("Pre-4.7 aedist</a>");
+    printf("pre-4.7 aedist</a>");
     if (ok)
     {
 	printf(" (");
@@ -144,11 +163,20 @@ get_change_download(change_ty *cp, string_ty *fn, string_list_ty *modifier)
 	emit_change_href(cp, "aedist+compat=4.16+es");
 	printf("entire source</a>)");
     }
-    printf(" compatibility<dd>\n");
+    printf(", ");
+    emit_change_href(cp, "aedist+compat=4.18");
+    printf("pre-4.19 aedist</a>");
+    if (ok)
+    {
+	printf(" (");
+	emit_change_href(cp, "aedist+compat=4.18+es");
+	printf("entire source</a>)");
+    }
+    printf("<dd>\n");
     printf("These items allow you to download change sets in\n");
     printf("Aegis' own transfer format, but omitting items which\n");
     printf("older versions of <i>aedist</i> do not understand.\n");
-    printf("It preserves most meta-data for the change set.\n");
+    printf("It preserves the meta-data for the change set.\n");
     printf("You unpack this format using the &ldquo;<i>aedist\n");
     printf("-receive</i>&rdquo; command.\n");
     printf("<p>\n");

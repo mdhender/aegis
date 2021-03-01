@@ -1,6 +1,6 @@
 //
 //	aegis - project change supervisor
-//	Copyright (C) 1999, 2002-2004 Peter Miller;
+//	Copyright (C) 1999, 2002-2005 Peter Miller;
 //	All rights reserved.
 //
 //	This program is free software; you can redistribute it and/or modify
@@ -74,6 +74,14 @@ change_cstate_improve(cstate_ty *d)
 	{
 	    d->branch->reuse_change_numbers = true;
 	    d->branch->mask |= cstate_branch_reuse_change_numbers_mask;
+	}
+
+	if (!(d->branch->mask &
+	    cstate_branch_default_test_regression_exemption_mask))
+	{
+	    d->branch->default_test_regression_exemption = true;
+	    d->branch->mask |=
+		cstate_branch_default_test_regression_exemption_mask;
 	}
     }
     switch (d->state)

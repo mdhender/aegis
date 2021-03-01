@@ -1,6 +1,6 @@
 //
 //	aegis - project change supervisor
-//	Copyright (C) 1997, 2002, 2004 Peter Miller;
+//	Copyright (C) 1997, 2002, 2004, 2005 Peter Miller;
 //	All rights reserved.
 //
 //	This program is free software; you can redistribute it and/or modify
@@ -38,7 +38,7 @@ tree_ty *tree_copy(tree_ty *);
 void tree_delete(tree_ty *);
 void tree_print(tree_ty *);
 struct rpt_value_ty *tree_evaluate(tree_ty *, struct string_ty *,
-    struct stat *);
+    struct string_ty *, struct string_ty *, struct stat *);
 int tree_useful(tree_ty *);
 int tree_constant(tree_ty *);
 struct rpt_value_ty *tree_evaluate_constant(tree_ty *);

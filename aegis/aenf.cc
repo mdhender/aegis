@@ -133,7 +133,8 @@ struct walker_ty
 
 
 static void
-walker(void *p, dir_walk_message_ty msg, string_ty *path, struct stat *st)
+walker(void *p, dir_walk_message_ty msg, string_ty *path,
+    const struct stat *st)
 {
     walker_ty	    *aux;
     string_ty	    *s;
@@ -310,6 +311,12 @@ new_file_main(void)
 	    str_free(s2);
 	    s2 = 0;
             break;
+
+	case arglex_token_keep:
+	case arglex_token_interactive:
+	case arglex_token_keep_not:
+	    user_delete_file_argument(new_file_usage);
+	    break;
 	}
 	arglex();
     }
@@ -369,6 +376,23 @@ new_file_main(void)
     lock_take();
 
     log_open(change_logfile_get(cp), up, log_style);
+
+    if (change_file_promote(cp))
+    {
+	//
+	// Write out the file state, and then let go of the locks
+	// and take them again.  This ensures the data is consistent
+	// for the next stage of processing.
+	//
+	trace(("Write out what we've done so far.\n"));
+	change_cstate_write(cp);
+	commit();
+	lock_release();
+
+	trace(("Take the locks again.\n"));
+	change_cstate_lock_prepare(cp);
+	lock_take();
+    }
 
     //
     // It is an error if the change is not in the being_developed state.
@@ -756,7 +780,23 @@ new_file_main(void)
 	//
 	usage = file_usage_value;
 	if (auto_config_allowed && change_file_is_config(cp, s1))
+	{
+	    static string_ty *old;
+	    if (!old)
+		old = str_from_c(THE_CONFIG_FILE_OLD);
+	    if (str_equal(s1, old))
+	    {
+		sub_context_ty sc;
+		sc.var_set_string("File_Name1", s1);
+		sc.var_set_charstar("File_Name2", THE_CONFIG_FILE_NEW);
+		sc.error_intl
+	       	(
+		    i18n("warning: $filename1 deprecated, "
+			"use $filename2 file instead")
+		);
+	    }
 	    usage = file_usage_config;
+	}
 
 	src_data = change_file_new(cp, s1);
 	src_data->action = file_action_create;

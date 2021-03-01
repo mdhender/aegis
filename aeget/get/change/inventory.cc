@@ -1,6 +1,6 @@
 //
 //	aegis - project change supervisor
-//	Copyright (C) 2004 Peter Miller;
+//	Copyright (C) 2004, 2005 Peter Miller;
 //	All rights reserved.
 //
 //	This program is free software; you can redistribute it and/or modify
@@ -27,6 +27,6 @@
 void
 get_change_inventory(project_ty *pp, string_ty *, string_list_ty *)
 {
-    change_functor_inventory cf(pp);
+    change_functor_inventory cf(false, pp);
     project_inventory_walk(pp, cf);
 }

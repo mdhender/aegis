@@ -1,6 +1,6 @@
 //
 //	aegis - project change supervisor
-//	Copyright (C) 2003, 2004 Peter Miller;
+//	Copyright (C) 2003-2005 Peter Miller;
 //	All rights reserved.
 //
 //	This program is free software; you can redistribute it and/or modify
@@ -131,7 +131,6 @@ whine(change_ty *cp, string_list_ty *modifier)
 void
 get_file(change_ty *cp, string_ty *filename, string_list_ty *modifier)
 {
-    fprintf(stderr, "%s: %d: get_file {\n", __FILE__, __LINE__);
     //
     // Look for the project modifier to report.
     //
@@ -142,7 +141,6 @@ get_file(change_ty *cp, string_ty *filename, string_list_ty *modifier)
 	    if (modifier_test_and_clear(modifier, tp->name))
 	    {
 		tp->action(cp, filename, modifier);
-    fprintf(stderr, "%s: %d: get_file }\n", __FILE__, __LINE__);
 		return;
 	    }
 	}
@@ -158,5 +156,4 @@ get_file(change_ty *cp, string_ty *filename, string_list_ty *modifier)
     // The default is to look for the file contents.
     //
     get_file_contents(cp, filename, modifier);
-    fprintf(stderr, "%s: %d: get_file }\n", __FILE__, __LINE__);
 }

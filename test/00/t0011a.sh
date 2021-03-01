@@ -1,7 +1,7 @@
 #!/bin/sh
 #
 #	aegis - project change supervisor
-#	Copyright (C) 1991-1998, 2002-2004 Peter Miller;
+#	Copyright (C) 1991-1998, 2002-2005 Peter Miller;
 #	All rights reserved.
 #
 #	This program is free software; you can redistribute it and/or modify
@@ -104,7 +104,7 @@ tmp=$work/tmp
 #
 # make the directories
 #
-activity="working directory 94"
+activity="working directory 107"
 mkdir $work $work/lib
 if test $? -ne 0 ; then no_result; fi
 chmod 777 $work/lib
@@ -149,14 +149,14 @@ fi
 #
 # make a new project
 #
-activity="new project 134"
+activity="new project 152"
 $bin/aegis -newpro example -version "" -dir $workproj -v -lib $worklib > log 2>&1
 if test $? -ne 0 ; then cat log; fail; fi
 
 #
 # change project attributes
 #
-activity="project attributes 141"
+activity="project attributes 159"
 cat > $tmp << 'TheEnd'
 description = "aegis user's guide";
 developer_may_review = true;
@@ -171,7 +171,7 @@ if test $? -ne 0 ; then cat log; fail; fi
 #
 # create a new change
 #
-activity="new change 156"
+activity="new change 174"
 cat > $tmp << 'TheEnd'
 brief_description = "Place under aegis";
 description = "A simple calculator using native floating point precision.  \
@@ -188,14 +188,14 @@ if test $? -ne 0 ; then cat log; fail; fi
 #
 # add a new developer
 #
-activity="new developer 173"
+activity="new developer 191"
 $bin/aegis -newdev $USER -v > log 2>&1
 if test $? -ne 0 ; then cat log; fail; fi
 
 #
 # begin development of the change
 #
-activity="develop begin 180"
+activity="develop begin 198"
 $bin/aegis -devbeg -l -v > log 2>&1
 if test $? -ne 0 ; then cat log; fail; fi
 $bin/aegis -devbeg 1 -dir $workchan -v > log 2>&1
@@ -204,8 +204,8 @@ if test $? -ne 0 ; then cat log; fail; fi
 #
 # add the new files to the change
 #
-activity="new file 189"
-$bin/aegis -new_file $workchan/Howto.cook $workchan/config $workchan/gram.y \
+activity="new file 207"
+$bin/aegis -new_file $workchan/Howto.cook $workchan/aegis.conf $workchan/gram.y \
 	$workchan/lex.l $workchan/main.cc -nl -v > log 2>&1
 if test $? -ne 0 ; then cat log; fail; fi
 
@@ -295,7 +295,7 @@ lex.o: gram.h;
 TheEnd
 if test $? -ne 0 ; then fail; fi
 
-cat > $workchan/config << 'TheEnd'
+cat > $workchan/aegis.conf << 'TheEnd'
 build_command = "cook -b ${s Howto.cook} project=$p change=$c version=$v -nl";
 link_integration_directory = true;
 
@@ -427,7 +427,7 @@ if test $? -ne 0 ; then fail; fi
 #
 # create a new test
 #
-activity="new test 416"
+activity="new test 430"
 $bin/aegis -nt -v > log 2>&1
 if test $? -ne 0 ; then cat log; fail; fi
 
@@ -494,42 +494,42 @@ if test $? -ne 0 ; then fail; fi
 #
 # build the change
 #
-activity="build 483"
+activity="build 497"
 $bin/aegis -build -nl -v > log 2>&1
 if test $? -ne 0 ; then cat log; fail; fi
 
 #
 # difference the change
 #
-activity="diff 490"
+activity="diff 504"
 $bin/aegis -diff -v -nl > log 2>&1
 if test $? -ne 0 ; then cat log; fail; fi
 
 #
 # test the change
 #
-activity="test 497"
+activity="test 511"
 $bin/aegis -test -nl -v > log 2>&1
 if test $? -ne 0 ; then cat log; fail; fi
 
 #
 # finish development of the change
 #
-activity="develop end 504"
+activity="develop end 518"
 $bin/aegis -dev_end -v > log 2>&1
 if test $? -ne 0 ; then cat log; fail; fi
 
 #
 # add a new reviewer
 #
-activity="new reviewer 511"
+activity="new reviewer 525"
 $bin/aegis -newrev $USER -v > log 2>&1
 if test $? -ne 0 ; then cat log; fail; fi
 
 #
 # pass the review
 #
-activity="review pass 518"
+activity="review pass 532"
 $bin/aegis -review_pass -list -proj example -v > log 2>&1
 if test $? -ne 0 ; then cat log; fail; fi
 $bin/aegis -review_pass -chan 1 -proj example -v > log 2>&1
@@ -538,14 +538,14 @@ if test $? -ne 0 ; then cat log; fail; fi
 #
 # add an integrator
 #
-activity="new integrator 527"
+activity="new integrator 541"
 $bin/aegis -newint $USER -v > log 2>&1
 if test $? -ne 0 ; then cat log; fail; fi
 
 #
 # start integrating
 #
-activity="integrate begin 534"
+activity="integrate begin 548"
 $bin/aegis -intbeg -list -v > log 2>&1
 if test $? -ne 0 ; then cat log; fail; fi
 $bin/aegis -intbeg 1 -v > log 2>&1
@@ -556,7 +556,7 @@ if test $? -ne 0 ; then cat log; fail; fi
 #
 # integrate build and test
 #
-activity="build 545"
+activity="build 559"
 $bin/aegis -build -nl -v > log 2>&1
 if test $? -ne 0 ; then cat log; fail; fi
 $bin/aegis -test -nl -v > log 2>&1
@@ -565,7 +565,7 @@ if test $? -ne 0 ; then cat log; fail; fi
 #
 # pass the integration
 #
-activity="integrate pass 554"
+activity="integrate pass 568"
 $bin/aegis -intpass -nl -v > log 2>&1
 if test $? -ne 0 ; then cat log; fail; fi
 
@@ -574,7 +574,7 @@ if test $? -ne 0 ; then cat log; fail; fi
 #
 # create the second and subsequent changes
 #
-activity="new change 563"
+activity="new change 577"
 cat > $tmp << 'fubar'
 brief_description = "file names on command line";
 description = "Optional input and output files may be \
@@ -585,7 +585,7 @@ if test $? -ne 0 ; then fail; fi
 $bin/aegis -new_change 2 -f $tmp -project example -v > log 2>&1
 if test $? -ne 0 ; then cat log; fail; fi
 
-activity="new change 574"
+activity="new change 588"
 cat > $tmp << 'fubar'
 brief_description = "add powers";
 description = "Enhance the grammar to allow exponentiation.  \
@@ -596,7 +596,7 @@ if test $? -ne 0 ; then fail; fi
 $bin/aegis -new_change 3 -f $tmp -project example -v > log 2>&1
 if test $? -ne 0 ; then cat log; fail; fi
 
-activity="new change 585"
+activity="new change 599"
 cat > $tmp << 'fubar'
 brief_description = "add variables";
 description = "Enhance the grammar to allow variables.  \
@@ -610,7 +610,7 @@ if test $? -ne 0 ; then cat log; fail; fi
 #
 # begin development of the change
 #
-activity="develop begin 599"
+activity="develop begin 613"
 $bin/aegis -devbeg -l -v > log 2>&1
 if test $? -ne 0 ; then cat log; fail; fi
 $bin/aegis -devbeg 2 -dir $workchan -v > log 2>&1
@@ -619,7 +619,7 @@ if test $? -ne 0 ; then cat log; fail; fi
 #
 # add the new files to the change
 #
-activity="copy file 608"
+activity="copy file 622"
 $bin/aegis -copy_file $workchan/main.cc -nl -v > log 2>&1
 if test $? -ne 0 ; then cat log; fail; fi
 
@@ -687,7 +687,7 @@ if test $? -ne 0 ; then fail; fi
 #
 # create a new test
 #
-activity="new test 676"
+activity="new test 690"
 $bin/aegis -nt -v > log 2>&1
 if test $? -ne 0 ; then cat log; fail; fi
 
@@ -760,41 +760,41 @@ if test $? -ne 0 ; then fail; fi
 #
 # build the change
 #
-activity="build 749"
+activity="build 763"
 $bin/aegis -build -nl -v > log 2>&1
 if test $? -ne 0 ; then cat log; fail; fi
 
 #
 # difference the change
 #
-activity="diff 756"
+activity="diff 770"
 $bin/aegis -diff -v -nl > log 2>&1
 if test $? -ne 0 ; then cat log; fail; fi
 
 #
 # test the change
 #
-activity="test 763"
+activity="test 777"
 $bin/aegis -test -nl -v > log 2>&1
 if test $? -ne 0 ; then cat log; fail; fi
-activity="test baseline 766"
+activity="test baseline 780"
 $bin/aegis -test -bl -nl -v > log 2>&1
 if test $? -ne 0 ; then cat log; fail; fi
-activity="test regression 769"
+activity="test regression 783"
 $bin/aegis -test -reg -nl -v > log 2>&1
 if test $? -ne 0 ; then cat log; fail; fi
 
 #
 # finish development of the change
 #
-activity="develop end 776"
+activity="develop end 790"
 $bin/aegis -dev_end -v > log 2>&1
 if test $? -ne 0 ; then cat log; fail; fi
 
 #
 # pass the review
 #
-activity="review pass 783"
+activity="review pass 797"
 $bin/aegis -review_pass -list -proj example -v > log 2>&1
 if test $? -ne 0 ; then cat log; fail; fi
 $bin/aegis -review_pass -chan 2 -proj example -v > log 2>&1
@@ -803,7 +803,7 @@ if test $? -ne 0 ; then cat log; fail; fi
 #
 # start integrating
 #
-activity="integrate begin 792"
+activity="integrate begin 806"
 $bin/aegis -intbeg -list -v > log 2>&1
 if test $? -ne 0 ; then cat log; fail; fi
 $bin/aegis -intbeg 2 -v > log 2>&1
@@ -814,23 +814,23 @@ if test $? -ne 0 ; then cat log; fail; fi
 #
 # integrate build and test
 #
-activity="build 803"
+activity="build 817"
 $bin/aegis -build -nl -v > log 2>&1
 if test $? -ne 0 ; then cat log; fail; fi
-activity="test 806"
+activity="test 820"
 $bin/aegis -test -nl -v > log 2>&1
 if test $? -ne 0 ; then cat log; fail; fi
-activity="test baseline 809"
+activity="test baseline 823"
 $bin/aegis -test -bl -nl -v > log 2>&1
 if test $? -ne 0 ; then cat log; fail; fi
-activity="test regression 812"
+activity="test regression 826"
 $bin/aegis -test -reg -nl -v > log 2>&1
 if test $? -ne 0 ; then cat log; fail; fi
 
 #
 # pass the integration
 #
-activity="integrate pass 819"
+activity="integrate pass 833"
 $bin/aegis -intpass -nl -v > log 2>&1
 if test $? -ne 0 ; then cat log; fail; fi
 
@@ -839,7 +839,7 @@ if test $? -ne 0 ; then cat log; fail; fi
 #
 # begin development of the change
 #
-activity="develop begin 828"
+activity="develop begin 842"
 $bin/aegis -devbeg -l -v > log 2>&1
 if test $? -ne 0 ; then cat log; fail; fi
 $bin/aegis -devbeg 3 -dir $workchan.3 -v > log 2>&1
@@ -848,7 +848,7 @@ if test $? -ne 0 ; then cat log; fail; fi
 #
 # add the new files to the change
 #
-activity="copy file 837"
+activity="copy file 851"
 $bin/aegis -copy_file $workchan.3/gram.y -nl -v > log 2>&1
 if test $? -ne 0 ; then cat log; fail; fi
 
@@ -905,7 +905,7 @@ expr
 TheEnd
 if test $? -ne 0 ; then fail; fi
 
-activity="diff 892"
+activity="diff 908"
 $bin/aegis -diff -v -nl > log 2>&1
 if test $? -ne 0 ; then cat log; fail; fi
 if test ! -r $workchan.3/gram.y,D ; then fail; fi
@@ -913,7 +913,7 @@ if test ! -r $workchan.3/gram.y,D ; then fail; fi
 #
 # create a new test
 #
-activity="new test 900"
+activity="new test 916"
 $bin/aegis -nt -v > log 2>&1
 if test $? -ne 0 ; then cat log; fail; fi
 
@@ -978,27 +978,27 @@ if test $? -ne 0 ; then fail; fi
 #
 # build the change
 #
-activity="build 965"
+activity="build 981"
 $bin/aegis -build -nl -v > log 2>&1
 if test $? -ne 0 ; then cat log; fail; fi
 
 #
 # difference the change
 #
-activity="diff 972"
+activity="diff 988"
 $bin/aegis -diff -v -nl > log 2>&1
 if test $? -ne 0 ; then cat log; fail; fi
 
 #
 # test the change
 #
-activity="test 979"
+activity="test 995"
 $bin/aegis -test -nl -v > log 2>&1
 if test $? -ne 0 ; then cat log; fail; fi
-activity="test baseline 982"
+activity="test baseline 998"
 $bin/aegis -test -bl -nl -v > log 2>&1
 if test $? -ne 0 ; then cat log; fail; fi
-activity="test regression 985"
+activity="test regression 1001"
 $bin/aegis -test -reg -nl -v > log 2>&1
 if test $? -ne 0 ; then cat log; fail; fi
 
@@ -1007,7 +1007,7 @@ if test $? -ne 0 ; then cat log; fail; fi
 #
 # begin development of the change
 #
-activity="develop begin 994"
+activity="develop begin 1010"
 $bin/aegis -devbeg -l -v > log 2>&1
 if test $? -ne 0 ; then cat log; fail; fi
 $bin/aegis -devbeg 4 -dir $workchan.4 -v > log 2>&1
@@ -1018,7 +1018,7 @@ if test $? -ne 0 ; then cat log; fail; fi
 #
 # add the new files to the change
 #
-activity="copy file 1005"
+activity="copy file 1021"
 $bin/aegis -copy_file $workchan.4/gram.y -nl -v -c 4 > log 2>&1
 if test $? -ne 0 ; then cat log; fail; fi
 
@@ -1077,7 +1077,7 @@ expr
 TheEnd
 if test $? -ne 0 ; then fail; fi
 
-activity="new file 1060"
+activity="new file 1080"
 $bin/aegis -new_file $workchan.4/var.cc -nl -v -c 4 > log 2>&1
 if test $? -ne 0 ; then cat log; fail; fi
 
@@ -1101,7 +1101,7 @@ if test $? -ne 0 ; then fail; fi
 #
 # create a new test
 #
-activity="new test 1087"
+activity="new test 1104"
 $bin/aegis -nt -v -c 4 > log 2>&1
 if test $? -ne 0 ; then cat log; fail; fi
 
@@ -1166,14 +1166,14 @@ if test $? -ne 0 ; then fail; fi
 #
 # build the change
 #
-activity="build 1152"
+activity="build 1169"
 $bin/aegis -build -nl -v -c 4 > log 2>&1
 if test $? -ne 0 ; then cat log; fail; fi
 
 #
 # difference the change
 #
-activity="diff 1159"
+activity="diff 1176"
 $bin/aegis -diff -v -nl -c 4 > log 2>&1
 if test $? -ne 0 ; then cat log; fail; fi
 if test ! -r $workchan.4/gram.y,D ; then fail; fi
@@ -1181,7 +1181,7 @@ if test ! -r $workchan.4/gram.y,D ; then fail; fi
 #
 # test the change
 #
-activity="test 1167"
+activity="test 1184"
 $bin/aegis -test -nl -v -c 4 > log 2>&1
 if test $? -ne 0 ; then cat log; fail; fi
 $bin/aegis -test -bl -nl -v -c 4 > log 2>&1
@@ -1192,14 +1192,14 @@ if test $? -ne 0 ; then cat log; fail; fi
 #
 # finish development of the change
 #
-activity="develop end 1178"
+activity="develop end 1195"
 $bin/aegis -dev_end -v -c 4 > log 2>&1
 if test $? -ne 0 ; then cat log; fail; fi
 
 #
 # pass the review
 #
-activity="review pass 1185"
+activity="review pass 1202"
 $bin/aegis -review_pass -list -proj example -v > log 2>&1
 if test $? -ne 0 ; then cat log; fail; fi
 $bin/aegis -review_pass -chan 4 -proj example -v > log 2>&1
@@ -1208,7 +1208,7 @@ if test $? -ne 0 ; then cat log; fail; fi
 #
 # start integrating
 #
-activity="integrate begin 1194"
+activity="integrate begin 1211"
 $bin/aegis -intbeg -list -v > log 2>&1
 if test $? -ne 0 ; then cat log; fail; fi
 $bin/aegis -intbeg 4 -v > log 2>&1
@@ -1219,10 +1219,10 @@ if test $? -ne 0 ; then cat log; fail; fi
 #
 # integrate build and test
 #
-activity="build 1205"
+activity="build 1222"
 $bin/aegis -build -nl -v -c 4 > log 2>&1
 if test $? -ne 0 ; then cat log; fail; fi
-activity="test 1208"
+activity="test 1225"
 $bin/aegis -test -nl -v -c 4 > log 2>&1
 if test $? -ne 0 ; then cat log; fail; fi
 $bin/aegis -test -bl -nl -v -c 4 > log 2>&1
@@ -1233,7 +1233,7 @@ if test $? -ne 0 ; then cat log; fail; fi
 #
 # pass the integration
 #
-activity="integrate pass 1219"
+activity="integrate pass 1236"
 $bin/aegis -intpass -nl -v -c 4 > log 2>&1
 if test $? -ne 0 ; then cat log; fail; fi
 
@@ -1242,14 +1242,14 @@ if test $? -ne 0 ; then cat log; fail; fi
 #
 # finish development of the change
 #
-activity="develop end 1228"
+activity="develop end 1245"
 $bin/aegis -dev_end -v -c 3 > log 2>&1
 if test $? -ne 1 ; then cat log; fail; fi
 
 #
 # need a new difference
 #
-activity="merge 1235"
+activity="merge 1252"
 $bin/aegis -diff --merge-only -nl -v -c 3 > log 2>&1
 if test $? -ne 0 ; then cat log; fail; fi
 
@@ -1262,48 +1262,48 @@ if test ! -r $workchan.3/gram.y ; then fail; fi
 #
 # need a new build
 #
-activity="build 1249"
+activity="build 1265"
 $bin/aegis -build -nl -v -c 3 > log 2>&1
 if test $? -ne 0 ; then cat log; fail; fi
 
 #
 # test it again
 #
-activity="test 1256"
+activity="test 1272"
 $bin/aegis -test -nl -v -c 3 > log 2>&1
 if test $? -ne 0 ; then cat log; fail; fi
-activity="test -bl 1259"
+activity="test -bl 1275"
 $bin/aegis -test -bl -nl -v -c 3 > log 2>&1
 if test $? -ne 0 ; then cat log; fail; fi
-activity="test -reg 1262"
+activity="test -reg 1278"
 $bin/aegis -test -reg -nl -v -c 3 > log 2>&1
 if test $? -ne 0 ; then cat log; fail; fi
 
 #
 # try to finish development of the change
 #
-activity="develop end 1269"
+activity="develop end 1285"
 $bin/aegis -dev_end -v -c 3 > log 2>&1
 if test $? -ne 1 ; then cat log; fail; fi
 
 #
 # diff again
 #
-activity="diff 1276"
+activity="diff 1292"
 $bin/aegis -diff -nl -v -c 3 > log 2>&1
 if test $? -ne 0 ; then cat log; fail; fi
 
 #
 # finish development of the change
 #
-activity="develop end 1283"
+activity="develop end 1299"
 $bin/aegis -dev_end -v -c 3 > log 2>&1
 if test $? -ne 0 ; then cat log; fail; fi
 
 #
 # pass the review
 #
-activity="review pass 1290"
+activity="review pass 1306"
 $bin/aegis -review_pass -list -proj example -v > log 2>&1
 if test $? -ne 0 ; then cat log; fail; fi
 $bin/aegis -review_pass -chan 3 -proj example -v > log 2>&1
@@ -1312,7 +1312,7 @@ if test $? -ne 0 ; then cat log; fail; fi
 #
 # start integrating
 #
-activity="integrate begin 1299"
+activity="integrate begin 1315"
 $bin/aegis -intbeg -list -v > log 2>&1
 if test $? -ne 0 ; then cat log; fail; fi
 $bin/aegis -intbeg 3 -v > log 2>&1
@@ -1323,10 +1323,10 @@ if test $? -ne 0 ; then cat log; fail; fi
 #
 # integrate build and test
 #
-activity="build 1310"
+activity="build 1326"
 $bin/aegis -build -nl -v > log 2>&1
 if test $? -ne 0 ; then cat log; fail; fi
-activity="test 1313"
+activity="test 1329"
 $bin/aegis -test -nl -v > log 2>&1
 if test $? -ne 0 ; then cat log; fail; fi
 $bin/aegis -test -bl -nl -v > log 2>&1
@@ -1337,7 +1337,7 @@ if test $? -ne 0 ; then cat log; fail; fi
 #
 # pass the integration
 #
-activity="integrate pass 1324"
+activity="integrate pass 1340"
 $bin/aegis -intpass -nl -v > log 2>&1
 if test $? -ne 0 ; then cat log; fail; fi
 

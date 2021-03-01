@@ -83,24 +83,17 @@ generate_uuid(string_ty *ifn, string_ty *ofn)
 static int
 check_uuid(string_ty *ifn, string_ty *ofn)
 {
-    input_ty	    *ifp;
-    string_ty	    *uuid;
-    int		    ret;
-
     os_become_orig();
-    ifp = input_file_open(ifn);
+    input_ty *ifp = input_file_open(ifn);
     if (!ifp)
 	fatal_raw("unable to open %s", ifn->str_text);
-    uuid = input_one_line(ifp);
-    input_delete(ifp);
+    nstring uuid;
+    if (!ifp->one_line(uuid))
+	fatal_raw("Unable to read uuid from %s", ifn);
+    delete ifp;
     ifp = 0;
     os_become_undo();
-    if (!uuid)
-	fatal_raw("Unable to read uuid from %s", ifn);
-    ret = universal_unique_identifier_valid(uuid);
-    str_free(uuid);
-    uuid = 0;
-    return ret;
+    return universal_unique_identifier_valid(uuid);
 }
 
 

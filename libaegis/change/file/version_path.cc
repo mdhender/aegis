@@ -22,16 +22,18 @@
 
 #include <change/file.h>
 #include <project/file.h>
+#include <trace.h>
 
 
 string_ty *
 change_file_version_path(change_ty *cp, fstate_src_ty *src,  int *unlink_p)
 {
+    trace(("change_file_version_path(cp = %08lX, src = %08lX)\n{\n",
+	(long)cp, (long)src));
+    fstate_src_trace(src);
     if (!cp->bogus)
     {
-	cstate_ty       *cstate_data;
-
-	cstate_data = change_cstate_get(cp);
+	cstate_ty *cstate_data = change_cstate_get(cp);
 	switch (cstate_data->state)
 	{
 	case cstate_state_awaiting_development:
@@ -42,10 +44,18 @@ change_file_version_path(change_ty *cp, fstate_src_ty *src,  int *unlink_p)
 	case cstate_state_being_reviewed:
 	case cstate_state_awaiting_integration:
 	case cstate_state_being_integrated:
+	    trace(("looking in change...\n"));
 	    if (change_file_find(cp, src->file_name, view_path_first))
 	    {
-		*unlink_p = 0;
-		return change_file_path(cp, src->file_name);
+		// Note: it could be transparent.
+		string_ty *rslt = change_file_path(cp, src->file_name);
+		if (rslt)
+		{
+		    *unlink_p = 0;
+		    trace(("return %08lX;\n", (long)rslt));
+		    trace(("}\n"));
+		    return rslt;
+		}
 	    }
 	    break;
 
@@ -53,5 +63,9 @@ change_file_version_path(change_ty *cp, fstate_src_ty *src,  int *unlink_p)
 	    break;
 	}
     }
-    return project_file_version_path(cp->pp, src, unlink_p);
+    trace(("looking in project...\n"));
+    string_ty *rslt = project_file_version_path(cp->pp, src, unlink_p);
+    trace(("return %08lX;\n", (long)rslt));
+    trace(("}\n"));
+    return rslt;
 }

@@ -1,6 +1,6 @@
 //
 //	aegis - project change supervisor
-//	Copyright (C) 1991-1995, 1998, 1999, 2002-2004 Peter Miller;
+//	Copyright (C) 1991-1995, 1998, 1999, 2002-2005 Peter Miller;
 //	All rights reserved.
 //
 //	This program is free software; you can redistribute it and/or modify
@@ -36,6 +36,7 @@
 #include <mprintf.h>
 #include <progname.h>
 #include <quit.h>
+#include <rsrc_limits.h>
 
 
 //
@@ -228,14 +229,16 @@ wrap(const char *s)
 static void
 double_jeopardy(void)
 {
-    char	    buffer[200];
-
+    int err = errno;
+    if (err == ENOMEM)
+	resource_usage_print();
+    char buffer[200];
     snprintf
     (
 	buffer,
 	sizeof(buffer),
 	"while attempting to construct an error message: %s (fatal)",
-	strerror(errno)
+	strerror(err)
     );
     wrap(buffer);
     quit(1);
@@ -327,6 +330,8 @@ nerror(const char *fmt, ...)
     if (!s1)
 	double_jeopardy();
     s1 = copy_string(s1);
+    if (n == ENOMEM)
+	resource_usage_print();
     error_raw("%s: %s", s1, strerror(n));
     free(s1);
 }
@@ -369,6 +374,8 @@ nfatal(const char *fmt, ...)
 	double_jeopardy();
     s1 = copy_string(s1);
 
+    if (n == ENOMEM)
+	resource_usage_print();
     fatal_raw("%s: %s", s1, strerror(n));
 }
 

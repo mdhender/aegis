@@ -1,6 +1,6 @@
 //
 //	aegis - project change supervisor
-//	Copyright (C) 2003, 2004 Peter Miller;
+//	Copyright (C) 2003-2005 Peter Miller;
 //	All rights reserved.
 //
 //	This program is free software; you can redistribute it and/or modify
@@ -27,6 +27,7 @@
 #include <get/change.h>
 #include <get/change/aedist.h>
 #include <get/change/aepatch.h>
+#include <get/change/aerevml.h>
 #include <get/change/aetar.h>
 #include <get/change/download.h>
 #include <get/change/file_invento.h>
@@ -67,6 +68,7 @@ static const table_ty table[] =
 
     { "aedist", get_change_aedist },
     { "aepatch", get_change_aepatch },
+    { "aerevml", get_change_aerevml },
     { "aetar", get_change_aetar },
     { "download", get_change_download },
     { "files", get_change_files },

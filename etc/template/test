@@ -57,6 +57,9 @@ if test $$? -ne 0 ; then exit 2; fi
 
 if test "$$1" != "" ; then bin="$$here/$$1/bin"; else bin="$$here/bin"; fi
 
+AEGIS_DATADIR=$$here/lib
+export AEGIS_DATADIR
+
 #
 # set the path, so that the aegis command that aepatch/aedist invokes
 # is from the same test set as the aepatch/aedist command itself.

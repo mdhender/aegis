@@ -1,6 +1,6 @@
 //
 //	aegis - project change supervisor
-//	Copyright (C) 1999, 2002-2004 Peter Miller;
+//	Copyright (C) 1999, 2002-2005 Peter Miller;
 //	All rights reserved.
 //
 //	This program is free software; you can redistribute it and/or modify
@@ -43,14 +43,14 @@ sub_substitute(sub_context_ty *scp, wstring_list_ty *arg)
 	trace(("}\n"));
 	return 0;
     }
-    nstring lhs = wstr_to_str(arg->get(1));
-    nstring rhs = wstr_to_str(arg->get(2));
+    nstring lhs(wstr_to_str(arg->get(1)));
+    nstring rhs(wstr_to_str(arg->get(2)));
 
     //
     // turn it into one big string to be substituted within
     //
     wstring ws = arg->unsplit(3, arg->size());
-    nstring s = wstr_to_str(ws.get_ref());
+    nstring s(wstr_to_str(ws.get_ref()));
 
     //
     // do the substitution

@@ -113,18 +113,66 @@ public:
     /**
       * The fputs method is used to write a NUL terminated string to the
       * output stream.
+      *
+      * @param str
+      *     The string to be written out.
       */
-    void fputs(const char *);
+    void fputs(const char *str);
+
+    /**
+      * The fputs method is used to write a NUL terminated string to the
+      * output stream, encoding any XML special characters (e.g. "<"
+      * becomes "&lt;", etc).
+      *
+      * @param str
+      *     The string to be written out.
+      * @param paragraphs
+      *     If true, insert <P> for two newlines and <BR> for single
+      *     newlines; if false, simply pass newlines through.
+      */
+    void fputs_xml(const char *str, bool paragraphs = false);
 
     /**
       * The fputs method is used to write a string to the output stream.
+      *
+      * @param str
+      *     The string to be written out.
       */
-    void fputs(string_ty *);
+    void fputs(string_ty *str);
+
+    /**
+      * The fputs method is used to write a string to the output stream,
+      * encoding any XML special characters (e.g. "<" becomes "&lt;",
+      * etc).
+      *
+      * @param str
+      *     The string to be written out.
+      * @param paragraphs
+      *     If true, insert <P> for two newlines and <BR> for single
+      *     newlines; if false, simply pass newlines through.
+      */
+    void fputs_xml(string_ty *str, bool paragraphs = false);
 
     /**
       * The fputs method is used to write a string to the output stream.
+      *
+      * @param str
+      *     The string to be written out.
       */
-    void fputs(const nstring &);
+    void fputs(const nstring &str);
+
+    /**
+      * The fputs method is used to write a string to the output stream,
+      * encoding any XML special characters (e.g. "<" becomes "&lt;",
+      * etc).
+      *
+      * @param str
+      *     The string to be written out.
+      * @param paragraphs
+      *     If true, insert <P> for two newlines and <BR> for single
+      *     newlines; if false, simply pass newlines through.
+      */
+    void fputs_xml(const nstring &str, bool paragraphs = false);
 
     /**
       * The fprintf method produces output according to
@@ -234,6 +282,34 @@ private:
       */
     output_ty &operator=(const output_ty &);
 };
+
+
+inline output_ty &
+operator<<(output_ty &os, char c)
+{
+    os.fputc(c);
+    return os;
+}
+
+
+inline output_ty &
+operator<<(output_ty &os, const char *s)
+{
+    os.fputs(s);
+    return os;
+}
+
+
+inline output_ty &
+operator<<(output_ty &os, const nstring &s)
+{
+    os.fputs(s);
+    return os;
+}
+
+class input_ty; // forward
+
+output_ty &operator<<(output_ty &os, input_ty &is);
 
 
 inline DEPRECATED void

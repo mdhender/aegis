@@ -35,7 +35,9 @@ magic_t magic_open(int flags);
 void magic_close(magic_t cookie);
 const char *magic_file(magic_t cookie, const char *filename);
 const char *magic_error(magic_t cookie);
+int magic_load(magic_t cookie, const char *file_name);
 #define MAGIC_MIME 0
+#define MAGIC_SYMLINK 0
 #endif
 
 #endif /* COMMON_AC_MAGIC_H */

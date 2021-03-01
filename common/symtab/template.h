@@ -1,6 +1,6 @@
 //
 //	aegis - project change supervisor
-//	Copyright (C) 2004 Peter Miller;
+//	Copyright (C) 2004, 2005 Peter Miller;
 //	All rights reserved.
 //
 //	This program is free software; you can redistribute it and/or modify
@@ -67,6 +67,38 @@ public:
     symtab() :
 	stp(0)
     {
+    }
+
+    /**
+      * The copy constructor.
+      */
+    symtab(const symtab &arg) :
+	stp(0)
+    {
+	copy(arg);
+    }
+
+    /**
+      * The assignment operator.
+      */
+    symtab &operator=(const symtab &arg)
+    {
+	if (this != &arg)
+	{
+	    clear();
+	    copy(arg);
+	}
+	return *this;
+    }
+
+    /**
+      * The clear method is used to delete all entries from the symbol table.
+      */
+    void
+    clear()
+    {
+	if (stp)
+    	    stp->clear();
     }
 
     /**
@@ -237,6 +269,7 @@ public:
       */
     void
     keys(nstring_list &result)
+	const
     {
 	if (stp)
 	    stp->keys(result);
@@ -258,14 +291,21 @@ private:
     static void reaper(void *p) { delete (value_type_t *)p; }
 
     /**
-      * The copy constructor.  Do not use.
+      * The copy method is used to copy the contents of one symbol table
+      * into another.
       */
-    symtab(const symtab &);
-
-    /**
-      * The assignment operator.  Do not use.
-      */
-    symtab &operator=(const symtab &);
+    void
+    copy(const symtab &arg)
+    {
+	nstring_list names;
+	arg.keys(names);
+	for (size_t j = 0; j < names.size(); ++j)
+	{
+	    value_type_t *p = arg.query(names[j]);
+	    if (p)
+		assign(names[j], *p);
+	}
+    }
 };
 
 /** @} */

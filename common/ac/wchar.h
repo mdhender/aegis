@@ -23,6 +23,7 @@
 #ifndef COMMON_AC_WCHAR_H
 #define COMMON_AC_WCHAR_H
 
+#include <ac/stdarg.h>
 #include <ac/stddef.h>
 
 #if HAVE_WCHAR_H

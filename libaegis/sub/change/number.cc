@@ -116,6 +116,7 @@ get_delta_uuid(change_ty *cp, wstring_list_ty *arg)
     cstate_ty *cstate_data = change_cstate_get(cp);
     switch (cstate_data->state)
     {
+    case cstate_state_being_integrated:
     case cstate_state_completed:
 	if (!cstate_data->delta_uuid)
 	    return 0;
@@ -126,7 +127,6 @@ get_delta_uuid(change_ty *cp, wstring_list_ty *arg)
     case cstate_state_awaiting_review:
     case cstate_state_being_reviewed:
     case cstate_state_awaiting_integration:
-    case cstate_state_being_integrated:
 	break;
     }
     return 0;

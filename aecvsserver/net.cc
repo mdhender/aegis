@@ -38,8 +38,8 @@
 
 
 net_ty::net_ty() :
-    in(input_stdin()),
-    out(new output_stdout_ty()),
+    in(new input_stdin()),
+    out(new output_stdout()),
     log_client(0),
     rooted(0),
     response_queue_length(0),
@@ -67,13 +67,13 @@ net_ty::net_ty() :
     // Set SO_KEEPALIVE on the socket, so that we don't hang forever
     // if the client dies while we are waiting for input.
     //
-    input_keepalive(in);
+    in->keepalive();
 }
 
 
 net_ty::~net_ty()
 {
-    input_delete(in);
+    delete in;
     in = 0;
     delete out;
     out = 0;
@@ -108,16 +108,16 @@ net_ty::~net_ty()
 }
 
 
-string_ty *
-net_ty::getline()
+bool
+net_ty::getline(nstring &s)
 {
-    string_ty *s = input_one_line(in);
-    if (log_client)
+    bool result = in->one_line(s);
+    if (result && log_client)
     {
-	log_client->fprintf("%s\n", s->str_text);
+	log_client->fprintf("%s\n", s.c_str());
 	log_client->flush();
     }
-    return s;
+    return result;
 }
 
 
@@ -370,5 +370,5 @@ net_ty::set_updating_verbose(string_ty *s)
 input_ty *
 net_ty::in_crop(long length)
 {
-    return input_crop_new(in, 0, length);
+    return new input_crop(in, false, length);
 }

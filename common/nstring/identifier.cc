@@ -20,12 +20,28 @@
 // MANIFEST: implementation of the nstring::identifier method
 //
 
+#include <ac/ctype.h>
+
 #include <nstring.h>
+#include <nstring/accumulator.h>
 
 
 nstring
 nstring::identifier()
     const
 {
-    return str_identifier(get_ref());
+    static nstring_accumulator buf;
+    buf.clear();
+    const char *cp = c_str();
+    for (;;)
+    {
+	unsigned char c = *cp++;
+	if (!c)
+		break;
+	// C locale
+	if (!isalnum((unsigned char)c))
+    	    c = '_';
+	buf.push_back(c);
+    }
+    return buf.mkstr();
 }

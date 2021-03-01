@@ -69,7 +69,8 @@ dnl Solaris needs to use the GNU Gettext to have any chance of
 dnl having working error message translation.  So we look for -lintl
 dnl unconditionally.
 dnl
-AC_CHECK_LIB(intl, gettext)
+AC_CHECK_LIB(intl, gettext, ,
+	unset ac_cv_func_gettext)
 
 AC_CHECK_FUNC(setsockopt, ,
 	unset ac_cv_func_setsockopt
@@ -81,7 +82,30 @@ AC_CHECK_LIB(crypt, crypt)
 AC_CHECK_LIB(magic, magic_file)
 dnl The -lclu library is for OSF/1 clustering
 AC_CHECK_LIB(clu, main)
+
+dnl
+dnl The curl library is used to read from arbitrary URLs.
+dnl
 AC_CHECK_LIB(curl, curl_multi_perform)
+
+dnl
+dnl The libxml2 library is used by the aerevml(1) command to parse its
+dnl input files.
+dnl
+AC_CHECK_LIB(xml2, xmlTextReaderRead, ,
+  [
+    AC_MSG_RESULT([
+        You must have the Gnome libxml2 library (http://xmlsoft.org/)
+        installed in order to build Aegis.  Please install the
+        xml2 library version 1.8.17 or later, and then re-run this
+        ./configure script.  You do not have to install the rest of
+        Gnome, the library can be used on its own.  If you are using a
+        package based install, you will need the libxml2-devel package
+        in addition to the libxml2 package.
+    ])
+    exit 1
+  ]
+)
 
 #
 # Look for static libraries necessary with -lcurl, but we don't need
@@ -99,6 +123,26 @@ then
 	STATIC_LIBS="`$CURL_CONFIG --libs`"
     fi
 fi
+
+#
+# Look for static libraries necessary with -lxml2, but we don't need
+# them when we are using shared libraries.
+#
+if test "$ac_cv_lib_xml2_xmlTextReaderRead" = "yes"
+then
+    AC_CHECK_PROGS(XML2_CONFIG, xml2-config)
+
+    if test -n "$XML2_CONFIG"
+    then
+	CFLAGS="$CFLAGS `$XML2_CONFIG --cflags`"
+        CXXFLAGS="$CXXFLAGS `$XML2_CONFIG --cflags`"
+	STATIC_LIBS="$STATIC_LIBS `$XML2_CONFIG --libs` -lpthread"
+    fi
+fi
+
+#
+# Arrange for a special make variable for static builds.
+#
 AC_SUBST(STATIC_LIBS)
 
 dnl
@@ -323,10 +367,23 @@ AC_MSG_RESULT(cross))
 
 AC_CHECK_HEADERS(crypt.h curl/curl.h dce/rpc.h dce/uuid.h fcntl.h      \
         iso646.h libgettext.h libintl.h limits.h locale.h magic.h      \
-        memory.h mntent.h regex.h rxposix.h shadow.h stddef.h stdlib.h \
-        string.h unistd.h wchar.h wctype.h widec.h zlib.h sys/clu.h    \
-        sys/ioctl.h sys/prctl.h sys/uuid.h uuid/uuid.h uuid.h          \
+        memory.h mntent.h new.h regex.h rxposix.h shadow.h stddef.h    \
+        stdlib.h string.h sys/clu.h sys/ioctl.h sys/prctl.h sys/uuid.h \
+        unistd.h uuid.h uuid/uuid.h wchar.h wctype.h widec.h zlib.h    \
 	)
+
+#
+# Look for the C++ <new> header.
+#
+AC_LANG_PUSH(C++)
+AC_MSG_CHECKING([for <new>])
+AC_COMPILE_IFELSE([#include <new>],
+AC_DEFINE(HAVE_HEADER_NEW, 1,
+    [Define this symbol of your system has the <new> C++ header])
+AC_MSG_RESULT(yes),
+AC_MSG_RESULT(no))
+AC_LANG_POP(C++)
+
 AC_HEADER_DIRENT
 AC_TYPE_SIGNAL
 AC_TYPE_SIZE_T
@@ -336,12 +393,12 @@ AC_SYS_LONG_FILE_NAMES
 AC_CHECK_FUNCS(clu_info crypt curl_easy_strerror curl_multi_strerror   \
         getpgrp igetspnam initgroups gettext gettimeofday iswctype     \
         magic_file mbrtowc pathconf prctl regcomp rpc_string_free      \
-        seteuid setlocale setresuid setreuid sighold sigrelse sigprocmask \
-        snprintf strcasecmp strlcat strlcpy strncasecmp strerror       \
-        strftime strsignal strtoul strverscmp symlink tcgetpgrp        \
-        uuid_create uuid_export uuid_generate uuid_hash uuid_load      \
-        uuid_make uuid_to_string uuid_unparse vsnprintf wcrtomb wcslen \
-        wcswidth wcwidth                                               \
+        seteuid setlocale setresuid setreuid sighold sigrelse          \
+        sigprocmask snprintf strcasecmp strlcat strlcpy strncasecmp    \
+        strerror strftime strsignal strtoul strverscmp symlink         \
+        tcgetpgrp uuid_create uuid_export uuid_generate uuid_hash      \
+        uuid_load uuid_make uuid_to_string uuid_unparse vsnprintf      \
+        wcrtomb wcslen wcswidth wcwidth xmlReaderForIO                 \
 	)
 AC_CHECK_DECLS([crypt],,, [
 #if HAVE_UNISTD_H

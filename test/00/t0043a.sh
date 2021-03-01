@@ -1,7 +1,7 @@
 #!/bin/sh
 #
 #	aegis - project change supervisor
-#	Copyright (C) 1996-1998, 2000, 2001, 2004 Peter Miller;
+#	Copyright (C) 1996-1998, 2000, 2001, 2004, 2005 Peter Miller;
 #	All rights reserved.
 #
 #	This program is free software; you can redistribute it and/or modify
@@ -173,11 +173,11 @@ $bin/aegis -db 10 -dir $workchan > log 2>&1
 if test $? -ne 0 ; then cat log; no_result; fi
 
 activity="new file 175"
-$bin/aegis -nf $workchan/config $workchan/a $workchan/b $workchan/c/d \
+$bin/aegis -nf $workchan/aegis.conf $workchan/a $workchan/b $workchan/c/d \
 	$workchan/c/e > log 2>&1
 if test $? -ne 0 ; then cat log; no_result; fi
 
-cat > $workchan/config << 'fubar'
+cat > $workchan/aegis.conf << 'fubar'
 build_command = "exit 0";
 diff_command = "echo $orig $input > $output";
 diff3_command = "exit 0; echo $orig $mr $input $output";

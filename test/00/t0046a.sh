@@ -1,7 +1,7 @@
 #!/bin/sh
 #
 #	aegis - project change supervisor
-#	Copyright (C) 1996-1998, 2000, 2001, 2004 Peter Miller;
+#	Copyright (C) 1996-1998, 2000, 2001, 2004, 2005 Peter Miller;
 #	All rights reserved.
 #
 #	This program is free software; you can redistribute it and/or modify
@@ -94,7 +94,7 @@ check_it()
 	if test $? -ne 0; then fail; fi
 }
 
-activity="working directory 84"
+activity="working directory 97"
 mkdir $work $work/lib
 if test $? -ne 0 ; then no_result; fi
 chmod 777 $work/lib
@@ -123,7 +123,7 @@ unset AEGIS_CHANGE
 #
 # test the aerm directory functionality
 #
-activity="new project 127"
+activity="new project 126"
 $bin/aegis -npr test -vers "" -dir $workproj -lib $worklib > log 2>&1
 if test $? -ne 0 ; then cat log; no_result; fi
 
@@ -138,7 +138,7 @@ if test $? -ne 0 ; then no_result; fi
 $bin/aegis -pa -f paf > log 2>&1
 if test $? -ne 0 ; then cat log; no_result; fi
 
-activity="new change 142"
+activity="new change 141"
 cat > caf << 'fubar'
 brief_description = "ten";
 cause = internal_enhancement;
@@ -148,7 +148,7 @@ if test $? -ne 0 ; then no_result; fi
 $bin/aegis -nc -f caf -p test > log 2>&1
 if test $? -ne 0 ; then cat log; no_result; fi
 
-activity="new change 152"
+activity="new change 151"
 cat > caf << 'fubar'
 brief_description = "eleven";
 cause = internal_enhancement;
@@ -158,7 +158,7 @@ if test $? -ne 0 ; then no_result; fi
 $bin/aegis -nc -f caf -p test > log 2>&1
 if test $? -ne 0 ; then cat log; no_result; fi
 
-activity="staff 162"
+activity="staff 161"
 $bin/aegis -ndev $USER > log 2>&1
 if test $? -ne 0 ; then cat log; no_result; fi
 
@@ -168,16 +168,16 @@ if test $? -ne 0 ; then cat log; no_result; fi
 $bin/aegis -nint $USER > log 2>&1
 if test $? -ne 0 ; then cat log; no_result; fi
 
-activity="develop begin 172"
+activity="develop begin 171"
 $bin/aegis -db 10 -dir $workchan > log 2>&1
 if test $? -ne 0 ; then cat log; no_result; fi
 
-activity="new file 176"
-$bin/aegis -nf $workchan/config $workchan/a $workchan/b $workchan/c/d \
+activity="new file 175"
+$bin/aegis -nf $workchan/aegis.conf $workchan/a $workchan/b $workchan/c/d \
 	$workchan/c/e > log 2>&1
 if test $? -ne 0 ; then cat log; no_result; fi
 
-cat > $workchan/config << 'fubar'
+cat > $workchan/aegis.conf << 'fubar'
 build_command = "exit 0";
 diff_command = "echo $orig $input > $output";
 diff3_command = "exit 0; echo $orig $mr $input $output";
@@ -188,47 +188,47 @@ history_query_command = "echo 1.1; exit 0; echo $history";
 fubar
 if test $? -ne 0 ; then no_result; fi
 
-activity="build 192"
+activity="build 191"
 $bin/aegis -b > log 2>&1
 if test $? -ne 0 ; then cat log; no_result; fi
 
-activity="diff 196"
+activity="diff 195"
 $bin/aegis -diff > log 2>&1
 if test $? -ne 0 ; then cat log; no_result; fi
 
-activity="develop end 200"
+activity="develop end 199"
 $bin/aegis -de > log 2>&1
 if test $? -ne 0 ; then cat log; no_result; fi
 
-activity="review pass 204"
+activity="review pass 203"
 $bin/aegis -rpass 10 > log 2>&1
 if test $? -ne 0 ; then cat log; no_result; fi
 
-activity="integrate begin 208"
+activity="integrate begin 207"
 $bin/aegis -ib 10 -v > log 2>&1
 if test $? -ne 0 ; then cat log; no_result; fi
 
-activity="build 212"
+activity="build 211"
 $bin/aegis -b -v > log 2>&1
 if test $? -ne 0 ; then cat log; no_result; fi
 
-activity="integrate pass 216"
+activity="integrate pass 215"
 $bin/aegis -ipass -v > log 2>&1
 if test $? -ne 0 ; then cat log; no_result; fi
 
-activity="develop begin 220"
+activity="develop begin 219"
 $bin/aegis -db 11 -dir $workchan > log 2>&1
 if test $? -ne 0 ; then cat log; no_result; fi
 
-activity="new file 224"
+activity="new file 223"
 $bin/aegis -nf $workchan/c/x > log 2>&1
 if test $? -ne 0 ; then cat log; no_result; fi
 
-activity="remove directory 228"
+activity="remove directory 227"
 $bin/aegis -rm $workchan/c > log 2>&1
 if test $? -ne 0 ; then cat log; fail; fi
 
-activity="check change file state 232"
+activity="check change file state 231"
 cat > ok << 'fubar'
 src =
 [

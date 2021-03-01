@@ -1,6 +1,6 @@
 //
 //	aegis - project change supervisor
-//	Copyright (C) 1991-1999, 2001-2004 Peter Miller;
+//	Copyright (C) 1991-1999, 2001-2005 Peter Miller;
 //	All rights reserved.
 //
 //	This program is free software; you can redistribute it and/or modify
@@ -90,6 +90,7 @@
 #include <progname.h>
 #include <quit.h>
 #include <r250.h>
+#include <rsrc_limits.h>
 #include <trace.h>
 #include <undo.h>
 #include <version.h>
@@ -202,6 +203,7 @@ main(int argc, char **argv)
     signal(SIGCLD, SIG_DFL);
 #endif
 
+    resource_limits_init();
     r250_init();
     os_become_init();
     arglex2_init(argc, argv);

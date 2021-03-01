@@ -30,7 +30,6 @@
 
 #include <error.h>
 #include <input/curl.h>
-#include <input/private.h>
 #include <mem.h>
 #include <nstring.h>
 #include <option.h>
@@ -46,53 +45,218 @@
 	fatal_raw("%s: %d: " function ": %s", __FILE__, __LINE__, reason);
 
 
-struct input_curl_ty
-{
-    input_ty	    inherited;
-    CURL            *handle;
-    string_ty	    *fn;
-    long	    pos;
-
-    char            *buffer;        // buffer to store cached data
-    size_t          buffer_maximum; // currently allocated buffers length
-    size_t          buffer_postion; // start of data in buffer
-    size_t          buffer_length;  // end of data in buffer
-    int             eof;            // end of file has been reached
-
-    char            errbuf[CURL_ERROR_SIZE];
-
-    time_t          progress_start;
-    char            *progress_buffer;
-    int             progress_buflen;
-    int             progress_cleanup;
-#if (LIBCURL_VERSION_NUM < 0x070b01)
-    nstring         *proxy;
-    nstring         *userpass;
-#endif
-};
-
-
 //
 // If there is more than one URL open at a time, all are processed
 // in parallel.  The multi-handle aggregates them all.
 //
-static CURLM    *multi_handle;
-static int      call_multi_immediate;
-static itab_ty  *stp;
+static CURLM *multi_handle;
+static bool call_multi_immediate;
+static itab_ty *stp;
 
+
+input_curl::~input_curl()
+{
+    //
+    // Release libcurl resources.
+    //
+    curl_multi_remove_handle(multi_handle, handle);
+    curl_easy_cleanup(handle);
+    handle = 0;
+    eof = true;
+
+    if (progress_cleanup)
+	write(2, "\n", 1);
+
+    //
+    // Release dynamic memory resources.
+    //
+    if (curl_buffer)
+        mem_free(curl_buffer);
+    curl_buffer = 0;
+    curl_buffer_position = 0;
+    curl_buffer_length = 0;
+    curl_buffer_maximum = 0;
+#if (LIBCURL_VERSION_NUM < 0x070b01)
+    delete userpass;
+    delete proxy;
+#endif
+}
+
+
+static int
+progress_callback(void *p, double dt, double dc, double ut, double uc)
+{
+    input_curl *icp = (input_curl *)p;
+    icp->progress_callback(dt, dc);
+    return 0;
+}
+
+
+//
+// Libcurl calls this function when it receives more data.
+//
+static size_t
+write_callback(char *data, size_t size, size_t nitems, void *p)
+{
+    input_curl *icp = (input_curl *)p;
+    size_t nbytes = size * nitems;
+    return icp->write_callback(data, nbytes);
+}
+
+
+input_curl::input_curl(const nstring &arg) :
+    fn(arg),
+    pos(0),
+    curl_buffer(0),
+    curl_buffer_maximum(0),
+    curl_buffer_position(0),
+    curl_buffer_length(0),
+    eof(false)
+{
+    handle = curl_easy_init();
+    if (!handle)
+	nfatal("curl_easy_init");
+
+    CURLcode err = curl_easy_setopt(handle, CURLOPT_ERRORBUFFER, errbuf);
+    if (err)
+	FATAL("curl_easy_setopt", curl_easy_strerror(err));
+
+#if (LIBCURL_VERSION_NUM < 0x070b01)
+    //
+    // libcurl prior to 7.11.1 has problems handling autenticated
+    // proxy specified by http_proxy or HTTP_PROXY, so we set them
+    // manually.
+    //
+
+    int uid;
+    int gid;
+    int umask;
+    //
+    // We need to save the user identity because the url::split method
+    // call os_become_ itself and we must issue os_become_undo and
+    // os_become to not raise a multiple permission error.
+    //
+    os_become_query(&uid, &gid, &umask);
+    os_become_undo();
+    url target_url(fn);
+    os_become(uid, gid, umask);
+    if (target_url.get_protocol() == "http")
+    {
+        char *http_proxy = getenv("http_proxy");
+        if (!http_proxy || http_proxy[0] == '\0')
+            http_proxy = getenv("HTTP_PROXY");
+        if (http_proxy && http_proxy[0] != '\0')
+        {
+            //
+            // We use the user's identity previously saved to
+            // undo/restore the process identity in order to prevent a
+            // multiple permission error from url::split.
+            //
+            os_become_undo();
+            url proxy_url(http_proxy);
+            os_become(uid, gid, umask);
+            userpass = new nstring(proxy_url.get_userpass());
+            proxy = new nstring(proxy_url.reassemble(true));
+            if (!userpass->empty())
+            {
+                curl_easy_setopt
+                (
+                    handle,
+                    CURLOPT_PROXYUSERPWD,
+                    userpass->c_str()
+                );
+            }
+            curl_easy_setopt(handle, CURLOPT_PROXY, proxy->c_str());
+        }
+    }
+#endif
+    err = curl_easy_setopt(handle, CURLOPT_URL, fn.c_str());
+    if (err)
+	FATAL("curl_easy_setopt", curl_easy_strerror(err));
+    err = curl_easy_setopt(handle, CURLOPT_FILE, this);
+    if (err)
+	FATAL("curl_easy_setopt", curl_easy_strerror(err));
+    err = curl_easy_setopt(handle, CURLOPT_VERBOSE, 0);
+    if (err)
+	FATAL("curl_easy_setopt", curl_easy_strerror(err));
+    err = curl_easy_setopt(handle, CURLOPT_WRITEFUNCTION, ::write_callback);
+    if (err)
+	FATAL("curl_easy_setopt", curl_easy_strerror(err));
+    err = curl_easy_setopt(handle, CURLOPT_FOLLOWLOCATION, 1);
+    if (err)
+	FATAL("curl_easy_setopt", curl_easy_strerror(err));
+
+    progress_start = 0;
+    progress_buflen = 0;
+    progress_buffer = 0;
+    progress_cleanup = 0;
+    if (option_verbose_get())
+    {
+	err = curl_easy_setopt(handle, CURLOPT_NOPROGRESS, 0);
+	if (err)
+	    FATAL("curl_easy_setopt", curl_easy_strerror(err));
+	err =
+	    curl_easy_setopt
+	    (
+		handle,
+		CURLOPT_PROGRESSFUNCTION,
+		::progress_callback
+	    );
+	if (err)
+	    FATAL("curl_easy_setopt", curl_easy_strerror(err));
+	err = curl_easy_setopt(handle, CURLOPT_PROGRESSDATA, this);
+	if (err)
+	    FATAL("curl_easy_setopt", curl_easy_strerror(err));
+	time(&progress_start);
+	progress_buflen = page_width_get(80);
+	if (progress_buflen < 40)
+	    progress_buflen = 40;
+	progress_buffer = (char *)mem_alloc(progress_buflen);
+    }
+
+    if (!multi_handle)
+    {
+	multi_handle = curl_multi_init();
+	if (!multi_handle)
+	    nfatal("curl_multi_init");
+    }
+    CURLMcode merr = curl_multi_add_handle(multi_handle, handle);
+    switch (merr)
+    {
+    case CURLM_CALL_MULTI_PERFORM:
+	call_multi_immediate = true;
+	break;
+
+    case CURLM_OK:
+	break;
+
+    default:
+	FATAL("curl_multi_add_handle", curl_multi_strerror(merr));
+    }
+
+    //
+    // Start the fetch as soon as possible.
+    //
+    call_multi_immediate = true;
+
+    //
+    // Build an associate table from libcurl handles to our file pointers.
+    //
+    if (!stp)
+	stp = itab_alloc(1);
+    itab_assign(stp, (itab_key_ty)handle, (void *)this);
+}
 
 
 static void
 print_byte_count(char *buf, size_t len, double number)
 {
-    const char      *units;
-
     if (number < 0)
     {
 	snprintf(buf, len, "-----");
 	return;
     }
-    units = " KMGTPE";
+    const char *units = " KMGTPE";
     for (;;)
     {
 	if (*units != ' ')
@@ -122,20 +286,16 @@ print_byte_count(char *buf, size_t len, double number)
 static void
 print_seconds(char *buf, size_t len, time_t secs)
 {
-    time_t          mins;
-    time_t          hours;
-    time_t          days;
-
-    mins = secs / 60;
+    time_t mins = secs / 60;
     secs %= 60;
-    hours = mins / 60;
+    time_t hours = mins / 60;
     mins %= 60;
     if (hours == 0)
     {
 	snprintf(buf, len, "%2dm%2.2ds", (int)mins, (int)secs);
 	return;
     }
-    days = hours / 24;
+    time_t days = hours / 24;
     hours %= 24;
     if (days == 0)
     {
@@ -151,66 +311,47 @@ print_seconds(char *buf, size_t len, time_t secs)
 }
 
 
-static int
-progress(void *p, double down_total, double down_current, double up_total,
-    double up_current)
+void
+input_curl::progress_callback(double down_total, double down_current)
 {
-    input_curl_ty   *fp;
-    char            buf1[7];
-    char            buf2[7];
-    char            buf3[7];
-    time_t          curtim;
-    time_t          predict;
-    time_t          remaining;
-    double          frac;
-    int             lhs;
-    int             rhs;
-
     if (down_current <= 0 || down_total <= 0)
-	return 0;
-    fp = (input_curl_ty *)p;
+	return;
+    time_t curtim;
     time(&curtim);
-    curtim -= fp->progress_start;
+    curtim -= progress_start;
+    char buf1[7];
     print_byte_count(buf1, sizeof(buf1), (long)down_current);
+    char buf2[7];
     print_byte_count(buf2, sizeof(buf2), (long)down_total);
-    frac = (down_total <= 0) ? 0 : (down_current / down_total);
-    predict = (time_t)(frac ? (0.5 + curtim / frac) : 0);
-    remaining = predict - curtim;
+    double frac = (down_total <= 0) ? 0 : (down_current / down_total);
+    time_t predict = (time_t)(frac ? (0.5 + curtim / frac) : 0);
+    time_t remaining = predict - curtim;
+    char buf3[7];
     print_seconds(buf3, sizeof(buf3), remaining);
 
-    memset(fp->progress_buffer, ' ', fp->progress_buflen);
-    fp->progress_buffer[0] = '\r';
-    memcpy(fp->progress_buffer +  1, buf1, 6);
-    memcpy(fp->progress_buffer +  7, " of ", 4);
-    memcpy(fp->progress_buffer + 11, buf2, 6);
-    snprintf(fp->progress_buffer + 18, 5, "%3d%%", (int)(100 * frac + 0.5));
+    memset(progress_buffer, ' ', progress_buflen);
+    progress_buffer[0] = '\r';
+    memcpy(progress_buffer +  1, buf1, 6);
+    memcpy(progress_buffer +  7, " of ", 4);
+    memcpy(progress_buffer + 11, buf2, 6);
+    snprintf(progress_buffer + 18, 5, "%3d%%", (int)(100 * frac + 0.5));
 
-    lhs = 24;
-    rhs = (int)(lhs + (fp->progress_buflen - 36) * frac);
+    int lhs = 24;
+    int rhs = (int)(lhs + (progress_buflen - 36) * frac);
     while (lhs < rhs)
-	fp->progress_buffer[lhs++] = '=';
-    fp->progress_buffer[lhs] = '>';
+	progress_buffer[lhs++] = '=';
+    progress_buffer[lhs] = '>';
 
-    memcpy(fp->progress_buffer + fp->progress_buflen - 10, "ETA", 3);
-    memcpy(fp->progress_buffer + fp->progress_buflen - 6, buf3, 6);
-    write(2, fp->progress_buffer, fp->progress_buflen);
-    fp->progress_cleanup = 1;
-    return 0;
+    memcpy(progress_buffer + progress_buflen - 10, "ETA", 3);
+    memcpy(progress_buffer + progress_buflen - 6, buf3, 6);
+    write(2, progress_buffer, progress_buflen);
+    progress_cleanup = 1;
 }
 
 
-//
-// Libcurl calls this function when it receives more data.
-//
-static size_t
-callback(char *data, size_t size, size_t nitems, void *p)
+size_t
+input_curl::write_callback(char *data, size_t nbytes)
 {
-    input_curl_ty   *fp;
-    size_t          nbytes;
-
-    fp = (input_curl_ty *)p;
-    nbytes = size * nitems;
-
     //
     // Grow the buffer if necessary.
     //
@@ -219,17 +360,17 @@ callback(char *data, size_t size, size_t nitems, void *p)
     // short of a power of 2, leaving room for the malloc header, which
     // results in a nicer malloc fit on many systems.
     //
-    while (fp->buffer_length + nbytes > fp->buffer_maximum)
+    while (curl_buffer_length + nbytes > curl_buffer_maximum)
     {
-	fp->buffer_maximum = fp->buffer_maximum * 2 + 32;
-	fp->buffer = (char *)mem_change_size(fp->buffer, fp->buffer_maximum);
+	curl_buffer_maximum = curl_buffer_maximum * 2 + 32;
+	curl_buffer = (char *)mem_change_size(curl_buffer, curl_buffer_maximum);
     }
 
     //
     // Copy the data into the buffer.
     //
-    memcpy(fp->buffer + fp->buffer_length, data, nbytes);
-    fp->buffer_length += nbytes;
+    memcpy(curl_buffer + curl_buffer_length, data, nbytes);
+    curl_buffer_length += nbytes;
 
     //
     // A negative return will stop the transfer for this stream.
@@ -238,49 +379,12 @@ callback(char *data, size_t size, size_t nitems, void *p)
 }
 
 
-static void
-destruct(input_ty *p)
-{
-    input_curl_ty   *fp;
-
-    //
-    // Release libcurl resources.
-    //
-    fp = (input_curl_ty *)p;
-    curl_multi_remove_handle(multi_handle, fp->handle);
-    curl_easy_cleanup(fp->handle);
-    fp->handle = 0;
-    fp->eof = 1;
-
-    if (fp->progress_cleanup)
-	write(2, "\n", 1);
-
-    //
-    // Release dynamic memory resources.
-    //
-    if (fp->buffer)
-        mem_free(fp->buffer);
-    fp->buffer = 0;
-    fp->buffer_postion = 0;
-    fp->buffer_length = 0;
-    fp->buffer_maximum = 0;
-    str_free(fp->fn);
-    fp->fn = 0;
-#if (LIBCURL_VERSION_NUM < 0x070b01)
-    delete fp->userpass;
-    delete fp->proxy;
-#endif
-}
-
-
-static input_curl_ty *
+static input_curl *
 handle_to_fp(CURL *handle)
 {
-    input_curl_ty   *result;
-
     assert(stp);
-    result = (input_curl_ty *)itab_query(stp, (itab_key_ty)handle);
-    if (!result || result->handle != handle)
+    input_curl *result = (input_curl *)itab_query(stp, (itab_key_ty)handle);
+    if (!result || !result->verify_handle(handle))
     {
 	fatal_raw
 	(
@@ -296,8 +400,8 @@ handle_to_fp(CURL *handle)
 
 
 /**
-  * The perform function is a wrapper arounf the curl_multi_perform
-  * function.  It checks form messages that may be waiting, waits in
+  * The perform function is a wrapper around the curl_multi_perform
+  * function.  It checks for messages that may be waiting, waits in
   * select if necessary, and calls curl_multi_perform eventually.
   *
   * It is expected that this function will be repeatedly called from a
@@ -313,33 +417,23 @@ perform(void)
     //
     for (;;)
     {
-	CURLMsg         *msg;
-	int             msgs;
-	input_curl_ty   *fp;
-
-	msg = curl_multi_info_read(multi_handle, &msgs);
+	int msgs = 0;
+	CURLMsg *msg = curl_multi_info_read(multi_handle, &msgs);
 	if (!msg)
 	    break;
 	if (msg->msg == CURLMSG_NONE)
 	    break;
 	if (msg->msg != CURLMSG_DONE)
 	    fatal_raw("curl_multi_info_read -> %d (bug)", msg->msg);
-	fp = handle_to_fp(msg->easy_handle);
+	input_curl *fp = handle_to_fp(msg->easy_handle);
 	if (msg->data.result == 0)
 	{
 	    // transfer over, no error
-	    fp->eof = 1;
+	    fp->eof_notify();
 	}
 	else
 	{
-	    sub_context_ty	*scp;
-
-	    scp = sub_context_new();
-	    sub_var_set_string(scp, "File_Name", fp->fn);
-	    sub_var_set_charstar(scp, "ERRNO", fp->errbuf);
-	    sub_var_override(scp, "ERRNO");
-	    fatal_intl(scp, i18n("read $filename: $errno"));
-	    // NOTREACHED
+	    fp->read_error();
 	}
     }
 
@@ -348,17 +442,15 @@ perform(void)
     //
     if (call_multi_immediate)
     {
-	call_multi_immediate = 0;
+	call_multi_immediate = false;
 	for (;;)
 	{
-	    CURLMcode       ret;
-	    int             num_xfer;
-
-	    ret = curl_multi_perform(multi_handle, &num_xfer);
+	    int num_xfer = 0;
+	    CURLMcode ret = curl_multi_perform(multi_handle, &num_xfer);
 	    switch (ret)
 	    {
 	    case CURLM_CALL_MULTI_PERFORM:
-		call_multi_immediate = 1;
+		call_multi_immediate = true;
 		return;
 
 	    case CURLM_OK:
@@ -377,18 +469,16 @@ perform(void)
     }
     else
     {
-	CURLcode        err;
-	fd_set          fdread;
-	fd_set          fdwrite;
-	fd_set          fdexcep;
-	int             maxfd;
-
+	fd_set fdread;
 	FD_ZERO(&fdread);
+	fd_set fdwrite;
 	FD_ZERO(&fdwrite);
+	fd_set fdexcep;
 	FD_ZERO(&fdexcep);
 
 	// get file descriptors from the transfers
-	err =
+	int maxfd = 0;
+	CURLcode err =
 	    (CURLcode)
 	    curl_multi_fdset(multi_handle, &fdread, &fdwrite, &fdexcep, &maxfd);
 	if (err)
@@ -396,37 +486,47 @@ perform(void)
 
 	if (maxfd >= 0)
 	{
-	    struct timeval  timeout;
-	    int             rc;
-
 	    // set a suitable timeout to fail on
+	    struct timeval timeout;
 	    timeout.tv_sec = 60; // 1 minute
 	    timeout.tv_usec = 0;
 
-	rc = select(maxfd + 1, &fdread, &fdwrite, &fdexcep, &timeout);
-	if (rc < 0)
-	{
-	    if (errno != EINTR)
+	    int rc = select(maxfd + 1, &fdread, &fdwrite, &fdexcep, &timeout);
+	    if (rc < 0)
 	    {
-		nfatal
-		(
-		    "%s: %d: select: %s",
-		    __FILE__,
-		    __LINE__,
-		    strerror(errno)
-		);
-		// NOTREACHED
+		if (errno != EINTR)
+		{
+		    nfatal
+		    (
+			"%s: %d: select: %s",
+			__FILE__,
+			__LINE__,
+			strerror(errno)
+		    );
+		    // NOTREACHED
+		}
 	    }
-	}
-	if (rc > 0)
-	{
-	    //
-	    // Some sockets are ready.
-	    //
-	    call_multi_immediate = 1;
-	}
+	    if (rc > 0)
+	    {
+		//
+		// Some sockets are ready.
+		//
+		call_multi_immediate = true;
+	    }
         }
     }
+}
+
+
+void
+input_curl::read_error()
+{
+    sub_context_ty sc;
+    sc.var_set_string("File_Name", fn);
+    sc.var_set_charstar("ERRNO", errbuf);
+    sc.var_override("ERRNO");
+    sc.fatal_intl(i18n("read $filename: $errno"));
+    // NOTREACHED
 }
 
 
@@ -435,41 +535,39 @@ perform(void)
   * Returns the number of bytes read.
   */
 
-static long
-read_data(input_curl_ty *fp, void *data, size_t nbytes)
+long
+input_curl::read_data(void *data, size_t nbytes)
 {
-    size_t          size_of_buffer;
-
     //
     // attempt to fill buffer
     //
-    while (!fp->eof && fp->buffer_postion + nbytes > fp->buffer_length)
+    while (!eof && curl_buffer_position + nbytes > curl_buffer_length)
 	perform();
 
     //
     // Extract as much data as possible from the buffer.
     //
-    size_of_buffer = fp->buffer_length - fp->buffer_postion;
+    size_t size_of_buffer = curl_buffer_length - curl_buffer_position;
     if (nbytes > size_of_buffer)
 	nbytes = size_of_buffer;
-    memcpy(data, fp->buffer + fp->buffer_postion, nbytes);
-    fp->buffer_postion += nbytes;
+    memcpy(data, curl_buffer + curl_buffer_position, nbytes);
+    curl_buffer_position += nbytes;
 
     //
     // Rearrange the buffer so that it does not grow forever.
     //
-    size_of_buffer = fp->buffer_length - fp->buffer_postion;
+    size_of_buffer = curl_buffer_length - curl_buffer_position;
     if (size_of_buffer == 0)
     {
-	fp->buffer_postion = 0;
-	fp->buffer_length = 0;
+	curl_buffer_position = 0;
+	curl_buffer_length = 0;
     }
-    else if (size_of_buffer <= fp->buffer_postion)
+    else if (size_of_buffer <= curl_buffer_position)
     {
 	// can shuffle the data down easily
-	memcpy(fp->buffer, fp->buffer + fp->buffer_postion, size_of_buffer);
-	fp->buffer_postion = 0;
-	fp->buffer_length = size_of_buffer;
+	memcpy(curl_buffer, curl_buffer + curl_buffer_position, size_of_buffer);
+	curl_buffer_position = 0;
+	curl_buffer_length = size_of_buffer;
     }
 
     //
@@ -479,223 +577,94 @@ read_data(input_curl_ty *fp, void *data, size_t nbytes)
 }
 
 
-static long
-input_curl_read(input_ty *p, void *data, size_t len)
+long
+input_curl::read_inner(void *data, size_t len)
 {
-    input_curl_ty   *fp;
-    long	    result;
-
     os_become_must_be_active();
     if (len < 0)
 	return 0;
-    fp = (input_curl_ty *)p;
 
-    result = read_data(fp, data, len);
+    long result = read_data(data, len);
     assert(result >= 0);
 
-    fp->pos += result;
+    pos += result;
     return result;
 }
 
 
-static long
-input_curl_ftell(input_ty *p)
+long
+input_curl::ftell_inner()
 {
-    input_curl_ty   *fp;
-
-    fp = (input_curl_ty *)p;
-    return fp->pos;
+    return pos;
 }
 
 
-static string_ty *
-input_curl_name(input_ty *p)
+nstring
+input_curl::name()
 {
-    input_curl_ty   *fp;
-
-    fp = (input_curl_ty *)p;
-    return fp->fn;
+    return fn;
 }
 
 
-static long
-input_curl_length(input_ty *p)
+long
+input_curl::length()
 {
     // Maybe there was a Content-Length header?
     return -1;
 }
 
 
-static input_vtbl_ty vtbl =
+#else
+
+
+input_curl::~input_curl()
 {
-    sizeof(input_curl_ty),
-    destruct,
-    input_curl_read,
-    input_curl_ftell,
-    input_curl_name,
-    input_curl_length,
-    0, // keepalive
-};
+}
 
 
-input_ty *
-input_curl_open(string_ty *fn)
+input_curl::input_curl(const nstring &arg) :
+    fn(arg)
 {
-    CURLcode        err;
-    CURLMcode       merr;
-    input_ty	    *result;
-    input_curl_ty   *fp;
+    sub_context_ty sc;
+    sc.var_set_string("FileLine", fn);
+    sc.fatal_intl(i18n("open $filename: no curl library"));
+}
 
-    result = input_new(&vtbl);
-    fp = (input_curl_ty *)result;
-    fp->fn = str_copy(fn);
-    fp->pos = 0;
-    fp->eof = 0;
-    fp->buffer = 0;
-    fp->buffer_postion = 0;
-    fp->buffer_length = 0;
-    fp->buffer_maximum = 0;
 
-    fp->handle = curl_easy_init();
-    if (!fp->handle)
-	nfatal("curl_easy_init");
+long
+input_curl::read_inner(void *data, size_t len)
+{
+    return 0;
+}
 
-    err = curl_easy_setopt(fp->handle, CURLOPT_ERRORBUFFER, fp->errbuf);
-    if (err)
-	FATAL("curl_easy_setopt", curl_easy_strerror(err));
 
-#if (LIBCURL_VERSION_NUM < 0x070b01)
-    //
-    // libcurl prior to 7.11.1 has problems handling autenticated
-    // proxy specified by http_proxy or HTTP_PROXY, so we set them
-    // manually.
-    //
+long
+input_curl::ftell_inner()
+{
+    return 0;
+}
 
-    int         uid;
-    int         gid;
-    int         umask;
-    //
-    // We need to save the user identity because the url::split method
-    // call os_become_ itself and we must issue os_become_undo and
-    // os_become to not raise a multiple permission error.
-    //
-    os_become_query(&uid, &gid, &umask);
-    os_become_undo();
-    url target_url(fn->str_text);
-    os_become(uid, gid, umask);
-    if (target_url.get_protocol() == "http")
-    {
-        char *http_proxy = getenv("http_proxy");
-        if (!http_proxy || http_proxy[0] == '\0')
-            http_proxy = getenv("HTTP_PROXY");
-        if (http_proxy && http_proxy[0] != '\0')
-        {
-            //
-            // We use the user's identity previously saved to
-            // undo/restore the process identity in order to prevent a
-            // multiple permission error from url::split.
-            //
-            os_become_undo();
-            url proxy_url(http_proxy);
-            os_become(uid, gid, umask);
-            fp->userpass = new nstring(proxy_url.get_userpass());
-            fp->proxy = new nstring(proxy_url.reassemble(true));
-            if (!fp->userpass->empty())
-            {
-                curl_easy_setopt
-                (
-                    fp->handle,
-                    CURLOPT_PROXYUSERPWD,
-                    fp->userpass->c_str()
-                );
-            }
-            curl_easy_setopt(fp->handle, CURLOPT_PROXY, fp->proxy->c_str());
-        }
-    }
-#endif
-    err = curl_easy_setopt(fp->handle, CURLOPT_URL, fp->fn->str_text);
-    if (err)
-	FATAL("curl_easy_setopt", curl_easy_strerror(err));
-    err = curl_easy_setopt(fp->handle, CURLOPT_FILE, fp);
-    if (err)
-	FATAL("curl_easy_setopt", curl_easy_strerror(err));
-    err = curl_easy_setopt(fp->handle, CURLOPT_VERBOSE, 0);
-    if (err)
-	FATAL("curl_easy_setopt", curl_easy_strerror(err));
-    err = curl_easy_setopt(fp->handle, CURLOPT_WRITEFUNCTION, callback);
-    if (err)
-	FATAL("curl_easy_setopt", curl_easy_strerror(err));
-    err = curl_easy_setopt(fp->handle, CURLOPT_FOLLOWLOCATION, 1);
-    if (err)
-	FATAL("curl_easy_setopt", curl_easy_strerror(err));
 
-    fp->progress_start = 0;
-    fp->progress_buflen = 0;
-    fp->progress_buffer = 0;
-    fp->progress_cleanup = 0;
-    if (option_verbose_get())
-    {
-	err = curl_easy_setopt(fp->handle, CURLOPT_NOPROGRESS, 0);
-	if (err)
-	    FATAL("curl_easy_setopt", curl_easy_strerror(err));
-	err = curl_easy_setopt(fp->handle, CURLOPT_PROGRESSFUNCTION, progress);
-	if (err)
-	    FATAL("curl_easy_setopt", curl_easy_strerror(err));
-	err = curl_easy_setopt(fp->handle, CURLOPT_PROGRESSDATA, fp);
-	if (err)
-	    FATAL("curl_easy_setopt", curl_easy_strerror(err));
-	time(&fp->progress_start);
-	fp->progress_buflen = page_width_get(80);
-	if (fp->progress_buflen < 40)
-	    fp->progress_buflen = 40;
-	fp->progress_buffer = (char *)mem_alloc(fp->progress_buflen);
-    }
+nstring
+input_curl::name()
+{
+    return fn;
+}
 
-    if (!multi_handle)
-    {
-	multi_handle = curl_multi_init();
-	if (!multi_handle)
-	    nfatal("curl_multi_init");
-    }
-    merr = curl_multi_add_handle(multi_handle, fp->handle);
-    switch (merr)
-    {
-    case CURLM_CALL_MULTI_PERFORM:
-	call_multi_immediate = 1;
-	break;
 
-    case CURLM_OK:
-	break;
-
-    default:
-	FATAL("curl_multi_add_handle", curl_multi_strerror(merr));
-    }
-
-    //
-    // Start the fetch as soon as possible.
-    //
-    call_multi_immediate = 1;
-
-    //
-    // Build an associate table from libcurl handles to our file pointers.
-    //
-    if (!stp)
-	stp = itab_alloc(1);
-    itab_assign(stp, (itab_key_ty)fp->handle, (void *)fp);
-
-    //
-    // Report success.
-    //
-    return result;
+long
+input_curl::length()
+{
+    return -1;
 }
 
 #endif // HAVE_LIBCURL
 
 
 bool
-input_curl_looks_likely(string_ty *fn)
+input_curl::looks_likely(const nstring &fn)
 {
-    const char *cp = fn->str_text;
+    const char *cp = fn.c_str();
     if (!isalpha((unsigned char)*cp))
 	return 0;
     for (;;)
@@ -705,4 +674,12 @@ input_curl_looks_likely(string_ty *fn)
 	    break;
     }
     return (cp[0] == ':' && cp[1] != '\0');
+}
+
+
+bool
+input_curl::is_remote()
+    const
+{
+    return true;
 }

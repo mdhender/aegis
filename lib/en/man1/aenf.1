@@ -1,6 +1,6 @@
 '\" t
 .\"	aegis - project change supervisor
-.\"	Copyright (C) 1991-1993, 1996, 1998-2000, 2002-2004 Peter Miller;
+.\"	Copyright (C) 1991-1993, 1996, 1998-2000, 2002-2005 Peter Miller;
 .\"	All rights reserved.
 .\"
 .\"	This program is free software; you can redistribute it and/or modify
@@ -71,6 +71,7 @@ will be set by subsequent \fIaecp\fP(1) commands.
 .so z_filesize.so
 .so z_intuit.so
 .so z_retype.so
+.so z_promotion.so
 .SS Notification
 The \fInew_file_command\fP in the project configuration file is run,
 if set.  The \fIproject_\%file_\%command\fP is also run, if set, and
@@ -102,6 +103,7 @@ configuration file.  The default project configuration file is called
 more than one file, splitting the content across several files, all of
 which must be of this type.
 .so o_help.so
+.so o_keep.so
 .so o_list.so
 .so o_nolog.so
 .so o_project.so

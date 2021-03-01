@@ -1,6 +1,6 @@
 //
 //	aegis - project change supervisor
-//	Copyright (C) 2004 Peter Miller;
+//	Copyright (C) 2004, 2005 Peter Miller;
 //	All rights reserved.
 //
 //	This program is free software; you can redistribute it and/or modify
@@ -21,7 +21,6 @@
 //
 
 #include <ac/libintl.h>
-#include <ac/magic.h>
 #include <ac/stdio.h>
 #include <ac/stdlib.h>
 #include <ac/string.h>
@@ -257,11 +256,12 @@ file_attributes_list(void)
 	!fattr_exists(fattr_data, "Content-Type")
     )
     {
-	magic_t cookie = magic_open(MAGIC_MIME);
-	nstring path = change_file_path(cp, filename);
-	const char *content_type = magic_file(cookie, path.c_str());
-	fattr_assign(fattr_data, "Content-Type", content_type);
-	magic_close(cookie);
+	nstring path(change_file_path(cp, filename));
+	os_become_orig();
+	nstring content_type = os_magic_file(path);
+	os_become_undo();
+	assert(!content_type.empty());
+	fattr_assign(fattr_data, "content-type", content_type);
     }
 
     //
@@ -545,20 +545,20 @@ file_attributes_main(void)
 
 	//
 	// For changes which are still being developed, we also add the
-	// "Content-Type" attribute.
+	// "content-type" attribute.
 	//
 	if
 	(
 	    change_is_being_developed(cp)
 	&&
-	    !fattr_exists(fattr_data, "Content-Type")
+	    !fattr_exists(fattr_data, "content-type")
 	)
 	{
-	    magic_t cookie = magic_open(MAGIC_MIME);
-	    nstring path = change_file_path(cp, filename);
-	    const char *content_type = magic_file(cookie, path.c_str());
-	    fattr_assign(fattr_data, "Content-Type", content_type);
-	    magic_close(cookie);
+	    nstring path(change_file_path(cp, filename));
+	    os_become_orig();
+	    nstring content_type = os_magic_file(path);
+	    os_become_undo();
+	    fattr_assign(fattr_data, "content-type", content_type);
 	}
 
 	//

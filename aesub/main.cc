@@ -31,11 +31,13 @@
 #include <file.h>
 #include <help.h>
 #include <language.h>
+#include <nstring/list.h>
 #include <os.h>
 #include <progname.h>
 #include <project.h>
 #include <quit.h>
 #include <r250.h>
+#include <rsrc_limits.h>
 #include <str_list.h>
 #include <sub.h>
 #include <trace.h>
@@ -103,20 +105,11 @@ aesub_help(void)
 static void
 aesub_main(void)
 {
-    string_ty	    *project_name;
-    long	    change_number;
-    string_ty	    *s;
-    project_ty	    *pp;
-    user_ty	    *up;
-    sub_context_ty  *scp;
-    size_t	    j;
-    int		    baseline;
-
     trace(("aesub_main()\n{\n"));
-    project_name = 0;
-    change_number = 0;
-    baseline = 0;
-    string_list_ty arg;
+    string_ty *project_name = 0;
+    long change_number = 0;
+    int baseline = 0;
+    nstring_list arg;
     while (arglex_token != arglex_token_eoln)
     {
 	switch (arglex_token)
@@ -137,9 +130,7 @@ aesub_main(void)
 
 	case arglex_token_string:
 	case arglex_token_number:
-	    s = str_from_c(arglex_value.alv_string);
-	    arg.push_back(s);
-	    str_free(s);
+	    arg.push_back(nstring(arglex_value.alv_string));
 	    break;
 
 	case arglex_token_baseline:
@@ -157,22 +148,20 @@ aesub_main(void)
 
 	    case arglex_token_string:
 		{
-		    string_ty *fn = str_from_c(arglex_value.alv_string);
 		    os_become_orig();
-		    s = read_whole_file(fn);
+		    nstring s(read_whole_file(arglex_value.alv_string));
 		    os_become_undo();
-		    str_free(fn);
 		    arg.push_back(s);
-		    str_free(s);
 		}
 		break;
 
 	    case arglex_token_stdio:
-		os_become_orig();
-		s = read_whole_file(0);
-		os_become_undo();
-		arg.push_back(s);
-		str_free(s);
+		{
+		    os_become_orig();
+		    nstring s(read_whole_file((char *)0));
+		    os_become_undo();
+		    arg.push_back(s);
+		}
 		break;
 	    }
 	    break;
@@ -194,49 +183,43 @@ aesub_main(void)
     //
     if (!project_name)
 	project_name = user_default_project();
-    pp = project_alloc(project_name);
+    project_ty *pp = project_alloc(project_name);
     str_free(project_name);
     project_bind_existing(pp);
 
     //
     // locate user data
     //
-    up = user_executing(pp);
+    user_ty *up = user_executing(pp);
 
     //
     // locate change data
     //
     if (baseline)
     {
-	for (j = 0; j < arg.nstrings; ++j)
+	for (size_t j = 0; j < arg.size(); ++j)
 	{
 	    if (j)
 		putchar(' ');
-	    scp = sub_context_New("command line", j + 1);
-	    s = substitute_p(scp, pp, arg.string[j]);
-	    sub_context_delete(scp);
-	    fputs(s->str_text, stdout);
-	    str_free(s);
+	    sub_context_ty sc("command line", j + 1);
+	    nstring text(sc.substitute_p(pp, arg[j].get_ref()));
+	    fwrite(text.c_str(), 1, text.size(), stdout);
 	}
     }
     else
     {
-	change_ty	*cp;
-
 	if (!change_number)
 	    change_number = user_default_change(up);
-	cp = change_alloc(pp, change_number);
+	change_ty *cp = change_alloc(pp, change_number);
 	change_bind_existing(cp);
 
-	for (j = 0; j < arg.nstrings; ++j)
+	for (size_t j = 0; j < arg.size(); ++j)
 	{
 	    if (j)
 		putchar(' ');
-	    scp = sub_context_New("command line", j + 1);
-	    s = substitute(scp, cp, arg.string[j]);
-	    sub_context_delete(scp);
-	    fputs(s->str_text, stdout);
-	    str_free(s);
+	    sub_context_ty sc("command line", j + 1);
+	    nstring text(sc.substitute(cp, arg[j].get_ref()));
+	    fwrite(text.c_str(), 1, text.size(), stdout);
 	}
 	change_free(cp);
     }
@@ -266,6 +249,7 @@ aesub_main(void)
 int
 main(int argc, char **argv)
 {
+    resource_limits_init();
     r250_init();
     os_become_init_mortal();
     arglex2_init(argc, argv);

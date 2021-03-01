@@ -768,7 +768,7 @@ nstring
 type_structure_ty::c_name_inner()
     const
 {
-    return str_format("%s_ty *", def_name().c_str());
+    return (def_name() + "_ty *");
 }
 
 

@@ -1,6 +1,6 @@
 //
 //	aegis - project change supervisor
-//	Copyright (C) 2004 Peter Miller;
+//	Copyright (C) 2004, 2005 Peter Miller;
 //	All rights reserved.
 //
 //	This program is free software; you can redistribute it and/or modify
@@ -76,6 +76,7 @@ public:
     /**
       * The constructor.
       */
+    explicit
     nstring(string_ty *arg) :
 	ref(arg ? str_copy(arg) : get_empty_ref())
     {
@@ -98,7 +99,7 @@ public:
 	if (this != &arg)
 	{
 	    str_free(ref);
-	    ref = str_copy(arg.ref);
+	    ref = (arg.ref ? str_copy(arg.ref) : get_empty_ref());
 	}
 	return *this;
     }
@@ -446,6 +447,16 @@ public:
     bool ends_with(const nstring &suffix) const;
 
     /**
+      * The ends_with_nocase method is ised to test whether this string
+      * ends with the given suffix.  The comparison will be case
+      * insensitive.
+      *
+      * @param suffix
+      *     The string to test for.
+      */
+    bool ends_with_nocase(const nstring &suffix) const;
+
+    /**
       * The gmatch function is used to match the string against a file
       * globbing pattern.
       */
@@ -463,7 +474,7 @@ public:
       * one constant substring with another.
       *
       * @note
-      *     The replacement is <i>not</b> done <i>in situ</i>.  The original
+      *     The replacement is <b>not</b> done <i>in situ</i>.  The original
       *     string is unaltered.
       *
       * @param lhs
@@ -540,6 +551,27 @@ public:
       *     unicode values (DDD > 255) are not understood.
      */
     nstring html_unquote() const;
+
+    /**
+      * The to_long method attempts to turn a string into a long value.
+      * It returns zero on failure.
+      */
+    long to_long() const;
+
+    /**
+      * The substrig method may be used to extract a substring from this
+      * string.
+      *
+      * @param start
+      *     The offset into the string where the substring starts.  If
+      *     negative, is measured from the end.
+      * @param nbytes
+      *     The number of bytes to extract, if that many available.  If
+      *     negative, measured to the left (text not reversed).
+      * @returns
+      *     a string, note that it could be less than nbytes long.
+      */
+    nstring substring(long start, long nbytes) const;
 
 private:
     /**

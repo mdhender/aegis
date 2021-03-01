@@ -30,6 +30,7 @@
 #include <os.h>
 #include <quit.h>
 #include <r250.h>
+#include <rsrc_limits.h>
 #include <undo.h>
 
 
@@ -49,15 +50,16 @@
 int
 main(int argc, char **argv)
 {
-	r250_init();
-	os_become_init();
-	arglex3_init(argc, argv);
-	env_initialize();
-	language_init();
-	quit_register(log_quitter);
-	quit_register(undo_quitter);
-	os_interrupt_register();
-	import();
-	quit(0);
-	return 0;
+    resource_limits_init();
+    r250_init();
+    os_become_init();
+    arglex3_init(argc, argv);
+    env_initialize();
+    language_init();
+    quit_register(log_quitter);
+    quit_register(undo_quitter);
+    os_interrupt_register();
+    import();
+    quit(0);
+    return 0;
 }

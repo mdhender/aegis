@@ -1,7 +1,8 @@
 #!/bin/sh
 #
 #	aegis - project change supervisor
-#	Copyright (C) 1999, 2000, 2002, 2004 Peter Miller;
+#	Copyright (C) 1999, 2000, 2002, 2004, 2005 Peter Miller;
+#	Copyright (C) 2005 Walter Franzini;
 #	All rights reserved.
 #
 #	This program is free software; you can redistribute it and/or modify
@@ -108,7 +109,7 @@ AEGIS_PROJECT=foo ; export AEGIS_PROJECT
 #
 # make the directories
 #
-activity="working directory 111"
+activity="working directory 112"
 mkdir $work $work/lib
 if test $? -ne 0 ; then no_result; fi
 chmod 777 $work/lib
@@ -127,14 +128,14 @@ unset LANGUAGE
 #
 # make a new project
 #
-activity="new project 130"
+activity="new project 131"
 $bin/aegis -npr foo -vers "" -dir $workproj > log 2>&1
 if test $? -ne 0 ; then cat log; no_result; fi
 
 #
 # change project attributes
 #
-activity="project attributes 137"
+activity="project attributes 138"
 cat > $tmp << 'end'
 description = "A bogus project created to test the aedist functionality.";
 developer_may_review = true;
@@ -149,7 +150,7 @@ if test $? -ne 0 ; then cat log; no_result; fi
 #
 # add the staff
 #
-activity="staff 152"
+activity="staff 153"
 $bin/aegis -nd $USER > log 2>&1
 if test $? -ne 0 ; then cat log; no_result; fi
 $bin/aegis -nrv $USER > log 2>&1
@@ -168,7 +169,7 @@ AEGIS_PROJECT=foo.4.2 ; export AEGIS_PROJECT
 #
 # create a new change
 #
-activity="new change 171"
+activity="new change 172"
 cat > $tmp << 'end'
 brief_description = "The first change";
 cause = internal_bug;
@@ -186,8 +187,8 @@ if test $? -ne 0 ; then cat log; no_result; fi
 #
 # add a new files to the change
 #
-activity="new file 189"
-$bin/aegis -nf $workchan/main.c $workchan/config -nl > log 2>&1
+activity="new file 190"
+$bin/aegis -nf $workchan/main.c $workchan/aegis.conf -nl > log 2>&1
 if test $? -ne 0 ; then cat log; no_result; fi
 cat > $workchan/main.c << 'end'
 /* $Id$ */
@@ -195,7 +196,7 @@ int main() { test(); exit(0); return 0; }
 end
 if test $? -ne 0 ; then no_result; fi
 
-cat > $workchan/config << 'end'
+cat > $workchan/aegis.conf << 'end'
 build_command = "exit 0";
 link_integration_directory = true;
 create_symlinks_before_build = true;
@@ -217,50 +218,127 @@ if test $? -ne 0 ; then no_result; fi
 #
 # build the change
 #
-activity="build 220"
+activity="build 221"
 $bin/aegis -build -nl -v > log 2>&1
 if test $? -ne 0 ; then cat log; fail; fi
 
 #
 # difference the change
 #
-activity="diff 227"
+activity="diff 228"
 $bin/aegis -diff > log 2>&1
 if test $? -ne 0 ; then cat log; no_result; fi
 
 #
 # now make a distribution set
 #
-activity="aedist -send 234"
+activity="aedist -send 235"
 $bin/aedist -send -o test.out -ndh > log 2>&1
 if test $? -ne 0 ; then cat log; fail; fi
 
-cat > test.ok << 'fubar'
+#
+# Check the aedist archive
+#
+activity="extract the archive 242"
+mkdir $work/test.d > log 2>&1
+if test $? -ne 0; then cat log; no_result; fi
+$bin/test_cpio -extract -change-dir $work/test.d -f test.out > log 2>&1
+if test $? -ne 0; then cat log; no_result; fi
+
+#
+# Check the archive header
+#
+activity="archive header 251"
+cat > $work/header.ok <<EOF
 MIME-Version: 1.0
 Content-Type: application/aegis-change-set
 Content-Transfer-Encoding: base64
 Subject: foo.4.2 - The first change
 Content-Name: foo.4.2.C001.ae
 Content-Disposition: attachment; filename=foo.4.2.C001.ae
+EOF
+if test $? -ne 0; then no_result; fi
 
-H4sIAAAAAAAAA61UTU/cMBDlGv+KAVnKQglJlqXQRrTqoQeknhA99SPyOpPEJXGC7fAh4L/X
-Tla7S0oFWzUXx+OZN2/ejB0dR8dRDMPXrycxmy320WiNR/uTv/iN1ngZh4aHrWp+ITeBZDVu
-kbxpDmYHUxKt85huyGP6Sh7TdR68ZLLAQHb1HNVWTMhTDocbcYjfvnsdB8if4aDRbNn8cyUw
-TzPUXInWiEbCKexclAi5UNrA4LyTkJc9OOs02jMhDSrJqhSlPeJYozQJMahNirdYt8b6GNXh
-wjZnGishcXyosFCotc2XPherDTMuG7thwghZ2BKusWraIZtWHE7JN+LdE8/LRYWp67wjzhuZ
-i8LS9TzGF9VwhRbMmTrNCuc2eFnL4/4zGDUT8oC/hKGbTnEcMH4kZNzr2Ua9ns7mr+z10s9q
-EA519H3uRJWlvKlrJjNXBN4KA5Etwop/mbqmFYq5YtJMKHtXGnW3FHsoLtV3tXPW6RzzRmHa
-Yy6dSqFdUFqgWeUhnlUcgs6n6EPQAi33r+ED0GZnFbBAfxIjIMhtGAR1aBsbyq6qIDCrfyp6
-qAQU1xB87TdrkG1n/iveVYeO6BqiqpoCAjUU9GDH8BL88GeJLHsfwn2rrKBA6fTRd3dH5Pm6
-9PbqwRtMwNmtFEoULr9TpTMJuGm3oR8hqBDiRfjhevykt0CAQGu1AngAjZmzWiI3lIaZv9hc
-9ZsEvhMPedmAH+9T2vqwa0NcRA8zpB9paBTTJerUjb/NfMOUTEZzfLTZu3l49C9zPNw4N8fh
-HtCzjMJeSJzE7mCyC/e9apPdBNxYTyL7o9B0SkKUwOMfdy/a8K2PNuV8cf7p7Mvn8+3tbcf5
-NyLw3p/wBgAA
-fubar
-if test $? -ne 0 ; then no_result; fi
+head -6 $work/test.out > $work/header.test
+if test $? -ne 0; then no_result; fi
 
-diff test.ok test.out
-if test $? -ne 0 ; then cat log; fail; fi
+diff $work/header.ok $work/header.test
+if test $? -ne 0; then fail; fi
+
+#
+# Chech the archive structure
+#
+activity="check the archive structure 271"
+cat > $work/test.ok <<EOF
+$work/test.d/etc/change-number
+$work/test.d/etc/change-set
+$work/test.d/etc/project-name
+$work/test.d/src/aegis.conf
+$work/test.d/src/main.c
+EOF
+if test $? -ne 0; then no_result; fi
+
+find $work/test.d -type f -print | sort > $work/out.list
+if test $? -ne 0; then no_result; fi
+
+diff $work/test.ok $work/out.list
+if test $? -ne 0; then fail; fi
+
+#
+# Check the metadata
+#
+activity="etc/project-name 290"
+cat > $work/test.ok <<EOF
+$AEGIS_PROJECT
+EOF
+if test $? -ne 0; then no_result; fi
+diff test.ok test.d/etc/project-name
+if test $? -ne 0; then fail; fi
+
+activity="etc/change-number 298"
+cat > $work/test.ok <<'EOF'
+1
+EOF
+if test $? -ne 0; then no_result; fi
+diff $work/test.ok $work/test.d/etc/change-number
+if test $? -ne 0; then fail; fi
+
+activity="etc/change-set 306"
+cat > $work/test.ok <<EOF
+brief_description = "The first change";
+description = "The first change";
+cause = internal_enhancement;
+test_exempt = true;
+test_baseline_exempt = true;
+regression_test_exempt = true;
+state = awaiting_development;
+src =
+[
+	{
+		file_name = "aegis.conf";
+		action = create;
+		usage = config;
+	},
+	{
+		file_name = "main.c";
+		action = create;
+		usage = source;
+	},
+];
+EOF
+if test $? -ne 0; then fail; fi
+diff $work/test.ok $work/test.d/etc/change-set
+if test $? -ne 0; then fail; fi
+
+#
+# Check the archive contents
+#
+activity="check the archive contents 336"
+
+diff $work/test.d/src/aegis.conf $workchan/aegis.conf > log 2>&1
+if test $? -ne 0; then cat log; fail; fi
+diff $work/test.d/src/main.c $workchan/main.c > log 2>&1
+if test $? -ne 0; then cat log; fail; fi
 
 #
 # the things tested in this test, worked

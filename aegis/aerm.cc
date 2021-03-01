@@ -321,6 +321,23 @@ remove_file_main(void)
 
     log_open(change_logfile_get(cp), up, log_style);
 
+    if (change_file_promote(cp))
+    {
+	//
+	// Write out the file state, and then let go of the locks
+	// and take them again.  This ensures the data is consistent
+	// for the next stage of processing.
+	//
+	trace(("Write out what we've done so far.\n"));
+	change_cstate_write(cp);
+	commit();
+	lock_release();
+
+	trace(("Take the locks again.\n"));
+	change_cstate_lock_prepare(cp);
+	lock_take();
+    }
+
     //
     // It is an error if the change is not in the in_development state.
     // It is an error if the change is not assigned to the current user.

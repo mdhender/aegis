@@ -22,57 +22,52 @@
 //
 //
 // NAME
-//	file_check
+//	cklinlen
 //
 // SYNOPSIS
-//	coding_standar [ -pw ][ <filename>... ]
-//	coding_standar -v
+//	cklinlen [ -pw ][ <filename>... ]
 //
 // DESCRIPTION
-//	The coding_standar program is used to check the named files for
-//	various problems relating to our source code repositiory:
+//      The cklinlen program is used to check the named files for
+//      various problems relating to our source code repositiory:
 //
-//	It checks to see if the file is in DOS format (using CRLF line
-//	terminations).	Files in the repository are required to be in
-//	UNIX format (using LF termination).
+//      It checks to see if the file is in DOS format (using CRLF line
+//      terminations).  Files in the repository are required to be in
+//      UNIX format (using LF termination).
 //
-//	It checks to see if the lines are too long.  Lines are required
-//	to be at most 80 chyaracatres wide.  (Tabs are interpretted to
-//	be every 8 characters.)
+//      It checks to see if the lines are too long.  Lines are required
+//      to be at most 80 characters wide.  (Tabs are interpretted to be
+//      every 8 characters.)
 //
-//	It checks to see that there are no unprintable characters in
-//	the file.  All source files are required to be plain ASCII text.
+//      It checks to see that there are no unprintable characters in the
+//      file.  All source files are required to be plain ASCII text.
 //
-//	It checks to see that there is no trailing white space on the ends
-//	of lines.  These are a waste of space, but more importantly humans
-//	can't see them and they occasionally introduce subtle defects.
+//      It checks to see that there is no trailing white space on the
+//      ends of lines.  These are a waste of space, but more importantly
+//      humans can't see them and they occasionally introduce subtle
+//      defects.
 //
-//	It checks to see that there is no trailing blank lines on the
-//	ends of files.	These are a waste of space, but more importantly
-//	humans often can't see them and they occasionally introduce
-//	subtle defects.
+//      It checks to see that there is no trailing blank lines on the
+//      ends of files.  These are a waste of space, but more importantly
+//      humans often can't see them and they occasionally introduce
+//      subtle defects.
 //
-//	Binary files produce a warning.  The repository shouldn't have
-//	binary files, but some were inherited from CVS.  This may change
-//	to being a fatal error at some time in the future.
+//      Binary files produce a fatal error.  The repository shouldn't
+//      have binary files.
 //
-//	C++ commands in C files produce a warning.  Many C compilers
-//	are able to cope with them, but many cannot.
+//      C++ comments in C files produce an error.  Many C compilers
+//      are able to cope with them, but many cannot.  Using the right
+//      comments gives the human reader a clue as to what language they
+//      are reading.
 //
-// OPTIONS
-//	The -p option turns on warnings when C comments appear in C++ files.
-//	The default is to silently ignore such comments.
-//
-//	The -w option may be used to generate warnings instead of fatal
-//	errors.  The default is to produce fatal errors (exit status 1).
-//
-//	The -v option may be used to print the version of the coding_standar
-//	program and exit.
+//      C comments in C++ files produce an error.  Using the right
+//      comments gives the human reader a clue as to what language they
+//      are reading.
 //
 // EXIT STATUS
-//	The coding_standar program will exit with an exit status of one
-//	for all errors.  It will only exit with a status of 0 (success)
-//	if there are no errors.
+//      The cklinlen program will exit with an exit status of one for
+//      all errors.  It will only exit with a status of 0 (success) if
+//      there are no errors.
 //
 
 #include <ac/stdio.h>
@@ -84,14 +79,8 @@
 #include <progname.h>
 
 
-enum
-{
-    arglex_token_warnings
-};
-
 static arglex_table_ty argtab[] =
 {
-    { "-Warnings", arglex_token_warnings, },
     ARGLEX_END_MARKER
 };
 
@@ -99,7 +88,7 @@ static arglex_table_ty argtab[] =
 static void
 usage(void)
 {
-    fprintf(stderr, "Usage: %s [ -w ] <filename>...\n", progname_get());
+    fprintf(stderr, "Usage: %s <filename>...\n", progname_get());
     exit(1);
 }
 
@@ -119,10 +108,6 @@ main(int argc, char **argv)
 		arglex_value.alv_string
 	    );
 	    usage();
-
-	case arglex_token_warnings:
-	    ++warning;
-	    break;
 
 	case arglex_token_string:
 	    check(arglex_value.alv_string);

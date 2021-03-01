@@ -1,7 +1,7 @@
 #!/bin/sh
 #
 #	aegis - project change supervisor
-#	Copyright (C) 1993-1998, 2002, 2004 Peter Miller;
+#	Copyright (C) 1993-1998, 2002, 2004, 2005 Peter Miller;
 #	All rights reserved.
 #
 #	This program is free software; you can redistribute it and/or modify
@@ -79,7 +79,7 @@ pass()
 }
 trap "no_result" 1 2 3 15
 
-activity="working directory 67"
+activity="working directory 82"
 mkdir $work $work/lib
 if test $? -ne 0 ; then no_result; fi
 chmod 777 $work/lib
@@ -126,14 +126,14 @@ fi
 # make a new project
 #	and check files it should have made
 #
-activity="new project 109"
+activity="new project 129"
 $bin/aegis -newpro foo -version "" -dir $workproj -lib $worklib
 if test $? -ne 0 ; then no_result; fi
 
 #
 # change project attributes
 #
-activity="project attributes 116"
+activity="project attributes 136"
 cat > $tmp << 'end'
 description = "A bogus project created to test things.";
 developer_may_review = true;
@@ -147,7 +147,7 @@ if test $? -ne 0 ; then no_result; fi
 # create a new change
 #	make sure it creates the files it should
 #
-activity="new change 130"
+activity="new change 150"
 cat > $tmp << 'end'
 brief_description = "This change is used to test the aegis functionality \
 with respect to change descriptions.";
@@ -159,7 +159,7 @@ if test $? -ne 0 ; then no_result; fi
 #
 # add a new developer
 #
-activity="new developer 142"
+activity="new developer 162"
 $bin/aegis -newdev $USER -p foo -lib $worklib
 if test $? -ne 0 ; then no_result; fi
 
@@ -167,17 +167,17 @@ if test $? -ne 0 ; then no_result; fi
 # begin development of a change
 #	check it made the files it should
 #
-activity="develop begin 150"
+activity="develop begin 170"
 $bin/aegis -devbeg 1 -p foo -dir $workchan -lib $worklib
 if test $? -ne 0 ; then no_result; fi
 
 #
 # add a new files to the change
 #
-activity="new file 157"
+activity="new file 177"
 $bin/aegis -new_file $workchan/main.cc -nl -lib $worklib -p foo
 if test $? -ne 0 ; then no_result; fi
-$bin/aegis -new_file $workchan/config -nl -lib $worklib -p foo
+$bin/aegis -new_file $workchan/aegis.conf -nl -lib $worklib -p foo
 if test $? -ne 0 ; then no_result; fi
 cat > $workchan/main.cc << 'end'
 int
@@ -186,7 +186,7 @@ main(int argc, char **argv)
 	return 0;
 }
 end
-cat > $workchan/config << 'end'
+cat > $workchan/aegis.conf << 'end'
 build_command = "rm -f foo; c++ -o foo -D'VERSION=\"$v\"' main.cc";
 link_integration_directory = true;
 
@@ -209,7 +209,7 @@ if test $? -ne 0 ; then no_result; fi
 #
 # create a new test
 #
-activity="new test 191"
+activity="new test 212"
 $bin/aegis -nt -lib $worklib -p foo
 if test $? -ne 0 ; then no_result; fi
 cat > $workchan/test/00/t0001a.sh << 'end'
@@ -254,63 +254,63 @@ end
 #
 # build the change
 #
-activity="build 231"
+activity="build 257"
 $bin/aegis -build -nl -lib $worklib -p foo > /dev/null 2>&1
 if test $? -ne 0 ; then no_result; fi
 
 #
 # difference the change
 #
-activity="diff 238"
+activity="diff 264"
 $bin/aegis -diff -nl -lib $worklib -p foo > /dev/null 2>&1
 if test $? -ne 0 ; then no_result; fi
 
 #
 # test the change
 #
-activity="test 245"
+activity="test 271"
 $bin/aegis -test -nl -lib $worklib -p foo > /dev/null 2>&1
 if test $? -ne 0 ; then no_result; fi
 
 #
 # finish development of the change
 #
-activity="develop end 252"
+activity="develop end 278"
 $bin/aegis -dev_end -lib $worklib -p foo
 if test $? -ne 0 ; then no_result; fi
 
 #
 # add a new reviewer
 #
-activity="new reviewer 259"
+activity="new reviewer 285"
 $bin/aegis -newrev $USER -p foo -lib $worklib
 if test $? -ne 0 ; then no_result; fi
 
 #
 # pass the review
 #
-activity="review pass 266"
+activity="review pass 292"
 $bin/aegis -review_pass -chan 1 -proj foo -lib $worklib
 if test $? -ne 0 ; then no_result; fi
 
 #
 # add an integrator
 #
-activity="new integrator 273"
+activity="new integrator 299"
 $bin/aegis -newint $USER -p foo -lib $worklib
 if test $? -ne 0 ; then no_result; fi
 
 #
 # start integrating
 #
-activity="integrate begin 280"
+activity="integrate begin 306"
 $bin/aegis -ib 1 -p foo -lib $worklib
 if test $? -ne 0 ; then no_result; fi
 
 #
 # integrate begin undo
 #
-activity="integrate begin undo 287"
+activity="integrate begin undo 313"
 $bin/aegis -ibu -lib $worklib -p foo
 if test $? -ne 0 ; then fail; fi
 

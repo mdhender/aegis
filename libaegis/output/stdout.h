@@ -26,22 +26,22 @@
 #include <output.h>
 
 /**
-  * The output_stdout_ty class is used to repersent the state of an
+  * The output_stdout class is used to repersent the state of an
   * output stream being written to the standard output.
   */
-class output_stdout_ty:
+class output_stdout:
     public output_ty
 {
 public:
     /**
       * The destructor.
       */
-    virtual ~output_stdout_ty();
+    virtual ~output_stdout();
 
     /**
       * The default constructor.
       */
-    output_stdout_ty();
+    output_stdout();
 
     // See base class for documentation.
     string_ty *filename() const;
@@ -74,19 +74,12 @@ private:
     /**
       * The copy constructor.  Do not use.
       */
-    output_stdout_ty(const output_stdout_ty &);
+    output_stdout(const output_stdout &);
 
     /**
       * The assignment operator.  Do not use.
       */
-    output_stdout_ty &operator=(const output_stdout_ty &);
+    output_stdout &operator=(const output_stdout &);
 };
-
-
-inline DEPRECATED output_ty *
-output_stdout(void)
-{
-    return new output_stdout_ty();
-}
 
 #endif // LIBAEGIS_OUTPUT_STDOUT_H

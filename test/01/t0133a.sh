@@ -1,7 +1,7 @@
 #!/bin/sh
 #
 #	aegis - project change supervisor
-#	Copyright (C) 2001, 2002, 2004 Peter Miller;
+#	Copyright (C) 2001, 2002, 2004, 2005 Peter Miller;
 #	All rights reserved.
 #
 #	This program is free software; you can redistribute it and/or modify
@@ -127,7 +127,7 @@ export AEGIS_FLAGS
 AEGIS_THROTTLE=2
 export AEGIS_THROTTLE
 
-activity="make directories 116"
+activity="make directories 130"
 mkdir $work $work/lib
 if test $? -ne 0 ; then no_result; fi
 worklib=$work/lib
@@ -150,13 +150,13 @@ unset LANGUAGE
 #
 # test the history encoding functionality
 #
-activity="new project 139"
+activity="new project 153"
 $bin/aegis -newpro foo -version - -dir $workproj -lib $worklib
 
 #
 # change project attributes
 #
-activity="project attributes 145"
+activity="project attributes 159"
 cat > pa << 'fubar'
 developer_may_review = true;
 developer_may_integrate = true;
@@ -168,7 +168,7 @@ if test $? -ne 0 ; then no_result; fi
 $bin/aegis -proatt -f pa -proj foo -lib $worklib
 if test $? -ne 0 ; then no_result; fi
 
-activity="project staff 157"
+activity="project staff 171"
 $bin/aegis -nd $USER -p foo -lib $worklib
 if test $? -ne 0 ; then no_result; fi
 $bin/aegis -nrv $USER -p foo -lib $worklib
@@ -179,7 +179,7 @@ if test $? -ne 0 ; then no_result; fi
 #
 # create a new change
 #
-activity="new change 168"
+activity="new change 182"
 cat > ca << 'end'
 brief_description = "This change is used to test the aegis functionality \
 with respect to change descriptions.";
@@ -189,15 +189,15 @@ if test $? -ne 0 ; then no_result; fi
 $bin/aegis -nc 1 -f ca -project foo -lib $worklib
 if test $? -ne 0 ; then no_result; fi
 
-activity="develop begin 178"
+activity="develop begin 192"
 $bin/aegis -db 1 -project foo -lib $worklib  -dir $chandir
 if test $? -ne 0 ; then no_result; fi
 
-activity="new file 182"
-$bin/aegis -nf $chandir/config $chandir/qp $chandir/b64 -p foo -lib $worklib
+activity="new file 196"
+$bin/aegis -nf $chandir/aegis.conf $chandir/qp $chandir/b64 -p foo -lib $worklib
 if test $? -ne 0 ; then no_result; fi
 
-cat > $chandir/config << 'end'
+cat > $chandir/aegis.conf << 'end'
 build_command =
 	"exit 0";
 history_get_command =
@@ -263,39 +263,61 @@ if test $? -ne 0 ; then no_result; fi
 
 sleep 1
 
-activity="build 250"
+activity="build 266"
 $bin/aegis -build -c 1 -project foo -lib $worklib > LOG 2>&1
 if test $? -ne 0 ; then cat LOG; no_result; fi
 
-activity="diff 254"
+activity="diff 270"
 $bin/aegis -diff -c 1 -project foo -lib $worklib > LOG 2>&1
 if test $? -ne 0 ; then cat LOG; no_result; fi
 
-activity="develop end 258"
+activity="develop end 274"
 $bin/aegis -de -c 1 -project foo -lib $worklib
 if test $? -ne 0 ; then no_result; fi
 
-activity="review pass 262"
+activity="review pass 278"
 $bin/aegis -rpass -c 1 -project foo -lib $worklib
 if test $? -ne 0 ; then no_result; fi
 
-activity="integrate begin 266"
+activity="integrate begin 282"
 $bin/aegis -ib -c 1 -project foo -lib $worklib
 if test $? -ne 0 ; then no_result; fi
 
-activity="build 270"
+activity="build 286"
 $bin/aegis -build -c 1 -project foo -lib $worklib > LOG 2>&1
 if test $? -ne 0 ; then cat LOG; no_result; fi
 
-activity="integrate pass 274"
+activity="integrate pass 290"
 $bin/aegis -ipass -c 1 -project foo -lib $worklib > LOG 2>&1
 if test $? -ne 0 ; then cat LOG; fail; fi
 
 # check the encoding of the files
-activity="check trunk state 279"
+activity="check trunk state 295"
 cat > ok << 'end'
 src =
 [
+	{
+		file_name = "aegis.conf";
+		uuid = "UUID";
+		action = create;
+		edit =
+		{
+			revision = "1.1";
+			encoding = none;
+		};
+		edit_origin =
+		{
+			revision = "1.1";
+			encoding = none;
+		};
+		usage = config;
+		file_fp =
+		{
+			youngest = TIME;
+			oldest = TIME;
+			crypto = "GUNK";
+		};
+	},
 	{
 		file_name = "b64";
 		uuid = "UUID";
@@ -311,28 +333,6 @@ src =
 			encoding = base64;
 		};
 		usage = source;
-		file_fp =
-		{
-			youngest = TIME;
-			oldest = TIME;
-			crypto = "GUNK";
-		};
-	},
-	{
-		file_name = "config";
-		uuid = "UUID";
-		action = create;
-		edit =
-		{
-			revision = "1.1";
-			encoding = none;
-		};
-		edit_origin =
-		{
-			revision = "1.1";
-			encoding = none;
-		};
-		usage = config;
 		file_fp =
 		{
 			youngest = TIME;
@@ -368,10 +368,21 @@ if test $? -ne 0 ; then no_result; fi
 
 check_it $workproj/info/trunk.fs ok
 
-activity="check change state 352"
+activity="check change state 371"
 cat > ok << 'end'
 src =
 [
+	{
+		file_name = "aegis.conf";
+		uuid = "UUID";
+		action = create;
+		edit =
+		{
+			revision = "1.1";
+			encoding = none;
+		};
+		usage = config;
+	},
 	{
 		file_name = "b64";
 		uuid = "UUID";
@@ -382,17 +393,6 @@ src =
 			encoding = base64;
 		};
 		usage = source;
-	},
-	{
-		file_name = "config";
-		uuid = "UUID";
-		action = create;
-		edit =
-		{
-			revision = "1.1";
-			encoding = none;
-		};
-		usage = config;
 	},
 	{
 		file_name = "qp";
@@ -414,7 +414,7 @@ check_it $workproj/info/change/0/001.fs ok
 #
 # create a new change
 #
-activity="new change 395"
+activity="new change 417"
 cat > ca << 'end'
 brief_description = "This change is used to stomp on file contents.";
 cause = internal_bug;
@@ -423,11 +423,11 @@ if test $? -ne 0 ; then no_result; fi
 $bin/aegis -nc 2 -f ca -project foo -lib $worklib
 if test $? -ne 0 ; then no_result; fi
 
-activity="develop begin 404"
+activity="develop begin 426"
 $bin/aegis -db 2 -project foo -lib $worklib  -dir $chandir
 if test $? -ne 0 ; then no_result; fi
 
-activity="copy file 408"
+activity="copy file 430"
 $bin/aegis -cp $chandir/qp $chandir/b64 -c 2 -p foo -lib $worklib
 if test $? -ne 0 ; then no_result; fi
 
@@ -441,38 +441,60 @@ Stomp on file.
 end
 if test $? -ne 0 ; then no_result; fi
 
-activity="build 422"
+activity="build 444"
 $bin/aegis -build -c 2 -project foo -lib $worklib > LOG 2>&1
 if test $? -ne 0 ; then cat LOG; no_result; fi
 
-activity="diff 426"
+activity="diff 448"
 $bin/aegis -diff -c 2 -project foo -lib $worklib > LOG 2>&1
 if test $? -ne 0 ; then cat LOG; no_result; fi
 
-activity="develop end 430"
+activity="develop end 452"
 $bin/aegis -de -c 2 -project foo -lib $worklib
 if test $? -ne 0 ; then no_result; fi
 
-activity="review pass 434"
+activity="review pass 456"
 $bin/aegis -rpass -c 2 -project foo -lib $worklib
 if test $? -ne 0 ; then no_result; fi
 
-activity="integrate begin 438"
+activity="integrate begin 460"
 $bin/aegis -ib -c 2 -project foo -lib $worklib
 if test $? -ne 0 ; then no_result; fi
 
-activity="build 442"
+activity="build 464"
 $bin/aegis -build -c 2 -project foo -lib $worklib > LOG 2>&1
 if test $? -ne 0 ; then cat LOG; no_result; fi
 
-activity="integrate pass 446"
+activity="integrate pass 468"
 $bin/aegis -ipass -c 2 -project foo -lib $worklib > LOG 2>&1
 if test $? -ne 0 ; then cat LOG; fail; fi
 
-activity="check trunk state 450"
+activity="check trunk state 472"
 cat > ok << 'end'
 src =
 [
+	{
+		file_name = "aegis.conf";
+		uuid = "UUID";
+		action = create;
+		edit =
+		{
+			revision = "1.1";
+			encoding = none;
+		};
+		edit_origin =
+		{
+			revision = "1.1";
+			encoding = none;
+		};
+		usage = config;
+		file_fp =
+		{
+			youngest = TIME;
+			oldest = TIME;
+			crypto = "GUNK";
+		};
+	},
 	{
 		file_name = "b64";
 		uuid = "UUID";
@@ -488,28 +510,6 @@ src =
 			encoding = none;
 		};
 		usage = source;
-		file_fp =
-		{
-			youngest = TIME;
-			oldest = TIME;
-			crypto = "GUNK";
-		};
-	},
-	{
-		file_name = "config";
-		uuid = "UUID";
-		action = create;
-		edit =
-		{
-			revision = "1.1";
-			encoding = none;
-		};
-		edit_origin =
-		{
-			revision = "1.1";
-			encoding = none;
-		};
-		usage = config;
 		file_fp =
 		{
 			youngest = TIME;
@@ -548,7 +548,7 @@ check_it $workproj/info/trunk.fs ok
 #
 # create a new change
 #
-activity="new change 526"
+activity="new change 551"
 cat > ca << 'end'
 brief_description = "This change is used to decode old history versions.";
 cause = internal_bug;
@@ -557,17 +557,17 @@ if test $? -ne 0 ; then no_result; fi
 $bin/aegis -nc 3 -f ca -project foo -lib $worklib
 if test $? -ne 0 ; then no_result; fi
 
-activity="develop begin 535"
+activity="develop begin 560"
 $bin/aegis -db 3 -project foo -lib $worklib  -dir $chandir
 if test $? -ne 0 ; then no_result; fi
 
-activity="copy file 539"
+activity="copy file 564"
 $bin/aegis -cp $chandir/qp -c 3 -delta 1 -p foo -lib $worklib > LOG 2>&1
 if test $? -ne 0 ; then cat LOG; fail; fi
 $bin/aegis -cp $chandir/b64 -c 3 -delta 1 -p foo -lib $worklib > LOG 2>&1
 if test $? -ne 0 ; then cat LOG; fail; fi
 
-activity="check change state 543"
+activity="check change state 570"
 cat > ok << 'end'
 src =
 [
@@ -600,7 +600,7 @@ if test $? -ne 0 ; then no_result; fi
 check_it $workproj/info/change/0/003.fs ok
 
 #and check that the files decode OK
-activity="check decoding 574"
+activity="check decoding 603"
 cmp b64.out $chandir/b64
 if test $? -ne 0 ; then fail; fi
 cmp qp.out $chandir/qp

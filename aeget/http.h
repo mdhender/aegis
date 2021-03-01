@@ -1,21 +1,21 @@
 //
-//	aegis - project change supervisor
-//	Copyright (C) 2003, 2004 Peter Miller;
-//	All rights reserved.
+//      aegis - project change supervisor
+//      Copyright (C) 2003, 2004 Peter Miller;
+//      All rights reserved.
 //
-//	This program is free software; you can redistribute it and/or modify
-//	it under the terms of the GNU General Public License as published by
-//	the Free Software Foundation; either version 2 of the License, or
-//	(at your option) any later version.
+//      This program is free software; you can redistribute it and/or modify
+//      it under the terms of the GNU General Public License as published by
+//      the Free Software Foundation; either version 2 of the License, or
+//      (at your option) any later version.
 //
-//	This program is distributed in the hope that it will be useful,
-//	but WITHOUT ANY WARRANTY; without even the implied warranty of
-//	MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-//	GNU General Public License for more details.
+//      This program is distributed in the hope that it will be useful,
+//      but WITHOUT ANY WARRANTY; without even the implied warranty of
+//      MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+//      GNU General Public License for more details.
 //
-//	You should have received a copy of the GNU General Public License
-//	along with this program; if not, write to the Free Software
-//	Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111, USA.
+//      You should have received a copy of the GNU General Public License
+//      along with this program; if not, write to the Free Software
+//      Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111, USA.
 //
 // MANIFEST: interface definition for aeget/http.c
 //
@@ -32,7 +32,50 @@ struct string_ty; // forward
 class nstring; // forward
 struct string_list_ty; // forward
 
-void http_fatal(const char *, ...)			      ATTR_PRINTF(1, 2);
+enum http_error_t
+{
+    http_error_continue = 100,
+    http_error_switching_protocols = 101,
+    http_error_ok = 200,
+    http_error_created = 201,
+    http_error_accepted = 202,
+    http_error_non_authoritative_information = 203,
+    http_error_no_content = 204,
+    http_error_reset_content = 205,
+    http_error_partial_content = 206,
+    http_error_multiple_choices = 300,
+    http_error_moved_permanently = 301,
+    http_error_moved_temporarily = 302,
+    http_error_see_other = 303,
+    http_error_not_modified = 304,
+    http_error_use_proxy = 305,
+    http_error_bad_request = 400,
+    http_error_unauthorized = 401,
+    http_error_payment_required = 402,
+    http_error_forbidden = 403,
+    http_error_not_found = 404,
+    http_error_method_not_allowed = 405,
+    http_error_not_acceptable = 406,
+    http_error_proxy_authentication_required = 407,
+    http_error_request_time_out = 408,
+    http_error_conflict = 409,
+    http_error_gone = 410,
+    http_error_length_required = 411,
+    http_error_precondition_failed = 412,
+    http_error_request_entity_too_large = 413,
+    http_error_request_url_too_large = 414,
+    http_error_unsupported_media_type = 415,
+    http_error_internal_server = 500,
+    http_error_not_implemented = 501,
+    http_error_bad_gateway = 502,
+    http_error_out_of_resources = 503,
+    http_error_gateway_time_out = 504,
+    http_error_version_not_supported = 505,
+};
+
+extern bool http_fatal_noerror;
+
+void http_fatal(http_error_t oops, const char *fmt, ...)      ATTR_PRINTF(2, 3);
 const char *http_getenv(const char *);
 void html_escape_string(string_ty *);
 void html_escape_string(const nstring &);
@@ -91,7 +134,7 @@ const char *http_script_name(void);
   */
 void emit_project_href(project_ty *pp);
 void emit_project_href(project_ty *pp, const char *modifier, ...)
-							      ATTR_PRINTF(2, 3);
+                                                              ATTR_PRINTF(2, 3);
 
 /**
   * The emit_change_href function is used to print the leading <a>
@@ -175,6 +218,26 @@ bool modifier_test(string_list_ty *modifiers, const char *name);
   *     true if the modifier is present, false if not
   */
 bool modifier_test_and_clear(string_list_ty *modifiers, const char *name);
+
+/**
+  * Insert an RSS icon image and link it to an RSS feed file.
+  *
+  * \param pp
+  *      The project details.
+  * \param rss_filename
+  *      The file name of the RSS feed file.  Not the full path.
+  */
+void emit_rss_icon_with_link(project_ty *pp, const nstring &rss_filename);
+
+/**
+  * Print RSS-related meta data.
+  *
+  * \param pp
+  *      The project details.
+  * \param rss_filename
+  *      The file name of the RSS feed file.  Not the full path.
+  */
+void emit_rss_meta_data(project_ty *pp, const nstring &rss_filename);
 
 #define HISTOGRAM_HEIGHT 12
 #define HISTOGRAM_WIDTH 120

@@ -1,7 +1,7 @@
 #!/bin/sh
 #
 #	aegis - project change supervisor
-#	Copyright (C) 2003, 2004 Peter Miller;
+#	Copyright (C) 2003-2005 Peter Miller;
 #	All rights reserved.
 #
 #	This program is free software; you can redistribute it and/or modify
@@ -112,11 +112,11 @@ export projdir
 AEGIS_PROJECT=test
 export AEGIS_PROJECT
 
-activity="new project 125"
+activity="new project 115"
 $bin/aegis -npr $AEGIS_PROJECT -version - -dir $projdir > log 2>&1
 if test $? -ne 0 ; then cat log; no_result; fi
 
-activity="project attributes 130"
+activity="project attributes 119"
 cat > paf << 'fubar'
 developer_may_review = true;
 developer_may_integrate = true;
@@ -136,7 +136,7 @@ if test $? -ne 0 ; then no_result; fi
 $bin/aegis -ni $USER
 if test $? -ne 0 ; then no_result; fi
 
-activity="new change 167"
+activity="new change 139"
 cat > caf << 'fubar'
 brief_description = "one";
 cause = internal_enhancement;
@@ -148,14 +148,14 @@ if test $? -ne 0 ; then cat log; no_result; fi
 changedir=$projdir/changedir
 export changedir
 
-activity="develop begin 176"
+activity="develop begin 151"
 $bin/aegis -db 10 -v  -dir $changedir > log 2>&1
 if test $? -ne 0 ; then cat log; no_result; fi
 
-activity="new file 180"
-$bin/aegis -nf $changedir/config $changedir/fred -v > log 2>&1
+activity="new file 155"
+$bin/aegis -nf $changedir/aegis.conf $changedir/fred -v > log 2>&1
 if test $? -ne 0 ; then cat log; no_result; fi
-cat > $changedir/config << 'fubar'
+cat > $changedir/aegis.conf << 'fubar'
 build_command = "exit 0";
 history_get_command =
 	"co -u'$e' -p $h,v > $o";
@@ -173,7 +173,7 @@ if test $? -ne 0 ; then no_result; fi
 echo hello > $changedir/fred
 if test $? -ne 0 ; then no_result; fi
 
-activity="new test 190"
+activity="new test 176"
 $bin/aegis -nt -v > log 2>&1
 if test $? -ne 0 ; then cat log; no_result; fi
 cat > $changedir/test/00/t0001a.sh << 'fubar'
@@ -186,50 +186,50 @@ fi
 fubar
 if test $? -ne 0 ; then cat log; no_result; fi
 
-activity="build 201"
+activity="build 189"
 $bin/aegis -b -v > log 2>&1
 if test $? -ne 0 ; then cat log; no_result; fi
 
-activity="diff 205"
+activity="diff 193"
 $bin/aegis -diff -v > log 2>&1
 if test $? -ne 0 ; then cat log; no_result; fi
 
-activity="test 205"
+activity="test 197"
 $bin/aegis -test -v > log 2>&1
 if test $? -ne 0 ; then cat log; no_result; fi
 
-activity="develop end 209"
+activity="develop end 201"
 $bin/aegis -de -v > log 2>&1
 if test $? -ne 0 ; then cat log; no_result; fi
 
-activity="review pass 213"
+activity="review pass 205"
 $bin/aegis -rpass 10 -v > log 2>&1
 if test $? -ne 0 ; then cat log; no_result; fi
 
-activity="integrate begin 217"
+activity="integrate begin 209"
 $bin/aegis -ib 10 -v > log 2>&1
 if test $? -ne 0 ; then cat log; no_result; fi
 
-activity="integrate build 221"
+activity="integrate build 213"
 $bin/aegis -b -v > log 2>&1
 if test $? -ne 0 ; then cat log; no_result; fi
 
-activity="integrate diff 225"
+activity="integrate diff 217"
 $bin/aegis -diff -v > log 2>&1
 if test $? -ne 0 ; then cat log; no_result; fi
 
-activity="test 241"
+activity="test 221"
 $bin/aegis -test -v > log 2>&1
 if test $? -ne 0 ; then cat log; no_result; fi
 
-activity="integrate pass 245"
+activity="integrate pass 225"
 $bin/aegis -ipass -v > log 2>&1
 if test $? -ne 0 ; then cat log; no_result; fi
 
 #
 # Next change
 #
-activity="new change 253"
+activity="new change 232"
 cat > caf << 'fubar'
 brief_description = "two";
 cause = internal_bug;
@@ -239,11 +239,11 @@ if test $? -ne 0 ; then no_result; fi
 $bin/aegis -nc -p $AEGIS_PROJECT -f caf -v > log 2>&1
 if test $? -ne 0 ; then cat log; no_result; fi
 
-activity="develop begin 262"
+activity="develop begin 242"
 $bin/aegis -db 11 -v  -dir $changedir > log 2>&1
 if test $? -ne 0 ; then cat log; no_result; fi
 
-activity="copy file 267"
+activity="copy file 246"
 $bin/aegis -cp -baserel fred  -v  > log 2>&1
 if test $? -ne 0 ; then cat log; no_result; fi
 cat > $changedir/fred << 'fubar'
@@ -251,7 +251,7 @@ Goodbye
 fubar
 if test $? -ne 0 ; then no_result; fi
 
-activity="new test 275"
+activity="new test 254"
 $bin/aegis -nt -v > log 2>&1
 if test $? -ne 0 ; then cat log; no_result; fi
 cat > $changedir/test/00/t0002a.sh << 'fubar'
@@ -264,24 +264,24 @@ fi
 fubar
 if test $? -ne 0 ; then cat log; no_result; fi
 
-activity="diff 275"
+activity="diff 267"
 $bin/aegis -diff -v > log 2>&1
 if test $? -ne 0 ; then cat log; no_result; fi
 
-activity="build 287"
+activity="build 271"
 $bin/aegis -b -v > log 2>&1
 if test $? -ne 0 ; then cat log; no_result; fi
 
-activity="test 292"
+activity="test 275"
 $bin/aegis -test -v > log 2>&1
 if test $? -ne 0 ; then cat log; no_result; fi
 
-activity="baseline test 296"
+activity="baseline test 279"
 $bin/aegis -test -bl -v > log 2>&1
 if test $? -ne 0 ; then cat log; no_result; fi
 
 # develop end should fail (test -reg required)
-activity="develop end 312"
+activity="develop end 284"
 $bin/aegis -de -v > log 2>&1
 if test $? -eq 0 ; then cat log; no_result; fi
 
@@ -289,58 +289,58 @@ grep 'test -reg required' log > /dev/null
 if test $? -ne 0 ; then cat log; no_result; fi
 
 # But now if we aecp the only other test, the regression exemption is granted
-activity="copy file 319"
+activity="copy file 292"
 $bin/aegis -cp -baserel test/00/t0001a.sh  -v  > log 2>&1
 if test $? -ne 0 ; then cat log; no_result; fi
 echo \# comment >> $changedir/test/00/t0001a.sh
 if test $? -ne 0 ; then no_result; fi
 
-activity="diff 326"
+activity="diff 298"
 $bin/aegis -diff -v > log 2>&1
 if test $? -ne 0 ; then cat log; no_result; fi
 
-activity="build 330"
+activity="build 302"
 $bin/aegis -b -v > log 2>&1
 if test $? -ne 0 ; then cat log; no_result; fi
 
-activity="test 335"
+activity="test 306"
 $bin/aegis -test -v > log 2>&1
 if test $? -ne 0 ; then cat log; no_result; fi
 
-activity="baseline test 339"
+activity="baseline test 310"
 $bin/aegis -test -bl -v > log 2>&1
 if test $? -ne 0 ; then cat log; no_result; fi
 
 # develop end should now be permitted
 # no aet -reg is required
-activity="develop end 346"
+activity="develop end 316"
 $bin/aegis -de -v > log 2>&1
 if test $? -ne 0 ; then cat log; fail ; fi
 
-activity="develop end undo 356"
+activity="develop end undo 320"
 $bin/aegis -deu -v -c 11 > log 2>&1
 if test $? -ne 0 ; then cat log; no_result ; fi
 
 # aecpu the test
-activity="copy undo 360"
+activity="copy undo 325"
 $bin/aegis -cpu -baserel test/00/t0001a.sh -v > log 2>&1
 if test $? -ne 0 ; then cat log; no_result ; fi
 
 # make sure that regression exemption is now false again
-activity="build 369"
+activity="build 330"
 $bin/aegis -b -v > log 2>&1
 if test $? -ne 0 ; then cat log; no_result; fi
 
-activity="test 374"
+activity="test 334"
 $bin/aegis -test -v > log 2>&1
 if test $? -ne 0 ; then cat log; no_result; fi
 
-activity="baseline test 379"
+activity="baseline test 338"
 $bin/aegis -test -bl -v > log 2>&1
 if test $? -ne 0 ; then cat log; no_result; fi
 
 # develop end should fail (test -reg required)
-activity="develop end 386"
+activity="develop end 343"
 $bin/aegis -de -v > log 2>&1
 if test $? -eq 0 ; then cat log; fail; fi
 

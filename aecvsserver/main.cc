@@ -33,6 +33,7 @@
 #include <progname.h>
 #include <quit.h>
 #include <r250.h>
+#include <rsrc_limits.h>
 #include <server/kerberos.h>
 #include <server/password.h>
 #include <server/simple.h>
@@ -79,6 +80,7 @@ main(int argc, char **argv)
 {
     server_ty       *serve;
 
+    resource_limits_init();
     r250_init();
     os_become_init_mortal();
     arglex2_init3(argc, argv, argtab);

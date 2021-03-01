@@ -1,6 +1,6 @@
 //
 //	aegis - project change supervisor
-//	Copyright (C) 1997, 2002, 2004 Peter Miller;
+//	Copyright (C) 1997, 2002, 2004, 2005 Peter Miller;
 //	All rights reserved.
 //
 //	This program is free software; you can redistribute it and/or modify
@@ -37,7 +37,8 @@ enum descend_message_ty
 };
 
 typedef void (*descend_callback_ty)(void *arg, descend_message_ty,
-    struct string_ty *, struct stat *);
+    struct string_ty *, struct string_ty *, struct string_ty *,
+    struct stat *);
 
 void descend(struct string_ty *, int, descend_callback_ty, void *);
 

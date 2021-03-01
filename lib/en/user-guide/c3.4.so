@@ -1,6 +1,6 @@
 .\"
 .\"	aegis - project change supervisor
-.\"	Copyright (C) 1999 Peter Miller;
+.\"	Copyright (C) 1999, 2005 Peter Miller;
 .\"	All rights reserved.
 .\"
 .\"	This program is free software; you can redistribute it and/or modify
@@ -42,8 +42,8 @@ will detect many cases of corruption such as this, for all of the commonly
 used history tools.  Note: it cannot detect all corruptions (nothing can)
 but it will detect more than many operating systems will.
 .LP
-You don't need to use this technique with SCCS, it already has a checksum
-in its files.
+You don't need to use this technique with SCCS or \fIaesvt\fP(1),
+they already have checksums in their files.
 .nh 3 "General Method"
 .LP
 In general, you need to do three things:

@@ -1,6 +1,6 @@
 //
 //	aegis - project change supervisor
-//	Copyright (C) 2001-2004 Peter Miller;
+//	Copyright (C) 2001-2005 Peter Miller;
 //	All rights reserved.
 //
 //	This program is free software; you can redistribute it and/or modify
@@ -60,7 +60,7 @@ patch_read(input_ty *input, int required)
 	// Look for a patch header;
 	// it could be in one of several formats.
 	//
-	trace(("%s\n", context->get_file_name()));
+	trace(("%s\n", context->get_file_name().c_str()));
 	pp = 0;
 	fp = 0;
 	for (j = 0; j < SIZEOF(format); ++j)
@@ -166,7 +166,7 @@ patch_read(input_ty *input, int required)
 	    pp->usage = file_usage_test;
     }
     if (required && result->length == 0)
-	input_fatal_error(input, "no patch found");
+	input->fatal_error("no patch found");
 
     //
     // clean up and go home

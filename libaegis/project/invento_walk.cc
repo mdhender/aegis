@@ -1,6 +1,6 @@
 //
 //	aegis - project change supervisor
-//	Copyright (C) 2004 Peter Miller;
+//	Copyright (C) 2004, 2005 Peter Miller;
 //	All rights reserved.
 //
 //	This program is free software; you can redistribute it and/or modify
@@ -48,64 +48,114 @@ project_completion_timestamp(project_ty *pp)
 
 static void
 project_change_inventory_get(project_ty *pp, change_functor &result,
-    time_t time_limit)
+    time_t time_limit, bool maximum)
 {
     trace(("project_change_inventory_get(pp = %08lX)\n{\n", (long)pp));
 
-    //
-    // Pull out all of the completed changes' UUIDs.
-    //
-    for (size_t j = 0; ; ++j)
+    if (maximum)
     {
 	//
-        // Get the changes in integration order.  Because this is the
-        // historical order, there is no need to sort once we have the
-        // full set of changes.
-        //
-        // This is especially important when there are parallel branches
-        // in operation.  They will have been integrated in a specific
-        // order, and the first branches changes come first, then the
-        // seconds branbches changes come second.
+	// Pull out all of the changes' UUIDs.
 	//
-	long cn = 0;
-	long dn = 0;
-	string_list_ty name;
-	if (!project_history_nth(pp, j, &cn, &dn, &name))
-	    break;
-
-	//
-	// Once a change is past the time limit, all later ones will be, too.
-	//
-	change_ty *cp = change_alloc(pp, cn);
-	change_bind_existing(cp);
-	assert(change_is_completed(cp));
-	time_t when = change_completion_timestamp(cp);
-	if (when > time_limit)
+	for (size_t j = 0; ; ++j)
 	{
+	    long cn = 0;
+	    if (!project_change_nth(pp, j, &cn))
+		break;
+
+	    change_ty *cp = change_alloc(pp, cn);
+	    change_bind_existing(cp);
+	    time_t when = change_completion_timestamp(cp);
+	    if (when <= time_limit)
+	    {
+		if (change_was_a_branch(cp))
+		{
+		    if (result.include_branches())
+			result(cp);
+
+		    //
+		    // Recurse on branches.
+		    //
+		    project_ty *sub_pp =
+			project_bind_branch(pp, change_copy(cp));
+		    project_change_inventory_get
+		    (
+			sub_pp,
+			result,
+			time_limit,
+			maximum
+		    );
+		    project_free(sub_pp);
+		}
+		else
+		{
+		    //
+		    // Call the functor.
+		    //
+		    result(cp);
+		}
+	    }
 	    change_free(cp);
-	    break;
 	}
+    }
+    else
+    {
+	//
+	// Pull out all of the completed changes' UUIDs.
+	//
+	for (size_t j = 0; ; ++j)
+	{
+	    //
+	    // Get the changes in integration order.  Because this is the
+	    // historical order, there is no need to sort once we have the
+	    // full set of changes.
+	    //
+	    // This is especially important when there are parallel branches
+	    // in operation.  They will have been integrated in a specific
+	    // order, and the first branches changes come first, then the
+	    // seconds branbches changes come second.
+	    //
+	    long cn = 0;
+	    long dn = 0;
+	    string_list_ty name;
+	    if (!project_history_nth(pp, j, &cn, &dn, &name))
+		break;
 
-	if (change_was_a_branch(cp))
-	{
-	    //
-	    // Recurse on completed branches.
-	    //
-	    project_ty *sub_pp = project_bind_branch(pp, change_copy(cp));
-	    project_change_inventory_get(sub_pp, result, time_limit);
-	    project_free(sub_pp);
-	}
-	else
-	{
-	    //
-	    // Print the change.
             //
-            // Well, we actually call the functor.  When this code was
-            // designed, both uses of it printed something.
+            // Once a change is past the time limit, all later ones will
+            // be, too.
 	    //
-	    result(cp);
+	    change_ty *cp = change_alloc(pp, cn);
+	    change_bind_existing(cp);
+	    assert(change_is_completed(cp));
+	    time_t when = change_completion_timestamp(cp);
+	    if (when > time_limit)
+	    {
+		change_free(cp);
+		break;
+	    }
+
+	    if (change_was_a_branch(cp))
+	    {
+		if (result.include_branches())
+		    result(cp);
+
+		//
+		// Recurse on completed branches.
+		//
+		project_ty *sub_pp = project_bind_branch(pp, change_copy(cp));
+		project_change_inventory_get(sub_pp, result, time_limit, false);
+		project_free(sub_pp);
+	    }
+	    else
+	    {
+		//
+		// Call the functor.
+		//
+		result(cp);
+	    }
+	    change_free(cp);
 	}
-	change_free(cp);
     }
     trace(("}\n"));
 }
@@ -113,16 +163,17 @@ project_change_inventory_get(project_ty *pp, change_functor &result,
 
 static void
 project_change_inventory_getr(project_ty *pp, change_functor &result,
-    time_t limit)
+    time_t limit, time_t maximum)
 {
     if (pp->parent)
-	project_change_inventory_getr(pp->parent, result, limit);
-    project_change_inventory_get(pp, result, limit);
+	project_change_inventory_getr(pp->parent, result, limit, false);
+    project_change_inventory_get(pp, result, limit, maximum);
 }
 
 
-void
-project_inventory_walk(project_ty *pp, change_functor &result, time_t limit)
+static void
+project_inventory_walk(project_ty *pp, change_functor &result, time_t limit,
+    bool maximum)
 {
     trace(("project_inventory_walk(pp = %08lX, limit = %ld)\n{\n", (long)pp,
 	(long)limit));
@@ -139,12 +190,21 @@ project_inventory_walk(project_ty *pp, change_functor &result, time_t limit)
 		break;
 	}
 	// The trunk is never completed.
-	project_change_inventory_getr(ppp, result, time_limit);
+	project_change_inventory_getr(ppp, result, time_limit, false);
     }
     else
     {
-	project_change_inventory_getr(pp, result, limit);
+	project_change_inventory_getr(pp, result, limit, maximum);
     }
+    trace(("}\n"));
+}
+
+
+void
+project_inventory_walk(project_ty *pp, change_functor &result, time_t limit)
+{
+    trace(("project_inventory_walk(pp = %08lX)\n{\n", (long)pp));
+    project_inventory_walk(pp, result, limit, result.all_changes());
     trace(("}\n"));
 }
 
@@ -153,6 +213,7 @@ void
 project_inventory_walk(project_ty *pp, change_functor &result)
 {
     trace(("project_inventory_walk(pp = %08lX)\n{\n", (long)pp));
-    project_inventory_walk(pp, result, project_completion_timestamp(pp));
+    time_t when = project_completion_timestamp(pp);
+    project_inventory_walk(pp, result, when);
     trace(("}\n"));
 }

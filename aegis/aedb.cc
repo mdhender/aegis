@@ -1,21 +1,21 @@
 //
-//	aegis - project change supervisor
-//	Copyright (C) 1991-1999, 2001-2004 Peter Miller;
-//	All rights reserved.
+//      aegis - project change supervisor
+//      Copyright (C) 1991-1999, 2001-2005 Peter Miller;
+//      All rights reserved.
 //
-//	This program is free software; you can redistribute it and/or modify
-//	it under the terms of the GNU General Public License as published by
-//	the Free Software Foundation; either version 2 of the License, or
-//	(at your option) any later version.
+//      This program is free software; you can redistribute it and/or modify
+//      it under the terms of the GNU General Public License as published by
+//      the Free Software Foundation; either version 2 of the License, or
+//      (at your option) any later version.
 //
-//	This program is distributed in the hope that it will be useful,
-//	but WITHOUT ANY WARRANTY; without even the implied warranty of
-//	MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-//	GNU General Public License for more details.
+//      This program is distributed in the hope that it will be useful,
+//      but WITHOUT ANY WARRANTY; without even the implied warranty of
+//      MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+//      GNU General Public License for more details.
 //
-//	You should have received a copy of the GNU General Public License
-//	along with this program; if not, write to the Free Software
-//	Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111, USA.
+//      You should have received a copy of the GNU General Public License
+//      along with this program; if not, write to the Free Software
+//      Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111, USA.
 //
 // MANIFEST: functions to implement develop begin
 //
@@ -46,6 +46,7 @@
 #include <project.h>
 #include <project/history.h>
 #include <quit.h>
+#include <rss.h>
 #include <sub.h>
 #include <trace.h>
 #include <undo.h>
@@ -60,15 +61,15 @@ develop_begin_usage(void)
     progname = progname_get();
     fprintf
     (
-	stderr,
-	"usage: %s -Develop_Begin <change_number> [ <option>... ]\n",
-	progname
+        stderr,
+        "usage: %s -Develop_Begin <change_number> [ <option>... ]\n",
+        progname
     );
     fprintf
     (
-	stderr,
-	"       %s -Develop_Begin -List [ <option>... ]\n",
-	progname
+        stderr,
+        "       %s -Develop_Begin -List [ <option>... ]\n",
+        progname
     );
     fprintf(stderr, "       %s -Develop_Begin -Help\n", progname);
     quit(1);
@@ -85,36 +86,36 @@ develop_begin_help(void)
 static void
 develop_begin_list(void)
 {
-    string_ty	    *project_name;
+    string_ty       *project_name;
 
     trace(("develop_begin_list()\n{\n"));
     project_name = 0;
     arglex();
     while (arglex_token != arglex_token_eoln)
     {
-	switch (arglex_token)
-	{
-	default:
-	    generic_argument(develop_begin_usage);
-	    continue;
+        switch (arglex_token)
+        {
+        default:
+            generic_argument(develop_begin_usage);
+            continue;
 
-	case arglex_token_project:
-	    arglex();
-	    // fall through...
+        case arglex_token_project:
+            arglex();
+            // fall through...
 
-	case arglex_token_string:
-	    arglex_parse_project(&project_name, develop_begin_usage);
-	    continue;
-	}
-	arglex();
+        case arglex_token_string:
+            arglex_parse_project(&project_name, develop_begin_usage);
+            continue;
+        }
+        arglex();
     }
     list_changes_in_state_mask
     (
-	project_name,
-	1 << cstate_state_awaiting_development
+        project_name,
+        1 << cstate_state_awaiting_development
     );
     if (project_name)
-	str_free(project_name);
+        str_free(project_name);
     trace(("}\n"));
 }
 
@@ -122,17 +123,17 @@ develop_begin_list(void)
 static void
 develop_begin_main(void)
 {
-    cstate_ty	    *cstate_data;
+    cstate_ty       *cstate_data;
     cstate_history_ty *history_data;
-    string_ty	    *devdir;
-    string_ty	    *project_name;
-    project_ty	    *pp;
-    long	    change_number;
-    change_ty	    *cp;
-    user_ty	    *up;
+    string_ty       *devdir;
+    string_ty       *project_name;
+    project_ty      *pp;
+    long            change_number;
+    change_ty       *cp;
+    user_ty         *up;
     pconf_ty        *pconf_data;
-    string_ty	    *usr;
-    user_ty	    *up2;
+    string_ty       *usr;
+    user_ty         *up2;
     log_style_ty    log_style;
 
     trace(("develop_begin_main()\n{\n"));
@@ -142,84 +143,101 @@ develop_begin_main(void)
     devdir = 0;
     usr = 0;
     log_style = log_style_create_default;
+    string_ty *reason = 0;
     while (arglex_token != arglex_token_eoln)
     {
-	switch (arglex_token)
-	{
-	default:
-	    generic_argument(develop_begin_usage);
-	    continue;
+        switch (arglex_token)
+        {
+        default:
+            generic_argument(develop_begin_usage);
+            continue;
 
-	case arglex_token_change:
-	    arglex();
-	    // fall through...
+        case arglex_token_change:
+            arglex();
+            // fall through...
 
-	case arglex_token_number:
-	    arglex_parse_change
-	    (
-		&project_name,
-		&change_number,
-		develop_begin_usage
-	    );
-	    continue;
+        case arglex_token_number:
+            arglex_parse_change
+            (
+                &project_name,
+                &change_number,
+                develop_begin_usage
+            );
+            continue;
 
-	case arglex_token_directory:
-	    if (arglex() != arglex_token_string)
-		option_needs_dir(arglex_token_directory, develop_begin_usage);
-	    if (devdir)
+        case arglex_token_directory:
+            if (arglex() != arglex_token_string)
+                option_needs_dir(arglex_token_directory, develop_begin_usage);
+            if (devdir)
+            {
+                duplicate_option_by_name
+                (
+                    arglex_token_directory,
+                    develop_begin_usage
+                );
+            }
+
+            //
+            // To cope with automounters, directories are stored as
+            // given, or are derived from the home directory in the
+            // passwd file.  Within aegis, pathnames have their
+            // symbolic links resolved, and any comparison of paths
+            // is done on this "system idea" of the pathname.
+            //
+            devdir = str_from_c(arglex_value.alv_string);
+            break;
+
+        case arglex_token_project:
+            arglex();
+            // fall through...
+
+        case arglex_token_string:
+            arglex_parse_project(&project_name, develop_begin_usage);
+            continue;
+
+        case arglex_token_user:
+            if (usr)
+                duplicate_option(develop_begin_usage);
+            if (arglex() != arglex_token_string)
+                option_needs_name(arglex_token_user, develop_begin_usage);
+            usr = str_from_c(arglex_value.alv_string);
+            break;
+
+        case arglex_token_nolog:
+            if (log_style == log_style_none)
+                duplicate_option(develop_begin_usage);
+            log_style = log_style_none;
+            break;
+
+        case arglex_token_wait:
+        case arglex_token_wait_not:
+            user_lock_wait_argument(develop_begin_usage);
+            break;
+
+	case arglex_token_reason:
+	    if (reason)
+	    duplicate_option(develop_begin_usage);
+	    switch (arglex())
 	    {
-		duplicate_option_by_name
-		(
-		    arglex_token_directory,
-		    develop_begin_usage
-		);
+	    default:
+		option_needs_string(arglex_token_reason, develop_begin_usage);
+		// NOTREACHED
+
+	    case arglex_token_string:
+	    case arglex_token_number:
+		reason = str_from_c(arglex_value.alv_string);
+		break;
 	    }
-
-	    //
-	    // To cope with automounters, directories are stored as
-	    // given, or are derived from the home directory in the
-	    // passwd file.  Within aegis, pathnames have their
-	    // symbolic links resolved, and any comparison of paths
-	    // is done on this "system idea" of the pathname.
-	    //
-	    devdir = str_from_c(arglex_value.alv_string);
 	    break;
-
-	case arglex_token_project:
-	    arglex();
-	    // fall through...
-
-	case arglex_token_string:
-	    arglex_parse_project(&project_name, develop_begin_usage);
-	    continue;
-
-	case arglex_token_user:
-	    if (usr)
-		duplicate_option(develop_begin_usage);
-	    if (arglex() != arglex_token_string)
-		option_needs_name(arglex_token_user, develop_begin_usage);
-	    usr = str_from_c(arglex_value.alv_string);
-	    break;
-
-	case arglex_token_nolog:
-	    if (log_style == log_style_none)
-		duplicate_option(develop_begin_usage);
-	    log_style = log_style_none;
-	    break;
-
-	case arglex_token_wait:
-	case arglex_token_wait_not:
-	    user_lock_wait_argument(develop_begin_usage);
-	    break;
-	}
-	arglex();
+        }
+        arglex();
     }
 
     //
     // locate project data
     //
     if (!project_name)
-	project_name = user_default_project();
+        project_name = user_default_project();
     pp = project_alloc(project_name);
     str_free(project_name);
     project_bind_existing(pp);
@@ -227,25 +245,25 @@ develop_begin_main(void)
     //
     // locate user data
     //
-    //	    up = user to own the change
-    //	    up2 = administrator forcing
+    //      up = user to own the change
+    //      up2 = administrator forcing
     //
     if (usr)
     {
-	up = user_symbolic(pp, usr);
-	up2 = user_executing(pp);
-	if (up == up2)
-	{
-	    user_free(up2);
-	    up2 = 0;
-	}
-	else if (!project_administrator_query(pp, user_name(up2)))
-	    project_fatal(pp, 0, i18n("not an administrator"));
+        up = user_symbolic(pp, usr);
+        up2 = user_executing(pp);
+        if (up == up2)
+        {
+            user_free(up2);
+            up2 = 0;
+        }
+        else if (!project_administrator_query(pp, user_name(up2)))
+            project_fatal(pp, 0, i18n("not an administrator"));
     }
     else
     {
-	up = user_executing(pp);
-	up2 = 0;
+        up = user_executing(pp);
+        up2 = 0;
     }
 
     //
@@ -262,7 +280,7 @@ develop_begin_main(void)
     // even though we could sometimes work this out for ourself.
     //
     if (!change_number)
-	fatal_intl(0, i18n("no change number"));
+        fatal_intl(0, i18n("no change number"));
     cp = change_alloc(pp, change_number);
     change_bind_existing(cp);
 
@@ -283,21 +301,21 @@ develop_begin_main(void)
     // awaiting_development state.
     //
     if (cstate_data->state != cstate_state_awaiting_development)
-	change_fatal(cp, 0, i18n("bad db state"));
+        change_fatal(cp, 0, i18n("bad db state"));
     if (!project_developer_query(pp, user_name(up)))
     {
-	sub_context_ty	*scp;
+        sub_context_ty  *scp;
 
-	scp = sub_context_new();
-	if (up2)
-	{
-	    sub_var_set_string(scp, "User", user_name(up));
-	    sub_var_optional(scp, "User");
-	    sub_var_override(scp, "User");
-	}
-	project_fatal(pp, scp, i18n("not a developer"));
-	// NOTREACHED
-	sub_context_delete(scp);
+        scp = sub_context_new();
+        if (up2)
+        {
+            sub_var_set_string(scp, "User", user_name(up));
+            sub_var_optional(scp, "User");
+            sub_var_override(scp, "User");
+        }
+        project_fatal(pp, scp, i18n("not a developer"));
+        // NOTREACHED
+        sub_context_delete(scp);
     }
 
     //
@@ -309,13 +327,13 @@ develop_begin_main(void)
     //
     if (!devdir)
     {
-	sub_context_ty	*scp;
+        sub_context_ty  *scp;
 
-	scp = sub_context_new();
-	devdir = change_development_directory_template(cp, up);
-	sub_var_set_string(scp, "File_Name", devdir);
-	change_verbose(cp, scp, i18n("development directory \"$filename\""));
-	sub_context_delete(scp);
+        scp = sub_context_new();
+        devdir = change_development_directory_template(cp, up);
+        sub_var_set_string(scp, "File_Name", devdir);
+        change_verbose(cp, scp, i18n("development directory \"$filename\""));
+        sub_context_delete(scp);
     }
     change_development_directory_set(cp, devdir);
 
@@ -329,12 +347,22 @@ develop_begin_main(void)
     history_data->what = cstate_history_what_develop_begin;
     if (up2)
     {
-	history_data->why =
-	    str_format
-	    (
-		"Forced by administrator \"%s\".",
-		user_name(up2)->str_text
-	    );
+        string_ty *r2 =
+            str_format
+            (
+                "Forced by administrator \"%s\".",
+                user_name(up2)->str_text
+            );
+	if (reason)
+	{
+	    string_ty *r1 = reason;
+	    reason = str_format("%s\n%s", r1->str_text, r2->str_text);
+	    str_free(r1);
+	    str_free(r2);
+	}
+	else
+	    reason = r2;
+	history_data->why = reason;
     }
 
     //
@@ -376,7 +404,12 @@ develop_begin_main(void)
     // run the forced develop begin notify command
     //
     if (up2)
-	change_run_forced_develop_begin_notify_command(cp, up2);
+        change_run_forced_develop_begin_notify_command(cp, up2);
+
+    //
+    // Update the RSS feed file if necessary.
+    //
+    rss_add_item_by_change(pp, cp);
 
     //
     // if symlinks are being used to pander to dumb DMT,
@@ -388,8 +421,8 @@ develop_begin_main(void)
     assert(pconf_data->development_directory_style);
     if (!pconf_data->development_directory_style->during_build_only)
     {
-	work_area_style_ty style = *pconf_data->development_directory_style;
-	change_create_symlinks_to_baseline(cp, up, style);
+        work_area_style_ty style = *pconf_data->development_directory_style;
+        change_create_symlinks_to_baseline(cp, up, style);
     }
 
     //
@@ -400,7 +433,7 @@ develop_begin_main(void)
     project_free(pp);
     user_free(up);
     if (up2)
-	user_free(up2);
+        user_free(up2);
     trace(("}\n"));
 }
 
@@ -410,8 +443,8 @@ develop_begin(void)
 {
     static arglex_dispatch_ty dispatch[] =
     {
-	{arglex_token_help, develop_begin_help, },
-	{arglex_token_list, develop_begin_list, },
+        {arglex_token_help, develop_begin_help, },
+        {arglex_token_list, develop_begin_list, },
     };
 
     trace(("develop_begin()\n{\n"));

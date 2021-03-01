@@ -1,6 +1,6 @@
 //
 //	aegis - project change supervisor
-//	Copyright (C) 1999-2004 Peter Miller;
+//	Copyright (C) 1999-2005 Peter Miller;
 //	All rights reserved.
 //
 //	This program is free software; you can redistribute it and/or modify
@@ -52,10 +52,21 @@ change_run_history_create_command(change_ty *cp, fstate_src_ty *src)
     // in aesub(5) are avaliable.  In addition:
     //
     // ${Input}
-    //	absolute path of source file
+    //     The absolute path of the source file to check-in.
     //
     // ${History}
-    //	absolute path of history file
+    //     The absolute path of history file.
+    //
+    // ${File_Name}   (Optional)
+    //     The base relative file name of the file for this check-in.
+    //     Note that the file name can vary over the lifetime of the
+    //     file as it is renamed, but the history file name never does.
+    //     DO NOT use this as the name of the history file.
+    //
+    // ${UUID}   (Optional)
+    //     The universally unique identifier for this file.  This is
+    //     invariant for the lifetime of the file.
+    //     DO NOT use this as the name of the history file.
     //
     trace(("change_run_history_create_command(cp = %8.8lX, "
         "filename = \"%s\")\n{\n", (long)cp, src->file_name->str_text));
@@ -85,6 +96,18 @@ change_run_history_create_command(change_ty *cp, fstate_src_ty *src)
     sub_var_set_string(scp, "History", hfn);
     hfnr = os_below_dir(hp, hfn);
     str_free(hfn);
+
+    //
+    // Some optional variables, for history tool meta-data.
+    //
+    scp->var_set_string("File_Name", src->file_name);
+    scp->var_optional("File_Name");
+    scp->var_set_string
+    (
+	"Universally_Unique_IDentifier",
+	(src->uuid ? src->uuid : src->file_name)
+    );
+    scp->var_optional("Universally_Unique_IDentifier");
 
     //
     // Make sure the command has been set.

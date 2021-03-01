@@ -1,6 +1,6 @@
 //
 //	aegis - project change supervisor
-//	Copyright (C) 2004 Peter Miller;
+//	Copyright (C) 2004, 2005 Peter Miller;
 //	All rights reserved.
 //
 //	This program is free software; you can redistribute it and/or modify
@@ -493,7 +493,7 @@ checkout_modules(module_ty *mp, server_ty *sp)
     //
     server_side = str_from_c("CVSROOT/modules");
     client_side = server_directory_calc_client_side(sp, server_side);
-    ip = input_string_new(s);
+    ip = new input_string(nstring(s));
     str_free(s);
     mode = 0444;
     version = fake_version_now();

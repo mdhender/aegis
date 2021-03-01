@@ -36,7 +36,7 @@ static int gzip_magic[2] = {0x1f, 0x8b}; // gzip magic header
 
 
 void
-output_gzip_ty::drop_dead(int err)
+output_gzip::drop_dead(int err)
 {
     sub_context_ty sc;
     sc.var_set_charstar("ERRNO", z_error(err));
@@ -62,7 +62,7 @@ output_long_le(output_ty *fp, uLong x)
 }
 
 
-output_gzip_ty::~output_gzip_ty()
+output_gzip::~output_gzip()
 {
     //
     // Make sure all buffered data has been passed to our write_inner
@@ -116,7 +116,7 @@ output_gzip_ty::~output_gzip_ty()
 }
 
 
-output_gzip_ty::output_gzip_ty(output_ty *arg1, bool arg2) :
+output_gzip::output_gzip(output_ty *arg1, bool arg2) :
     deeper(arg1),
     close_on_close(arg2),
     outbuf(new Byte [Z_BUFSIZE]),
@@ -167,7 +167,7 @@ output_gzip_ty::output_gzip_ty(output_ty *arg1, bool arg2) :
 
 
 string_ty *
-output_gzip_ty::filename()
+output_gzip::filename()
     const
 {
     return deeper->filename();
@@ -175,7 +175,7 @@ output_gzip_ty::filename()
 
 
 long
-output_gzip_ty::ftell_inner()
+output_gzip::ftell_inner()
     const
 {
     return pos;
@@ -183,7 +183,7 @@ output_gzip_ty::ftell_inner()
 
 
 void
-output_gzip_ty::write_inner(const void *buf, size_t len)
+output_gzip::write_inner(const void *buf, size_t len)
 {
     if (len > 0)
 	bol = (((const char *)buf)[len - 1] == '\n');
@@ -207,7 +207,7 @@ output_gzip_ty::write_inner(const void *buf, size_t len)
 
 
 int
-output_gzip_ty::page_width()
+output_gzip::page_width()
     const
 {
     return deeper->page_width();
@@ -215,7 +215,7 @@ output_gzip_ty::page_width()
 
 
 int
-output_gzip_ty::page_length()
+output_gzip::page_length()
     const
 {
     return deeper->page_length();
@@ -223,7 +223,7 @@ output_gzip_ty::page_length()
 
 
 void
-output_gzip_ty::end_of_line_inner()
+output_gzip::end_of_line_inner()
 {
     if (!bol)
 	fputc('\n');
@@ -231,7 +231,7 @@ output_gzip_ty::end_of_line_inner()
 
 
 const char *
-output_gzip_ty::type_name()
+output_gzip::type_name()
     const
 {
     return "gzip";

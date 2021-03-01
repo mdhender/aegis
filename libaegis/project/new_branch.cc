@@ -1,6 +1,6 @@
 //
 //	aegis - project change supervisor
-//	Copyright (C) 2001-2004 Peter Miller;
+//	Copyright (C) 2001-2005 Peter Miller;
 //	All rights reserved.
 //
 //	This program is free software; you can redistribute it and/or modify
@@ -75,7 +75,7 @@ branch_description_invent(project_ty *pp)
 
 project_ty *
 project_new_branch(project_ty *ppp, user_ty *up, long change_number,
-    string_ty *topdir)
+    string_ty *topdir, string_ty *reason)
 {
     cstate_ty       *cstate_data;
     cstate_history_ty *history_data;
@@ -167,6 +167,8 @@ project_new_branch(project_ty *ppp, user_ty *up, long change_number,
     //
     history_data = change_history_new(cp, up);
     history_data->what = cstate_history_what_new_change;
+    if (reason)
+	history_data->why = str_copy(reason);
     history_data = change_history_new(cp, up);
     history_data->what = cstate_history_what_develop_begin;
     cstate_data = change_cstate_get(cp);
@@ -276,6 +278,11 @@ project_new_branch(project_ty *ppp, user_ty *up, long change_number,
     (
 	cp,
 	project_default_test_exemption_get(ppp)
+    );
+    change_branch_default_test_regression_exemption_set
+    (
+	cp,
+	project_default_test_regression_exemption_get(ppp)
     );
     change_branch_default_development_directory_set
     (

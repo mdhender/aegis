@@ -1,6 +1,6 @@
 //
 //	aegis - project change supervisor
-//	Copyright (C) 1999, 2003, 2004 Peter Miller;
+//	Copyright (C) 1999, 2003-2005 Peter Miller;
 //	All rights reserved.
 //
 //	This program is free software; you can redistribute it and/or modify
@@ -58,7 +58,7 @@ change_env_set(change_ty *cp, int with_arch)
 		if (ap->value && ap->value->str_length)
                 {
                     sub_context_ty *scp = sub_context_new();
-                    nstring env_value = substitute(scp, cp, ap->value);
+                    nstring env_value(substitute(scp, cp, ap->value));
                     env_set(name, env_value.c_str());
                     sub_context_delete(scp);
                 }

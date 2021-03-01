@@ -1,6 +1,6 @@
 //
 //	aegis - project change supervisor
-//	Copyright (C) 1999, 2003, 2004 Peter Miller;
+//	Copyright (C) 1999, 2003-2005 Peter Miller;
 //	All rights reserved.
 //
 //	This program is free software; you can redistribute it and/or modify
@@ -20,12 +20,22 @@
 // MANIFEST: functions to manipulate pushba_transs
 //
 
-#include <input/private.h>
+#include <input.h>
 
 
 void
-input_pushback_transfer(input_ty *to, input_ty *from)
+input_ty::pushback_transfer(input_ty *from)
 {
-    while (from->buffer_end > from->buffer_position)
-       	input_ungetc(to, *(--(from->buffer_end)));
+    from->pullback_transfer(this);
+}
+
+
+void
+input_ty::pullback_transfer(input_ty *to)
+{
+    if (buffer_position < buffer_end)
+    {
+	to->unread(buffer_position, buffer_end - buffer_position);
+	buffer_position = buffer_end;
+    }
 }

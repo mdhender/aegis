@@ -51,6 +51,7 @@ missing_main(void)
     nstring_list include_uuid_list;
     nstring_list exclude_version_list;
     nstring_list include_version_list;
+    bool all_changes = false;
     arglex();
     while (arglex_token != arglex_token_eoln)
     {
@@ -135,6 +136,10 @@ missing_main(void)
                 break;
             }
             break;
+
+	case arglex_token_maximum:
+	    all_changes = true;
+	    break;
         }
         arglex();
     }
@@ -150,7 +155,10 @@ missing_main(void)
     project_bind_existing(pp);
 
     symtab<change_ty> local_inventory;
-    change_functor_inventory_builder cf(pp, &local_inventory);
+    bool include_branches = true;
+    bool ignore_original_uuid = false;
+    change_functor_inventory_builder cf(include_branches, all_changes,
+	ignore_original_uuid, pp, &local_inventory);
     project_inventory_walk(pp, cf);
 
     //
@@ -165,7 +173,7 @@ missing_main(void)
     {
 	smart_url.set_path_if_empty
 	(
-	    nstring::format("/cgi-bin/aeget/%s", project_name->str_text)
+	    nstring::format("/cgi-bin/aeget/%s", project_name_get(pp)->str_text)
 	);
 	smart_url.set_query_if_empty("inventory");
 	ifn = smart_url.reassemble();
@@ -207,20 +215,22 @@ missing_main(void)
     // Fetch and list the remote change sets.
     //
     int n = 0;
+    int r = 0;
     for (;;)
     {
+        nstring line;
         os_become_orig();
-        string_ty *line_p = input_one_line(ifp);
+	bool ok = ifp->one_line(line);
         os_become_undo();
-        if (!line_p)
-            break;
-	nstring line(line_p);
-
         trace_nstring(line);
+        if (!ok)
+            break;
 
         replay_line parts;
 	if (!parts.extract(line))
 	    continue;
+
+        r++;
 
         if (local_inventory.query(parts.get_uuid()))
             continue;
@@ -265,6 +275,8 @@ missing_main(void)
 	col_eoln(colp);
 	++n;
     }
+    uuid_col->fprintf("Remote change set%s: %d.", r == 1 ? "" : "s", r);
+    col_eoln(colp);
     uuid_col->fprintf("Missing %d change set%s.", n, (n == 1 ? "" : "s"));
     col_eoln(colp);
     col_close(colp);

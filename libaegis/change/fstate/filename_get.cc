@@ -35,3 +35,16 @@ change_fstate_filename_get(change_ty *cp)
     }
     return cp->fstate_filename;
 }
+
+
+string_ty *
+change_pfstate_filename_get(change_ty *cp)
+{
+    assert(cp->reference_count >= 1);
+    if (!cp->pfstate_filename)
+    {
+	cp->pfstate_filename =
+    	    str_format("%s.pfs", change_cstate_filename_get(cp)->str_text);
+    }
+    return cp->pfstate_filename;
+}

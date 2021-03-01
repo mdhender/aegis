@@ -1,6 +1,6 @@
 //
 //	aegis - project change supervisor
-//	Copyright (C) 2002-2004 Peter Miller;
+//	Copyright (C) 2002-2005 Peter Miller;
 //	All rights reserved.
 //
 //	This program is free software; you can redistribute it and/or modify
@@ -21,42 +21,57 @@
 //
 
 #include <ac/stdlib.h>
-#include <ac/unistd.h>
 
+#include <nstring.h>
 #include <os.h>
 #include <progname.h>
+#include <uuidentifier.h>
+
+
+static nstring
+find_temp_dir(int at_home)
+{
+    if (at_home)
+    {
+	const char *cp = getenv("HOME");
+	if (cp && *cp)
+	    return cp;
+    }
+    return nstring(os_tmpdir());
+}
 
 
 string_ty *
 os_edit_filename(int at_home)
 {
-    static int      num;
-    string_ty       *buffer;
-    string_ty       *result;
-    const char      *dir;
-    int             name_max;
-
-    if (at_home)
+    nstring dir = find_temp_dir(at_home);
+    int name_max = 14;
+    if (os_become_active())
     {
-	dir = getenv("HOME");
-	if (!dir || dir[0] != '/')
-	    dir = "/tmp";
+	name_max = os_pathconf_name_max(dir.get_ref());
     }
     else
     {
-	dir = os_tmpdir()->str_text;
+	os_become_orig();
+	name_max = os_pathconf_name_max(dir.get_ref());
+	os_become_undo();
     }
-    name_max = 14;
-    buffer = str_format("-%d-%d", getpid(), ++num);
-    result =
+    nstring prog = nstring::format("%.*s", name_max / 2, progname_get());
+    nstring glunk(universal_unique_identifier());
+
+    //
+    // Build the name of the temporary file.  If one of the parts
+    // has to be made smaller, because otherwise the file name would
+    // be too long, throw away some of the UUID.  On modern Unix
+    // implementations this will not happen.
+    //
+    return
 	str_format
 	(
-	    "%s/%.*s%s",
-	    dir,
-	    (int)(name_max - buffer->str_length),
-	    progname_get(),
-	    buffer->str_text
+	    "%s/%s-%.*s",
+	    dir.c_str(),
+	    prog.c_str(),
+	    (int)(name_max - prog.size() - 1),
+	    glunk.c_str()
 	);
-    str_free(buffer);
-    return result;
 }

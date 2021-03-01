@@ -1,6 +1,6 @@
 //
 //	aegis - project change supervisor
-//	Copyright (C) 2001, 2003, 2004 Peter Miller;
+//	Copyright (C) 2001, 2003-2005 Peter Miller;
 //	All rights reserved.
 //
 //	This program is free software; you can redistribute it and/or modify
@@ -25,15 +25,12 @@
 
 
 void
-input_fatal_error(input_ty *fp, const char *msg)
+input_ty::fatal_error(const char *msg)
 {
-	sub_context_ty	*scp;
-	string_ty	*s;
-
-	scp = sub_context_new();
-	s = subst_intl(scp, msg);
-	sub_var_set_string(scp, "File_Name", input_name(fp));
-	sub_var_set_string(scp, "MeSsaGe", s);
-	fatal_intl(scp, i18n("$filename: $message"));
-	// NOTREACHED
+    sub_context_ty sc;
+    string_ty *s = sc.subst_intl(msg);
+    sc.var_set_string("File_Name", name());
+    sc.var_set_string("MeSsaGe", s);
+    sc.fatal_intl(i18n("$filename: $message"));
+    // NOTREACHED
 }

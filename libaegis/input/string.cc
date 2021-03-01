@@ -1,6 +1,6 @@
 //
 //	aegis - project change supervisor
-//	Copyright (C) 2004 Peter Miller;
+//	Copyright (C) 2004, 2005 Peter Miller;
 //	All rights reserved.
 //
 //	This program is free software; you can redistribute it and/or modify
@@ -23,99 +23,50 @@
 #include <ac/string.h>
 
 #include <input/string.h>
-#include <input/private.h>
-#include <str.h>
 
-struct input_string_ty
+
+input_string::~input_string()
 {
-    input_ty        inherited;
-    string_ty       *base;
-    size_t          pos;
-    string_ty       *name;
-};
-
-
-static void
-input_string_destructor(input_ty *p)
-{
-    input_string_ty *isp;
-
-    isp = (input_string_ty *)p;
-    str_free(isp->base);
-    str_free(isp->name);
 }
 
 
-static long
-input_string_read(input_ty *p, void *data, size_t len)
+input_string::input_string(const nstring &arg) :
+    base(arg),
+    pos(0)
 {
-    input_string_ty *isp;
-    size_t          nbytes;
+}
 
-    isp = (input_string_ty *)p;
-    if (isp->pos >= isp->base->str_length)
+
+long
+input_string::read_inner(void *data, size_t len)
+{
+    if (pos >= base.size())
 	return 0;
-    nbytes = isp->base->str_length - isp->pos;
+    size_t nbytes = base.size() - pos;
     if (nbytes > len)
 	nbytes = len;
-    memcpy(data, isp->base->str_text + isp->pos, nbytes);
-    isp->pos += nbytes;
+    memcpy(data, base.c_str() + pos, nbytes);
+    pos += nbytes;
     return nbytes;
 }
 
 
-static long
-input_string_ftell(input_ty *p)
+long
+input_string::ftell_inner()
 {
-    input_string_ty *isp;
-
-    isp = (input_string_ty *)p;
-    return isp->pos;
+    return pos;
 }
 
 
-static string_ty *
-input_string_name(input_ty *p)
+nstring
+input_string::name()
 {
-    input_string_ty *isp;
-
-    isp = (input_string_ty *)p;
-    return isp->name;
+    return "generated string";
 }
 
 
-static long
-input_string_length(input_ty *p)
+long
+input_string::length()
 {
-    input_string_ty *isp;
-
-    isp = (input_string_ty *)p;
-    return isp->base->str_length;
-}
-
-
-static input_vtbl_ty vtbl =
-{
-    sizeof(input_string_ty),
-    input_string_destructor,
-    input_string_read,
-    input_string_ftell,
-    input_string_name,
-    input_string_length,
-    0, // keepalive
-};
-
-
-input_ty *
-input_string_new(string_ty *s)
-{
-    input_ty        *result;
-    input_string_ty *isp;
-
-    result = input_new(&vtbl);
-    isp = (input_string_ty *)result;
-    isp->base = str_copy(s);
-    isp->pos = 0;
-    isp->name = str_from_c("generated string");
-    return result;
+    return base.size();
 }

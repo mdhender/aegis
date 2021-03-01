@@ -1,6 +1,6 @@
 //
 //	aegis - project change supervisor
-//	Copyright (C) 1995-2004 Peter Miller;
+//	Copyright (C) 1995-2005 Peter Miller;
 //	All rights reserved.
 //
 //	This program is free software; you can redistribute it and/or modify
@@ -112,6 +112,7 @@ new_branch_main(void)
     change_number = 0;
     devdir = 0;
     output = 0;
+    string_ty *reason = 0;
     while (arglex_token != arglex_token_eoln)
     {
 	switch (arglex_token)
@@ -181,6 +182,22 @@ new_branch_main(void)
 
 	    case arglex_token_stdio:
 		output = "";
+		break;
+	    }
+	    break;
+
+	case arglex_token_reason:
+	    if (reason)
+		duplicate_option(new_branch_usage);
+	    switch (arglex())
+	    {
+	    default:
+		option_needs_string(arglex_token_reason, new_branch_usage);
+		// NOTREACHED
+
+	    case arglex_token_string:
+	    case arglex_token_number:
+		reason = str_from_c(arglex_value.alv_string);
 		break;
 	    }
 	    break;
@@ -254,7 +271,7 @@ new_branch_main(void)
     //
     // create the new branch
     //
-    bp = project_new_branch(pp, up, change_number, devdir);
+    bp = project_new_branch(pp, up, change_number, devdir, reason);
 
     //
     // If there is an output option,

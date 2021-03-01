@@ -88,7 +88,6 @@ change_history_encode(change_ty *cp, fstate_src_ty *src, int *unlink_p)
     src->edit->encoding = history_version_encoding_none;
     pconf_data = change_pconf_get(cp, 1);
     min_qp_enc = 0;
-    trace(("mark\n"));
     switch (pconf_data->history_content_limitation)
     {
     case pconf_history_content_limitation_binary_capable:
@@ -135,7 +134,6 @@ change_history_encode(change_ty *cp, fstate_src_ty *src, int *unlink_p)
     case pconf_history_content_limitation_ascii_text:
 	break;
     }
-    trace(("mark\n"));
 
     //
     // Some history tools are rather dumb, and require the last
@@ -150,7 +148,6 @@ change_history_encode(change_ty *cp, fstate_src_ty *src, int *unlink_p)
     change_become(cp);
     if (!b64_dir)
     {
-	trace(("mark\n"));
 	b64_dir = os_edit_filename(0);
 	os_mkdir(b64_dir, 0755);
 	undo_rmdir_bg(b64_dir);
@@ -158,7 +155,6 @@ change_history_encode(change_ty *cp, fstate_src_ty *src, int *unlink_p)
     }
     if (!qp_dir)
     {
-	trace(("mark\n"));
 	qp_dir = os_edit_filename(0);
 	os_mkdir(qp_dir, 0755);
 	undo_rmdir_bg(qp_dir);
@@ -166,7 +162,6 @@ change_history_encode(change_ty *cp, fstate_src_ty *src, int *unlink_p)
     }
     if (!nenc_dir)
     {
-	trace(("mark\n"));
 	nenc_dir = os_edit_filename(0);
 	os_mkdir(nenc_dir, 0755);
 	undo_rmdir_bg(nenc_dir);
@@ -180,7 +175,6 @@ change_history_encode(change_ty *cp, fstate_src_ty *src, int *unlink_p)
     {
 	string_ty       *relname;
 
-	trace(("mark\n"));
 	relname = project_history_uuid_translate(src);
 	ofn1 = dir_and_base(qp_dir, relname);
 	ofn2 = dir_and_base(b64_dir, relname);
@@ -189,7 +183,6 @@ change_history_encode(change_ty *cp, fstate_src_ty *src, int *unlink_p)
     }
     else
     {
-	trace(("mark\n"));
 	ofn1 = dir_and_base(qp_dir, filename);
 	ofn2 = dir_and_base(b64_dir, filename);
 	ofn3 = str_copy(filename);
@@ -198,12 +191,10 @@ change_history_encode(change_ty *cp, fstate_src_ty *src, int *unlink_p)
     change_become(cp);
     if (src->uuid)
     {
-	trace(("mark\n"));
 	assert(!str_equal(filename, ofn3));
 	os_symlink_or_copy(filename, ofn3);
     }
 
-    trace(("mark\n"));
     ip = input_file_open(filename);
     str_free(filename);
 
@@ -224,8 +215,7 @@ change_history_encode(change_ty *cp, fstate_src_ty *src, int *unlink_p)
 	char            *pos;
 	char            *end;
 
-	trace(("mark\n"));
-	nbytes = input_read(ip, buffer, sizeof(buffer));
+	nbytes = ip->read(buffer, sizeof(buffer));
 	if (nbytes == 0)
 	    break;
 	op->write(buffer, nbytes);
@@ -265,11 +255,12 @@ change_history_encode(change_ty *cp, fstate_src_ty *src, int *unlink_p)
 	ascii_yuck = 1;
 	intl_yuck = 1;
     }
-    input_delete(ip);
+    delete ip;
+    ip = 0;
     delete op;
+    op = 0;
     change_become_undo();
 
-    trace(("mark\n"));
     encoding_required = 1;
     switch (pconf_data->history_content_limitation)
     {
@@ -288,7 +279,6 @@ change_history_encode(change_ty *cp, fstate_src_ty *src, int *unlink_p)
     }
     if (!encoding_required)
     {
-	trace(("mark\n"));
 	change_become(cp);
 	os_unlink(ofn1);
 	str_free(ofn1);
@@ -312,7 +302,6 @@ change_history_encode(change_ty *cp, fstate_src_ty *src, int *unlink_p)
     size2 = os_file_size(ofn2);
     if (size1 <= size2)
     {
-	trace(("mark\n"));
 	src->edit->encoding = history_version_encoding_quoted_printable;
 	filename = ofn1;
 	os_unlink(ofn2);
@@ -320,7 +309,6 @@ change_history_encode(change_ty *cp, fstate_src_ty *src, int *unlink_p)
     }
     else
     {
-	trace(("mark\n"));
 	src->edit->encoding = history_version_encoding_base64;
 	os_unlink(ofn1);
 	str_free(ofn1);

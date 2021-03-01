@@ -24,8 +24,6 @@
 #include <ac/string.h>
 
 #include <input/gunzip.h>
-#include <input/private.h>
-#include <mem.h>
 #include <sub.h>
 
 
@@ -46,145 +44,125 @@
 #define RESERVED     0xE0 // bits 5..7: reserved
 
 
-struct input_gunzip_ty
+void
+input_gunzip::zlib_fatal_error(int err)
 {
-    input_ty	    inherited;
-    input_ty	    *deeper;
-    z_stream	    stream;
-    int		    z_eof;
-    uLong	    crc;
-    long	    pos;
-    Byte	    *buf;
-    string_ty	    *filename;
-};
-
-
-static void
-zlib_fatal_error(input_gunzip_ty *this_thing, int err)
-{
-    sub_context_ty  *scp;
-
     if (err >= 0)
-	    return;
-    scp = sub_context_new();
-    if (this_thing->stream.msg)
-    {
-	sub_var_set_format
-	(
-	    scp,
-	    "ERRNO",
-	    "%s (%s)",
-	    z_error(err),
-	    this_thing->stream.msg
-	);
-    }
+	return;
+    sub_context_ty sc;
+    if (stream.msg)
+	sc.var_set_format("ERRNO", "%s (%s)", z_error(err), stream.msg);
     else
-	sub_var_set_charstar(scp, "ERRNO", z_error(err));
-    sub_var_override(scp, "ERRNO");
-    sub_var_set_string(scp, "File_Name", input_name(this_thing->deeper));
-    fatal_intl(scp, i18n("gunzip $filename: $errno"));
+	sc.var_set_charstar("ERRNO", z_error(err));
+    sc.var_override("ERRNO");
+    sc.var_set_string("File_Name", deeper->name());
+    sc.fatal_intl(i18n("gunzip $filename: $errno"));
 }
 
 
-static void
-input_gunzip_destructor(input_ty *fp)
+input_gunzip::~input_gunzip()
 {
-    input_gunzip_ty *this_thing;
-    int		    err;
-
-    this_thing = (input_gunzip_ty *)fp;
-    err = inflateEnd(&this_thing->stream);
+    int err = inflateEnd(&stream);
     if (err < 0)
-	zlib_fatal_error(this_thing, err);
-    input_delete(this_thing->deeper);
-    mem_free(this_thing->buf);
-    this_thing->deeper = 0;
-    if (this_thing->filename)
-	str_free(this_thing->filename);
+	zlib_fatal_error(err);
+    if (close_on_close)
+	delete deeper;
+    deeper = 0;
+    delete buf;
+    buf = 0;
 }
 
 
-static long
-getLong(input_gunzip_ty *this_thing)
+input_gunzip::input_gunzip(input_ty *arg1, bool arg2) :
+    deeper(arg1),
+    close_on_close(arg2),
+    z_eof(false),
+    crc(crc32(0L, Z_NULL, 0)),
+    pos(0),
+    buf(new Byte [Z_BUFSIZE])
 {
-    long	    result;
-    int		    j;
-    int		    c;
+    stream.zalloc = (alloc_func)0;
+    stream.zfree = (free_func)0;
+    stream.opaque = (voidpf)0;
+    stream.next_in = Z_NULL;
+    stream.avail_in = 0;
+    stream.next_out = Z_NULL;
+    stream.avail_out = 0;
 
-    result = 0;
-    for (j = 0; j < 4; ++j)
+    //
+    // windowBits is passed < 0 to tell that there is no zlib header.
+    // Note that in this case inflate *requires* an extra "dummy" byte
+    // after the compressed stream in order to complete decompression
+    // and return Z_STREAM_END. Here the gzip CRC32 ensures that 4
+    // bytes are present after the compressed stream.
+    //
+    int err = inflateInit2(&stream, -MAX_WBITS);
+    if (err < 0)
+	zlib_fatal_error(err);
+
+    //
+    // Now read the file header.
+    //
+    read_header();
+}
+
+
+long
+input_gunzip::getLong()
+{
+    long result = 0;
+    for (int j = 0; j < 4; ++j)
     {
-	c = input_getc(this_thing->deeper);
+	int c = deeper->getc();
 	if (c < 0)
-	{
-    	    input_fatal_error
-	    (
-		(input_ty *)this_thing,
-		"gunzip: premature end of file"
-	    );
-	}
+    	    fatal_error("gunzip: premature end of file");
 	result += c << (j * 8);
     }
     return result;
 }
 
 
-static long
-input_gunzip_read(input_ty *fp, void *data, size_t len)
+long
+input_gunzip::read_inner(void *data, size_t len)
 {
-    input_gunzip_ty *this_thing;
-    Bytef	    *start;
-    int		    err;
-    long	    result;
-
-    this_thing = (input_gunzip_ty *)fp;
-    if (this_thing->z_eof)
+    if (z_eof)
 	return 0;
 
-    start = (Bytef *)data; // starting point for crc computation
-    this_thing->stream.next_out = (Bytef *)data;
-    this_thing->stream.avail_out = len;
+    Bytef *start = (Bytef *)data; // starting point for crc computation
+    stream.next_out = (Bytef *)data;
+    stream.avail_out = len;
 
-    while (this_thing->stream.avail_out > 0)
+    while (stream.avail_out > 0)
     {
-	if (this_thing->stream.avail_in == 0)
+	if (stream.avail_in == 0)
 	{
-	    this_thing->stream.next_in = this_thing->buf;
-    	    this_thing->stream.avail_in =
-       		input_read(this_thing->deeper, this_thing->buf, Z_BUFSIZE);
+	    stream.next_in = buf;
+    	    stream.avail_in = deeper->read(buf, Z_BUFSIZE);
 	    //
 	    // There should always be something left on the
 	    // input, because we have the CRC and Length
 	    // to follow.  Fatal error if not.
 	    //
-	    if (this_thing->stream.avail_in <= 0)
+	    if (stream.avail_in <= 0)
 	    {
-		input_fatal_error
-		(
-		    this_thing->deeper,
-		    "gunzip: premature end of file"
-		);
+		deeper->fatal_error("gunzip: premature end of file");
 	    }
 	}
-	err = inflate(&this_thing->stream, Z_PARTIAL_FLUSH);
+	int err = inflate(&stream, Z_PARTIAL_FLUSH);
 	if (err < 0)
-    	    zlib_fatal_error(this_thing, err);
+    	    zlib_fatal_error(err);
 	if (err == Z_STREAM_END)
 	{
-    	    this_thing->z_eof = 1;
+    	    z_eof = true;
 
 	    //
 	    // Push back the unused portion of the input stream.
 	    // (The way we wrote it, there shouldn't be much.)
 	    //
-	    while (this_thing->stream.avail_in > 0)
+	    while (stream.avail_in > 0)
 	    {
-		this_thing->stream.avail_in--;
-		input_ungetc
-		(
-	    	    this_thing->deeper,
-	    	    this_thing->stream.next_in[this_thing->stream.avail_in]
-		);
+		stream.avail_in--;
+		deeper->ungetc(stream.next_in[stream.avail_in]);
 	    }
 
 	    //
@@ -197,18 +175,18 @@ input_gunzip_read(input_ty *fp, void *data, size_t len)
     //
     // Calculate the running CRC
     //
-    result = this_thing->stream.next_out - start;
-    this_thing->crc = crc32(this_thing->crc, start, (uInt)result);
+    long result = stream.next_out - start;
+    crc = crc32(crc, start, (uInt)result);
 
     //
     // Update the file position.
     //
-    this_thing->pos += result;
+    pos += result;
 
     //
     // At end-of-file we need to do some checking.
     //
-    if (this_thing->z_eof)
+    if (z_eof)
     {
 	//
 	// Check CRC
@@ -216,22 +194,19 @@ input_gunzip_read(input_ty *fp, void *data, size_t len)
 	// Watch out for 64-bit machines.  This is what
 	// those aparrently redundant 0xFFFFFFFF are for.
 	//
-	if ((getLong(this_thing) & 0xFFFFFFFF) !=
-            (this_thing->crc & 0xFFFFFFFF))
-	    input_fatal_error((input_ty *)this_thing,
-                              "gunzip: checksum mismatch");
+	if ((getLong() & 0xFFFFFFFF) != (crc & 0xFFFFFFFF))
+	    fatal_error("gunzip: checksum mismatch");
 
 	//
 	// The uncompressed length here may be different
-	// from this_thing->pos in case of concatenated .gz
+	// from pos in case of concatenated .gz
 	// files.  But we don't write them that way,
 	// so give an error if it happens.
 	//
 	// We shouldn't have 64-bit problems in this case.
 	//
-	if (getLong(this_thing) != this_thing->pos)
-	    input_fatal_error((input_ty *)this_thing,
-                              "gunzip: length mismatch");
+	if (getLong() != pos)
+	    fatal_error("gunzip: length mismatch");
     }
 
     //
@@ -242,60 +217,37 @@ input_gunzip_read(input_ty *fp, void *data, size_t len)
 }
 
 
-static long
-input_gunzip_ftell(input_ty *fp)
+long
+input_gunzip::ftell_inner()
 {
-    input_gunzip_ty *this_thing;
-
-    this_thing = (input_gunzip_ty *)fp;
-    return this_thing->pos;
+    return pos;
 }
 
 
-static int
-end_with(string_ty *haystack, const char *needle)
+nstring
+input_gunzip::name()
 {
-    size_t	    len;
-    char	    *s;
-
-    len = strlen(needle);
-    if (haystack->str_length < len)
-	return 0;
-    s = haystack->str_text + haystack->str_length - len;
-    return (0 == strncasecmp(s, needle, len));
-}
-
-
-
-static string_ty *
-input_gunzip_name(input_ty *fp)
-{
-    input_gunzip_ty *this_thing;
-
-    this_thing = (input_gunzip_ty *)fp;
-    if (!this_thing->filename)
+    if (filename.empty())
     {
-	string_ty	*s;
-
-	s = input_name(this_thing->deeper);
-	if (end_with(s, ".z"))
-	    this_thing->filename = str_n_from_c(s->str_text, s->str_length - 2);
-	else if (end_with(s, ".gz"))
-	    this_thing->filename = str_n_from_c(s->str_text, s->str_length - 3);
-	else if (end_with(s, ".tgz"))
+	nstring s = deeper->name();
+	if (s.ends_with_nocase(".z"))
+	    filename = nstring(s.c_str(), s.size() - 2);
+	else if (s.ends_with_nocase(".gz"))
+	    filename = nstring(s.c_str(), s.size() - 3);
+	else if (s.ends_with_nocase(".tgz"))
 	{
-	    this_thing->filename =
-		str_format("%.*s.tar", (int)s->str_length - 4, s->str_text);
+	    filename =
+		nstring::format("%.*s.tar", (int)s.size() - 4, s.c_str());
 	}
 	else
-	    this_thing->filename = str_copy(s);
+	    filename = s;
     }
-    return this_thing->filename;
+    return filename;
 }
 
 
-static long
-input_gunzip_length(input_ty *fp)
+long
+input_gunzip::length()
 {
     //
     // We have no idea how long the decompressed stream will be.
@@ -307,78 +259,90 @@ input_gunzip_length(input_ty *fp)
 //
 // Check the gzip header of a gz_stream opened for reading. Set the
 // stream mode to transparent if the gzip magic header is not present;
-// set this_thing->err to Z_DATA_ERROR if the magic header is present but the
+// set err to Z_DATA_ERROR if the magic header is present but the
 // rest of the header is incorrect.
 //
 // IN assertion: the stream this has already been created sucessfully;
-// this_thing->stream.avail_in is zero for the first time, but may be non-zero
+// stream.avail_in is zero for the first time, but may be non-zero
 // for concatenated .gz files.
 //
+static int gz_magic[2] = {0x1f, 0x8b}; // gzip magic header
 
-static int
-check_header(input_ty *deeper)
+bool
+input_gunzip::candidate(input_ty *deeper)
 {
-    int		    method;
-    int		    flags;
-    uInt	    len;
-    int		    c;
-    static int	    gz_magic[2] = {0x1f, 0x8b}; // gzip magic header
-
     //
     // Check for the magic number.
     // If it isn't present, assume transparent mode.
     //
-    c = input_getc(deeper);
+    int c = deeper->getc();
     if (c < 0)
-	return 0;
+	return false;
     if (c != gz_magic[0])
     {
-	input_ungetc(deeper, c);
-	return 0;
+	deeper->ungetc(c);
+	return false;
     }
-    c = input_getc(deeper);
+    c = deeper->getc();
     if (c < 0)
     {
-	input_ungetc(deeper, gz_magic[0]);
-	return 0;
+	deeper->ungetc(gz_magic[0]);
+	return false;
     }
     if (c != gz_magic[1])
     {
-	input_ungetc(deeper, c);
-	input_ungetc(deeper, gz_magic[0]);
-	return 0;
+	deeper->ungetc(c);
+	deeper->ungetc(gz_magic[0]);
+	return false;
     }
+    deeper->ungetc(gz_magic[1]);
+    deeper->ungetc(gz_magic[0]);
+    return true;
+}
+
+
+void
+input_gunzip::read_header()
+{
+    //
+    // Check for the magic number.
+    // If it isn't present, assume transparent mode.
+    //
+    int c1 = deeper->getc();
+    int c2 = deeper->getc();
+    if (c1 != gz_magic[0] || c2 != gz_magic[1])
+	deeper->fatal_error("gunzip: wrong magic number");
 
     //
     // Magic number present, now we require the rest of the header
     // to be present and correctly formed.
     //
-    method = input_getc(deeper);
+    int method = deeper->getc();
     if (method != Z_DEFLATED)
-	input_fatal_error(deeper, "gunzip: not deflated encoding");
-    flags = input_getc(deeper);
+	deeper->fatal_error("gunzip: not deflated encoding");
+    int flags = deeper->getc();
     if (flags < 0 || (flags & RESERVED) != 0)
-	input_fatal_error(deeper, "gunzip: unknown flags");
+	deeper->fatal_error("gunzip: unknown flags");
 
     // Discard time, xflags and OS code:
-    for (len = 0; len < 6; len++)
-	if (input_getc(deeper) < 0)
-    	    input_fatal_error(deeper, "gunzip: short file");
+    for (uInt len = 0; len < 6; len++)
+	if (deeper->getc() < 0)
+    	    deeper->fatal_error("gunzip: short file");
 
     if (flags & EXTRA_FIELD)
     {
 	// skip the extra field
-	int elen = input_getc(deeper);
+	int elen = deeper->getc();
 	if (elen < 0)
-	    input_fatal_error(deeper, "gunzip: invalid character value");
-	c = input_getc(deeper);
+	    deeper->fatal_error("gunzip: invalid character value");
+	int c = deeper->getc();
 	if (c < 0)
-	    input_fatal_error(deeper, "gunzip: short file");
+	    deeper->fatal_error("gunzip: short file");
 	elen += (c << 8);
 	while (elen-- > 0)
 	{
-	    if (input_getc(deeper) < 0)
-		input_fatal_error(deeper, "gunzip: short file");
+	    if (deeper->getc() < 0)
+		deeper->fatal_error("gunzip: short file");
 	}
     }
     if (flags & ORIG_NAME)
@@ -386,9 +350,9 @@ check_header(input_ty *deeper)
 	// skip the original file name
 	for (;;)
 	{
-    	    c = input_getc(deeper);
+    	    int c = deeper->getc();
     	    if (c < 0)
-       		input_fatal_error(deeper, "gunzip: short file");
+       		deeper->fatal_error("gunzip: short file");
     	    if (c == 0)
        		break;
 	}
@@ -398,9 +362,9 @@ check_header(input_ty *deeper)
 	// skip the .gz file comment
 	for (;;)
 	{
-    	    c = input_getc(deeper);
+    	    int c = deeper->getc();
     	    if (c < 0)
-       		input_fatal_error(deeper, "gunzip: short file");
+       		deeper->fatal_error("gunzip: short file");
     	    if (c == 0)
        		break;
 	}
@@ -408,47 +372,24 @@ check_header(input_ty *deeper)
     if (flags & HEAD_CRC)
     {
 	// skip the header crc
-	for (len = 0; len < 2; len++)
-    	    if (input_getc(deeper) < 0)
-       		input_fatal_error(deeper, "gunzip: short file");
+	for (int len = 0; len < 2; len++)
+    	    if (deeper->getc() < 0)
+       		deeper->fatal_error("gunzip: short file");
     }
-    return 1;
 }
 
 
-static void
-input_gunzip_keepalive(input_ty *fp)
+void
+input_gunzip::keepalive()
 {
-    input_gunzip_ty *ip;
-
-    ip = (input_gunzip_ty *)fp;
-    input_keepalive(ip->deeper);
+    deeper->keepalive();
 }
-
-
-static input_vtbl_ty vtbl =
-{
-    sizeof(input_gunzip_ty),
-    input_gunzip_destructor,
-    input_gunzip_read,
-    input_gunzip_ftell,
-    input_gunzip_name,
-    input_gunzip_length,
-    input_gunzip_keepalive,
-};
 
 
 input_ty *
-input_gunzip(input_ty *deeper)
+input_gunzip_open(input_ty *deeper)
 {
-    input_ty	    *result;
-    input_gunzip_ty *this_thing;
-    int		    err;
-
-    //
-    // Verify and skip the .gz file header.
-    //
-    if (!check_header(deeper))
+    if (!input_gunzip::candidate(deeper))
     {
 	//
 	// If it is not actually a compressed file,
@@ -457,33 +398,13 @@ input_gunzip(input_ty *deeper)
 	//
 	return deeper;
     }
+    return new input_gunzip(deeper);
+}
 
-    result = input_new(&vtbl);
-    this_thing = (input_gunzip_ty *)result;
-    this_thing->deeper = deeper;
-    this_thing->stream.zalloc = (alloc_func)0;
-    this_thing->stream.zfree = (free_func)0;
-    this_thing->stream.opaque = (voidpf)0;
-    this_thing->stream.next_in = Z_NULL;
-    this_thing->stream.avail_in = 0;
-    this_thing->stream.next_out = Z_NULL;
-    this_thing->stream.avail_out = 0;
-    this_thing->buf = (Byte *)mem_alloc(Z_BUFSIZE);
-    this_thing->crc = crc32(0L, Z_NULL, 0);
-    this_thing->pos = 0;
-    this_thing->z_eof = 0;
-    this_thing->filename = 0;
 
-    //
-    // windowBits is passed < 0 to tell that there is no zlib header.
-    // Note that in this case inflate *requires* an extra "dummy" byte
-    // after the compressed stream in order to complete decompression
-    // and return Z_STREAM_END. Here the gzip CRC32 ensures that 4
-    // bytes are present after the compressed stream.
-    //
-    err = inflateInit2(&this_thing->stream, -MAX_WBITS);
-    if (err < 0)
-	zlib_fatal_error(this_thing, err);
-
-    return result;
+bool
+input_gunzip::is_remote()
+    const
+{
+    return deeper->is_remote();
 }

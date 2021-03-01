@@ -1,6 +1,6 @@
 //
 //	aegis - project change supervisor
-//	Copyright (C) 2004 Peter Miller;
+//	Copyright (C) 2004, 2005 Peter Miller;
 //	All rights reserved.
 //
 //	This program is free software; you can redistribute it and/or modify
@@ -22,7 +22,7 @@
 // Taken from cvs-1.12.5/src/scramble.c...
 //
 
-#include <mem.h>
+#include <nstring/accumulator.h>
 #include <scramble.h>
 
 //
@@ -77,7 +77,8 @@ static const unsigned char shifts[] =
   192,159,244,239,185,168,215,144,139,165,180,157,147,186,214,176,
   227,231,219,169,175,156,206,198,129,164,150,210,154,177,134,127,
   182,128,158,208,162,132,167,209,149,241,153,251,237,236,171,195,
-  243,233,253,240,194,250,191,155,142,137,245,235,163,242,178,152 };
+  243,233,253,240,194,250,191,155,142,137,245,235,163,242,178,152
+};
 
 
 //
@@ -94,54 +95,39 @@ static const unsigned char shifts[] =
 // to use.  If it does not recognize the method, it dies with error.
 //
 
-string_ty *
-scramble(string_ty *str)
+nstring
+scramble(const nstring &str)
 {
-    size_t          j;
-    char            *buffer;
-    string_ty       *result;
-
     //
-    // +1 to hold the 'A' prefix that indicates which version of
-    // scrambling this is (the first, obviously, since we only do one
-    // kind of scrambling so far).
+    // The 'A' prefix that indicates which version of scrambling this is
+    // (the first, obviously, since we only do one kind of scrambling so
+    // far).
     //
-    buffer = (char *)mem_alloc(str->str_length + 1);
-
-    // Scramble (TM) version prefix.
-    buffer[0] = 'A';
-    for (j = 0; j < str->str_length; j++)
-	buffer[j + 1] = shifts[(unsigned char)(str->str_text[j])];
-    result = str_n_from_c(buffer, str->str_length + 1);
-    mem_free(buffer);
-    return result;
+    nstring_accumulator buffer;
+    buffer.push_back('A');
+    for (size_t j = 0; j < str.size(); j++)
+	buffer.push_back(shifts[(unsigned char)(str[j])]);
+    return buffer.mkstr();
 }
 
 
-string_ty *
-descramble(string_ty *str)
+nstring
+descramble(const nstring &str)
 {
-    size_t          j;
-    char            *buffer;
-    string_ty       *result;
-
     //
     // For now we can only handle one kind of scrambling.  In the future
     // there may be other kinds, and this `if' will become a `switch'.
     //
-    if (str->str_text[0] != 'A')
-	return str_copy(str);
+    if (str[0] != 'A')
+	return str;
 
     //
-    // -1 to skip the 'A' prefix that indicates which version of
-    // scrambling this is (the first, obviously, since we only do one
-    // kind of scrambling so far).
+    // Skip the 'A' prefix that indicates which version of scrambling
+    // this is (the first, obviously, since we only do one kind of
+    // scrambling so far).
     //
-    buffer = (char *)mem_alloc(str->str_length - 1);
-
-    for (j = 1; j < str->str_length; j++)
-	buffer[j - 1] = shifts[(unsigned char)(str->str_text[j])];
-    result = str_n_from_c(buffer, str->str_length - 1);
-    mem_free(buffer);
-    return result;
+    nstring_accumulator buffer;
+    for (size_t j = 1; j < str.size(); j++)
+	buffer.push_back(shifts[(unsigned char)(str[j])]);
+    return buffer.mkstr();
 }

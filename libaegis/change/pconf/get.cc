@@ -1,6 +1,6 @@
 //
 //	aegis - project change supervisor
-//	Copyright (C) 1999-2004 Peter Miller;
+//	Copyright (C) 1999-2005 Peter Miller;
 //	All rights reserved.
 //
 //	This program is free software; you can redistribute it and/or modify
@@ -375,9 +375,9 @@ input_catenate_tricky(string_list_ty *filename)
     fpl = (input_ty **)mem_alloc(filename->nstrings * sizeof(fpl[0]));
     for (j = 0; j < filename->nstrings; ++j)
     {
-	fpl[j] = input_crlf(input_file_open(filename->string[j]), 1);
+	fpl[j] = new input_crlf(input_file_open(filename->string[j]), true);
     }
-    fp = input_catenate(fpl, filename->nstrings, 1);
+    fp = new input_catenate(fpl, filename->nstrings, 1);
     mem_free(fpl);
     return fp;
 }
@@ -875,6 +875,11 @@ pconf_improve_more(change_ty *cp)
 	d->integration_directory_style->source_file_whiteout = false;
 	d->integration_directory_style->mask |=
 	    work_area_style_source_file_whiteout_mask;
+    }
+    if (!(d->mask & pconf_cache_project_file_list_for_each_delta_mask))
+    {
+	d->cache_project_file_list_for_each_delta = true;
+	d->mask |= pconf_cache_project_file_list_for_each_delta_mask;
     }
 }
 

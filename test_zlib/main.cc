@@ -63,15 +63,12 @@ usage(void)
 static void
 test_input(string_ty *ifn, string_ty *ofn)
 {
-    input_ty        *ifp;
-    output_ty       *ofp;
-
     os_become_orig();
-    ifp = input_file_open(ifn);
-    ifp = input_gunzip(ifp);
-    ofp = output_file_binary_open(ofn);
+    input_ty *ifp = input_file_open(ifn);
+    ifp = input_gunzip_open(ifp);
+    output_ty *ofp = output_file_binary_open(ofn);
     input_to_output(ifp, ofp);
-    input_delete(ifp);
+    delete ifp;
     delete ofp;
 }
 
@@ -79,16 +76,13 @@ test_input(string_ty *ifn, string_ty *ofn)
 static void
 test_output(string_ty *ifn, string_ty *ofn)
 {
-    input_ty        *ifp;
-    output_ty       *ofp;
-
     os_become_orig();
-    ifp = input_file_open(ifn);
-    ifp = input_crlf(ifp, 1);
-    ofp = output_file_text_open(ofn);
-    ofp = new output_gzip_ty(ofp, true);
+    input_ty *ifp = input_file_open(ifn);
+    ifp = new input_crlf(ifp, true);
+    output_ty *ofp = output_file_text_open(ofn);
+    ofp = new output_gzip(ofp, true);
     input_to_output(ifp, ofp);
-    input_delete(ifp);
+    delete ifp;
     delete ofp;
 }
 

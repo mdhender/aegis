@@ -1,7 +1,7 @@
 #!/bin/sh
 #
 #	aegis - project change supervisor
-#	Copyright (C) 1991-1998, 2000, 2002-2004 Peter Miller;
+#	Copyright (C) 1991-1998, 2000, 2002-2005 Peter Miller;
 #	All rights reserved.
 #
 #	This program is free software; you can redistribute it and/or modify
@@ -107,7 +107,7 @@ tmp=$work/tmp
 #
 # make the directories
 #
-activity="working directory 95"
+activity="working directory 110"
 mkdir $work $work/lib
 if test $? -ne 0 ; then no_result; fi
 chmod 777 $work/lib
@@ -146,7 +146,7 @@ fi
 # make a new project
 #	and check files it should have made
 #
-activity="new project 129"
+activity="new project 149"
 $bin/aegis -newpro foo -version "" -dir $workproj -v -lib $worklib > log 2>&1
 if test $? -ne 0 ; then cat log; no_result; fi
 
@@ -166,7 +166,7 @@ if test $? -ne 0 ; then cat log; no_result; fi
 #
 # create a new change
 #
-activity="new change 149"
+activity="new change 169"
 cat > $tmp << 'end'
 brief_description = "This change is used to test the aegis functionality \
 with respect to change descriptions.";
@@ -179,24 +179,24 @@ if test $? -ne 0 ; then cat log; no_result; fi
 #
 # add a new developer
 #
-activity="new developer 162"
+activity="new developer 182"
 $bin/aegis -newdev $USER -p foo -v -lib $worklib > log 2>&1
 if test $? -ne 0 ; then cat log; no_result; fi
 
 #
 # begin development of a change
 #
-activity="develop begin 169"
+activity="develop begin 189"
 $bin/aegis -devbeg 1 -p foo -dir $workchan -v -lib $worklib > log 2>&1
 if test $? -ne 0 ; then cat log; no_result; fi
 
 #
 # add a new files to the change
 #
-activity="new file 176"
+activity="new file 196"
 $bin/aegis -new_file $workchan/main.cc -nl -v -lib $worklib -p foo > log 2>&1
 if test $? -ne 0 ; then cat log; no_result; fi
-$bin/aegis -new_file $workchan/config -nl -v -lib $worklib -p foo > log 2>&1
+$bin/aegis -new_file $workchan/aegis.conf -nl -v -lib $worklib -p foo > log 2>&1
 if test $? -ne 0 ; then cat log; no_result; fi
 cat > $workchan/main.cc << 'end'
 int
@@ -206,7 +206,7 @@ main(int argc, char **argv)
 }
 end
 if test $? -ne 0 ; then no_result; fi
-cat > $workchan/config << 'end'
+cat > $workchan/aegis.conf << 'end'
 build_command = "rm -f foo; c++ -o foo -D'VERSION=\"$v\"' main.cc";
 link_integration_directory = true;
 
@@ -229,7 +229,7 @@ if test $? -ne 0 ; then no_result; fi
 #
 # create a new test
 #
-activity="new test 212"
+activity="new test 232"
 $bin/aegis -nt -v -lib $worklib -p foo > log 2>&1
 if test $? -ne 0 ; then cat log; no_result; fi
 cat > $workchan/test/00/t0001a.sh << 'end'
@@ -273,56 +273,56 @@ if test $? -ne 0 ; then no_result; fi
 #
 # build the change
 #
-activity="build 251"
+activity="build 276"
 $bin/aegis -build -nl -v -lib $worklib -p foo > log 2>&1
 if test $? -ne 0 ; then cat log; no_result; fi
 
 #
 # difference the change
 #
-activity="diff 258"
+activity="diff 283"
 $bin/aegis -diff -nl -v -lib $worklib -p foo > log 2>&1
 if test $? -ne 0 ; then cat log; no_result; fi
 
 #
 # test the change
 #
-activity="test 265"
+activity="test 290"
 $bin/aegis -test -nl -v -lib $worklib -p foo > log 2>&1
 if test $? -ne 0 ; then cat log; no_result; fi
 
 #
 # finish development of the change
 #
-activity="develop end 272"
+activity="develop end 297"
 $bin/aegis -dev_end -v -lib $worklib -p foo > log 2>&1
 if test $? -ne 0 ; then cat log; no_result; fi
 
 #
 # add a new reviewer
 #
-activity="new reviewer 279"
+activity="new reviewer 304"
 $bin/aegis -newrev $USER -p foo -v -lib $worklib > log 2>&1
 if test $? -ne 0 ; then cat log; no_result; fi
 
 #
 # pass the review
 #
-activity="review pass 286"
+activity="review pass 311"
 $bin/aegis -review_pass -chan 1 -proj foo -v -lib $worklib > log 2>&1
 if test $? -ne 0 ; then cat log; no_result; fi
 
 #
 # undo the review pass
 #
-activity="review pass undo 293"
+activity="review pass undo 318"
 $bin/aegis -review_pass_undo -chan 1 -proj foo -v -lib $worklib > log 2>&1
 if test $? -ne 0 ; then cat log; fail; fi
 
 #
 # make sure it worked
 #
-activity="verify change state 300"
+activity="verify change state 325"
 cat > ok << 'fubar'
 brief_description = "This change is used to test the aegis functionality with respect to change descriptions.";
 description = "This change is used to test the aegis functionality with respect to change descriptions.";

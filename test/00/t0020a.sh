@@ -1,7 +1,7 @@
 #!/bin/sh
 #
 #	aegis - project change supervisor
-#	Copyright (C) 1994-1998, 2004 Peter Miller;
+#	Copyright (C) 1994-1998, 2004, 2005 Peter Miller;
 #	All rights reserved.
 #
 #	This program is free software; you can redistribute it and/or modify
@@ -93,7 +93,7 @@ AEGIS_PROJECT=foo ; export AEGIS_PROJECT
 #
 # make the directories
 #
-activity="working directory 81"
+activity="working directory 96"
 mkdir $work $work/lib
 if test $? -ne 0 ; then no_result; fi
 chmod 777 $work/lib
@@ -176,14 +176,14 @@ unset LANGUAGE
 # make a new project
 #	and check files it should have made
 #
-activity="new project 161"
+activity="new project 179"
 $bin/aegis -npr foo -vers "" -dir $workproj > log 2>&1
 if test $? -ne 0 ; then cat log; no_result; fi
 
 #
 # change project attributes
 #
-activity="project attributes 168"
+activity="project attributes 186"
 cat > $tmp << 'end'
 description = "A bogus project created to test the symlink farm functionality.";
 developer_may_review = true;
@@ -198,7 +198,7 @@ if test $? -ne 0 ; then cat log; no_result; fi
 # create a new change
 #	make sure it creates the files it should
 #
-activity="new change 183"
+activity="new change 201"
 cat > $tmp << 'end'
 brief_description = "The first change";
 cause = internal_bug;
@@ -210,7 +210,7 @@ if test $? -ne 0 ; then cat log; no_result; fi
 #
 # create a second change
 #
-activity="new change 195"
+activity="new change 213"
 cat > $tmp << 'end'
 brief_description = "The second change";
 cause = internal_bug;
@@ -222,7 +222,7 @@ if test $? -ne 0 ; then cat log; no_result; fi
 #
 # add the staff
 #
-activity="staff 207"
+activity="staff 225"
 $bin/aegis -nd $USER > log 2>&1
 if test $? -ne 0 ; then cat log; no_result; fi
 $bin/aegis -nrv $USER > log 2>&1
@@ -239,9 +239,9 @@ if test $? -ne 0 ; then cat log; no_result; fi
 #
 # add a new files to the change
 #
-activity="new file 224"
+activity="new file 242"
 $bin/aegis -nf $workchan/main.cc $workchan/test.cc $workchan/Makefile \
-	$workchan/config -nl > log 2>&1
+	$workchan/aegis.conf -nl > log 2>&1
 if test $? -ne 0 ; then cat log; no_result; fi
 cat > $workchan/main.cc << 'end'
 extern void test();
@@ -274,7 +274,7 @@ foo: main.o test.o
 	c++ -o foo main.o test.o
 end
 if test $? -ne 0 ; then no_result; fi
-cat > $workchan/config << 'end'
+cat > $workchan/aegis.conf << 'end'
 build_command = "make VERSION=$version";
 link_integration_directory = true;
 create_symlinks_before_build = true;
@@ -295,7 +295,7 @@ if test $? -ne 0 ; then no_result; fi
 #
 # create a new test
 #
-activity="new test 267"
+activity="new test 298"
 $bin/aegis -nt > log 2>&1
 if test $? -ne 0 ; then cat log; no_result; fi
 cat > $workchan/test/00/t0001a.sh << 'end'
@@ -330,21 +330,21 @@ if test $? -ne 0 ; then no_result; fi
 #
 # This will try to do symlink stuff.
 #
-activity="build 295"
+activity="build 333"
 $bin/aegis -build -nl -v > log 2>&1
 if test $? -ne 0 ; then cat log; fail; fi
 
 #
 # difference the change
 #
-activity="diff 302"
+activity="diff 340"
 $bin/aegis -diff > log 2>&1
 if test $? -ne 0 ; then cat log; no_result; fi
 
 #
 # test the change
 #
-activity="test 309"
+activity="test 347"
 $bin/aegis -t -v > log 2>&1
 if test $? -ne 0 ; then cat log; no_result; fi
 
@@ -353,38 +353,38 @@ if test $? -ne 0 ; then cat log; no_result; fi
 #
 #	It must ignore the symlinks when it chmod's
 #
-activity="develop end 316"
+activity="develop end 356"
 $bin/aegis -de > log 2>&1
 if test $? -ne 0 ; then cat log; fail; fi
 
 #
 # pass the review
 #
-activity="review pass 323"
+activity="review pass 363"
 $bin/aegis -rpass -c 1 > log 2>&1
 if test $? -ne 0 ; then cat log; no_result; fi
 
 #
 # start integrating
 #
-activity="integrate begin 330"
+activity="integrate begin 370"
 $bin/aegis -ib 1 > log 2>&1
 if test $? -ne 0 ; then cat log; no_result; fi
 
 #
 # integrate build and test
 #
-activity="build 337"
+activity="build 377"
 $bin/aegis -b -nl -v > log 2>&1
 if test $? -ne 0 ; then cat log; no_result; fi
-activity="test 340"
+activity="test 380"
 $bin/aegis -t -nl -v > log 2>&1
 if test $? -ne 0 ; then cat log; no_result; fi
 
 #
 # pass the integration
 #
-activity="integrate pass 347"
+activity="integrate pass 387"
 $bin/aegis -intpass -nl > log 2>&1
 if test $? -ne 0 ; then cat log; no_result; fi
 
@@ -393,7 +393,7 @@ if test $? -ne 0 ; then cat log; no_result; fi
 #
 #	It will create symlinks into the baseline
 #
-activity="develop begin 354"
+activity="develop begin 396"
 $bin/aegis -db -c 2 -dir $workchan > log 2>&1
 if test $? -ne 0 ; then cat log; fail; fi
 
@@ -402,7 +402,7 @@ if test $? -ne 0 ; then cat log; fail; fi
 #
 #	It will have to remove the symlink before copying
 #
-activity="copy file 361"
+activity="copy file 405"
 $bin/aegis -cp $workchan/main.cc -nl > log 2>&1
 if test $? -ne 0 ; then cat log; fail; fi
 
@@ -430,7 +430,7 @@ if test $? -ne 0 ; then no_result; fi
 #
 # need another test
 #
-activity="new test 390"
+activity="new test 433"
 $bin/aegis -nt > log 2>&1
 if test $? -ne 0 ; then cat log; no_result; fi
 cat > $workchan/test/00/t0002a.sh << 'end'
@@ -469,16 +469,16 @@ if test $? -ne 0 ; then no_result; fi
 # diff the change
 # test the change
 #
-activity="build 420"
+activity="build 472"
 $bin/aegis -b -nl -v > log 2>&1
 if test $? -ne 0 ; then cat log; fail; fi
-activity="diff 423"
+activity="diff 475"
 $bin/aegis -diff -nl > log 2>&1
 if test $? -ne 0 ; then cat log; no_result; fi
-activity="test 426"
+activity="test 478"
 $bin/aegis -t -nl -v > log 2>&1
 if test $? -ne 0 ; then cat log; no_result; fi
-activity="test baseline 429"
+activity="test baseline 481"
 $bin/aegis -t -bl -nl -v > log 2>&1
 if test $? -ne 0 ; then cat log; no_result; fi
 
@@ -487,13 +487,13 @@ if test $? -ne 0 ; then cat log; no_result; fi
 # review pass
 # start integrating
 #
-activity="develop end 438"
+activity="develop end 490"
 $bin/aegis -de > log 2>&1
 if test $? -ne 0 ; then cat log; no_result; fi
-activity="review pass 441"
+activity="review pass 493"
 $bin/aegis -revpass -c 2 > log 2>&1
 if test $? -ne 0 ; then cat log; no_result; fi
-activity="integrate begin 444"
+activity="integrate begin 496"
 $bin/aegis -intbeg -c 2 > log 2>&1
 if test $? -ne 0 ; then cat log; no_result; fi
 
@@ -502,20 +502,20 @@ if test $? -ne 0 ; then cat log; no_result; fi
 # test the integration
 # test the integration against the baseline
 #
-activity="build 453"
+activity="build 505"
 $bin/aegis -b -nl -v > log 2>&1
 if test $? -ne 0 ; then cat log; no_result; fi
-activity="test 456"
+activity="test 508"
 $bin/aegis -t -nl -v > log 2>&1
 if test $? -ne 0 ; then cat log; no_result; fi
-activity="test baseline 459"
+activity="test baseline 511"
 $bin/aegis -t -bl -nl -v > log 2>&1
 if test $? -ne 0 ; then cat log; no_result; fi
 
 #
 # pass the integration
 #
-activity="integrate pass 466"
+activity="integrate pass 518"
 $bin/aegis -intpass -nl > log 2>&1
 if test $? -ne 0 ; then cat log; no_result; fi
 

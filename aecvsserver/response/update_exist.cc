@@ -80,7 +80,7 @@ destructor(response_ty *rp)
     rcp->client_side = 0;
     str_free(rcp->server_side);
     rcp->server_side = 0;
-    input_delete(rcp->source);
+    delete rcp->source;
     rcp->source = 0;
     str_free(rcp->version);
     rcp->version = 0;
@@ -120,7 +120,7 @@ write(response_ty *rp, output_ty *op)
     );
     output_mode_string(op, rcp->mode);
     os_become_orig();
-    length = input_length(rcp->source);
+    length = rcp->source->length();
     if (length > 0)
     {
 	//

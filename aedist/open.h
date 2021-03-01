@@ -1,6 +1,6 @@
 /*
  *	aegis - project change supervisor
- *	Copyright (C) 1999, 2001, 2002 Peter Miller;
+ *	Copyright (C) 1999, 2001, 2002, 2005 Peter Miller;
  *	All rights reserved.
  *
  *	This program is free software; you can redistribute it and/or modify
@@ -25,9 +25,9 @@
 
 #include <main.h>
 
-struct string_ty; /* existence */
+struct string_ty; /* forward */
+class input_cpio; /* forward */
 
-struct input_ty *aedist_open(struct string_ty *filename,
-	struct string_ty **subject_p);
+input_cpio *aedist_open(string_ty *filename, string_ty **subject_p);
 
 #endif /* AEDIST_OPEN_H */

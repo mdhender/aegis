@@ -1,6 +1,6 @@
 //
 //	aegis - project change supervisor
-//	Copyright (C) 1991-1997, 1999, 2001-2004 Peter Miller;
+//	Copyright (C) 1991-1997, 1999, 2001-2005 Peter Miller;
 //	All rights reserved.
 //
 //	This program is free software; you can redistribute it and/or modify
@@ -46,6 +46,9 @@ struct string_list_ty; // forward
   *
   * \param path
   *     The path to check for existance.
+  * \param eaccess_is_ok
+  *     If true, the EACCES error is also cause for returning false,
+  *     rather than reporting a fatal error and exiting.
   * \returns
   *     int; non-zero if the file exists, zero if the file doesn't
   *     (ENOENT or ENOTDIR)
@@ -53,7 +56,7 @@ struct string_list_ty; // forward
   *     This function does not return for any error other than ENOENT or
   *     ENOTDIR, but prints an error and exits.
   */
-int os_exists(string_ty *path);
+int os_exists(string_ty *path, bool eaccess_is_ok = false);
 
 /**
   * The os_exists function is used to determine if the given path
@@ -61,6 +64,9 @@ int os_exists(string_ty *path);
   *
   * \param path
   *     The path to check for existance.
+  * \param eaccess_is_ok
+  *     If true, the EACCES error is also cause for returning false,
+  *     rather than reporting a fatal error and exiting.
   * \returns
   *     bool; true if the file exists, false if the file doesn't exist
   *     (ENOENT or ENOTDIR).
@@ -68,7 +74,7 @@ int os_exists(string_ty *path);
   *     This function does not return for any error other than ENOENT or
   *     ENOTDIR, but prints an error and exits.
   */
-bool os_exists(const nstring &path);
+bool os_exists(const nstring &path, bool eaccess_is_ok = false);
 
 /**
   * The os_mkdir function is used to create a new directory.  It does
@@ -779,13 +785,52 @@ void os_chmod_errok(string_ty *path, int mode);
 void os_chmod_errok(const nstring &path, int mode);
 
 int os_chmod_query(string_ty *);
+
+/**
+  * The os_link function is used to make a hard link between two files.
+  *
+  * @param from
+  *     The existing file.
+  * @param to
+  *     The new file to be a hard link of the existing file.
+  */
 void os_link(string_ty *from, string_ty *to);
+
+/**
+  * The os_link function is used to make a hard link between two files.
+  *
+  * @param from
+  *     The existing file.
+  * @param to
+  *     The new file to be a hard link of the existing file.
+  */
+void os_link(const nstring &from, const nstring &to);
+
 int os_testing_mode(void);
 void os_become_init(void);
 void os_become_init_mortal(void);
 void os_become_reinit_mortal(void);
 void os_become(int uid, int gid, int umsk);
+
+/**
+  * The os_become_undo function is used to undo the effects of the
+  * os_become function.  It returns the effective uid and gid to root,
+  * so that future os_become call will work.
+  *
+  * It is a bug (and a fatal error will be issued) if there is no
+  * matching os_become call.
+  */
 void os_become_undo(void);
+
+/**
+  * The os_become_undo_atexit function is used to cancel any os_become
+  * setting, if one is active.  It performs all of the functions
+  * of_os_become_undo, except it is not an error if there has been no
+  * matching os_become call.  This function may <b>only</b> be called
+  * from quite_action derived classes.
+  */
+void os_become_undo_atexit(void);
+
 void os_become_orig(void);
 void os_become_query(int *uid, int *gid, int *umsk);
 void os_become_orig_query(int *uid, int *gid, int *umsk);
@@ -826,7 +871,28 @@ enum edit_ty
 	edit_background
 };
 
-void os_edit(string_ty *, edit_ty);
+/**
+  * The os_edit function is used to pass the named file to an edirot for
+  * the user to edit.  It returns whn the user quit the editor.
+  *
+  * @param filename
+  *     The name of the file to be edited.
+  * @param mode
+  *     How the editing is to be done.
+  */
+void os_edit(string_ty *filename, edit_ty mode);
+
+/**
+  * The os_edit function is used to pass the named file to an edirot for
+  * the user to edit.  It returns whn the user quit the editor.
+  *
+  * @param filename
+  *     The name of the file to be edited.
+  * @param mode
+  *     How the editing is to be done.
+  */
+void os_edit(const nstring &filename, edit_ty mode);
+
 string_ty *os_edit_string(string_ty *, edit_ty);
 string_ty *os_edit_new(edit_ty);
 string_ty *os_edit_filename(int);
@@ -844,6 +910,16 @@ int os_pathconf_path_max(string_ty *);
   *     The dst paramter is the destination file to be created.
   */
 void os_symlink(string_ty *src, string_ty *dst);
+
+/**
+  * The os_symlink function is used to make symbolic links.
+  *
+  * @param src
+  *     The src paramter is the source file to be linked from.
+  * @param dst
+  *     The dst paramter is the destination file to be created.
+  */
+void os_symlink(const nstring &src, const nstring &dst);
 
 /**
   * The os_symlink_or_copy function is used to make symbolic links if
@@ -908,6 +984,30 @@ bool os_isa_symlink(string_ty *path);
   *     true if the file exists and is not a regular file,
   */
 int os_isa_special_file(string_ty *path);
+
+/**
+  * The os_magic_file function is used to determine a file type from
+  * file contents.
+  *
+  * @param filename
+  *     The name of the file to be examined to determine the file type.
+  * @returns
+  *     A string describing the file, as a MIME content-type.
+  *     E.g. most source files will be "text/plain; charset=us-ascii"
+  */
+nstring os_magic_file(const nstring &filename);
+
+/**
+  * The os_magic_file function is used to determine a file type from
+  * file contents.  This is for compatibility and will eventually disappear.
+  *
+  * @param filename
+  *     The name of the file to be examined to determine the file type.
+  * @returns
+  *     A string describing the file, as a MIME content-type.
+  *     E.g. most source files will be "text/plain; charset=us-ascii"
+  */
+nstring os_magic_file(string_ty *filename);
 
 /** @} */
 #endif // OS_H

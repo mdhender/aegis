@@ -124,7 +124,7 @@ flock_construct(struct flock *p, int type, long start, long length)
     memset(p, 0, sizeof(*p));
 
     assert(start >= 0);
-    assert(length > 0);
+    assert(length >= 0);
     p->l_type = type;
     p->l_whence = SEEK_SET;
 #ifdef WHOLE_FILE_LOCKS_ONLY
@@ -765,7 +765,7 @@ lock_take(void)
 	// give all the locks back
 	// that we got so far
 	//
-	flock_construct(&p, F_UNLCK, 0L, 0x7FFFFFFF);
+	flock_construct(&p, F_UNLCK, 0L, 0L);
 	if (glue_fcntl(fd, F_SETLKW, &p))
 	{
 	    sub_context_ty  *scp;
@@ -895,7 +895,7 @@ lock_take(void)
 	// and then release it,
 	// before trying all over again.
 	//
-	flock_construct(&p, F_UNLCK, 0L, 0x7FFFFFFF);
+	flock_construct(&p, F_UNLCK, 0L, 0L);
 	if (glue_fcntl(fd, F_SETLKW, &p))
 	{
 	    sub_context_ty  *scp;
@@ -956,7 +956,7 @@ lock_release(void)
     // This should be unnecessary because we close the file anyway,
     // but some operating systems hang onto them if we don't.
     //
-    flock_construct(&p, F_UNLCK, 0L, 0x7FFFFFFF);
+    flock_construct(&p, F_UNLCK, 0L, 0L);
     err = glue_fcntl(fildes, F_SETLKW, &p);
 #ifdef __CYGWIN__
     if (err && errno == EACCES)

@@ -56,6 +56,11 @@ class aediff_bad_state:
     public change_functor
 {
 public:
+    aediff_bad_state() :
+	change_functor(true)
+    {
+    }
+
     void
     operator()(change_ty *cp)
     {

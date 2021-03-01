@@ -1,0 +1,157 @@
+//
+//	aegis - project change supervisor
+//	Copyright (C) 2005 Peter Miller;
+//	All rights reserved.
+//
+//	This program is free software; you can redistribute it and/or modify
+//	it under the terms of the GNU General Public License as published by
+//	the Free Software Foundation; either version 2 of the License, or
+//	(at your option) any later version.
+//
+//	This program is distributed in the hope that it will be useful,
+//	but WITHOUT ANY WARRANTY; without even the implied warranty of
+//	MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+//	GNU General Public License for more details.
+//
+//	You should have received a copy of the GNU General Public License
+//	along with this program; if not, write to the Free Software
+//	Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111, USA.
+//
+// MANIFEST: implementation of the xml_node class
+//
+
+#pragma implementation "xml_node"
+
+#include <xml_node.h>
+
+
+xml_node::~xml_node()
+{
+}
+
+
+xml_node::xml_node()
+{
+}
+
+
+xml_node::xml_node(const xml_node &arg)
+{
+}
+
+
+xml_node &
+xml_node::operator=(const xml_node &arg)
+{
+    return *this;
+}
+
+
+void
+xml_node::none(const nstring &name, const nstring &value)
+{
+}
+
+
+void
+xml_node::attribute(const nstring &name, const nstring &value)
+{
+}
+
+
+void
+xml_node::cdata(const nstring &value)
+{
+    text(value);
+}
+
+
+void
+xml_node::comment(const nstring &value)
+{
+}
+
+
+void
+xml_node::document(const nstring &value)
+{
+}
+
+
+void
+xml_node::document_fragment(const nstring &value)
+{
+}
+
+
+void
+xml_node::document_type(const nstring &name, const nstring &value)
+{
+}
+
+
+void
+xml_node::element_begin(const nstring &name)
+{
+}
+
+
+void
+xml_node::element_end(const nstring &name)
+{
+}
+
+
+void
+xml_node::entity_begin(const nstring &name, const nstring &value)
+{
+}
+
+
+void
+xml_node::entity_end(const nstring &name, const nstring &value)
+{
+}
+
+
+void
+xml_node::entity_reference(const nstring &name, const nstring &value)
+{
+}
+
+
+void
+xml_node::notation(const nstring &name, const nstring &value)
+{
+}
+
+
+void
+xml_node::processing_instruction(const nstring &name, const nstring &value)
+{
+}
+
+
+void
+xml_node::significant_whitespace(const nstring &value)
+{
+    text(value);
+}
+
+
+void
+xml_node::text(const nstring &value)
+{
+}
+
+
+void
+xml_node::whitespace(const nstring &value)
+{
+}
+
+
+void
+xml_node::xml_declaration(const nstring &name, const nstring &value)
+{
+}

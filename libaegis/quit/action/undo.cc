@@ -1,6 +1,6 @@
 //
 //	aegis - project change supervisor
-//	Copyright (C) 2004 Peter Miller;
+//	Copyright (C) 2004, 2005 Peter Miller;
 //	All rights reserved.
 //
 //	This program is free software; you can redistribute it and/or modify
@@ -22,6 +22,7 @@
 
 #pragma implementation "quit_action_undo"
 
+#include <os.h>
 #include <quit/action/undo.h>
 #include <undo.h>
 
@@ -41,5 +42,8 @@ void
 quit_action_undo::operator()(int exit_status)
 {
     if (exit_status != 0)
+    {
+	os_become_undo_atexit();
 	undo();
+    }
 }

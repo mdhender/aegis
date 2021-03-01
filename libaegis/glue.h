@@ -1,24 +1,24 @@
-/*
- *	aegis - project change supervisor
- *	Copyright (C) 1993, 1994, 1999, 2002, 2004, 2005 Peter Miller;
- *	All rights reserved.
- *
- *	This program is free software; you can redistribute it and/or modify
- *	it under the terms of the GNU General Public License as published by
- *	the Free Software Foundation; either version 2 of the License, or
- *	(at your option) any later version.
- *
- *	This program is distributed in the hope that it will be useful,
- *	but WITHOUT ANY WARRANTY; without even the implied warranty of
- *	MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
- *	GNU General Public License for more details.
- *
- *	You should have received a copy of the GNU General Public License
- *	along with this program; if not, write to the Free Software
- *	Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111, USA.
- *
- * MANIFEST: interface definition for libaegis/glue.c
- */
+//
+//	aegis - project change supervisor
+//	Copyright (C) 1993, 1994, 1999, 2002, 2004, 2005 Peter Miller;
+//	All rights reserved.
+//
+//	This program is free software; you can redistribute it and/or modify
+//	it under the terms of the GNU General Public License as published by
+//	the Free Software Foundation; either version 2 of the License, or
+//	(at your option) any later version.
+//
+//	This program is distributed in the hope that it will be useful,
+//	but WITHOUT ANY WARRANTY; without even the implied warranty of
+//	MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+//	GNU General Public License for more details.
+//
+//	You should have received a copy of the GNU General Public License
+//	along with this program; if not, write to the Free Software
+//	Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111, USA.
+//
+// MANIFEST: interface definition for libaegis/glue.c
+//
 
 #ifndef AEGIS_GLUE_H
 #define AEGIS_GLUE_H
@@ -31,7 +31,9 @@
 struct stat;
 struct utimbuf;
 struct flock;
-struct string_list_ty; /* forward */
+struct string_list_ty; // forward
+class nstring; // forward
+class nstring_list; // forward
 
 int copyfile(const char *src, const char *dst);
 int catfile(const char *path);
@@ -42,16 +44,60 @@ int read_whole_dir(const char *path, char **data, long *datalen);
   * names contained in a directory.  It is returned as a string_list_ty.
   * The string list is initialized (via string_list_constructor) before
   * the results are appended.
+  *
+  * @param path
+  *     The path to read the directory entries of.
+  * @param wl
+  *     The string list to hold the answers.
+  *     It is clear()ed first.
+  * @returns
+  *     -1 on error, 0 on success
   */
-int read_whole_dir__wl(const char *path, struct string_list_ty *);
+int read_whole_dir__wl(const char *path, struct string_list_ty *wl);
+
+/**
+  * The read_whole_dir__wl function may be used to read the list of file
+  * names contained in a directory.  It is returned as a nstring_list.
+  *
+  * @param path
+  *     The path to read the directory entries of.
+  * @param wl
+  *     The string list to hold the answers.
+  *     It is clear()ed first.
+  * @returns
+  *     -1 on error, 0 on success
+  */
+int read_whole_dir__wl(const nstring &path, nstring_list &wl);
 
 /**
   * The read_whole_dir__wla function may be used to read the list of
   * file names contained in a directory and append them to the given
-  * string list.  It is returned as a string_list_ty.  The string list
-  * is NOT initialized first.
+  * string list.  It is returned as a string_list_ty.
+  *
+  * @param path
+  *     The path to read the directory entries of.
+  * @param wl
+  *     The string list to hold the answers.
+  *     It is NOT clear()ed first.
+  * @returns
+  *     -1 on error, 0 on success
   */
-int read_whole_dir__wla(const char *path, struct string_list_ty *);
+int read_whole_dir__wla(const char *path, struct string_list_ty *wl);
+
+/**
+  * The read_whole_dir__wla function may be used to read the list of
+  * file names contained in a directory and append them to the given
+  * string list.  It is returned as a string_list_ty.
+  *
+  * @param path
+  *     The path to read the directory entries of.
+  * @param wl
+  *     The string list to hold the answers.
+  *     It is NOT clear()ed first.
+  * @returns
+  *     -1 on error, 0 on success
+  */
+int read_whole_dir__wla(const nstring &path, nstring_list &wl);
 
 int file_compare(const char *, const char *);
 int file_fingerprint(const char *path, char *buf, int max);
@@ -102,11 +148,11 @@ int glue_fwrite(char *, long, long, FILE *);
 #ifndef CONF_NO_seteuid
 #ifndef aegis_glue_disable
 
-/*
- * when seteuid works,
- * use the functions directly,
- * not the glue functions
- */
+//
+// when seteuid works,
+// use the functions directly,
+// not the glue functions
+//
 #define	glue_access	access
 #define	glue_catfile	catfile
 #define	glue_chmod	chmod
@@ -144,7 +190,7 @@ int glue_fwrite(char *, long, long, FILE *);
 #define	glue_write	::write
 #define	glue_fwrite	fwrite
 
-#endif /* aegis_glue_disable */
-#endif /* CONF_NO_seteuid */
+#endif // aegis_glue_disable
+#endif // CONF_NO_seteuid
 
-#endif /* AEGIS_GLUE_H */
+#endif // AEGIS_GLUE_H

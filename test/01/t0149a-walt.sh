@@ -125,7 +125,7 @@ workchan=$work/chan
 workproj=$work/proj
 tmp=$work/tmp
 export AEGIS_PROJECT AEGIS_PATH
-activity="new project 130"
+activity="new project 128"
 $bin/aegis -npr $AEGIS_PROJECT -vers "" -dir $workproj \
     -lib $work/lib -verb > log 2>&1
 if test $? -ne 0 ; then cat log; no_result; fi
@@ -145,7 +145,7 @@ if test $? -ne 0 ; then cat log; no_result; fi
 #
 # add the staff
 #
-activity="staff 150"
+activity="staff 148"
 $bin/aegis -nd $USER -p $AEGIS_PROJECT > log 2>&1
 if test $? -ne 0 ; then cat log; no_result; fi
 $bin/aegis -nrv $USER -p $AEGIS_PROJECT > log 2>&1
@@ -156,7 +156,7 @@ if test $? -ne 0 ; then cat log; no_result; fi
 #
 # create a new change
 #
-activity="new change 161"
+activity="new change 159"
 cat > $tmp << 'end'
 brief_description = "The first change";
 cause = internal_bug;
@@ -176,7 +176,7 @@ if test $? -ne 0 ; then cat log; no_result; fi
 $bin/aegis -db 10 -dir $workchan > log 2>&1
 if test $? -ne 0 ; then cat log; no_result; fi
 
-cat > $workchan/config << 'end'
+cat > $workchan/aegis.conf << 'end'
 build_command = "exit 0";
 link_integration_directory = true;
 history_get_command =
@@ -195,43 +195,43 @@ remove_symlinks_after_integration_build = false;
 end
 if test $? -ne 0 ; then no_result; fi
 
-activity="New file 200"
-$bin/aegis -nf $workchan/config > log 2>&1
+activity="New file 198"
+$bin/aegis -nf $workchan/aegis.conf > log 2>&1
 if test $? -ne 0 ; then cat log; no_result; fi
 
-activity="New file 204"
+activity="New file 202"
 $bin/aegis -nf $workchan/source-file0 > log 2>& 1
 if test $? -ne 0 ; then cat log; no_result; fi
 
-activity="New file 208"
+activity="New file 206"
 $bin/aegis -nf $workchan/source-file1 > log 2>& 1
 if test $? -ne 0 ; then cat log; no_result; fi
 
-activity="Build 212"
+activity="Build 210"
 $bin/aegis -b > log 2>&1
 if test $? -ne 0 ; then cat log; no_result; fi
 
-activity="Diff 216"
+activity="Diff 214"
 $bin/aegis -diff > log 2>&1
 if test $? -ne 0 ; then cat log; no_result; fi
 
-activity="Develop end 220"
+activity="Develop end 218"
 $bin/aegis -de > log 2>&1
 if test $? -ne 0 ; then cat log; no_result; fi
 
-activity="Review Pass 224"
+activity="Review Pass 222"
 $bin/aegis -rpass 10 > log 2>&1
 if test $? -ne 0 ; then cat log; no_result; fi
 
-activity="Integrate Begin 228"
+activity="Integrate Begin 226"
 $bin/aegis -ib  10 > log 2>&1
 if test $? -ne 0 ; then cat log; no_result; fi
 
-activity="Integrate Build 232"
+activity="Integrate Build 230"
 $bin/aegis -b 10 > log 2>&1
 if test $? -ne 0 ; then cat log; no_result; fi
 
-activity="Integrate Pass 236"
+activity="Integrate Pass 234"
 $bin/aegis -ipass 10 > log 2>&1
 if test $? -ne 0 ; then cat log; no_result; fi
 
@@ -239,7 +239,7 @@ if test $? -ne 0 ; then cat log; no_result; fi
 # the second change
 #
 
-activity="New change 244"
+activity="New change 242"
 cat > $tmp << 'end'
 brief_description = "The second change";
 cause = internal_bug;
@@ -255,28 +255,28 @@ if test $? -ne 0 ; then cat log; no_result; fi
 $bin/aegis -db 11 -p $AEGIS_PROJECT -dir $workchan > log 2>&1
 if test $? -ne 0 ; then cat log; no_result; fi
 
-activity="move file 260"
+activity="move file 258"
 $bin/aegis -mv -c 11 -p $AEGIS_PROJECT $workchan/source-file0 \
     $workchan/source-file2 -nl > log 2>&1
 if test $? -ne 0 ; then cat log; no_result; fi
 
-activity="second change build 265"
+activity="second change build 263"
 $bin/aegis -build -c 11 -nl > log 2>&1
 if test $? -ne 0 ; then cat log; no_result; fi
 
-activity="second change diff 269"
+activity="second change diff 267"
 $bin/aegis -diff -c 11 -nl > log 2>&1
 if test $? -ne 0 ; then cat log; no_result; fi
 
-activity="second change develop end 273"
+activity="second change develop end 271"
 $bin/aegis -de -c 11 -verb > log 2>&1
 if test $? -ne 0 ; then cat log; no_result; fi
 
-activity="review pass 277"
+activity="review pass 275"
 $bin/aegis -rpass -c 11 -verb > log 2>&1
 if test $? -ne 0 ; then cat log; no_result; fi
 
-activity="integrate begin 281"
+activity="integrate begin 279"
 $bin/aegis -ib -c 11 -verb > log 2>&1
 if test $? -ne 0 ; then cat log; no_result; fi
 
@@ -292,14 +292,14 @@ if test $? -ne 0 ; then cat log; no_result; fi
 #
 # create the patch
 #
-activity="generate the patch 297"
+activity="generate the patch 295"
 $bin/aedist -s -p $AEGIS_PROJECT -bl -es -o $work/$AEGIS_PROJECT.ae > log 2>&1
 if test $? -ne 0 ; then cat log; no_result; fi
 
 #
 # cleanup
 #
-activity="cleanup 304"
+activity="cleanup 302"
 rm -rf $workchan
 rm -rf $workproj
 rm -rf $work/lib
@@ -308,7 +308,7 @@ rm -rf $work/lib
 # create the destination project
 #
 
-activity="new project 313"
+activity="new project 311"
 $bin/aegis -npr $AEGIS_PROJECT -vers "" -dir $workproj \
     -lib $work/lib -verb > log 2>&1
 if test $? -ne 0 ; then cat log; no_result; fi
@@ -329,7 +329,7 @@ if test $? -ne 0 ; then cat log; no_result; fi
 #
 # add the staff
 #
-activity="staff 334"
+activity="staff 332"
 $bin/aegis -nd $USER -p $AEGIS_PROJECT > log 2>&1
 if test $? -ne 0 ; then cat log; no_result; fi
 $bin/aegis -nrv $USER -p $AEGIS_PROJECT > log 2>&1
@@ -337,7 +337,7 @@ if test $? -ne 0 ; then cat log; no_result; fi
 $bin/aegis -ni $USER -p $AEGIS_PROJECT > log 2>&1
 if test $? -ne 0 ; then cat log; no_result; fi
 
-activity="receive the change 342"
+activity="receive the change 340"
 $bin/aedist -r -p $AEGIS_PROJECT -f $work/$AEGIS_PROJECT.ae \
     -dir $workchan -verb > log 2>&1
 if test $? -ne 0 ; then cat log; fail; fi

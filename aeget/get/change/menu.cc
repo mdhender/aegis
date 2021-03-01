@@ -1,6 +1,6 @@
 //
 //	aegis - project change supervisor
-//	Copyright (C) 2003, 2004 Peter Miller;
+//	Copyright (C) 2003-2005 Peter Miller;
 //	All rights reserved.
 //
 //	This program is free software; you can redistribute it and/or modify
@@ -26,6 +26,7 @@
 #include <cstate.h>
 #include <get/change/menu.h>
 #include <http.h>
+#include <nstring.h>
 #include <project.h>
 #include <str_list.h>
 
@@ -41,6 +42,9 @@ get_change_menu(change_ty *cp, string_ty *filename, string_list_ty *modifier)
     html_header_ps(0, cp);
     printf("<h1 align=center>\n");
     emit_change_but1(cp);
+    long dn = change_cstate_get(cp)->delta_number;
+    if (dn > 0)
+	printf(", Delta %ld", dn);
     printf("</h1>\n");
 
     cstate_ty *cstate_data = change_cstate_get(cp);
@@ -74,6 +78,30 @@ get_change_menu(change_ty *cp, string_ty *filename, string_list_ty *modifier)
     printf("<dt>State<dd>This change is in the ");
     printf("<dfn>%s</dfn> state.\n", cstate_state_ename(cstate_data->state));
     printf("<p>\n");
+
+    //
+    // List attributes
+    //
+    if (cstate_data->attribute && cstate_data->attribute->length)
+    {
+	printf("<dt>Attributes<dd>\n");
+	printf("<table>\n");
+	printf("<tr><th>Name</th><th>Value</th></tr>\n");
+	attributes_list_ty *alp = cstate_data->attribute;
+	for (size_t j = 0; j < alp->length; ++j)
+	{
+	    attributes_ty *ap = alp->list[j];
+	    printf("<tr><td>\n");
+	    if (ap->name)
+		printf("%s\n", nstring(ap->name).html_quote().c_str());
+	    printf("</td><td>\n");
+	    if (ap->value)
+		printf("%s\n", nstring(ap->value).html_quote().c_str());
+	    printf("</td></tr>\n");
+	}
+	printf("</table>\n");
+	printf("<p>\n");
+    }
 
     if (cstate_data->branch)
     {

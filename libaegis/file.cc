@@ -1,6 +1,6 @@
 //
 //	aegis - project change supervisor
-//	Copyright (C) 1991-1995, 1998, 1999, 2001-2004 Peter Miller;
+//	Copyright (C) 1991-1995, 1998, 1999, 2001-2005 Peter Miller;
 //	All rights reserved.
 //
 //	This program is free software; you can redistribute it and/or modify
@@ -30,6 +30,7 @@
 #include <glue.h>
 #include <input/file_text.h>
 #include <mem.h>
+#include <nstring/accumulator.h>
 #include <os.h>
 #include <sub.h>
 #include <trace.h>
@@ -110,61 +111,31 @@ copy_whole_file(string_ty *from, string_ty *to, int cmt)
 }
 
 
-//
-// NAME
-//	read_whole_file
-//
-// SYNOPSIS
-//	string_ty *read_whole_file(char *path);
-//
-// DESCRIPTION
-//	The read_whole_file function is used to
-//	read a file into a string.  The file is assumed to be a text file.
-//
-// ARGUMENTS
-//	path	- pathname of file to be read
-//
-// RETURNS
-//	Pointer to string in dynamic memory containing text of file.
-//	Any trailing white space will have been removed.
-//
-// CAVEAT
-//	Assumes the user has already been set.
-//
-
 string_ty *
 read_whole_file(string_ty *fn)
 {
-    size_t	    length_max;
-    size_t	    length;
-    char	    *text;
-    string_ty	    *s;
-    int		    c;
-    input_ty	    *fp;
+    nstring result(read_whole_file(nstring(fn)));
+    return str_copy(result.get_ref());
+}
 
+
+nstring
+read_whole_file(const nstring &fn)
+{
+    nstring_accumulator acc;
     os_become_must_be_active();
-    length_max = 1000;
-    length = 0;
-    text = (char *)mem_alloc(length_max);
-    fp = input_file_text_open(fn);
+    input_ty *fp = input_file_text_open(fn.get_ref());
     for (;;)
     {
-	c = input_getc(fp);
+	int c = fp->getc();
 	if (c == EOF)
 	    break;
-	if (length >= length_max)
-	{
-	    length_max = length_max * 2 + 16;
-	    text = (char *)mem_change_size(text, length_max);
-	}
-	text[length++] = c;
+	acc.push_back(c);
     }
-    while (length > 0 && isspace((unsigned char)text[length - 1]))
-	--length;
-    input_delete(fp);
-    s = str_n_from_c(text, length);
-    mem_free(text);
-    return s;
+    while (acc.size() > 0 && isspace((unsigned char)acc.back()))
+	acc.pop_back();
+    delete fp;
+    return acc.mkstr();
 }
 
 

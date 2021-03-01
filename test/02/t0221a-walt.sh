@@ -127,7 +127,7 @@ check_it()
 AEGIS_PATH=$work/lib
 export AEGIS_PATH
 
-activity="new project 129"
+activity="new project 130"
 $bin/aegis -npr test -version - -v -dir $work/proj.dir \
 	-lib $AEGIS_PATH > log 2>&1
 if test $? -ne 0 ; then cat log; no_result; fi
@@ -136,7 +136,7 @@ AEGIS_PROJECT=test
 export AEGIS_PROJECT
 
 
-activity="project attributes 138"
+activity="project attributes 139"
 cat > paf << fubar
 developer_may_review = true;
 developer_may_integrate = true;
@@ -149,7 +149,7 @@ if test $? -ne 0 ; then no_result; fi
 $bin/aegis -pa -f paf -v > log 2>&1
 if test $? -ne 0 ; then cat log; no_result; fi
 
-activity="staff 151"
+activity="staff 152"
 $bin/aegis -nd $USER -v > log 2>&1
 if test $? -ne 0 ; then cat log; no_result; fi
 $bin/aegis -nrv $USER -v > log 2>&1
@@ -161,7 +161,7 @@ if test $? -ne 0 ; then cat log; no_result; fi
 # We do not use the trunk because it's special, it does not have a
 # parent, and this condition make it special also in the code.
 #
-activity="new branch 163"
+activity="new branch 164"
 $bin/aegis -nbr -p $AEGIS_PROJECT 1 > log 2>&1
 if test $? -ne 0; then cat log; no_result; fi
 
@@ -170,7 +170,7 @@ export AEGIS_PROJECT
 
 proj=$AEGIS_PROJECT
 
-activity="new change 172"
+activity="new change 173"
 cat > caf << 'fubar'
 brief_description = "one";
 cause = internal_enhancement;
@@ -180,15 +180,15 @@ if test $? -ne 0 ; then no_result; fi
 $bin/aegis -nc -f caf -v -p $AEGIS_PROJECT > log 2>&1
 if test $? -ne 0 ; then cat log; no_result; fi
 
-activity="develop begin 182"
+activity="develop begin 183"
 $bin/aegis -db 10 -v > log 2>&1
 if test $? -ne 0 ; then cat log; no_result; fi
 
-activity="new file 186"
-$bin/aegis -nf $work/${proj}.C010/config $work/${proj}.C010/fred \
+activity="new file 187"
+$bin/aegis -nf $work/${proj}.C010/aegis.conf $work/${proj}.C010/fred \
 	$work/${proj}.C010/barney -v > log 2>&1
 if test $? -ne 0 ; then cat log; no_result; fi
-cat > $work/${proj}.C010/config << 'fubar'
+cat > $work/${proj}.C010/aegis.conf << 'fubar'
 build_command = "date > derived1 && date > derived2";
 history_get_command =
 	"co -u'$e' -p $h,v > $o";
@@ -211,54 +211,54 @@ if test $? -ne 0 ; then no_result; fi
 echo one > $work/${proj}.C010/barney
 if test $? -ne 0 ; then no_result; fi
 
-activity="build 213"
+activity="build 214"
 $bin/aegis -b -v > log 2>&1
 if test $? -ne 0 ; then cat log; no_result; fi
 
-activity="diff 217"
+activity="diff 218"
 $bin/aegis -diff -v > log 2>&1
 if test $? -ne 0 ; then cat log; no_result; fi
 
-activity="develop end 221"
+activity="develop end 222"
 $bin/aegis -de -v > log 2>&1
 if test $? -ne 0 ; then cat log; no_result; fi
 
-activity="integrate begin 225"
+activity="integrate begin 226"
 $bin/aegis -ib -mini 10 -v > log 2>&1
 if test $? -ne 0 ; then cat log; no_result; fi
 
-activity="check the baseline content 229"
+activity="check the baseline content 230"
 delta_dir=`$bin/aegis -cd`
-test -f $delta_dir/config || no_result
+test -f $delta_dir/aegis.conf || no_result
 test -f $delta_dir/fred || no_result
 test -f $delta_dir/barney || no_result
 
-activity="integrate build 235"
+activity="integrate build 236"
 $bin/aegis -b -v > log 2>&1
 if test $? -ne 0 ; then cat log; no_result; fi
 
-activity="integrate diff 239"
+activity="integrate diff 240"
 $bin/aegis -diff -v > log 2>&1
 if test $? -ne 0 ; then cat log; no_result; fi
 
-activity="check the baseline content 243"
+activity="check the baseline content 244"
 delta_dir=`$bin/aegis -cd`
-test -f $delta_dir/config || no_result
+test -f $delta_dir/aegis.conf || no_result
 test -f $delta_dir/fred || no_result
 test -f $delta_dir/barney || no_result
 
-activity="integrate pass 249"
+activity="integrate pass 250"
 $bin/aegis -ipass -v > log 2>&1
 if test $? -ne 0 ; then cat log; no_result; fi
 
-activity="check the baseline content 253"
+activity="check the baseline content 254"
 bl_dir=$work/proj.dir/branch.1/baseline
-test -f $bl_dir/config || no_result
+test -f $bl_dir/aegis.conf || no_result
 test -f $bl_dir/fred || no_result
 test -f $bl_dir/barney || no_result
 
 
-activity="new branch 260"
+activity="new branch 261"
 $bin/aegis -nbr -p $proj 1 > log 2>&1
 if test $? -ne 0; then cat log; no_result; fi
 
@@ -267,7 +267,7 @@ export AEGIS_PROJECT
 
 proj=$AEGIS_PROJECT
 
-activity="new change 269"
+activity="new change 270"
 cat > caf << 'fubar'
 brief_description = "one";
 cause = internal_enhancement;
@@ -277,7 +277,7 @@ if test $? -ne 0 ; then no_result; fi
 $bin/aegis -nc -f caf 1 -v -p $AEGIS_PROJECT > log 2>&1
 if test $? -ne 0 ; then cat log; no_result; fi
 
-activity="develop begin 279"
+activity="develop begin 280"
 $bin/aegis -db 1 -dir $work/$proj.C001 >  log 2>&1
 if test $? -ne 0; then cat log; no_result; fi
 
@@ -287,13 +287,13 @@ if test $? -ne 0; then cat log; no_result; fi
 echo 'append something' >> $work/$proj.C001/fred
 if test $? -ne 0; then no_result; fi
 
-activity="create a new config file 289"
+activity="create a new aegis.conf file 290"
 $bin/aegis -nf -config $work/$proj.C001/test.conf -nl -v > log 2>&1
 if test $? -ne 0; then cat log; no_result; fi
 
 cat > $work/$proj.C001/test.conf <<'EOF'
 /*
- * we are not testing tests, we only need a config file somewhere.
+ * we are not testing tests, we only need a aegis.conf file somewhere.
  */
 new_test_filename =
         "test/${zpad $hundred 2}/"
@@ -301,46 +301,46 @@ new_test_filename =
 EOF
 if test $? -ne 0; then no_result; fi
 
-activity="build 303"
+activity="build 304"
 $bin/aegis -build 1  > log 2>&1
 if test $? -ne 0 ; then cat log; no_result; fi
 
-activity="diff 307"
+activity="diff 308"
 $bin/aegis -diff 1 > log 2>&1
 if test $? -ne 0 ; then cat log; no_result; fi
 
-activity="dev_end 311"
+activity="dev_end 312"
 $bin/aegis -dev_end 1 > log 2>&1
 if test $? -ne 0 ; then cat log; no_result; fi
 
-activity="ibegin 315"
+activity="ibegin 316"
 $bin/aegis -ib  1 > log 2>&1
 if test $? -ne 0 ; then cat log; no_result; fi
 
-activity="check dir content 319"
+activity="check dir content 320"
 delta_dir=`$bin/aegis -cd -c 1`
 test -f $delta_dir/fred || no_result
 test -f $delta_dir/test.conf || no_result
 
-activity="build 324"
+activity="build 325"
 $bin/aegis -build 1 > log 2>&1
 if test $? -ne 0 ; then cat log; no_result; fi
 
-activity="check the baseline content 328"
+activity="check the baseline content 329"
 delta_dir=`$bin/aegis -cd -c 1`
 test -f $delta_dir/fred || no_result
 test -f $delta_dir/derived1 || no_result
 test -f $delta_dir/derived2 || no_result
 
-activity="diff  334"
+activity="diff  335"
 $bin/aegis -diff 1 -nl -v > log 2>&1
 if test $? -ne 0 ; then cat log; no_result; fi
 
-activity="integrate pass 338"
+activity="integrate pass 339"
 $bin/aegis -ipass 1 -nl -v > log 2>&1
 if test $? -ne 0 ; then cat log; no_result; fi
 
-activity="check the baseline content 342"
+activity="check the baseline content 343"
 bl_dir=$work/proj.dir/branch.1/branch.1/baseline
 test -f $bl_dir/fred || no_result
 test -f $bl_dir/test.conf || no_result
@@ -412,7 +412,7 @@ if test $? -ne 0 ; then no_result; fi
 
 check_it ok $work/proj.dir/info/change/0/001.branch/0/001.fs
 
-activity="close branch.1 349"
+activity="close branch.1 415"
 AEGIS_PROJECT=test.1
 export AEGIS_PROJECT
 $bin/aegis -dev_end -p $AEGIS_PROJECT 1 -v > log 2>&1
@@ -426,7 +426,7 @@ if test $? -ne 0 ; then cat log; no_result; fi
 $bin/aegis -ipass -p $AEGIS_PROJECT 1 -v > log 2>&1
 if test $? -ne 0 ; then cat log; no_result; fi
 
-activity="check the baseline content 363"
+activity="check the baseline content 429"
 bl_dir=$work/proj.dir/branch.1/baseline
 test -f $bl_dir/fred || no_result
 test -f $bl_dir/test.conf || no_result
@@ -434,7 +434,7 @@ test -f $bl_dir/derived1 || no_result
 test -f $bl_dir/derived2 || no_result
 
 
-activity="new change 371"
+activity="new change 437"
 cat > caf <<EOF
 brief_description = "two";
 cause = internal_enhancement;
@@ -445,43 +445,43 @@ if test $? -ne 0; then no_result; fi
 $bin/aegis -nc -p $AEGIS_PROJECT -f caf 2 -v > log 2>&1
 if test $? -ne 0 ; then cat log; no_result; fi
 
-activity="develop begin 382"
+activity="develop begin 448"
 $bin/aegis -db 2 -dir $work/$proj.C002 -v > log 2>&1
 if test $? -ne 0 ; then cat log; no_result; fi
 
-activity="remove config file 386"
+activity="remove aegis.conf file 452"
 $bin/aegis -rm $work/$proj.C002/test.conf -v -nl > log 2>&1
 if test $? -ne 0 ; then cat log; no_result; fi
 
-activity="diff 390"
+activity="diff 456"
 $bin/aegis -diff -v -nl > log 2>&1
 if test $? -ne 0 ; then cat log; no_result; fi
 
-activity="build 394"
+activity="build 460"
 $bin/aegis -build -v -nl > log 2>&1
 if test $? -ne 0 ; then cat log; no_result; fi
 
-activity="develop_end 398"
+activity="develop_end 464"
 $bin/aegis -dev_end 2 -v > log 2>&1
 if test $? -ne 0 ; then cat log; no_result; fi
 
-activity="integrate begin 402"
+activity="integrate begin 468"
 $bin/aegis -ib 2 -v > log 2>&1
 if test $? -ne 0 ; then cat log; no_result; fi
 
-activity="build 406"
+activity="build 472"
 $bin/aegis -build 2 -v -nl > log 2>&1
 if test $? -ne 0 ; then cat log; no_result; fi
 
-activity="diff 410"
+activity="diff 476"
 $bin/aegis -diff 2 -v -nl > log 2>&1
 if test $? -ne 0 ; then cat log; no_result; fi
 
-activity="integrate pass 414"
+activity="integrate pass 480"
 $bin/aegis -ipass 2 -v > log 2>&1
 if test $? -ne 0 ; then cat log; no_result; fi
 
-activity="check the baseline content 418"
+activity="check the baseline content 484"
 bl_dir=$work/proj.dir/branch.1/baseline
 test -f $bl_dir/test.conf && no_result
 test -f $bl_dir/derived1 || no_result
@@ -490,6 +490,34 @@ test -f $bl_dir/derived2 || no_result
 cat > ok << 'fubar'
 src =
 [
+	{
+		file_name = "aegis.conf";
+		uuid = "UUID";
+		action = create;
+		edit =
+		{
+			revision = "1.1";
+			encoding = none;
+		};
+		edit_origin =
+		{
+			revision = "1.1";
+			encoding = none;
+		};
+		usage = config;
+		file_fp =
+		{
+			youngest = TIME;
+			oldest = TIME;
+			crypto = "GUNK";
+		};
+		diff_file_fp =
+		{
+			youngest = TIME;
+			oldest = TIME;
+			crypto = "GUNK";
+		};
+	},
 	{
 		file_name = "barney";
 		uuid = "UUID";
@@ -505,34 +533,6 @@ src =
 			encoding = none;
 		};
 		usage = source;
-		file_fp =
-		{
-			youngest = TIME;
-			oldest = TIME;
-			crypto = "GUNK";
-		};
-		diff_file_fp =
-		{
-			youngest = TIME;
-			oldest = TIME;
-			crypto = "GUNK";
-		};
-	},
-	{
-		file_name = "config";
-		uuid = "UUID";
-		action = create;
-		edit =
-		{
-			revision = "1.1";
-			encoding = none;
-		};
-		edit_origin =
-		{
-			revision = "1.1";
-			encoding = none;
-		};
-		usage = config;
 		file_fp =
 		{
 			youngest = TIME;
@@ -603,7 +603,7 @@ if test $? -ne 0 ; then no_result; fi
 
 check_it ok $work/proj.dir/info/change/0/001.fs
 
-activity="send the change 424"
+activity="send the change 606"
 $bin/aedist -send -p  test.1.1 -c 1 -o c1.ae -v > log 2>&1
 if test $? -ne 0; then cat log; fail; fi
 

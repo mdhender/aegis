@@ -1,6 +1,6 @@
 //
 //	aegis - project change supervisor
-//	Copyright (C) 2000, 2002, 2004 Peter Miller;
+//	Copyright (C) 2000, 2002, 2004, 2005 Peter Miller;
 //	All rights reserved.
 //
 //	This program is free software; you can redistribute it and/or modify
@@ -49,6 +49,22 @@ void batch_result_list_append(batch_result_list_ty *brlp, string_ty *file_name,
     int exit_status, string_ty *architecture);
 void batch_result_list_append_list(batch_result_list_ty *,
     const batch_result_list_ty *);
-int batch_result_list_member(batch_result_list_ty *, string_ty *);
+
+/**
+  * The batch_result_list_member function is used to test whether the
+  * given (file_name, architecture) pair is a member of the given test
+  * result list.
+  *
+  * @param brlp
+  *     The results list in question.
+  * @param file_name
+  *     The file name in question.
+  * @param architecture
+  *     The architecture name, or NULL
+  * @returns
+  *     bool; true if a member present, false if not.
+  */
+bool batch_result_list_member(batch_result_list_ty *brlp, string_ty *file_name,
+    string_ty *architecture);
 
 #endif // LIBAEGIS_CHANGE_TEST_BATCH_RESULT_H

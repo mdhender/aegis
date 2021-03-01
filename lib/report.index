@@ -1,6 +1,6 @@
 /*
  *	aegis - project change supervisor
- *	Copyright (C) 1994, 1996, 1999, 2001-2003 Peter Miller;
+ *	Copyright (C) 1994, 1996, 1999, 2001-2003, 2005 Peter Miller;
  *	All rights reserved.
  *
  *	This program is free software; you can redistribute it and/or modify
@@ -26,146 +26,178 @@
 
 where =
 [
-	{
-		name = "Administrators";
-		description = "Report the administrators of a project";
-		filename = "report/proj_admin.rpt";
-	},
-	{
-		name = "Changes";
-		description = "Report the changes in a project";
-		filename = "report/chan_lists.rpt";
-	},
-	{
-		name = "Change_Details";
-		description = "Report the details of a change";
-		filename = "report/chan_detai.rpt";
-	},
-	{
-		name = "Change_Files";
-		description = "Report the files in a change";
-		filename = "report/chan_files.rpt";
-	},
-	{
-		name = "Change_History";
-		description = "Report the history of a change";
-		filename = "report/chan_histo.rpt";
-	},
-	{
-		name = "Change_Log";
-		description = "Report the history of a change.  Usually \
-employed on branches, where it can provides a common Internet ``Change Log'' \
-style of output.";
-		filename = "report/chan_log.rpt";
-	},
-	{
-		name = "Debian_Change_Log";
-		description = "Report the history of a change.  Usually \
-employed on branches, where it can provide a Debian formatted changelog \
-file; best used with the -nph option.";
-		filename = "report/debchanlog.rpt";
-	},
-	{
-		name = "Change_Recursive_Debug";
-		description = "Recursive descent of change information, \
-mind-bogglingly verbose";
-		filename = "report/chan_recur.rpt";
-	},
-	{
-		name = "Developers";
-		description = "Report the developers of a project";
-		filename = "report/proj_devel.rpt";
-	},
-	{
-		name = "File_Activity";
-		description =
-"Report the activity of the named files, or all project files by default.  \
-This can sometimes be slow to generate.";
-		filename = "report/file_activ.rpt";
-	},
-	{
-		name = "File_Conflicts";
-		description =
-"Report any conflict of the named files, or all change files by default.  \
-This can sometimes be slow to generate.";
-		filename = "report/file_cflct.rpt";
-	},
-	{
-		name = "File_History";
-		description =
-"Report the history of the named files, or all project files by default.  \
-This can sometimes be slow to generate.";
-		filename = "report/file_hstry.rpt";
-	},
-	{
-		name = "Integrators";
-		description = "Report the integrators of a project";
-		filename = "report/proj_integ.rpt";
-	},
-	{
-		name = "Projects";
-		description =
-			"Report the names and descriptions of all projects";
-		filename = "report/proj_lists.rpt";
-	},
-	{
-		name = "Project_Activity";
-		description =
-	      "Report all state change for all change in the project, by user.";
-		filename = "report/proj_activ.rpt";
-	},
-	{
-		name = "Project_ANcestors";
-		description =
-"Report the name of the project, and the names of all the project's direct \
-ancestors.";
-		filename = "report/proj_ances.rpt";
-	},
-	{
-		name = "Project_Branches";
-		description = "Report all branches below the project.";
-		filename = "report/proj_bran.rpt";
-	},
-	{
-		name = "Project_Branch_Dates";
-		description = "Report all branches below the project, \
-with their start and finish dates.";
-		filename = "report/proj_brada.rpt";
-	},
-	{
-		name = "Project_Active_Branches";
-		description = "Report all active branches below the project.";
-		filename = "report/proj_brana.rpt";
-	},
-	{
-		name = "Project_Files";
-		description = "Report all files in the baseline of a project";
-		filename = "report/proj_files.rpt";
-	},
-	{
-		name = "Project_Gantt";
-		description = "Generate data for import into Ms. Project";
-		filename = "report/proj_gantt.rpt";
-	},
-	{
-		name = "Project_STATistics";
-		description = "Report various statistics about a project";
-		filename = "report/proj_stats.rpt";
-	},
-	{
-		name = "Project_Recursive_Debug";
-		description = "Recursive descent of project information, \
-mind-bogglingly verbose";
-		filename = "report/proj_recur.rpt";
-	},
-	{
-		name = "Reviewers";
-		description = "Report the reviewers of a project";
-		filename = "report/proj_rvwrs.rpt";
-	},
-	{
-		name = "Project_STAFf";
-		description = "Report the staff assigned to a project";
-		filename = "report/proj_staff.rpt";
-	},
+    {
+	name = "Administrators";
+	description = "Report the administrators of a project";
+	filename = "report/proj_admin.rpt";
+    },
+    {
+	name = "Changes";
+	description = "Report the changes in a project";
+	filename = "report/chan_lists.rpt";
+    },
+    {
+	name = "Change_Details";
+	description = "Report the details of a change";
+	filename = "report/chan_detai.rpt";
+    },
+    {
+	name = "Change_Files";
+	description = "Report the files in a change";
+	filename = "report/chan_files.rpt";
+    },
+    {
+	name = "Change_History";
+	description = "Report the history of a change";
+	filename = "report/chan_histo.rpt";
+    },
+    {
+	name = "Change_Log";
+	description =
+	    "Report the history of a change.  Usually employed on "
+            "branches, where it can provides a common Internet ``Change "
+            "Log'' style of output.";
+	filename = "report/chan_log.rpt";
+    },
+    {
+	name = "Debian_Change_Log";
+	description =
+            "Report the history of a change.  Usually employed on "
+            "branches, where it can provide a Debian formatted "
+            "changelog file; best used with the -nph option.";
+	filename = "report/debchanlog.rpt";
+    },
+    {
+	name = "Change_Recursive_Debug";
+	description =
+            "Recursive descent of change information, mind bogglingly "
+            "verbose, it lists the aereport variable names you need to "
+            "use to write your own report scripts.";
+	filename = "report/chan_recur.rpt";
+    },
+    {
+	name = "Developers";
+	description = "Report the developers of a project";
+	filename = "report/proj_devel.rpt";
+    },
+    {
+	name = "File_Activity";
+	description =
+            "Report the activity of the named files, or all project "
+            "files by default.  This can sometimes be slow to generate.";
+	filename = "report/file_activ.rpt";
+    },
+    {
+	name = "File_Conflicts";
+	description =
+            "Report any conflict of the named files, or all change "
+            "files by default.  This can sometimes be slow to generate.";
+	filename = "report/file_cflct.rpt";
+    },
+    {
+	name = "File_History";
+	description =
+            "Report the history of the named files, or all project "
+            "files by default.  This can sometimes be slow to generate.";
+	filename = "report/file_hstry.rpt";
+    },
+    {
+	name = "File_Version_History";
+	description =
+            "Report version history of the named files, or all project "
+            "files by default.  This can sometimes be slow to generate.";
+	filename = "report/file_vhist.rpt";
+    },
+    {
+	name = "Integrators";
+	description = "Report the integrators of a project";
+	filename = "report/proj_integ.rpt";
+    },
+    {
+	name = "Projects";
+	description = "Report the names and descriptions of all projects";
+	filename = "report/proj_lists.rpt";
+    },
+    {
+	name = "Project_Activity";
+	description =
+	    "Report all state change for all change in the project, by user.";
+	filename = "report/proj_activ.rpt";
+    },
+    {
+	name = "Project_ANcestors";
+	description =
+            "Report the name of the project, and the names of all the "
+            "project's direct ancestors.";
+	filename = "report/proj_ances.rpt";
+    },
+    {
+	name = "Project_Branches";
+	description = "Report all branches below the project.";
+	filename = "report/proj_bran.rpt";
+    },
+    {
+	name = "Project_Branch_Dates";
+	description =
+            "Report all branches below the project, with their start "
+            "and finish dates.";
+	filename = "report/proj_brada.rpt";
+    },
+    {
+	name = "Project_Active_Branches";
+	description = "Report all active branches below the project.";
+	filename = "report/proj_brana.rpt";
+    },
+    {
+	name = "Project_Files";
+	description = "Report all files in the baseline of a project";
+	filename = "report/proj_files.rpt";
+    },
+    {
+	name = "Project_Gantt";
+	description = "Generate data for import into Ms. Project";
+	filename = "report/proj_gantt.rpt";
+    },
+    {
+	name = "Project_Parentage";
+	description =
+            "List the parents branchs of a project back to the trunk";
+	filename = "report/proj_parent.rpt";
+    },
+    {
+	name = "Project_STATistics";
+	description = "Report various statistics about a project";
+	filename = "report/proj_stats.rpt";
+    },
+    {
+	name = "Project_Recursive_Debug";
+	description =
+            "Recursive descent of project information, mind bogglingly "
+            "verbose, it lists the aereport variable names you need to "
+            "use to write your own report scripts.";
+	filename = "report/proj_recur.rpt";
+    },
+    {
+	name = "Project_STAFf";
+	description = "Report the staff assigned to a project";
+	filename = "report/proj_staff.rpt";
+    },
+    {
+	name = "Reviewers";
+	description = "Report the reviewers of a project";
+	filename = "report/proj_rvwrs.rpt";
+    },
+    {
+	name = "Users";
+	description = "Report the users of the system, and their email address";
+	filename = "report/user_list.rpt";
+    },
+    {
+	name = "User_Recursive_Debug";
+	description =
+            "Recursive descent of user information, mind bogglingly "
+            "verbose, it lists the aereport variable names you need to "
+            "use to write your own report scripts.";
+	filename = "report/user_recurs.rpt";
+    },
 ];

@@ -27,19 +27,18 @@
 #include <check.h>
 #include <error.h>
 
-int             warning;
-int             limit = 80;
+bool            warning;
+static int      limit;
 static int      number_of_blank_lines;
 static int      number_of_errors;
 static int      line_number;
-static int      dos_format;
-static int      binary_format;
+static bool     dos_format;
+static bool     binary_format;
 static FILE     *fp;
 static const char *fn;
-static int      isa_c_file;
-static int      isa_cxx_file;
-static int      isa_h_file;
-int	        cxx_warning;
+static bool     isa_c_file;
+static bool     isa_cxx_file;
+static bool     isa_h_file;
 static int      unprintable_ok;
 
 
@@ -66,8 +65,8 @@ check_c_comment(void)
 {
     if (isa_h_file && !isa_c_file)
     {
-	isa_h_file = 0;
-	isa_c_file = 1;
+	isa_h_file = false;
+	isa_c_file = true;
     }
     if (isa_cxx_file)
     {
@@ -147,8 +146,8 @@ run_state_machine(int c)
 	    state = state_cxx_comment;
 	    if (isa_h_file && !isa_cxx_file)
 	    {
-		isa_h_file = 0;
-		isa_cxx_file = 1;
+		isa_h_file = true;
+		isa_cxx_file = true;
 	    }
 	    if (isa_c_file)
 	    {
@@ -409,7 +408,7 @@ check_one_line(void)
 		++white_space;
 		break;
 	    }
-	    ++dos_format;
+	    dos_format = true;
 	    // fall through...
 
 	case '\n':
@@ -467,7 +466,7 @@ check_one_line(void)
 
 	default:
 	    if (c == 0)
-		binary_format++;
+		binary_format = true;
 	    assert(c != EOF);
 	    if (!isprint((unsigned char)c))
 		++unprintable;
@@ -479,7 +478,7 @@ check_one_line(void)
 }
 
 
-static int
+static bool
 begins_with(const char *haystack, const char *needle)
 {
     size_t len1 = strlen(haystack);
@@ -488,7 +487,7 @@ begins_with(const char *haystack, const char *needle)
 }
 
 
-static int
+static bool
 ends_with(const char *haystack, const char *needle)
 {
     size_t len1 = strlen(haystack);
@@ -500,12 +499,10 @@ ends_with(const char *haystack, const char *needle)
 void
 check(const char *file_name)
 {
-    const char      *short_file_name;
-
     //
     // Skip over leading baseline symlinks.
     //
-    short_file_name = file_name;
+    const char *short_file_name = file_name;
     while (short_file_name[0] == 'b' && short_file_name[1] == 'l')
 	short_file_name += 2;
     if (*short_file_name == '/')
@@ -513,6 +510,7 @@ check(const char *file_name)
     else
 	short_file_name = file_name;
 
+    limit = 80;
     isa_c_file = ends_with(file_name, ".c") || ends_with(file_name, ".C");
     isa_cxx_file =
 	ends_with(file_name, ".cc") || ends_with(file_name, ".CC") ||
@@ -527,7 +525,11 @@ check(const char *file_name)
     if (begins_with(short_file_name, "test/") && ends_with(file_name, ".sh"))
     {
 	limit = 510;
-	unprintable_ok = 1;
+	unprintable_ok = true;
+    }
+    if (ends_with(file_name, ".xml"))
+    {
+	limit = 510;
     }
 
     state = state_normal;
@@ -538,8 +540,8 @@ check(const char *file_name)
     number_of_errors = 0;
     number_of_blank_lines = 0;
     line_number = 0;
-    dos_format = 0;
-    binary_format = 0;
+    dos_format = false;
+    binary_format = false;
     while (check_one_line())
 	;
     if (dos_format)
@@ -547,7 +549,7 @@ check(const char *file_name)
 	error_raw("%s: file in DOS format (must use UNIX format)", fn);
 	++number_of_errors;
     }
-    if (number_of_blank_lines)
+    if (number_of_blank_lines > 0)
     {
 	error_raw
 	(
@@ -562,13 +564,13 @@ check(const char *file_name)
     {
 	error_raw
 	(
-	    "%s: file appears to be binary, so this file does not need to "
-	    "be changed, but you may want to consider replacing it with a "
-	    "plain-text file",
+            "%s: file appears to be binary, it needs to be replaced "
+            "with a plain-text file",
 	    fn
 	);
+	++number_of_errors;
     }
-    else if (number_of_errors && !warning)
+    if (number_of_errors > 0 && !warning)
     {
 	fatal_raw
 	(

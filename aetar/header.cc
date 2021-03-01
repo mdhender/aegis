@@ -109,17 +109,10 @@ string_field_set(char *to_buf, size_t to_len, const nstring &from)
 }
 
 
-string_ty *
+nstring
 header_name_get(header_ty *hp)
 {
-    return str_n_from_c(hp->name, careful_strlen(hp->name, sizeof(hp->name)));
-}
-
-
-void
-header_name_set(header_ty *hp, string_ty *arg)
-{
-    header_name_set(hp, nstring(str_copy(arg)));
+    return nstring(hp->name, careful_strlen(hp->name, sizeof(hp->name)));
 }
 
 
@@ -228,22 +221,15 @@ header_linkflag_set(header_ty *hp, int n)
 }
 
 
-string_ty *
+nstring
 header_linkname_get(header_ty *hp)
 {
     return
-	str_n_from_c
+	nstring
 	(
 	    hp->linkname,
 	    careful_strlen(hp->linkname, sizeof(hp->linkname))
 	);
-}
-
-
-void
-header_linkname_set(header_ty *hp, string_ty *arg)
-{
-    header_linkname_set(hp, nstring(str_copy(arg)));
 }
 
 
@@ -254,20 +240,12 @@ header_linkname_set(header_ty *hp, const nstring &arg)
 }
 
 
-string_ty *
+nstring
 header_uname_get(header_ty *hp)
 {
     if (0 != strncmp(hp->magic, TMAGIC, sizeof(hp->magic)))
 	return 0;
-    return
-	str_n_from_c(hp->uname, careful_strlen(hp->uname, sizeof(hp->uname)));
-}
-
-
-void
-header_uname_set(header_ty *hp, string_ty *arg)
-{
-    header_uname_set(hp, nstring(str_copy(arg)));
+    return nstring(hp->uname, careful_strlen(hp->uname, sizeof(hp->uname)));
 }
 
 
@@ -279,20 +257,12 @@ header_uname_set(header_ty *hp, const nstring &arg)
 }
 
 
-string_ty *
+nstring
 header_gname_get(header_ty *hp)
 {
     if (0 != strncmp(hp->magic, TMAGIC, sizeof(hp->magic)))
 	return 0;
-    return
-	str_n_from_c(hp->gname, careful_strlen(hp->gname, sizeof(hp->gname)));
-}
-
-
-void
-header_gname_set(header_ty *hp, string_ty *arg)
-{
-    header_gname_set(hp, nstring(str_copy(arg)));
+    return nstring(hp->gname, careful_strlen(hp->gname, sizeof(hp->gname)));
 }
 
 

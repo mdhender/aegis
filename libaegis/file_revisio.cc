@@ -22,11 +22,29 @@
 
 #pragma implementation "file_revision"
 
+#include <error.h> // for assert
 #include <file_revision.h>
 #include <os.h>
 
 
 file_revision::~file_revision()
+{
+    assert(ref);
+    ref->one_fewer();
+    ref = 0;
+}
+
+
+void
+file_revision::inner::one_fewer()
+{
+    --reference_count;
+    if (reference_count <= 0)
+	delete this;
+}
+
+
+file_revision::inner::~inner()
 {
     if (need_to_unlink)
     {
@@ -39,6 +57,14 @@ file_revision::~file_revision()
 
 
 file_revision::file_revision(const nstring &arg1, bool arg2) :
+    ref(new inner(arg1, arg2))
+{
+    assert(ref);
+}
+
+
+file_revision::inner::inner(const nstring &arg1, bool arg2) :
+    reference_count(1),
     filename(arg1),
     need_to_unlink(arg2)
 {
@@ -46,9 +72,9 @@ file_revision::file_revision(const nstring &arg1, bool arg2) :
 
 
 file_revision::file_revision(const file_revision &arg) :
-    filename(arg.filename),
-    need_to_unlink(arg.need_to_unlink)
+    ref(arg.ref)
 {
+    ref->one_more();
 }
 
 
@@ -57,8 +83,9 @@ file_revision::operator=(const file_revision &arg)
 {
     if (this != &arg)
     {
-	filename = arg.filename;
-	need_to_unlink = arg.need_to_unlink;
+	ref->one_fewer();
+	ref = arg.ref;
+	ref->one_more();
     }
     return *this;
 }

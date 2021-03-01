@@ -1,6 +1,6 @@
 //
 //	aegis - project change supervisor
-//	Copyright (C) 1991-1997, 1999, 2000, 2002-2004 Peter Miller;
+//	Copyright (C) 1991-1997, 1999, 2000, 2002-2005 Peter Miller;
 //	All rights reserved.
 //
 //	This program is free software; you can redistribute it and/or modify
@@ -180,5 +180,27 @@ void change_file_resolve_names(change_ty *cp, user_ty *up,
   */
 string_ty *change_file_resolve_name(change_ty *cp, user_ty *up,
     string_ty *file_name);
+
+/**
+  * The change_file_promote function is used to check whether or not
+  * recent integrations have change the actions the change files must
+  * perform.
+  *
+  * If two changes are creating the same file, the first one integrated
+  * means that the second one must update its action to "modify".
+  *
+  * If two changes are removing the same file, the first one integrated
+  * means that the second one needs to drop the file from its list.
+  *
+  * If one change is removing a file, and a second change is modifying
+  * the same file, after the first change is integrated, the second
+  * change must update its action to "create".
+  *
+  * @param cp
+  *     The change in question.
+  * @returns
+  *     true if anything changed, false if nothing changed.
+  */
+bool change_file_promote(change_ty *cp);
 
 #endif // CHANGE_FILE_H

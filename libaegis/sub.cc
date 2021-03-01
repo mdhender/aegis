@@ -87,6 +87,7 @@
 #include <sub/expr.h>
 #include <sub/getenv.h>
 #include <sub/histo_direc.h>
+#include <sub/history_path.h>
 #include <sub/identifier.h>
 #include <sub/left.h>
 #include <sub/length.h>
@@ -308,6 +309,7 @@ static sub_table_ty table[] =
     // Guess
     // History
     {"History_Directory", sub_history_directory, },
+    {"History_Path", sub_history_path, },
     // Input
     {"IDentifier", sub_identifier, },
     {"INTegration_Directory", sub_integration_directory, },

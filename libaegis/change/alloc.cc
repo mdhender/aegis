@@ -47,6 +47,7 @@ change_alloc(project_ty *pp, long number)
     cp->fstate_data = 0;
     cp->fstate_stp = 0;
     cp->fstate_filename = 0;
+    cp->pfstate_filename = 0;
     cp->fstate_is_a_new_file = 0;
 
     cp->architecture_name = 0;

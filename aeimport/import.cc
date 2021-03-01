@@ -1,6 +1,6 @@
 //
 //	aegis - project change supervisor
-//	Copyright (C) 2001-2004 Peter Miller;
+//	Copyright (C) 2001-2005 Peter Miller;
 //	All rights reserved.
 //
 //	This program is free software; you can redistribute it and/or modify
@@ -371,6 +371,8 @@ import_main(void)
     pattr_data->mask |= pattr_minimum_branch_number_mask;
     pattr_data->default_test_exemption = true;
     pattr_data->mask |= pattr_default_test_exemption_mask;
+    pattr_data->default_test_regression_exemption = true;
+    pattr_data->mask |= pattr_default_test_regression_exemption_mask;
 
     //
     // locate user data
@@ -489,7 +491,7 @@ import_main(void)
 	trace(("ppp = %8.8lX\n", (long)ppp));
 	change_number = magic_zero_encode(version_number[j]);
 	trace(("change_number = %ld;\n", change_number));
-	ppp = project_new_branch(ppp, up, change_number, (string_ty *)0);
+	ppp = project_new_branch(ppp, up, change_number);
 	version_pp[j] = ppp;
     }
 

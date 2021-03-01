@@ -1,0 +1,40 @@
+.\"
+.\"	aegis - project change supervisor
+.\"	Copyright (C) 2005 Peter Miller;
+.\"	All rights reserved.
+.\"
+.\"	This program is free software; you can redistribute it and/or modify
+.\"	it under the terms of the GNU General Public License as published by
+.\"	the Free Software Foundation; either version 2 of the License, or
+.\"	(at your option) any later version.
+.\"
+.\"	This program is distributed in the hope that it will be useful,
+.\"	but WITHOUT ANY WARRANTY; without even the implied warranty of
+.\"	MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+.\"	GNU General Public License for more details.
+.\"
+.\"	You should have received a copy of the GNU General Public License
+.\"	along with this program; if not, write to the Free Software
+.\"	Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111, USA.
+.\"
+.\" MANIFEST: document describing automatic file action promotion
+.\"
+.SS File Action Adjustment
+When this command runs, it first checks the change files against the
+projects files.  If there are inconsistencies, the file actions will be
+adjusted as follows:
+.TP 8n
+create
+If a file is being created, but another change set is integrated which
+also creates the file, the file action in the change set still being
+developed will be adjusted to "modify".
+.TP 8n
+modify
+If a file is being modified, but another change set is integrated
+which removes the file, the file action in the change set still being
+developed will be adjusted to "create".
+.TP 8n
+remove
+If a file is being removed, but another change set is integrated which
+removes the file, the file will be dropped from the change set still
+being developed.

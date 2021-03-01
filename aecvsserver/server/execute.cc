@@ -29,28 +29,20 @@
 int
 server_execute(server_ty *sp, string_ty *cmd)
 {
-    string_ty       *s1;
-    string_ty       *s2;
-    int             flags;
-    string_ty       *dir;
-    int             result;
-
     //
     // Run the command.
     //
     trace(("server_execute()\n{\n"));
     os_become_orig();
-    flags = OS_EXEC_FLAG_SILENT;
-    dir = os_curdir();
-    s1 = os_edit_filename(0);
-    trace_string(s1->str_text);
-    s2 = str_format("( %s ) > %s 2>&1", cmd->str_text, s1->str_text);
-    result = os_execute_retcode(s2, flags, dir);
-    str_free(s2);
+    int flags = OS_EXEC_FLAG_SILENT;
+    string_ty *dir = os_curdir();
+    nstring s1(os_edit_filename(0));
+    trace_nstring(s1);
+    nstring s2 = nstring::format("( %s ) > %s 2>&1", cmd->str_text, s1.c_str());
+    int result = os_execute_retcode(s2.get_ref(), flags, dir);
     s2 = read_whole_file(s1);
     os_unlink(s1);
-    str_free(s1);
-    trace_string(s2->str_text);
+    trace_nstring(s2);
     os_become_undo();
 
     //
@@ -64,15 +56,14 @@ server_execute(server_ty *sp, string_ty *cmd)
 	    sp,
 	    "%s\n%s\nexit status: %d",
 	    cmd->str_text,
-	    s2->str_text,
+	    s2.c_str(),
 	    result
 	);
     }
-    else if (s2->str_length)
+    else if (!s2.empty())
     {
-	server_e(sp, "%s\n%s", cmd->str_text, s2->str_text);
+	server_e(sp, "%s\n%s", cmd->str_text, s2.c_str());
     }
-    str_free(s2);
 
     //
     // Report the exit status to the caller:

@@ -1,21 +1,21 @@
 //
-//	aegis - project change supervisor
-//	Copyright (C) 1991-1999, 2001-2004 Peter Miller;
-//	All rights reserved.
+//      aegis - project change supervisor
+//      Copyright (C) 1991-1999, 2001-2005 Peter Miller;
+//      All rights reserved.
 //
-//	This program is free software; you can redistribute it and/or modify
-//	it under the terms of the GNU General Public License as published by
-//	the Free Software Foundation; either version 2 of the License, or
-//	(at your option) any later version.
+//      This program is free software; you can redistribute it and/or modify
+//      it under the terms of the GNU General Public License as published by
+//      the Free Software Foundation; either version 2 of the License, or
+//      (at your option) any later version.
 //
-//	This program is distributed in the hope that it will be useful,
-//	but WITHOUT ANY WARRANTY; without even the implied warranty of
-//	MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-//	GNU General Public License for more details.
+//      This program is distributed in the hope that it will be useful,
+//      but WITHOUT ANY WARRANTY; without even the implied warranty of
+//      MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+//      GNU General Public License for more details.
 //
-//	You should have received a copy of the GNU General Public License
-//	along with this program; if not, write to the Free Software
-//	Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111, USA.
+//      You should have received a copy of the GNU General Public License
+//      along with this program; if not, write to the Free Software
+//      Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111, USA.
 //
 // MANIFEST: functions to implement review pass
 //
@@ -50,6 +50,7 @@
 #include <project/file.h>
 #include <project/history.h>
 #include <quit.h>
+#include <rss.h>
 #include <sub.h>
 #include <trace.h>
 #include <undo.h>
@@ -64,9 +65,9 @@ review_pass_usage(void)
     progname = progname_get();
     fprintf
     (
-	stderr,
-	"usage: %s -Review_PASS <change_number> [ <option>... ]\n",
-	progname
+        stderr,
+        "usage: %s -Review_PASS <change_number> [ <option>... ]\n",
+        progname
     );
     fprintf(stderr, "       %s -Review_PASS -List [ <option>... ]\n", progname);
     fprintf(stderr, "       %s -Review_PASS -Help\n", progname);
@@ -84,32 +85,32 @@ review_pass_help(void)
 static void
 review_pass_list(void)
 {
-    string_ty	    *project_name;
+    string_ty       *project_name;
 
     trace(("review_pass_list()\n{\n"));
     project_name = 0;
     arglex();
     while (arglex_token != arglex_token_eoln)
     {
-	switch (arglex_token)
-	{
-	default:
-	    generic_argument(review_pass_usage);
-	    continue;
+        switch (arglex_token)
+        {
+        default:
+            generic_argument(review_pass_usage);
+            continue;
 
-	case arglex_token_project:
-	    arglex();
-	    // fall through...
+        case arglex_token_project:
+            arglex();
+            // fall through...
 
-	case arglex_token_string:
-	    arglex_parse_project(&project_name, review_pass_usage);
-	    continue;
-	}
-	arglex();
+        case arglex_token_string:
+            arglex_parse_project(&project_name, review_pass_usage);
+            continue;
+        }
+        arglex();
     }
     list_changes_in_state_mask(project_name, 1 << cstate_state_being_reviewed);
     if (project_name)
-	str_free(project_name);
+        str_free(project_name);
     trace(("}\n"));
 }
 
@@ -117,8 +118,8 @@ review_pass_list(void)
 static void
 check_permissions(change_ty *cp, user_ty *up)
 {
-    cstate_ty	    *cstate_data;
-    project_ty	    *pp;
+    cstate_ty       *cstate_data;
+    project_ty      *pp;
     cstate_history_ty *hp;
 
     cstate_data = change_cstate_get(cp);
@@ -127,32 +128,32 @@ check_permissions(change_ty *cp, user_ty *up)
     // it is an error if the change is not in the 'being_reviewed' state.
     //
     if (cstate_data->state != cstate_state_being_reviewed)
-	change_fatal(cp, 0, i18n("bad rp state"));
+        change_fatal(cp, 0, i18n("bad rp state"));
     assert(cstate_data->history->length >= 3);
     hp = cstate_data->history->list[cstate_data->history->length - 1];
     if (hp->what == cstate_history_what_review_begin)
     {
-	if (!str_equal(hp->who, user_name(up)))
-	    change_fatal(cp, 0, i18n("not reviewer"));
+        if (!str_equal(hp->who, user_name(up)))
+            change_fatal(cp, 0, i18n("not reviewer"));
     }
     else
     {
-	pp = cp->pp;
-	if (!project_reviewer_query(pp, user_name(up)))
-	    project_fatal(pp, 0, i18n("not a reviewer"));
-	if (change_reviewer_already(cp, user_name(up)))
-	{
-	    change_fatal(cp, 0, i18n("duplicate review"));
-	}
-	if
-	(
-	    !project_developer_may_review_get(pp)
-	&&
-	    str_equal(change_developer_name(cp), user_name(up))
-	)
-	{
-	    change_fatal(cp, 0, i18n("developer may not review"));
-	}
+        pp = cp->pp;
+        if (!project_reviewer_query(pp, user_name(up)))
+            project_fatal(pp, 0, i18n("not a reviewer"));
+        if (change_reviewer_already(cp, user_name(up)))
+        {
+            change_fatal(cp, 0, i18n("duplicate review"));
+        }
+        if
+        (
+            !project_developer_may_review_get(pp)
+        &&
+            str_equal(change_developer_name(cp), user_name(up))
+        )
+        {
+            change_fatal(cp, 0, i18n("developer may not review"));
+        }
     }
 }
 
@@ -160,159 +161,159 @@ check_permissions(change_ty *cp, user_ty *up)
 static void
 review_pass_main(void)
 {
-    cstate_ty	    *cstate_data;
+    cstate_ty       *cstate_data;
     cstate_history_ty *history_data;
-    string_ty	    *project_name;
-    project_ty	    *pp;
-    long	    change_number;
-    change_ty	    *cp;
-    user_ty	    *up;
-    long	    j;
-    string_ty	    *comment =	    0;
-    const char      *reason =	    0;
-    edit_ty	    edit;
+    string_ty       *project_name;
+    project_ty      *pp;
+    long            change_number;
+    change_ty       *cp;
+    user_ty         *up;
+    long            j;
+    edit_ty         edit;
 
     trace(("review_pass_main()\n{\n"));
     arglex();
     project_name = 0;
     change_number = 0;
     edit = edit_not_set;
+    nstring comment;
+    nstring reason;
     while (arglex_token != arglex_token_eoln)
     {
-	switch (arglex_token)
-	{
-	default:
-	    generic_argument(review_pass_usage);
-	    continue;
+        switch (arglex_token)
+        {
+        default:
+            generic_argument(review_pass_usage);
+            continue;
 
-	case arglex_token_change:
-	    arglex();
-	    // fall through...
+        case arglex_token_change:
+            arglex();
+            // fall through...
 
-	case arglex_token_number:
-	    arglex_parse_change
-	    (
-		&project_name,
-		&change_number,
-		review_pass_usage
-	    );
-	    continue;
+        case arglex_token_number:
+            arglex_parse_change
+            (
+                &project_name,
+                &change_number,
+                review_pass_usage
+            );
+            continue;
 
-	case arglex_token_project:
-	    arglex();
-	    // fall through...
+        case arglex_token_project:
+            arglex();
+            // fall through...
 
-	case arglex_token_string:
-	    arglex_parse_project(&project_name, review_pass_usage);
-	    continue;
+        case arglex_token_string:
+            arglex_parse_project(&project_name, review_pass_usage);
+            continue;
 
-	case arglex_token_file:
-	    if (comment)
-		duplicate_option(review_pass_usage);
+        case arglex_token_file:
+            if (!comment.empty())
+                duplicate_option(review_pass_usage);
+            switch (arglex())
+            {
+            default:
+                option_needs_file(arglex_token_file, review_pass_usage);
+                // NOTREACHED
+
+            case arglex_token_string:
+                os_become_orig();
+                comment = read_whole_file(arglex_value.alv_string);
+                os_become_undo();
+                break;
+
+            case arglex_token_stdio:
+                os_become_orig();
+                comment = read_whole_file((char *)0);
+                os_become_undo();
+                break;
+            }
+            break;
+
+        case arglex_token_reason:
+            if (reason)
+                duplicate_option(review_pass_usage);
 	    switch (arglex())
 	    {
 	    default:
-		option_needs_file(arglex_token_file, review_pass_usage);
-		// NOTREACHED
+		option_needs_string(arglex_token_reason, review_pass_usage);
 
 	    case arglex_token_string:
-		{
-		    string_ty       *s;
-
-		    os_become_orig();
-		    s = str_from_c(arglex_value.alv_string);
-		    comment = read_whole_file(s);
-		    str_free(s);
-		    os_become_undo();
-		}
-		break;
-
-	    case arglex_token_stdio:
-		os_become_orig();
-		comment = read_whole_file((string_ty *)0);
-		os_become_undo();
+	    case arglex_token_number:
+		reason = arglex_value.alv_string;
 		break;
 	    }
-	    assert(comment);
-	    break;
+            break;
 
-	case arglex_token_reason:
-	    if (reason)
-		duplicate_option(review_pass_usage);
-	    if (arglex() != arglex_token_string)
-		option_needs_string(arglex_token_reason, review_pass_usage);
-	    reason = arglex_value.alv_string;
-	    break;
+        case arglex_token_edit:
+            if (edit == edit_foreground)
+                duplicate_option(review_pass_usage);
+            if (edit != edit_not_set)
+            {
+                too_many_edits:
+                mutually_exclusive_options
+                (
+                    arglex_token_edit,
+                    arglex_token_edit_bg,
+                    review_pass_usage
+                );
+            }
+            edit = edit_foreground;
+            break;
 
-	case arglex_token_edit:
-	    if (edit == edit_foreground)
-		duplicate_option(review_pass_usage);
-	    if (edit != edit_not_set)
-	    {
-		too_many_edits:
-		mutually_exclusive_options
-		(
-		    arglex_token_edit,
-		    arglex_token_edit_bg,
-		    review_pass_usage
-		);
-	    }
-	    edit = edit_foreground;
-	    break;
+        case arglex_token_edit_bg:
+            if (edit == edit_background)
+                duplicate_option(review_pass_usage);
+            if (edit != edit_not_set)
+                goto too_many_edits;
+            edit = edit_background;
+            break;
 
-	case arglex_token_edit_bg:
-	    if (edit == edit_background)
-		duplicate_option(review_pass_usage);
-	    if (edit != edit_not_set)
-		goto too_many_edits;
-	    edit = edit_background;
-	    break;
+        case arglex_token_wait:
+        case arglex_token_wait_not:
+            user_lock_wait_argument(review_pass_usage);
+            break;
 
-	case arglex_token_wait:
-	case arglex_token_wait_not:
-	    user_lock_wait_argument(review_pass_usage);
-	    break;
-
-	case arglex_token_signed_off_by:
-	case arglex_token_signed_off_by_not:
-	    option_signed_off_by_argument(review_pass_usage);
-	    break;
-	}
-	arglex();
+        case arglex_token_signed_off_by:
+        case arglex_token_signed_off_by_not:
+            option_signed_off_by_argument(review_pass_usage);
+            break;
+        }
+        arglex();
     }
 
-    if (comment && reason)
+    if (!comment.empty() && !reason)
     {
-	mutually_exclusive_options
-	(
-	    arglex_token_file,
-	    arglex_token_reason,
-	    review_pass_usage
-	);
+        mutually_exclusive_options
+        (
+            arglex_token_file,
+            arglex_token_reason,
+            review_pass_usage
+        );
     }
-    if (edit != edit_not_set && (comment || reason))
+    if (edit != edit_not_set && (!comment.empty() || !reason.empty()))
     {
-	mutually_exclusive_options
-	(
-	    (
-		edit == edit_foreground
-	    ?
-		arglex_token_edit
-	    :
-		arglex_token_edit_bg
-	    ),
-	    (comment ? arglex_token_file : arglex_token_reason),
-	    review_pass_usage
-	);
+        mutually_exclusive_options
+        (
+            (
+                edit == edit_foreground
+            ?
+                arglex_token_edit
+            :
+                arglex_token_edit_bg
+            ),
+            (comment.empty() ? arglex_token_reason : arglex_token_file),
+            review_pass_usage
+        );
     }
-    if (reason)
-	comment = str_from_c(reason);
+    if (!reason.empty())
+        comment = reason;
 
     //
     // locate project data
     //
     if (!project_name)
-	project_name = user_default_project();
+        project_name = user_default_project();
     pp = project_alloc(project_name);
     str_free(project_name);
     project_bind_existing(pp);
@@ -326,7 +327,7 @@ review_pass_main(void)
     // locate change data
     //
     if (!change_number)
-	change_number = user_default_change(up);
+        change_number = user_default_change(up);
     cp = change_alloc(pp, change_number);
     change_bind_existing(cp);
 
@@ -336,8 +337,8 @@ review_pass_main(void)
     //
     if (edit != edit_not_set)
     {
-	check_permissions(cp, up);
-	comment = os_edit_new(edit);
+        check_permissions(cp, up);
+        comment = nstring(os_edit_new(edit));
     }
 
     //
@@ -360,26 +361,27 @@ review_pass_main(void)
     cstate_data->state = cstate_state_awaiting_integration;
     history_data = change_history_new(cp, up);
     history_data->what = cstate_history_what_review_pass;
-    history_data->why = comment;
+    if (!comment.empty())
+        history_data->why = str_copy(comment.get_ref());
     if  (0 != change_run_review_policy_command(cp, up))
     {
-	//
+        //
         // The review policy command failed.
         //
         // This means that more review is required.  Now we have to work
         // out which state to send the change to.
-	//
+        //
         // (If the review policy command hasn't been set, the above
         // function returns zero, and you never get to here.)
-	//
-	switch (project_develop_end_action_get(pp))
-	{
-	case cstate_branch_develop_end_action_goto_awaiting_review:
-	    cstate_data->state = cstate_state_awaiting_review;
-	    history_data->what = cstate_history_what_review_pass_2ar;
-	    break;
+        //
+        switch (project_develop_end_action_get(pp))
+        {
+        case cstate_branch_develop_end_action_goto_awaiting_review:
+            cstate_data->state = cstate_state_awaiting_review;
+            history_data->what = cstate_history_what_review_pass_2ar;
+            break;
 
-	case cstate_branch_develop_end_action_goto_awaiting_integration:
+        case cstate_branch_develop_end_action_goto_awaiting_integration:
             //
             // This unlikely event happens when there were
             // changes in awaiting_review and/or being_reviewed
@@ -388,22 +390,22 @@ review_pass_main(void)
             //
             // Since we don't know that the develop_end_action was
             // before, we assume it was the default, and fall through...
-	    //
-	case cstate_branch_develop_end_action_goto_being_reviewed:
-	    cstate_data->state = cstate_state_being_reviewed;
-	    history_data->what = cstate_history_what_review_pass_2br;
-	    break;
+            //
+        case cstate_branch_develop_end_action_goto_being_reviewed:
+            cstate_data->state = cstate_state_being_reviewed;
+            history_data->what = cstate_history_what_review_pass_2br;
+            break;
 
 #ifndef DEBUG
-	default:
-	    //
-	    // Something weird is going on.
-	    // Advance to being_integrated anyway.
-	    //
-	    assert(0);
-	    break;
+        default:
+            //
+            // Something weird is going on.
+            // Advance to being_integrated anyway.
+            //
+            assert(0);
+            break;
 #endif
-	}
+        }
     }
 
     //
@@ -412,109 +414,109 @@ review_pass_main(void)
     //
     for (j = 0;; ++j)
     {
-	fstate_src_ty   *src_data;
-	string_ty	*path;
-	string_ty	*path_d;
-	int		same;
-	int		file_required;
-	int		diff_file_required;
+        fstate_src_ty   *src_data;
+        string_ty       *path;
+        string_ty       *path_d;
+        int             same;
+        int             file_required;
+        int             diff_file_required;
 
-	src_data = change_file_nth(cp, j, view_path_first);
-	if (!src_data)
-	    break;
+        src_data = change_file_nth(cp, j, view_path_first);
+        if (!src_data)
+            break;
 
-	file_required = 1;
-	diff_file_required = 1;
-	switch (src_data->usage)
-	{
-	case file_usage_source:
-	case file_usage_config:
-	case file_usage_test:
-	case file_usage_manual_test:
-	    break;
+        file_required = 1;
+        diff_file_required = 1;
+        switch (src_data->usage)
+        {
+        case file_usage_source:
+        case file_usage_config:
+        case file_usage_test:
+        case file_usage_manual_test:
+            break;
 
-	case file_usage_build:
-	    file_required = 0;
-	    diff_file_required = 0;
-	    break;
-	}
-	switch (src_data->action)
-	{
-	case file_action_create:
-	case file_action_modify:
-	    break;
+        case file_usage_build:
+            file_required = 0;
+            diff_file_required = 0;
+            break;
+        }
+        switch (src_data->action)
+        {
+        case file_action_create:
+        case file_action_modify:
+            break;
 
-	case file_action_insulate:
-	    assert(0);
-	    break;
+        case file_action_insulate:
+            assert(0);
+            break;
 
-	case file_action_transparent:
-	    if (change_was_a_branch(cp))
-	    {
-		file_required = 0;
-		diff_file_required = 0;
-	    }
-	    break;
+        case file_action_transparent:
+            if (change_was_a_branch(cp))
+            {
+                file_required = 0;
+                diff_file_required = 0;
+            }
+            break;
 
-	case file_action_remove:
-	    file_required = 0;
+        case file_action_remove:
+            file_required = 0;
 
-	    //
-	    // the removed half of a move is not differenced
-	    //
-	    if
-	    (
-		src_data->move
-	    &&
-		change_file_find(cp, src_data->move, view_path_first)
-	    )
-		diff_file_required = 0;
-	    break;
-	}
+            //
+            // the removed half of a move is not differenced
+            //
+            if
+            (
+                src_data->move
+            &&
+                change_file_find(cp, src_data->move, view_path_first)
+            )
+                diff_file_required = 0;
+            break;
+        }
 
-	path = change_file_path(cp, src_data->file_name);
-	if (file_required)
-	{
-	    user_become(up);
-	    same = change_fingerprint_same(src_data->file_fp, path, 0);
-	    user_become_undo();
-	    if (!same)
-	    {
-		sub_context_ty	*scp;
+        path = change_file_path(cp, src_data->file_name);
+        if (file_required)
+        {
+            user_become(up);
+            same = change_fingerprint_same(src_data->file_fp, path, 0);
+            user_become_undo();
+            if (!same)
+            {
+                sub_context_ty  *scp;
 
-		scp = sub_context_new();
-		sub_var_set_string(scp, "File_Name", src_data->file_name);
-		change_fatal(cp, scp, i18n("$filename altered"));
-		// NOTREACHED
-		sub_context_delete(scp);
-	    }
-	}
+                scp = sub_context_new();
+                sub_var_set_string(scp, "File_Name", src_data->file_name);
+                change_fatal(cp, scp, i18n("$filename altered"));
+                // NOTREACHED
+                sub_context_delete(scp);
+            }
+        }
 
-	path_d = str_format("%s,D", path->str_text);
-	if (diff_file_required)
-	{
-	    user_become(up);
-	    same = change_fingerprint_same(src_data->diff_file_fp, path_d, 0);
-	    user_become_undo();
-	    if (!same)
-	    {
-		sub_context_ty	*scp;
+        path_d = str_format("%s,D", path->str_text);
+        if (diff_file_required)
+        {
+            user_become(up);
+            same = change_fingerprint_same(src_data->diff_file_fp, path_d, 0);
+            user_become_undo();
+            if (!same)
+            {
+                sub_context_ty  *scp;
 
-		scp = sub_context_new();
-		sub_var_set_format
-		(
-		    scp,
-		    "File_Name",
-		    "%s,D",
-		    src_data->file_name->str_text
-		);
-		change_fatal(cp, scp, i18n("$filename altered"));
-		// NOTREACHED
-		sub_context_delete(scp);
-	    }
-	}
-	str_free(path);
-	str_free(path_d);
+                scp = sub_context_new();
+                sub_var_set_format
+                (
+                    scp,
+                    "File_Name",
+                    "%s,D",
+                    src_data->file_name->str_text
+                );
+                change_fatal(cp, scp, i18n("$filename altered"));
+                // NOTREACHED
+                sub_context_delete(scp);
+            }
+        }
+        str_free(path);
+        str_free(path_d);
     }
 
     //
@@ -523,7 +525,7 @@ review_pass_main(void)
     // description.
     //
     if (change_signed_off_by_get(cp))
-	change_signed_off_by(cp, up);
+        change_signed_off_by(cp, up);
 
     //
     // write out the data and release the locks
@@ -536,6 +538,11 @@ review_pass_main(void)
     // run the notify command
     //
     change_run_review_pass_notify_command(cp);
+
+    //
+    // Update the RSS feed file if necessary.
+    //
+    rss_add_item_by_change(pp, cp);
 
     //
     // verbose success message
@@ -553,8 +560,8 @@ review_pass(void)
 {
     static arglex_dispatch_ty dispatch[] =
     {
-	{arglex_token_help, review_pass_help, },
-	{arglex_token_list, review_pass_list, },
+        {arglex_token_help, review_pass_help, },
+        {arglex_token_list, review_pass_list, },
     };
 
     trace(("review_pass()\n{\n"));

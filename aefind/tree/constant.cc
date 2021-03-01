@@ -1,6 +1,6 @@
 //
 //	aegis - project change supervisor
-//	Copyright (C) 1997, 2002-2004 Peter Miller;
+//	Copyright (C) 1997, 2002-2005 Peter Miller;
 //	All rights reserved.
 //
 //	This program is free software; you can redistribute it and/or modify
@@ -59,7 +59,8 @@ print(tree_ty *tp)
 
 
 static rpt_value_ty *
-evaluate(tree_ty *tp, string_ty *path, struct stat *st)
+evaluate(tree_ty *tp, string_ty *path_unres, string_ty *path,
+    string_ty *path_res, struct stat *st)
 {
     tree_constant_ty *this_thing;
 

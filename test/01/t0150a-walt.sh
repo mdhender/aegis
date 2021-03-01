@@ -111,14 +111,14 @@ unset LANGUAGE
 #
 # make a new project
 #
-activity="new project 133"
+activity="new project 114"
 $bin/aegis -npr foo -vers "" -dir $workproj > log 2>&1
 if test $? -ne 0 ; then cat log; no_result; fi
 
 #
 # change project attributes
 #
-activity="project attributes 140"
+activity="project attributes 121"
 cat > $tmp << 'end'
 description = "A bogus project created to test the aepatch -send functionality.";
 developer_may_review = true;
@@ -132,7 +132,7 @@ if test $? -ne 0 ; then cat log; no_result; fi
 #
 # create a new change
 #
-activity="new change 154"
+activity="new change 135"
 cat > $tmp << 'end'
 brief_description = "The first change";
 cause = internal_bug;
@@ -144,7 +144,7 @@ if test $? -ne 0 ; then cat log; no_result; fi
 #
 # add the staff
 #
-activity="staff 166"
+activity="staff 147"
 $bin/aegis -nd $USER > log 2>&1
 if test $? -ne 0 ; then cat log; no_result; fi
 $bin/aegis -nrv $USER > log 2>&1
@@ -161,9 +161,9 @@ if test $? -ne 0 ; then cat log; no_result; fi
 #
 # add a new files to the change
 #
-activity="new file 183"
+activity="new file 164"
 $bin/aegis -c 1 -nf $workchan/main.c $workchan/test.c $workchan/Makefile \
-	$workchan/config -nl > log 2>&1
+	$workchan/aegis.conf -nl > log 2>&1
 if test $? -ne 0 ; then cat log; no_result; fi
 cat > $workchan/main.c << 'end'
 int
@@ -189,7 +189,7 @@ foo: main.o test.o
 	date > $@
 end
 if test $? -ne 0 ; then no_result; fi
-cat > $workchan/config << 'end'
+cat > $workchan/aegis.conf << 'end'
 build_command = "make -f \\${source Makefile}";
 create_symlinks_before_build = true;
 link_integration_directory = true;
@@ -211,7 +211,7 @@ if test $? -ne 0 ; then no_result; fi
 #
 # create a new test
 #
-activity="new test 233"
+activity="new test 214"
 $bin/aegis -c 1 -nt > log 2>&1
 if test $? -ne 0 ; then cat log; no_result; fi
 cat > $workchan/test/00/t0001a.sh << 'end'
@@ -223,70 +223,70 @@ if test $? -ne 0 ; then no_result; fi
 #
 # build the change
 #
-activity="build 245"
+activity="build 226"
 $bin/aegis -c 1 -build -nl -v > log 2>&1
 if test $? -ne 0 ; then cat log; no_result; fi
 
 #
 # difference the change
 #
-activity="diff 252"
+activity="diff 233"
 $bin/aegis -diff -c 1 > log 2>&1
 if test $? -ne 0 ; then cat log; no_result; fi
 
 #
 # test the change
 #
-activity="test 259"
+activity="test 240"
 $bin/aegis -t -c 1 -v > log 2>&1
 if test $? -ne 0 ; then cat log; no_result; fi
 
 #
 # finish development of the 1st change
 #
-activity="develop end 266"
+activity="develop end 247"
 $bin/aegis -de -c 1 > log 2>&1
 if test $? -ne 0 ; then cat log; no_result; fi
 
 #
 # pass the review of the 1st change
 #
-activity="review pass 273"
+activity="review pass 254"
 $bin/aegis -rpass -c 1 > log 2>&1
 if test $? -ne 0 ; then cat log; no_result; fi
 
 #
 # start integrating
 #
-activity="integrate begin 280"
+activity="integrate begin 261"
 $bin/aegis -ib 1 > log 2>&1
 if test $? -ne 0 ; then cat log; no_result; fi
 
 #
 # integrate build
 #
-activity="build 287"
+activity="build 268"
 $bin/aegis -b -c 1 -nl -v > log 2>&1
 if test $? -ne 0 ; then cat log; no_result; fi
 
 #
 # integrate test
 #
-activity="test 294"
+activity="test 275"
 $bin/aegis -t -c 1 -nl -v > log 2>&1
 if test $? -ne 0 ; then cat log; no_result; fi
 
 #
 # pass the integration
 #
-activity="integrate pass 301"
+activity="integrate pass 282"
 $bin/aegis -intpass -c 1 -nl -v > log 2>&1
 if test $? -ne 0 ; then cat log; no_result; fi
 
 #
 # create the second change
 #
-activity="new change 308"
+activity="new change 289"
 cat > $tmp << 'end'
 brief_description = "The second change";
 cause = internal_bug;
@@ -308,7 +308,7 @@ if test $? -ne 0 ; then cat log; no_result; fi
 # add a new files to the change
 #
 
-activity="new file 330"
+activity="new file 311"
 $bin/aegis -c 2 -nf $workchan.2/dummy.c -nl > log 2>&1
 if test $? -ne 0 ; then cat log; no_result; fi
 cat > $workchan.2/dummy.c << 'end'
@@ -327,28 +327,28 @@ if test $? -ne 0 ; then no_result; fi
 #
 # new build file to 2nd change
 #
-activity="new build file 349"
+activity="new build file 330"
 $bin/aegis -c 2 -nf -build $workchan.2/foo
 if test $? -ne 0 ; then cat log; no_result; fi
 
 #
 # build the 2nd change
 #
-activity="build 356"
+activity="build 337"
 $bin/aegis -c 2 -build -nl -v > log 2>&1
 if test $? -ne 0 ; then cat log; no_result; fi
 
 #
 # difference the change
 #
-activity="diff 363"
+activity="diff 344"
 $bin/aegis -diff -c 2 > log 2>&1
 if test $? -ne 0 ; then cat log; no_result; fi
 
 #
 # 3rd change
 #
-activity="new change 370"
+activity="new change 351"
 cat > $tmp << 'end'
 brief_description = "The second change";
 cause = internal_bug;
@@ -369,41 +369,41 @@ if test $? -ne 0 ; then cat log; no_result; fi
 #
 # new build file to 3rd change
 #
-activity="new build file 391"
+activity="new build file 372"
 $bin/aegis -c 3 -nf -build $workchan.3/foo
 if test $? -ne 0 ; then cat log; no_result; fi
 
 #
 # build the 3nd change
 #
-activity="build 398"
+activity="build 379"
 $bin/aegis -c 3 -build -nl -v > log 2>&1
 if test $? -ne 0 ; then cat log; no_result; fi
 
 #
 # finish development of the 2nd change
 #
-activity="develop end 405"
+activity="develop end 386"
 $bin/aegis -de -c 2 > log 2>&1
 if test $? -ne 0 ; then cat log; no_result ; fi
 
-activity="review pass 2nd 409"
+activity="review pass 2nd 390"
 $bin/aegis -rpass -c 2 > log 2>&1
 if test $? -ne 0 ; then cat log ; no_result; fi
 
-activity="integrate begin 2nd 413"
+activity="integrate begin 2nd 394"
 $bin/aegis -ib -c 2 > log 2>&1
 if test $? -ne 0 ; then cat log ; no_result; fi
 
-activity="integrate build 2nd 417"
+activity="integrate build 2nd 398"
 $bin/aegis -b -c 2 -nl -v > log 2>&1
 if test $? -ne 0 ; then cat log ; no_result ; fi
 
-activity="integrate diff 2nd 421"
+activity="integrate diff 2nd 402"
 $bin/aegis -diff -c 2 -nl -v > log 2>&1
 if test $? -ne 0 ; then cat log ; no_result ; fi
 
-activity="integrate pass 2nd 425"
+activity="integrate pass 2nd 406"
 $bin/aegis -ipass -c 2 > log 2>&1
 if test $? -ne 0 ; then cat log ; no_result ; fi
 
@@ -411,11 +411,11 @@ if test $? -ne 0 ; then cat log ; no_result ; fi
 # go ahead with the 3rd change
 #
 
-activity="diff 3rd change 433"
+activity="diff 3rd change 414"
 $bin/aegis -diff -c 3 -nl -v > log 2>&1
 if test $? -ne 0 ; then cat log ; no_result ; fi
 
-activity="develop end 3rd 437"
+activity="develop end 3rd 418"
 $bin/aegis -de -c 3 > log 2>&1
 if test $? -ne 0 ; then cat log ; fail ; fi
 

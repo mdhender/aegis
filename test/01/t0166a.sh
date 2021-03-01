@@ -1,7 +1,7 @@
 #!/bin/sh
 #
 #	aegis - project change supervisor
-#	Copyright (C) 2002 Peter Miller;
+#	Copyright (C) 2002, 2005 Peter Miller;
 #	All rights reserved.
 #
 #	This program is free software; you can redistribute it and/or modify
@@ -179,7 +179,7 @@ if test $? -ne 0 ; then cat log; no_result; fi
 $bin/aegis -nf $workchan/Makefile -nl \
 	-uuid aaaaaaaa-bbbb-4bbb-8ccc-ccccddddddd3 > log 2>&1
 if test $? -ne 0 ; then cat log; no_result; fi
-$bin/aegis -nf $workchan/config -nl \
+$bin/aegis -nf $workchan/aegis.conf -nl \
 	-uuid aaaaaaaa-bbbb-4bbb-8ccc-ccccddddddd4 > log 2>&1
 if test $? -ne 0 ; then cat log; no_result; fi
 cat > $workchan/main.c << 'end'
@@ -207,7 +207,7 @@ foo: main.o test.o
 	date > $@
 end
 if test $? -ne 0 ; then no_result; fi
-cat > $workchan/config << 'end'
+cat > $workchan/aegis.conf << 'end'
 build_command = "exit 0";
 link_integration_directory = true;
 history_get_command =
@@ -228,7 +228,7 @@ if test $? -ne 0 ; then no_result; fi
 #
 # create a new test
 #
-activity="new test 222"
+activity="new test 231"
 $bin/aegis -nt -uuid aaaaaaaa-bbbb-4bbb-8ccc-ccccddddddd5 > log 2>&1
 if test $? -ne 0 ; then cat log; no_result; fi
 cat > $workchan/test/00/t0001a.sh << 'end'
@@ -240,21 +240,21 @@ if test $? -ne 0 ; then no_result; fi
 #
 # build the change
 #
-activity="build 234"
+activity="build 243"
 $bin/aegis -build -nl -v > log 2>&1
 if test $? -ne 0 ; then cat log; fail; fi
 
 #
 # difference the change
 #
-activity="diff 241"
+activity="diff 250"
 $bin/aegis -diff > log 2>&1
 if test $? -ne 0 ; then cat log; no_result; fi
 
 #
 # test the change
 #
-activity="test 248"
+activity="test 257"
 $bin/aegis -t -v > log 2>&1
 if test $? -ne 0 ; then cat log; no_result; fi
 
@@ -264,49 +264,49 @@ if test $? -ne 0 ; then cat log; no_result; fi
 #
 # finish development of the change
 #
-activity="develop end 255"
+activity="develop end 267"
 $bin/aegis -de > log 2>&1
 if test $? -ne 0 ; then cat log; fail; fi
 
 #
 # pass the review
 #
-activity="review pass 262"
+activity="review pass 274"
 $bin/aegis -rpass -c 1 > log 2>&1
 if test $? -ne 0 ; then cat log; no_result; fi
 
 #
 # start integrating
 #
-activity="integrate begin 269"
+activity="integrate begin 281"
 $bin/aegis -ib 1 > log 2>&1
 if test $? -ne 0 ; then cat log; no_result; fi
 
 #
 # integrate build
 #
-activity="build 276"
+activity="build 288"
 $bin/aegis -b -nl -v > log 2>&1
 if test $? -ne 0 ; then cat log; no_result; fi
 
 #
 # integrate test
 #
-activity="test 283"
+activity="test 295"
 $bin/aegis -t -nl -v > log 2>&1
 if test $? -ne 0 ; then cat log; no_result; fi
 
 #
 # pass the integration
 #
-activity="integrate pass 290"
+activity="integrate pass 302"
 $bin/aegis -intpass -nl > log 2>&1
 if test $? -ne 0 ; then cat log; no_result; fi
 
 #
 # create a new change, to generate a patch
 #
-activity="new change 297"
+activity="new change 309"
 cat > $tmp << 'end'
 brief_description = "The second change";
 cause = internal_bug;
@@ -324,7 +324,7 @@ if test $? -ne 0 ; then cat log; no_result; fi
 #
 # add a new files to the change
 #
-activity="copy file 315"
+activity="copy file 327"
 $bin/aegis -cp $workchan/main.c -c 2 -nl > log 2>&1
 if test $? -ne 0 ; then cat log; no_result; fi
 cat > $workchan/main.c << 'end'
@@ -395,14 +395,14 @@ if test $? -ne 0 ; then fail; fi
 #
 # receive the patch
 #
-activity="aepatch receive 386"
+activity="aepatch receive 398"
 $bin/aepatch -receive -dir ${workchan}3 -f the.patch -trojan > log 2>&1
 if test $? -ne 0 ; then cat log; fail; fi
 
 #
 # Make sure the patch is applied properly.
 #
-activity="verify 393"
+activity="verify 405"
 diff $workchan/main.c ${workchan}3/main.c
 if test $? -ne 0 ; then fail; fi
 

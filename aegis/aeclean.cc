@@ -132,7 +132,7 @@ struct clean_info_ty
 
 static void
 clean_out_the_garbage(void *p, dir_walk_message_ty msg, string_ty *path,
-    struct stat *st)
+    const struct stat *st)
 {
     clean_info_ty   *sip;
     string_ty	    *s1;

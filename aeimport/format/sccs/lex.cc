@@ -1,6 +1,6 @@
 //
 //	aegis - project change supervisor
-//	Copyright (C) 2001, 2002, 2004 Peter Miller;
+//	Copyright (C) 2001, 2002, 2004, 2005 Peter Miller;
 //	All rights reserved.
 //
 //	This program is free software; you can redistribute it and/or modify
@@ -54,7 +54,7 @@ sccs_lex_close(void)
 {
     if (error_count)
 	quit(1);
-    input_delete(ip);
+    delete ip;
     ip = 0;
 }
 
@@ -68,14 +68,14 @@ sccs_lex_error(sub_context_ty *scp, const char *s)
 
     // re-use substitution context
     sub_var_set_string(scp, "Message", msg);
-    sub_var_set_string(scp, "File_Name", input_name(ip));
+    sub_var_set_string(scp, "File_Name", ip->name());
     error_intl(scp, i18n("$filename: $message"));
     str_free(msg);
 
     if (++error_count >= 20)
     {
 	// re-use substitution context
-	sub_var_set_string(scp, "File_Name", input_name(ip));
+	sub_var_set_string(scp, "File_Name", ip->name());
 	fatal_intl(scp, i18n("$filename: too many errors"));
     }
 }
@@ -103,7 +103,7 @@ getch(void)
 	getch_line_pos = 0;
 	for (;;)
 	{
-	    c = input_getc(ip);
+	    c = ip->getc();
 	    if (c < 0)
 	    {
 		if (getch_line_buffer.empty())

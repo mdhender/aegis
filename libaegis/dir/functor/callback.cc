@@ -1,0 +1,67 @@
+//
+//	aegis - project change supervisor
+//	Copyright (C) 2005 Peter Miller;
+//	All rights reserved.
+//
+//	This program is free software; you can redistribute it and/or modify
+//	it under the terms of the GNU General Public License as published by
+//	the Free Software Foundation; either version 2 of the License, or
+//	(at your option) any later version.
+//
+//	This program is distributed in the hope that it will be useful,
+//	but WITHOUT ANY WARRANTY; without even the implied warranty of
+//	MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+//	GNU General Public License for more details.
+//
+//	You should have received a copy of the GNU General Public License
+//	along with this program; if not, write to the Free Software
+//	Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111, USA.
+//
+// MANIFEST: implementation of the dir_functor_callback class
+//
+
+#pragma implementation "dir_functor_callback"
+
+#include <dir/functor/callback.h>
+
+
+dir_functor_callback::~dir_functor_callback()
+{
+}
+
+
+dir_functor_callback::dir_functor_callback(dir_walk_callback_ty arg1,
+	void *arg2) :
+    callback(arg1),
+    auxilliary(arg2)
+{
+}
+
+
+void
+dir_functor_callback::operator()(msg_t msg, const nstring &path,
+    const struct stat &st)
+{
+    switch (msg)
+    {
+    case msg_dir_before:
+	callback(auxilliary, dir_walk_dir_before, path.get_ref(), &st);
+	break;
+
+    case msg_dir_after:
+	callback(auxilliary, dir_walk_dir_after, path.get_ref(), &st);
+	break;
+
+    case msg_file:
+	callback(auxilliary, dir_walk_file, path.get_ref(), &st);
+	break;
+
+    case msg_special:
+	callback(auxilliary, dir_walk_special, path.get_ref(), &st);
+	break;
+
+    case msg_symlink:
+	callback(auxilliary, dir_walk_symlink, path.get_ref(), &st);
+	break;
+    }
+}

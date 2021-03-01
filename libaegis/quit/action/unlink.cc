@@ -48,6 +48,7 @@ void
 quit_action_unlink::operator()(int exit_status)
 {
     // This action is NOT conditional on the exit status.
+    // os_become_undo_atexit();
     os_become(uid, gid, umask);
     os_unlink_errok(path);
     os_become_undo();

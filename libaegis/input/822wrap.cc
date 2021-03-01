@@ -1,6 +1,6 @@
 //
 //	aegis - project change supervisor
-//	Copyright (C) 1999, 2003, 2004 Peter Miller;
+//	Copyright (C) 1999, 2003-2005 Peter Miller;
 //	All rights reserved.
 //
 //	This program is free software; you can redistribute it and/or modify
@@ -21,55 +21,43 @@
 //
 
 #include <input/822wrap.h>
-#include <input/private.h>
 
 
-struct input_822wrap_ty
+input_822wrap::~input_822wrap()
 {
-    input_ty        inherit;
-    input_ty        *deeper;
-    int             close_on_delete;
-    long            pos;
-    int             column;
-};
-
-
-static void
-input_822wrap_destructor(input_ty *fp)
-{
-    input_822wrap_ty *this_thing;
-
-    this_thing = (input_822wrap_ty *)fp;
-    input_pushback_transfer(this_thing->deeper, fp);
-    if (this_thing->close_on_delete)
-	    input_delete(this_thing->deeper);
+    pullback_transfer(deeper);
+    if (delete_on_delete)
+	delete deeper;
+    deeper = 0;
 }
 
 
-static long
-input_822wrap_read(input_ty *fp, void *data, size_t len)
+input_822wrap::input_822wrap(input_ty *arg1, bool arg2) :
+    deeper(arg1),
+    delete_on_delete(arg2),
+    pos(0),
+    column(0)
 {
-    input_822wrap_ty *this_thing;
-    int             c;
-    unsigned char   *cp;
-    unsigned char   *end;
-    size_t          nbytes;
+}
 
-    this_thing = (input_822wrap_ty *)fp;
-    cp = (unsigned char *)data;
-    end = cp + len;
+
+long
+input_822wrap::read_inner(void *data, size_t len)
+{
+    unsigned char *cp = (unsigned char *)data;
+    unsigned char *end = cp + len;
     while (cp < end)
     {
-	c = input_getc(this_thing->deeper);
+	int c = deeper->getc();
 	if (c < 0)
 	    break;
-	if (c == '\n' && this_thing->column > 0)
+	if (c == '\n' && column > 0)
 	{
-	    c = input_getc(this_thing->deeper);
+	    c = deeper->getc();
 	    if (c != ' ' && c != '\t')
 	    {
 		if (c >= 0)
-	    	    input_ungetc(this_thing->deeper, c);
+	    	    deeper->ungetc(c);
 		c = '\n';
 	    }
 	}
@@ -81,77 +69,48 @@ input_822wrap_read(input_ty *fp, void *data, size_t len)
 	    // too far ahead of ourselves, in case the header
 	    // finishes and the binary data starts.
 	    //
-	    this_thing->column = 0;
+	    column = 0;
 	    break;
 	}
-	this_thing->column++;
+	column++;
     }
-    nbytes = (cp - (unsigned char *)data);
-    this_thing->pos += nbytes;
+    size_t nbytes = (cp - (unsigned char *)data);
+    pos += nbytes;
     return nbytes;
 }
 
 
-static long
-input_822wrap_ftell(input_ty *fp)
+long
+input_822wrap::ftell_inner()
 {
-    input_822wrap_ty *this_thing;
-
-    this_thing = (input_822wrap_ty *)fp;
-    return this_thing->pos;
+    return pos;
 }
 
 
-static struct string_ty *
-input_822wrap_name(input_ty *fp)
+nstring
+input_822wrap::name()
 {
-    input_822wrap_ty *this_thing;
-
-    this_thing = (input_822wrap_ty *)fp;
-    return input_name(this_thing->deeper);
+    return deeper->name();
 }
 
 
-static long
-input_822wrap_length(input_ty *fp)
+long
+input_822wrap::length()
 {
     return -1;
 }
 
 
-static void
-input_822wrap_keepalive(input_ty *fp)
+void
+input_822wrap::keepalive()
 {
-    input_822wrap_ty *ip;
-
-    ip = (input_822wrap_ty *)fp;
-    input_keepalive(ip->deeper);
+    deeper->keepalive();
 }
 
 
-static input_vtbl_ty vtbl =
+bool
+input_822wrap::is_remote()
+    const
 {
-    sizeof(input_822wrap_ty),
-    input_822wrap_destructor,
-    input_822wrap_read,
-    input_822wrap_ftell,
-    input_822wrap_name,
-    input_822wrap_length,
-    input_822wrap_keepalive,
-};
-
-
-input_ty *
-input_822wrap(input_ty *deeper, int close_on_delete)
-{
-    input_ty	*result;
-    input_822wrap_ty *this_thing;
-
-    result = input_new(&vtbl);
-    this_thing = (input_822wrap_ty *)result;
-    this_thing->deeper = deeper;
-    this_thing->close_on_delete = close_on_delete;
-    this_thing->pos = 0;
-    this_thing->column = 0;
-    return result;
+    return deeper->is_remote();
 }

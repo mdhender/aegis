@@ -1,6 +1,6 @@
 //
 //	aegis - project change supervisor
-//	Copyright (C) 1991-1993, 2002, 2004 Peter Miller.
+//	Copyright (C) 1991-1993, 2002, 2004, 2005 Peter Miller.
 //	All rights reserved.
 //
 //	This program is free software; you can redistribute it and/or modify
@@ -20,26 +20,50 @@
 // MANIFEST: interface definition for aegis/dir.c
 //
 
-#ifndef DIR_H
-#define DIR_H
+#ifndef LIBAEGIS_DIR_H
+#define LIBAEGIS_DIR_H
 
-#include <main.h>
-#include <str.h>
+#include <nstring.h>
+
+class dir_functor; // forward
 
 enum dir_walk_message_ty
 {
-	dir_walk_dir_before,
-	dir_walk_dir_after,
-	dir_walk_file,
-	dir_walk_special,
-	dir_walk_symlink
+    dir_walk_dir_before,
+    dir_walk_dir_after,
+    dir_walk_file,
+    dir_walk_special,
+    dir_walk_symlink
 };
 
-struct stat;
+struct stat; // forward
 
 typedef void (*dir_walk_callback_ty)(void *arg, dir_walk_message_ty,
-	string_ty *, struct stat *);
+	string_ty *, const struct stat *);
 
-void dir_walk(string_ty *, dir_walk_callback_ty, void *arg);
+/**
+  * The dir_walk function is used to recursively walk a directory tree,
+  * calling the \a cb funtion for each entry.
+  *
+  * @param path
+  *     The path to the directory to be walked.
+  * @param cb
+  *     The function to be called for each file and directory.
+  * @param arg
+  *     A extra argument ot be passed to the \a cb function, usually
+  *     used to provide context.
+  */
+void dir_walk(string_ty *path, dir_walk_callback_ty cb, void *arg);
 
-#endif // DIR_H
+/**
+  * The dir_walk function is used to recursively walk a directory tree,
+  * calling the \a cb functor for each entry.
+  *
+  * @param path
+  *     The path to the directory to be walked.
+  * @param cb
+  *     The functor to be called for each file and directory.
+  */
+void dir_walk(const nstring &path, dir_functor &cb);
+
+#endif // LIBAEGIS_DIR_H

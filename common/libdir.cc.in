@@ -1,27 +1,28 @@
-/*
- *	aegis - project change supervisor
- *	Copyright (C) 1997, 1999, 2002-2004 Peter Miller;
- *	All rights reserved.
- *
- *	This program is free software; you can redistribute it and/or modify
- *	it under the terms of the GNU General Public License as published by
- *	the Free Software Foundation; either version 2 of the License, or
- *	(at your option) any later version.
- *
- *	This program is distributed in the hope that it will be useful,
- *	but WITHOUT ANY WARRANTY; without even the implied warranty of
- *	MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
- *	GNU General Public License for more details.
- *
- *	You should have received a copy of the GNU General Public License
- *	along with this program; if not, write to the Free Software
- *	Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111, USA.
- *
- * MANIFEST: functions to report configured values
- *
- * @configure_input@
- */
+//
+//	aegis - project change supervisor
+//	Copyright (C) 1997, 1999, 2002-2004 Peter Miller;
+//	All rights reserved.
+//
+//	This program is free software; you can redistribute it and/or modify
+//	it under the terms of the GNU General Public License as published by
+//	the Free Software Foundation; either version 2 of the License, or
+//	(at your option) any later version.
+//
+//	This program is distributed in the hope that it will be useful,
+//	but WITHOUT ANY WARRANTY; without even the implied warranty of
+//	MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+//	GNU General Public License for more details.
+//
+//	You should have received a copy of the GNU General Public License
+//	along with this program; if not, write to the Free Software
+//	Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111, USA.
+//
+// MANIFEST: functions to report configured values
+//
+// @configure_input@
+//
 
+#include <ac/stdlib.h>
 #include <libdir.h>
 
 
@@ -32,116 +33,126 @@ configured_prefix(void)
 }
 
 
-/*
- * On a network, may ONLY be shared betwen machines of identical
- * cpu-vendor-os flavour.  Probably mounted read-only.
- *
- * This is where the executable files live.
- */
+//
+// On a network, may ONLY be shared betwen machines of identical
+// cpu-vendor-os flavour.  Probably mounted read-only.
+//
+// This is where the executable files live.
+//
 
 const char *
 configured_bindir(void)
 {
-	return "@bindir@";
+    return "@bindir@";
 }
 
 
-/*
- * On a network, may ONLY be shared betwen machines of identical
- * cpu-vendor-os flavour.  Probably mounted read-only.
- */
+//
+// On a network, may ONLY be shared betwen machines of identical
+// cpu-vendor-os flavour.  Probably mounted read-only.
+//
 
 const char *
 configured_libdir(void)
 {
-	return "@libdir@";
+    return "@libdir@";
 }
 
 
-/*
- * This is where the error message (.mo) files are parked.
- */
+//
+// This is where the error message (.mo) files are parked.
+//
 
 const char *
 configured_nlsdir(void)
 {
-	return "@NLSDIR@";
+    return "@NLSDIR@";
 }
 
-/*
- * On a network, may be shared betwen all machines.
- * Probably mounted read-only.
- *
- * This is where the various translations of the user documentation are
- * parked, all documents, papers and manual pages, for all languages.
- *
- * This is where the various shell scripts are parked.
- *
- * This is where the reort scripts are parked.
- */
+
+//
+// On a network, may be shared betwen all machines.
+// Probably mounted read-only.
+//
+// This is where the various translations of the user documentation are
+// parked, all documents, papers and manual pages, for all languages.
+//
+// This is where the various shell scripts are parked.
+//
+// This is where the report scripts are parked.
+//
 
 const char *
 configured_datadir(void)
 {
-	return "@datadir@";
+    //
+    // This isn't documented.  This is intentional.
+    // It should only be used for testing purposes.
+    // DO NOT do it for any of the other configured directories.
+    //
+    char *datadir = getenv("AEGIS_DATADIR");
+    if (datadir && *datadir)
+        return datadir;
+
+    return "@datadir@";
 }
 
 
-/*
- * On a network, may be shared betwen all machines.
- * Probably mounted read-only.
- *
- * This is where the default-language manual entries are parked.
- */
+//
+// On a network, may be shared betwen all machines.
+// Probably mounted read-only.
+//
+// This is where the default-language manual entries are parked.
+//
 
 const char *
 configured_mandir(void)
 {
-	return "@mandir@";
+    return "@mandir@";
 }
 
 
-/*
- * On a network, must be shared betwen all machines.
- * MUST BE mounted Read-Write.
- *
- * This is where the lockfile lives.
- *
- * This is where the global state (project index) file lives.
- *
- * This is where the user ownership state files live.
- */
+//
+// On a network, must be shared betwen all machines.
+// MUST BE mounted Read-Write.
+//
+// This is where the lockfile lives.
+//
+// This is where the global state (project index) file lives.
+//
+// This is where the user ownership state files live.
+//
 
 const char *
 configured_comdir(void)
 {
-	return "@sharedstatedir@";
+    return "@sharedstatedir@";
 }
 
 
 int
 configured_aegis_uid(void)
 {
-	return @AEGIS_UID@;
+    return @AEGIS_UID@;
 }
 
 
 int
 configured_aegis_gid(void)
 {
-	return @AEGIS_GID@;
+    return @AEGIS_GID@;
 }
 
 
 const char *
 configured_exeext(void)
 {
-	return "@EXEEXT@";
+    return "@EXEEXT@";
 }
 
 
 const char *
 configured_sysconfdir(void)
 {
-	return "@sysconfdir@";
+    return "@sysconfdir@";
 }

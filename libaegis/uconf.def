@@ -27,6 +27,8 @@
  *	man5/aeuconf.5
  */
 
+#include <common.def>
+
 /*
  * The name of a project.
  */
@@ -182,3 +184,11 @@ visual_command = string;
  * Overrides $PAGER environment variable (for Aegis only).
  */
 pager_command = string;
+
+/*
+ * The attribute field describes a list of user-specified attributes.
+ *
+ * Arguably, almost all user attributes could be subsumed into this
+ * attribute list, but Aegis' original design was not that shape.
+ */
+attribute = attributes;

@@ -1,7 +1,7 @@
 #!/bin/sh
 #
 #	aegis - project change supervisor
-#	Copyright (C) 2004 Peter Miller;
+#	Copyright (C) 2004, 2005 Peter Miller;
 #	All rights reserved.
 #
 #	This program is free software; you can redistribute it and/or modify
@@ -176,10 +176,10 @@ $bin/aegis -db 10 -v > log 2>&1
 if test $? -ne 0 ; then cat log; no_result; fi
 
 activity="new file 178"
-$bin/aegis -nf $work/test.C010/config $work/test.C010/fred \
+$bin/aegis -nf $work/test.C010/aegis.conf $work/test.C010/fred \
 	$work/test.C010/barney -v > log 2>&1
 if test $? -ne 0 ; then cat log; no_result; fi
-cat > $work/test.C010/config << 'fubar'
+cat > $work/test.C010/aegis.conf << 'fubar'
 build_command = "date > derived1 && date > derived2";
 history_get_command =
 	"co -u'$e' -p $h,v > $o";
@@ -232,7 +232,7 @@ if test $? -ne 0 ; then cat log; no_result; fi
 
 activity="check the baseline content 233"
 delta_dir=`$bin/aegis -cd`
-test -f $delta_dir/config || fail
+test -f $delta_dir/aegis.conf || fail
 test -f $delta_dir/fred || fail
 test -f $delta_dir/barney || fail
 
@@ -246,7 +246,7 @@ if test $? -ne 0 ; then cat log; no_result; fi
 
 activity="check the baseline content 247"
 delta_dir=`$bin/aegis -cd`
-test -f $delta_dir/config || fail
+test -f $delta_dir/aegis.conf || fail
 test -f $delta_dir/fred || fail
 test -f $delta_dir/barney || fail
 
@@ -255,7 +255,7 @@ $bin/aegis -ipass -v > log 2>&1
 if test $? -ne 0 ; then cat log; no_result; fi
 
 activity="check the baseline content 257"
-test -f $work/proj.dir/baseline/config || fail
+test -f $work/proj.dir/baseline/aegis.conf || fail
 test -f $work/proj.dir/baseline/fred || fail
 test -f $work/proj.dir/baseline/barney || fail
 
@@ -304,32 +304,32 @@ activity="check dir content 303"
 delta_dir=`$bin/aegis -cd -c 1`
 test -f $delta_dir/fred || fail
 
-activity="build 309"
+activity="build 307"
 $bin/aegis -build 1 > log 2>&1
 if test $? -ne 0 ; then cat log; no_result; fi
 
-activity="check the baseline content 313"
+activity="check the baseline content 311"
 delta_dir=`$bin/aegis -cd -c 1`
 test -f $delta_dir/fred || fail
 test -f $delta_dir/derived1 || fail
 test -f $delta_dir/derived2 || fail
 
-activity="diff  319"
+activity="diff  317"
 $bin/aegis -diff 1 -nl -v > log 2>&1
 if test $? -ne 0 ; then cat log; no_result; fi
 
-activity="integrate pass 323"
+activity="integrate pass 321"
 $bin/aegis -ipass 1 -nl -v > log 2>&1
 if test $? -ne 0 ; then cat log; no_result; fi
 
-activity="check the baseline content 327"
+activity="check the baseline content 325"
 test -f $work/proj.dir/branch.1/baseline/fred || fail
 test -f $work/proj.dir/branch.1/baseline/derived1 || fail
 test -f $work/proj.dir/branch.1/baseline/derived2 || fail
 
 ###
 
-activity="new change 335"
+activity="new change 332"
 cat > caf << 'fubar'
 brief_description = "two";
 cause = internal_enhancement;
@@ -339,58 +339,58 @@ if test $? -ne 0 ; then no_result; fi
 $bin/aegis -nc -f caf 2 -v -p $AEGIS_PROJECT > log 2>&1
 if test $? -ne 0 ; then cat log; no_result; fi
 
-activity="develop begin 345"
+activity="develop begin 342"
 $bin/aegis -db 2 -dir $work/test.1.C002 >  log 2>&1
 if test $? -ne 0; then cat log; no_result; fi
 
-activity="source remove 349"
+activity="source remove 346"
 $bin/aegis -rm -c 2 $work/test.1.C002/barney -nl -v > log 2>&1
 if test $? -ne 0 ; then cat log; no_result; fi
 
-activity="build 353"
+activity="build 350"
 $bin/aegis -build 2  > log 2>&1
 if test $? -ne 0 ; then cat log; no_result; fi
 
-activity="diff 357"
+activity="diff 354"
 $bin/aegis -diff 2 > log 2>&1
 if test $? -ne 0 ; then cat log; no_result; fi
 
-activity="dev_end 361"
+activity="dev_end 358"
 $bin/aegis -dev_end 2 > log 2>&1
 if test $? -ne 0 ; then cat log; no_result; fi
 
-activity="ibegin 365"
+activity="ibegin 362"
 $bin/aegis -ib  2 > log 2>&1
 if test $? -ne 0 ; then cat log; no_result; fi
 
-activity="check dir content 369"
+activity="check dir content 366"
 delta_dir=`$bin/aegis -cd -c 2`
-test -f $delta_dir/config && fail
+test -f $delta_dir/aegis.conf && fail
 test -f $delta_dir/barney && fail
 test -f $delta_dir/fred || fail
 
-activity="build 374"
+activity="build 372"
 $bin/aegis -build 2 > log 2>&1
 if test $? -ne 0 ; then cat log; no_result; fi
 
-activity="check the baseline content 378"
+activity="check the baseline content 376"
 delta_dir=`$bin/aegis -cd -c 2`
-test -f $delta_dir/config && fail
+test -f $delta_dir/aegis.conf && fail
 test -f $delta_dir/barney && fail
 test -f $delta_dir/fred || fail
 test -f $delta_dir/derived1 || fail
 test -f $delta_dir/derived2 || fail
 
-activity="diff  385"
+activity="diff  384"
 $bin/aegis -diff 2 -nl -v > log 2>&1
 if test $? -ne 0 ; then cat log; no_result; fi
 
-activity="integrate pass 389"
+activity="integrate pass 388"
 $bin/aegis -ipass 2 -nl -v > log 2>&1
 if test $? -ne 0 ; then cat log; no_result; fi
 
-activity="check the baseline content 393"
-test -f $work/proj.dir/branch.1/baseline/config && fail
+activity="check the baseline content 392"
+test -f $work/proj.dir/branch.1/baseline/aegis.conf && fail
 test -f $work/proj.dir/branch.1/baseline/barney && fail
 test -f $work/proj.dir/branch.1/baseline/fred || fail
 test -f $work/proj.dir/branch.1/baseline/derived1 || fail

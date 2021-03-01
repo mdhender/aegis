@@ -1,7 +1,7 @@
 #!/bin/sh
 #
 #	aegis - project change supervisor
-#	Copyright (C) 1991-1998, 2000, 2004 Peter Miller;
+#	Copyright (C) 1991-1998, 2000, 2004, 2005 Peter Miller;
 #	All rights reserved.
 #
 #	This program is free software; you can redistribute it and/or modify
@@ -83,7 +83,7 @@ pass()
 }
 trap "no_result" 1 2 3 15
 
-activity="working directory 71"
+activity="working directory 86"
 mkdir $work $work/lib
 if test $? -ne 0 ; then no_result; fi
 chmod 777 $work/lib
@@ -121,7 +121,7 @@ fi
 #
 # program to ask questions about symlinks
 #
-activity="symlink test program 104"
+activity="symlink test program 124"
 cat > symlink.cc << 'fubar'
 #include <sys/types.h>
 #include <sys/stat.h>
@@ -168,14 +168,14 @@ symlinkdest=$workchan/symlinkdest
 # make a new project
 #	and check files it should have made
 #
-activity="new project 153"
+activity="new project 171"
 $bin/aegis -newpro foo -version "" -dir $workproj -lib $worklib
 if test $? -ne 0 ; then no_result; fi
 
 #
 # change project attributes
 #
-activity="project attributes 160"
+activity="project attributes 178"
 cat > $tmp << 'end'
 description = "A bogus project created to test things.";
 developer_may_review = true;
@@ -190,7 +190,7 @@ if test $? -ne 0 ; then no_result; fi
 # create a new change
 #	make sure it creates the files it should
 #
-activity="new change 174"
+activity="new change 193"
 cat > $tmp << 'end'
 brief_description = "This change is used to test the aegis functionality \
 with respect to change descriptions.";
@@ -202,7 +202,7 @@ if test $? -ne 0 ; then no_result; fi
 #
 # add a new developer
 #
-activity="new developer 186"
+activity="new developer 205"
 $bin/aegis -newdev $USER -p foo -lib $worklib
 if test $? -ne 0 ; then no_result; fi
 
@@ -210,14 +210,14 @@ if test $? -ne 0 ; then no_result; fi
 # begin development of a change
 #	check it made the files it should
 #
-activity="develop begin 194"
+activity="develop begin 213"
 $bin/aegis -devbeg 1 -p foo -dir $workchan -lib $worklib
 if test $? -ne 0 ; then no_result; fi
 
 #
 # create a symbolic link in the development directory
 #
-activity="create a symlink 201"
+activity="create a symlink 220"
 mkdir $symlinkdest
 if test $? -ne 0 ; then no_result; fi
 ln -s $symlinkdest $symlinktestfile
@@ -226,10 +226,10 @@ if test $? -ne 0 ; then no_result; fi
 #
 # add a new files to the change
 #
-activity="new file 210"
+activity="new file 229"
 $bin/aegis -new_file $workchan/main.cc -nl -lib $worklib -p foo
 if test $? -ne 0 ; then no_result; fi
-$bin/aegis -new_file $workchan/config -nl -lib $worklib -p foo
+$bin/aegis -new_file $workchan/aegis.conf -nl -lib $worklib -p foo
 if test $? -ne 0 ; then no_result; fi
 cat > $workchan/main.cc << 'end'
 int
@@ -239,7 +239,7 @@ main(int argc, char **argv)
 }
 end
 if test $? -ne 0 ; then no_result; fi
-cat > $workchan/config << 'end'
+cat > $workchan/aegis.conf << 'end'
 build_command = "rm -f foo; c++ -o foo -D'VERSION=\"$v\"' main.cc";
 link_integration_directory = true;
 
@@ -262,7 +262,7 @@ if test $? -ne 0 ; then no_result; fi
 #
 # create a new test
 #
-activity="new test 244"
+activity="new test 265"
 $bin/aegis -nt -lib $worklib -p foo
 if test $? -ne 0 ; then fail; fi
 cat > $workchan/test/00/t0001a.sh << 'end'
@@ -295,73 +295,73 @@ if test $? -ne 0 ; then no_result; fi
 #
 # build the change
 #
-activity="build 282"
+activity="build 298"
 $bin/aegis -build -nl -lib $worklib -p foo > /dev/null 2>&1
 if test $? -ne 0 ; then no_result; fi
 
 #
 # difference the change
 #
-activity="diff 289"
+activity="diff 305"
 $bin/aegis -diff -nl -lib $worklib -p foo > /dev/null 2>&1
 if test $? -ne 0 ; then no_result; fi
 
 #
 # test the change
 #
-activity="test 296"
+activity="test 312"
 $bin/aegis -test -nl -lib $worklib -p foo > /dev/null 2>&1
 if test $? -ne 0 ; then no_result; fi
 
 #
 # finish development of the change
 #
-activity="develop end 303"
+activity="develop end 319"
 $bin/aegis -dev_end -lib $worklib -p foo
 if test $? -ne 0 ; then fail; fi
 
 #
 # add a new reviewer
 #
-activity="new reviewer 310"
+activity="new reviewer 326"
 $bin/aegis -newrev $USER -p foo -lib $worklib
 if test $? -ne 0 ; then no_result; fi
 
 #
 # pass the review
 #
-activity="review pass 317"
+activity="review pass 333"
 $bin/aegis -review_pass -chan 1 -proj foo -lib $worklib
 if test $? -ne 0 ; then no_result; fi
 
 #
 # add an integrator
 #
-activity="new integrator 324"
+activity="new integrator 340"
 $bin/aegis -newint $USER -p foo -lib $worklib
 if test $? -ne 0 ; then no_result; fi
 
 #
 # start integrating
 #
-activity="integrate begin 331"
+activity="integrate begin 347"
 $bin/aegis -intbeg 1 -p foo -lib $worklib
 if test $? -ne 0 ; then no_result; fi
 
 #
 # integrate build
 #
-activity="build 338"
+activity="build 354"
 $bin/aegis -build -nl -lib $worklib -p foo > /dev/null 2>&1
 if test $? -ne 0 ; then no_result; fi
-activity="test 341"
+activity="test 357"
 $bin/aegis -test -nl -lib $worklib -p foo > /dev/null 2>&1
 if test $? -ne 0 ; then no_result; fi
 
 #
 # pass the integration
 #
-activity="integrate pass 348"
+activity="integrate pass 364"
 $bin/aegis -intpass -nl -lib $worklib -p foo > /dev/null 2>&1
 if test $? -ne 0 ; then fail; fi
 
@@ -376,7 +376,7 @@ sleep 5
 # or wether it is still there
 # It is meant to have been removed.
 #
-activity="symlink existence 356"
+activity="symlink existence 379"
 ./symlink $symlinktestfile
 if test $? -ne 0 ; then fail; fi
 

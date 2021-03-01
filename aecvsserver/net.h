@@ -1,6 +1,6 @@
 //
 //	aegis - project change supervisor
-//	Copyright (C) 2004 Peter Miller;
+//	Copyright (C) 2004, 2005 Peter Miller;
 //	All rights reserved.
 //
 //	This program is free software; you can redistribute it and/or modify
@@ -24,6 +24,7 @@
 #define AE_CVS_SERVER_NET_H
 
 #include <directory.h>
+#include <nstring.h>
 #include <str_list.h>
 
 enum response_code_ty
@@ -85,10 +86,10 @@ public:
     /**
       * The getline method is used to read one line from the input (up
       * to the next newline character or end of input).  The newline
-      * is not included in the returned string.  Returns NULL if
+      * is not included in the returned string.  Returns false if
       * end-of-file is reached.
       */
-    string_ty *getline();
+    bool getline(nstring &s);
 
     /**
       * The printf method is used to write output to the client.

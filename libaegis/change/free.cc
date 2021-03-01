@@ -45,6 +45,8 @@ change_free(change_ty *cp)
 		str_free(cp->cstate_filename);
 	if (cp->fstate_filename)
 		str_free(cp->fstate_filename);
+	if (cp->pfstate_filename)
+		str_free(cp->pfstate_filename);
 	if (cp->cstate_data)
 		cstate_type.free(cp->cstate_data);
 	if (cp->fstate_data)

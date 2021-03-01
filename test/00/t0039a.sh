@@ -1,7 +1,7 @@
 #!/bin/sh
 #
 #	aegis - project change supervisor
-#	Copyright (C) 1996, 1997, 1998 Peter Miller;
+#	Copyright (C) 1996-1998, 2005 Peter Miller;
 #	All rights reserved.
 #
 #	This program is free software; you can redistribute it and/or modify
@@ -104,14 +104,14 @@ unset LANGUAGE
 #
 # make a new project
 #
-activity="new project 109"
+activity="new project 107"
 $bin/aegis -newpro $AEGIS_PROJECT -version "" -dir $workproj -v -lib $worklib > log 2>&1
 if test $? -ne 0 ; then cat log; no_result; fi
 
 #
 # change project attributes
 #
-activity="project attributes 116"
+activity="project attributes 114"
 cat > $tmp << 'TheEnd'
 description = "test the test correlation functionality";
 developer_may_review = true;
@@ -126,7 +126,7 @@ if test $? -ne 0 ; then cat log; no_result; fi
 #
 # create a new change
 #
-activity="new change 131"
+activity="new change 129"
 cat > $tmp << 'TheEnd'
 brief_description = "one";
 cause = internal_enhancement;
@@ -142,31 +142,31 @@ if test $? -ne 0 ; then cat log; no_result; fi
 #
 # add staff
 #
-activity="new developer 147"
+activity="new developer 145"
 $bin/aegis -newdev $USER -v > log 2>&1
 if test $? -ne 0 ; then cat log; no_result; fi
-activity="new reviewer 150"
+activity="new reviewer 148"
 $bin/aegis -newrev $USER -v > log 2>&1
 if test $? -ne 0 ; then cat log; no_result; fi
-activity="new integrator 153"
+activity="new integrator 151"
 $bin/aegis -newint $USER -v > log 2>&1
 if test $? -ne 0 ; then cat log; no_result; fi
 
 #
 # begin development of the change
 #
-activity="develop begin 160"
+activity="develop begin 158"
 $bin/aegis -devbeg 1 -dir $workchan -v > log 2>&1
 if test $? -ne 0 ; then cat log; no_result; fi
 
 #
 # add the new files to the change
 #
-activity="new file 167"
-$bin/aegis -new_file $workchan/config $workchan/a -nl -v > log 2>&1
+activity="new file 165"
+$bin/aegis -new_file $workchan/aegis.conf $workchan/a -nl -v > log 2>&1
 if test $? -ne 0 ; then cat log; no_result; fi
 
-cat > $workchan/config << 'TheEnd'
+cat > $workchan/aegis.conf << 'TheEnd'
 build_command = "exit 0";
 link_integration_directory = true;
 
@@ -191,7 +191,7 @@ if test $? -ne 0 ; then no_result; fi
 #
 # This is NOT recommended practice when writing tests :-)
 #
-activity="new test 196"
+activity="new test 194"
 $bin/aegis -nt -v > log 2>&1
 if test $? -ne 0 ; then cat log; no_result; fi
 
@@ -204,66 +204,66 @@ if test $? -ne 0 ; then no_result; fi
 #
 # build the change
 #
-activity="build 209"
+activity="build 207"
 $bin/aegis -build -nl -v > log 2>&1
 if test $? -ne 0 ; then cat log; no_result; fi
 
 #
 # difference the change
 #
-activity="diff 216"
+activity="diff 214"
 $bin/aegis -diff -v -nl > log 2>&1
 if test $? -ne 0 ; then cat log; no_result; fi
 
 #
 # test the change
 #
-activity="test 223"
+activity="test 221"
 $bin/aegis -test -nl -v > log 2>&1
 if test $? -ne 0 ; then cat log; no_result; fi
 
 #
 # finish development of the change
 #
-activity="develop end 230"
+activity="develop end 228"
 $bin/aegis -dev_end -v > log 2>&1
 if test $? -ne 0 ; then cat log; no_result; fi
 
 #
 # pass the review
 #
-activity="review pass 237"
+activity="review pass 235"
 $bin/aegis -review_pass -chan 1 -proj $AEGIS_PROJECT -v > log 2>&1
 if test $? -ne 0 ; then cat log; no_result; fi
 
 #
 # start integrating
 #
-activity="integrate begin 244"
+activity="integrate begin 242"
 $bin/aegis -intbeg 1 -v > log 2>&1
 if test $? -ne 0 ; then cat log; no_result; fi
 
 #
 # integrate build and test
 #
-activity="build 251"
+activity="build 249"
 $bin/aegis -build -nl -v > log 2>&1
 if test $? -ne 0 ; then cat log; no_result; fi
-activity="test 254"
+activity="test 252"
 $bin/aegis -test -nl -v > log 2>&1
 if test $? -ne 0 ; then cat log; no_result; fi
 
 #
 # pass the integration
 #
-activity="integrate pass 261"
+activity="integrate pass 259"
 $bin/aegis -intpass -nl -v > log 2>&1
 if test $? -ne 0 ; then cat log; fail; fi
 
 #
 # create the second change
 #
-activity="new change 268"
+activity="new change 266"
 cat > $tmp << 'fubar'
 brief_description = "two";
 cause = internal_enhancement;
@@ -278,21 +278,21 @@ if test $? -ne 0 ; then cat log; no_result; fi
 #
 # begin development of the change
 #
-activity="develop begin 283"
+activity="develop begin 281"
 $bin/aegis -devbeg 2 -dir $workchan -v > log 2>&1
 if test $? -ne 0 ; then cat log; no_result; fi
 
 #
 # add the new files to the change
 #
-activity="new file 290"
+activity="new file 288"
 $bin/aegis -nf $workchan/b -nl -v > log 2>&1
 if test $? -ne 0 ; then cat log; no_result; fi
 
 #
 # create a new test
 #
-activity="new test 297"
+activity="new test 295"
 $bin/aegis -nt -v > log 2>&1
 if test $? -ne 0 ; then cat log; no_result; fi
 
@@ -307,73 +307,73 @@ if test $? -ne 0 ; then no_result; fi
 # reset the project attributes,
 # the aent overrode the test exemptions
 #
-activity="change attributes 312"
+activity="change attributes 310"
 $bin/aegis -ca 2 -f $tmp -project $AEGIS_PROJECT -v > log 2>&1
 if test $? -ne 0 ; then cat log; no_result; fi
 
 #
 # build the change
 #
-activity="build 319"
+activity="build 317"
 $bin/aegis -build -nl -v > log 2>&1
 if test $? -ne 0 ; then cat log; no_result; fi
 
 #
 # difference the change
 #
-activity="diff 326"
+activity="diff 324"
 $bin/aegis -diff -v -nl > log 2>&1
 if test $? -ne 0 ; then cat log; no_result; fi
 
 #
 # test the change
 #
-activity="test 333"
+activity="test 331"
 $bin/aegis -test -nl -v > log 2>&1
 if test $? -ne 0 ; then cat log; no_result; fi
 
 #
 # finish development of the change
 #
-activity="develop end 340"
+activity="develop end 338"
 $bin/aegis -dev_end -v > log 2>&1
 if test $? -ne 0 ; then cat log; no_result; fi
 
 #
 # pass the review
 #
-activity="review pass 347"
+activity="review pass 345"
 $bin/aegis -review_pass -chan 2 -proj $AEGIS_PROJECT -v > log 2>&1
 if test $? -ne 0 ; then cat log; no_result; fi
 
 #
 # start integrating
 #
-activity="integrate begin 354"
+activity="integrate begin 352"
 $bin/aegis -intbeg 2 -v > log 2>&1
 if test $? -ne 0 ; then cat log; no_result; fi
 
 #
 # integrate build and test
 #
-activity="build 361"
+activity="build 359"
 $bin/aegis -build -nl -v > log 2>&1
 if test $? -ne 0 ; then cat log; no_result; fi
-activity="test 364"
+activity="test 362"
 $bin/aegis -test -nl -v > log 2>&1
 if test $? -ne 0 ; then cat log; no_result; fi
 
 #
 # pass the integration
 #
-activity="integrate pass 371"
+activity="integrate pass 369"
 $bin/aegis -intpass -nl -v > log 2>&1
 if test $? -ne 0 ; then cat log; fail; fi
 
 #
 # create the third change
 #
-activity="new change 378"
+activity="new change 376"
 cat > $tmp << 'fubar'
 brief_description = "three";
 cause = internal_enhancement;
@@ -385,28 +385,28 @@ if test $? -ne 0 ; then cat log; no_result; fi
 #
 # begin development of the change
 #
-activity="develop begin 390"
+activity="develop begin 388"
 $bin/aegis -devbeg 3 -dir $workchan.3 -v > log 2>&1
 if test $? -ne 0 ; then cat log; no_result; fi
 
 #
 # add the new files to the change
 #
-activity="copy file 397"
+activity="copy file 395"
 $bin/aegis -copy_file $workchan.3/a -nl -v > log 2>&1
 if test $? -ne 0 ; then cat log; no_result; fi
 
 #
 # pass the integration
 #
-activity="test 404"
+activity="test 402"
 $bin/aegis -test -suggest 1 -suggest_noise 0 -nl -v > log 2>&1
 if test $? -ne 0 ; then cat log; no_result; fi
 
 #
 # only test 1 should have been run
 #
-activity="verify tests run 411"
+activity="verify tests run 409"
 if test ! -r $workchan.3/ran.test.1; then fail; fi
 if test -r $workchan.3/ran.test.2; then fail; fi
 

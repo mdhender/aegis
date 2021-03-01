@@ -1,7 +1,7 @@
 #!/bin/sh
 #
 #	aegis - project change supervisor
-#	Copyright (C) 2002, 2004 Peter Miller;
+#	Copyright (C) 2002, 2004, 2005 Peter Miller;
 #	All rights reserved.
 #
 #	This program is free software; you can redistribute it and/or modify
@@ -157,10 +157,10 @@ $bin/aegis -db 10 -v > log 2>&1
 if test $? -ne 0 ; then cat log; no_result; fi
 
 activity="new file 159"
-$bin/aegis -nf $work/test.C010/config $work/test.C010/fred \
+$bin/aegis -nf $work/test.C010/aegis.conf $work/test.C010/fred \
 	$work/test.C010/barney -v > log 2>&1
 if test $? -ne 0 ; then cat log; no_result; fi
-cat > $work/test.C010/config << 'fubar'
+cat > $work/test.C010/aegis.conf << 'fubar'
 build_command = "exit 0";
 history_get_command =
 	"co -u'$e' -p $h,v > $o";
@@ -232,6 +232,34 @@ cat > ok << 'fubar'
 src =
 [
 	{
+		file_name = "aegis.conf";
+		uuid = "UUID";
+		action = create;
+		edit =
+		{
+			revision = "1.1";
+			encoding = none;
+		};
+		edit_origin =
+		{
+			revision = "1.1";
+			encoding = none;
+		};
+		usage = config;
+		file_fp =
+		{
+			youngest = TIME;
+			oldest = TIME;
+			crypto = "GUNK";
+		};
+		diff_file_fp =
+		{
+			youngest = TIME;
+			oldest = TIME;
+			crypto = "GUNK";
+		};
+	},
+	{
 		file_name = "barney";
 		uuid = "UUID";
 		action = create;
@@ -259,34 +287,6 @@ src =
 			crypto = "GUNK";
 		};
 		executable = true;
-	},
-	{
-		file_name = "config";
-		uuid = "UUID";
-		action = create;
-		edit =
-		{
-			revision = "1.1";
-			encoding = none;
-		};
-		edit_origin =
-		{
-			revision = "1.1";
-			encoding = none;
-		};
-		usage = config;
-		file_fp =
-		{
-			youngest = TIME;
-			oldest = TIME;
-			crypto = "GUNK";
-		};
-		diff_file_fp =
-		{
-			youngest = TIME;
-			oldest = TIME;
-			crypto = "GUNK";
-		};
 	},
 	{
 		file_name = "fred";
@@ -330,6 +330,17 @@ cat > ok << 'fubar'
 src =
 [
 	{
+		file_name = "aegis.conf";
+		uuid = "UUID";
+		action = create;
+		edit =
+		{
+			revision = "1.1";
+			encoding = none;
+		};
+		usage = config;
+	},
+	{
 		file_name = "barney";
 		uuid = "UUID";
 		action = create;
@@ -340,17 +351,6 @@ src =
 		};
 		usage = source;
 		executable = true;
-	},
-	{
-		file_name = "config";
-		uuid = "UUID";
-		action = create;
-		edit =
-		{
-			revision = "1.1";
-			encoding = none;
-		};
-		usage = config;
 	},
 	{
 		file_name = "fred";
@@ -466,28 +466,28 @@ if test $? -ne 0 ; then cat log; no_result; fi
 deltadir=`$bin/aegis -cd`
 if test $? -ne 0 ; then no_result; fi
 
-activity="test executable mode fred 468"
+activity="test executable mode fred 469"
 test -x $deltadir/fred || fail
-activity="test executable mode barney 470"
+activity="test executable mode barney 471"
 test -x $deltadir/barney || fail
 
-activity="build 473"
+activity="build 474"
 $bin/aegis -build -v -nl > log 2>&1
 if test $? -ne 0 ; then cat log; no_result; fi
 
-activity="diff 477"
+activity="diff 478"
 $bin/aegis -diff -v -nl > log 2>&1
 if test $? -ne 0 ; then cat log; no_result; fi
 
-activity="check barney permissions 481"
+activity="check barney permissions 482"
 test -x $deltadir/barney || fail
-activity="check fred permissions 483"
+activity="check fred permissions 484"
 test -x $deltadir/fred || fail
-activity="integrate pass 485"
+activity="integrate pass 486"
 $bin/aegis -ipass -v > log 2>&1
 if test $? -ne 0 ; then cat log; no_result; fi
 
-activity="check project file state 489"
+activity="check project file state 490"
 cat > ok << 'fubar'
 src =
 [

@@ -1,6 +1,6 @@
 //
 //	aegis - project change supervisor
-//	Copyright (C) 2004 Peter Miller;
+//	Copyright (C) 2004, 2005 Peter Miller;
 //	All rights reserved.
 //
 //	This program is free software; you can redistribute it and/or modify
@@ -21,37 +21,32 @@
 //
 
 #include <change/branch.h>
+#include <change/list.h>
 #include <project.h>
 
 
-change_ty *
-change_branch_uuid_find(change_ty *cp, string_ty *uuid)
+void
+change_branch_uuid_find(change_ty *cp, string_ty *uuid, change_list_ty &result)
 {
-    cstate_ty       *cstate_data;
-
-    cstate_data = change_cstate_get(cp);
-    if (cstate_data->uuid && str_equal(uuid, cstate_data->uuid))
-	return cp;
+    cstate_ty *cstate_data = change_cstate_get(cp);
+    if (cstate_data->uuid && str_leading_prefix(cstate_data->uuid, uuid))
+    {
+	result.append(change_copy(cp));
+	if (uuid->str_length == 36)
+	    return;
+    }
     if (cstate_data->branch)
     {
-	project_ty      *pp2;
-	size_t          j;
-
-	pp2 = project_bind_branch(cp->pp, cp);
-	for (j = 0; j < cstate_data->branch->change->length; ++j)
+	project_ty *pp2 = project_bind_branch(cp->pp, cp);
+	for (size_t j = 0; j < cstate_data->branch->change->length; ++j)
 	{
-	    long            change_number;
-	    change_ty       *cp2;
-	    change_ty       *result;
-
-	    change_number = cstate_data->branch->change->list[j];
-	    cp2 = change_alloc(pp2, change_number);
+	    long change_number = cstate_data->branch->change->list[j];
+	    change_ty *cp2 = change_alloc(pp2, change_number);
 	    change_bind_existing(cp);
-	    result = change_branch_uuid_find(cp2, uuid);
-	    if (result)
-		return result;
+	    change_branch_uuid_find(cp2, uuid, result);
+	    if (uuid->str_length == 36 && result.size())
+		return;
 	    change_free(cp2);
 	}
     }
-    return 0;
 }

@@ -1,6 +1,6 @@
 //
 //	aegis - project change supervisor
-//	Copyright (C) 2000, 2002-2004 Peter Miller;
+//	Copyright (C) 2000, 2002-2005 Peter Miller;
 //	All rights reserved.
 //
 //	This program is free software; you can redistribute it and/or modify
@@ -21,6 +21,7 @@
 //
 
 #include <change/test/batch_result.h>
+#include <error.h> // for assert
 #include <mem.h>
 
 
@@ -65,8 +66,6 @@ void
 batch_result_list_append(batch_result_list_ty *p, string_ty *file_name,
     int exit_status, string_ty *architecture)
 {
-    batch_result_ty *brp;
-
     if (p->length >= p->length_max)
     {
 	size_t		nbytes;
@@ -75,7 +74,8 @@ batch_result_list_append(batch_result_list_ty *p, string_ty *file_name,
 	nbytes = p->length_max * sizeof(p->item[0]);
 	p->item = (batch_result_ty *)mem_change_size(p->item, nbytes);
     }
-    brp = p->item + p->length++;
+    batch_result_ty *brp = p->item + p->length++;
+    assert(file_name);
     brp->file_name = str_copy(file_name);
     brp->exit_status = exit_status;
     brp->architecture = architecture ? str_copy(architecture) : 0;
@@ -86,9 +86,7 @@ void
 batch_result_list_append_list(batch_result_list_ty *p,
     const batch_result_list_ty *p2)
 {
-    size_t          j;
-
-    for (j = 0; j < p2->length; ++j)
+    for (size_t j = 0; j < p2->length; ++j)
     {
 	const batch_result_ty *brp2 = p2->item + j;
 	batch_result_list_append
@@ -105,15 +103,36 @@ batch_result_list_append_list(batch_result_list_ty *p,
 }
 
 
-int
-batch_result_list_member(batch_result_list_ty *p, string_ty *file_name)
+bool
+batch_result_list_member(batch_result_list_ty *p, string_ty *file_name,
+    string_ty *architecture)
 {
-    size_t          j;
-
-    for (j = 0; j < p->length; ++j)
+    assert(p);
+    if (!p)
+	return false;
+    for (size_t j = 0; j < p->length; ++j)
     {
-	if (str_equal(file_name, p->item[j].file_name))
-    	    return 1;
+	batch_result_ty *brp = p->item +j;
+	assert(brp->file_name);
+	if (!brp->file_name)
+	    continue;
+	if
+       	(
+	    str_equal(file_name, brp->file_name)
+	&&
+	    (
+	       	architecture
+	    ?
+		(
+		    brp->architecture
+		&&
+		    str_equal(architecture, brp->architecture)
+		)
+	    :
+		(0 == brp->architecture)
+	    )
+	)
+    	    return true;
     }
-    return 0;
+    return false;
 }

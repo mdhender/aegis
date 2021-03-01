@@ -1,7 +1,7 @@
 #!/bin/sh
 #
 #	aegis - project change supervisor
-#	Copyright (C) 2001-2004 Peter Miller;
+#	Copyright (C) 2001-2005 Peter Miller;
 #	All rights reserved.
 #
 #	This program is free software; you can redistribute it and/or modify
@@ -261,6 +261,7 @@ branch =
 	reviewer_may_integrate = true;
 	developers_may_create_changes = true;
 	default_test_exemption = true;
+	default_test_regression_exemption = true;
 	skip_unlucky = false;
 	compress_database = false;
 	develop_end_action = goto_being_reviewed;

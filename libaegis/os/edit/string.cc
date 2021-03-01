@@ -33,24 +33,16 @@
 string_ty *
 os_edit_string(string_ty *subject, edit_ty et)
 {
-    string_ty       *filename;
-    string_ty       *result;
-    FILE            *fp;
-
-    filename = os_edit_filename(0);
+    nstring filename(os_edit_filename(0));
     os_become_orig();
-    fp = fopen_with_stale_nfs_retry(filename->str_text, "w");
+    FILE *fp = fopen_with_stale_nfs_retry(filename.c_str(), "w");
     if (!fp)
     {
-	sub_context_ty  *scp;
-	int             errno_old;
-
-	errno_old = errno;
-	scp = sub_context_new();
-	sub_errno_setx(scp, errno_old);
-	sub_var_set_string(scp, "File_Name", filename);
-	fatal_intl(scp, i18n("open $filename: $errno"));
-	sub_context_delete(scp);
+	int errno_old = errno;
+	sub_context_ty  sc;
+	sc.errno_setx(errno_old);
+	sc.var_set_string("File_Name", filename);
+	sc.fatal_intl(i18n("open $filename: $errno"));
     }
     if (subject)
     {
@@ -67,8 +59,8 @@ os_edit_string(string_ty *subject, edit_ty et)
     os_become_undo();
     os_edit(filename, et);
     os_become_orig();
-    result = read_whole_file(filename);
+    nstring result(read_whole_file(filename));
     os_unlink(filename);
     os_become_undo();
-    return result;
+    return str_copy(result.get_ref());
 }

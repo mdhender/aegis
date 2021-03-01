@@ -28,6 +28,7 @@
 #include <get/file/menu.h>
 #include <fstate.h>
 #include <http.h>
+#include <nstring.h>
 #include <project.h>
 #include <project/file.h>
 #include <str_list.h>
@@ -127,6 +128,26 @@ get_file_menu(change_ty *cp, string_ty *filename, string_list_ty *modifier)
 	printf("Project File</a><dd>\n");
 	printf("This item directs you to the corresponding file menu\n");
 	printf("for the project.\n");
+	printf("<p>\n");
+    }
+    if (src->attribute && src->attribute->length)
+    {
+	printf("<dt>Attributes<dd>\n");
+	printf("<table>\n");
+	printf("<tr><th>Name</th><th>Value</th></tr>\n");
+	attributes_list_ty *alp = src->attribute;
+	for (size_t j = 0; j < alp->length; ++j)
+	{
+	    attributes_ty *ap = alp->list[j];
+	    printf("<tr><td>\n");
+	    if (ap->name)
+		printf("%s\n", nstring(ap->name).html_quote().c_str());
+	    printf("</td><td>\n");
+	    if (ap->value)
+		printf("%s\n", nstring(ap->value).html_quote().c_str());
+	    printf("</td></tr>\n");
+	}
+	printf("</table>\n");
 	printf("<p>\n");
     }
 

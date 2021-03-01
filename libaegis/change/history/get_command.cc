@@ -140,15 +140,15 @@ change_run_history_get_command(change_ty *cp, fstate_src_ty *src,
 	break;
 
     case history_version_encoding_quoted_printable:
-	ip = input_quoted_printable(ip, 1);
+	ip = new input_quoted_printable(ip, true);
 	break;
 
     case history_version_encoding_base64:
-	ip = input_base64(ip, 1);
+	ip = new input_base64(ip, true);
 	break;
     }
     input_to_output(ip, op);
-    input_delete(ip);
+    delete ip;
     delete op;
     os_unlink(name_of_encoded_file);
     os_become_undo();

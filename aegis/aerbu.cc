@@ -1,21 +1,21 @@
 //
-//	aegis - project change supervisor
-//	Copyright (C) 2001-2004 Peter Miller;
-//	All rights reserved.
+//      aegis - project change supervisor
+//      Copyright (C) 2001-2005 Peter Miller;
+//      All rights reserved.
 //
-//	This program is free software; you can redistribute it and/or modify
-//	it under the terms of the GNU General Public License as published by
-//	the Free Software Foundation; either version 2 of the License, or
-//	(at your option) any later version.
+//      This program is free software; you can redistribute it and/or modify
+//      it under the terms of the GNU General Public License as published by
+//      the Free Software Foundation; either version 2 of the License, or
+//      (at your option) any later version.
 //
-//	This program is distributed in the hope that it will be useful,
-//	but WITHOUT ANY WARRANTY; without even the implied warranty of
-//	MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-//	GNU General Public License for more details.
+//      This program is distributed in the hope that it will be useful,
+//      but WITHOUT ANY WARRANTY; without even the implied warranty of
+//      MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+//      GNU General Public License for more details.
 //
-//	You should have received a copy of the GNU General Public License
-//	along with this program; if not, write to the Free Software
-//	Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111, USA.
+//      You should have received a copy of the GNU General Public License
+//      along with this program; if not, write to the Free Software
+//      Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111, USA.
 //
 // MANIFEST: functions to manipulate aerbus
 //
@@ -42,6 +42,7 @@
 #include <project/file.h>
 #include <project/history.h>
 #include <quit.h>
+#include <rss.h>
 #include <sub.h>
 #include <trace.h>
 #include <undo.h>
@@ -56,9 +57,9 @@ review_begin_undo_usage(void)
     progname = progname_get();
     fprintf
     (
-	stderr,
-	"usage: %s -Review_PASS <change_number> [ <option>... ]\n",
-	progname
+        stderr,
+        "usage: %s -Review_PASS <change_number> [ <option>... ]\n",
+        progname
     );
     fprintf(stderr, "       %s -Review_PASS -List [ <option>... ]\n", progname);
     fprintf(stderr, "       %s -Review_PASS -Help\n", progname);
@@ -76,32 +77,32 @@ review_begin_undo_help(void)
 static void
 review_begin_undo_list(void)
 {
-    string_ty	    *project_name;
+    string_ty       *project_name;
 
     trace(("review_begin_undo_list()\n{\n"));
     project_name = 0;
     arglex();
     while (arglex_token != arglex_token_eoln)
     {
-	switch (arglex_token)
-	{
-	default:
-	    generic_argument(review_begin_undo_usage);
-	    continue;
+        switch (arglex_token)
+        {
+        default:
+            generic_argument(review_begin_undo_usage);
+            continue;
 
-	case arglex_token_project:
-	    arglex();
-	    // fall through...
+        case arglex_token_project:
+            arglex();
+            // fall through...
 
-	case arglex_token_string:
-	    arglex_parse_project(&project_name, review_begin_undo_usage);
-	    continue;
-	}
-	arglex();
+        case arglex_token_string:
+            arglex_parse_project(&project_name, review_begin_undo_usage);
+            continue;
+        }
+        arglex();
     }
     list_changes_in_state_mask(project_name, 1 << cstate_state_being_reviewed);
     if (project_name)
-	str_free(project_name);
+        str_free(project_name);
     trace(("}\n"));
 }
 
@@ -109,60 +110,81 @@ review_begin_undo_list(void)
 static void
 review_begin_undo_main(void)
 {
-    cstate_ty	    *cstate_data;
+    cstate_ty       *cstate_data;
     cstate_history_ty *history_data;
-    string_ty	    *project_name;
-    project_ty	    *pp;
-    long	    change_number;
-    change_ty	    *cp;
-    user_ty	    *up;
+    string_ty       *project_name;
+    project_ty      *pp;
+    long            change_number;
+    change_ty       *cp;
+    user_ty         *up;
 
     trace(("review_begin_undo_main()\n{\n"));
     arglex();
     project_name = 0;
     change_number = 0;
+    string_ty *reason = 0;
     while (arglex_token != arglex_token_eoln)
     {
-	switch (arglex_token)
-	{
-	default:
-	    generic_argument(review_begin_undo_usage);
-	    continue;
+        switch (arglex_token)
+        {
+        default:
+            generic_argument(review_begin_undo_usage);
+            continue;
 
-	case arglex_token_change:
-	    arglex();
-	    // fall through...
+        case arglex_token_change:
+            arglex();
+            // fall through...
 
-	case arglex_token_number:
-	    arglex_parse_change
-	    (
-		&project_name,
-		&change_number,
-		review_begin_undo_usage
-	    );
-	    continue;
+        case arglex_token_number:
+            arglex_parse_change
+            (
+                &project_name,
+                &change_number,
+                review_begin_undo_usage
+            );
+            continue;
 
-	case arglex_token_project:
-	    arglex();
-	    // fall through...
+        case arglex_token_project:
+            arglex();
+            // fall through...
 
-	case arglex_token_string:
-	    arglex_parse_project(&project_name, review_begin_undo_usage);
-	    continue;
+        case arglex_token_string:
+            arglex_parse_project(&project_name, review_begin_undo_usage);
+            continue;
 
-	case arglex_token_wait:
-	case arglex_token_wait_not:
-	    user_lock_wait_argument(review_begin_undo_usage);
+        case arglex_token_wait:
+        case arglex_token_wait_not:
+            user_lock_wait_argument(review_begin_undo_usage);
+            break;
+
+	case arglex_token_reason:
+	    if (reason)
+	    duplicate_option(review_begin_undo_usage);
+	    switch (arglex())
+	    {
+	    default:
+		option_needs_string
+		(
+	    	    arglex_token_reason,
+	    	    review_begin_undo_usage
+		);
+		// NOTREACHED
+
+	    case arglex_token_string:
+	    case arglex_token_number:
+		reason = str_from_c(arglex_value.alv_string);
+		break;
+	    }
 	    break;
-	}
-	arglex();
+        }
+        arglex();
     }
 
     //
     // locate project data
     //
     if (!project_name)
-	project_name = user_default_project();
+        project_name = user_default_project();
     pp = project_alloc(project_name);
     str_free(project_name);
     project_bind_existing(pp);
@@ -176,7 +198,7 @@ review_begin_undo_main(void)
     // locate change data
     //
     if (!change_number)
-	change_number = user_default_change(up);
+        change_number = user_default_change(up);
     cp = change_alloc(pp, change_number);
     change_bind_existing(cp);
 
@@ -191,37 +213,38 @@ review_begin_undo_main(void)
     // it is an error if the change is not in the 'being_reviewed' state.
     //
     if (cstate_data->state != cstate_state_being_reviewed)
-	change_fatal(cp, 0, i18n("bad rbu state"));
+        change_fatal(cp, 0, i18n("bad rbu state"));
     if
     (
-	project_develop_end_action_get(pp)
+        project_develop_end_action_get(pp)
     !=
-	pattr_develop_end_action_goto_awaiting_review
+        pattr_develop_end_action_goto_awaiting_review
     )
     {
-	if (!project_reviewer_query(pp, user_name(up)))
-	    project_fatal(pp, 0, i18n("not a reviewer"));
-	if
-	(
-	    !project_developer_may_review_get(pp)
-	&&
-	    str_equal(change_developer_name(cp), user_name(up))
-	)
-	    change_fatal(cp, 0, i18n("developer may not review"));
+        if (!project_reviewer_query(pp, user_name(up)))
+            project_fatal(pp, 0, i18n("not a reviewer"));
+        if
+        (
+            !project_developer_may_review_get(pp)
+        &&
+            str_equal(change_developer_name(cp), user_name(up))
+        )
+            change_fatal(cp, 0, i18n("developer may not review"));
     }
     else
     {
-	if (!str_equal(change_reviewer_name(cp), user_name(up)))
-	    change_fatal(cp, 0, i18n("not reviewer"));
+        if (!str_equal(change_reviewer_name(cp), user_name(up)))
+            change_fatal(cp, 0, i18n("not reviewer"));
 
-	//
-	// change the state
-	// remember who reviewed it
-	// add to the change's history
-	//
-	cstate_data->state = cstate_state_awaiting_review;
-	history_data = change_history_new(cp, up);
-	history_data->what = cstate_history_what_review_begin_undo;
+        //
+        // change the state
+        // remember who reviewed it
+        // add to the change's history
+        //
+        cstate_data->state = cstate_state_awaiting_review;
+        history_data = change_history_new(cp, up);
+        history_data->what = cstate_history_what_review_begin_undo;
+	history_data->why = reason;
     }
 
     //
@@ -235,6 +258,11 @@ review_begin_undo_main(void)
     // run the notify command
     //
     change_run_review_begin_undo_notify_command(cp);
+
+    //
+    // Update the RSS feed file if necessary.
+    //
+    rss_add_item_by_change(pp, cp);
 
     //
     // verbose success message
@@ -252,8 +280,8 @@ review_begin_undo(void)
 {
     static arglex_dispatch_ty dispatch[] =
     {
-	{arglex_token_help, review_begin_undo_help, },
-	{arglex_token_list, review_begin_undo_list, },
+        {arglex_token_help, review_begin_undo_help, },
+        {arglex_token_list, review_begin_undo_list, },
     };
 
     trace(("review_begin_undo()\n{\n"));

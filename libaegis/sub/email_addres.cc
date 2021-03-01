@@ -1,6 +1,6 @@
 //
 //	aegis - project change supervisor
-//	Copyright (C) 2004 Peter Miller;
+//	Copyright (C) 2004, 2005 Peter Miller;
 //	All rights reserved.
 //
 //	This program is free software; you can redistribute it and/or modify
@@ -41,7 +41,7 @@ sub_email_address(sub_context_ty *scp, wstring_list_ty *arg)
     size_t j = 1;
     for (; j < arg->size(); ++j)
     {
-	nstring option = wstr_to_str(arg->get(j));
+	nstring option(wstr_to_str(arg->get(j)));
 	if (arglex_compare("-Comma", option.c_str(), 0))
 	    separator = ", ";
 	else if (arglex_compare("-Quote", option.c_str(), 0))
@@ -51,7 +51,7 @@ sub_email_address(sub_context_ty *scp, wstring_list_ty *arg)
     }
     for (; j < arg->size(); ++j)
     {
-	nstring login = wstr_to_str(arg->get(j));
+	nstring login(wstr_to_str(arg->get(j)));
 	user_ty *up = user_symbolic(pp, login.get_ref());
 	string_ty *s = user_email_address(up);
 	if (quote)
@@ -69,7 +69,7 @@ sub_email_address(sub_context_ty *scp, wstring_list_ty *arg)
     //
     // Convert the work list to a single string.
     //
-    nstring rs = words.unsplit(separator);
+    nstring rs(words.unsplit(separator));
     wstring_ty *result = str_to_wstr(rs.get_ref());
 
     //

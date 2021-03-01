@@ -107,6 +107,9 @@
 /* Define this symbol of your system has GNU diff. */
 #undef HAVE_GNU_DIFF
 
+/* Define this symbol of your system has the <new> C++ header */
+#undef HAVE_HEADER_NEW
+
 /* Define to 1 if you have the `igetspnam' function. */
 #undef HAVE_IGETSPNAM
 
@@ -161,6 +164,9 @@
 /* Define to 1 if you have the `w' library (-lw). */
 #undef HAVE_LIBW
 
+/* Define to 1 if you have the `xml2' library (-lxml2). */
+#undef HAVE_LIBXML2
+
 /* Define to 1 if you have the `z' library (-lz). */
 #undef HAVE_LIBZ
 
@@ -206,6 +212,9 @@
 
 /* Define to 1 if you have the <ndir.h> header file, and it defines `DIR'. */
 #undef HAVE_NDIR_H
+
+/* Define to 1 if you have the <new.h> header file. */
+#undef HAVE_NEW_H
 
 /* Define to 1 if you have the `pathconf' function. */
 #undef HAVE_PATHCONF
@@ -389,6 +398,9 @@
 /* Define this symbol of your system has the wint_t type defined. It is
    usually in <stddef.h> or <wctype.h>. */
 #undef HAVE_WINT_T
+
+/* Define to 1 if you have the `xmlReaderForIO' function. */
+#undef HAVE_XMLREADERFORIO
 
 /* Define to 1 if you have the <zlib.h> header file. */
 #undef HAVE_ZLIB_H

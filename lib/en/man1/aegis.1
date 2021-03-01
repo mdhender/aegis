@@ -1,6 +1,6 @@
 '\" t
 .\"	aegis - project change supervisor
-.\"	Copyright (C) 1991-1994, 1997-1999, 2001-2004 Peter Miller;
+.\"	Copyright (C) 1991-1994, 1997-1999, 2001-2005 Peter Miller;
 .\"	All rights reserved.
 .\"
 .\"	This program is free software; you can redistribute it and/or modify
@@ -628,6 +628,12 @@ form as the \fI${version}\fP substitution output for completed changes.)
 \fB\-Change\fP \fIproject\fP\fB\.D\fInumber\fP
 It is possible to combine the \fB\-Project\fP and
 \fB\-Change-From-Delta\fP options as a single option.
+.TP 8n
+\fB\-Change\fP \fIUUID\fP
+Each completed change is assigned a globallay unique identifier (UUID).
+You can specify a change by its 36-character UUID, or any unambiguous
+leading predix of the UUID (it must be at least 4 characters, and not look
+like a number).
 .SH Listings
 The following options are available to all listings.
 These options may appear anywhere on the command line following
@@ -753,6 +759,10 @@ Defaults to
 if not set.
 See the \fIvisual_\%command\fP fields in \fIaeuconf\fP(1) for how to
 override this specifically for Aegis.
+.TP 8n
+AEGIS_DATADIR
+Overrides the datadir as specified at \fIconfigure\fP invocation.
+Useful mainly for testing.
 .so z_cmd_env.so
 .br
 .ne 1i

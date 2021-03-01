@@ -64,23 +64,8 @@ change_identifier_subset::get_file_revision(const nstring &filename,
 	    //
 	    trace(("project = \"%s\"\n",
 		project_name_get(pid.get_pp())->str_text));
-	    if (!historian)
-	    {
-		historian =
-	    	    new project_file_roll_forward
-		    (
-			pid.get_pp(),
-			(
-			    delta_date != NO_TIME_SET
-			?
-			    delta_date
-			:
-			    change_completion_timestamp(cp)
-			),
-			0
-		    );
-	    }
-	    file_event_ty *fep = historian->get_last(filename.get_ref());
+	    project_file_roll_forward *hp = get_historian();
+	    file_event_ty *fep = hp->get_last(filename.get_ref());
 	    if (!fep)
 	    {
 		//
@@ -148,7 +133,7 @@ change_identifier_subset::get_file_revision(const nstring &filename,
     }
     int from_unlink = 0;
     trace(("edit = %s\n", src->edit->revision->str_text));
-    nstring from = change_file_version_path(cp, src, &from_unlink);
+    nstring from(change_file_version_path(cp, src, &from_unlink));
     trace(("}\n"));
     return file_revision(from, from_unlink);
 }

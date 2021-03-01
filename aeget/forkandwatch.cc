@@ -84,7 +84,7 @@ fork_and_watch(void)
     switch (child = fork())
     {
     case -1:
-	http_fatal("fork");
+	http_fatal(http_error_internal_server, "fork");
 	// NOTREACHED
 
     default:
@@ -155,7 +155,7 @@ fork_and_watch(void)
     }
 
     if (os_waitpid(child, &status))
-	http_fatal("wait: %s", strerror(errno));
+	http_fatal(http_error_internal_server, "wait: %s", strerror(errno));
     a = (status >> 8) & 0xFF;
     b = (status >> 7) & 1;
     c = status & 0x7F;
@@ -166,7 +166,7 @@ fork_and_watch(void)
 	// process was stopped,
 	// since we didn't do it, treat it as an error
 	//
-	http_fatal("command stopped");
+	http_fatal(http_error_internal_server, "command stopped");
 	// NOTREACHED
 
     case 0:
@@ -177,6 +177,8 @@ fork_and_watch(void)
 	//
 	// process dies from unhandled condition
 	//
+	if (!http_fatal_noerror)
+	    printf("Status: 500 Internal server error\n");
 	html_header(0, 0);
 	printf("<title>Error</title></head><body>\n");
 	html_header_ps(0, 0);
@@ -198,6 +200,7 @@ fork_and_watch(void)
 	//
 	// For errors, we wrap up stderr and send it to them.
 	//
+	printf("500 Internal server error\n");
 	html_header(0, 0);
 	printf("<title>Error</title></head><body>\n");
 	html_header_ps(0, 0);
@@ -222,6 +225,7 @@ fork_and_watch(void)
 	{
 	    http_fatal
 	    (
+		http_error_internal_server,
 		"open \"%s\": %s",
 		stdout_filename->str_text,
 		strerror(errno)

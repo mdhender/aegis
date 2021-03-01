@@ -46,7 +46,7 @@ standard_output_name(void)
 }
 
 
-output_stdout_ty::~output_stdout_ty()
+output_stdout::~output_stdout()
 {
     //
     // Make sure all buffered data has been passed to our write_inner
@@ -56,14 +56,14 @@ output_stdout_ty::~output_stdout_ty()
 }
 
 
-output_stdout_ty::output_stdout_ty() :
+output_stdout::output_stdout() :
     bol(true)
 {
 }
 
 
 string_ty *
-output_stdout_ty::filename()
+output_stdout::filename()
     const
 {
     return standard_output_name().get_ref();
@@ -71,7 +71,7 @@ output_stdout_ty::filename()
 
 
 long
-output_stdout_ty::ftell_inner()
+output_stdout::ftell_inner()
     const
 {
     return lseek(fileno(stdout), 0L, SEEK_CUR);
@@ -79,7 +79,7 @@ output_stdout_ty::ftell_inner()
 
 
 void
-output_stdout_ty::write_inner(const void *data, size_t len)
+output_stdout::write_inner(const void *data, size_t len)
 {
     if (::write(fileno(stdout), data, len) < 0)
     {
@@ -96,7 +96,7 @@ output_stdout_ty::write_inner(const void *data, size_t len)
 
 
 int
-output_stdout_ty::page_width()
+output_stdout::page_width()
     const
 {
     struct stat	st;
@@ -107,7 +107,7 @@ output_stdout_ty::page_width()
 
 
 int
-output_stdout_ty::page_length()
+output_stdout::page_length()
     const
 {
     struct stat	st;
@@ -118,7 +118,7 @@ output_stdout_ty::page_length()
 
 
 void
-output_stdout_ty::end_of_line_inner()
+output_stdout::end_of_line_inner()
 {
     if (!bol)
 	fputc('\n');
@@ -126,7 +126,7 @@ output_stdout_ty::end_of_line_inner()
 
 
 const char *
-output_stdout_ty::type_name()
+output_stdout::type_name()
     const
 {
     return standard_output_name().c_str();

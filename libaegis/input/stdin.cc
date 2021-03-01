@@ -1,6 +1,6 @@
 //
 //	aegis - project change supervisor
-//	Copyright (C) 1999, 2003, 2004 Peter Miller;
+//	Copyright (C) 1999, 2003-2005 Peter Miller;
 //	All rights reserved.
 //
 //	This program is free software; you can redistribute it and/or modify
@@ -27,117 +27,94 @@
 #include <sys/socket.h>
 #include <ac/unistd.h>
 
-#include <input/private.h>
 #include <input/stdin.h>
 #include <sub.h>
-#include <str.h>
 
 
-struct input_stdin_ty
+input_stdin::~input_stdin()
 {
-    input_ty        inherited;
-    long            pos;
-    int             unbuffered;
-};
+}
 
 
-static string_ty *
+input_stdin::input_stdin() :
+    pos(0),
+    unbuffered(false)
+{
+}
+
+
+static nstring
 standard_input(void)
 {
-    static string_ty *name;
-    sub_context_ty  *scp;
-
-    if (!name)
+    static nstring cache;
+    if (cache.empty())
     {
-	scp = sub_context_new();
-	name = subst_intl(scp, i18n("standard input"));
-	sub_context_delete(scp);
+	sub_context_ty sc;
+	cache = nstring(sc.subst_intl(i18n("standard input")));
     }
-    return name;
+    return cache;
 }
 
 
-static void
-input_stdin_destructor(input_ty *this_thing)
+long
+input_stdin::read_inner(void *data, size_t len)
 {
-}
-
-
-static long
-input_stdin_read(input_ty *ip, void *data, size_t len)
-{
-    long            result;
-    input_stdin_ty  *isp;
-    int             fd;
-
     if (len <= 0)
 	return 0;
-    isp = (input_stdin_ty *)ip;
-    if (isp->unbuffered)
+    if (unbuffered)
 	len = 1;
-    fd = fileno(stdin);
-    result = read(fd, data, len);
+    int fd = fileno(stdin);
+    long result = ::read(fd, data, len);
     if (result < 0)
     {
-	sub_context_ty	*scp;
-	int             errno_old;
-
-	errno_old = errno;
-	scp = sub_context_new();
-	sub_errno_setx(scp, errno_old);
-	sub_var_set_string(scp, "File_Name", standard_input());
-	fatal_intl(scp, i18n("read $filename: $errno"));
+	int errno_old = errno;
+	sub_context_ty sc;
+	sc.errno_setx(errno_old);
+	sc.var_set_string("File_Name", standard_input());
+	sc.fatal_intl(i18n("read $filename: $errno"));
 	// NOTREACHED
     }
-    isp->pos += result;
+    pos += result;
     return result;
 }
 
 
-static long
-input_stdin_ftell(input_ty *ip)
+long
+input_stdin::ftell_inner()
 {
-    input_stdin_ty  *isp;
-
-    isp = (input_stdin_ty *)ip;
-    return isp->pos;
+    return pos;
 }
 
 
-static string_ty *
-input_stdin_name(input_ty *this_thing)
+nstring
+input_stdin::name()
 {
     return standard_input();
 }
 
 
-static long
-input_stdin_length(input_ty *this_thing)
+long
+input_stdin::length()
 {
-    struct stat     st;
-
+    struct stat st;
     if (fstat(fileno(stdin), &st) < 0)
-	    return -1;
+	return -1;
     if (!S_ISREG(st.st_mode))
-	    return -1;
+	return -1;
     return st.st_size;
 }
 
 
-static void
-input_stdin_keepalive(input_ty *ip)
+void
+input_stdin::keepalive()
 {
-    input_stdin_ty  *isp;
-    int             fd;
-    int             on;
-
     //
     // This method is a hint that we are talking to a network socket,
     // so to get an error fairly soon after the other end drops out,
     // set the keepalive option.
     //
-    fd = fileno(stdin);
-    on = 1;
+    int fd = fileno(stdin);
+    int on = 1;
     // ignore any error
     setsockopt(fd, SOL_SOCKET, SO_KEEPALIVE, (char *)&on, sizeof(on));
 
@@ -147,32 +124,5 @@ input_stdin_keepalive(input_ty *ip)
     // (it blocks to read all the data you asked for, rather than being
     // interactive).
     //
-    isp = (input_stdin_ty *)ip;
-    isp->unbuffered = 1;
-}
-
-
-static input_vtbl_ty vtbl =
-{
-    sizeof(input_stdin_ty),
-    input_stdin_destructor,
-    input_stdin_read,
-    input_stdin_ftell,
-    input_stdin_name,
-    input_stdin_length,
-    input_stdin_keepalive,
-};
-
-
-input_ty *
-input_stdin(void)
-{
-    input_ty        *ip;
-    input_stdin_ty  *isp;
-
-    ip = input_new(&vtbl);
-    isp = (input_stdin_ty *)ip;
-    isp->unbuffered = 0;
-    isp->pos = 0;
-    return ip;
+    unbuffered = true;
 }

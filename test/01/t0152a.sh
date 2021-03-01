@@ -1,7 +1,7 @@
 #!/bin/sh
 #
 #	aegis - project change supervisor
-#	Copyright (C) 2001 Peter Miller;
+#	Copyright (C) 2001, 2005 Peter Miller;
 #	All rights reserved.
 #
 #	This program is free software; you can redistribute it and/or modify
@@ -100,7 +100,7 @@ AEGIS_PROJECT=foo ; export AEGIS_PROJECT
 #
 # make the directories
 #
-activity="working directory 104"
+activity="working directory 103"
 mkdir $work $work/lib
 if test $? -ne 0 ; then no_result; fi
 chmod 777 $work/lib
@@ -119,14 +119,14 @@ unset LANGUAGE
 #
 # make a new project
 #
-activity="new project 123"
+activity="new project 122"
 $bin/aegis -npr foo -vers "" -dir $workproj > log 2>&1
 if test $? -ne 0 ; then cat log; no_result; fi
 
 #
 # change project attributes
 #
-activity="project attributes 130"
+activity="project attributes 129"
 cat > $tmp << 'end'
 description = "A bogus project created to test the \
 build_time_adjust_notify_command functionality.";
@@ -172,7 +172,7 @@ if test $? -ne 0 ; then cat log; no_result; fi
 #
 activity="new file 173"
 $bin/aegis -nf $workchan/main.c $workchan/test.c $workchan/Makefile \
-	$workchan/config $workchan/cmd/time_adj.sh -nl > log 2>&1
+	$workchan/aegis.conf $workchan/cmd/time_adj.sh -nl > log 2>&1
 if test $? -ne 0 ; then cat log; no_result; fi
 cat > $workchan/main.c << 'end'
 int
@@ -199,7 +199,7 @@ foo: main.o test.o
 end
 if test $? -ne 0 ; then no_result; fi
 
-cat > $workchan/config << 'end'
+cat > $workchan/aegis.conf << 'end'
 build_command = "exit 0";
 link_integration_directory = true;
 history_get_command =
@@ -227,7 +227,7 @@ if test $? -ne 0 ; then no_result; fi
 #
 # create a new test
 #
-activity="new test 221"
+activity="new test 230"
 $bin/aegis -nt > log 2>&1
 if test $? -ne 0 ; then cat log; no_result; fi
 cat > $workchan/test/00/t0001a.sh << 'end'
@@ -239,56 +239,56 @@ if test $? -ne 0 ; then no_result; fi
 #
 # build the change
 #
-activity="build 233"
+activity="build 242"
 $bin/aegis -build -nl -v > log 2>&1
 if test $? -ne 0 ; then cat log; fail; fi
 
 #
 # difference the change
 #
-activity="diff 240"
+activity="diff 249"
 $bin/aegis -diff > log 2>&1
 if test $? -ne 0 ; then cat log; no_result; fi
 
 #
 # test the change
 #
-activity="test 247"
+activity="test 256"
 $bin/aegis -t -v > log 2>&1
 if test $? -ne 0 ; then cat log; no_result; fi
 
 #
 # finish development of the change
 #
-activity="develop end 254"
+activity="develop end 263"
 $bin/aegis -de > log 2>&1
 if test $? -ne 0 ; then cat log; fail; fi
 
 #
 # pass the review
 #
-activity="review pass 261"
+activity="review pass 270"
 $bin/aegis -rpass -c 1 > log 2>&1
 if test $? -ne 0 ; then cat log; no_result; fi
 
 #
 # start integrating
 #
-activity="integrate begin 268"
+activity="integrate begin 277"
 $bin/aegis -ib 1 > log 2>&1
 if test $? -ne 0 ; then cat log; no_result; fi
 
 #
 # integrate build
 #
-activity="build 275"
+activity="build 284"
 $bin/aegis -b -nl -v > log 2>&1
 if test $? -ne 0 ; then cat log; no_result; fi
 
 #
 # integrate test
 #
-activity="test 282"
+activity="test 291"
 $bin/aegis -t -nl -v > log 2>&1
 if test $? -ne 0 ; then cat log; no_result; fi
 
@@ -297,7 +297,7 @@ if test $? -ne 0 ; then cat log; no_result; fi
 #
 # This is the point it used to fail.
 #
-activity="integrate pass 289"
+activity="integrate pass 300"
 $bin/aegis -intpass -nl > log 2>&1
 if test $? -ne 0 ; then cat log; fail; fi
 

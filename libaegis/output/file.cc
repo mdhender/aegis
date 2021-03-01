@@ -33,7 +33,7 @@
 #include <sub.h>
 
 
-output_file_ty::~output_file_ty()
+output_file::~output_file()
 {
     //
     // Make sure all buffered data has been passed to our write_inner
@@ -56,7 +56,7 @@ output_file_ty::~output_file_ty()
 
 
 string_ty *
-output_file_ty::filename()
+output_file::filename()
     const
 {
     return file_name.get_ref();
@@ -64,7 +64,7 @@ output_file_ty::filename()
 
 
 long
-output_file_ty::ftell_inner()
+output_file::ftell_inner()
     const
 {
     return pos;
@@ -72,7 +72,7 @@ output_file_ty::ftell_inner()
 
 
 void
-output_file_ty::write_inner(const void *data, size_t len)
+output_file::write_inner(const void *data, size_t len)
 {
     if (glue_write(fd, data, len) < 0)
     {
@@ -90,7 +90,7 @@ output_file_ty::write_inner(const void *data, size_t len)
 
 
 int
-output_file_ty::page_width()
+output_file::page_width()
     const
 {
     return page_width_get(DEFAULT_PRINTER_WIDTH);
@@ -98,7 +98,7 @@ output_file_ty::page_width()
 
 
 int
-output_file_ty::page_length()
+output_file::page_length()
     const
 {
     return page_length_get(DEFAULT_PRINTER_LENGTH);
@@ -106,7 +106,7 @@ output_file_ty::page_length()
 
 
 void
-output_file_ty::end_of_line_inner()
+output_file::end_of_line_inner()
 {
     if (!bol)
 	fputc('\n');
@@ -114,7 +114,7 @@ output_file_ty::end_of_line_inner()
 
 
 const char *
-output_file_ty::type_name()
+output_file::type_name()
     const
 {
     return "file";
@@ -156,21 +156,15 @@ open_with_stale_nfs_retry(const char *path, int mode)
 }
 
 
-output_file_ty::output_file_ty(string_ty *fn, bool binary) :
-    file_name(str_copy(fn)),
+output_file::output_file(const nstring &fn, bool binary) :
+    file_name(fn),
     fd(-1),
     bol(true),
     pos(0)
 {
-    if (!fn || !fn->str_length)
-    {
-	fd = 1;
-	file_name = "standard output";
-	return;
-    }
     os_become_must_be_active();
     int mode = O_WRONLY | O_CREAT | O_TRUNC | (binary ? O_BINARY : O_TEXT);
-    fd = open_with_stale_nfs_retry(fn->str_text, mode);
+    fd = open_with_stale_nfs_retry(fn.c_str(), mode);
     if (fd < 0)
     {
 	int errno_old = errno;
@@ -184,9 +178,16 @@ output_file_ty::output_file_ty(string_ty *fn, bool binary) :
 
 
 output_ty *
+output_file_open(const nstring &fn, bool binary)
+{
+    if (fn.empty() || fn == "-")
+	return new output_stdout();
+    return new output_file(fn, binary);
+}
+
+
+output_ty *
 output_file_open(string_ty *fn, bool binary)
 {
-    if (!fn || !fn->str_length)
-	return new output_stdout_ty();
-    return new output_file_ty(fn, binary);
+    return output_file_open(nstring(fn), binary);
 }

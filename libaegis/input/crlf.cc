@@ -1,6 +1,6 @@
 //
 //	aegis - project change supervisor
-//	Copyright (C) 1999, 2002-2004 Peter Miller;
+//	Copyright (C) 1999, 2002-2005 Peter Miller;
 //	All rights reserved.
 //
 //	This program is free software; you can redistribute it and/or modify
@@ -20,88 +20,62 @@
 // MANIFEST: functions for reading input and filtering out CR LF sequences
 //
 
-#include <error.h>
 #include <input/crlf.h>
-#include <input/private.h>
-#include <str.h>
 #include <sub.h>
 #include <trace.h>
 
 
-struct input_crlf_ty
+input_crlf::~input_crlf()
 {
-    input_ty        inherited;
-    input_ty        *deeper;
-    long            pos;
-    int             delete_on_close;
-    long            line_number;
-    int             prev_was_newline;
-    string_ty       *name_cache;
-    int             escaped_newline;
-};
-
-
-static void
-input_crlf_destructor(input_ty *p)
-{
-    input_crlf_ty   *this_thing;
-
-    trace(("input_crlf_destructor()\n{\n"));
-    this_thing = (input_crlf_ty *)p;
-    input_pushback_transfer(this_thing->deeper, p);
-    if (this_thing->delete_on_close)
-	input_delete(this_thing->deeper);
-    this_thing->deeper = 0; // paranoia
-    if (this_thing->name_cache)
-    {
-	str_free(this_thing->name_cache);
-	this_thing->name_cache = 0;
-    }
+    trace(("input_crlf::~input_crlf()\n{\n"));
+    pullback_transfer(deeper);
+    if (delete_on_close)
+	delete deeper;
+    deeper = 0;
     trace(("}\n"));
 }
 
 
-static long
-input_crlf_read(input_ty *ip, void *data, size_t len)
+input_crlf::input_crlf(input_ty *arg1, bool arg2) :
+    deeper(arg1),
+    delete_on_close(arg2),
+    pos(0),
+    line_number(0),
+    prev_was_newline(true),
+    newlines_may_be_escaped(false)
 {
-    input_crlf_ty   *this_thing;
-    int             c;
-    unsigned char   *cp;
-    unsigned char   *end;
-    size_t          nbytes;
-    sub_context_ty  *scp;
+}
 
-    trace(("input_crlf_read()\n{\n"));
-    this_thing = (input_crlf_ty *)ip;
-    if (this_thing->prev_was_newline)
+
+long
+input_crlf::read_inner(void *data, size_t len)
+{
+    trace(("input_crlf::read_inner()\n{\n"));
+    if (prev_was_newline)
     {
-	this_thing->line_number++;
-	this_thing->prev_was_newline = 0;
+	++line_number;
+	prev_was_newline = false;
 
 	//
 	// The name cache includes the line number, and the line
 	// number just changed, so nuke it.
 	//
-	if (this_thing->name_cache)
-	{
-	    str_free(this_thing->name_cache);
-	    this_thing->name_cache = 0;
-	}
+	name_cache.clear();
     }
 
-    cp = (unsigned char *)data;
-    end = cp + len;
+    unsigned char *cp = (unsigned char *)data;
+    unsigned char *end = cp + len;
     while (cp < end)
     {
-	c = input_getc(this_thing->deeper);
+	int c = deeper->getc();
 	switch (c)
 	{
 	case '\r':
-	    c = input_getc(this_thing->deeper);
+	    c = deeper->getc();
 	    if (c == '\n')
 		goto newline;
 	    if (c >= 0)
-		input_ungetc(this_thing->deeper, c);
+		deeper->ungetc(c);
 #ifdef __mac_os_x__
 	    goto newline;
 #else
@@ -110,9 +84,9 @@ input_crlf_read(input_ty *ip, void *data, size_t len)
 #endif
 
 	case '\\':
-	    if (this_thing->escaped_newline)
+	    if (newlines_may_be_escaped)
 	    {
-		c = input_getc(this_thing->deeper);
+		c = deeper->getc();
 		if (c == '\n')
 		{
 		    //
@@ -121,11 +95,11 @@ input_crlf_read(input_ty *ip, void *data, size_t len)
 		    // so that the line numbers
 		    // are right.
 		    //
-		    this_thing->prev_was_newline = 1;
+		    prev_was_newline = 1;
 		    break;
 		}
 		if (c >= 0)
-		    input_ungetc(this_thing->deeper, c);
+		    deeper->ungetc(c);
 	    }
 	    *cp++ = '\\';
 	    continue;
@@ -143,10 +117,12 @@ input_crlf_read(input_ty *ip, void *data, size_t len)
 	    // However, for international text, just about
 	    // anything is acceptable.  But not NUL.
 	    //
-	    scp = sub_context_new();
-	    sub_var_set_format(scp, "Name", "\\%o", c);
-	    fatal_intl(scp, i18n("illegal '$name' character"));
-	    sub_context_delete(scp);
+	    {
+		sub_context_ty sc;
+		sc.var_set_format("Name", "\\%o", c);
+		string_ty *s = sc.subst_intl(i18n("illegal '$name' character"));
+		fatal_error(s->str_text);
+	    }
 	    continue;
 
 	default:
@@ -185,7 +161,7 @@ input_crlf_read(input_ty *ip, void *data, size_t len)
 	    //
 	    newline:
 	    *cp++ = '\n';
-	    this_thing->prev_was_newline = 1;
+	    prev_was_newline = 1;
 	    break;
 	}
 	break;
@@ -194,108 +170,62 @@ input_crlf_read(input_ty *ip, void *data, size_t len)
     //
     // Figure what happened.
     //
-    nbytes = (cp - (unsigned char *)data);
-    this_thing->pos += nbytes;
+    size_t nbytes = (cp - (unsigned char *)data);
+    pos += nbytes;
     trace(("return %ld;\n", (long)nbytes));
     trace(("}\n"));
     return nbytes;
 }
 
 
-static long
-input_crlf_ftell(input_ty *fp)
+long
+input_crlf::ftell_inner()
 {
-    input_crlf_ty   *this_thing;
-
-    this_thing = (input_crlf_ty *)fp;
-    trace(("input_crlf_ftell => %ld\n", this_thing->pos));
-    return this_thing->pos;
+    trace(("input_crlf_ftell => %ld\n", pos));
+    return pos;
 }
 
 
-static string_ty *
-input_crlf_name(input_ty *p)
+nstring
+input_crlf::name()
 {
-    input_crlf_ty   *this_thing;
-
     trace(("input_crlf_name\n"));
-    this_thing = (input_crlf_ty *)p;
-    if (!this_thing->line_number)
-	return input_name(this_thing->deeper);
-    if (!this_thing->name_cache)
+    if (!line_number)
+	return deeper->name();
+    if (!name_cache)
     {
-	this_thing->name_cache =
-	    str_format
-	    (
-	       	"%s: %ld",
-	       	input_name(this_thing->deeper)->str_text,
-	       	this_thing->line_number
-	    );
+	name_cache =
+	    nstring::format("%s: %ld", deeper->name().c_str(), line_number);
     }
-    return this_thing->name_cache;
+    return name_cache;
 }
 
 
-static long
-input_crlf_length(input_ty *p)
+long
+input_crlf::length()
 {
     trace(("input_crlf_length => -1\n"));
     return -1;
 }
 
 
-static void
-input_crlf_keepalive(input_ty *fp)
+void
+input_crlf::keepalive()
 {
-    input_crlf_ty   *ip;
-
-    ip = (input_crlf_ty *)fp;
-    input_keepalive(ip->deeper);
-}
-
-
-static input_vtbl_ty vtbl =
-{
-    sizeof(input_crlf_ty),
-    input_crlf_destructor,
-    input_crlf_read,
-    input_crlf_ftell,
-    input_crlf_name,
-    input_crlf_length,
-    input_crlf_keepalive,
-};
-
-
-input_ty *
-input_crlf(input_ty *fp, int delete_on_close)
-{
-    input_ty        *result;
-    input_crlf_ty   *this_thing;
-
-    trace(("input_crlf(fp = %08lX)\n{\n", (long)fp));
-    result = input_new(&vtbl);
-    this_thing = (input_crlf_ty *)result;
-    this_thing->deeper = fp;
-    this_thing->pos = 0;
-    this_thing->delete_on_close = !!delete_on_close;
-    this_thing->line_number = 0;
-    this_thing->prev_was_newline = 1;
-    this_thing->name_cache = 0;
-    this_thing->escaped_newline = 0;
-    trace(("return %08lX\n", (long)result));
-    trace(("}\n"));
-    return result;
+    deeper->keepalive();
 }
 
 
 void
-input_crlf_escaped_newline(input_ty *ip)
+input_crlf::escaped_newline()
 {
-    if (ip->vptr == &vtbl)
-    {
-	input_crlf_ty	*this_thing;
+    newlines_may_be_escaped = true;
+}
 
-	this_thing = (input_crlf_ty *)ip;
-	this_thing->escaped_newline = 1;
-    }
+
+bool
+input_crlf::is_remote()
+    const
+{
+    return deeper->is_remote();
 }

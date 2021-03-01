@@ -1,6 +1,7 @@
 //
 //	aegis - project change supervisor
 //	Copyright (C) 1999-2005 Peter Miller;
+//	Copyright (C) 2004, 2005 Walter Franzini;
 //	All rights reserved.
 //
 //	This program is free software; you can redistribute it and/or modify
@@ -27,6 +28,7 @@
 #include <arglex3.h>
 #include <arglex/change.h>
 #include <arglex/project.h>
+#include <attribute.h>
 #include <change/branch.h>
 #include <change/file.h>
 #include <change/functor/attribu_list.h>
@@ -58,6 +60,7 @@
 #include <undo.h>
 #include <usage.h>
 #include <user.h>
+#include <uuidentifier.h>
 
 
 #define NO_TIME_SET ((time_t)(-1))
@@ -82,7 +85,13 @@ have_it_already(cstate_ty *change_set, fstate_src_ty *src_data)
 
 
 static void
-one_more_src(cstate_ty *change_set, fstate_src_ty *src_data, int use_attr)
+one_more_src
+(
+    project_file_roll_forward &historian,
+    cstate_ty *change_set,
+    fstate_src_ty *src_data,
+    int use_attr
+)
 {
     cstate_src_ty   **dst_data_p;
     cstate_src_ty   *dst_data;
@@ -107,8 +116,96 @@ one_more_src(cstate_ty *change_set, fstate_src_ty *src_data, int use_attr)
     {
 	if (src_data->attribute)
 	    dst_data->attribute = attributes_list_copy(src_data->attribute);
-	if (src_data->uuid)
+        if (src_data->uuid)
 	    dst_data->uuid = str_copy(src_data->uuid);
+
+        //
+        // If the historian is not set we can not retrieve the needed
+        // information, so we return.
+        //
+        trace(("historian = %d;\n", historian.is_set() ? 1 : 0));
+        if (!historian.is_set())
+            return;
+
+        //
+        // We handle only modified files.
+        //
+        // todo:
+        // We should handle also file renames because the rename
+        // operation may carry also file modifications.  However the
+        // aemv command does not support the -delta option, yet.
+        //
+        trace(("src_data->action = %s;\n",
+               file_action_ename(src_data->action)));
+        switch (src_data->action)
+        {
+        case file_action_modify:
+            break;
+
+        case file_action_insulate:
+            assert(0);
+            // FALLTHROUGH
+
+        case file_action_create:
+        case file_action_transparent:
+        case file_action_remove:
+#ifndef DEBUG
+        default:
+#endif
+            return;
+            break;
+        }
+
+        trace(("fn=\"%s\";\nft = %s;\n",
+               src_data->file_name->str_text,
+               file_action_ename(src_data->action)));
+        file_event_ty *fep = historian.get_older(src_data->file_name);
+        //
+        // The fep *can* be NULL if the change is not completed
+        // (e.g. for renamed files).  At the moment we assume this is
+        // not the case.
+        //
+        if (!fep)
+            return;
+
+        assert(fep);
+        if (!fep->cp->cstate_data->uuid)
+            return;
+        if (!src_data->edit_origin)
+            return;
+        assert(src_data->edit_origin->revision);
+        assert(fep->src);
+        if (!fep->src->edit->revision)
+            return;
+        trace_string(fep->cp->cstate_data->uuid->str_text);
+        if
+        (
+            !str_equal
+            (
+                src_data->edit_origin->revision,
+                fep->src->edit->revision
+            )
+        )
+        {
+            //
+            // It's tempting to say
+            //
+            // assert(0);
+            //
+            // but the assumption is not true for outstanding changes.
+            //
+            return;
+        }
+
+        if (!dst_data->attribute)
+            dst_data->attribute =
+                (attributes_list_ty*)attributes_list_type.alloc();
+        attributes_list_append
+        (
+            dst_data->attribute,
+            EDIT_ORIGIN_UUID,
+            fep->cp->cstate_data->uuid->str_text
+        );
     }
 }
 
@@ -561,6 +658,14 @@ send_main(void)
         // Peter's 4.18.D004, publicly in 4.19
         //
         use_rename_patch = (strverscmp(compatibility, "4.19") >= 0);
+
+	//
+	// Add new compatibility tests above this comment.
+	//
+        // If you add anything more to this set of flags, you MUST
+        // also update the aeget/get/change/download.cc file, so that
+        // downloads are possible.
+	//
     }
     if (entire_source)
     {
@@ -805,7 +910,7 @@ send_main(void)
     ofp->fputc('\n');
     ofp = output_content_encoding(ofp, ascii_armor);
     if (needs_compression)
-	ofp = new output_gzip_ty(ofp, true);
+	ofp = new output_gzip(ofp, true);
     output_cpio_ty *cpio_p = new output_cpio_ty(ofp);
 
     //
@@ -909,14 +1014,14 @@ send_main(void)
 	    :
 		(attributes_list_ty *)attributes_list_type.alloc()
 	    );
-	change_functor_attribute_list result(change_set->attribute);
+	change_functor_attribute_list result(false, change_set->attribute);
 	if (change_was_a_branch(cp))
 	{
 	    //
             // For branches, add all of the constituent change sets'
             // UUIDs.  That way, if you resynch by grabbing a whole
             // branch as one change set, you still grab all of the
-            // constituent set UUIDs.
+            // constituent change set UUIDs.
 	    //
 	    project_inventory_walk(pp, result);
 	}
@@ -1010,7 +1115,7 @@ send_main(void)
 	}
 	if (!use_config && src_data->usage == file_usage_config)
 	    src_data->usage = file_usage_source;
-	one_more_src(change_set, src_data, use_attributes);
+	one_more_src(historian, change_set, src_data, use_attributes);
     }
     if (entire_source)
     {
@@ -1066,7 +1171,13 @@ send_main(void)
 		{
 		    if (!use_config && fep->src->usage == file_usage_config)
 			fep->src->usage = file_usage_source;
-		    one_more_src(change_set, fep->src, use_attributes);
+		    one_more_src
+                    (
+                        historian,
+                        change_set,
+                        fep->src,
+                        use_attributes
+                    );
 		}
 	    }
 	}
@@ -1118,13 +1229,206 @@ send_main(void)
 		{
 		    if (!use_config && src_data->usage == file_usage_config)
 			src_data->usage = file_usage_source;
-		    one_more_src(change_set, src_data, use_attributes);
+		    one_more_src
+                    (
+                        historian,
+                        change_set,
+                        src_data,
+                        use_attributes
+                    );
 		}
 	    }
 	}
     }
     if (!change_set->src || !change_set->src->length)
 	change_fatal(cp, 0, i18n("bad send no files"));
+
+    //
+    // Adjust the content of the change set to make it contains only
+    // operations that can be performed in a 'change'.
+    //
+    if (entire_source)
+    {
+        //
+        // We collapse multiple rename chains into just one rename
+        // operation:
+        //
+        // A renamed to B renamed to C
+        //
+        // will become
+        //
+        // A renamed to C
+        //
+        trace_int_unsigned(change_set->src->length);
+        for (size_t i = 0; i < change_set->src->length; ++i)
+        {
+            trace_int_unsigned(i);
+
+            if (!change_set->src->list[i])
+                continue;
+
+            cstate_src_ty *csrc = change_set->src->list[i];
+            switch (csrc->action)
+            {
+            case file_action_transparent:
+            case file_action_insulate:
+            case file_action_modify:
+                continue;
+
+            case file_action_remove:
+            case file_action_create:
+                if (!csrc->move)
+                    continue;
+                break;
+            }
+
+            assert(csrc->move);
+            cstate_src_ty *csrc2 = 0;
+            for (size_t k = i+1; k < change_set->src->length; ++k)
+            {
+                csrc2 = change_set->src->list[k];
+
+                if (!csrc2)
+                    continue;
+
+                if (!csrc2->move)
+                    continue;
+
+                switch (csrc2->action)
+                {
+                case file_action_create:
+                case file_action_remove:
+                    break;
+
+                case file_action_transparent:
+                case file_action_insulate:
+                case file_action_modify:
+                    assert(0);
+                    continue;
+                }
+
+                //
+                // We have found a regular rename.
+                //
+                if
+                (
+                    str_equal(csrc->move, csrc2->file_name)
+                    &&
+                    str_equal(csrc2->move, csrc->file_name)
+                    &&
+                    csrc->action != csrc2->action
+                )
+                    goto loop_end;
+
+                //
+                // We have found two unrelated file.
+                //
+                if
+                (
+                    !str_equal(csrc->move, csrc2->file_name)
+                    &&
+                    !str_equal(csrc2->move, csrc->file_name)
+                )
+                    continue;
+
+                //
+                // 1) identify A and B
+                //
+                cstate_src_ty *old;
+                cstate_src_ty *newer;
+                size_t newer_idx;
+
+                if (str_equal(csrc->move, csrc2->file_name))
+                {
+                    old = csrc;
+                    newer = csrc2;
+                    newer_idx = k;
+                }
+                else
+                {
+                    old = csrc2;
+                    newer = csrc;
+                    newer_idx = i;
+                }
+
+                assert(old->move);
+                assert(newer->move);
+
+                //
+                // Identify C
+                // Adjust A and C and remove B
+                //
+                for (size_t l = 0; l < change_set->src->length; ++l)
+                {
+                    if (l == i || l == k)
+                        continue;
+
+                    cstate_src_ty *most_recent =
+                        change_set->src->list[l];
+                    if (!most_recent)
+                        continue;
+                    if (!most_recent->move)
+                        continue;
+
+                    if (!str_equal(newer->move, most_recent->file_name))
+                        continue;
+
+                    switch (most_recent->action)
+                    {
+                    case file_action_modify:
+                    case file_action_insulate:
+                    case file_action_transparent:
+#ifdef DEBUG
+                    default:
+#endif
+                        assert(0);
+                        continue;
+
+                    case file_action_create:
+                        assert(most_recent->move);
+                        str_free(most_recent->move);
+                        assert(old->file_name);
+                        most_recent->move = str_copy(old->file_name);
+                        // FALLTHROUGH
+
+                    case file_action_remove:
+                        assert(old->move);
+                        str_free(old->move);
+                        assert(newer->move);
+                        old->move = str_copy(newer->move);
+                        cstate_src_type.free(newer);
+                        change_set->src->list[newer_idx] = 0;
+                        break;
+                    }
+                }
+            }
+        loop_end:;
+        }
+
+        //
+        // Now the change_set may contain holes (0), we need to remove
+        // them before further operations.  We are not forced to keep
+        // the order because of the next qsort invocation.
+        //
+        for (size_t k = 0; k < change_set->src->length; ++k)
+        {
+            trace_int_unsigned(change_set->src->length);
+            trace_int_unsigned(k);
+            if (change_set->src->list[k])
+                continue;
+
+            while (!change_set->src->list[--change_set->src->length]);
+            change_set->src->list[k] =
+                change_set->src->list[change_set->src->length];
+        }
+
+#ifdef DEBUG
+        for (size_t k = 0; k < change_set->src->length; ++k)
+        {
+            assert(change_set->src->list[k]);
+        }
+#endif
+    }
 
     //
     // sort the files by name
@@ -1619,10 +1923,9 @@ send_main(void)
 		// Read the diff into the archive.
 		//
 		os_become_orig();
-		ifp = input_file_open(diff_output_filename);
+		ifp = input_file_open(diff_output_filename, true);
 		assert(ifp);
-		input_file_unlink_on_close(ifp);
-		len = input_length(ifp);
+		len = ifp->length();
                 assert(len >= 0);
 		if (len > 0 || is_a_rename)
 		{
@@ -1632,7 +1935,8 @@ send_main(void)
 		    input_to_output(ifp, ofp);
 		    delete ofp;
 		}
-		input_delete(ifp);
+		delete ifp;
+		ifp = 0;
 		os_become_undo();
 
                 // It's tempting to say:
@@ -1664,13 +1968,15 @@ send_main(void)
 	    os_become_orig();
 	    ifp = input_file_open(input_filename);
 	    assert(ifp);
-	    len = input_length(ifp);
+	    len = ifp->length();
 	    childs_name =
 		nstring::format("src/%s", csrc->file_name->str_text);
 	    ofp = cpio_p->child(childs_name, len);
 	    input_to_output(ifp, ofp);
-	    input_delete(ifp);
+	    delete ifp;
+	    ifp = 0;
 	    delete ofp;
+	    ofp = 0;
 	    os_become_undo();
 	    break;
 	}

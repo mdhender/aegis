@@ -37,8 +37,9 @@ class file_revision
 public:
     /**
       * The destructor.
+      * Thou shalt not derive from this class.
       */
-    virtual ~file_revision();
+    ~file_revision();
 
     /**
       * The constructor.
@@ -59,20 +60,86 @@ public:
       * The get_path method is used to extract the path of the file
       * containing the file revision.
       */
-    nstring get_path() const { return filename; }
+    nstring get_path() const { return ref->get_path(); }
 
 private:
-    /**
-      * The filename instance variable is used to remember the absolute
-      * path of the file.
-      */
-    nstring filename;
+    class inner
+    {
+    public:
+	/**
+	  * The destructor.
+	  * Thou shalt not derive from this class.
+          *
+          * This method is private because you are supposed to call
+          * one_fewer() so that the instance will delete itself once the
+          * last reference is gone.
+	  */
+	~inner();
+
+	/**
+	  * The constructor.
+	  */
+	inner(const nstring &filename, bool need_to_unlink);
+
+	/**
+	  * The get_path method is used to extract the path of the file
+	  * containing the file revision.
+	  */
+	nstring get_path() const { return filename; }
+
+	/**
+          * The one_fewer method is used to notify this instance that
+          * there is one fewer reference to it.  Once all references are
+          * gone, this instance will delete itself.
+	  */
+	void one_fewer();
+
+	/**
+          * The one_more method is used to notify this instance that
+          * there is one more reference to it.
+	  */
+	void one_more() { ++reference_count; }
+
+    private:
+	/**
+          * The reference_count instance variable is used to remember
+          * how many references exist to this.
+	  */
+	long reference_count;
+
+	/**
+	  * The filename instance variable is used to remember the absolute
+	  * path of the file.
+	  */
+	nstring filename;
+
+	/**
+	  * The need_to_unlink instance variable is used to remember wether
+	  * or not we need to unlink the file in the destructor.
+	  */
+	bool need_to_unlink;
+
+	/**
+	  * The default constructor.  Do not use.
+	  */
+	inner();
+
+	/**
+	  * The copy constructor.  Do not use.
+	  */
+	inner(const inner &);
+
+	/**
+	  * The assignment operator.  Do not use.
+	  */
+	inner &operator=(const inner &);
+    };
 
     /**
-      * The need_to_unlink instance variable is used to remember wether
-      * or not we need to unlink the file in the destructor.
+      * The ref instance variable is used to remember the reference to
+      * the inner reference-counted data.
       */
-    bool need_to_unlink;
+    inner *ref;
 
     /**
       * The default constructor.

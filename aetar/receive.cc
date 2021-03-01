@@ -33,6 +33,7 @@
 #include <input/gunzip.h>
 #include <input/tar.h>
 #include <nstring.h>
+#include <nstring/list.h>
 #include <os.h>
 #include <output/file.h>
 #include <progname.h>
@@ -40,8 +41,6 @@
 #include <project/file.h>
 #include <project/history.h>
 #include <receive.h>
-#include <str.h>
-#include <str_list.h>
 #include <sub.h>
 #include <trace.h>
 #include <undo.h>
@@ -60,53 +59,49 @@ usage(void)
 }
 
 
-static string_ty *
-is_a_path_prefix(string_ty *haystack, string_ty *needle)
+static bool
+is_a_path_prefix(const nstring &haystack, const nstring &needle,
+    nstring &result)
 {
     if
     (
-	haystack->str_length > needle->str_length
+	haystack.size() > needle.size()
     &&
-	haystack->str_text[needle->str_length] == '/'
+	haystack[needle.size()] == '/'
     &&
-	0 == memcmp(haystack->str_text, needle->str_text, needle->str_length)
+	0 == memcmp(haystack.c_str(), needle.c_str(), needle.size())
     )
     {
-	return
-	    str_n_from_c
+	result =
+	    nstring
 	    (
-		haystack->str_text + needle->str_length + 1,
-		haystack->str_length - needle->str_length - 1
+		haystack.c_str() + needle.size() + 1,
+		haystack.size() - needle.size() - 1
 	    );
+	return true;
     }
-    return 0;
+    return false;
 }
 
 
-static string_ty *path_prefix_add;
-static string_list_ty path_prefix_remove;
+static nstring path_prefix_add;
+static nstring_list path_prefix_remove;
 
 
 static void
-mangle(string_ty **filename_p)
+mangle(nstring &filename)
 {
-    size_t          k;
-    string_ty       *s;
-
-    for (k = 0; k < path_prefix_remove.nstrings; ++k)
+    for (size_t k = 0; k < path_prefix_remove.size(); ++k)
     {
-	s = is_a_path_prefix(*filename_p, path_prefix_remove.string[k]);
-	if (s)
+	nstring s;
+	if (is_a_path_prefix(filename, path_prefix_remove[k], s))
 	{
-	    str_free(*filename_p);
-	    *filename_p = s;
+	    filename = s;
 	}
     }
-    if (path_prefix_add)
+    if (!path_prefix_add.empty())
     {
-	s = os_path_cat(path_prefix_add, *filename_p);
-	str_free(*filename_p);
-	*filename_p = s;
+	filename = os_path_cat(path_prefix_add, filename);
     }
 }
 
@@ -117,7 +112,7 @@ receive(void)
     trace(("receive()\n{\n"));
     string_ty       *project_name;
     long            change_number;
-    string_ty       *ifn;
+    nstring         ifn;
     string_ty       *s;
     project_ty      *pp;
     change_ty       *cp;
@@ -126,13 +121,11 @@ receive(void)
     string_ty       *dot;
     const char      *delta;
     string_ty       *devdir;
-    input_ty	    *tar_p;
     output_ty	    *ofp;
     int		    trojan;
 
     project_name = 0;
     change_number = 0;
-    ifn = 0;
     trojan = -1;
     delta = 0;
     devdir = 0;
@@ -156,7 +149,7 @@ receive(void)
 	    continue;
 
 	case arglex_token_file:
-	    if (ifn)
+	    if (!ifn.empty())
 		duplicate_option(usage);
 	    switch (arglex())
 	    {
@@ -165,12 +158,11 @@ receive(void)
 		// NOTREACHED
 
 	    case arglex_token_string:
-		ifn = str_from_c(arglex_value.alv_string);
+		ifn = arglex_value.alv_string;
 		break;
 
 	    case arglex_token_stdio:
-		ifn = str_from_c("");
-		break;
+                break;
 	    }
 	    break;
 
@@ -229,15 +221,13 @@ receive(void)
 		duplicate_option(usage);
 	    if (arglex() != arglex_token_string)
 		option_needs_file(arglex_token_path_prefix_add, usage);
-	    path_prefix_add = str_from_c(arglex_value.alv_string);
+	    path_prefix_add = arglex_value.alv_string;
 	    break;
 
 	case arglex_token_path_prefix_remove:
 	    if (arglex() != arglex_token_string)
-		option_needs_file(arglex_token_path_prefix_add, usage);
-	    s = str_from_c(arglex_value.alv_string);
-	    path_prefix_remove.push_back_unique(s);
-	    str_free(s);
+		option_needs_file(arglex_token_path_prefix_remove, usage);
+	    path_prefix_remove.push_back_unique(arglex_value.alv_string);
 	    break;
 	}
 	arglex();
@@ -247,9 +237,9 @@ receive(void)
     // Open the tape archive file.
     //
     os_become_orig();
-    tar_p = input_file_open(ifn);
-    tar_p = input_gunzip(tar_p);
-    tar_p = input_tar(tar_p);
+    input_ty *ifp = input_file_open(ifn);
+    ifp = input_gunzip_open(ifp);
+    input_tar *tar_p = new input_tar(ifp);
     os_become_undo();
 
     //
@@ -273,11 +263,12 @@ receive(void)
     attribute_file_name = os_edit_filename(0);
     undo_unlink_errok(attribute_file_name);
     ofp = output_file_text_open(attribute_file_name);
-    ofp->fputs
+    ofp->fprintf
     (
-	"brief_description = \"none\";\n"
+	"brief_description = \"%s\";\n"
 	"description = \"This change was extracted from a tarball.\";\n"
-	"cause = external_bug;\n"
+	"cause = external_bug;\n",
+        ifn.length() > 0 ? ifn.c_str() : "none"
     );
     delete ofp;
     ofp = 0;
@@ -324,10 +315,14 @@ receive(void)
     change_bind_existing(cp);
     dd = change_development_directory_get(cp, 0);
     dd = str_copy(dd);	// will vanish when change_free();
+    int umask = change_umask(cp);
     change_free(cp);
     cp = 0;
+    string_list_ty  files_created;
+    string_list_ty  files_modified;
 
     os_chdir(dd);
+
 
     //
     // Now extract each file from the tar archive.
@@ -337,16 +332,12 @@ receive(void)
     //
     for (;;)
     {
-	input_ty        *ip;
-	string_ty       *filename;
-	fstate_src_ty   *src_data;
-	string_ty       *cmd = 0;
-
 	//
 	// Find the next file in the archive.
 	//
+	nstring filename;
 	os_become_orig();
-	ip = input_tar_child(tar_p, &filename);
+	input_ty *ip = tar_p->child(filename);
 	os_become_undo();
 	if (!ip)
 	    break;
@@ -354,13 +345,15 @@ receive(void)
 	//
 	// Mangle the file name if necessary.
 	//
-	mangle(&filename);
+	mangle(filename);
+        trace_string(filename.c_str());
 
 	//
 	// Work out if the file sxists in the project.
 	// This is how we decide to copy or create.
 	//
-	src_data = project_file_find(pp, filename, view_path_extreme);
+	fstate_src_ty *src_data =
+	    project_file_find(pp, filename.get_ref(), view_path_extreme);
 
 	//
 	// Build the command to be run.
@@ -385,52 +378,69 @@ receive(void)
 #ifndef DEBUG
             default:
 #endif
-                    cmd =
-                    str_format
-                    (
-                        "aegis --copy-file %s --project=%s --change=%ld%s "
-                        "--verbose",
-                        filename->str_text,
-                        project_name->str_text,
-                        change_number,
-                        trace_options.c_str()
-                    );
+                //
+                // If the project is configured to copy or (sym)link
+                // the sources from the baseline, we need to unlink
+                // the source to prevent a permission denied error.
+                //
+                os_become_orig();
+                os_unlink_errok(src_data->file_name);
+                os_become_undo();
+                files_modified.push_back(filename.get_ref());
                 break;
             }
 	}
 	else
 	{
-	    cmd =
-		str_format
-		(
-                    "aegis --new-file %s --no-template --project=%s "
-                        "--change=%ld%s --verbose",
-		    filename->str_text,
-		    project_name->str_text,
-		    change_number,
-                    trace_options.c_str()
-		);
+            files_created.push_back(filename.get_ref());
 	}
-        if (cmd)
-        {
-            os_become_orig();
-            os_execute(cmd, OS_EXEC_FLAG_INPUT, dd);
-            os_become_undo();
-            str_free(cmd);
-        }
 
         //
 	// Now copy the file into the project.
 	//
         os_become_orig();
-        ofp = output_file_binary_open(filename);
+        os_mkdir_between(dd, filename.get_ref(), 02755 & ~umask);
+        ofp = output_file_binary_open(filename.get_ref());
 	input_to_output(ip, ofp);
 	delete ofp;
-	input_delete(ip);
+	delete ip;
 	os_become_undo();
-	str_free(filename);
     }
-    input_delete(tar_p);
+    delete tar_p;
+
+    //
+    // Now create the new files.
+    //
+    if (!files_created.empty())
+    {
+        nstring cmd =
+            nstring::format
+            (
+                "aegis --new-file --no-template --project=%s "
+                "--change=%ld%s --no-keep --verbose",
+                project_name->str_text,
+                change_number,
+                trace_options.c_str()
+            );
+        os_xargs(cmd.get_ref(), &files_created, dd);
+    }
+
+    //
+    // Now copy the modified files.
+    //
+    if (!files_modified.empty())
+    {
+        nstring cmd =
+            nstring::format
+            (
+                "aegis --copy-file --project=%s --change=%ld%s "
+                "--keep --verbose",
+                project_name->str_text,
+                change_number,
+                trace_options.c_str()
+            );
+        os_xargs(cmd.get_ref(), &files_modified, dd);
+    }
 
     project_free(pp);
     pp = 0;

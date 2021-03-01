@@ -1,6 +1,6 @@
 //
 //	aegis - project change supervisor
-//	Copyright (C) 1997, 1999, 2002-2004 Peter Miller;
+//	Copyright (C) 1997, 1999, 2002-2005 Peter Miller;
 //	All rights reserved.
 //
 //	This program is free software; you can redistribute it and/or modify
@@ -39,7 +39,8 @@
 
 
 static rpt_value_ty *
-atime_evaluate(tree_ty *tp, string_ty *path, struct stat *st)
+atime_evaluate(tree_ty *tp, string_ty *path_unres, string_ty *path,
+    string_ty *path_res, struct stat *st)
 {
     tree_monadic_ty *this_thing;
     rpt_value_ty    *vp;
@@ -48,7 +49,7 @@ atime_evaluate(tree_ty *tp, string_ty *path, struct stat *st)
     string_ty       *s;
 
     this_thing = (tree_monadic_ty *)tp;
-    vp = tree_evaluate(this_thing->arg, path, st);
+    vp = tree_evaluate(this_thing->arg, path_unres, path, path_res, st);
     if (vp->method->type == rpt_value_type_error)
 	return vp;
     svp = rpt_value_stringize(vp);
@@ -77,7 +78,7 @@ atime_evaluate(tree_ty *tp, string_ty *path, struct stat *st)
     rpt_value_free(vp);
 
     s = rpt_value_string_query(svp);
-    if (str_equal(path, s))
+    if (str_equal(path_unres, s) || str_equal(path_res, s))
 	result = rpt_value_time(st->st_atime);
     else
     {
@@ -118,7 +119,8 @@ function_atime(tree_list_ty *args)
 
 
 static rpt_value_ty *
-ctime_evaluate(tree_ty *tp, string_ty *path, struct stat *st)
+ctime_evaluate(tree_ty *tp, string_ty *path_unres, string_ty *path,
+    string_ty *path_res, struct stat *st)
 {
     tree_monadic_ty *this_thing;
     rpt_value_ty    *vp;
@@ -127,7 +129,7 @@ ctime_evaluate(tree_ty *tp, string_ty *path, struct stat *st)
     string_ty       *s;
 
     this_thing = (tree_monadic_ty *)tp;
-    vp = tree_evaluate(this_thing->arg, path, st);
+    vp = tree_evaluate(this_thing->arg, path_unres, path, path_res, st);
     if (vp->method->type == rpt_value_type_error)
 	return vp;
     svp = rpt_value_stringize(vp);
@@ -156,7 +158,7 @@ ctime_evaluate(tree_ty *tp, string_ty *path, struct stat *st)
     rpt_value_free(vp);
 
     s = rpt_value_string_query(svp);
-    if (str_equal(path, s))
+    if (str_equal(path_unres, s) || str_equal(path_res, s))
 	result = rpt_value_time(st->st_ctime);
     else
     {
@@ -197,7 +199,8 @@ function_ctime(tree_list_ty *args)
 
 
 static rpt_value_ty *
-mtime_evaluate(tree_ty *tp, string_ty *path, struct stat *st)
+mtime_evaluate(tree_ty *tp, string_ty *path_unres, string_ty *path,
+    string_ty *path_res, struct stat *st)
 {
     tree_monadic_ty *this_thing;
     rpt_value_ty    *vp;
@@ -206,7 +209,7 @@ mtime_evaluate(tree_ty *tp, string_ty *path, struct stat *st)
     string_ty       *s;
 
     this_thing = (tree_monadic_ty *)tp;
-    vp = tree_evaluate(this_thing->arg, path, st);
+    vp = tree_evaluate(this_thing->arg, path_unres, path, path_res, st);
     if (vp->method->type == rpt_value_type_error)
 	return vp;
     svp = rpt_value_stringize(vp);
@@ -235,7 +238,7 @@ mtime_evaluate(tree_ty *tp, string_ty *path, struct stat *st)
     rpt_value_free(vp);
 
     s = rpt_value_string_query(svp);
-    if (str_equal(path, s))
+    if (str_equal(path_unres, s) || str_equal(path_res, s))
 	result = rpt_value_time(st->st_mtime);
     else
     {
@@ -276,7 +279,8 @@ function_mtime(tree_list_ty *args)
 
 
 static rpt_value_ty *
-mode_evaluate(tree_ty *tp, string_ty *path, struct stat *st)
+mode_evaluate(tree_ty *tp, string_ty *path_unres, string_ty *path,
+    string_ty *path_res, struct stat *st)
 {
     tree_monadic_ty *this_thing;
     rpt_value_ty    *vp;
@@ -285,7 +289,7 @@ mode_evaluate(tree_ty *tp, string_ty *path, struct stat *st)
     string_ty       *s;
 
     this_thing = (tree_monadic_ty *)tp;
-    vp = tree_evaluate(this_thing->arg, path, st);
+    vp = tree_evaluate(this_thing->arg, path_unres, path, path_res, st);
     if (vp->method->type == rpt_value_type_error)
 	return vp;
     svp = rpt_value_stringize(vp);
@@ -314,7 +318,7 @@ mode_evaluate(tree_ty *tp, string_ty *path, struct stat *st)
     rpt_value_free(vp);
 
     s = rpt_value_string_query(svp);
-    if (str_equal(path, s))
+    if (str_equal(path_unres, s) || str_equal(path_res, s))
 	result = rpt_value_integer(st->st_mode & 07777);
     else
     {
@@ -355,7 +359,8 @@ function_mode(tree_list_ty *args)
 
 
 static rpt_value_ty *
-nlink_evaluate(tree_ty *tp, string_ty *path, struct stat *st)
+nlink_evaluate(tree_ty *tp, string_ty *path_unres, string_ty *path,
+    string_ty *path_res, struct stat *st)
 {
     tree_monadic_ty  *this_thing;
     rpt_value_ty     *vp;
@@ -364,7 +369,7 @@ nlink_evaluate(tree_ty *tp, string_ty *path, struct stat *st)
     string_ty        *s;
 
     this_thing = (tree_monadic_ty *)tp;
-    vp = tree_evaluate(this_thing->arg, path, st);
+    vp = tree_evaluate(this_thing->arg, path_unres, path, path_res, st);
     if (vp->method->type == rpt_value_type_error)
 	return vp;
     svp = rpt_value_stringize(vp);
@@ -393,7 +398,7 @@ nlink_evaluate(tree_ty *tp, string_ty *path, struct stat *st)
     rpt_value_free(vp);
 
     s = rpt_value_string_query(svp);
-    if (str_equal(path, s))
+    if (str_equal(path_unres, s) || str_equal(path_res, s))
 	result = rpt_value_integer(st->st_nlink);
     else
     {
@@ -434,7 +439,8 @@ function_nlink(tree_list_ty *args)
 
 
 static rpt_value_ty *
-ino_evaluate(tree_ty *tp, string_ty *path, struct stat *st)
+ino_evaluate(tree_ty *tp, string_ty *path_unres, string_ty *path,
+    string_ty *path_res, struct stat *st)
 {
     tree_monadic_ty *this_thing;
     rpt_value_ty    *vp;
@@ -443,7 +449,7 @@ ino_evaluate(tree_ty *tp, string_ty *path, struct stat *st)
     string_ty       *s;
 
     this_thing = (tree_monadic_ty *)tp;
-    vp = tree_evaluate(this_thing->arg, path, st);
+    vp = tree_evaluate(this_thing->arg, path_unres, path, path_res, st);
     if (vp->method->type == rpt_value_type_error)
 	return vp;
     svp = rpt_value_stringize(vp);
@@ -472,7 +478,7 @@ ino_evaluate(tree_ty *tp, string_ty *path, struct stat *st)
     rpt_value_free(vp);
 
     s = rpt_value_string_query(svp);
-    if (str_equal(path, s))
+    if (str_equal(path_unres, s) || str_equal(path_res, s))
 	result = rpt_value_integer(st->st_ino);
     else
     {
@@ -513,7 +519,8 @@ function_ino(tree_list_ty *args)
 
 
 static rpt_value_ty *
-uid_evaluate(tree_ty *tp, string_ty *path, struct stat *st)
+uid_evaluate(tree_ty *tp, string_ty *path_unres, string_ty *path,
+    string_ty *path_res, struct stat *st)
 {
     tree_monadic_ty *this_thing;
     rpt_value_ty    *vp;
@@ -522,7 +529,7 @@ uid_evaluate(tree_ty *tp, string_ty *path, struct stat *st)
     string_ty       *s;
 
     this_thing = (tree_monadic_ty *)tp;
-    vp = tree_evaluate(this_thing->arg, path, st);
+    vp = tree_evaluate(this_thing->arg, path_unres, path, path_res, st);
     if (vp->method->type == rpt_value_type_error)
 	return vp;
     svp = rpt_value_stringize(vp);
@@ -551,7 +558,7 @@ uid_evaluate(tree_ty *tp, string_ty *path, struct stat *st)
     rpt_value_free(vp);
 
     s = rpt_value_string_query(svp);
-    if (str_equal(path, s))
+    if (str_equal(path_unres, s) || str_equal(path_unres, s))
 	result = rpt_value_integer(st->st_uid);
     else
     {
@@ -592,7 +599,8 @@ function_uid(tree_list_ty *args)
 
 
 static rpt_value_ty *
-gid_evaluate(tree_ty *tp, string_ty *path, struct stat *st)
+gid_evaluate(tree_ty *tp, string_ty *path_unres, string_ty *path,
+    string_ty *path_res, struct stat *st)
 {
     tree_monadic_ty *this_thing;
     rpt_value_ty    *vp;
@@ -601,7 +609,7 @@ gid_evaluate(tree_ty *tp, string_ty *path, struct stat *st)
     string_ty       *s;
 
     this_thing = (tree_monadic_ty *)tp;
-    vp = tree_evaluate(this_thing->arg, path, st);
+    vp = tree_evaluate(this_thing->arg, path_unres, path, path_res, st);
     if (vp->method->type == rpt_value_type_error)
 	return vp;
     svp = rpt_value_stringize(vp);
@@ -630,7 +638,7 @@ gid_evaluate(tree_ty *tp, string_ty *path, struct stat *st)
     rpt_value_free(vp);
 
     s = rpt_value_string_query(svp);
-    if (str_equal(path, s))
+    if (str_equal(path_unres, s) || str_equal(path_res, s))
 	result = rpt_value_integer(st->st_gid);
     else
     {
@@ -671,7 +679,8 @@ function_gid(tree_list_ty *args)
 
 
 static rpt_value_ty *
-size_evaluate(tree_ty *tp, string_ty *path, struct stat *st)
+size_evaluate(tree_ty *tp, string_ty *path_unres, string_ty *path,
+    string_ty *path_res, struct stat *st)
 {
     tree_monadic_ty *this_thing;
     rpt_value_ty    *vp;
@@ -680,7 +689,7 @@ size_evaluate(tree_ty *tp, string_ty *path, struct stat *st)
     string_ty       *s;
 
     this_thing = (tree_monadic_ty *)tp;
-    vp = tree_evaluate(this_thing->arg, path, st);
+    vp = tree_evaluate(this_thing->arg, path_unres, path, path_res, st);
     if (vp->method->type == rpt_value_type_error)
 	return vp;
     svp = rpt_value_stringize(vp);
@@ -709,7 +718,7 @@ size_evaluate(tree_ty *tp, string_ty *path, struct stat *st)
     rpt_value_free(vp);
 
     s = rpt_value_string_query(svp);
-    if (str_equal(path, s))
+    if (str_equal(path_unres, s) || str_equal(path_res, s))
 	result = rpt_value_integer(st->st_size);
     else
     {
@@ -750,7 +759,8 @@ function_size(tree_list_ty *args)
 
 
 static rpt_value_ty *
-type_evaluate(tree_ty *tp, string_ty *path, struct stat *st)
+type_evaluate(tree_ty *tp, string_ty *path_unres, string_ty *path,
+    string_ty *path_res, struct stat *st)
 {
     tree_monadic_ty *this_thing;
     rpt_value_ty    *vp;
@@ -760,7 +770,7 @@ type_evaluate(tree_ty *tp, string_ty *path, struct stat *st)
     int             n;
 
     this_thing = (tree_monadic_ty *)tp;
-    vp = tree_evaluate(this_thing->arg, path, st);
+    vp = tree_evaluate(this_thing->arg, path_unres, path, path_res, st);
     if (vp->method->type == rpt_value_type_error)
 	return vp;
     svp = rpt_value_stringize(vp);
@@ -789,7 +799,7 @@ type_evaluate(tree_ty *tp, string_ty *path, struct stat *st)
     rpt_value_free(vp);
 
     s = rpt_value_string_query(svp);
-    if (str_equal(path, s))
+    if (str_equal(path_unres, s) || str_equal(path_res, s))
 	n = st->st_mode;
     else
     {

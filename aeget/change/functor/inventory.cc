@@ -1,6 +1,6 @@
 //
 //	aegis - project change supervisor
-//	Copyright (C) 2004 Peter Miller;
+//	Copyright (C) 2004, 2005 Peter Miller;
 //	All rights reserved.
 //
 //	This program is free software; you can redistribute it and/or modify
@@ -24,6 +24,7 @@
 
 #include <ac/ctype.h>
 #include <ac/stdio.h>
+#include <ac/string.h>
 
 #include <attribute.h>
 #include <change.h>
@@ -36,8 +37,10 @@
 #include <uuidentifier.h>
 
 
-change_functor_inventory::change_functor_inventory(project_ty *arg) :
-    pp(arg),
+change_functor_inventory::change_functor_inventory(bool arg1,
+	project_ty *arg2) :
+    change_functor(arg1),
+    pp(arg2),
     num(0)
 {
     html_header(pp, 0);
@@ -105,20 +108,26 @@ change_functor_inventory::operator()(change_ty *cp)
     cstate_ty *cstate_data = change_cstate_get(cp);
     if (cstate_data->uuid)
 	print_one_line(cp, cstate_data->uuid);
-    attributes_ty *ap =
-	attributes_list_find(cstate_data->attribute, ORIGINAL_UUID);
-    if (ap)
+    if (cstate_data->attribute)
     {
-	assert(ap->value);
-	if
-	(
-	    ap->value
-	&&
-	    // users can edit, make sure is OK
-	    universal_unique_identifier_valid(ap->value)
-	)
+	for (size_t j = 0; j < cstate_data->attribute->length; ++j)
 	{
-	    print_one_line(cp, ap->value);
+	    attributes_ty *ap = cstate_data->attribute->list[j];
+	    assert(ap);
+	    if
+    	    (
+		ap->name
+	    &&
+		0 == strcasecmp(ORIGINAL_UUID, ap->name->str_text)
+	    &&
+		ap->value
+	    &&
+		// users can edit, make sure is OK
+		universal_unique_identifier_valid(ap->value)
+	    )
+	    {
+		print_one_line(cp, ap->value);
+	    }
 	}
     }
 }

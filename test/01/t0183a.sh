@@ -182,7 +182,7 @@ activity="new file 181"
 $bin/aegis -nf  $workchan/bogus -nl \
 	-uuid "aaaaaaaa-bbbb-4bbb-8ccc-ccccddddddd1" > log 2>&1
 if test $? -ne 0 ; then cat log; no_result; fi
-$bin/aegis -nf  $workchan/config -nl \
+$bin/aegis -nf  $workchan/aegis.conf -nl \
 	-uuid "aaaaaaaa-bbbb-4bbb-8ccc-ccccddddddd2" > log 2>&1
 if test $? -ne 0 ; then cat log; no_result; fi
 
@@ -191,7 +191,7 @@ the trunk version
 end
 if test $? -ne 0 ; then no_result; fi
 
-cat > $workchan/config << 'end'
+cat > $workchan/aegis.conf << 'end'
 build_command = "exit 0";
 create_symlinks_before_build = true;
 remove_symlinks_after_build = false;
@@ -215,49 +215,49 @@ if test $? -ne 0 ; then no_result; fi
 #
 # build the change
 #
-activity="build 214"
+activity="build 218"
 $bin/aegis -build -nl -v > log 2>&1
 if test $? -ne 0 ; then cat log; no_result; fi
 
 #
 # difference the change
 #
-activity="diff 221"
+activity="diff 225"
 $bin/aegis -diff > log 2>&1
 if test $? -ne 0 ; then cat log; no_result; fi
 
 #
 # finish development of the change
 #
-activity="develop end 228"
+activity="develop end 232"
 $bin/aegis -de > log 2>&1
 if test $? -ne 0 ; then cat log; no_result; fi
 
 #
 # pass the review
 #
-activity="review pass 235"
+activity="review pass 239"
 $bin/aegis -rpass -c 1 > log 2>&1
 if test $? -ne 0 ; then cat log; no_result; fi
 
 #
 # start integrating
 #
-activity="integrate begin 242"
+activity="integrate begin 246"
 $bin/aegis -ib 1 > log 2>&1
 if test $? -ne 0 ; then cat log; no_result; fi
 
 #
 # integrate build
 #
-activity="build 249"
+activity="build 253"
 $bin/aegis -b -nl -v > log 2>&1
 if test $? -ne 0 ; then cat log; no_result; fi
 
 #
 # pass the integration
 #
-activity="integrate pass 256"
+activity="integrate pass 260"
 $bin/aegis -intpass -nl > log 2>&1
 if test $? -ne 0 ; then cat log; no_result; fi
 
@@ -266,7 +266,7 @@ if test $? -ne 0 ; then cat log; no_result; fi
 #
 # create a new change
 #
-activity="new change 265"
+activity="new change 269"
 cat > tmp << 'end'
 brief_description = "The second change";
 cause = internal_bug;
@@ -284,7 +284,7 @@ if test $? -ne 0 ; then cat log; no_result; fi
 #
 # add files to the change
 #
-activity="copy file 283"
+activity="copy file 287"
 $bin/aegis -mv $workchan/bogus $workchan/bogus13 -nl > log 2>&1
 if test $? -ne 0 ; then cat log; no_result; fi
 
@@ -296,18 +296,18 @@ if test $? -ne 0 ; then cat log; no_result; fi
 #
 # aedist -send the change.
 #
-activity="aedist -send 295"
+activity="aedist -send 299"
 $bin/aedist -send -c 2 -o $work/c2.ae > log 2>&1
 if test $? -ne 0 ; then cat log; fail; fi
 
 #
 # aedist -receive the change.
 #
-activity="aedist -rec 302"
+activity="aedist -rec 306"
 $bin/aedist -rec -f $work/c2.ae -c 3 -dir ${workchan}.3 > log 2>&1
 if test $? -ne 0 ; then cat log; fail; fi
 
-activity="check change state 306"
+activity="check change state 310"
 cat > ok << 'end'
 src =
 [

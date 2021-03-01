@@ -138,6 +138,11 @@ convert_to_new_format(project_ty *pp)
     );
     pstate_data->developers_may_create_changes = false;
 
+    //
+    // Old-style projects alawys had regression tests exempt by default.
+    //
+    change_branch_default_test_regression_exemption_set(pp->pcp, true);
+
     change_branch_forced_develop_begin_notify_command_set
     (
 	pp->pcp,
@@ -1193,6 +1198,14 @@ project_top_path_get(project_ty *pp, int resolve)
 
     cp = project_change_get(pp);
     return change_top_path_get(cp, resolve);
+}
+
+
+nstring
+project_rss_path_get(project_ty *pp, bool resolve)
+{
+    string_ty *project_top_path = project_top_path_get(pp, resolve);
+    return os_path_cat(nstring(project_top_path), "rss");
 }
 
 

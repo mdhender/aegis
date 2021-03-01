@@ -1,7 +1,7 @@
 #!/bin/sh
 #
 #	aegis - project change supervisor
-#	Copyright (C) 2002, 2004 Peter Miller;
+#	Copyright (C) 2002, 2004, 2005 Peter Miller;
 #	All rights reserved.
 #
 #	This program is free software; you can redistribute it and/or modify
@@ -18,7 +18,7 @@
 #	along with this program; if not, write to the Free Software
 #	Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111, USA.
 #
-# MANIFEST: Test the configdir functionality
+# MANIFEST: Test the aegis.confdir functionality
 #
 
 unset AEGIS_PROJECT
@@ -69,7 +69,7 @@ check_it()
 no_result()
 {
 	set +x
-	echo 'NO RESULT for test of the configdir functionality' 1>&2
+	echo 'NO RESULT for test of the aegis.confdir functionality' 1>&2
 	cd $here
 	find $work -type d -user $USER -exec chmod u+w {} \;
 	rm -rf $work
@@ -78,7 +78,7 @@ no_result()
 fail()
 {
 	set +x
-	echo 'FAILED test of the configdir functionality' 1>&2
+	echo 'FAILED test of the aegis.confdir functionality' 1>&2
 	cd $here
 	find $work -type d -user $USER -exec chmod u+w {} \;
 	rm -rf $work
@@ -116,7 +116,7 @@ AEGIS_PATH=$work/lib
 export AEGIS_PATH
 
 #
-# test the configdir functionality
+# test the aegis.confdir functionality
 #
 activity="new project 121"
 $bin/aegis -npr test -version '' -v -dir $work/proj.dir > log 2>&1
@@ -156,12 +156,12 @@ $bin/aegis -db 10 -v > log 2>&1
 if test $? -ne 0 ; then cat log; no_result; fi
 
 activity="new file 158"
-$bin/aegis -nf $work/test.C010/config $work/test.C010/config.d/build \
+$bin/aegis -nf $work/test.C010/aegis.conf $work/test.C010/config.d/build \
 	$work/test.C010/config.d/history $work/test.C010/config.d/misc \
 	$work/test.C010/fred $work/test.C010/barney -v > log 2>&1
 if test $? -ne 0 ; then cat log; no_result; fi
 
-cat > $work/test.C010/config << 'fubar'
+cat > $work/test.C010/aegis.conf << 'fubar'
 configuration_directory = "config.d";
 fubar
 if test $? -ne 0 ; then no_result; fi
@@ -197,42 +197,42 @@ if test $? -ne 0 ; then no_result; fi
 echo one > $work/test.C010/barney
 if test $? -ne 0 ; then no_result; fi
 
-activity="build 185"
+activity="build 200"
 $bin/aegis -b -v > log 2>&1
 if test $? -ne 0 ; then cat log; fail; fi
 
-activity="diff 189"
+activity="diff 204"
 $bin/aegis -diff -v > log 2>&1
 if test $? -ne 0 ; then cat log; no_result; fi
 
-activity="develop end 193"
+activity="develop end 208"
 $bin/aegis -de -v > log 2>&1
 if test $? -ne 0 ; then cat log; no_result; fi
 
-activity="review pass 197"
+activity="review pass 212"
 $bin/aegis -rpass 10 -v > log 2>&1
 if test $? -ne 0 ; then cat log; no_result; fi
 
-activity="integrate begin 201"
+activity="integrate begin 216"
 $bin/aegis -ib 10 -v > log 2>&1
 if test $? -ne 0 ; then cat log; no_result; fi
 
-activity="integrate build 205"
+activity="integrate build 220"
 $bin/aegis -b -v > log 2>&1
 if test $? -ne 0 ; then cat log; no_result; fi
 
-activity="integrate diff 209"
+activity="integrate diff 224"
 $bin/aegis -diff -v > log 2>&1
 if test $? -ne 0 ; then cat log; no_result; fi
 
-activity="integrate pass 213"
+activity="integrate pass 228"
 $bin/aegis -ipass -v > log 2>&1
 if test $? -ne 0 ; then cat log; no_result; fi
 
 #
 # now create a branch
 #
-activity="new branch 220"
+activity="new branch 235"
 $bin/aegis -nbr -p test 1 -v > log 2>&1
 if test $? -ne 0 ; then cat log; no_result; fi
 
@@ -243,7 +243,7 @@ export AEGIS_PROJECT
 # The first change on the branch
 # override the build rule
 #
-activity="new change 231"
+activity="new change 246"
 cat > caf << 'fubar'
 brief_description = "the second change";
 cause = internal_enhancement;
@@ -252,11 +252,11 @@ if test $? -ne 0 ; then no_result; fi
 $bin/aegis -nc -f caf -v -p test.1 > log 2>&1
 if test $? -ne 0 ; then cat log; no_result; fi
 
-activity="develop begin 240"
+activity="develop begin 255"
 $bin/aegis -db 10 -v > log 2>&1
 if test $? -ne 0 ; then cat log; no_result; fi
 
-activity="copy file 244"
+activity="copy file 259"
 $bin/aegis -cp $work/test.1.C010/config.d/build -v > log 2>&1
 if test $? -ne 0 ; then cat log; no_result; fi
 
@@ -265,39 +265,39 @@ build_command = "rm -rf wilma; date > wilma; exit 0";
 fubar
 if test $? -ne 0 ; then no_result; fi
 
-activity="build 251"
+activity="build 268"
 $bin/aegis -b -v > log 2>&1
 if test $? -ne 0 ; then cat log; no_result; fi
 
 test -f $work/test.1.C010/wilma || fail
 
-activity="diff 255"
+activity="diff 274"
 $bin/aegis -diff -v > log 2>&1
 if test $? -ne 0 ; then cat log; no_result; fi
 
-activity="develop end 259"
+activity="develop end 278"
 $bin/aegis -de -v > log 2>&1
 if test $? -ne 0 ; then cat log; no_result; fi
 
-activity="review pass 263"
+activity="review pass 282"
 $bin/aegis -rpass 10 -v > log 2>&1
 if test $? -ne 0 ; then cat log; no_result; fi
 
-activity="integrate begin 267"
+activity="integrate begin 286"
 $bin/aegis -ib 10 -v > log 2>&1
 if test $? -ne 0 ; then cat log; no_result; fi
 
-activity="integrate build 271"
+activity="integrate build 290"
 $bin/aegis -b -v > log 2>&1
 if test $? -ne 0 ; then cat log; no_result; fi
 
 test -f $work/test.1.C010/wilma || fail
 
-activity="integrate diff 275"
+activity="integrate diff 296"
 $bin/aegis -diff -v > log 2>&1
 if test $? -ne 0 ; then cat log; no_result; fi
 
-activity="integrate pass 279"
+activity="integrate pass 300"
 $bin/aegis -ipass -v > log 2>&1
 if test $? -ne 0 ; then cat log; no_result; fi
 

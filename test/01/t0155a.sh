@@ -1,7 +1,7 @@
 #!/bin/sh
 #
 #	aegis - project change supervisor
-#	Copyright (C) 2001-2003 Peter Miller;
+#	Copyright (C) 2001-2003, 2005 Peter Miller;
 #	All rights reserved.
 #
 #	This program is free software; you can redistribute it and/or modify
@@ -183,7 +183,7 @@ if test $? -ne 0 ; then no_result; fi
 activity="new file 183"
 $bin/aegis -new_file $workchan/main.c -nl -lib $worklib -Pro foo
 if test $? -ne 0 ; then no_result; fi
-$bin/aegis -new_file $workchan/config -nl -lib $worklib -p foo
+$bin/aegis -new_file $workchan/aegis.conf -nl -lib $worklib -p foo
 if test $? -ne 0 ; then no_result; fi
 
 cat > $workchan/main.c << 'end'
@@ -196,7 +196,7 @@ main()
 end
 if test $? -ne 0 ; then no_result; fi
 
-cat > $workchan/config << 'end'
+cat > $workchan/aegis.conf << 'end'
 build_command = "exit 0";
 
 history_get_command =
@@ -292,14 +292,14 @@ check_it $workproj/info/change/0/001 ok
 #
 # add a new reviewer
 #
-activity="new reviewer 293"
+activity="new reviewer 295"
 $bin/aegis -newrev $USER -p foo -lib $worklib
 if test $? -ne 0 ; then no_result; fi
 
 #
 # begin the review
 #
-activity="review begin 300"
+activity="review begin 302"
 $bin/aegis -review_begin -chan 1 -proj foo -lib $worklib
 if test $? -ne 0 ; then fail; fi
 
@@ -364,7 +364,7 @@ check_it $workproj/info/change/0/001 ok
 #
 # un-begin the review
 #
-activity="review begin undo 300"
+activity="review begin undo 367"
 $bin/aegis -rbu -chan 1 -proj foo -lib $worklib
 if test $? -ne 0 ; then fail; fi
 

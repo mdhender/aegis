@@ -1,7 +1,7 @@
 #!/bin/sh
 #
 #	aegis - project change supervisor
-#	Copyright (C) 1998 Peter Miller;
+#	Copyright (C) 1998, 2005 Peter Miller;
 #	All rights reserved.
 #
 #	This program is free software; you can redistribute it and/or modify
@@ -93,7 +93,7 @@ tmp=$work/tmp
 #
 # make the directories
 #
-activity="working directory 94"
+activity="working directory 96"
 mkdir $work $work/lib
 if test $? -ne 0 ; then no_result; fi
 chmod 777 $work/lib
@@ -119,14 +119,14 @@ unset LANGUAGE
 #
 # make a new project
 #
-activity="new project 134"
+activity="new project 122"
 $bin/aegis -newpro example -version "" -dir $workproj -v -lib $worklib > log 2>&1
 if test $? -ne 0 ; then cat log; fail; fi
 
 #
 # change project attributes
 #
-activity="project attributes 141"
+activity="project attributes 129"
 cat > $tmp << 'TheEnd'
 description = "aegis user's guide";
 developer_may_review = true;
@@ -141,7 +141,7 @@ if test $? -ne 0 ; then cat log; fail; fi
 #
 # create a new change
 #
-activity="new change 156"
+activity="new change 144"
 cat > $tmp << 'TheEnd'
 brief_description = "Place under aegis";
 description = "A simple calculator using native floating point precision.  \
@@ -158,25 +158,25 @@ if test $? -ne 0 ; then cat log; fail; fi
 #
 # add a new developer
 #
-activity="new developer 173"
+activity="new developer 161"
 $bin/aegis -newdev $USER -v > log 2>&1
 if test $? -ne 0 ; then cat log; fail; fi
 
 #
 # begin development of the change
 #
-activity="develop begin 180"
+activity="develop begin 168"
 $bin/aegis -devbeg 1 -dir $workchan -v > log 2>&1
 if test $? -ne 0 ; then cat log; no_result; fi
 
 #
 # add the new files to the change
 #
-activity="new file 189"
-$bin/aegis -new_file $workchan/config -nl -v > log 2>&1
+activity="new file 175"
+$bin/aegis -new_file $workchan/aegis.conf -nl -v > log 2>&1
 if test $? -ne 0 ; then cat log; no_result; fi
 
-cat > $workchan/config << 'fubar'
+cat > $workchan/aegis.conf << 'fubar'
 build_command = "exit 0";
 history_create_command = "exit 0";
 history_get_command = "exit 0";
@@ -194,7 +194,7 @@ $bin/aegis -clean -nl -v > log 2>&1
 if test $? -ne 0 ; then cat log; fail; fi
 
 test -r $workchan/junk && fail
-test ! -r $workchan/config && fail
+test ! -r $workchan/aegis.conf && fail
 
 #
 # the things tested in this test, worked

@@ -1,7 +1,7 @@
 #!/bin/sh
 #
 #	aegis - project change supervisor
-#	Copyright (C) 1993-1998, 2002, 2004 Peter Miller;
+#	Copyright (C) 1993-1998, 2002, 2004, 2005 Peter Miller;
 #	All rights reserved.
 #
 #	This program is free software; you can redistribute it and/or modify
@@ -91,7 +91,7 @@ tmp=$work/tmp
 #
 # make the directories
 #
-activity="create working directory 79"
+activity="create working directory 94"
 mkdir $work $work/lib
 if test $? -ne 0 ; then no_result; fi
 chmod 777 $work/lib
@@ -129,14 +129,14 @@ fi
 #
 # make a new project
 #
-activity="new project 112"
+activity="new project 132"
 $bin/aegis -newpro foo -vers "" -dir $workproj -v -lib $worklib > test.out 2>&1
 if test $? -ne 0 ; then cat test.out; no_result; fi
 
 #
 # change project attributes
 #
-activity="project attributes 119"
+activity="project attributes 139"
 cat > $tmp << 'end'
 description = "A bogus project created to test things.";
 developer_may_review = true;
@@ -150,7 +150,7 @@ if test $? -ne 0 ; then cat test.out; no_result; fi
 # create a new change
 #	make sure it creates the files it should
 #
-activity="new change 133"
+activity="new change 153"
 cat > $tmp << 'end'
 brief_description = "This change is used to test the aegis functionality \
 with respect to change descriptions.";
@@ -162,28 +162,28 @@ if test $? -ne 0 ; then cat test.out; no_result; fi
 #
 # add a new developer
 #
-activity="new developer 145"
+activity="new developer 165"
 $bin/aegis -newdev $USER -p foo -v -lib $worklib > test.out 2>&1
 if test $? -ne 0 ; then cat test.out; no_result; fi
 
 #
 # begin development of a change
 #
-activity="begin development 152"
+activity="begin development 172"
 $bin/aegis -devbeg 1 -p foo -dir $workchan -v -lib $worklib > test.out 2>&1
 if test $? -ne 0 ; then cat test.out; no_result; fi
 
 #
 # add a new files to the change
 #
-activity="new file 159"
+activity="new file 179"
 $bin/aegis -new_file $workchan/main.cc -nl -v -lib $worklib -p foo > test.out 2>&1
 if test $? -ne 0 ; then cat test.out; no_result; fi
 $bin/aegis -new_file $workchan/fubar -nl -v -lib $worklib -p foo > test.out 2>&1
 if test $? -ne 0 ; then cat test.out; no_result; fi
 $bin/aegis -new_file $workchan/version -b -nl -v -lib $worklib -p foo > test.out 2>&1
 if test $? -ne 0 ; then cat test.out; fail; fi
-$bin/aegis -new_file $workchan/config -nl -v -lib $worklib -p foo > test.out 2>&1
+$bin/aegis -new_file $workchan/aegis.conf -nl -v -lib $worklib -p foo > test.out 2>&1
 if test $? -ne 0 ; then cat test.out; no_result; fi
 
 #
@@ -200,7 +200,7 @@ end
 #
 # put something in 'config'
 #
-cat > $workchan/config << 'end'
+cat > $workchan/aegis.conf << 'end'
 build_command = "rm -f foo version; c++ -o foo main.cc; echo '$v' > version";
 link_integration_directory = true;
 
@@ -222,7 +222,7 @@ end
 #
 # create a new test
 #
-activity="new test 205"
+activity="new test 225"
 $bin/aegis -nt -v -lib $worklib -p foo > test.out 2>&1
 if test $? -ne 0 ; then cat test.out; no_result; fi
 
@@ -279,77 +279,77 @@ sleep 1
 #
 # build the change
 #
-activity="development build 252"
+activity="development build 282"
 $bin/aegis -build -nl -v -lib $worklib -p foo > test.out 2>&1
 if test $? -ne 0 ; then cat test.out; fail; fi
 
 #
 # difference the change
 #
-activity="development diff 259"
+activity="development diff 289"
 $bin/aegis -diff -nl -v -lib $worklib -p foo > test.out 2>&1
 if test $? -ne 0 ; then cat test.out; fail; fi
 
 #
 # test the change
 #
-activity="development test 266"
+activity="development test 296"
 $bin/aegis -test -nl -v -lib $worklib -p foo > test.out 2>&1
 if test $? -ne 0 ; then cat test.out; no_result; fi
 
 #
 # finish development of the change
 #
-activity="develop end 273"
+activity="develop end 303"
 $bin/aegis -dev_end -v -lib $worklib -p foo > test.out 2>&1
 if test $? -ne 0 ; then cat test.out; fail; fi
 
 #
 # add a new reviewer
 #
-activity="new reviewer 280"
+activity="new reviewer 310"
 $bin/aegis -newrev $USER -p foo -v -lib $worklib > test.out 2>&1
 if test $? -ne 0 ; then cat test.out; no_result; fi
 
 #
 # pass the review
 #
-activity="review pass 287"
+activity="review pass 317"
 $bin/aegis -review_pass -chan 1 -proj foo -v -lib $worklib > test.out 2>&1
 if test $? -ne 0 ; then cat test.out; no_result; fi
 
 #
 # add an integrator
 #
-activity="new inegrator 294"
+activity="new inegrator 324"
 $bin/aegis -newint $USER -p foo -v -lib $worklib > test.out 2>&1
 if test $? -ne 0 ; then cat test.out; no_result; fi
 
 #
 # start integrating
 #
-activity="integrate begin 301"
+activity="integrate begin 331"
 $bin/aegis -intbeg 1 -p foo -v -lib $worklib > test.out 2>&1
 if test $? -ne 0 ; then cat test.out; fail; fi
 
 #
 # integrate build
 #
-activity="integration build 308"
+activity="integration build 338"
 $bin/aegis -build -nl -v -lib $worklib -p foo > test.out 2>&1
 if test $? -ne 0 ; then cat test.out; fail; fi
 
 #
 # integrate test
 #
-activity="integration test 315"
+activity="integration test 345"
 $bin/aegis -test -nl -v -lib $worklib -p foo > test.out 2>&1
 if test $? -ne 0 ; then cat test.out; no_result; fi
 
 #
 # integration pass
 #
-activity="integrate pass 322"
+activity="integrate pass 352"
 $bin/aegis -intpass -nl -v -lib $worklib -p foo > test.out 2>&1
 if test $? -ne 0 ; then cat test.out; fail; fi
 
@@ -357,7 +357,7 @@ if test $? -ne 0 ; then cat test.out; fail; fi
 # create a new change
 #	make sure it creates the files it should
 #
-activity="new change 330"
+activity="new change 360"
 cat > $tmp << 'end'
 brief_description = "A second Change";
 cause = internal_bug;
@@ -368,14 +368,14 @@ if test $? -ne 0 ; then cat test.out; no_result; fi
 #
 # begin development of a change
 #
-activity="develop begin 341"
+activity="develop begin 371"
 $bin/aegis -devbeg 2 -p foo -dir $workchan -v -lib $worklib > test.out 2>&1
 if test $? -ne 0 ; then cat test.out; no_result; fi
 
 #
 # set change attributes
 #
-activity="change attributes 348"
+activity="change attributes 378"
 cat > $workchan/xx  << 'fubar'
 test_exempt = true;
 test_baseline_exempt = true;
@@ -387,7 +387,7 @@ if test $? -ne 0 ; then cat test.out; no_result; fi
 #
 # add a new files to the change
 #
-activity="copy file 360"
+activity="copy file 390"
 $bin/aegis -cp $workchan/main.cc -nl -v -lib $worklib -p foo > test.out 2>&1
 if test $? -ne 0 ; then cat test.out; no_result; fi
 
@@ -406,49 +406,49 @@ sleep 1
 #
 # build the change
 #
-activity="development build 374"
+activity="development build 409"
 $bin/aegis -build -nl -v -lib $worklib -p foo > test.out 2>&1
 if test $? -ne 0 ; then cat test.out; no_result; fi
 
 #
 # difference the change
 #
-activity="development diff 381"
+activity="development diff 416"
 $bin/aegis -diff -nl -v -lib $worklib -p foo > test.out 2>&1
 if test $? -ne 0 ; then cat test.out; no_result; fi
 
 #
 # finish development of the change
 #
-activity="develop end 388"
+activity="develop end 423"
 $bin/aegis -dev_end -v -lib $worklib -p foo > test.out 2>&1
 if test $? -ne 0 ; then cat test.out; no_result; fi
 
 #
 # pass the review
 #
-activity="review pass 395"
+activity="review pass 430"
 $bin/aegis -review_pass -chan 2 -proj foo -v -lib $worklib > test.out 2>&1
 if test $? -ne 0 ; then cat test.out; no_result; fi
 
 #
 # start integrating
 #
-activity="integrate begin 402"
+activity="integrate begin 437"
 $bin/aegis -intbeg 2 -p foo -v -lib $worklib > test.out 2>&1
 if test $? -ne 0 ; then cat test.out; fail; fi
 
 #
 # integrate build
 #
-activity="integration build 409"
+activity="integration build 444"
 $bin/aegis -build -nl -v -lib $worklib -p foo > test.out 2>&1
 if test $? -ne 0 ; then cat test.out; no_result; fi
 
 #
 # integration pass
 #
-activity="integrate pass 416"
+activity="integrate pass 451"
 $bin/aegis -intpass -nl -v -lib $worklib -p foo > test.out 2>&1
 if test $? -ne 0 ; then cat test.out; fail; fi
 
@@ -456,7 +456,7 @@ if test $? -ne 0 ; then cat test.out; fail; fi
 # the build file should now be a change file
 #	even though user did not put it there
 #
-activity="check change file state 424"
+activity="check change file state 459"
 $bin/aegis -l cf -c 2 -unf -lib $worklib -p foo > test.out 2>&1
 if test $? -ne 0 ; then cat test.out; fail; fi
 cat > test.ok << 'fubar'

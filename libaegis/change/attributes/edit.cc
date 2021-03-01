@@ -73,6 +73,7 @@ change_attributes_edit(cattr_ty **dp, int et)
 	d = cattr_read_file(filename);
 	commit_unlink_errok(filename);
 	os_become_undo();
+	change_attributes_fixup(d);
 	change_attributes_verify(filename, d);
 	str_free(filename);
 	*dp = d;

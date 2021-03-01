@@ -1,6 +1,6 @@
 /*
  *	aegis - project change supervisor
- *	Copyright (C) 1997, 2002 Peter Miller;
+ *	Copyright (C) 1997, 2002, 2005 Peter Miller;
  *	All rights reserved.
  *
  *	This program is free software; you can redistribute it and/or modify
@@ -25,6 +25,13 @@
 
 #include <main.h>
 
-struct tree_ty *tree_this_new(void);
+/**
+  * The tree_this_new function is used to create a new {} expression tree
+  * node, allocated in dynamic memory.
+  *
+  * @param arg
+  *     Set to -1 for {}, 0 for {-}, or 1 for {+}
+  */
+struct tree_ty *tree_this_new(int arg = -1);
 
 #endif /* AEFIND_TREE_THIS_H */

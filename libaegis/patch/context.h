@@ -1,6 +1,6 @@
 //
 //	aegis - project change supervisor
-//	Copyright (C) 2001, 2002, 2004 Peter Miller;
+//	Copyright (C) 2001, 2002, 2004, 2005 Peter Miller;
 //	All rights reserved.
 //
 //	This program is free software; you can redistribute it and/or modify
@@ -68,7 +68,7 @@ public:
       * The get_file_name method is used to get the name and line number
       * of the input stream.  This is mostly used for debugging.
       */
-    const char *get_file_name() const { return input_name(input)->str_text; }
+    nstring get_file_name() const { return input->name(); }
 
 private:
     /**

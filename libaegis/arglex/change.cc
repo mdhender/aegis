@@ -196,11 +196,13 @@ arglex_parse_change_tok(string_ty **project_name_p, long *change_number_p,
 
     case arglex_token_string:
 	s = str_from_c(arglex_value.alv_string);
-	if (universal_unique_identifier_valid(s))
+	if (universal_unique_identifier_valid_partial(s))
 	{
 	    //
-            // Hunt for the change set with the given UUID within the project.
-	    // Complain if there is no change set with the given UUID.
+            // Hunt for the change set with the given UUID within the
+            // project.  Complain if there is no change set with the
+            // given UUID if the UUID is exact.  Move on if there is no
+            // match, or too many matches, for a partial (prefix) UUID.
 	    //
 	    if (!project_name)
 		project_name = user_default_project();
@@ -209,20 +211,27 @@ arglex_parse_change_tok(string_ty **project_name_p, long *change_number_p,
 	    change_ty *cp = project_uuid_find(pp, s);
 	    if (!cp)
 	    {
-		no_such_uuid(pp, s);
-		// NOTREACHED
+		if (s->str_length == 36)
+		{
+		    no_such_uuid(pp, s);
+		    // NOTREACHED
+		}
+		project_free(pp);
 	    }
-            if (!*project_name_p)
-		*project_name_p = str_copy(project_name_get(cp->pp));
-	    else if (!str_equal(project_name, project_name_get(cp->pp)))
-		duplicate_option_by_name(arglex_token_project, usage);
-	    change_number = cp->number;
-	    if (change_number == 0)
-		change_number = MAGIC_ZERO;
-	    change_free(cp);
-	    project_free(pp);
-	    project_name = *project_name_p;
-	    break;
+	    else
+	    {
+		if (!*project_name_p)
+		    *project_name_p = str_copy(project_name_get(cp->pp));
+		else if (!str_equal(project_name, project_name_get(cp->pp)))
+		    duplicate_option_by_name(arglex_token_project, usage);
+		change_number = cp->number;
+		if (change_number == 0)
+		    change_number = MAGIC_ZERO;
+		change_free(cp);
+		project_free(pp);
+		project_name = *project_name_p;
+		break;
+	    }
 	}
 	if (extract_change_number(&s, &change_number))
 	{

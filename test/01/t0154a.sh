@@ -103,14 +103,14 @@ unset LANGUAGE
 #
 # test the architecture discriminator functionality
 #
-activity="new project 123"
+activity="new project 106"
 $bin/aegis -npr test -version '' -v -dir $work/proj > log 2>&1
 if test $? -ne 0 ; then cat log; no_result; fi
 
 AEGIS_PROJECT=test
 export AEGIS_PROJECT
 
-activity="project attributes 127"
+activity="project attributes 113"
 cat > paf << 'fubar'
 developer_may_review = true;
 developer_may_integrate = true;
@@ -121,7 +121,7 @@ if test $? -ne 0 ; then no_result; fi
 $bin/aegis -pa -f paf -v > log 2>&1
 if test $? -ne 0 ; then cat log; no_result; fi
 
-activity="staff 138"
+activity="staff 124"
 $bin/aegis -nd $USER -v > log 2>&1
 if test $? -ne 0 ; then cat log; no_result; fi
 $bin/aegis -nrv $USER -v > log 2>&1
@@ -129,7 +129,7 @@ if test $? -ne 0 ; then cat log; no_result; fi
 $bin/aegis -ni $USER -v > log 2>&1
 if test $? -ne 0 ; then cat log; no_result; fi
 
-activity="new change 146"
+activity="new change 132"
 cat > caf << 'fubar'
 brief_description = "one";
 cause = internal_enhancement;
@@ -139,15 +139,15 @@ if test $? -ne 0 ; then no_result; fi
 $bin/aegis -nc -f caf -v -p test > log 2>&1
 if test $? -ne 0 ; then cat log; no_result; fi
 
-activity="develop begin 156"
+activity="develop begin 142"
 $bin/aegis -db 10 -dir $work/test.C010 -v > log 2>&1
 if test $? -ne 0 ; then cat log; no_result; fi
 
 
-activity="new file 160"
-$bin/aegis -nf $work/test.C010/config -v > log 2>&1
+activity="new file 147"
+$bin/aegis -nf $work/test.C010/aegis.conf -v > log 2>&1
 if test $? -ne 0 ; then cat log; no_result; fi
-cat > $work/test.C010/config << 'fubar'
+cat > $work/test.C010/aegis.conf << 'fubar'
 build_command = "exit 0";
 history_get_command =
 	"co -u'$e' -p $h,v > $o";
@@ -175,7 +175,7 @@ architecture = [
 fubar
 if test $? -ne 0 ; then no_result; fi
 
-activity="new test 182"
+activity="new test 178"
 $bin/aegis -nt -v > log 2>&1
 if test $? -ne 0 ; then cat log ; fail; fi
 
@@ -186,7 +186,7 @@ exit 0;
 EOF
 if test $? -ne 0 ; then no_result; fi
 
-activity="change arch 200"
+activity="change arch 189"
 $bin/aegis -ca -l | sed -e 's/unspecified/foo/' > $work/temp
 if test $? -ne 0 ; then cat log; no_result; fi
 
@@ -194,7 +194,7 @@ if test $? -ne 0 ; then cat log; no_result; fi
 $bin/aegis -ca  -f $work/temp -v > log 2>&1
 if test $? -ne 0 ; then cat log; no_result; fi
 
-activity="build 208"
+activity="build 197"
 $bin/aegis -b -v > log 2>&1
 if test $? -ne 0 ; then cat log; no_result; fi
 

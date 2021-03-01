@@ -1,6 +1,6 @@
 //
 //	aegis - project change supervisor
-//	Copyright (C) 2003, 2004 Peter Miller;
+//	Copyright (C) 2003-2005 Peter Miller;
 //	All rights reserved.
 //
 //	This program is free software; you can redistribute it and/or modify
@@ -119,7 +119,7 @@ get_change_aetar(change_ty *cp, string_ty *fn, string_list_ty *modifier)
 	while (pp->parent)
 	    pp = pp->parent;
 	nstring proj = fixup(project_name_get(pp)->str_text);
-	nstring rev = change_version_get(cp);
+	nstring rev(change_version_get(cp));
 	prefix = proj + "." + rev;
     }
 
@@ -128,9 +128,9 @@ get_change_aetar(change_ty *cp, string_ty *fn, string_list_ty *modifier)
     //
     if (!prefix.empty())
 	prefix = " -add-path-prefix=" + prefix;
-    nstring quoted_project = str_quote_shell(project_name_get(cp->pp));
+    nstring quoted_project(str_quote_shell(project_name_get(cp->pp)));
     nstring command =
-	str_format
+	nstring::format
 	(
 	    "%s/aetar -send %s%s -p %s -c %ld\n",
 	    configured_bindir(),

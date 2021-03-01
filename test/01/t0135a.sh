@@ -1,7 +1,7 @@
 #!/bin/sh
 #
 #	aegis - project change supervisor
-#	Copyright (C) 2001 Peter Miller;
+#	Copyright (C) 2001, 2005 Peter Miller;
 #	All rights reserved.
 #
 #	This program is free software; you can redistribute it and/or modify
@@ -169,7 +169,7 @@ if test $? -ne 0 ; then cat log; no_result; fi
 # add the new files to the change
 #
 activity="new file 171"
-$bin/aegis -new_file $workchan/Howto.cook $workchan/config $workchan/f1 \
+$bin/aegis -new_file $workchan/Howto.cook $workchan/aegis.conf $workchan/f1 \
 	$workchan/f2 $workchan/f3 -nl -v > log 2>&1
 if test $? -ne 0 ; then cat log; no_result; fi
 
@@ -180,7 +180,7 @@ if test $? -ne 0 ; then no_result; fi
 date > $workchan/f3
 if test $? -ne 0 ; then no_result; fi
 
-cat > $workchan/config << 'TheEnd'
+cat > $workchan/aegis.conf << 'TheEnd'
 build_command = "exit 0";
 link_integration_directory = true;
 create_symlinks_before_build = true;
@@ -206,60 +206,60 @@ if test $? -ne 0 ; then no_result; fi
 #
 # build the change
 #
-activity="build 207"
+activity="build 209"
 $bin/aegis -build -nl -v > log 2>&1
 if test $? -ne 0 ; then cat log; no_result; fi
 
 #
 # difference the change
 #
-activity="diff 214"
+activity="diff 216"
 $bin/aegis -diff -v -nl > log 2>&1
 if test $? -ne 0 ; then cat log; no_result; fi
 
 #
 # finish development of the change
 #
-activity="develop end 221"
+activity="develop end 223"
 $bin/aegis -dev_end -v > log 2>&1
 if test $? -ne 0 ; then cat log; no_result; fi
 
 #
 # pass the review
 #
-activity="review pass 228"
+activity="review pass 230"
 $bin/aegis -review_pass -chan 1 -proj example -v > log 2>&1
 if test $? -ne 0 ; then cat log; no_result; fi
 
 #
 # start integrating
 #
-activity="integrate begin 235"
+activity="integrate begin 237"
 $bin/aegis -intbeg 1 -v > log 2>&1
 if test $? -ne 0 ; then cat log; no_result; fi
 
 #
 # integrate build and test
 #
-activity="build 242"
+activity="build 244"
 $bin/aegis -build -nl -v > log 2>&1
 if test $? -ne 0 ; then cat log; no_result; fi
 
 #
 # pass the integration
 #
-activity="integrate pass 249"
+activity="integrate pass 251"
 $bin/aegis -intpass -nl -v > log 2>&1
 if test $? -ne 0 ; then cat log; no_result; fi
 
-activity="new branch 253"
+activity="new branch 255"
 $bin/aegis -nbr 2 -p example -v > log 2>&1
 if test $? -ne 0 ; then cat log; no_result; fi
 
 #
 # make sure the symlinks are present
 #
-diff $work/proj/baseline/config $work/proj/branch.2/baseline/config
+diff $work/proj/baseline/aegis.conf $work/proj/branch.2/baseline/aegis.conf
 if test $? -ne 0 ; then cat log; fail; fi
 
 #

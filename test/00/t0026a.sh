@@ -1,7 +1,7 @@
 #!/bin/sh
 #
 #	aegis - project change supervisor
-#	Copyright (C) 1994, 1995, 1996, 1997, 1998, 1999 Peter Miller;
+#	Copyright (C) 1994-1999, 2005 Peter Miller;
 #	All rights reserved.
 #
 #	This program is free software; you can redistribute it and/or modify
@@ -82,7 +82,7 @@ pass()
 }
 trap \"no_result\" 1 2 3 15
 
-activity="working directory 75"
+activity="working directory 85"
 mkdir $work $work/lib $work/lib/report
 if test $? -ne 0 ; then no_result; fi
 cd $work
@@ -106,11 +106,11 @@ export AEGIS_PROJECT
 #
 # create project and changes
 #
-activity="new project 113"
+activity="new project 109"
 $bin/aegis -npr foo -vers "" -dir $work/proj
 if test $? -ne 0 ; then no_result; fi
 
-activity="staff 117"
+activity="staff 113"
 $bin/aegis -nd $USER
 if test $? -ne 0 ; then no_result; fi
 $bin/aegis -nrv $USER
@@ -118,7 +118,7 @@ if test $? -ne 0 ; then no_result; fi
 $bin/aegis -ni $USER
 if test $? -ne 0 ; then no_result; fi
 
-activity="new change 125"
+activity="new change 121"
 cat > $work/fred << 'fubar'
 brief_description = "just an example";
 cause = internal_bug;
@@ -129,7 +129,7 @@ if test $? -ne 0 ; then no_result; fi
 $bin/aegis -nc 1 -f $work/fred -p foo
 if test $? -ne 0 ; then no_result; fi
 
-activity="new change 136"
+activity="new change 132"
 cat > $work/fred << 'fubar'
 brief_description = "another example";
 cause = internal_enhancement;
@@ -140,7 +140,7 @@ if test $? -ne 0 ; then no_result; fi
 $bin/aegis -nc 2 -f $work/fred -p foo
 if test $? -ne 0 ; then no_result; fi
 
-activity="project attributes 147"
+activity="project attributes 143"
 cat > $work/fred << 'fubar'
 developer_may_review = true;
 developer_may_integrate = true;
@@ -156,13 +156,13 @@ if test $? -ne 0 ; then no_result; fi
 #
 # do first change
 #
-activity="develop begin 163"
+activity="develop begin 159"
 $bin/aegis -db 1 -dir $work/dd1
 if test $? -ne 0 ; then no_result; fi
-activity="new file 166"
-$bin/aegis -nf $work/dd1/config
+activity="new file 162"
+$bin/aegis -nf $work/dd1/aegis.conf
 if test $? -ne 0 ; then no_result; fi
-cat > $work/dd1/config << 'fubar'
+cat > $work/dd1/aegis.conf << 'fubar'
 build_command = "exit 0";
 history_create_command = "echo $history $input > /dev/null";
 history_put_command = "echo $history $input > /dev/null";
@@ -172,38 +172,38 @@ diff_command = "set +e; diff $orig $in > $out; test $? -le 1";
 diff3_command = "echo diff3 $orig $mr $in > $out";
 fubar
 if test $? -ne 0 ; then no_result; fi
-activity="build 179"
+activity="build 175"
 $bin/aegis -build -nl > /dev/null 2>&1
 if test $? -ne 0 ; then no_result; fi
-activity="diff 182"
+activity="diff 178"
 $bin/aegis -diff -nl > /dev/null 2>&1
 if test $? -ne 0 ; then no_result; fi
-activity="develop end 185"
+activity="develop end 181"
 $bin/aegis -de
 if test $? -ne 0 ; then no_result; fi
-activity="review pass 188"
+activity="review pass 184"
 $bin/aegis -rpass 1
 if test $? -ne 0 ; then no_result; fi
-activity="integrate begin 191"
+activity="integrate begin 187"
 $bin/aegis -ib 1
 if test $? -ne 0 ; then no_result; fi
-activity="build 194"
+activity="build 190"
 $bin/aegis -b -nl > /dev/null 2>&1
 if test $? -ne 0 ; then no_result; fi
-activity="integrate pass 197"
+activity="integrate pass 193"
 $bin/aegis -ipass -nl > errlog 2>&1
 if test $? -ne 0 ; then cat errlog; no_result; fi
 
 #
 # do second change
 #
-activity="develop begin 204"
+activity="develop begin 200"
 $bin/aegis -db 2 -dir $work/dd2
 if test $? -ne 0 ; then no_result; fi
-activity="copy file 207"
-$bin/aegis -cp $work/dd2/config
+activity="copy file 203"
+$bin/aegis -cp $work/dd2/aegis.conf
 if test $? -ne 0 ; then no_result; fi
-cat > $work/dd2/config << 'fubar'
+cat > $work/dd2/aegis.conf << 'fubar'
 build_command = "exit 0";
 history_create_command = "echo $history $input > /dev/null";
 history_put_command = "echo $history $input > /dev/null";
@@ -213,41 +213,41 @@ diff_command = "set +e; diff $orig $in > $out; test $? -le 1";
 diff3_command = "echo diff3 $orig $mr $in > $out";
 fubar
 if test $? -ne 0 ; then no_result; fi
-activity="build 220"
+activity="build 216"
 $bin/aegis -build -nl > /dev/null 2>&1
 if test $? -ne 0 ; then no_result; fi
-activity="diff 223"
+activity="diff 219"
 $bin/aegis -diff -nl > /dev/null 2>&1
 if test $? -ne 0 ; then no_result; fi
-activity="develop end 226"
+activity="develop end 222"
 $bin/aegis -de
 if test $? -ne 0 ; then no_result; fi
-activity="review pass 229"
+activity="review pass 225"
 $bin/aegis -rpass 2
 if test $? -ne 0 ; then no_result; fi
-activity="integrate begin 232"
+activity="integrate begin 228"
 $bin/aegis -ib 2
 if test $? -ne 0 ; then no_result; fi
-activity="build 235"
+activity="build 231"
 $bin/aegis -b -nl > /dev/null 2>&1
 if test $? -ne 0 ; then no_result; fi
-activity="integrate pass 238"
+activity="integrate pass 234"
 $bin/aegis -ipass -nl > errlog 2>&1
 if test $? -ne 0 ; then cat errlog; no_result; fi
 
 #
 # now test using the delta names
 #
-activity="delta name 245"
+activity="delta name 241"
 $bin/aegis -dn 1 test
 if test $? -ne 0 ; then fail; fi
-activity="delta name 248"
+activity="delta name 244"
 $bin/aegis -dn 2 retest
 if test $? -ne 0 ; then fail; fi
-activity="delta name 251"
+activity="delta name 247"
 $bin/aegis -dn 1 test -ow
 if test $? -ne 0 ; then fail; fi
-activity="delta name 254"
+activity="delta name 250"
 $bin/aegis -dn 2 test > log 2>&1
 if test $? -ne 1 ; then cat log; fail; fi
 
@@ -256,7 +256,7 @@ if test $? -ne 1 ; then cat log; fail; fi
 #	the listing test is locale-specific
 #	will need to change if fails too many places
 #
-activity="delta name 263"
+activity="delta name 259"
 $bin/aegis -l phi -tw 0 -pw=79 > test.out
 if test $? -ne 0 ; then fail; fi
 sed -e 's/[A-Z][a-z][a-z] [A-Z][a-z][a-z] [ 123][0-9]/XXX XXX XX/g' \

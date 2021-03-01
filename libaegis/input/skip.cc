@@ -1,6 +1,6 @@
 //
 //	aegis - project change supervisor
-//	Copyright (C) 2002-2004 Peter Miller;
+//	Copyright (C) 2002-2005 Peter Miller;
 //	All rights reserved.
 //
 //	This program is free software; you can redistribute it and/or modify
@@ -24,17 +24,15 @@
 
 
 void
-input_skip(input_ty *ip, size_t size)
+input_ty::skip(size_t size)
 {
-    char	    buffer[1024];
-    size_t	    nbytes;
-
     while (size > 0)
     {
-	nbytes = size;
+	size_t nbytes = size;
 	if (nbytes > sizeof(buffer))
 	    nbytes = sizeof(buffer);
-	input_read_strictest(ip, buffer, nbytes);
+	char throw_me_away[1024];
+	read_strictest(throw_me_away, nbytes);
 	size -= nbytes;
     }
 }

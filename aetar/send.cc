@@ -503,7 +503,7 @@ tar_send(void)
     os_become_orig();
     ofp = output_file_binary_open(output);
     if (needs_compression)
-	ofp = new output_gzip_ty(ofp, true);
+	ofp = new output_gzip(ofp, true);
     output_tar_ty *tar_p = new output_tar_ty(ofp);
     os_become_undo();
 
@@ -770,12 +770,14 @@ tar_send(void)
 		os_become_orig();
 		ifp = input_file_open(abs_filename);
 		assert(ifp);
-		len = input_length(ifp);
+		len = ifp->length();
 		nstring tar_name = path_prefix + nstring(str_copy(filename));
-		ofp = tar_p->child(tar_name.get_ref(), len, csrc->executable);
+		ofp = tar_p->child(tar_name, len, csrc->executable);
 		input_to_output(ifp, ofp);
-		input_delete(ifp);
+		delete ifp;
+		ifp = 0;
 		delete ofp;
+		ofp = 0;
 		os_become_undo();
 	    }
 	    break;

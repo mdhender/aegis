@@ -1,6 +1,6 @@
 /*
  *	aegis - project change supervisor
- *	Copyright (C) 2002, 2004 Peter Miller;
+ *	Copyright (C) 2002, 2004, 2005 Peter Miller;
  *	All rights reserved.
  *
  *	This program is free software; you can redistribute it and/or modify
@@ -40,6 +40,7 @@ cklinlen_obj =
     [arch]/common/str/catenate.o
     [arch]/common/str/format.o
     [arch]/common/str.o
+    [arch]/common/rsrc_limits.o
     [arch]/common/trace.o
     ;
 
@@ -51,7 +52,7 @@ data
 [unsplit "\n" [resolve [sort [change_files] [project_files]]]]
 dataend
 
-    awk -f [resolve etc/incl-check.awk];
+    [awk] -f [resolve etc/incl-check.awk];
 data
 [unsplit "\n"
     [change_files] [project_files]

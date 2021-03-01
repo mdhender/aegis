@@ -1,6 +1,6 @@
 //
 //	aegis - project change supervisor
-//	Copyright (C) 2001-2004 Peter Miller;
+//	Copyright (C) 2001-2005 Peter Miller;
 //	All rights reserved.
 //
 //	This program is free software; you can redistribute it and/or modify
@@ -303,9 +303,7 @@ extract_meta_data(string_ty **spp)
     //
     // Build an input source out of the marked text.
     //
-    s = str_n_from_c(begin, end - begin);
-    ip = input_string_new(s);
-    str_free(s);
+    ip = new input_string(nstring(begin, end - begin));
 
     //
     // Crop the description to emit the meta-data
@@ -319,12 +317,12 @@ extract_meta_data(string_ty **spp)
     *spp = s;
 
     //
-    // Deciper the meta data.
+    // Decipher the meta data.
     //
-    ip = input_base64(ip, 1);
-    ip = input_gunzip(ip);
+    ip = new input_base64(ip, true);
+    ip = input_gunzip_open(ip);
     change_set = (cstate_ty *)parse_input(ip, &cstate_type);
-    ip = 0; // parse_input input_delete()ed it for us
+    ip = 0; // parse_input delete-ed it for us
     return change_set;
 }
 
@@ -596,6 +594,17 @@ receive(void)
     project_free(pp);
     pp = 0;
 
+    nstring reason;
+    if (plp->comment)
+    {
+	reason =
+	    (
+		" --reason="
+	    +
+		("Downloaded from " + nstring(plp->comment)).quote_shell()
+	    );
+    }
+
     //
     // create the new change
     //
@@ -604,10 +613,11 @@ receive(void)
     s =
 	str_format
 	(
-	    "aegis --new-change %ld --project=%s --file=%s --verbose%s",
+	    "aegis --new-change %ld --project=%s --file=%s --verbose%s%s",
 	    change_number,
 	    project_name->str_text,
 	    attribute_file_name->str_text,
+	    reason.c_str(),
             trace_options.c_str()
 	);
     os_execute(s, OS_EXEC_FLAG_INPUT, dot);

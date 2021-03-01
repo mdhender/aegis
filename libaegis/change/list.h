@@ -1,6 +1,6 @@
 //
 //	aegis - project change supervisor
-//	Copyright (C) 2003, 2004 Peter Miller;
+//	Copyright (C) 2003-2005 Peter Miller;
 //	All rights reserved.
 //
 //	This program is free software; you can redistribute it and/or modify
@@ -31,7 +31,9 @@ class change_list_ty
 {
 public:
     size_t          length;
+private:
     size_t          maximum;
+public:
     struct change_ty **item;
 
     /**
@@ -60,6 +62,39 @@ public:
       * Empty the list of members.
       */
     void clear();
+
+    /**
+      * The size method is used to obtain the number of changes in the
+      * change list.
+      */
+    size_t size() const { return length; }
+
+    /**
+      * The empty method is used to determine whether or not the list is
+      * empty.
+      *
+      * @returns
+      *     bool; true if not elements in list, false if there are.
+      */
+    bool empty() const { return (length == 0); }
+
+    /**
+      * The get method is used to obtain an element of the
+      * change list.
+      *
+      * @param n
+      *     The array element number.  No range check is performed.
+      */
+    change_ty *get(size_t n) const { return item[n]; }
+
+    /**
+      * The [] operator is used to obtain an element of the
+      * change list.
+      *
+      * @param n
+      *     The array element number.  No range check is performed.
+      */
+    change_ty *operator[](size_t n) const { return get(n); }
 
 private:
     /**

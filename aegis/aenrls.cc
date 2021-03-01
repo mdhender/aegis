@@ -1,6 +1,6 @@
 //
 //	aegis - project change supervisor
-//	Copyright (C) 1991-1999, 2001-2004 Peter Miller;
+//	Copyright (C) 1991-1999, 2001-2005 Peter Miller;
 //	All rights reserved.
 //
 //	This program is free software; you can redistribute it and/or modify
@@ -99,7 +99,7 @@ struct copy_tree_arg_ty
 
 static void
 copy_tree_callback(void *arg, dir_walk_message_ty message, string_ty *path,
-    struct stat *st)
+    const struct stat *st)
 {
     string_ty	    *s1;
     string_ty	    *s2;
@@ -711,6 +711,11 @@ new_release_main(void)
 	pp[1],
 	project_default_test_exemption_get(pp[0])
     );
+    project_default_test_regression_exemption_set
+    (
+	pp[1],
+	project_default_test_regression_exemption_get(pp[0])
+    );
     project_minimum_change_number_set
     (
 	pp[1],
@@ -742,7 +747,7 @@ new_release_main(void)
 	trace(("ppp = %8.8lX\n", (long)ppp));
 	change_number = magic_zero_encode(new_version_number[j]);
 	trace(("change_number = %ld;\n", change_number));
-	ppp = project_new_branch(ppp, up, change_number, (string_ty *)0);
+	ppp = project_new_branch(ppp, up, change_number);
 	version_pp[j] = ppp;
     }
 

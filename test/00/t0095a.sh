@@ -1,7 +1,8 @@
 #!/bin/sh
 #
 #	aegis - project change supervisor
-#	Copyright (C) 1994-1999, 2002, 2004 Peter Miller;
+#	Copyright (C) 1994-1999, 2002, 2004, 2005 Peter Miller;
+#       Copyrithg (C) 2005 Walter Franzini;
 #	All rights reserved.
 #
 #	This program is free software; you can redistribute it and/or modify
@@ -18,7 +19,7 @@
 #	along with this program; if not, write to the Free Software
 #	Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111, USA.
 #
-# MANIFEST: Test aedist -send -entire-source functionality
+# MANIFEST: Test aedist -send -entire-source/-baseline functionality
 #
 
 unset AEGIS_PROJECT
@@ -37,6 +38,30 @@ here=`pwd`
 if test $? -ne 0 ; then exit 2; fi
 
 if test "$1" != "" ; then bin="$here/$1/bin"; else bin="$here/bin"; fi
+
+#
+# set the path, so that the aegis command that aepatch/aedist invokes
+# is from the same test set as the aepatch/aedist command itself.
+#
+PATH=${bin}:$PATH
+export PATH
+
+check_it()
+{
+	sed	-e "s|$work|...|g" \
+		-e 's|= [0-9][0-9]*; /.*|= TIME;|' \
+		-e "s/\"$USER\"/\"USER\"/g" \
+		-e 's/19[0-9][0-9]/YYYY/' \
+		-e 's/20[0-9][0-9]/YYYY/' \
+		-e 's/node = ".*"/node = "NODE"/' \
+		-e 's/crypto = ".*"/crypto = "GUNK"/' \
+		-e 's/uuid = ".*"/uuid = "UUID"/' \
+                -e 's/value = ".*"/value = "UUID"/' \
+		< $2 > $work/sed.out
+	if test $? -ne 0; then no_result; fi
+	diff -u $1 $work/sed.out
+	if test $? -ne 0; then fail; fi
+}
 
 no_result()
 {
@@ -93,7 +118,7 @@ AEGIS_PROJECT=foo ; export AEGIS_PROJECT
 #
 # make the directories
 #
-activity="working directory 81"
+activity="working directory 121"
 mkdir $work $work/lib
 if test $? -ne 0 ; then no_result; fi
 chmod 777 $work/lib
@@ -112,14 +137,14 @@ unset LANGUAGE
 #
 # make a new project
 #
-activity="new project 161"
+activity="new project 140"
 $bin/aegis -npr foo -vers "" -dir $workproj > log 2>&1
 if test $? -ne 0 ; then cat log; no_result; fi
 
 #
 # change project attributes
 #
-activity="project attributes 168"
+activity="project attributes 147"
 cat > $tmp << 'end'
 description = "A bogus project created to test the aedist -send -entire-source functionality.";
 developer_may_review = true;
@@ -133,7 +158,7 @@ if test $? -ne 0 ; then cat log; no_result; fi
 #
 # create a new change
 #
-activity="new change 183"
+activity="new change 161"
 cat > $tmp << 'end'
 brief_description = "The first change";
 cause = internal_bug;
@@ -145,10 +170,11 @@ if test $? -ne 0 ; then cat log; no_result; fi
 #
 # create a second change
 #
-activity="new change 195"
+activity="new change 173"
 cat > $tmp << 'end'
 brief_description = "The second change";
 cause = internal_bug;
+test_exempt = true;
 end
 if test $? -ne 0 ; then no_result; fi
 $bin/aegis -nc 2 -f $tmp -p foo > log 2>&1
@@ -157,7 +183,7 @@ if test $? -ne 0 ; then cat log; no_result; fi
 #
 # add the staff
 #
-activity="staff 207"
+activity="staff 186"
 $bin/aegis -nd $USER > log 2>&1
 if test $? -ne 0 ; then cat log; no_result; fi
 $bin/aegis -nrv $USER > log 2>&1
@@ -174,9 +200,9 @@ if test $? -ne 0 ; then cat log; no_result; fi
 #
 # add a new files to the change
 #
-activity="new file 224"
+activity="new file 203"
 $bin/aegis -nf $workchan/main.c $workchan/test.c $workchan/Makefile \
-	$workchan/config -nl > log 2>&1
+	$workchan/aegis.conf -nl > log 2>&1
 if test $? -ne 0 ; then cat log; no_result; fi
 cat > $workchan/main.c << 'end'
 int main() { test(); exit(0); return 0; }
@@ -194,7 +220,7 @@ foo: main.o test.o
 	date > $@
 end
 if test $? -ne 0 ; then no_result; fi
-cat > $workchan/config << 'end'
+cat > $workchan/aegis.conf << 'end'
 build_command = "exit 0";
 link_integration_directory = true;
 history_get_command =
@@ -214,7 +240,7 @@ if test $? -ne 0 ; then no_result; fi
 #
 # create a new test
 #
-activity="new test 267"
+activity="new test 243"
 $bin/aegis -nt > log 2>&1
 if test $? -ne 0 ; then cat log; no_result; fi
 cat > $workchan/test/00/t0001a.sh << 'end'
@@ -226,77 +252,77 @@ if test $? -ne 0 ; then no_result; fi
 #
 # build the change
 #
-activity="build 295"
+activity="build 255"
 $bin/aegis -build -nl -v > log 2>&1
 if test $? -ne 0 ; then cat log; fail; fi
 
 #
 # difference the change
 #
-activity="diff 302"
+activity="diff 262"
 $bin/aegis -diff > log 2>&1
 if test $? -ne 0 ; then cat log; no_result; fi
 
 #
 # test the change
 #
-activity="test 309"
+activity="test 269"
 $bin/aegis -t -v > log 2>&1
 if test $? -ne 0 ; then cat log; no_result; fi
 
 #
 # finish development of the change
 #
-activity="develop end 316"
+activity="develop end 276"
 $bin/aegis -de > log 2>&1
 if test $? -ne 0 ; then cat log; fail; fi
 
 #
 # pass the review
 #
-activity="review pass 323"
+activity="review pass 283"
 $bin/aegis -rpass -c 1 > log 2>&1
 if test $? -ne 0 ; then cat log; no_result; fi
 
 #
 # start integrating
 #
-activity="integrate begin 330"
+activity="integrate begin 290"
 $bin/aegis -ib 1 > log 2>&1
 if test $? -ne 0 ; then cat log; no_result; fi
 
 #
 # integrate build
 #
-activity="build 337"
+activity="build 297"
 $bin/aegis -b -nl -v > log 2>&1
 if test $? -ne 0 ; then cat log; no_result; fi
 
 #
 # integrate test
 #
-activity="test 340"
+activity="test 304"
 $bin/aegis -t -nl -v > log 2>&1
 if test $? -ne 0 ; then cat log; no_result; fi
 
 #
 # pass the integration
 #
-activity="integrate pass 347"
+activity="integrate pass 311"
 $bin/aegis -intpass -nl > log 2>&1
 if test $? -ne 0 ; then cat log; no_result; fi
 
 #
 # start work on change 2
 #
-activity="develop begin 354"
+activity="develop begin 318"
 $bin/aegis -db -c 2 -dir $workchan > log 2>&1
 if test $? -ne 0 ; then cat log; fail; fi
 
 #
 # copy a file into the change
 #
-activity="copy file 361"
+activity="copy file 325"
 $bin/aegis -cp $workchan/main.c -nl > log 2>&1
 if test $? -ne 0 ; then cat log; fail; fi
 
@@ -326,7 +352,10 @@ if test $? -ne 0 ; then no_result; fi
 #
 # build a distribution set
 #
-$bin/aedist -send -ndh -c 2 -o test.ae --entire-source
+activity="send the change 355"
+ulimit -c unlimited
+$bin/aedist -send -ndh -c 2 -o test.ae \
+    --entire-source > log 2>&1
 if test $? -ne 0 ; then fail; fi
 
 #
@@ -365,7 +394,7 @@ FILES
 	Type	Action	 File Name
 	------- -------- -----------
 	source	create	 Makefile
-	config	create	 config
+	config	create	 aegis.conf
 	source	modify	 main.c
 	source	create	 test.c
 	test	create	 test/00/t0001a.sh
@@ -374,6 +403,367 @@ if test $? -ne 0 ; then no_result; fi
 
 diff test.ok test.out2
 if test $? -ne 0 ; then fail; fi
+
+#----------------------------------------------------------------------
+
+#
+#
+#
+activity="move test.c test2.c 412"
+$bin/aegis -mv -c 2 $workchan/test.c $workchan/test2.c \
+        -v > log 2>&1
+if test $? -ne 0 ; then cat log; no_result; fi
+
+activity="copy Makefile 417"
+$bin/aegis -cp -c 2 $workchan/Makefile -v > log 2>&1
+if test $? -ne 0 ; then cat log; no_result; fi
+
+cat > $workchan/Makefile <<EOF
+.c.o:
+	date > $@
+
+foo: main.o test2.o
+	date > $@
+EOF
+if test $? -ne 0 ; then cat log; no_result; fi
+
+ulimit -c unlimited
+$bin/aedist -send -entire_source -ndh -c 2 -o $work/c2.ae > log 2>&1
+if test $? -ne 0 ; then cat log; no_result; fi
+
+mkdir -p $work/c2.d
+
+$bin/test_cpio -extract -change_directory $work/c2.d -f $work/c2.ae
+if test $? -ne 0 ; then cat log; no_result; fi
+
+cat > test.ok <<EOF
+$work/c2.d/etc/change-number
+$work/c2.d/etc/change-set
+$work/c2.d/etc/project-name
+$work/c2.d/src/Makefile
+$work/c2.d/src/aegis.conf
+$work/c2.d/src/main.c
+$work/c2.d/src/test/00/t0001a.sh
+$work/c2.d/src/test2.c
+EOF
+if test $? -ne 0 ; then cat log; no_result; fi
+
+find $work/c2.d -type f -print | sort > test.out
+if test $? -ne 0 ; then cat log; no_result; fi
+
+diff $work/test.ok $work/test.out
+if test $? -ne 0 ; then cat log; no_result; fi
+
+cat > test.ok <<EOF
+brief_description = "A bogus project created to test the aedist -send -entire-source functionality.";
+description = "A bogus project created to test the aedist -send -entire-source functionality.";
+cause = internal_enhancement;
+test_exempt = true;
+test_baseline_exempt = true;
+regression_test_exempt = true;
+attribute =
+[
+	{
+		name = "original-UUID";
+		value = "UUID";
+	},
+];
+state = awaiting_development;
+src =
+[
+	{
+		file_name = "Makefile";
+		uuid = "UUID";
+		action = modify;
+		usage = source;
+	},
+	{
+		file_name = "aegis.conf";
+		uuid = "UUID";
+		action = create;
+		usage = config;
+	},
+	{
+		file_name = "main.c";
+		uuid = "UUID";
+		action = modify;
+		usage = source;
+	},
+	{
+		file_name = "test.c";
+		uuid = "UUID";
+		action = remove;
+		usage = source;
+		move = "test2.c";
+	},
+	{
+		file_name = "test/00/t0001a.sh";
+		uuid = "UUID";
+		action = create;
+		usage = test;
+	},
+	{
+		file_name = "test2.c";
+		uuid = "UUID";
+		action = create;
+		usage = source;
+		move = "test.c";
+	},
+];
+EOF
+
+check_it $work/test.ok $work/c2.d/etc/change-set
+
+$bin/aegis -build -c 2 > log 2>&1
+if test $? -ne 0 ; then cat log; no_result; fi
+
+$bin/aegis -diff -c 2 > log 2>&1
+if test $? -ne 0 ; then cat log; no_result; fi
+
+activity="line  523"
+$bin/aegis -dev_end -c 2 > log 2>&1
+if test $? -ne 0 ; then cat log; no_result; fi
+
+#
+# pass the review
+#
+activity="review pass 530"
+$bin/aegis -rpass -c 2 > log 2>&1
+if test $? -ne 0 ; then cat log; no_result; fi
+
+#
+# start integrating
+#
+activity="integrate begin 537"
+$bin/aegis -ib 2 > log 2>&1
+if test $? -ne 0 ; then cat log; no_result; fi
+
+#
+# integrate build
+#
+activity="build 544"
+$bin/aegis -b -nl -v > log 2>&1
+if test $? -ne 0 ; then cat log; no_result; fi
+
+#
+# integrate test
+#
+activity="test 551"
+$bin/aegis -t -nl -v > log 2>&1
+if test $? -ne 0 ; then cat log; no_result; fi
+
+#
+# pass the integration
+#
+activity="integrate pass 558"
+$bin/aegis -intpass -nl > log 2>&1
+if test $? -ne 0 ; then cat log; no_result; fi
+
+
+
+#-----------------------------------------------------------
+
+
+#
+# create a third change
+#
+activity="new change 570"
+cat > $tmp << 'end'
+brief_description = "The third change";
+cause = internal_bug;
+test_exempt = true;
+test_baseline_exempt = true;
+end
+if test $? -ne 0 ; then no_result; fi
+$bin/aegis -nc 3 -f $tmp -p foo > log 2>&1
+if test $? -ne 0 ; then cat log; no_result; fi
+
+#
+# start work on change 3
+#
+
+activity="develop begin 585"
+$bin/aegis -db -c 3 -dir $workchan > log 2>&1
+if test $? -ne 0 ; then cat log; fail; fi
+
+#
+# copy a file into the change
+#
+activity="copy file 592"
+$bin/aegis -mv $workchan/test2.c $workchan/test3.c \
+    -nl > log 2>&1
+if test $? -ne 0 ; then cat log; no_result; fi
+
+activity="modify file 597"
+$bin/aegis -cp $workchan/Makefile
+if test $? -ne 0 ; then cat log; no_result; fi
+
+cat > $workchan/Makefile <<EOF
+.c.o:
+	date > $@
+
+foo: main.o test3.o
+	date > $@
+EOF
+if test $? -ne 0 ; then cat log; no_result; fi
+
+#
+# build
+#
+activity="build 613"
+$bin/aegis -b -c 3 -nl -v > log 2>&1
+if test $? -ne 0 ; then cat log; no_result; fi
+
+activity="diff the change 617"
+$bin/aegis -diff -c 3 > log 2>&1
+if test $? -ne 0 ; then cat log; no_result; fi
+
+activity="develop end  621"
+$bin/aegis -dev_end -c 3 > log 2>&1
+if test $? -ne 0 ; then cat log; no_result; fi
+
+#
+# pass the review
+#
+activity="review pass 628"
+$bin/aegis -rpass -c 3 > log 2>&1
+if test $? -ne 0 ; then cat log; no_result; fi
+
+#
+# start integrating
+#
+activity="integrate begin 635"
+$bin/aegis -ib 3 > log 2>&1
+if test $? -ne 0 ; then cat log; no_result; fi
+
+#
+# integrate build
+#
+activity="build 642"
+$bin/aegis -b -nl -v > log 2>&1
+if test $? -ne 0 ; then cat log; no_result; fi
+
+#
+# integrate test
+#
+activity="test 649"
+$bin/aegis -t -nl -v > log 2>&1
+if test $? -ne 0 ; then cat log; no_result; fi
+
+#
+# pass the integration
+#
+activity="integrate pass 656"
+$bin/aegis -intpass -nl > log 2>&1
+if test $? -ne 0 ; then cat log; no_result; fi
+
+#
+# build a distribution set
+#
+activity="send the archive 663"
+ulimit -c unlimited
+$bin/aedist -send -ndh -bl -o c3.ae \
+    --entire-source -v > log 2>&1
+if test $? -ne 0 ; then cat log; fail; fi
+
+mkdir -p $work/c3.d
+
+activity="extract the archive 671"
+$bin/test_cpio -extract -change_directory $work/c3.d -f $work/c3.ae
+if test $? -ne 0 ; then cat log; no_result; fi
+
+activity="check the content 675"
+cat > $work/test.ok <<EOF
+$work/c3.d/etc/change-number
+$work/c3.d/etc/change-set
+$work/c3.d/etc/project-name
+$work/c3.d/src/Makefile
+$work/c3.d/src/aegis.conf
+$work/c3.d/src/main.c
+$work/c3.d/src/test/00/t0001a.sh
+$work/c3.d/src/test3.c
+EOF
+if test $? -ne 0 ; then no_result; fi
+
+find $work/c3.d -type f -print | sort > test.out
+if test $? -ne 0 ; then cat log; no_result; fi
+
+diff $work/test.ok $work/test.out > log 2>&1
+if test $? -ne 0 ; then cat log; no_result; fi
+
+activity="check etc/change-set 694"
+cat > test.ok <<EOF
+brief_description = "A bogus project created to test the aedist -send -entire-source functionality.";
+description = "A bogus project created to test the aedist -send -entire-source functionality.";
+cause = internal_enhancement;
+test_exempt = false;
+test_baseline_exempt = false;
+regression_test_exempt = true;
+attribute =
+[
+	{
+		name = "original-UUID";
+		value = "UUID";
+	},
+	{
+		name = "original-UUID";
+		value = "UUID";
+	},
+	{
+		name = "original-UUID";
+		value = "UUID";
+	},
+];
+state = awaiting_development;
+src =
+[
+	{
+		file_name = "Makefile";
+		uuid = "UUID";
+		action = create;
+		usage = source;
+	},
+	{
+		file_name = "aegis.conf";
+		uuid = "UUID";
+		action = create;
+		usage = config;
+	},
+	{
+		file_name = "main.c";
+		uuid = "UUID";
+		action = create;
+		usage = source;
+	},
+	{
+		file_name = "test.c";
+		uuid = "UUID";
+		action = remove;
+		usage = source;
+		move = "test3.c";
+	},
+	{
+		file_name = "test/00/t0001a.sh";
+		uuid = "UUID";
+		action = create;
+		usage = test;
+	},
+	{
+		file_name = "test3.c";
+		uuid = "UUID";
+		action = create;
+		usage = source;
+		move = "test.c";
+	},
+];
+EOF
+
+check_it $work/test.ok $work/c3.d/etc/change-set
+
+
+activity="receive the archive 764"
+$bin/aedist -receive -f c3.ae -c 4 -ignore_uuid -trojan -v > log 2>&1
+if test $? -ne 0 ; then cat log; fail; fi
 
 #
 # the things tested in this test, worked

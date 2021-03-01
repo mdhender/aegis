@@ -1,6 +1,6 @@
 .\"
 .\"	aegis - project change supervisor
-.\"	Copyright (C) 1993, 1994, 1998, 2002, 2004 Peter Miller;
+.\"	Copyright (C) 1993, 1994, 1998, 2002, 2004, 2005 Peter Miller;
 .\"	All rights reserved.
 .\"
 .\"	This program is free software; you can redistribute it and/or modify
@@ -99,10 +99,10 @@ they ask Aegis for the source files of the project and change
 so that cake can determine what needs to be compiled and linked.
 .E(
 #define project_files \e
-  [[aegis -l pf -terse -p PROJECT \e
+  [[aelpf -p PROJECT \e
     -c CHANGE]];
 #define change_files \e
-  [[aegis -l cf -terse -p PROJECT \e
+  [[aelcf -p PROJECT \e
    -c CHANGE]];
 #define source_files \e
   project_files change_files

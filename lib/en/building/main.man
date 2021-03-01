@@ -119,6 +119,12 @@ and installing \fBGNU rx\fP compression library before you run the
 \fIconfigure\fP script.
 (Note: test 81 will fail if the POSIX regular expression functions are
 not available.)
+.PP
+The GNOME libxml2 library (\f[CW]http://xmlsoft.org/\fP) is used to
+parse XML, you will need version 1.8.17 or later.  You do not have to
+install the rest of GNOME as this library is able to be used by itself.
+This package is \fBnot\fP optional, you need it to successfully build
+Aegis.
 .SS Running Configure
 Normally,
 you just
@@ -606,6 +612,12 @@ Before describing how to test
 you may need to grab some other free software,
 because the tests require it in some cases,
 and because it is generally useful in others.
+.TP 8n
+GNOME libxml2
+The GNOME libxml2 library (\f[CW]http://xmlsoft.org/\fP) is used to parse XML.
+Version 1.8.17 or later.  You do not have to install the rest of GNOME
+as this library is able to be used by itself.  This package is \fBnot\fP
+optional, you need it to successfully build Aegis.
 .TP 8n
 .B cook
 This is a dependency maintenance tool (DMT).

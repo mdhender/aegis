@@ -1,6 +1,6 @@
 //
 //	aegis - project change supervisor
-//	Copyright (C) 2004 Peter Miller;
+//	Copyright (C) 2004, 2005 Peter Miller;
 //	All rights reserved.
 //
 //	This program is free software; you can redistribute it and/or modify
@@ -40,7 +40,7 @@ change_warning(change_ty *cp, sub_context_ty *scp, const char *s)
     // assemble the message
     //
     subst_intl_change(scp, cp);
-    nstring msg1 = subst_intl(scp, s);
+    nstring msg1(subst_intl(scp, s));
 
     //
     // get ready to pass the message to the project error function
@@ -52,7 +52,7 @@ change_warning(change_ty *cp, sub_context_ty *scp, const char *s)
     // assemble the warning
     //
     subst_intl_change(scp, cp);
-    nstring msg2 = subst_intl(scp, "warning: $message");
+    nstring msg2(subst_intl(scp, "warning: $message"));
 
     //
     // get ready to pass the message to the project error function

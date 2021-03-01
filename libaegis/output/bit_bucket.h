@@ -27,22 +27,22 @@
 #include <output.h>
 
 /**
-  * The output_bit_bucket_ty class represents a NULL output stream.  The
+  * The output_bit_bucket class represents a NULL output stream.  The
   * output written to such a stream will be discarded.
   */
-class output_bit_bucket_ty:
+class output_bit_bucket:
     public output_ty
 {
 public:
     /**
       * The destructor.
       */
-    virtual ~output_bit_bucket_ty();
+    virtual ~output_bit_bucket();
 
     /**
       * The default constructor.
       */
-    output_bit_bucket_ty();
+    output_bit_bucket();
 
     // See base class for documentation.
     string_ty* filename() const;
@@ -81,19 +81,12 @@ private:
     /**
       * The copy constructor.  Do not use.
       */
-    output_bit_bucket_ty(const output_bit_bucket_ty &);
+    output_bit_bucket(const output_bit_bucket &);
 
     /**
       * The copy constructor.  Do not use.
       */
-    output_bit_bucket_ty &operator=(const output_bit_bucket_ty &);
+    output_bit_bucket &operator=(const output_bit_bucket &);
 };
-
-
-inline output_ty *
-output_bit_bucket(void)
-{
-    return new output_bit_bucket_ty();
-}
 
 #endif // LIBAEGIS_OUTPUT_BIT_BUCKET_H

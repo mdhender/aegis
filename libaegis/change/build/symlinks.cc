@@ -92,7 +92,7 @@ check_symbolic_link_to_baseline(string_ty *path_rel, string_list_ty *stack,
 	return file_status_not_related;
     }
 
-    if (dest_rel != path_rel)
+    if (dest_rel != nstring(path_rel))
     {
 	//
         // It points into the directory stack, bit it doesn't point at
@@ -352,7 +352,7 @@ is_an_aegis_symlink(string_ty *path_rel, string_list_ty *stack, int start)
     }
     for (size_t c = start; c < stack->nstrings; ++c)
     {
-        nstring test_path = os_path_cat(stack->string[c], path_rel);
+        nstring test_path(os_path_cat(stack->string[c], path_rel));
         if (str_equal(test_path, dest_abs))
         {
             //
@@ -478,7 +478,7 @@ maintain(void *p, dir_stack_walk_message_t msg, string_ty *path_rel,
             if (sip->style->during_build_only)
             {
                 assert(derived_symlinks);
-                derived_symlinks->assign(path_rel, path_target);
+                derived_symlinks->assign(nstring(path_rel), path_target);
             }
         }
         break;
@@ -521,7 +521,7 @@ maintain(void *p, dir_stack_walk_message_t msg, string_ty *path_rel,
 			// stale files too early in the stack.
 			//
 			user_become_undo();
-			nstring origin = project_file_path(ppp, path_rel);
+			nstring origin(project_file_path(ppp, path_rel));
 			user_become(sip->up);
 			if (origin.empty())
 			{
@@ -561,7 +561,7 @@ maintain(void *p, dir_stack_walk_message_t msg, string_ty *path_rel,
 		else
 		{
 		    user_become_undo();
-		    nstring origin = project_file_path(pp, path_rel);
+		    nstring origin(project_file_path(pp, path_rel));
 		    user_become(sip->up);
 		    assert(!origin.empty());
 		    os_mkdir_between(sip->stack.string[0], path_rel, 02755);
@@ -643,7 +643,7 @@ maintain(void *p, dir_stack_walk_message_t msg, string_ty *path_rel,
 		// stale files too early in the stack.
 		//
 		user_become_undo();
-		nstring origin = project_file_path(pp, path_rel);
+		nstring origin(project_file_path(pp, path_rel));
 		user_become(sip->up);
 		assert(!origin.empty());
 		struct stat st1;
@@ -752,7 +752,7 @@ maintain(void *p, dir_stack_walk_message_t msg, string_ty *path_rel,
 		// stale files too early in the stack.
 		//
 		user_become_undo();
-		nstring origin = project_file_path(ppp, path_rel);
+		nstring origin(project_file_path(ppp, path_rel));
 		fstate_src_ty *ppp_src =
 		    project_file_find(ppp, path_rel, view_path_extreme);
 		assert(ppp_src);
@@ -794,7 +794,7 @@ maintain(void *p, dir_stack_walk_message_t msg, string_ty *path_rel,
 	    // stale files too early in the stack.
 	    //
 	    user_become_undo();
-	    nstring origin = project_file_path(pp, path_rel);
+	    nstring origin(project_file_path(pp, path_rel));
 	    user_become(sip->up);
 	    assert(!origin.empty());
 	    if
@@ -821,7 +821,12 @@ maintain(void *p, dir_stack_walk_message_t msg, string_ty *path_rel,
 		os_chmod(path_abs.get_ref(), file_mode & ~sip->umask);
 	    }
 	}
-	else if (change_is_being_developed(sip->cp) && comma_d(path_rel))
+	else if
+       	(
+	    change_is_being_developed(sip->cp)
+	&&
+	    comma_d(nstring(path_rel))
+	)
 	{
 	    //
             // Do not make links or symlinks or copies of the difference
@@ -829,7 +834,7 @@ maintain(void *p, dir_stack_walk_message_t msg, string_ty *path_rel,
             // busier for no good reason.
 	    //
 	}
-	else if (!is_a_symlink_exception(path_rel, sip))
+	else if (!is_a_symlink_exception(nstring(path_rel), sip))
 	{
 	    //
 	    // There is no file in the development directory, there is

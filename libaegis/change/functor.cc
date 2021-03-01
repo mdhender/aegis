@@ -1,6 +1,6 @@
 //
 //	aegis - project change supervisor
-//	Copyright (C) 2004 Peter Miller;
+//	Copyright (C) 2004, 2005 Peter Miller;
 //	All rights reserved.
 //
 //	This program is free software; you can redistribute it and/or modify
@@ -31,21 +31,25 @@ change_functor::~change_functor()
 }
 
 
-change_functor::change_functor()
+change_functor::change_functor(bool arg1, bool arg2) :
+    include_branches_flag(arg1),
+    all_changes_flag(arg2)
 {
-    // Nothing to do.
 }
 
 
-change_functor::change_functor(const change_functor &arg)
+change_functor::change_functor(const change_functor &arg) :
+    include_branches_flag(arg.include_branches_flag)
 {
-    // Nothing to do.
 }
 
 
 change_functor &
 change_functor::operator=(const change_functor &arg)
 {
-    // Nothing to do.
+    if (this != &arg)
+    {
+	include_branches_flag = arg.include_branches_flag;
+    }
     return *this;
 }

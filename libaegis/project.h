@@ -1,6 +1,6 @@
 //
 //	aegis - project change supervisor
-//	Copyright (C) 1992-1999, 2001-2004 Peter Miller;
+//	Copyright (C) 1992-1999, 2001-2005 Peter Miller;
 //	All rights reserved.
 //
 //	This program is free software; you can redistribute it and/or modify
@@ -76,6 +76,20 @@ struct change_ty *project_change_get(project_ty *);
 string_ty *project_home_path_get(project_ty *);
 string_ty *project_Home_path_get(project_ty *);
 string_ty *project_top_path_get(project_ty *, int);
+
+/**
+  * The project_rss_path_get function is used to get the path of the RSS
+  * directory for the given project.
+  *
+  * @param pp
+  *     The project in question
+  * @param resolve
+  *     Whether or not to resolve symlinks in the path.
+  * @returns
+  *     a string containing the absolute path
+  */
+nstring project_rss_path_get(project_ty *pp, bool resolve = false);
+
 void project_home_path_set(project_ty *, string_ty *);
 string_ty *project_baseline_path_get(project_ty *, int);
 
@@ -149,8 +163,30 @@ int project_name_ok(string_ty *);
 
 struct pconf_ty *project_pconf_get(project_ty *);
 
-project_ty *project_new_branch(project_ty *, struct user_ty *, long,
-    string_ty *);
+/**
+  * The project_new_branch function is used to create new branches.
+  *
+  * @param pp
+  *     The project to create the branch below.
+  * @param up
+  *     The authorised user requesting the new branch.
+  * @param change_number
+  *     The change number to use for the new branch.
+  * @param topdir
+  *     The change (branch) directory, It is in the same place as the
+  *     rest of the project, unless otherwise specified (i.e. not NULL).
+  *     This makes it easy to collect the whole project tree, branches,
+  *     info and all, in a simple tar or cpio command for archiving or
+  *     moving.
+  * @param reason
+  *     The reason the user gave on the command line, or NULL for no
+  *     reason to be attached to the change's history.
+  * @returns
+  *     A pointer to the new project represented by the new branch.
+  */
+project_ty *project_new_branch(project_ty *pp, struct user_ty *up,
+    long change_number, string_ty *topdir = 0, string_ty *reason = 0);
+
 void project_file_list_invalidate(project_ty *);
 string_ty *project_brief_description_get(project_ty *);
 

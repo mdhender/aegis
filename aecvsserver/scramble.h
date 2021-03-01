@@ -1,6 +1,6 @@
 /*
  *	aegis - project change supervisor
- *	Copyright (C) 2004 Peter Miller;
+ *	Copyright (C) 2004, 2005 Peter Miller;
  *	All rights reserved.
  *
  *	This program is free software; you can redistribute it and/or modify
@@ -23,9 +23,9 @@
 #ifndef AECVSSERVER_SCRAMBLE_H
 #define AECVSSERVER_SCRAMBLE_H
 
-#include <str.h>
+#include <nstring.h>
 
-string_ty *scramble(string_ty *);
-string_ty *descramble(string_ty *);
+nstring scramble(const nstring &arg);
+nstring descramble(const nstring &arg);
 
 #endif /* AECVSSERVER_SCRAMBLE_H */

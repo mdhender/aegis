@@ -1,7 +1,7 @@
 #!/bin/sh
 #
 #	aegis - project change supervisor
-#	Copyright (C) 1996-1998, 2001, 2002, 2004 Peter Miller;
+#	Copyright (C) 1996-1998, 2001, 2002, 2004, 2005 Peter Miller;
 #	All rights reserved.
 #
 #	This program is free software; you can redistribute it and/or modify
@@ -38,7 +38,7 @@ if test $? -ne 0; then exit 2; fi
 
 if test "$1" != "" ; then bin="$here/$1/bin"; else bin="$here/bin"; fi
 
-activity="create working directory 39"
+activity="create working directory 41"
 
 pass()
 {
@@ -135,7 +135,7 @@ fi
 #
 # make a new project
 #
-activity="new project 113"
+activity="new project 138"
 $bin/aegis -newpro foo -version "" -dir $workproj -lib $worklib
 if test $? -ne 0 ; then no_result; fi
 $bin/aegis -newpro -list -unf -lib $worklib > test.out
@@ -144,7 +144,7 @@ if test $? -ne 0 ; then no_result; fi
 #
 # change project attributes
 #
-activity="project attributes 122"
+activity="project attributes 147"
 cat > $tmp << 'end'
 description = "A bogus project created to test things.";
 developer_may_review = true;
@@ -159,7 +159,7 @@ if test $? -ne 0 ; then no_result; fi
 #
 # create a new change
 #
-activity="new change 137"
+activity="new change 162"
 cat > $tmp << 'end'
 brief_description = "first";
 cause = internal_bug;
@@ -188,7 +188,7 @@ if test $? -ne 0 ; then no_result; fi
 #
 # add the staff
 #
-activity="staff 166"
+activity="staff 191"
 $bin/aegis -newdev $USER -p foo -lib $worklib
 if test $? -ne 0 ; then no_result; fi
 $bin/aegis -newrev $USER -p foo -lib $worklib
@@ -199,19 +199,19 @@ if test $? -ne 0 ; then no_result; fi
 #
 # begin development of a change
 #
-activity="develop begin 177"
+activity="develop begin 202"
 $bin/aegis -devbeg 1 -p foo -dir $workchan -lib $worklib
 if test $? -ne 0 ; then no_result; fi
 
 #
 # add a new files to the change
 #
-activity="new file 184"
-$bin/aegis -nf $workchan/config $workchan/a.cc $workchan/b.cc $workchan/h.h \
+activity="new file 209"
+$bin/aegis -nf $workchan/aegis.conf $workchan/a.cc $workchan/b.cc $workchan/h.h \
 	$workchan/Makefile -nl -lib $worklib -Pro foo
 if test $? -ne 0 ; then no_result; fi
 
-cat > $workchan/config << 'fubar'
+cat > $workchan/aegis.conf << 'fubar'
 build_command = "make";
 create_symlinks_before_build = true;
 link_integration_directory = true;
@@ -280,7 +280,7 @@ if test $? -ne 0 ; then no_result; fi
 #
 # create a new test
 #
-activity="new test 259"
+activity="new test 283"
 $bin/aegis -nt -lib $worklib -p foo
 if test $? -ne 0 ; then no_result; fi
 cat > $workchan/test/00/t0001a.sh << 'end'
@@ -301,21 +301,21 @@ end
 #
 # build the change
 #
-activity="build 280"
+activity="build 304"
 $bin/aegis -b 1 -nl -lib $worklib -p foo > test.out 2>&1
 if test $? -ne 0 ; then cat test.out;no_result; fi
 
 #
 # difference the change
 #
-activity="diff 287"
+activity="diff 311"
 $bin/aegis -diff -lib $worklib -p foo > test.out 2>&1
 if test $? -ne 0 ; then cat test.out; no_result; fi
 
 #
 # test the change
 #
-activity="test 294"
+activity="test 318"
 $bin/aegis -test -lib $worklib -p foo -nl > test.out 2>&1
 if test $? -ne 0 ; then cat test.out; no_result; fi
 
@@ -329,45 +329,45 @@ if test $? -ne 0 ; then no_result; fi
 #
 # pass the review
 #
-activity="review pass 308"
+activity="review pass 332"
 $bin/aegis -review_pass -c 1 -proj foo -lib $worklib
 if test $? -ne 0 ; then no_result; fi
 
 #
 # start integrating
 #
-activity="integrate begin 315"
+activity="integrate begin 339"
 $bin/aegis -intbeg 1 -p foo -lib $worklib > test.err 2>&1
 if test $? -ne 0 ; then cat test.err; no_result; fi
 
 #
 # integrate build
 #
-activity="build 322"
+activity="build 346"
 $bin/aegis -b 1 -nl -lib $worklib -p foo > test.out 2>&1
 if test $? -ne 0 ; then cat test.out; no_result; fi
-activity="test 325"
+activity="test 349"
 $bin/aegis -test -nl -lib $worklib -p foo > test.out 2>&1
 if test $? -ne 0 ; then cat test.out; no_result; fi
 
 #
 # pass the integration
 #
-activity="integrate pass 332"
+activity="integrate pass 356"
 $bin/aegis -intpass -nl -lib $worklib -p foo > test.out 2>&1
 if test $? -ne 0 ; then cat test.out; no_result; fi
 
 #
 # start work on change 2
 #
-activity="develop begin 339"
+activity="develop begin 363"
 $bin/aegis -devbeg 2 -p foo -dir $workchan -lib $worklib
 if test $? -ne 0 ; then no_result; fi
 
 #
 # copy a file into the change
 #
-activity="copy file 346"
+activity="copy file 370"
 sleep 2
 $bin/aegis -cp $workchan/h.h -nl -lib $worklib -p foo
 if test $? -ne 0 ; then no_result; fi
@@ -390,13 +390,13 @@ if test $? -ne 0 ; then no_result; fi
 # diff the change
 # test the change
 #
-activity="build 369"
+activity="build 393"
 $bin/aegis -b 2 -nl -lib $worklib -p foo > test.out 2>&1
 if test $? -ne 0 ; then cat test.out; no_result; fi
-activity="diff 372"
+activity="diff 396"
 $bin/aegis -diff -nl -lib $worklib -p foo > test.out 2>&1
 if test $? -ne 0 ; then cat test.out; no_result; fi
-activity="test 375"
+activity="test 399"
 $bin/aegis -test -reg -nl -lib $worklib -p foo > test.out 2>&1
 if test $? -ne 0 ; then cat test.out; no_result; fi
 
@@ -405,27 +405,27 @@ if test $? -ne 0 ; then cat test.out; no_result; fi
 # review pass
 # start integrating
 #
-activity="devlop end 384"
+activity="devlop end 408"
 $bin/aegis -devend -lib $worklib -p foo
 if test $? -ne 0 ; then no_result; fi
-activity="review pass 387"
+activity="review pass 411"
 $bin/aegis -revpass -c 2 -p foo -lib $worklib
 if test $? -ne 0 ; then no_result; fi
-activity="integrate begin 390"
+activity="integrate begin 414"
 $bin/aegis -intbeg -c 2 -p foo -lib $worklib > test.err 2>&1
 if test $? -ne 0 ; then cat test.err; no_result; fi
 
 #
 # start work on change 3
 #
-activity="develop begin 397"
+activity="develop begin 421"
 $bin/aegis -devbeg 3 -p foo -dir $workchan.3 -lib $worklib
 if test $? -ne 0 ; then no_result; fi
 
 #
 # copy a file into change 3
 #
-activity="copy file 404"
+activity="copy file 428"
 sleep 2
 $bin/aegis -cp 3 $workchan.3/b.cc -nl -lib $worklib -p foo
 if test $? -ne 0 ; then no_result; fi
@@ -438,24 +438,24 @@ if test $? -ne 0 ; then no_result; fi
 # build the integration, change 2
 # test the integration
 #
-activity="build 417"
+activity="build 441"
 $bin/aegis -b 2 -nl -lib $worklib -p foo > test.out 2>&1
 if test $? -ne 0 ; then cat test.out; no_result; fi
-activity="test 420"
+activity="test 444"
 $bin/aegis -t 2 -reg -nl -lib $worklib -p foo > test.out 2>&1
 if test $? -ne 0 ; then cat test.out; no_result; fi
 
 #
 # build the change, change 3
 #
-activity="build 427"
+activity="build 451"
 $bin/aegis -b 3 -nl -lib $worklib -p foo > test.out 2>&1
 if test $? -ne 0 ; then cat test.out; no_result; fi
 
 #
 # pass the integration, change 2
 #
-activity="integrate pass 434"
+activity="integrate pass 458"
 $bin/aegis -intpass 2 -nl -lib $worklib -p foo -v > test.out 2>&1
 if test $? -ne 0 ; then cat test.out; fail; fi
 
@@ -464,7 +464,7 @@ if test $? -ne 0 ; then cat test.out; fail; fi
 # development directory.  If aeipass has not touched the files
 # correctly, there will be none.
 #
-activity="check baseline mtimes 443"
+activity="check baseline mtimes 467"
 find $workproj/baseline -type f -newer $workchan.3/all -print > test.out 2>&1
 if test $? -ne 0 ; then cat test.out; no_result; fi
 sed -e "s|$workproj/baseline/||" < test.out > test.out2 2>&1
@@ -488,7 +488,7 @@ if test $? -ne 0 ; then fail; fi
 # There *should* be something to do, because the mod time of h.h in the
 # baseline should have been adjusted by aeipass.
 #
-activity="build 467"
+activity="build 491"
 rm $workchan.3/all
 if test $? -ne 0 ; then no_result; fi
 $bin/aegis -b 3 -nl -lib $worklib -p foo > test.out 2>&1
@@ -503,7 +503,7 @@ if test $? -ne 0 ; then cat test.out; no_result; fi
 # however the absence of a correct build, and thus the failure of
 # subsequent tests, is the reported bug symptom.
 #
-activity="test 482"
+activity="test 506"
 $bin/aegis -test 3 -reg -nl -lib $worklib -p foo > test.out 2>&1
 if test $? -ne 0 ; then cat test.out; fail; fi
 

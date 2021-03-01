@@ -1,7 +1,7 @@
 #!/bin/sh
 #
 #	aegis - project change supervisor
-#	Copyright (C) 1998, 2000, 2004 Peter Miller;
+#	Copyright (C) 1998, 2000, 2004, 2005 Peter Miller;
 #	All rights reserved.
 #
 #	This program is free software; you can redistribute it and/or modify
@@ -118,11 +118,11 @@ export AEGIS_PATH
 #
 # test the quote subst functionality
 #
-activity="new project 123"
+activity="new project 121"
 $bin/aegis -npr test -version '' -v -dir $work/proj.dir > log 2>&1
 if test $? -ne 0 ; then cat log; no_result; fi
 
-activity="project attributes 127"
+activity="project attributes 125"
 cat > paf << 'fubar'
 developer_may_review = true;
 developer_may_integrate = true;
@@ -133,7 +133,7 @@ if test $? -ne 0 ; then no_result; fi
 $bin/aegis -pa -f paf -v > log 2>&1
 if test $? -ne 0 ; then cat log; no_result; fi
 
-activity="staff 138"
+activity="staff 136"
 $bin/aegis -nd $USER -v > log 2>&1
 if test $? -ne 0 ; then cat log; no_result; fi
 $bin/aegis -nrv $USER -v > log 2>&1
@@ -141,7 +141,7 @@ if test $? -ne 0 ; then cat log; no_result; fi
 $bin/aegis -ni $USER -v > log 2>&1
 if test $? -ne 0 ; then cat log; no_result; fi
 
-activity="new change 146"
+activity="new change 144"
 cat > caf << 'fubar'
 brief_description = "one";
 cause = internal_enhancement;
@@ -151,14 +151,14 @@ if test $? -ne 0 ; then no_result; fi
 $bin/aegis -nc -f caf -v -p test > log 2>&1
 if test $? -ne 0 ; then cat log; no_result; fi
 
-activity="develop begin 156"
+activity="develop begin 154"
 $bin/aegis -db 10 -v > log 2>&1
 if test $? -ne 0 ; then cat log; no_result; fi
 
-activity="new file 160"
-$bin/aegis -nf $work/test.C010/config -v > log 2>&1
+activity="new file 158"
+$bin/aegis -nf $work/test.C010/aegis.conf -v > log 2>&1
 if test $? -ne 0 ; then cat log; no_result; fi
-cat > $work/test.C010/config << 'fubar'
+cat > $work/test.C010/aegis.conf << 'fubar'
 build_command = "exit 0";
 history_get_command =
 	"co -u'$e' -p ${quote $h,v} > $o";
@@ -176,11 +176,11 @@ shell_safe_filenames = false;
 fubar
 if test $? -ne 0 ; then no_result; fi
 
-activity="new file 160"
+activity="new file 179"
 $bin/aegis -nf "$work/test.C010/test(a)" -v > log 2>&1
 if test $? -ne 0 ; then cat log; no_result; fi
 
-activity="diff 182"
+activity="diff 183"
 $bin/aegis -diff -v > log 2>&1
 if test $? -ne 0 ; then cat log; fail; fi
 

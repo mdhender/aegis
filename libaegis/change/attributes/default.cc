@@ -1,6 +1,6 @@
 //
 //	aegis - project change supervisor
-//	Copyright (C) 2000, 2002-2004 Peter Miller;
+//	Copyright (C) 2000, 2002-2005 Peter Miller;
 //	All rights reserved.
 //
 //	This program is free software; you can redistribute it and/or modify
@@ -61,7 +61,8 @@ change_attributes_default(cattr_ty *a, project_ty *pp, pconf_ty *pc)
     {
 	if (!(a->mask & cattr_regression_test_exempt_mask))
 	{
-	    a->regression_test_exempt = true;
+	    a->regression_test_exempt =
+		project_default_test_regression_exemption_get(pp);
 	    a->mask |= cattr_regression_test_exempt_mask;
 	}
     }
@@ -76,33 +77,36 @@ change_attributes_default(cattr_ty *a, project_ty *pp, pconf_ty *pc)
             project_default_test_exemption_get(pp);
 	a->mask |= cattr_test_baseline_exempt_mask;
     }
+    if (!(a->mask & cattr_regression_test_exempt_mask))
+    {
+	a->regression_test_exempt =
+            project_default_test_regression_exemption_get(pp);
+	a->mask |= cattr_regression_test_exempt_mask;
+    }
 
     if (!a->architecture)
+    {
 	a->architecture =
 	    (cattr_architecture_list_ty *)cattr_architecture_list_type.alloc();
+    }
     assert(pc->architecture);
     assert(pc->architecture->length);
     if (!a->architecture->length)
     {
-	size_t	j;
-
-	for (j = 0; j < pc->architecture->length; ++j)
+	for (size_t j = 0; j < pc->architecture->length; ++j)
 	{
-	    type_ty	    *type_p;
-	    string_ty	    **str_p;
-	    pconf_architecture_ty *pca;
-
-	    pca = pc->architecture->list[j];
+	    pconf_architecture_ty *pca = pc->architecture->list[j];
 	    if (pca->mode != pconf_architecture_mode_required)
 		continue;
-	    str_p =
+	    type_ty *type_p = 0;
+	    string_ty **str_p =
 		(string_ty **)
 		cattr_architecture_list_type.list_parse
 		(
 		    a->architecture,
 		    &type_p
 		);
-	    assert(type_p==&string_type);
+	    assert(type_p == &string_type);
 	    *str_p = str_copy(pca->name);
 	}
     }

@@ -44,7 +44,8 @@ enum
     arglex_token_input,
     arglex_token_output,
     arglex_token_quoted_printable,
-    arglex_token_unix_to_unix
+    arglex_token_unix_to_unix,
+    arglex_token_header_not
 };
 
 
@@ -56,8 +57,12 @@ static arglex_table_ty argtab[] =
     { "-Unix_to_Unix_Encode", arglex_token_unix_to_unix, },
     { "-Unix_to_Unix_Decode", arglex_token_unix_to_unix, },
     { "-Unix_to_Unix", arglex_token_unix_to_unix, },
+    { "-No_Header", arglex_token_header_not, },
     ARGLEX_END_MARKER
 };
+
+
+bool has_header = true;
 
 
 static void
@@ -77,39 +82,40 @@ usage(void)
 
 
 static void
+skip_header(input_ty *ifp)
+{
+    if (has_header)
+    {
+	//
+	// skip lines until we find a blank line
+	// as a crude way to pass over the rfc822  header
+	//
+	for (;;)
+	{
+	    nstring s;
+	    if (!ifp->one_line(s))
+		break;
+	    if (s.empty())
+		break;
+	}
+    }
+}
+
+
+static void
 test_input_base64(string_ty *ifn, string_ty *ofn)
 {
-    input_ty        *ifp;
-    output_ty       *ofp;
+    input_ty *ifp = input_file_open(ifn);
+    output_ty *ofp = output_file_text_open(ofn);
 
-    ifp = input_file_open(ifn);
-    ofp = output_file_text_open(ofn);
-
-    //
-    // skip lines until we find a blank line
-    // as a crude way to pass over the rfc822  header
-    //
-    for (;;)
-    {
-	string_ty	*s;
-
-	s = input_one_line(ifp);
-	if (!s)
-	    break;
-	if (!s->str_length)
-	{
-	    str_free(s);
-	    break;
-	}
-	str_free(s);
-    }
+    skip_header(ifp);
 
     //
     // filter the rest
     //
-    ifp = input_base64(ifp, 1);
+    ifp = new input_base64(ifp, true);
     input_to_output(ifp, ofp);
-    input_delete(ifp);
+    delete ifp;
     delete ofp;
 }
 
@@ -117,34 +123,14 @@ test_input_base64(string_ty *ifn, string_ty *ofn)
 static void
 test_input_qp(string_ty *ifn, string_ty *ofn)
 {
-    input_ty        *ifp;
-    output_ty       *ofp;
+    input_ty *ifp = input_file_open(ifn);
+    output_ty *ofp = output_file_text_open(ofn);
 
-    ifp = input_file_open(ifn);
-    ofp = output_file_text_open(ofn);
+    skip_header(ifp);
 
-    //
-    // skip lines until we find a blank line
-    // as a crude way to pass over the rfc822  header
-    //
-    for (;;)
-    {
-	string_ty       *s;
-
-	s = input_one_line(ifp);
-	if (!s)
-	    break;
-	if (!s->str_length)
-	{
-	    str_free(s);
-	    break;
-	}
-	str_free(s);
-    }
-
-    ifp = input_quoted_printable(ifp, 1);
+    ifp = new input_quoted_printable(ifp, true);
     input_to_output(ifp, ofp);
-    input_delete(ifp);
+    delete ifp;
     delete ofp;
 }
 
@@ -152,34 +138,14 @@ test_input_qp(string_ty *ifn, string_ty *ofn)
 static void
 test_input_uu(string_ty *ifn, string_ty *ofn)
 {
-    input_ty        *ifp;
-    output_ty       *ofp;
+    input_ty *ifp = input_file_open(ifn);
+    output_ty *ofp = output_file_text_open(ofn);
 
-    ifp = input_file_open(ifn);
-    ofp = output_file_text_open(ofn);
+    skip_header(ifp);
 
-    //
-    // skip lines until we find a blank line
-    // as a crude way to pass over the rfc822  header
-    //
-    for (;;)
-    {
-	string_ty	*s;
-
-	s = input_one_line(ifp);
-	if (!s)
-	    break;
-	if (!s->str_length)
-	{
-	    str_free(s);
-	    break;
-	}
-	str_free(s);
-    }
-
-    ifp = input_uudecode(ifp, 1);
+    ifp = new input_uudecode(ifp, true);
     input_to_output(ifp, ofp);
-    input_delete(ifp);
+    delete ifp;
     delete ofp;
 }
 
@@ -187,18 +153,18 @@ test_input_uu(string_ty *ifn, string_ty *ofn)
 static void
 test_output_base64(string_ty *ifn, string_ty *ofn)
 {
-    input_ty        *ifp;
-    output_ty       *ofp;
-
-    ifp = input_file_open(ifn);
-    ifp = input_crlf(ifp, 1);
-    ofp = output_file_text_open(ofn);
-    ofp->fputs("Content-Type: application/x-aegis-test\n");
-    ofp->fputs("Content-Transfer-Encoding: base64\n");
-    ofp->fputs("\n");
+    input_ty *ifp = input_file_open(ifn);
+    ifp = new input_crlf(ifp, true);
+    output_ty *ofp = output_file_text_open(ofn);
+    if (has_header)
+    {
+	ofp->fputs("Content-Type: application/x-aegis-test\n");
+	ofp->fputs("Content-Transfer-Encoding: base64\n");
+	ofp->fputs("\n");
+    }
     ofp = new output_base64_ty(ofp, true);
     input_to_output(ifp, ofp);
-    input_delete(ifp);
+    delete ifp;
     delete ofp;
 }
 
@@ -206,18 +172,18 @@ test_output_base64(string_ty *ifn, string_ty *ofn)
 static void
 test_output_qp(string_ty *ifn, string_ty *ofn)
 {
-    input_ty        *ifp;
-    output_ty       *ofp;
-
-    ifp = input_file_open(ifn);
-    ifp = input_crlf(ifp, 1);
-    ofp = output_file_text_open(ofn);
-    ofp->fputs("Content-Type: application/x-aegis-test\n");
-    ofp->fputs("Content-Transfer-Encoding: quoted-printable\n");
-    ofp->fputs("\n");
+    input_ty *ifp = input_file_open(ifn);
+    ifp = new input_crlf(ifp, true);
+    output_ty *ofp = output_file_text_open(ofn);
+    if (has_header)
+    {
+	ofp->fputs("Content-Type: application/x-aegis-test\n");
+	ofp->fputs("Content-Transfer-Encoding: quoted-printable\n");
+	ofp->fputs("\n");
+    }
     ofp = new output_quoted_printable_ty(ofp, true, false);
     input_to_output(ifp, ofp);
-    input_delete(ifp);
+    delete ifp;
     delete ofp;
 }
 
@@ -225,18 +191,18 @@ test_output_qp(string_ty *ifn, string_ty *ofn)
 static void
 test_output_uu(string_ty *ifn, string_ty *ofn)
 {
-    input_ty        *ifp;
-    output_ty       *ofp;
-
-    ifp = input_file_open(ifn);
-    ifp = input_crlf(ifp, 1);
-    ofp = output_file_text_open(ofn);
-    ofp->fputs("Content-Type: application/x-aegis-test\n");
-    ofp->fputs("Content-Transfer-Encoding: uuencode\n");
-    ofp->fputs("\n");
+    input_ty *ifp = input_file_open(ifn);
+    ifp = new input_crlf(ifp, true);
+    output_ty *ofp = output_file_text_open(ofn);
+    if (has_header)
+    {
+	ofp->fputs("Content-Type: application/x-aegis-test\n");
+	ofp->fputs("Content-Transfer-Encoding: uuencode\n");
+	ofp->fputs("\n");
+    }
     ofp = new output_uuencode_ty(ofp, true);
     input_to_output(ifp, ofp);
-    input_delete(ifp);
+    delete ifp;
     delete ofp;
 }
 
@@ -312,6 +278,10 @@ main(int argc, char **argv)
 	    if (func)
 		goto too_many;
 	    func = ofunc;
+	    break;
+
+	case arglex_token_header_not:
+	    has_header = false;
 	    break;
 	}
 	arglex();

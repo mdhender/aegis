@@ -1,6 +1,7 @@
 //
 //	aegis - project change supervisor
 //	Copyright (C) 1993-1999, 2001-2005 Peter Miller;
+//	Copyright (C) 2005 Walter Franzini;
 //	All rights reserved.
 //
 //	This program is free software; you can redistribute it and/or modify
@@ -187,6 +188,55 @@ move_file_innards(user_ty *up, change_ty *cp, string_ty *old_name,
 	change_fatal(cp, scp, i18n("nil move $filename"));
 	// NOTREACHED
 	sub_context_delete(scp);
+    }
+
+    //
+    // the new file name must be valid.
+    //
+    nstring err(change_filename_check(cp, new_name));
+    if (!err.empty())
+    {
+        change_fatal(cp, 0, err.c_str());
+    }
+
+    //
+    // The new file must not cause directory conflicts.
+    //
+    nstring conflicting_name(change_file_directory_conflict(cp, new_name));
+    if (!conflicting_name.empty())
+    {
+        sub_context_ty  *scp;
+
+        scp = sub_context_new();
+        sub_var_set_string(scp, "File_Name", new_name);
+        sub_var_set_string(scp, "File_Name2", conflicting_name);
+        sub_var_optional(scp, "File_Name2");
+        change_fatal
+	(
+            cp,
+            scp,
+            i18n("file $filename directory name conflict")
+        );
+        // NOTREACHED
+        sub_context_delete(scp);
+    }
+    conflicting_name = nstring(project_file_directory_conflict(pp, new_name));
+    if (!conflicting_name.empty())
+    {
+        sub_context_ty  *scp;
+
+        scp = sub_context_new();
+        sub_var_set_string(scp, "File_Name", new_name);
+        sub_var_set_string(scp, "File_Name2", conflicting_name);
+        sub_var_optional(scp, "File_Name2");
+        project_fatal
+	(
+            pp,
+            scp,
+            i18n("file $filename directory name conflict")
+        );
+        // NOTREACHED
+        sub_context_delete(scp);
     }
 
     //

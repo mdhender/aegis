@@ -709,11 +709,14 @@ copy_file_independent(void)
 	    //
 	    // set the file mode
 	    //
-	    mode = 0666;
-	    if (old_src->executable)
-		mode |= 0111;
-	    mode &= ~original_umask;
-	    os_chmod(to, mode);
+	    if (!output)
+	    {
+		mode = 0666;
+		if (old_src->executable)
+		    mode |= 0111;
+		mode &= ~original_umask;
+		os_chmod(to, mode);
+	    }
 	    os_become_undo();
         }
 
@@ -1167,6 +1170,26 @@ copy_file_main(void)
 	lock_take();
 
 	log_open(change_logfile_get(cp), up, log_style);
+
+	if (change_file_promote(cp))
+	{
+	    trace(("The change_file_promote found somthing to do.\n"));
+
+	    //
+	    // Write out the file state, and then let go of the locks
+	    // and take them again.  This ensures the data is consistent
+	    // for the next stage of processing.
+	    //
+	    trace(("Write out what we've done so far.\n"));
+	    change_cstate_write(cp);
+	    commit();
+	    lock_release();
+
+	    trace(("Take the locks again.\n"));
+	    change_cstate_lock_prepare(cp);
+	    project_baseline_read_lock_prepare(pp2);
+	    lock_take();
+	}
     }
     cstate_data = change_cstate_get(cp);
 
@@ -1809,15 +1832,21 @@ copy_file_main(void)
 	    if (!p_src_data)
 		p_src_data = project_file_find(pp2, s1, view_path_simple);
 	    assert(p_src_data);
-	    assert(p_src_data->edit);
-	    assert(p_src_data->edit->revision);
+            //
+            // It's tempting to say:
+            //
+	    // assert(p_src_data->edit);
+	    // assert(p_src_data->edit->revision);
+            //
+            // but it is not true for removed files.
+            //
 	    c_src_data = change_file_find(cp, s1, view_path_first);
 	    if (!c_src_data)
 		c_src_data = change_file_new(cp, s1);
 	    switch (p_src_data->action)
 	    {
 	    case file_action_remove:
-		c_src_data->action = file_action_remove;
+                c_src_data->action = file_action_remove;
 		break;
 
 	    case file_action_insulate:
@@ -1830,6 +1859,8 @@ copy_file_main(void)
 #ifndef DEBUG
 	    default:
 #endif
+                assert(p_src_data->edit);
+                assert(p_src_data->edit->revision);
 		c_src_data->action =
 		    (read_only ? file_action_insulate : file_action_modify);
 		break;
@@ -1951,9 +1982,21 @@ copy_file_main(void)
 		history_version_type.free(c_src_data->edit_origin_new);
 		c_src_data->edit_origin_new = 0;
 	    }
-	    assert(p_src_data->edit);
-	    assert(p_src_data->edit->revision);
-	    c_src_data->edit_origin = history_version_copy(p_src_data->edit);
+            if (p_src_data->edit)
+            {
+                assert(p_src_data->edit->revision);
+                c_src_data->edit_origin =
+                    history_version_copy(p_src_data->edit);
+            }
+            else
+            {
+                assert(p_src_data->edit_origin);
+                assert(p_src_data->edit_origin->revision);
+                assert(p_src_data->action == file_action_remove);
+                c_src_data->edit_origin =
+                    history_version_copy(p_src_data->edit_origin);
+            }
+
 
 	    //
 	    // Copying the config file into a change

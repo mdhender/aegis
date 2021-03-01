@@ -1,7 +1,7 @@
 #!/bin/sh
 #
 #	aegis - project change supervisor
-#	Copyright (C) 1996, 1997, 1998 Peter Miller;
+#	Copyright (C) 1996-1998, 2005 Peter Miller;
 #	All rights reserved.
 #
 #	This program is free software; you can redistribute it and/or modify
@@ -116,13 +116,13 @@ done
 
 cat > attr-file << 'fubar'
 brief_description = "something short";
-description = "\n\
+description = "begin\n\
 fubar
 if test $? -ne 0 ; then no_result; fi
 cat test.in >> attr-file
 if test $? -ne 0 ; then no_result; fi
 cat >> attr-file << 'fubar'
-";
+end";
 cause = internal_enhancement;
 test_exempt = false;
 test_baseline_exempt = true;

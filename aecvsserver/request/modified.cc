@@ -1,6 +1,6 @@
 //
 //	aegis - project change supervisor
-//	Copyright (C) 2004 Peter Miller;
+//	Copyright (C) 2004, 2005 Peter Miller;
 //	All rights reserved.
 //
 //	This program is free software; you can redistribute it and/or modify
@@ -143,7 +143,7 @@ run(server_ty *sp, string_ty *arg)
     //
     module_modified(mp, sp, file_name, fip, ip);
     str_free(file_name);
-    input_delete(ip);
+    delete ip;
     module_delete(mp);
 }
 

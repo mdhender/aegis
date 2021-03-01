@@ -32,11 +32,10 @@ struct pconf_ty;
 struct project_ty;
 struct string_ty;
 
-void change_attributes_default(struct cattr_ty *, struct project_ty *,
-	struct pconf_ty *);
-void change_attributes_copy(struct cattr_ty *, struct cstate_ty *);
-void change_attributes_verify(string_ty *, struct cattr_ty *);
-void change_attributes_edit(struct cattr_ty **, int);
+void change_attributes_default(cattr_ty *, project_ty *, struct pconf_ty *);
+void change_attributes_copy(struct cattr_ty *, cstate_ty *);
+void change_attributes_verify(string_ty *, cattr_ty *);
+void change_attributes_edit(cattr_ty **, int);
 
 /**
   * The change_attributes_append function is used to append an
@@ -51,7 +50,7 @@ void change_attributes_edit(struct cattr_ty **, int);
   * \param value
   *     The value to assign to the attribute.
   */
-void change_attributes_append(struct cstate_ty *cs, const char *name,
+void change_attributes_append(cstate_ty *cs, const char *name,
     const char *value);
 
 /**
@@ -67,5 +66,14 @@ void change_attributes_append(struct cstate_ty *cs, const char *name,
   *     The value of the given attribute, or NULL if not found.
   */
 string_ty *change_attributes_find(change_ty *cp, string_ty *name);
+
+/**
+  * The change_attributes_fixup function is used to trim description and
+  * brief description fields.  Only cosmetic changes are allowed.
+  *
+  * @param cap
+  *     The change attributes in question.
+  */
+void change_attributes_fixup(cattr_ty *cap);
 
 #endif /* LIBAEGIS_CHANGE_ATTRIBUTES_H */

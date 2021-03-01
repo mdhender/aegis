@@ -27,12 +27,10 @@
 void
 input_to_output(input_ty *ifp, output_ty *ofp)
 {
-    unsigned char   buffer[4096];
-    size_t          n;
-
     for (;;)
     {
-	n = input_read(ifp, buffer, sizeof(buffer));
+	unsigned char buffer[4096];
+	long n = ifp->read(buffer, sizeof(buffer));
 	if (!n)
     	    break;
 	ofp->write(buffer, n);

@@ -1,7 +1,7 @@
 #!/bin/sh
 #
 #	aegis - project change supervisor
-#	Copyright (C) 2003, 2004 Peter Miller;
+#	Copyright (C) 2003-2005 Peter Miller;
 #	All rights reserved.
 #
 #	This program is free software; you can redistribute it and/or modify
@@ -151,14 +151,14 @@ AEGIS_PROJECT=foo ; export AEGIS_PROJECT
 #
 # make a new project
 #
-activity="new project 128"
+activity="new project 154"
 $bin/aegis -npr foo -vers "" -dir $workproj > log 2>&1
 if test $? -ne 0 ; then cat log; no_result; fi
 
 #
 # change project attributes
 #
-activity="project attributes 135"
+activity="project attributes 161"
 cat > tmp << 'end'
 description = "A bogus project created to test the aecvsserver add "
     "functionality.";
@@ -174,7 +174,7 @@ if test $? -ne 0 ; then cat log; no_result; fi
 #
 # add the staff
 #
-activity="staff 150"
+activity="staff 177"
 $bin/aegis -nd $USER > log 2>&1
 if test $? -ne 0 ; then cat log; no_result; fi
 $bin/aegis -nrv $USER > log 2>&1
@@ -187,7 +187,7 @@ if test $? -ne 0 ; then cat log; no_result; fi
 #
 # create a new change
 #
-activity="new change 163"
+activity="new change 190"
 cat > tmp << 'end'
 brief_description = "The first change";
 cause = internal_bug;
@@ -205,8 +205,8 @@ if test $? -ne 0 ; then cat log; no_result; fi
 #
 # add a new files to the change
 #
-activity="new file 181"
-$bin/aegis -nf  $workchan/config $workchan/dir/bogus -nl > log 2>&1
+activity="new file 208"
+$bin/aegis -nf  $workchan/aegis.conf $workchan/dir/bogus -nl > log 2>&1
 if test $? -ne 0 ; then cat log; no_result; fi
 
 cat > $workchan/dir/bogus << 'end'
@@ -214,7 +214,7 @@ the trunk version
 end
 if test $? -ne 0 ; then no_result; fi
 
-cat > $workchan/config << 'end'
+cat > $workchan/aegis.conf << 'end'
 build_command = "exit 0";
 link_integration_directory = true;
 history_get_command =
@@ -236,49 +236,49 @@ if test $? -ne 0 ; then no_result; fi
 #
 # build the change
 #
-activity="build 214"
+activity="build 239"
 $bin/aegis -build -nl -v > log 2>&1
 if test $? -ne 0 ; then cat log; no_result; fi
 
 #
 # difference the change
 #
-activity="diff 221"
+activity="diff 246"
 $bin/aegis -diff > log 2>&1
 if test $? -ne 0 ; then cat log; no_result; fi
 
 #
 # finish development of the change
 #
-activity="develop end 228"
+activity="develop end 253"
 $bin/aegis -de > log 2>&1
 if test $? -ne 0 ; then cat log; no_result; fi
 
 #
 # pass the review
 #
-activity="review pass 235"
+activity="review pass 260"
 $bin/aegis -rpass -c 1 > log 2>&1
 if test $? -ne 0 ; then cat log; no_result; fi
 
 #
 # start integrating
 #
-activity="integrate begin 242"
+activity="integrate begin 267"
 $bin/aegis -ib 1 > log 2>&1
 if test $? -ne 0 ; then cat log; no_result; fi
 
 #
 # integrate build
 #
-activity="build 249"
+activity="build 274"
 $bin/aegis -b -nl -v > log 2>&1
 if test $? -ne 0 ; then cat log; no_result; fi
 
 #
 # pass the integration
 #
-activity="integrate pass 256"
+activity="integrate pass 281"
 $bin/aegis -intpass -nl > log 2>&1
 if test $? -ne 0 ; then cat log; no_result; fi
 
@@ -287,7 +287,7 @@ if test $? -ne 0 ; then cat log; no_result; fi
 #
 # create a new change
 #
-activity="new change 304"
+activity="new change 290"
 cat > tmp << 'end'
 brief_description = "The second change";
 cause = internal_bug;
@@ -299,7 +299,7 @@ if test $? -ne 0 ; then cat log; no_result; fi
 #
 # begin development of a change
 #
-activity="develop begin"
+activity="develop begin 302"
 $bin/aegis -db 2 -dir $workchan > log 2>&1
 if test $? -ne 0 ; then cat log; no_result; fi
 
@@ -312,7 +312,7 @@ export CVS_SERVER
 #
 # Now use cvs to checkout the project.
 #
-activity="cvs checkout"
+activity="cvs checkout 315"
 cvs -d :fork:/aegis co ${AEGIS_PROJECT}.C002 > log 2>&1
 if test $? -ne 0 ; then cat log; no_result; fi
 
@@ -320,7 +320,7 @@ if test $? -ne 0 ; then cat log; no_result; fi
 # Add a file in the cvs workarea and
 # then used cvs add and commit it.
 #
-activity="cvs add"
+activity="cvs add 323"
 echo "Change Two" > $AEGIS_PROJECT.C002/dir/baboon
 if test $? -ne 0 ; then no_result; fi
 
@@ -330,7 +330,7 @@ if test $? -ne 0 ; then cat log; fail; fi
 
 cd $work
 
-activity="cvs commit"
+activity="cvs commit 333"
 cvs -d :fork:/aegis commit -m "message" $AEGIS_PROJECT.C002 > log 2>&1
 if test $? -ne 0 ; then cat log; fail; fi
 
@@ -343,7 +343,7 @@ if test $? -ne 0 ; then fail; fi
 #
 # make sure the meta-data matches
 #
-activity="check change file state"
+activity="check change file state 346"
 cat > ok << 'fubar'
 src =
 [

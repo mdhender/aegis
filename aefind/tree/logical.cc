@@ -1,6 +1,6 @@
 //
 //	aegis - project change supervisor
-//	Copyright (C) 1997, 1999, 2002-2004 Peter Miller;
+//	Copyright (C) 1997, 1999, 2002-2005 Peter Miller;
 //	All rights reserved.
 //
 //	This program is free software; you can redistribute it and/or modify
@@ -33,7 +33,8 @@
 
 
 static rpt_value_ty *
-and_evaluate(tree_ty *tp, string_ty *path, struct stat *st)
+and_evaluate(tree_ty *tp, string_ty *path_unres, string_ty *path,
+    string_ty *path_res, struct stat *st)
 {
     tree_diadic_ty  *this_thing;
     rpt_value_ty    *v1;
@@ -43,7 +44,7 @@ and_evaluate(tree_ty *tp, string_ty *path, struct stat *st)
 
     this_thing = (tree_diadic_ty *)tp;
 
-    v1 = tree_evaluate(this_thing->left, path, st);
+    v1 = tree_evaluate(this_thing->left, path_unres, path, path_res, st);
     if (v1->method->type == rpt_value_type_error)
 	return v1;
     v1b = rpt_value_booleanize(v1);
@@ -72,7 +73,7 @@ and_evaluate(tree_ty *tp, string_ty *path, struct stat *st)
 	return v1b;
     rpt_value_free(v1b);
 
-    v2 = tree_evaluate(this_thing->right, path, st);
+    v2 = tree_evaluate(this_thing->right, path_unres, path, path_res, st);
     if (v2->method->type == rpt_value_type_error)
 	return v2;
     v2b = rpt_value_booleanize(v2);
@@ -122,7 +123,8 @@ tree_and_new(tree_ty *left, tree_ty *right)
 
 
 static rpt_value_ty *
-or_evaluate(tree_ty *tp, string_ty *path, struct stat *st)
+or_evaluate(tree_ty *tp, string_ty *path_unres, string_ty *path,
+    string_ty *path_res, struct stat *st)
 {
     tree_diadic_ty  *this_thing;
     rpt_value_ty    *v1;
@@ -132,7 +134,7 @@ or_evaluate(tree_ty *tp, string_ty *path, struct stat *st)
 
     this_thing = (tree_diadic_ty *)tp;
 
-    v1 = tree_evaluate(this_thing->left, path, st);
+    v1 = tree_evaluate(this_thing->left, path_unres, path, path_res, st);
     if (v1->method->type == rpt_value_type_error)
 	return v1;
     v1b = rpt_value_booleanize(v1);
@@ -161,7 +163,7 @@ or_evaluate(tree_ty *tp, string_ty *path, struct stat *st)
 	return v1b;
     rpt_value_free(v1b);
 
-    v2 = tree_evaluate(this_thing->right, path, st);
+    v2 = tree_evaluate(this_thing->right, path_unres, path, path_res, st);
     if (v2->method->type == rpt_value_type_error)
 	return v2;
     v2b = rpt_value_booleanize(v2);
@@ -211,7 +213,8 @@ tree_or_new(tree_ty *left, tree_ty *right)
 
 
 static rpt_value_ty *
-not_evaluate(tree_ty *tp, string_ty *path, struct stat *st)
+not_evaluate(tree_ty *tp, string_ty *path_unres, string_ty *path,
+    string_ty *path_res, struct stat *st)
 {
     tree_monadic_ty *this_thing;
     rpt_value_ty    *v1;
@@ -219,7 +222,7 @@ not_evaluate(tree_ty *tp, string_ty *path, struct stat *st)
     rpt_value_ty    *v3;
 
     this_thing = (tree_monadic_ty *)tp;
-    v1 = tree_evaluate(this_thing->arg, path, st);
+    v1 = tree_evaluate(this_thing->arg, path_unres, path, path_res, st);
     if (v1->method->type == rpt_value_type_error)
 	return v1;
     v2 = rpt_value_booleanize(v1);
@@ -266,19 +269,20 @@ tree_not_new(tree_ty *arg)
 
 
 static rpt_value_ty *
-comma_evaluate(tree_ty *tp, string_ty *path, struct stat *st)
+comma_evaluate(tree_ty *tp, string_ty *path_unres, string_ty *path,
+    string_ty *path_res, struct stat *st)
 {
     tree_diadic_ty  *this_thing;
     rpt_value_ty    *vp;
 
     this_thing = (tree_diadic_ty *)tp;
 
-    vp = tree_evaluate(this_thing->left, path, st);
+    vp = tree_evaluate(this_thing->left, path_unres, path, path_res, st);
     if (vp->method->type == rpt_value_type_error)
 	return vp;
     rpt_value_free(vp);
 
-    return tree_evaluate(this_thing->right, path, st);
+    return tree_evaluate(this_thing->right, path_unres, path, path_res, st);
 }
 
 
@@ -340,7 +344,8 @@ triadic_print(tree_ty *tp)
 
 
 static rpt_value_ty *
-triadic_evaluate(tree_ty *tp, string_ty *path, struct stat *st)
+triadic_evaluate(tree_ty *tp, string_ty *path_unres, string_ty *path,
+    string_ty *path_res, struct stat *st)
 {
     triadic_ty      *this_thing;
     rpt_value_ty    *v1;
@@ -349,7 +354,7 @@ triadic_evaluate(tree_ty *tp, string_ty *path, struct stat *st)
 
     this_thing = (triadic_ty *)tp;
 
-    v1 = tree_evaluate(this_thing->arg1, path, st);
+    v1 = tree_evaluate(this_thing->arg1, path_unres, path, path_res, st);
     if (v1->method->type == rpt_value_type_error)
 	return v1;
     v1b = rpt_value_booleanize(v1);
@@ -377,8 +382,15 @@ triadic_evaluate(tree_ty *tp, string_ty *path, struct stat *st)
     which = rpt_value_boolean_query(v1b);
     rpt_value_free(v1b);
 
-    return tree_evaluate(
-        (which ? this_thing->arg2 : this_thing->arg3), path, st);
+    return
+	tree_evaluate
+	(
+	    (which ? this_thing->arg2 : this_thing->arg3),
+	    path_unres,
+	    path,
+	    path_res,
+	    st
+	);
 }
 
 

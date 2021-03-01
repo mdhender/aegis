@@ -1,6 +1,6 @@
 //
 //	aegis - project change supervisor
-//	Copyright (C) 2004 Peter Miller;
+//	Copyright (C) 2004, 2005 Peter Miller;
 //	All rights reserved.
 //
 //	This program is free software; you can redistribute it and/or modify
@@ -140,6 +140,12 @@ public:
       * the buffer.
       */
     void pop_back() { if (length) --length; }
+
+    /**
+      * The back method is used to obtain the last character in the
+      * buffer, or NUL if the buffer is empty.
+      */
+    char back() { return (length ? buffer[length - 1] : 0); }
 
     /**
       * The get_data method is used to obtain a pointer to the base of

@@ -1,6 +1,6 @@
 //
 //	aegis - project change supervisor
-//	Copyright (C) 2004 Peter Miller;
+//	Copyright (C) 2004, 2005 Peter Miller;
 //	All rights reserved.
 //
 //	This program is free software; you can redistribute it and/or modify
@@ -68,10 +68,10 @@ server_response_flush(server_ty *sp)
 }
 
 
-string_ty *
-server_getline(server_ty *sp)
+bool
+server_getline(server_ty *sp, nstring &result)
 {
-    return sp->np->getline();
+    return sp->np->getline(result);
 }
 
 

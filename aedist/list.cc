@@ -42,9 +42,6 @@ list_main(void)
 {
     string_ty       *ifn = 0;
     input_ty        *ifp;
-    input_ty        *cpio_p;
-    string_ty       *archive_name;
-    string_ty       *s;
     cstate_ty       *change_set;
     size_t          j;
     string_ty       *ofn = 0;
@@ -107,8 +104,8 @@ list_main(void)
     //
     // Open the input file and verify the format.
     //
-    s = 0;
-    cpio_p = aedist_open(ifn, &s);
+    string_ty *s = 0;
+    input_cpio *cpio_p = aedist_open(ifn, &s);
     assert(cpio_p);
     assert(s);
 
@@ -120,76 +117,64 @@ list_main(void)
     body_col = col_create(colp, INDENT_WIDTH, 0, (const char *)0);
     col_title(colp, "Distribution Change Set", s->str_text);
     str_free(s);
+    s = 0;
 
     //
     // read the project name from the archive,
     // and use it to default the project if not given
     //
     os_become_orig();
-    archive_name = 0;
-    ifp = input_cpio_child(cpio_p, &archive_name);
+    nstring archive_name;
+    ifp = cpio_p->child(archive_name);
     if (!ifp)
-	input_fatal_error(cpio_p, "file missing");
-    assert(archive_name);
-    s = str_from_c("etc/project-name");
-    if (!str_equal(archive_name, s))
-	input_fatal_error(ifp, "wrong file");
-    str_free(s);
-    str_free(archive_name);
+	cpio_p->fatal_error("file missing");
+    if (archive_name != "etc/project-name")
+	ifp->fatal_error("wrong file");
+    archive_name.clear();
 
-    s = input_one_line(ifp);
-    if (!s || !s->str_length)
-	input_fatal_error(ifp, "short file");
-    input_delete(ifp);
+    nstring pname;
+    if (!ifp->one_line(pname) || pname.empty())
+	ifp->fatal_error("short file");
+    delete ifp;
     os_become_undo();
 
     head_col->fputs("PROJECT");
     col_eoln(colp);
-    body_col->fputs(s);
-    str_free(s);
+    body_col->fputs(pname);
 
     //
     // read the change number from the archive, and use it to default
     // the change number if not given, and if possible.
     //
     os_become_orig();
-    archive_name = 0;
-    ifp = input_cpio_child(cpio_p, &archive_name);
+    archive_name.clear();
+    ifp = cpio_p->child(archive_name);
     if (!ifp)
-	input_fatal_error(cpio_p, "file missing");
-    assert(archive_name);
-    s = str_from_c("etc/change-number");
-    if (str_equal(s, archive_name))
+	cpio_p->fatal_error("file missing");
+    if (archive_name == "etc/change-number")
     {
-	str_free(s);
-	s = input_one_line(ifp);
-	input_delete(ifp);
+	nstring chnum;
+	ifp->one_line(chnum);
+	delete ifp;
 	os_become_undo();
-	str_free(archive_name);
-
 	body_col->fputs(", change ");
-	body_col->fputs(s);
-	str_free(s);
+	body_col->fputs(chnum);
 
 	os_become_orig();
-	archive_name = 0;
-	ifp = input_cpio_child(cpio_p, &archive_name);
+	archive_name.clear();
+	ifp = cpio_p->child(archive_name);
 	if (!ifp)
-	    input_fatal_error(cpio_p, "file missing");
-	assert(archive_name);
+	    cpio_p->fatal_error("file missing");
     }
     col_eoln(colp);
 
     //
     // get the change details from the input
     //
-    s = str_from_c("etc/change-set");
-    if (!str_equal(s, archive_name))
-	input_fatal_error(ifp, "wrong file");
-    str_free(s);
+    if (archive_name != "etc/change-set")
+	ifp->fatal_error("wrong file");
     change_set = (cstate_ty *)parse_input(ifp, &cstate_type);
     ifp = 0; // parse_input input_delete()ed it for us
-    str_free(archive_name);
     os_become_undo();
 
     //
@@ -205,7 +190,7 @@ list_main(void)
     ||
 	!change_set->src->length
     )
-	input_fatal_error(cpio_p, "bad change set");
+	cpio_p->fatal_error("bad change set");
     for (j = 0; j < change_set->src->length; ++j)
     {
 	cstate_src_ty   *src_data;
@@ -221,7 +206,7 @@ list_main(void)
 	||
 	    !(src_data->mask & cstate_src_usage_mask)
 	)
-	    input_fatal_error(cpio_p, "bad file info");
+	    cpio_p->fatal_error("bad file info");
     }
 
     col_need(colp, 3);
@@ -299,7 +284,7 @@ list_main(void)
 	col_eoln(colp);
     }
 
-    input_delete(cpio_p);
+    delete cpio_p;
     col_close(colp);
     cstate_type.free(change_set);
 }

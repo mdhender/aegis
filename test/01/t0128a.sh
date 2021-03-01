@@ -1,7 +1,7 @@
 #!/bin/sh
 #
 #	aegis - project change supervisor
-#	Copyright (C) 2001 Peter Miller;
+#	Copyright (C) 2001, 2005 Peter Miller;
 #	All rights reserved.
 #
 #	This program is free software; you can redistribute it and/or modify
@@ -96,7 +96,7 @@ check_it()
 	if test $? -ne 0; then fail; fi
 }
 
-activity="working directory 84"
+activity="working directory 99"
 mkdir $work $work/lib
 if test $? -ne 0 ; then no_result; fi
 chmod 777 $work/lib
@@ -126,14 +126,14 @@ unset LANGUAGE
 #
 # test the aemvu functionality
 #
-activity="new project 114"
+activity="new project 129"
 $bin/aegis -npr example -version '' -lib $worklib -dir $work/proj -v > log 2>&1
 if test $? -ne 0 ; then cat log; no_result; fi
 
 #
 # change project attributes
 #
-activity="project attributes 121"
+activity="project attributes 136"
 cat > $tmp << 'TheEnd'
 description = "bogosity";
 developer_may_review = true;
@@ -149,7 +149,7 @@ if test $? -ne 0 ; then cat log; no_result; fi
 #
 # create a new change
 #
-activity="new change 137"
+activity="new change 152"
 cat > $tmp << 'TheEnd'
 brief_description = "c1";
 description = "c1";
@@ -166,28 +166,28 @@ if test $? -ne 0 ; then cat log; no_result; fi
 #
 # add a new developer
 #
-activity="new developer 151"
+activity="new developer 169"
 $bin/aegis -newdev $USER -v > log 2>&1
 if test $? -ne 0 ; then cat log; no_result; fi
-activity="new reviewer 154"
+activity="new reviewer 172"
 $bin/aegis -newrev $USER -v > log 2>&1
 if test $? -ne 0 ; then cat log; no_result; fi
-activity="new integrator 157"
+activity="new integrator 175"
 $bin/aegis -newint $USER -v > log 2>&1
 if test $? -ne 0 ; then cat log; no_result; fi
 
 #
 # begin development of the change
 #
-activity="develop begin 164"
+activity="develop begin 182"
 $bin/aegis -devbeg 1 -dir $workchan -v > log 2>&1
 if test $? -ne 0 ; then cat log; no_result; fi
 
 #
 # add the new files to the change
 #
-activity="new file 171"
-$bin/aegis -new_file $workchan/Howto.cook $workchan/config $workchan/f1 \
+activity="new file 189"
+$bin/aegis -new_file $workchan/Howto.cook $workchan/aegis.conf $workchan/f1 \
 	$workchan/f2 $workchan/f3 -nl -v > log 2>&1
 if test $? -ne 0 ; then cat log; no_result; fi
 
@@ -198,7 +198,7 @@ if test $? -ne 0 ; then no_result; fi
 date > $workchan/f3
 if test $? -ne 0 ; then no_result; fi
 
-cat > $workchan/config << 'TheEnd'
+cat > $workchan/aegis.conf << 'TheEnd'
 build_command = "exit 0";
 link_integration_directory = true;
 
@@ -221,56 +221,56 @@ if test $? -ne 0 ; then no_result; fi
 #
 # build the change
 #
-activity="build 207"
+activity="build 224"
 $bin/aegis -build -nl -v > log 2>&1
 if test $? -ne 0 ; then cat log; no_result; fi
 
 #
 # difference the change
 #
-activity="diff 214"
+activity="diff 231"
 $bin/aegis -diff -v -nl > log 2>&1
 if test $? -ne 0 ; then cat log; no_result; fi
 
 #
 # finish development of the change
 #
-activity="develop end 221"
+activity="develop end 238"
 $bin/aegis -dev_end -v > log 2>&1
 if test $? -ne 0 ; then cat log; no_result; fi
 
 #
 # pass the review
 #
-activity="review pass 228"
+activity="review pass 245"
 $bin/aegis -review_pass -chan 1 -proj example -v > log 2>&1
 if test $? -ne 0 ; then cat log; no_result; fi
 
 #
 # start integrating
 #
-activity="integrate begin 235"
+activity="integrate begin 252"
 $bin/aegis -intbeg 1 -v > log 2>&1
 if test $? -ne 0 ; then cat log; no_result; fi
 
 #
 # integrate build and test
 #
-activity="build 242"
+activity="build 259"
 $bin/aegis -build -nl -v > log 2>&1
 if test $? -ne 0 ; then cat log; no_result; fi
 
 #
 # pass the integration
 #
-activity="integrate pass 249"
+activity="integrate pass 266"
 $bin/aegis -intpass -nl -v > log 2>&1
 if test $? -ne 0 ; then cat log; no_result; fi
 
 #
 # create the second change
 #
-activity="new change 263"
+activity="new change 273"
 cat > $tmp << 'fubar'
 brief_description = "c2";
 description = "c2";
@@ -297,7 +297,7 @@ if test $? -ne 0 ; then cat log; no_result; fi
 #
 # move file undo
 #
-activity="move file undo 293"
+activity="move file undo 300"
 $bin/aegis -mvu $workchan/bogus -nl -v > log 2>&1
 if test $? -ne 0 ; then cat log; fail; fi
 

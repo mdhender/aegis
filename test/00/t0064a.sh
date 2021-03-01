@@ -1,7 +1,7 @@
 #!/bin/sh
 #
 #	aegis - project change supervisor
-#	Copyright (C) 1997, 1998, 2000-2002, 2004 Peter Miller;
+#	Copyright (C) 1997, 1998, 2000-2002, 2004, 2005 Peter Miller;
 #	All rights reserved.
 #
 #	This program is free software; you can redistribute it and/or modify
@@ -77,7 +77,7 @@ no_result()
 }
 trap \"no_result\" 1 2 3 15
 
-activity="working directory 77"
+activity="working directory 80"
 mkdir $work $work/lib
 if test $? -ne 0 ; then no_result; fi
 chmod 777 $work/lib
@@ -99,14 +99,14 @@ export AEGIS_PATH
 #
 # test the aede functionality
 #
-activity="new preject 100"
+activity="new preject 102"
 $bin/aegis -npr test -vers '' -dir $work/proj -lib $work/lib > LOG 2>&1
 if test $? -ne 0 ; then cat LOG; no_result; fi
 
 AEGIS_PROJECT=test
 export AEGIS_PROJECT
 
-activity="project attributes 107"
+activity="project attributes 109"
 cat > paf << 'fubar'
 developer_may_review = true;
 developer_may_integrate = true;
@@ -117,19 +117,19 @@ if test $? -ne 0 ; then fail; fi
 $bin/aegis -pa -f paf -v > log 2>&1
 if test $? -ne 0 ; then cat log; fail; fi
 
-activity="new developer 118"
+activity="new developer 120"
 $bin/aegis -nd $USER > LOG 2>&1
 if test $? -ne 0 ; then cat LOG; no_result; fi
-activity="new reviewer 121"
+activity="new reviewer 123"
 $bin/aegis -nrv $USER > LOG 2>&1
 if test $? -ne 0 ; then cat LOG; no_result; fi
-activity="new integrator 124"
+activity="new integrator 126"
 $bin/aegis -ni $USER > LOG 2>&1
 if test $? -ne 0 ; then cat LOG; no_result; fi
 
 # The first change creates a file ---------------------------------------------
 
-activity="new change 130"
+activity="new change 132"
 cat > caf << 'fubar'
 brief_description = "change the first";
 cause = internal_enhancement;
@@ -142,15 +142,15 @@ if test $? -ne 0 ; then no_result; fi
 $bin/aegis -nc -f caf -p test > LOG 2>&1
 if test $? -ne 0 ; then cat LOG; no_result; fi
 
-activity="develop begin 143"
+activity="develop begin 145"
 $bin/aegis -db 10 -dir $work/chan > LOG 2>&1
 if test $? -ne 0 ; then cat LOG; no_result; fi
 
-activity="new file 147"
-$bin/aegis -nf $work/chan/config $work/chan/fred > LOG 2>&1
+activity="new file 149"
+$bin/aegis -nf $work/chan/aegis.conf $work/chan/fred > LOG 2>&1
 if test $? -ne 0 ; then cat LOG; no_result; fi
 
-cat > $work/chan/config << 'fubar'
+cat > $work/chan/aegis.conf << 'fubar'
 build_command = "exit 0";
 history_get_command =
 	"co -u'$e' -p $h,v > $o";
@@ -166,37 +166,37 @@ diff3_command = "(diff3 -e $mr $orig $i | sed -e '/^w$$/d' -e '/^q$$/d'; \
 fubar
 if test $? -ne 0 ; then no_result; fi
 
-activity="build 167"
+activity="build 169"
 $bin/aegis -b > LOG 2>&1
 if test $? -ne 0 ; then cat LOG; no_result; fi
 
-activity="diff 171"
+activity="diff 173"
 $bin/aegis -diff > LOG 2>&1
 if test $? -ne 0 ; then cat LOG; no_result; fi
 
-activity="develop end 175"
+activity="develop end 177"
 $bin/aegis -de > LOG 2>&1
 if test $? -ne 0 ; then cat LOG; no_result; fi
 
-activity="review pass 179"
+activity="review pass 181"
 $bin/aegis -rpass 10 > LOG 2>&1
 if test $? -ne 0 ; then cat LOG; no_result; fi
 
-activity="integrate begin 183"
+activity="integrate begin 185"
 $bin/aegis -ib 10 > LOG 2>&1
 if test $? -ne 0 ; then cat LOG; no_result; fi
 
-activity="build 187"
+activity="build 189"
 $bin/aegis -b > LOG 2>&1
 if test $? -ne 0 ; then cat LOG; no_result; fi
 
-activity="integrate pass 191"
+activity="integrate pass 193"
 $bin/aegis -ipass > LOG 2>&1
 if test $? -ne 0 ; then cat LOG; no_result; fi
 
 # The second change deletes the file -------------------------------------------
 
-activity="new change 197"
+activity="new change 199"
 cat > caf << 'fubar'
 brief_description = "change the second";
 cause = internal_enhancement;
@@ -209,45 +209,45 @@ if test $? -ne 0 ; then no_result; fi
 $bin/aegis -nc -f caf -p test > LOG 2>&1
 if test $? -ne 0 ; then cat LOG; no_result; fi
 
-activity="develop begin 210"
+activity="develop begin 212"
 $bin/aegis -db 11 -dir $work/chan > LOG 2>&1
 if test $? -ne 0 ; then cat LOG; no_result; fi
 
-activity="remove file 214"
+activity="remove file 216"
 $bin/aegis -rm $work/chan/fred > LOG 2>&1
 if test $? -ne 0 ; then cat LOG; no_result; fi
 
-activity="build 218"
+activity="build 220"
 $bin/aegis -b > LOG 2>&1
 if test $? -ne 0 ; then cat LOG; no_result; fi
 
-activity="diff 222"
+activity="diff 224"
 $bin/aegis -diff > LOG 2>&1
 if test $? -ne 0 ; then cat LOG; no_result; fi
 
-activity="develop end 226"
+activity="develop end 228"
 $bin/aegis -de > LOG 2>&1
 if test $? -ne 0 ; then cat LOG; no_result; fi
 
-activity="review pass 230"
+activity="review pass 232"
 $bin/aegis -rpass 11 > LOG 2>&1
 if test $? -ne 0 ; then cat LOG; no_result; fi
 
-activity="integrate begin 234"
+activity="integrate begin 236"
 $bin/aegis -ib 11 > LOG 2>&1
 if test $? -ne 0 ; then cat LOG; no_result; fi
 
-activity="build 238"
+activity="build 240"
 $bin/aegis -b > LOG 2>&1
 if test $? -ne 0 ; then cat LOG; no_result; fi
 
-activity="integrate pass 242"
+activity="integrate pass 244"
 $bin/aegis -ipass > LOG 2>&1
 if test $? -ne 0 ; then cat LOG; no_result; fi
 
 # Create a new branch ---------------------------------------------------------
 
-activity="new branch 248"
+activity="new branch 250"
 $bin/aegis -nbr -p test > LOG 2>&1
 if test $? -ne 0 ; then cat LOG; no_result; fi
 
@@ -256,7 +256,7 @@ export AEGIS_PROJECT
 
 # Change the third creates the file again -------------------------------------
 
-activity="new change 257"
+activity="new change 259"
 cat > caf << 'fubar'
 brief_description = "change the third";
 cause = internal_enhancement;
@@ -269,29 +269,29 @@ if test $? -ne 0 ; then no_result; fi
 $bin/aegis -nc -f caf -p test.1 > LOG 2>&1
 if test $? -ne 0 ; then cat LOG; no_result; fi
 
-activity="develop begin 270"
+activity="develop begin 272"
 $bin/aegis -db 10 -dir $work/chan > LOG 2>&1
 if test $? -ne 0 ; then cat LOG; no_result; fi
 
-activity="new file 274"
+activity="new file 276"
 $bin/aegis -nf $work/chan/fred > LOG 2>&1
 if test $? -ne 0 ; then cat LOG; no_result; fi
 
-activity="build 278"
+activity="build 280"
 $bin/aegis -b > LOG 2>&1
 if test $? -ne 0 ; then cat LOG; no_result; fi
 
-activity="diff 282"
+activity="diff 284"
 $bin/aegis -diff > LOG 2>&1
 if test $? -ne 0 ; then cat LOG; no_result; fi
 
-activity="develop end 286"
+activity="develop end 288"
 $bin/aegis -de > LOG 2>&1
 if test $? -ne 0 ; then cat LOG; no_result; fi
 
 # Verify that develop end shallowed the file properly -------------------------
 
-activity="verify trunk file state 292"
+activity="verify trunk file state 294"
 
 check_it()
 {
@@ -313,7 +313,7 @@ cat > ok << 'fubar'
 src =
 [
 	{
-		file_name = "config";
+		file_name = "aegis.conf";
 		uuid = "UUID";
 		action = create;
 		edit =
@@ -357,7 +357,7 @@ if test $? -ne 0 ; then cat LOG; no_result; fi
 
 check_it ok $work/proj/info/trunk.fs
 
-activity="verify branch file state 339"
+activity="verify branch file state 360"
 
 cat > ok << 'fubar'
 src =
@@ -389,29 +389,29 @@ check_it ok $work/proj/info/change/0/001.fs
 
 # Finish the integration ------------------------------------------------------
 
-activity="review pass 363"
+activity="review pass 392"
 $bin/aegis -rpass 10 > LOG 2>&1
 if test $? -ne 0 ; then cat LOG; no_result; fi
 
-activity="integrate begin 367"
+activity="integrate begin 396"
 $bin/aegis -ib 10 > LOG 2>&1
 if test $? -ne 0 ; then cat LOG; no_result; fi
 
-activity="diff 371"
+activity="diff 400"
 $bin/aegis -diff > LOG 2>&1
 if test $? -ne 0 ; then cat LOG; no_result; fi
 
-activity="build 375"
+activity="build 404"
 $bin/aegis -b > LOG 2>&1
 if test $? -ne 0 ; then cat LOG; no_result; fi
 
-activity="integrate pass 379"
+activity="integrate pass 408"
 $bin/aegis -ipass > LOG 2>&1
 if test $? -ne 0 ; then cat LOG; no_result; fi
 
 # Verify branch file state ----------------------------------------------------
 
-activity="verify branch file state 385"
+activity="verify branch file state 414"
 
 cat > ok << 'fubar'
 src =

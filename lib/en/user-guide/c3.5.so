@@ -1,0 +1,136 @@
+.\"
+.\"	aegis - project change supervisor
+.\"	Copyright (C) 2005 Peter Miller;
+.\"	All rights reserved.
+.\"
+.\"	This program is free software; you can redistribute it and/or modify
+.\"	it under the terms of the GNU General Public License as published by
+.\"	the Free Software Foundation; either version 2 of the License, or
+.\"	(at your option) any later version.
+.\"
+.\"	This program is distributed in the hope that it will be useful,
+.\"	but WITHOUT ANY WARRANTY; without even the implied warranty of
+.\"	MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+.\"	GNU General Public License for more details.
+.\"
+.\"	You should have received a copy of the GNU General Public License
+.\"	along with this program; if not, write to the Free Software
+.\"	Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111, USA.
+.\"
+.\" MANIFEST: User Guide, The History Tool, Using aesvt
+.\"
+.bp
+.nh 2 "Using aesvt"
+.LP
+The \fIaesvt\fP(1) command is distributed with Aegis.
+It supports binary files, has versy small history files,
+and has good end-to-end behaviour.
+The entries for the commands are listed below.
+.nh 3 "history_create_command"
+.LP
+This command is used to create a new file history.
+This command is always executed as the project owner.
+.LP
+The following substitutions are available:
+.IP ${Input}
+absolute path of the source file
+.IP ${History}
+absolute path of the history file
+.LP
+The entry in the
+.I "aegis.conf"
+file looks like this:
+.E(
+history_create_command =
+  "aesvt -checkin "
+  "-history $history "
+  "-f $input"
+  ;
+.E)
+.nh 3 "history_put_command"
+.LP
+It is essential that the \fIhistory_\%create_\%command\fP and the
+\fIhistory_\%put_\%command\fP are identical.  It is a historical accident
+that there are two separate commands: before Aegis supported branches,
+this was not a requirement.
+.nh 3 "history_get_command"
+.LP
+This command is used to get a specific edit back from history.
+This command is always executed as the project owner.
+.LP
+The following substitutions are available:
+.IP ${History}
+absolute path of the history file
+.IP ${Edit}
+edit number, as given by history_\%query_\%command
+.IP ${Output}
+absolute path of the destination file
+.LP
+The entry in the
+.I "aegis.conf"
+file looks like this:
+.E(
+history_get_command =
+  "aesvt -checkout "
+  "-history $history "
+  "-edit $edit "
+  "-o $output"
+  ;
+.E)
+.nh 3 "history_query_command"
+.LP
+This command is used to query what the history mechanism calls the top-most
+edit of a history file.
+The result may be any arbitrary string,
+it need not be anything like a number,
+just so long as it uniquely identifies the edit
+for use by the
+.I history_get_command
+at a later date.
+The edit number is to be printed on the standard output.
+This command is always executed as the project owner.
+.LP
+The following substitutions are available:
+.IP ${History}
+absolute path of the history file
+.LP
+The entry in the
+.I "aegis.conf"
+file looks like this:
+.E(
+history_query_command =
+  "aesvt -query "
+  "-history $history"
+  ;
+.E)
+.nh 3 "Templates"
+.LP
+The
+.I lib/config.example/aesvt
+file in the Aegis distribution
+(installed as \fI\*(D)/config.example/aesvt\fP by default)
+contains all of the above commands,
+so that you may readily insert them into your project
+configuration
+file.
+.LP
+Also, there are some subtleties to writing the commands, which are not
+present in the above examples.  In particular, being able to support file
+names which contain characters which are special to the shell requires
+the use of the ${quote} substitution around all of the files names in
+the commands.
+.LP
+In addition, it is possible to store meta-date with each version.
+For example: ``\f[CW]Description=${quote ($version) ${change
+description}}\fP'' inserts the version number and the brief description
+into the file's log.  This means that using the \fIaesvt -list\fP option
+will provide quite useful summaries.
+.nh 3 "Binary Files"
+.LP
+The \fIaesvt\fP(1) command is able to cope with binary files.
+Set
+.E(
+history_content_limitation =
+    binary_capable;
+.E)
+so that Aegis knows that no encoding is required.

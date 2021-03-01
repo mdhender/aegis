@@ -27,159 +27,55 @@
 #include <ac/sys/types.h>
 #include <sys/socket.h>
 
-#include <error.h>
 #include <glue.h>
 #include <input/curl.h>
 #include <input/file.h>
-#include <input/private.h>
 #include <input/stdin.h>
-#include <mem.h>
 #include <os.h>
-#include <str.h>
 #include <sub.h>
 #include <url.h>
 
-struct input_file_ty
+
+input_file::~input_file()
 {
-    input_ty	    inherited;
-    int		    fd;
-    string_ty	    *fn;
-    int		    unlink_on_close;
-    long	    pos;
-};
-
-
-static void
-destruct(input_ty *p)
-{
-    input_file_ty   *this_thing;
-
-    this_thing = (input_file_ty *)p;
-    if (glue_close(this_thing->fd))
+    if (fd >= 0)
     {
-	sub_context_ty	*scp;
-	int             errno_old;
+	if (glue_close(fd))
+	{
+	    int errno_old = errno;
+	    sub_context_ty *scp = sub_context_new();
+	    sub_errno_setx(scp, errno_old);
+	    sub_var_set_string(scp, "File_Name", path);
+	    fatal_intl(scp, i18n("close $filename: $errno"));
+	    // NOTREACHED
+	}
 
-	errno_old = errno;
-	scp = sub_context_new();
-	sub_errno_setx(scp, errno_old);
-	sub_var_set_string(scp, "File_Name", this_thing->fn);
-	fatal_intl(scp, i18n("close $filename: $errno"));
-	// NOTREACHED
+	// The file only exists if fd>=0
+	if (unlink_on_close_flag)
+	    os_unlink_errok(path);
+
+	fd = -1;
     }
-    if (this_thing->unlink_on_close)
-	os_unlink_errok(this_thing->fn);
-    str_free(this_thing->fn);
-    this_thing->fd = -1;
-    this_thing->fn = 0;
 }
-
-
-static long
-input_file_read(input_ty *p, void *data, size_t len)
-{
-    input_file_ty   *this_thing;
-    long	    result;
-
-    os_become_must_be_active();
-    if (len == 0)
-	return 0;
-    this_thing = (input_file_ty *)p;
-    result = glue_read(this_thing->fd, data, len);
-    if (result < 0)
-    {
-	sub_context_ty	*scp;
-	int             errno_old;
-
-	errno_old = errno;
-	scp = sub_context_new();
-	sub_errno_setx(scp, errno_old);
-	sub_var_set_string(scp, "File_Name", this_thing->fn);
-	fatal_intl(scp, i18n("read $filename: $errno"));
-	// NOTREACHED
-    }
-    this_thing->pos += result;
-    return result;
-}
-
-
-static long
-input_file_ftell(input_ty *p)
-{
-    input_file_ty   *this_thing;
-
-    this_thing = (input_file_ty *)p;
-    return this_thing->pos;
-}
-
-
-static string_ty *
-input_file_name(input_ty *p)
-{
-    input_file_ty   *this_thing;
-
-    this_thing = (input_file_ty *)p;
-    return this_thing->fn;
-}
-
-
-static long
-input_file_length(input_ty *p)
-{
-    input_file_ty   *this_thing;
-
-    this_thing = (input_file_ty *)p;
-    return os_file_size(this_thing->fn);
-}
-
-
-static void
-input_file_keepalive(input_ty *fp)
-{
-    input_file_ty   *ip;
-    int             on;
-
-    ip = (input_file_ty *)fp;
-    on = 1;
-    // ignore any error
-    setsockopt(ip->fd, SOL_SOCKET, SO_KEEPALIVE, (char *)&on, sizeof(on));
-}
-
-
-static input_vtbl_ty vtbl =
-{
-    sizeof(input_file_ty),
-    destruct,
-    input_file_read,
-    input_file_ftell,
-    input_file_name,
-    input_file_length,
-    input_file_keepalive,
-};
 
 
 static int
 open_with_stale_nfs_retry(const char *path, int mode)
 {
-    int		    fd;
-    int		    perms =	    0666;
-#ifdef ESTALE
-    int		    ntries;
-    const int	    nsecs =	    5;
-#endif
-
     //
     // Try to open the file.
     //
     errno = 0;
-    fd = glue_open(path, mode, perms);
+    int perms = 0666;
+    int fd = glue_open(path, mode, perms);
 
     //
     // Keep trying for one minute if we get a Stale NFS file handle
     // error.  Some systems suffer from this in a Very Bad Way.
     //
 #ifdef ESTALE
-    for (ntries = 0; ntries < 60; ntries += nsecs)
+    const int nsecs = 5;
+    for (int ntries = 0; ntries < 60; ntries += nsecs)
     {
 	if (fd >= 0)
 	    break;
@@ -199,67 +95,108 @@ open_with_stale_nfs_retry(const char *path, int mode)
 }
 
 
-input_ty *
-input_file_open(string_ty *fn)
+input_file::input_file(const nstring &arg1, bool arg2, bool empty_if_absent) :
+    path(arg1),
+    fd(-1),
+    unlink_on_close_flag(arg2),
+    pos(0)
 {
-    input_ty	    *result;
-    input_file_ty   *this_thing;
-    int		    fd;
-
-    if (!fn || !fn->str_length)
-	return input_stdin();
-
     os_become_must_be_active();
-    fd = open_with_stale_nfs_retry(fn->str_text, O_RDONLY);
-    if (fd < 0 && errno == ENOENT && input_curl_looks_likely(fn))
-    {
-        // Note: we use the input_curl_looks_likely function EVEN when
-        // -lcurl is not available, .
-#ifdef HAVE_LIBCURL
-	return input_curl_open(fn);
-#else
-	// This fragment should probably be moved into input_curl_open
-	// in the case when HAVE_LIBCURL is undefined.
-	url temp = nstring(str_copy(fn));
-	if (!temp.is_a_file())
-	{
-	    sub_context_ty sc(__FILE__, __LINE__);
-	    sc.var_set_string("File_Name", fn);
-	    sc.fatal_intl(i18n("open $filename: no curl library"));
-	    // NOTREACHED
-	}
-	str_free(fn);
-	fn = str_copy(temp.get_path().get_ref());
-	fd = open_with_stale_nfs_retry(fn->str_text, O_RDONLY);
-#endif
-    }
-
-    result = input_new(&vtbl);
-    this_thing = (input_file_ty *)result;
-    this_thing->fd = fd;
-    if (this_thing->fd < 0)
+    fd = open_with_stale_nfs_retry(path.c_str(), O_RDONLY);
+    if (fd < 0)
     {
 	int errno_old = errno;
-	sub_context_ty sc(__FILE__, __LINE__);
+	if (errno_old != ENOENT)
+	{
+	    sub_context_ty sc(__FILE__, __LINE__);
+	    sc.errno_setx(errno_old);
+	    sc.var_set_string("File_Name", path);
+	    sc.fatal_intl(i18n("open $filename: $errno"));
+	    // NOTREACHED
+	}
+    }
+}
+
+
+long
+input_file::read_inner(void *data, size_t len)
+{
+    os_become_must_be_active();
+    if (len == 0)
+	return 0;
+    if (fd < 0)
+	return 0;
+    long result = glue_read(fd, data, len);
+    if (result < 0)
+    {
+	int errno_old = errno;
+	sub_context_ty sc;
 	sc.errno_setx(errno_old);
-	sc.var_set_string("File_Name", fn);
-	sc.fatal_intl(i18n("open $filename: $errno"));
+	sc.var_set_string("File_Name", path);
+	sc.fatal_intl(i18n("read $filename: $errno"));
 	// NOTREACHED
     }
-    this_thing->fn = str_copy(fn);
-    this_thing->unlink_on_close = 0;
-    this_thing->pos = 0;
+    pos += result;
     return result;
 }
 
 
-void
-input_file_unlink_on_close(input_ty *fp)
+long
+input_file::ftell_inner()
 {
-    input_file_ty   *this_thing;
+    return pos;
+}
 
-    if (fp->vptr != &vtbl)
-	return;
-    this_thing = (input_file_ty *)fp;
-    this_thing->unlink_on_close = 1;
+
+nstring
+input_file::name()
+{
+    return path;
+}
+
+
+long
+input_file::length()
+{
+    if (fd < 0)
+	return 0;
+    return os_file_size(path.get_ref());
+}
+
+
+void
+input_file::keepalive()
+{
+    if (fd >= 0)
+    {
+	int on = 1;
+	// ignore any error
+	setsockopt(fd, SOL_SOCKET, SO_KEEPALIVE, (char *)&on, sizeof(on));
+    }
+}
+
+
+void
+input_file::unlink_on_close()
+{
+    unlink_on_close_flag = true;
+}
+
+
+input_ty *
+input_file_open(const nstring &fn, bool unlink_on_close, bool empty_if_absent)
+{
+    os_become_must_be_active();
+    if (fn.empty() || fn == "-")
+	return new input_stdin();
+    if (input_curl::looks_likely(fn))
+	return new input_curl(fn);
+    return new input_file(fn, unlink_on_close, empty_if_absent);
+}
+
+
+input_ty *
+input_file_open(string_ty *fn, bool unlink_on_close)
+{
+    return input_file_open(nstring(fn), unlink_on_close);
 }

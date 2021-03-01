@@ -31,7 +31,7 @@
 
 
 bool
-os_exists(const nstring &path)
+os_exists(const nstring &path, bool eaccess_is_ok)
 {
     os_become_must_be_active();
     struct stat st;
@@ -43,12 +43,22 @@ os_exists(const nstring &path)
     if (oret)
     {
 	int errno_old = errno;
-	if (errno_old != ENOENT && errno_old != ENOTDIR)
+	switch (errno_old)
 	{
-	    sub_context_ty *scp = sub_context_new();
-	    sub_errno_setx(scp, errno_old);
-	    sub_var_set_string(scp, "File_Name", path);
-	    fatal_intl(scp, i18n("stat $filename: $errno"));
+	case ENOENT:
+	case ENOTDIR:
+	    break;
+
+	case EACCES:
+	    if (eaccess_is_ok)
+		break;
+	    // fall through...
+
+	default:
+	    sub_context_ty sc;
+	    sc.errno_setx(errno_old);
+	    sc.var_set_string("File_Name", path);
+	    sc.fatal_intl(i18n("stat $filename: $errno"));
 	    // NOTREACHED
 	}
 	return false;
@@ -58,7 +68,7 @@ os_exists(const nstring &path)
 
 
 int
-os_exists(string_ty *path)
+os_exists(string_ty *path, bool eaccess_is_ok)
 {
-    return os_exists(nstring(str_copy(path)));
+    return os_exists(nstring(str_copy(path)), eaccess_is_ok);
 }

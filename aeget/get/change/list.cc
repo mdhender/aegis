@@ -1,6 +1,6 @@
 //
 //	aegis - project change supervisor
-//	Copyright (C) 2003, 2004 Peter Miller;
+//	Copyright (C) 2003-2005 Peter Miller;
 //	All rights reserved.
 //
 //	This program is free software; you can redistribute it and/or modify
@@ -31,8 +31,10 @@
 #include <emit/brief_descri.h>
 #include <emit/project.h>
 #include <http.h>
+#include <os.h>
 #include <project.h>
 #include <project/history.h>
+#include <rss.h>
 #include <str_list.h>
 
 
@@ -118,8 +120,19 @@ get_change_list(project_ty *pp, string_ty *filename, string_list_ty *modifier)
     // No modifiers means all states.
     //
     state_mask = calculate_state_mask(modifier);
+    bit = single_bit(state_mask);
 
     html_header(pp, 0);
+    nstring rss_filename;
+    if (bit >= 0)
+    {
+	rss_filename =
+	    rss_feed_filename(pp, cstate_state_ename((cstate_state_ty)bit));
+	if (!rss_filename.empty())
+	{
+	    emit_rss_meta_data(pp, os_basename(rss_filename));
+	}
+    }
     printf("<title>Project ");
     html_encode_string(project_name_get(pp));
     printf(",\nList of Changes</title></head><body>\n");
@@ -127,7 +140,6 @@ get_change_list(project_ty *pp, string_ty *filename, string_list_ty *modifier)
     printf("<h1 align=center>");
     emit_project(pp);
     printf(",<br>\nList of Changes");
-    bit = single_bit(state_mask);
     link_to_state_page = 1;
     if (bit >= 0)
     {
@@ -141,6 +153,14 @@ get_change_list(project_ty *pp, string_ty *filename, string_list_ty *modifier)
 	    printf(" not %s", cstate_state_ename((cstate_state_ty)bit));
     }
     printf("</h1>\n");
+
+    // Place an RSS icon if necessary.
+    if (!rss_filename.empty())
+    {
+        printf("<p align=\"center\">\n");
+        emit_rss_icon_with_link(pp, os_basename(rss_filename));
+        printf("</p>\n");
+    }
 
     //
     // Find the attributes.

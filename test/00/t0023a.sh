@@ -53,6 +53,9 @@ if test $? -ne 0 ; then exit 2; fi
 
 if test "$1" != "" ; then bin="$here/$1/bin"; else bin="$here/bin"; fi
 
+if test "$1" != "" ; then AEGIS_DATADIR=$here/$1/lib; else AEGIS_DATADIR="$here/lib"; fi
+export AEGIS_DATADIR
+
 no_result()
 {
 	set +x

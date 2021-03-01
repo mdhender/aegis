@@ -1,6 +1,6 @@
 //
 //	aegis - project change supervisor
-//	Copyright (C) 1991, 1993, 1994, 2002-2004 Peter Miller.
+//	Copyright (C) 1991, 1993, 1994, 2002-2005 Peter Miller.
 //	All rights reserved.
 //
 //	This program is free software; you can redistribute it and/or modify
@@ -243,10 +243,10 @@ static void
 findsnake(int depth, long A, long N, long B, long M)
 {
     snake_t         *sp;
-    long            ulx;
-    long            uly;
-    long            lrx;
-    long            lry;
+    long            ulx = 0;
+    long            uly = 0;
+    long            lrx = 0;
+    long            lry = 0;
     long            D;
     long            count;
 

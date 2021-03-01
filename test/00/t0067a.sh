@@ -1,7 +1,7 @@
 #!/bin/sh
 #
 #	aegis - project change supervisor
-#	Copyright (C) 1997, 1998, 2000, 2001, 2004 Peter Miller;
+#	Copyright (C) 1997, 1998, 2000, 2001, 2004, 2005 Peter Miller;
 #	All rights reserved.
 #
 #	This program is free software; you can redistribute it and/or modify
@@ -116,21 +116,21 @@ unset LANGUAGE
 #
 # test the branch ipass functionality
 #
-activity="new project 115"
+activity="new project 119"
 $bin/aegis -npr test -vers '' -dir $workproj -lib $worklib > log 2>&1
 if test $? -ne 0 ; then cat log; no_result; fi
 
-activity="staff 119"
+activity="staff 123"
 $bin/aegis -nd $USER -p test -lib $worklib > log 2>&1
 if test $? -ne 0 ; then cat log; no_result; fi
-activity="staff 122"
+activity="staff 126"
 $bin/aegis -nrv $USER -p test -lib $worklib > log 2>&1
 if test $? -ne 0 ; then cat log; no_result; fi
-activity="staff 125"
+activity="staff 129"
 $bin/aegis -ni $USER -p test -lib $worklib > log 2>&1
 if test $? -ne 0 ; then cat log; no_result; fi
 
-activity="project attributes 129"
+activity="project attributes 133"
 cat > pa << 'fubar'
 developer_may_review = true;
 developer_may_integrate = true;
@@ -140,14 +140,14 @@ if test $? -ne 0 ; then no_result; fi
 $bin/aegis -pa -f pa -p test -lib $worklib > log 2>&1
 if test $? -ne 0 ; then cat log; no_result; fi
 
-activity="create branch 139"
+activity="create branch 143"
 $bin/aegis -nbr 4 -p test -lib $worklib > log 2>&1
 if test $? -ne 0 ; then cat log; no_result; fi
 
 #
 # create a change to the branch
 #
-activity="new change 146"
+activity="new change 150"
 cat > ca << 'fubar'
 brief_description = "first";
 description = "This is the first change.";
@@ -160,15 +160,15 @@ if test $? -ne 0 ; then no_result; fi
 $bin/aegis -nc -f ca -p test.4 -lib $worklib > log 2>&1
 if test $? -ne 0 ; then cat log; no_result; fi
 
-activity="develop begin 159"
+activity="develop begin 163"
 $bin/aegis -db 10 -p test.4 -dir $workchan -lib $worklib > log 2>&1
 if test $? -ne 0 ; then cat log; no_result; fi
 
-activity="new file 163"
-$bin/aegis -nf $workchan/config -c 10 -p test.4 -lib $worklib > log 2>&1
+activity="new file 167"
+$bin/aegis -nf $workchan/aegis.conf -c 10 -p test.4 -lib $worklib > log 2>&1
 if test $? -ne 0 ; then cat log; no_result; fi
 
-cat > $workchan/config << 'fubar'
+cat > $workchan/aegis.conf << 'fubar'
 build_command = "exit 0";
 
 history_get_command =
@@ -190,44 +190,44 @@ fubar
 if test $? -ne 0 ; then no_result; fi
 
 # build
-activity="build 189"
+activity="build 193"
 $bin/aegis -b -c 10 -p test.4 -lib $worklib > log 2>&1
 if test $? -ne 0 ; then cat log; no_result; fi
 
-activity="difference 193"
+activity="difference 197"
 $bin/aegis -diff -c 10 -p test.4 -lib $worklib > log 2>&1
 if test $? -ne 0 ; then cat log; no_result; fi
 
-activity="develop end 197"
+activity="develop end 201"
 $bin/aegis -de -c 10 -p test.4 -lib $worklib > log 2>&1
 if test $? -ne 0 ; then cat log; no_result; fi
 
-activity="review pass 201"
+activity="review pass 205"
 $bin/aegis -rpass 10 -p test.4 -lib $worklib > log 2>&1
 if test $? -ne 0 ; then cat log; no_result; fi
 
-activity="integrate begin 205"
+activity="integrate begin 209"
 $bin/aegis -ib 10 -p test.4 -lib $worklib > log 2>&1
 if test $? -ne 0 ; then cat log; no_result; fi
 
 # build
-activity="build 210"
+activity="build 214"
 $bin/aegis -b -c 10 -p test.4 -lib $worklib > log 2>&1
 if test $? -ne 0 ; then cat log; no_result; fi
 
 # diff
-activity="diff 215"
+activity="diff 219"
 $bin/aegis -diff -c 10 -p test.4 -lib $worklib > log 2>&1
 if test $? -ne 0 ; then cat log; no_result; fi
 
-activity="integrate pass 219"
+activity="integrate pass 223"
 $bin/aegis -ipass 10 -p test.4 -lib $worklib > log 2>&1
 if test $? -ne 0 ; then cat log; no_result; fi
 
 #
 # create another change to branch 4
 #
-activity="new change 226"
+activity="new change 230"
 cat > ca << 'fubar'
 brief_description = "second";
 description = "This is the second change.";
@@ -241,70 +241,70 @@ $bin/aegis -nc -f ca -p test.4 -lib $worklib > log 2>&1
 if test $? -ne 0 ; then cat log; no_result; fi
 
 # develop begin
-activity="develop begin 240"
+activity="develop begin 244"
 $bin/aegis -db 11 -p test.4 -dir $workchan -lib $worklib > log 2>&1
 if test $? -ne 0 ; then cat log; no_result; fi
 
-activity="new file 244"
+activity="new file 248"
 $bin/aegis -nf $workchan/fred -c 11 -p test.4 -lib $worklib > log 2>&1
 if test $? -ne 0 ; then cat log; no_result; fi
 
-activity="new test 248"
+activity="new test 252"
 $bin/aegis -nt $workchan/a.test.sh -c 11 -p test.4 -lib $worklib > log 2>&1
 if test $? -ne 0 ; then cat log; no_result; fi
 
 echo exit 0 > $workchan.a.test.sh
 if test $? -ne 0 ; then no_result; fi
 
-activity="change attributes 255"
+activity="change attributes 259"
 $bin/aegis -ca -f ca -c 11 -p test.4 -lib $worklib > log 2>&1
 if test $? -ne 0 ; then cat log; no_result; fi
 
 # build
-activity="build 260"
+activity="build 264"
 $bin/aegis -b -c 11 -p test.4 -lib $worklib > log 2>&1
 if test $? -ne 0 ; then cat log; no_result; fi
 
 # test
-activity="test 265"
+activity="test 269"
 $bin/aegis -t -c 11 -p test.4 -lib $worklib > log 2>&1
 if test $? -ne 0 ; then cat log; no_result; fi
 
-activity="difference 269"
+activity="difference 273"
 $bin/aegis -diff -c 11 -p test.4 -lib $worklib > log 2>&1
 if test $? -ne 0 ; then cat log; no_result; fi
 
-activity="develop end 273"
+activity="develop end 277"
 $bin/aegis -de -c 11 -p test.4 -lib $worklib > log 2>&1
 if test $? -ne 0 ; then cat log; no_result; fi
 
-activity="review pass 277"
+activity="review pass 281"
 $bin/aegis -rpass 11 -p test.4 -lib $worklib > log 2>&1
 if test $? -ne 0 ; then cat log; no_result; fi
 
-activity="integrate begin 281"
+activity="integrate begin 285"
 $bin/aegis -ib 11 -p test.4 -lib $worklib > log 2>&1
 if test $? -ne 0 ; then cat log; no_result; fi
 
 # build
-activity="build 286"
+activity="build 290"
 $bin/aegis -b -c 11 -p test.4 -lib $worklib > log 2>&1
 if test $? -ne 0 ; then cat log; no_result; fi
 
 # test
-activity="test 291"
+activity="test 295"
 $bin/aegis -t -c 11 -p test.4 -lib $worklib > log 2>&1
 if test $? -ne 0 ; then cat log; no_result; fi
 
-activity="difference 295"
+activity="difference 299"
 $bin/aegis -diff -c 11 -p test.4 -lib $worklib > log 2>&1
 if test $? -ne 0 ; then cat log; no_result; fi
 
-activity="integrate pass 299"
+activity="integrate pass 303"
 $bin/aegis -ipass 11 -p test.4 -lib $worklib > log 2>&1
 if test $? -ne 0 ; then cat log; no_result; fi
 
-activity="check file state 303"
+activity="check file state 307"
 cat > ok << 'fubar'
 src =
 [
@@ -344,7 +344,7 @@ src =
 		];
 	},
 	{
-		file_name = "config";
+		file_name = "aegis.conf";
 		uuid = "UUID";
 		action = create;
 		edit =
@@ -411,7 +411,7 @@ check_it ok $workproj/info/change/0/004.fs
 #
 # end branch 4 and integrate it
 #
-activity="change attributes 383"
+activity="change attributes 414"
 cat > ca << 'fubar'
 test_baseline_exempt = true;
 regression_test_exempt = true;
@@ -420,34 +420,34 @@ if test $? -ne 0 ; then no_result; fi
 $bin/aegis -ca -f ca -c 4 -p test -lib $worklib > log 2>&1
 if test $? -ne 0 ; then cat log; no_result; fi
 
-activity="develop end 392"
+activity="develop end 423"
 $bin/aegis -de -c 4 -p test -lib $worklib > log 2>&1
 if test $? -ne 0 ; then cat log; no_result; fi
 
-activity="review pass 396"
+activity="review pass 427"
 $bin/aegis -rpass -c 4 -p test -lib $worklib > log 2>&1
 if test $? -ne 0 ; then cat log; no_result; fi
 
-activity="integrate begin 400"
+activity="integrate begin 431"
 $bin/aegis -ib -c 4 -p test -lib $worklib > log 2>&1
 if test $? -ne 0 ; then cat log; no_result; fi
 
-activity="build 404"
+activity="build 435"
 $bin/aegis -b -c 4 -p test -lib $worklib > log 2>&1
 if test $? -ne 0 ; then cat log; no_result; fi
 
-activity="test 408"
+activity="test 439"
 $bin/aegis -t -c 4 -p test -lib $worklib > log 2>&1
 if test $? -ne 0 ; then cat log; no_result; fi
 
-activity="integrate pass 412"
+activity="integrate pass 443"
 $bin/aegis -ipass -c 4 -p test -lib $worklib > log 2>&1
 if test $? -ne 0 ; then cat log; no_result; fi
 
 #
 # Now make sure that the test correlations look as they should
 #
-activity="check file state 419"
+activity="check file state 450"
 cat > ok << 'fubar'
 src =
 [
@@ -481,7 +481,7 @@ src =
 		];
 	},
 	{
-		file_name = "config";
+		file_name = "aegis.conf";
 		uuid = "UUID";
 		action = create;
 		edit =

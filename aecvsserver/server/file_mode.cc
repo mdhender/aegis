@@ -1,6 +1,6 @@
 //
 //	aegis - project change supervisor
-//	Copyright (C) 2004 Peter Miller;
+//	Copyright (C) 2004, 2005 Peter Miller;
 //	All rights reserved.
 //
 //	This program is free software; you can redistribute it and/or modify
@@ -155,15 +155,17 @@ parse_mode_string(string_ty *s, int *mode_p)
 int
 server_file_mode_get(server_ty *sp)
 {
-    string_ty       *mode_string;
-    int             mode;
-
-    mode_string = server_getline(sp);
-    if (!parse_mode_string(mode_string, &mode))
+    int mode = 0;
+    nstring mode_string;
+    if
+    (
+	!server_getline(sp, mode_string)
+    ||
+	!parse_mode_string(mode_string.get_ref(), &mode)
+    )
     {
-	server_error(sp, "malformed \"%s\" mode string", mode_string->str_text);
+	server_error(sp, "malformed \"%s\" mode string", mode_string.c_str());
 	mode = 0644;
     }
-    str_free(mode_string);
     return mode;
 }

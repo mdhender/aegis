@@ -1,0 +1,82 @@
+/*
+ *	aegis - project change supervisor
+ *	Copyright (C) 2005 Peter Miller;
+ *	All rights reserved.
+ *
+ *	This program is free software; you can redistribute it and/or modify
+ *	it under the terms of the GNU General Public License as published by
+ *	the Free Software Foundation; either version 2 of the License, or
+ *	(at your option) any later version.
+ *
+ *	This program is distributed in the hope that it will be useful,
+ *	but WITHOUT ANY WARRANTY; without even the implied warranty of
+ *	MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ *	GNU General Public License for more details.
+ *
+ *	You should have received a copy of the GNU General Public License
+ *	along with this program; if not, write to the Free Software
+ *	Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111, USA.
+ *
+ * MANIFEST: report the names and email address of all users
+ */
+
+auto attr_names;
+attr_names =
+[
+    "default_change_number",
+    "default_development_directory",
+    "default_project_directory",
+    "default_project_name",
+    "delete_file_preference",
+    "diff_preference",
+    "editor_command",
+    "lock_wait_preference",
+    "log_file_preference",
+    "page_preference",
+    "pager_command",
+    "persevere_preference",
+    "symbolic_link_preference",
+    "visual_command",
+    "whiteout_preference"
+];
+
+auto name, u;
+title("The Users Report");
+if (terse())
+{
+    columns({ name = "Login\n-------"; right = 0; });
+    for (name in sort(keys(user)))
+	print(name);
+}
+else
+{
+    columns
+    (
+	{ name = "Login\n--------------"; right = 0; },
+	{ name = "Attribute\n--------------"; left = 16; right = 0; },
+	{ name = "Value\n--------------"; left = 32; right = 0; }
+    );
+    for (name in sort(keys(user)))
+    {
+	u = user[name];
+	print(name, "email_address", u.email_address);
+
+	/*
+	 * List all of the fixed attribute fields.
+	 */
+	auto a;
+	for (a in attr_names)
+	{
+	    if (u[a] != "")
+		print("", a, u[a]);
+	}
+
+	/*
+	 * Now list all of the user-defined attributes.
+	 */
+	for (a in u.attribute)
+	{
+	    print("", a.name, a.value);
+	}
+    }
+}

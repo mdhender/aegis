@@ -1,6 +1,6 @@
 //
 //	aegis - project change supervisor
-//	Copyright (C) 1999, 2001-2004 Peter Miller;
+//	Copyright (C) 1999, 2001-2005 Peter Miller;
 //	All rights reserved.
 //
 //	This program is free software; you can redistribute it and/or modify
@@ -21,53 +21,40 @@
 //
 
 #include <input/base64.h>
-#include <input/private.h>
 #include <stracc.h>
 
 
-struct input_base64_ty
+input_base64::~input_base64()
 {
-    input_ty	    inherited;
-    input_ty	    *deeper;
-    int		    close_on_close;
-    long	    pos;
-    int		    residual_bits;
-    int		    residual_value;
-    int		    eof;
-};
-
-
-static void
-input_base64_destructor(input_ty *fp)
-{
-    input_base64_ty *this_thing;
-
-    this_thing = (input_base64_ty *)fp;
-    if (this_thing->close_on_close)
-	input_delete(this_thing->deeper);
-    this_thing->deeper = 0; // paranoia
+    if (close_on_close)
+	delete deeper;
+    deeper = 0;
 }
 
 
-static long
-input_base64_read(input_ty *fp, void *data, size_t len)
+input_base64::input_base64(input_ty *arg1, bool arg2) :
+    deeper(arg1),
+    close_on_close(arg2),
+    pos(0),
+    residual_bits(0),
+    residual_value(0),
+    eof(false)
 {
-    input_base64_ty *this_thing;
-    int		    c;
-    unsigned char   *cp;
-    unsigned char   *end;
-    size_t	    nbytes;
+}
 
-    this_thing = (input_base64_ty *)fp;
-    if (this_thing->eof)
+
+long
+input_base64::read_inner(void *data, size_t len)
+{
+    if (eof)
 	return 0;
-    cp = (unsigned char *)data;
-    end = cp + len;
+    unsigned char *cp = (unsigned char *)data;
+    unsigned char *end = cp + len;
     while (cp < end)
     {
-	while (this_thing->residual_bits < 8)
+	while (residual_bits < 8)
 	{
-	    c = input_getc(this_thing->deeper);
+	    int c = deeper->getc();
 	    switch (c)
 	    {
 	    case ' ':
@@ -78,7 +65,7 @@ input_base64_read(input_ty *fp, void *data, size_t len)
 		continue;
 
 	    case '=':
-		this_thing->eof = 1;
+		eof = 1;
 		goto done;
 
 	    case 'A':
@@ -172,120 +159,78 @@ input_base64_read(input_ty *fp, void *data, size_t len)
 
 	    case '#':
 		//
-		// The RFC says we have th option of ignoreing bogus
+		// The RFC says we have the option of ignoring bogus
 		// characters or whinging about them.  If we ignore the
 		// '#' symbol, we can decode the patch meta data without
-		// and extra prefix removing input filter.
+		// an extra prefix removing input filter.
 		//
 		continue;
 
 	    default:
 		if (c < 0)
 		{
-		    if (this_thing->residual_bits != 0)
-			input_fatal_error(fp, "base64: residual bits != 0");
-		    this_thing->eof = 1;
+		    if (residual_bits != 0)
+			fatal_error("base64: residual bits != 0");
+		    eof = 1;
 		    goto done;
 		}
-		input_fatal_error(fp, "base64: invalid character");
+		fatal_error("base64: invalid character");
 		// NOTREACHED
 	    }
-	    this_thing->residual_value = (this_thing->residual_value << 6) + c;
-	    this_thing->residual_bits += 6;
+	    residual_value = (residual_value << 6) + c;
+	    residual_bits += 6;
 	}
-	this_thing->residual_bits -= 8;
-	*cp++ = (this_thing->residual_value >> this_thing->residual_bits);
+	residual_bits -= 8;
+	*cp++ = (residual_value >> residual_bits);
     }
     done:
-    nbytes = (cp - (unsigned char *)data);
-    this_thing->pos += nbytes;
+    size_t nbytes = (cp - (unsigned char *)data);
+    pos += nbytes;
     return nbytes;
 }
 
 
-static long
-input_base64_tell(input_ty *deeper)
+long
+input_base64::ftell_inner()
 {
-    input_base64_ty *this_thing;
-
-    this_thing = (input_base64_ty *)deeper;
-    return this_thing->pos;
+    return pos;
 }
 
 
-static struct string_ty *
-input_base64_name(input_ty *fp)
+nstring
+input_base64::name()
 {
-    input_base64_ty *this_thing;
-
-    this_thing = (input_base64_ty *)fp;
-    return input_name(this_thing->deeper);
+    return deeper->name();
 }
 
 
-static long
-input_base64_length(input_ty *fp)
+long
+input_base64::length()
 {
     return -1;
 }
 
 
-static void
-input_base64_keepalive(input_ty *fp)
+void
+input_base64::keepalive()
 {
-    input_base64_ty *ip;
-
-    ip = (input_base64_ty *)fp;
-    input_keepalive(ip->deeper);
+    deeper->keepalive();
 }
 
 
-static input_vtbl_ty vtbl =
+bool
+input_base64::recognise(input_ty *ifp)
 {
-    sizeof(input_base64_ty),
-    input_base64_destructor,
-    input_base64_read,
-    input_base64_tell,
-    input_base64_name,
-    input_base64_length,
-    input_base64_keepalive,
-};
-
-
-input_ty *
-input_base64(input_ty *deeper, int coc)
-{
-    input_ty	    *result;
-    input_base64_ty *this_thing;
-
-    result = input_new(&vtbl);
-    this_thing = (input_base64_ty *)result;
-    this_thing->deeper = deeper;
-    this_thing->close_on_close = !!coc;
-    this_thing->pos = 0;
-    this_thing->residual_bits = 0;
-    this_thing->residual_value = 0;
-    this_thing->eof = 0;
-    return result;
-}
-
-
-int
-input_base64_recognise(input_ty *ifp)
-{
-    int		    result;
-    int		    c;
-    stracc_t	    buffer;
-
     //
     // There are only a few characters which are acceptable to
     // the base64 filter.  Any others are conclusive evidence
     // of wrongness.
     //
-    result = 1;
+    bool result = true;
+    stracc_t buffer;
     while (buffer.size() < 8000)
     {
-	c = input_getc(ifp);
+	int c = ifp->getc();
 	if (c < 0)
 	    break;
 	buffer.push_back(c);
@@ -363,11 +308,19 @@ input_base64_recognise(input_ty *ifp)
 	    continue;
 
 	default:
-	    result = 0;
+	    result = false;
 	    break;
 	}
 	break;
     }
-    input_unread(ifp, buffer.get_data(), buffer.size());
+    ifp->unread(buffer.get_data(), buffer.size());
     return result;
+}
+
+
+bool
+input_base64::is_remote()
+    const
+{
+    return deeper->is_remote();
 }
