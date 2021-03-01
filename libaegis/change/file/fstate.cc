@@ -14,10 +14,8 @@
 //	GNU General Public License for more details.
 //
 //	You should have received a copy of the GNU General Public License
-//	along with this program; if not, write to the Free Software
-//	Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111, USA.
-//
-// MANIFEST: functions to manipulate fstates
+//	along with this program.  If not, see
+//	<http://www.gnu.org/licenses/>.
 //
 
 #include <libaegis/change/file.h>
@@ -64,7 +62,29 @@ fimprove(fstate_ty *fstate_data, string_ty *filename, change_ty *cp)
 	switch (src->action)
 	{
 	case file_action_transparent:
+            break;
+
 	case file_action_remove:
+            //
+            // There was once a bug in aeclone which caused the
+            // edit_origin field to be omitted for removed files.  This,
+            // in turn, led to project file entries with no edit_origin
+            // field, which hauses assert failues and segfaults all over
+            // the place.
+            //
+            if (!src->edit_origin && !src->edit_number_origin)
+            {
+                //
+                // The problem is , what the heck to we replace it with?
+                // Probably not important, since it will never be passed
+                // to the history_get_command.
+                //
+                src->edit_origin =
+                    (history_version_ty *)history_version_type.alloc();
+                src->edit_origin->errpos = str_copy(src->errpos);
+                src->edit_origin->revision = str_from_c("0.0");
+                src->edit_origin->encoding = history_version_encoding_none;
+            }
 	    break;
 
 	case file_action_create:

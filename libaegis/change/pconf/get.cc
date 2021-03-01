@@ -14,10 +14,8 @@
 //	GNU General Public License for more details.
 //
 //	You should have received a copy of the GNU General Public License
-//	along with this program; if not, write to the Free Software
-//	Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111, USA.
-//
-// MANIFEST: functions to manipulate gets
+//	along with this program.  If not, see
+//      <http://www.gnu.org/licenses>.
 //
 
 #include <common/error.h>	// for assert
@@ -410,43 +408,84 @@ pconf_read_by_usage(change_ty *cp)
     // (The string_list_append_list_unique is O(n**2), oops.)
     //
     string_list_ty filename;
-    for (size_t j = 0;; ++j)
+    if (cp->bogus || change_is_completed(cp))
     {
-	fstate_src_ty *src = change_file_nth(cp, j, view_path_extreme);
-	if (!src)
-	    break;
-	if (src->usage != file_usage_config)
-	    continue;
-	if (!candidate(src))
-	    continue;
-	fstate_src_trace(src);
+        //
+        // Use project file list.
+        //
+        // Two reasons:
+        // 1. avoid a catch-22 of needing the pconf to know the history
+        //    commands needed to load the pconf to know the history
+        //    commands needed to ... etc.
+        // 2. it can be very slow.
+        //
+        // We may need to revisit this in future when we have change
+        // (branch) delta panning working.
+        //
+        project_ty *pp = cp->pp;
+        while (!pp->is_a_trunk() && change_is_completed(pp->change_get()))
+            pp = pp->parent_get();
+        for (size_t j = 0;; ++j)
+        {
+            fstate_src_ty *src = pp->file_nth(j, view_path_extreme);
+            if (!src)
+                break;
+            if (src->usage != file_usage_config)
+                continue;
+            if (!candidate(src))
+                continue;
+            fstate_src_trace(src);
 
-	//
-        // It may be necessary to get the file out of history when we
-        // are dealing with an historical change set, and the particular
-        // file's version is not in a baseline any longer, and must be
-        // extracted from history.
-	//
-	int need_to_unlink = 0;
-	string_ty *s = change_file_version_path(cp, src, &need_to_unlink);
-        assert(s);
-	if (need_to_unlink)
-	{
-	    //
-	    // Remember to remove the temporary file on exit.
-	    //
-	    nstring path(str_copy(s));
-	    os_become_orig();
-	    quit_action *qap = new quit_action_unlink(path);
-	    os_become_undo();
-	    quit_register(*qap);
+            string_ty *s = project_file_path(pp, src);
+            assert(s);
+
+            //
+            // Add the filename to the list.
+            //
+            filename.push_back(s);
+            str_free(s);
         }
+    }
+    else
+    {
+        for (size_t j = 0;; ++j)
+        {
+            fstate_src_ty *src = change_file_nth(cp, j, view_path_extreme);
+            if (!src)
+                break;
+            if (src->usage != file_usage_config)
+                continue;
+            if (!candidate(src))
+                continue;
+            fstate_src_trace(src);
 
-	//
-	// Add the filename to the list.
-	//
-        filename.push_back(s);
-	str_free(s);
+            //
+            // It may be necessary to get the file out of history when we
+            // are dealing with an historical change set, and the particular
+            // file's version is not in a baseline any longer, and must be
+            // extracted from history.
+            //
+            int need_to_unlink = 0;
+            string_ty *s = change_file_version_path(cp, src, &need_to_unlink);
+            assert(s);
+            if (need_to_unlink)
+            {
+                //
+                // Remember to remove the temporary file on exit.
+                //
+                nstring path(str_copy(s));
+                os_become_orig();
+                quit_action *qap = new quit_action_unlink(path);
+                os_become_undo();
+                quit_register(*qap);
+            }
+
+            //
+            // Add the filename to the list.
+            //
+            filename.push_back(s);
+            str_free(s);
+        }
     }
 
     //
@@ -880,7 +919,6 @@ change_pconf_get(change_ty *cp, int required)
     change_lock_sync(cp);
     if (!cp->pconf_data)
     {
-
 	cp->pconf_data = pconf_read_by_usage(cp);
 	if (!cp->pconf_data)
 	{

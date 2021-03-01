@@ -1,8 +1,7 @@
 #!/bin/sh
 #
 #	aegis - project change supervisor
-#	Copyright (C) 1999, 2001, 2002, 2004, 2005 Peter Miller;
-#	All rights reserved.
+#	Copyright (C) 2007 Peter Miller
 #
 #	This program is free software; you can redistribute it and/or modify
 #	it under the terms of the GNU General Public License as published by
@@ -174,20 +173,11 @@ activity="new integrator 172"
 $bin/aegis -newint $USER -v > log 2>&1
 if test $? -ne 0 ; then cat log; no_result; fi
 
-#
-# create a couple of branches
-#
-$bin/aegis -nbr 1 -p example -v > log 2>&1
-if test $? -ne 0 ; then cat log; no_result; fi
-$bin/aegis -nbr 2 -p example -v > log 2>&1
-if test $? -ne 0 ; then cat log; no_result; fi
-
 # --------------------------------------------------------------------------
 #
-# Create a new change to get the project going.  We'll use the branches
-# after this, when testing things.
+# Create a new change to get the project going.
 #
-activity="new change 189"
+activity="new change 180"
 cat > $tmp << 'TheEnd'
 brief_description = "c1";
 description = "c1";
@@ -195,20 +185,23 @@ cause = internal_enhancement;
 TheEnd
 if test $? -ne 0 ; then no_result; fi
 
-$bin/aegis -nc 10 -f $tmp -project example -v > log 2>&1
+$bin/aegis -nc 1 -f $tmp -project example -v > log 2>&1
 if test $? -ne 0 ; then cat log; no_result; fi
+
+AEGIS_CHANGE=1
+export AEGIS_CHANGE
 
 #
 # begin development of the change
 #
-activity="develop begin 203"
-$bin/aegis -devbeg 10 -dir $workchan -v > log 2>&1
+activity="develop begin 197"
+$bin/aegis -devbeg 1 -dir $workchan -v > log 2>&1
 if test $? -ne 0 ; then cat log; no_result; fi
 
 #
 # create a suitable aegis.conf file
 #
-activity="new files 210"
+activity="new files 204"
 $bin/aegis -nf $workchan/aegis.conf $workchan/template.sh -v > log 2>&1
 if test $? -ne 0 ; then cat log; no_result; fi
 
@@ -231,56 +224,53 @@ history_put_trashes_file = warn;
 fubar
 if test $? -ne 0 ; then no_result; fi
 
-activity="new files 233"
+activity="new files 227"
 $bin/aegis -nf $workchan/fred -v > log 2>&1
 if test $? -ne 0 ; then cat log; no_result; fi
 
 echo fred > $workchan/fred
 if test $? -ne 0 ; then no_result; fi
 
-activity="diff 240"
+activity="diff 234"
 $bin/aegis -diff -v > log 2>&1
 if test $? -ne 0 ; then cat log; no_result; fi
 
-activity="build 244"
+activity="build 238"
 $bin/aegis -build -v > log 2>&1
 if test $? -ne 0 ; then cat log; no_result; fi
 
-activity="develop end 248"
+activity="develop end 242"
 $bin/aegis -de -v > log 2>&1
 if test $? -ne 0 ; then cat log; no_result; fi
 
-activity="review pass 252"
-$bin/aegis -rpass 10 -v > log 2>&1
+activity="review pass 246"
+$bin/aegis -rpass 1 -v > log 2>&1
 if test $? -ne 0 ; then cat log; no_result; fi
 
-activity="integrate begin 256"
-$bin/aegis -ib 10 -v > log 2>&1
+activity="integrate begin 250"
+$bin/aegis -ib 1 -v > log 2>&1
 if test $? -ne 0 ; then cat log; no_result; fi
 
-activity="integrate diff 260"
+activity="integrate diff 254"
 $bin/aegis -diff -v > log 2>&1
 if test $? -ne 0 ; then cat log; no_result; fi
 
-activity="integrate build 264"
+activity="integrate build 258"
 $bin/aegis -b -v > log 2>&1
 if test $? -ne 0 ; then cat log; no_result; fi
 
-activity="integrate pass 268"
+activity="integrate pass 262"
 $bin/aegis -ipass -v > log 2>&1
 if test $? -ne 0 ; then cat log; no_result; fi
 
 # --------------------------------------------------------------------------
 #
-# On the first branch, we create a change.  This change will create one
-# file, and remove another.  We will clone it before completing it.
+# With a new change, remove a file.
 #
-AEGIS_PROJECT=example.1
-export AEGIS_PROJECT
 AEGIS_CHANGE=10
 export AEGIS_CHANGE
 
-activity="new change 282"
+activity="new change 273"
 cat > $tmp << 'TheEnd'
 brief_description = "c2";
 description = "c2";
@@ -288,14 +278,14 @@ cause = internal_enhancement;
 TheEnd
 if test $? -ne 0 ; then no_result; fi
 
-$bin/aegis -nc 10 -f $tmp -project example.1 -v > log 2>&1
+$bin/aegis -nc 10 -f $tmp -project example -v > log 2>&1
 if test $? -ne 0 ; then cat log; no_result; fi
 
-activity="develop begin 293"
+activity="develop begin 284"
 $bin/aegis -devbeg 10 -dir $workchan -v > log 2>&1
 if test $? -ne 0 ; then cat log; no_result; fi
 
-activity="remove files 297"
+activity="remove files 288"
 $bin/aegis -rm $workchan/fred -v > log 2>&1
 if test $? -ne 0 ; then cat log; no_result; fi
 
@@ -316,12 +306,13 @@ src =
 ];
 fubar
 if test $? -ne 0 ; then no_result; fi
-check_it ok $work/proj/info/change/0/001.branch/0/010.fs
+check_it ok $work/proj/info/change/0/010.fs
 
+# --------------------------------------------------------------------------
 #
-# Clone a change with a file remove.
+# Clone the change with the file remove.
 #
-activity="clone 323"
+activity="clone 315"
 $bin/aegis -clone 10 11 -dir ${workchan}11 -v > log 2>&1
 if test $? -ne 0 ; then cat log; fail; fi
 
@@ -342,85 +333,74 @@ src =
 ];
 fubar
 if test $? -ne 0 ; then no_result; fi
-check_it ok $work/proj/info/change/0/001.branch/0/011.fs
+check_it ok $work/proj/info/change/0/011.fs
 
-activity="new files 346"
-$bin/aegis -nf $workchan/barney -v > log 2>&1
-if test $? -ne 0 ; then cat log; no_result; fi
+AEGIS_CHANGE=11
+export AEGIS_CHANGE
 
-echo barney > $workchan/barney
-if test $? -ne 0 ; then no_result; fi
-
-activity="diff 353"
-$bin/aegis -diff -v > log 2>&1
-if test $? -ne 0 ; then cat log; no_result; fi
-
-activity="build 357"
+activity="build 341"
 $bin/aegis -build -v > log 2>&1
 if test $? -ne 0 ; then cat log; no_result; fi
 
-activity="develop end 361"
-$bin/aegis -de -v > log 2>&1
-if test $? -ne 0 ; then cat log; no_result; fi
-
-activity="review pass 365"
-$bin/aegis -rpass 10 -v > log 2>&1
-if test $? -ne 0 ; then cat log; no_result; fi
-
-activity="integrate begin 369"
-$bin/aegis -ib 10 -v > log 2>&1
-if test $? -ne 0 ; then cat log; no_result; fi
-
-activity="integrate diff 373"
+activity="diff 345"
 $bin/aegis -diff -v > log 2>&1
 if test $? -ne 0 ; then cat log; no_result; fi
 
-activity="integrate build 377"
+activity="develop end 349"
+$bin/aegis -de -v > log 2>&1
+if test $? -ne 0 ; then cat log; no_result; fi
+
+activity="review pass 353"
+$bin/aegis -rpass 11 -v > log 2>&1
+if test $? -ne 0 ; then cat log; no_result; fi
+
+activity="integrate begin 357"
+$bin/aegis -ib 11 -v > log 2>&1
+if test $? -ne 0 ; then cat log; no_result; fi
+
+activity="integrate diff 361"
+$bin/aegis -diff -v > log 2>&1
+if test $? -ne 0 ; then cat log; no_result; fi
+
+activity="integrate build 365"
 $bin/aegis -b -v > log 2>&1
 if test $? -ne 0 ; then cat log; no_result; fi
 
-activity="integrate pass 381"
+activity="integrate pass 369"
 $bin/aegis -ipass -v > log 2>&1
 if test $? -ne 0 ; then cat log; no_result; fi
 
 # --------------------------------------------------------------------------
 #
-# Now the file is gone, clone it again.
+# Now the file is gone, do an aecp -delta
 #
-AEGIS_CHANGE=11
+AEGIS_CHANGE=12
 export AEGIS_CHANGE
 
-#
-# Clone a change with a file remove
-# of a removed file.
-#
-activity="clone 396"
-$bin/aegis -clone 11 12 -dir ${workchan}12 -v > log 2>&1
-if test $? -ne 0 ; then cat log; fail; fi
-
-activity="remove file undo 400"
-$bin/aegis -rmu ${workchan}11/fred -v > log 2>&1
-if test $? -ne 0 ; then cat log; no_result; fi
-
-activity="remove file 404"
-$bin/aegis -rm ${workchan}11/barney -v > log 2>&1
-if test $? -ne 0 ; then cat log; no_result; fi
-
-#
-# Clone a file remove onto a branch which never had the file in the
-# first place.
-#
-activity="clone 412"
-$bin/aegis -clone -p example.2 -br 1 -c 12 -c 13 -dir ${workchan}13 -v > log 2>&1
-if test $? -ne 0 ; then cat log; fail; fi
-
-cat > ok << 'fubar'
-src =
-[
-];
-fubar
+activity="new change 380"
+cat > $tmp << 'TheEnd'
+brief_description = "c12";
+description = "c12";
+cause = internal_enhancement;
+TheEnd
 if test $? -ne 0 ; then no_result; fi
-check_it ok $work/proj/info/change/0/002.branch/0/013.fs
+
+$bin/aegis -nc 12 -f $tmp -project example -v > log 2>&1
+if test $? -ne 0 ; then cat log; no_result; fi
+
+activity="develop begin 391"
+$bin/aegis -devbeg 12 -dir ${workchan}12 -v > log 2>&1
+if test $? -ne 0 ; then cat log; no_result; fi
+
+set +e
+
+#
+# All that set-up was for this:
+# [ aegis-Bugs-1684820 ] would segfault
+#
+activity="aecp -delta 401"
+$bin/aegis -cp . -delta 2 -v -c 12 -base-rel > log 2>&1
+if test $? -ne 0 ; then cat log; fail; fi
 
 # --------------------------------------------------------------------------
 

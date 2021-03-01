@@ -1,7 +1,7 @@
 '\" t
 .\"	aegis - project change supervisor
-.\"	Copyright (C) 1994-1996, 1998-2006 Peter Miller;
-.\"	All rights reserved.
+.\"	Copyright (C) 1994-1996, 1998-2006 Peter Miller
+.\"	Copyright (C) 2007 Walter Franzini
 .\"
 .\"	This program is free software; you can redistribute it and/or modify
 .\"	it under the terms of the GNU General Public License as published by
@@ -14,10 +14,8 @@
 .\"	GNU General Public License for more details.
 .\"
 .\"	You should have received a copy of the GNU General Public License
-.\"	along with this program; if not, write to the Free Software
-.\"	Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111, USA.
-.\"
-.\" MANIFEST: description of aegis project configuration file format
+.\"	along with this program. If not, see
+.\"	<http://www.gnu.org/licenses/>.
 .\"
 .so z_name.so
 .TH aepconf 5 \*(N) "Reference Manual"
@@ -42,9 +40,9 @@ See \fIaenf\fP(1) for more information.
 This file contains a number of commands to be executed by Aegis.  There
 are times when the substitutions in these commands may contain shell
 special characters, which would change the meaning of the commands in
-unintended ways.  There are two main sources of these problems: filenames
+unintended ways.  There are two main sources of these problems: file names
 and architecture names.  In order to have shell special characters
-in filenames, you must set the \fIshell_\%safe_\%filenames\fP field
+in file names, you must set the \fIshell_\%safe_\%filenames\fP field
 (see below) to \fIfalse\fP.  If you do this, you will need to use the
 \f(CWquote\fP substitution (see \fIaesub\fP(5)) to quote them, so that
 the shell does not abuse them.  Other things which may need quoting include
@@ -68,7 +66,7 @@ change is completed (see \fIaeipass\fP(1) for more information) the file
 will be present in the baseline, and be used by all users and all changes.
 .PP
 If you ever need to change one of the fields of the project \fIconfig\fP file,
-you do this the same way as for any other souce file, by copying it into
+you do this the same way as for any other source file, by copying it into
 a change using the
 .RS
 .nf
@@ -235,7 +233,7 @@ start doing anything.  If possible, change your build system to use the
 .TP 8n
 source_file_whiteout = boolean;
 .RS
-The \fIsource_file_whiteout\fP field mat be used to sprecify the
+The \fIsource_file_whiteout\fP field may be used to specify the
 presence (true) or absence (false) of white-out files, used to
 "cover up" files being removed by a change set.  These files
 contain 1KB of random data, intended to cause a syntax error
@@ -341,13 +339,13 @@ Defaults to false if not set.
 defaults to the value of that field, with a warning.]
 .PP
 If this field is false, the development directory will be populated by
-the develeop begin (\fIaedb\fP) command, and the integratin directory
+the develop begin (\fIaedb\fP) command, and the integrating directory
 will be populated by the integrate begin (\fIaeib\fP) command.
 .RE
 .TP 8n
 derived_at_start_only = boolean;
 .RS
-This field controls whether the above fields controling the appearance
+This field controls whether the above fields controlling the appearance
 of derived files are acted upon before every build (false) or only when
 the work area is created (true).
 .PP
@@ -930,7 +928,7 @@ field, below.
 .PP
 Executed as: the project owner.
 Current directory: the base of the history tree.
-Exit status: zero indicates succes, all non-zero exits indicate failure
+Exit status: zero indicates success, all non-zero exits indicate failure
 (the integrate pass will fail).
 .RE
 .\" ------------------------------------------------------------------------
@@ -946,7 +944,7 @@ If you need a transaction ID, use the \fI$version\fP substitution.
 .PP
 Executed as: the project owner.
 Current directory: the base of the history tree.
-Exit status: zero indicates succes, all non-zero exits indicate failure
+Exit status: zero indicates success, all non-zero exits indicate failure
 (the integrate pass will fail).
 .RE
 .\" ------------------------------------------------------------------------
@@ -963,7 +961,7 @@ If you need a transaction ID, use the \fI$version\fP substitution.
 .PP
 Executed as: the project owner.
 Current directory: the base of the history tree.
-Exit status: zero indicates succes, all non-zero exits indicate failure
+Exit status: zero indicates success, all non-zero exits indicate failure
 (the integrate pass will fail).
 .RE
 .\" ------------------------------------------------------------------------
@@ -1009,7 +1007,7 @@ substitutions to yield a string suitable for the history tool in question.
 .PP
 Executed as: the project owner.
 Current directory: the base of the history tree.
-Exit status: zero indicates succes, all non-zero exits indicate failure
+Exit status: zero indicates success, all non-zero exits indicate failure
 (the integrate pass will fail).
 .RE
 .TP 8n
@@ -1214,7 +1212,7 @@ Executed as: the project owner (for integration diffs), or the
 developer (for development diffs).
 Current directory: the integration directory (for integration diffs),
 or the development directory (for development diffs).
-Exit status: zero indicates succes, all non-zero exits indicate failure
+Exit status: zero indicates success, all non-zero exits indicate failure
 (the aed will fail).
 .RE
 .TP 8n
@@ -1258,7 +1256,7 @@ Executed as: the project owner (for integration diffs), or the
 developer (for development diffs).
 Current directory: the integration directory (for integration diffs),
 or the development directory (for development diffs).
-Exit status: zero indicates succes, all non-zero exits indicate failure
+Exit status: zero indicates success, all non-zero exits indicate failure
 (the aed will fail).
 .RE
 .TP 8n
@@ -1318,7 +1316,7 @@ Executed as: the project owner (for integration diffs), or the
 developer (for development diffs).
 Current directory: the integration directory (for integration diffs),
 or the development directory (for development diffs).
-Exit status: zero indicates succes, all non-zero exits indicate failure
+Exit status: zero indicates success, all non-zero exits indicate failure
 (the aed will fail).
 .RE
 .TP 8n
@@ -1365,7 +1363,7 @@ develop_end_policy_command = string;
 This field is used to set the command to be executed by the
 \fIaede\fP(1) command.  This command is useful in cases where the
 enterprise has determined that additional pre-conditions must be met (in
-addition to those already imposed by the \fIsaede\gP(1) command) before
+addition to those already imposed by the \fIaede\f[P](1) command) before
 a change may leave the \fIbeing developed\fP state.
 Defaults to "\f[CW]exit 0\fP" if not set.
 .PP
@@ -1600,8 +1598,8 @@ Executed as: the project owner (for integration tests) or the developer
 Current directory: the integration directory (for integration tests),
 the development directory (for development tests), the project
 baseline (for -bl tests), or the current directory (for
--indenpendent tests).
-Exit status: zero indicates succes, one indicates failure, anything
+-independent tests).
+Exit status: zero indicates success, one indicates failure, anything
 else indicates "no result".
 .RE
 .\" ------------------------------------------------------------------------
@@ -1798,7 +1796,7 @@ if you try to run it, compile it, or include it.
 .TP 8n
 maximum_filename_length = integer;
 .RS
-This field is used to limit the length of filenames.
+This field is used to limit the length of file names.
 All new files may not have path components longer than this.
 Existing files are not affected.
 The last component must also allow for the ",D" suffix of difference files.
@@ -1820,7 +1818,7 @@ for more information.
 posix_filename_charset = boolean;
 .RS
 This field may be used to limit the characters allowed
-in filenames to only those explicitly allowed by POSIX.
+in file names to only those explicitly allowed by POSIX.
 Defaults to false if not set.
 .PP
 For a filename to be portable across conforming implementations of
@@ -1837,38 +1835,38 @@ except non-printing characters, space characters and leading hyphens.
 .TP
 dos_filename_required = boolean;
 .br
-This field may be used to limit filenames so that they conform to
+This field may be used to limit file names so that they conform to
 the DOS 8+3 filename limits and to the DOS filename character set.
-Also denies filenames which look like devices (AUX, \fIetc\fP).
+Also denies file names which look like devices (AUX, \fIetc\fP).
 Defaults to false if not set.
 This field is used in combination with the other filename fields,
 it does not replace them.
 .TP
 windows_filename_required = boolean;
 .br
-This field may be used to limit filenames so that they conform to the
+This field may be used to limit file names so that they conform to the
 Windows98 and WindowsNT filename limits and character set.  Also denies
-filenames which look like devices (AUX, \fIetc\fP).  Defaults to false
+file names which look like devices (AUX, \fIetc\fP).  Defaults to false
 if not set.  This field is used in combination with the other filename
 fields, it does not replace them.
 .TP
 shell_safe_filenames = boolean;
 .br
-This field may be used to limit filenames so that they may not contain
+This field may be used to limit file names so that they may not contain
 shell special characters.  If you do not set this to true, you will
-need to use the ${quote} substitution around filenames in commands,
+need to use the ${quote} substitution around file names in commands,
 or risk unexpected errors.  This field defaults to true if not set.
 .TP
 filename_pattern_accept = [ string ];
 .br
-This field is used to specify a list of patterns of acceptable filenames.
+This field is used to specify a list of patterns of acceptable file names.
 The patterns are matched against each filename path element.
 The patterns are constructed from the usual shell filename wildcards.
 Defaults to "*" if not set.
 .TP
 filename_pattern_reject = [ string ];
 .br
-This field is used to specify a list of patterns of unacceptable filenames.
+This field is used to specify a list of patterns of unacceptable file names.
 The patterns are matched against each filename path element.
 The patterns are constructed from the usual shell filename wildcards.
 Defaults to "*,D" if not set.
@@ -1921,7 +1919,7 @@ as it allows Aegis to try different names should there be a conflict.
 If not set, defaults to "\f(CW$ddd/${left $p ${expr ${namemax
 $ddd} - ${length .$magic$c}}}.$magic$c\fP".
 .PP
-For DOS compatibility (8+3 filenames), a useful setting is
+For DOS compatibility (8+3 file names), a useful setting is
 "\f(CW$ddd/${downcase ${left ${id $p} 8}.$magic${right 0$c 2}}\fP".
 This ensures that the filename is always a valid 8.3 filename, that it
 is always lowercase, and it translates any punctuation in the project
@@ -1935,7 +1933,7 @@ All of the substitutions defined in \fIaesub\fP(5) are
 available.  The following substitutions is also available:
 .TP 8n
 File_Name
-The absolute pathname of the source file.
+The absolute path name of the source file.
 .PP
 Defaults to "$filename,S" if not set.
 .RE
@@ -2026,7 +2024,7 @@ File modification times are not adjusted.  This is a really bad
 idea.  Really.  Make sure that, at the very minimum,
 \fIproject_\%file_\%command\fP touches all of the change's files,
 otherwise the build problems which ensue are going to take you
-weeks to track down and lose you mucho productivity.
+weeks to track down and lose you much productivity.
 You have been warned.
 .LP
 See also the \fIbuild_\%time_\%adjust_\%notify_\%command\fP field.
@@ -2043,9 +2041,25 @@ For a description of \f[CW]Signed-off-by\fP see
 http://www.ussg.iu.edu/hypermail/linux/kernel/0405.2/1301.html and
 http://www.osdl.org/newsroom/press_releases/2004/2004_05_24_dco.html
 .RE
+.TP 8n
+cache_project_file_list_for_each_delta = boolean;
+.RS
+It is possible to have Aegis cache the list of project files that
+were present at integrate pass for each delta (integrated change
+set).  This is used to optimize all project-history-based
+operations, such as \fIaecp -delta\fP or \fIaepatch\fP(1).
+.PP
+This cache will optimize many operations which would otherwise
+require time to reconstruct the project state using the
+roll-forward data available in each change set.  However, it comes
+at the cost of disk space, and not everyone can afford more and more
+disk.
+.PP
+This field defaults to true if not set.
+.RE
 .SH RSS FEEDS
 .RE
-Aegis has the ability to feed RSS channels when changesets transition
+Aegis has the ability to feed RSS channels when change-sets transition
 states.  See the User Guide for full details.  Following is a brief
 description of the project-specific attributes used to control this process.
 .RE
@@ -2222,22 +2236,6 @@ Defaults to \fBtrue\fP if not set.  This default is intentional.  It is
 important that there are no symlinks in the (new) baseline, because
 they could go stale between integrations.  If you set this field to
 false, \fIcaveat emptor\fP.
-.RE
-.TP 8n
-cache_project_file_list_for_each_delta = boolean;
-.RS
-It is possible to have Aegis cache the list of project files that
-were present at integrate pass for each delta (integrated change
-set).  This is used to optimize all project-history-based
-operations, such as \fIaecp -delta\fP or \fIaepatch\fP(1).
-.PP
-This cache will optimize many operations which would otherwise
-require time to reconstruct the prohect state using the
-roll-foworward data available in each change set.  However, it comes
-at the cost of disk space, and not everyone can afford more and more
-disk.
-.PP
-This field defaults to true if not set.
 .RE
 .SH SEE ALSO
 .TP 8n

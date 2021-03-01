@@ -16,8 +16,8 @@
 #	GNU General Public License for more details.
 #
 #	You should have received a copy of the GNU General Public License
-#	along with this program; if not, write to the Free Software
-#	Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111, USA.
+#	along with this program. If not, see
+#	<http://www.gnu.org/licenses/>.
 #
 # MANIFEST: Test the tricky symlink functionality
 #
@@ -657,11 +657,11 @@ INTD=`$bin/aesub '$IntD'`
 if test $? -ne 0 ; then cat log; no_result; fi
 
 activity="check links 654"
-if test ! -e $INTD/barney ; then fail; fi
-if test -e $INTD/wilma ; then fail; fi
-if test ! -e $INTD/betty ; then fail; fi
-if test ! -e $INTD/pebbles ; then fail; fi
-if test -e $INTD/bammbamm ; then fail; fi
+if test ! -f $INTD/barney ; then fail; fi
+if test -f $INTD/wilma ; then fail; fi
+if test ! -f $INTD/betty ; then fail; fi
+if test ! -f $INTD/pebbles ; then fail; fi
+if test -f $INTD/bammbamm ; then fail; fi
 
 activity="integrate begin undo 666"
 $bin/aegis -ibu 4 -v > log 2>&1
@@ -685,11 +685,11 @@ INTD=`$bin/aesub '$IntD'`
 if test $? -ne 0 ; then cat log; no_result; fi
 
 activity="check links 687"
-if test ! -e $INTD/barney ; then fail; fi
-if test -e $INTD/wilma ; then fail; fi
-if test ! -e $INTD/betty ; then fail; fi
-if test ! -e $INTD/pebbles ; then fail; fi
-if test -e $INTD/bammbamm ; then fail; fi
+if test ! -f $INTD/barney ; then fail; fi
+if test -f $INTD/wilma ; then fail; fi
+if test ! -f $INTD/betty ; then fail; fi
+if test ! -f $INTD/pebbles ; then fail; fi
+if test -f $INTD/bammbamm ; then fail; fi
 
 #
 # Only definite negatives are possible.

@@ -1,7 +1,7 @@
 //
 //	aegis - project change supervisor
-//	Copyright (C) 1991-1999, 2001-2006 Peter Miller;
-//	All rights reserved.
+//	Copyright (C) 1991-1999, 2001-2006 Peter Miller
+//	Copyright (C) 2007 Walter Franzini
 //
 //	This program is free software; you can redistribute it and/or modify
 //	it under the terms of the GNU General Public License as published by
@@ -636,6 +636,17 @@ copy_file_independent(void)
 		continue;
 
 	    case file_action_create:
+                //
+                // The file has been renamed and we asked for the
+                // removed name.  Omit it.
+                //
+                if (!str_equal(s1, old_src->file_name))
+                {
+                    wl.remove(s1);
+                    continue;
+                }
+                // FALLTHROUGH
+
 	    case file_action_modify:
 	    case file_action_insulate:
 	    case file_action_transparent:
@@ -1241,7 +1252,7 @@ copy_file_main(void)
     {
 	//
 	// If the time is in the future, you could get a different
-	// answer for the same inpout at some point in the future.
+	// answer for the same input at some point in the future.
 	//
 	// This is the "time safe" quality first described by
 	// Damon Poole <damon@ede.com>
@@ -1375,6 +1386,7 @@ copy_file_main(void)
     for (j = 0; j < wl.nstrings; ++j)
     {
 	s1 = wl.string[j];
+        trace_string(s1->str_text);
 	if (s1->str_text[0] == '/')
 	    s2 = str_copy(s1);
 	else
@@ -1437,6 +1449,7 @@ copy_file_main(void)
 		string_ty       *s3;
 
 		s3 = wl_in.string[k];
+                trace_string(s3->str_text);
 		if (overwriting || !change_file_find(cp, s3, view_path_first))
 		{
 		    if (wl2.member(s3))
@@ -1604,7 +1617,7 @@ copy_file_main(void)
     for (j = 0; j < wl.nstrings; ++j)
     {
 	string_ty       *from = 0;
-	string_ty       *to;
+	string_ty       *to = 0;
 	fstate_src_ty   *old_src = 0;
 	fstate_src_ty   *older_src = 0;
         int             from_unlink = 0;
@@ -1649,18 +1662,31 @@ copy_file_main(void)
 		    }
 		}
 		else
-		    older_src = old_src;
+                {
+                    //
+                    // If the file has been renamed we asked for the
+                    // old name of the file and get the new one.  So
+                    // we remove the file name from the list.
+                    //
+                    if (!str_equal(s1, old_src->file_name))
+                    {
+                        wl.remove(s1);
+                        --j;
+                        continue;
+                    }
+                    older_src = old_src;
+                }
 	    }
 	    assert(old_src);
 	    trace(("old_src = %lX\n", (long)old_src));
 	    assert(older_src);
 	    trace(("older_src = %lX\n", (long)older_src));
-	    switch (older_src->action)
+            switch (older_src->action)
 	    {
 	    case file_action_remove:
-		// Shouldn't we use whiteout like aerm?
-		from = str_from_c("/dev/null");
-		break;
+                trace_string(s1->str_text);
+                change_file_whiteout_write(cp, s1, up);
+                goto done;
 
 	    case file_action_create:
 	    case file_action_modify:
@@ -1736,7 +1762,9 @@ copy_file_main(void)
 	    if (from_unlink)
 		os_unlink_errok(from);
 	    user_become_undo();
-	    str_free(from);
+
+        done:
+            str_free(from);
 	    str_free(to);
 	}
 	else

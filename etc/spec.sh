@@ -15,10 +15,8 @@
 #	GNU General Public License for more details.
 #
 #	You should have received a copy of the GNU General Public License
-#	along with this program; if not, write to the Free Software
-#	Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111, USA.
-#
-# MANIFEST: shell script to generate RedHat spec file
+#	along with this program. If not, see
+#	<http://www.gnu.org/licenses/>.
 #
 version=${version-0.0.0}
 echo '#'
@@ -267,7 +265,7 @@ done
 for file in $files_rx
 do
 	case $file in
-	*/bin/aegis | */bin/aeimport)
+	*/bin/aegis | */bin/aeimport | */bin/aelock)
 		echo "%attr(4755,root,bin) $file"
 		;;
 	*)

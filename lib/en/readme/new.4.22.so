@@ -15,10 +15,8 @@
 .\"	GNU General Public License for more details.
 .\"
 .\"	You should have received a copy of the GNU General Public License
-.\"	along with this program; if not, write to the Free Software
-.\"	Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111, USA.
-.\"
-.\" MANIFEST: document describing new 4.22 features
+.\"	along with this program.  If not, see
+.\"	<http://www.gnu.org/licenses/>.
 .\"
 .\" you can create the initial cut of this file using the
 .\"	aereport -f bl/bl/lib/report/chan_so.rpt -p aegis.4 -c 22 -unf
@@ -30,10 +28,103 @@
 .\" .\" Change NN
 .\" ------------------------------------------------------------------------
 .\" Place new text above this line.
-.SS Version 4.22.1 (14-Apr-2007)
+.SS Version 4.22.2 (18-Oct-2007)
 .PP
 This is an update for the 4.22 stable release, it is meant to help
-Aegis users while the next release cycle to end.
+Aegis users while the next release cycle ends.
+. \"
+. \" 4.22.C346
+. \"
+.PP
+.if n *
+.if t \(bu
+[ 1684820 ] Fixed a bug in aeclone that caused aecp -delta segfaults.
+. \"
+. \" 4.22.C558
+. \"
+.PP
+.if n *
+.if t \(bu
+The symlink farm now handle derived files registered within Aegis more
+like normal derived files.
+. \"
+. \" 4.22.C154
+. \"
+.PP
+.if n *
+.if t \(bu
+[ 1697199 ] The change_pconf_get function no longer looks for
+historical versions of files, if it can help it.  This makes many
+things go faster and solved the problem of configuration fields
+redefinition.  While this change does not make Aegis more time safe,
+it cures one of the symptoms.
+. \"
+. \" 4.22.C341
+. \"
+.PP
+.if n *
+.if t \(bu
+Fixed test 222 to work with recent releases of subversion.
+. \"
+. \" 4.22.C623
+. \"
+.PP
+.if n *
+.if t \(bu
+The \f[I]aepconf\f[P](5) man page has been improved.
+. \"
+. \" 4.22.C624
+. \"
+.PP
+.if n *
+.if t \(bu
+[ Debian 435422 ] The reference manual was wrongly referring to
+-Page-Headings instead of -Page-Header.  The documentation has been
+updated to match the source code.
+. \"
+. \" 4.22.C578
+. \"
+.PP
+.if n *
+.if t \(bu
+[ 1704108 ] The \f[I]aecp\f[P](1) -delta command now follows the whiteout
+preference when copying a "removed"file.
+. \"
+. \" 4.22.585
+. \"
+.PP
+.if n *
+.if t \(bu
+[ 1704100 ] A bug has been fixed that caused \f[I]aecp\f[P](1) -delta
+X to copy in a change also a file with the old name of a file
+\f[I]aemv\f[P](1)ed before delta X.
+. \"
+. \" 4.22.C582
+. \"
+.PP
+.if n *
+.if t \(bu
+The generated Makefile now installs \f[I]aelock\f[P](1) with the
+correct permissions.
+. \"
+. \" 4.22.C266
+. \"
+.PP
+.if n *
+.if t \(bu
+[ 1701701 ] A bug has been fixed in the \f[I]aetar\f[P](1) command, it
+no longer creates tarballs that cause BSD and other tar to complain
+like this:
+tar: End of archive volume 1 reached
+tar: Unexpected EOF on archive file
+. \"
+. \" 4.22.C597
+. \"
+.PP
+.if n *
+.if t \(bu
+The configure script now handle correctly the datadir substitution.
+.SS Version 4.22.1 (14-Apr-2007)
 . \"
 . \" 4.22.C596
 . \"
@@ -42,7 +133,7 @@ Aegis users while the next release cycle to end.
 .if t \(bu
 Test t0247a-walt.sh has been fixed, it was not exporting
 AEGIS_TEST_DIR.  This make \f[I]aeintegratq\f[P](1) leaving stuff in
-the home dir of the user.
+the home directory of the user.
 . \"
 . \" 4.22.C593
 . \"
@@ -69,6 +160,23 @@ modified to pass even when \f[I]lex\f[P](1) is missing.
 \f[I]aedist\f[P](1) now handle certain renamed files correctly when
 receiving branches or entire-source.
 . \"
+. \" 4.22.C592
+. \"
+.PP
+.if n *
+.if t \(bu
+The t0011a.sh test script failed when \f[I]lex\f[P](1) was missing, since
+it is not required to build Aegis the test script has been modified to
+pass even when \f[I]lex\f[P](1) is missing.
+. \"
+. \" 4.22.D036
+. \"
+.PP
+.if n *
+.if t \(bu
+\f[I]aedist\f[P](1) now handle certain renamed files correctly
+when receiving branches or entire-source.
+. \"
 . \" 4.22.D033
 . \"
 .PP
@@ -80,6 +188,7 @@ configure does not trigger anymore those warnings.
 . \"
 . \" 4.22.D032
 . \"
+.\" ------------------------------------------------------------------------
 .PP
 .if n *
 .if t \(bu
@@ -92,9 +201,15 @@ portable, and will give false negatives on some systems.
 .PP
 .if n *
 .if t \(bu
+The test suite does not use anymore \f[I]diff\f[P](1) -u because not all
+systems have gnu diff, so the use of gnu diff's -u option is
+nor portable, and will give false negatives on some systems.
+.PP
+.if n *
+.if t \(bu
 \f[I]aedist\f[P](1) -rec now save the UUID as the user defined
 original-UUID if the UUID is already present in the repository.  This
-is especially useful when receving changes in the same repository.
+is especially useful when receiving changes in the same repository.
 . \"
 . \" 4.22.D029
 . \"
@@ -165,7 +280,7 @@ The \f[I]aedist\f[P](1) -rec command now better handles file renamed
 .PP
 .if n *
 .if t \(bu
-A bug has been fixed that caused the \f[I]change_pcong_get\f[P]
+A bug has been fixed that caused the \f[I]change_pconf_get\f[P]
 function terminate \f[I]aegis\f[P](1) with a fatal error if applied to
 a branch without a config file (e.g. if the trunk does not contain any
 closed branch).
@@ -200,7 +315,7 @@ works correctly with the \f[I]aesub\f[P](1) -bl command.
 \f[I]aedist(1) -received\f[P] has been modified to set the user
 defined attribute foreign-copyright to true when receiving a remote
 change set.  This in order to avoid \f[I]aede-policy\f[P](1) complain
-about incorret copyright notice at \f[I]aede\f[P](1) time.\n\
+about incorrect copyright notice at \f[I]aede\f[P](1) time.\n\
 . \"
 . \" 4.22.D016
 . \"
@@ -252,7 +367,7 @@ to files at branch integration pass time. This can happen if the files
 was created and integrated with an old Aegis release, lacking support
 for file's UUID.  This bug make it possible to have the history for a
 file split into two part, one accessible via the file_name, the other
-accesible using the UUID.
+accessible using the UUID.
 . \"
 . \" 4.22.D010
 . \"

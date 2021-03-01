@@ -14,10 +14,8 @@
 //	GNU General Public License for more details.
 //
 //	You should have received a copy of the GNU General Public License
-//	along with this program; if not, write to the Free Software
-//	Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111, USA.
-//
-// MANIFEST: functions to implement the 'aegis -CLone' command
+//	along with this program.  If not, see
+//	<http://www.gnu.org/licenses/>.
 //
 
 #include <common/ac/stdio.h>
@@ -576,6 +574,9 @@ clone_main(void)
 		// they have whiteout instead.
 		//
 		change_file_whiteout_write(cp, src_data->file_name, up);
+                assert(p_src_data->edit);
+                assert(p_src_data->edit->revision);
+                src_data->edit_origin = history_version_copy(p_src_data->edit);
 		continue;
 
 	    case file_action_transparent:

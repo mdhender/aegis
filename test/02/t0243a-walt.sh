@@ -1,8 +1,7 @@
 #!/bin/sh
 #
 #	aegis - project change supervisor
-#	Copyright (C) 2006 Peter Miller;
-#	All rights reserved.
+#	Copyright (C) 2007 Walter Franzini
 #
 #	This program is free software; you can redistribute it and/or modify
 #	it under the terms of the GNU General Public License as published by
@@ -15,8 +14,10 @@
 #	GNU General Public License for more details.
 #
 #	You should have received a copy of the GNU General Public License
-#	along with this program. If not, see
-#	<http://www.gnu.org/licenses/>.
+#	along with this program; if not, write to the Free Software
+#	Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111, USA.
+#
+# MANIFEST: Test the aecp -delta -ind functionality
 #
 
 unset AEGIS_PROJECT
@@ -24,35 +25,6 @@ unset AEGIS_CHANGE
 unset AEGIS_PATH
 unset AEGIS
 umask 022
-
-EDITOR=true
-export EDITOR
-
-#
-# Make sure Subversion is installed on this machine.
-# If it is not, give an automatic pass.
-#
-if svn --version > /dev/null 2>&1
-then
-    :
-else
-    echo ''
-    echo '	You do not have Subversion installed on this machine.'
-    echo '	This test is assumed to pass by default.'
-    echo ''
-    exit 0
-fi
-
-svnversion=`svn --version |
-awk 'NR==1{split($3,a,"[.]");printf("%02d.%02d.%02d\n",a[1],a[2],a[3]);}'`
-if expr "$svnversion" "<" "01.01.00" > /dev/null 2>&1
-then
-    echo ''
-    echo '	You do not have Subversion 1.1 or later installed on   '
-    echo '	this machine.  This test is assumed to pass by default.'
-    echo ''
-    exit 0
-fi
 
 LINES=24
 export LINES
@@ -72,7 +44,7 @@ AEGIS_FLAGS="delete_file_preference = no_keep; \
 	log_file_preference = never; \
 	default_development_directory = \"$work\";"
 export AEGIS_FLAGS
-AEGIS_THROTTLE=2
+AEGIS_THROTTLE=-1
 export AEGIS_THROTTLE
 
 # This tells aeintegratq that it is being used by a test.
@@ -124,7 +96,7 @@ pass()
 fail()
 {
 	set +x
-	echo "FAILED test of the ae-repo-ci svn functionality ($activity)" 1>&2
+	echo "FAILED test of the aecp -delta functionality ($activity)" 1>&2
 	cd $here
 	find $work -type d -user $USER -exec chmod u+w {} \;
 	rm -rf $work
@@ -133,8 +105,8 @@ fail()
 no_result()
 {
 	set +x
-	echo "NO RESULT when testing the ae-repo-ci svn functionality" \
-	    "($activity)" 1>&2
+	echo "NO RESULT when testing the aecp -delta " \
+	    "functionality ($activity)" 1>&2
 	cd $here
 	find $work -type d -user $USER -exec chmod u+w {} \;
 	rm -rf $work
@@ -142,13 +114,30 @@ no_result()
 }
 trap \"no_result\" 1 2 3 15
 
-activity="create test directory 147"
+check_it()
+{
+	sed	-e "s|$work|...|g" \
+		-e 's|= [0-9][0-9]*; /.*|= TIME;|' \
+		-e "s/\"$USER\"/\"USER\"/g" \
+		-e 's/19[0-9][0-9]/YYYY/' \
+		-e 's/20[0-9][0-9]/YYYY/' \
+		-e 's/node = ".*"/node = "NODE"/' \
+		-e 's/crypto = ".*"/crypto = "GUNK"/' \
+                -e 's/uuid = ".*"/uuid = "UUID"/' \
+		< $2 > $work/sed.out
+	if test $? -ne 0; then no_result; fi
+	diff $1 $work/sed.out
+	if test $? -ne 0; then fail; fi
+}
+
+activity="create test directory 133"
 mkdir $work $work/lib
 if test $? -ne 0 ; then no_result; fi
 chmod 777 $work/lib
 if test $? -ne 0 ; then no_result; fi
 cd $work
 if test $? -ne 0 ; then no_result; fi
+workchan=$work/change-dir
 
 #
 # use the built-in error messages
@@ -158,16 +147,32 @@ export AEGIS_MESSAGE_LIBRARY
 unset LANG
 unset LANGUAGE
 
-LANG=C
-export LANG
+#
+# If the C++ compiler is called something other than "c++", as
+# discovered by the configure script, create a shell script called
+# "c++" which invokes the correct C++ compiler.  Make sure the current
+# directory is in the path, so that it will be invoked.
+#
+if test "$CXX" != "c++"
+then
+	cat >> $work/c++ << fubar
+#!/bin/sh
+exec ${CXX-g++} \$*
+fubar
+	if test $? -ne 0 ; then no_result; fi
+	chmod a+rx $work/c++
+	if test $? -ne 0 ; then no_result; fi
+	PATH=${work}:${PATH}
+	export PATH
+fi
 
-#
-# test the ae-repo-ci functionality
-#
 AEGIS_PATH=$work/lib
 export AEGIS_PATH
 
-activity="new project 172"
+#
+# test the aecp -delta functionality
+#
+activity="new project 175"
 $bin/aegis -npr test -version - -v -dir $work/proj.dir \
 	-lib $AEGIS_PATH > log 2>&1
 if test $? -ne 0 ; then cat log; no_result; fi
@@ -175,7 +180,7 @@ if test $? -ne 0 ; then cat log; no_result; fi
 AEGIS_PROJECT=test
 export AEGIS_PROJECT
 
-activity="project attributes 180"
+activity="project attributes 183"
 cat > paf << fubar
 developer_may_review = true;
 developer_may_integrate = true;
@@ -186,9 +191,9 @@ default_development_directory = "$work";
 fubar
 if test $? -ne 0 ; then no_result; fi
 $bin/aegis -pa -f paf -v > log 2>&1
-if test $? -ne 0 ; then cat log; no_result; fi
+if test $? -ne 0 ; then cat log; no_result; fi;
 
-activity="staff 193"
+activity="staff 196"
 $bin/aegis -nd $USER -v > log 2>&1
 if test $? -ne 0 ; then cat log; no_result; fi
 $bin/aegis -nrv $USER -v > log 2>&1
@@ -196,177 +201,178 @@ if test $? -ne 0 ; then cat log; no_result; fi
 $bin/aegis -ni $USER -v > log 2>&1
 if test $? -ne 0 ; then cat log; no_result; fi
 
-activity="new change 201"
-cat > caf << 'fubar'
-brief_description = "one";
+activity="create the branch 204"
+$bin/aegis -nbr -p $AEGIS_PROJECT 1 -v > log 2>&1
+if test $? -ne 0; then cat log; no_result; fi
+
+AEGIS_PROJECT=test.1
+export AEGIS_PROJECT
+
+activity="create the branch 211"
+$bin/aegis -nbr -p $AEGIS_PROJECT 1 -v > log 2>&1
+if test $? -ne 0; then cat log; no_result; fi
+
+AEGIS_PROJECT=test.1.1
+export AEGIS_PROJECT
+
+activity="create the 1st change 218"
+cat > caf <<EOF
+brief_description = "zero";
 cause = internal_enhancement;
 test_baseline_exempt = true;
-fubar
+EOF
 if test $? -ne 0 ; then no_result; fi
 $bin/aegis -nc -f caf -v -p $AEGIS_PROJECT > log 2>&1
 if test $? -ne 0 ; then cat log; no_result; fi
 
-activity="develop begin 211"
-$bin/aegis -db 10 -v > log 2>&1
+activity="develop begin 228"
+workchan=$work/change-dir-10
+$bin/aegis -db 10 -dir $workchan -v > log 2>&1
 if test $? -ne 0 ; then cat log; no_result; fi
 
-activity="new file 215"
-$bin/aegis -nf $work/test.C010/aegis.conf $work/test.C010/fred/wilma \
-	$work/test.C010/barney -v > log 2>&1
+activity="new file 233"
+$bin/aegis -nf $workchan/aegis.conf -v > log 2>&1
 if test $? -ne 0 ; then cat log; no_result; fi
-cat > $work/test.C010/aegis.conf << 'fubar'
-build_command = "exit 0";
+
+cat > $workchan/aegis.conf << 'fubar'
+build_command = "date > derived1 && date > derived2";
 
 history_get_command = "aesvt -check-out -edit ${quote $edit} "
     "-history ${quote $history} -f ${quote $output}";
 history_put_command = "aesvt -check-in -history ${quote $history} "
     "-f ${quote $input}";
+history_create_command = "aesvt -check-in -history ${quote $history} "
+    "-f ${quote $input}";
 history_query_command = "aesvt -query -history ${quote $history}";
 history_content_limitation = binary_capable;
 
-diff_command = "exit 0";
+diff_command = "set +e; diff $orig $i > $out; test $$? -le 1";
 diff3_command = "(diff3 -e $mr $orig $i | sed -e '/^w$$/d' -e '/^q$$/d'; \
 	echo '1,$$p' ) | ed - $mr > $out";
 link_integration_directory = true;
 fubar
 if test $? -ne 0 ; then no_result; fi
 
-echo one > $work/test.C010/fred/wilma
-if test $? -ne 0 ; then no_result; fi
+activity="new file 256"
+$bin/aegis -nf $workchan/foo -v > log 2>&1
+if test $? -ne 0; then cat log; no_result; fi
 
-echo one > $work/test.C010/barney
-if test $? -ne 0 ; then no_result; fi
+cat > $workchan/foo <<EOF
+some not so random text
+EOF
+if test $? -ne 0; then no_result; fi
 
-activity="develop end 242"
+activity="build 265"
+$bin/aegis -b -v > log 2>&1
+if test $? -ne 0 ; then cat log; no_result; fi
+
+activity="diff 269"
+$bin/aegis -diff -v > log 2>&1
+if test $? -ne 0 ; then cat log; no_result; fi
+
+activity="develop end 273"
 $bin/aegis -de -v > log 2>&1
 if test $? -ne 0 ; then cat log; no_result; fi
 
-activity="integrate begin 246"
-$bin/aegis -ib 10 -v > log 2>&1
-if test $? -ne 0 ; then cat log; no_result; fi
+activitye="integrate 231"
+$bin/aeintegratq -p $AEGIS_PROJECT > log 2>&1
+if test $? -ne 0 ; then cat log ; no_result; fi
 
-activity="integrate pass 250"
-$bin/aegis -ipass -v > log 2>&1
-if test $? -ne 0 ; then cat log; no_result; fi
-
-# --------------------------------------------------------------------------
-#
-# Now we have to create the svn repository
-#
-activity="svnadmin create 258"
-svnadmin create --fs-type=fsfs $work/svnroot
-if test $? -ne 0 ; then no_result; fi
-
-svn mkdir -mtesting file://$work/svnroot/$AEGIS_PROJECT > log 2>&1
-if test $? -ne 0 ; then cat log; no_result; fi
-
-# --------------------------------------------------------------------------
-#
-# Now we can test the ae-repo-ci command, to commit the Aegis change into svn.
-#
-activity="ae-repo-ci one 269"
-$bin/ae-repo-ci --repository=svn --module file://$work/svnroot/$AEGIS_PROJECT \
-    -c 10 > log 2>&1
-if test $? -ne 0 ; then cat log; fail; fi
-
-test -f $work/svnroot/db/revs/2 || fail
-
-# --------------------------------------------------------------------------
-
-#
-# second change
-#
-activity="new change 281"
-cat > caf << 'fubar'
-brief_description = "the second change";
+activity="the 2nd change 281"
+cat > caf <<EOF
+brief_description = "zero";
 cause = internal_enhancement;
-fubar
+test_baseline_exempt = true;
+EOF
 if test $? -ne 0 ; then no_result; fi
-$bin/aegis -nc 2 -f caf -v -p $AEGIS_PROJECT > log 2>&1
+$bin/aegis -nc -f caf -v -p $AEGIS_PROJECT > log 2>&1
 if test $? -ne 0 ; then cat log; no_result; fi
 
-activity="develop begin 290"
-$bin/aegis -db 2 -v > log 2>&1
-if test $? -ne 0 ; then cat log; fail; fi
-
-activity="copy file 294"
-$bin/aegis -cp $work/test.C002/barney -v > log 2>&1
+activity="develop begin 291"
+workchan=$work/change-dir-11
+$bin/aegis -db 11 -dir $workchan -v > log 2>&1
 if test $? -ne 0 ; then cat log; no_result; fi
 
-echo second > $work/test.C002/barney
-if test $? -ne 0 ; then no_result; fi
+activity="rename a file 296"
+$bin/aegis -mv $workchan/foo $workchan/foo2 -v > log 2>&1
+if test $? -ne 0; then cat log; no_result; fi
 
-activity="copy file 301"
-$bin/aegis -cp $work/test.C002/fred/wilma -v > log 2>&1
+activity="build 300"
+$bin/aegis -b -v > log 2>&1
 if test $? -ne 0 ; then cat log; no_result; fi
 
-echo third > $work/test.C002/fred/wilma
-if test $? -ne 0 ; then no_result; fi
+activity="diff 304"
+$bin/aegis -diff -v > log 2>&1
+if test $? -ne 0 ; then cat log; no_result; fi
 
 activity="develop end 308"
 $bin/aegis -de -v > log 2>&1
 if test $? -ne 0 ; then cat log; no_result; fi
 
-activity="integrate begin 312"
-$bin/aegis -ib 2 -v > log 2>&1
-if test $? -ne 0 ; then cat log; no_result; fi
+activitye="integrate 231"
+$bin/aeintegratq -p $AEGIS_PROJECT > log 2>&1
+if test $? -ne 0 ; then cat log ; no_result; fi
 
-activity="integrate pass 316"
-$bin/aegis -ipass -c 2 -v > log 2>&1
-if test $? -ne 0 ; then cat log; no_result; fi
-
-# ------------------------------------------------------------------------
-
-#
-# third change
-# (rename and remove)
-#
-activity="new change 337"
-cat > caf << 'fubar'
-brief_description = "the third change";
+activity="the 3rd change 316"
+cat > caf <<EOF
+brief_description = "zero";
 cause = internal_enhancement;
-fubar
+test_baseline_exempt = true;
+EOF
 if test $? -ne 0 ; then no_result; fi
-$bin/aegis -nc 3 -f caf -v -p $AEGIS_PROJECT > log 2>&1
+$bin/aegis -nc -f caf -v -p $AEGIS_PROJECT > log 2>&1
 if test $? -ne 0 ; then cat log; no_result; fi
 
-activity="develop begin 346"
-$bin/aegis -db 3 -v > log 2>&1
-if test $? -ne 0 ; then cat log; fail; fi
-
-activity="move file 350"
-$bin/aegis -mv $work/test.C003/barney $work/test.C003/rubble -v > log 2>&1
+activity="develop begin 326"
+workchan=$work/change-dir-12
+$bin/aegis -db 12 -dir $workchan -v > log 2>&1
 if test $? -ne 0 ; then cat log; no_result; fi
 
-echo third > $work/test.C003/rubble
-if test $? -ne 0 ; then no_result; fi
+activity="new file 331"
+$bin/aegis -nf $workchan/bar -v > log 2>&1
+if test $? -ne 0; then cat log; no_result; fi
 
-activity="remove file 357"
-$bin/aegis -rm $work/test.C003/fred/wilma -v > log 2>&1
+activity="build 335"
+$bin/aegis -b -v > log 2>&1
 if test $? -ne 0 ; then cat log; no_result; fi
 
-activity="develop end 361"
-$bin/aegis -de 3 -v > log 2>&1
+activity="diff 339"
+$bin/aegis -diff -v > log 2>&1
 if test $? -ne 0 ; then cat log; no_result; fi
 
-activity="integrate begin 365"
-$bin/aegis -ib 3 -v > log 2>&1
+activity="develop end 343"
+$bin/aegis -de -v > log 2>&1
 if test $? -ne 0 ; then cat log; no_result; fi
 
-activity="integrate pass 369"
-$bin/aegis -ipass -c 3 -v > log 2>&1
-if test $? -ne 0 ; then cat log; no_result; fi
+activitye="integrate 231"
+$bin/aeintegratq -p $AEGIS_PROJECT > log 2>&1
+if test $? -ne 0 ; then cat log ; no_result; fi
 
-# ------------------------------------------------------------------------
-#
-# run the ae-repo-ci command again
-#
-activity="ae-repo-ci three 377"
-$bin/ae-repo-ci --repository=svn --module file://$work/svnroot/$AEGIS_PROJECT \
-    -c 3 > log 2>&1
-if test $? -ne 0 ; then cat log; fail; fi
+activity="check independent 351"
+mkdir $work/independent
+if test $? -ne 0; then no_result; fi
 
-test -f $work/svnroot/db/revs/3 || fail
+cd $work/independent
+
+activity="copy -ind files 357"
+$bin/aegis -cp -ind -p test.1.1 -delta 3 . > $work/log 2>&1
+if test $? -ne 0; then cat $work/log; no_result; fi
+
+cd $work
+
+activity="check copied 363"
+cat > ok <<EOF
+independent/aegis.conf
+independent/bar
+independent/foo2
+EOF
+if test $? -ne 0; then no_result; fi
+
+find independent -type f | sort > independent.list
+if test $? -ne 0; then no_result; fi
+
+cmp ok independent.list
+if test $? -ne 0; then fail; fi
 
 #
 # Only definite negatives are possible.

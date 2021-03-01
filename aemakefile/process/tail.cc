@@ -1,7 +1,7 @@
 //
 //      aegis - project change supervisor
-//      Copyright (C) 2004, 2005 Peter Miller;
-//      All rights reserved.
+//      Copyright (C) 2004-2006 Peter Miller
+//      Copyright (C) 2007 Walter Franzini
 //
 //      This program is free software; you can redistribute it and/or modify
 //      it under the terms of the GNU General Public License as published by
@@ -77,6 +77,7 @@ process_tail::process_tail(printer &arg) :
     find_sizes_files->push_back("common/str.$(OBJEXT)");
     find_sizes_files->push_back("common/str/catenate.$(OBJEXT)");
     find_sizes_files->push_back("common/str/format.$(OBJEXT)");
+    find_sizes_files->push_back("common/stracc.$(OBJEXT)");
     find_sizes_files->push_back("common/trace.$(OBJEXT)");
 
     datadir_files.push_back(
@@ -373,7 +374,7 @@ process_tail::postlude()
             print << "\t@sleep 1\n";
             print << "\t$(CXX) $(LDFLAGS) -o $@ $(" << name
                 << "_files) libaegis/libaegis.$(LIBEXT) $(LIBS)\n";
-            if (name == "aegis" || name == "aeimport")
+            if (name == "aegis" || name == "aeimport" || name == "aelock")
                 print << "\t-chown root $@ && chmod 4755 $@\n";
             print << "\t@sleep 1\n";
         }
@@ -383,7 +384,7 @@ process_tail::postlude()
             << "$(PROGRAM_SUFFIX)$(EXEEXT): bin/" << name
             << "$(EXEEXT) .bindir\n";
         print << "\t$(INSTALL_PROGRAM) bin/" << name << "$(EXEEXT) $@\n";
-        if (name == "aegis" || name == "aeimport")
+        if (name == "aegis" || name == "aeimport" || name == "aelock")
             print << "\t-chown root $@ && chmod 4755 $@\n";
     }
 

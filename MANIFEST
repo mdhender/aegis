@@ -539,7 +539,7 @@ aegis/aechown.cc	functions to implement the 'aegis -Change_Owner' command
 aegis/aechown.h	interface definition for aegis/aechown.c
 aegis/aeclean.cc	clean a change development directory
 aegis/aeclean.h	interface definition for aegis/aeclean.c
-aegis/aeclone.cc	functions to implement the 'aegis -CLone' command
+aegis/aeclone.cc	no manifest specified
 aegis/aeclone.h	interface definition for aegis/aeclone.c
 aegis/aecp.cc	functions to implement copy file
 aegis/aecp.h	interface definition for aegis/aecp.c
@@ -1104,7 +1104,7 @@ etc/rpm-build.sh	shell script to rpm-build
 etc/rsrvd_syms.sh	shell script to manipulate rsrvd_symss
 etc/set-uid-root	set-uid-root
 etc/so.sh	shell script to generate include lists
-etc/spec.sh	shell script to generate RedHat spec file
+etc/spec.sh	no manifest specified
 etc/ssp.awk	awk script to supress multiple blank lines
 etc/statistics.awk	script to generate source statistics summary
 etc/tags.cook	tags.cook
@@ -1430,7 +1430,7 @@ lib/en/man1/o_template.so	document describing template options
 lib/en/man1/o_terse.so	description of -TERse command line option
 lib/en/man1/o_trojan.so	document describing lib/en/man1/o_trojans
 lib/en/man1/o_trunk.so	description of the -TRunk command line option
-lib/en/man1/o_unforma.so	document describing -UNFormatted option
+lib/en/man1/o_unforma.so	no manifest specified
 lib/en/man1/o_user.so	document describing o_user.so
 lib/en/man1/o_verbose.so	description of -Verbose command line option
 lib/en/man1/o_wait.so	document describing the wait options
@@ -1468,7 +1468,7 @@ lib/en/man5/aelock.5	manual page describing the lib/en/man5/aelock command.
 lib/en/man5/aemetrics.5	manual page describing the lib/en/man5/aemetrics command.
 lib/en/man5/aemetrics.so	document describing lib/en/man5/aemetricss
 lib/en/man5/aepattr.5	description of aegis project attribute file format
-lib/en/man5/aepconf.5	description of aegis project configuration file format
+lib/en/man5/aepconf.5	no manifest specified
 lib/en/man5/aepstate.5	description of aegis project state file format
 lib/en/man5/aer.5	manual page describing the report scripting language
 lib/en/man5/aerptidx.5	manual page describing the aereport index file format
@@ -1524,7 +1524,7 @@ lib/en/readme/new.4.19.so	document describing new 4.19 features
 lib/en/readme/new.4.2.so	document describing new 4.2 features
 lib/en/readme/new.4.20.so	document describing new 4.20 features
 lib/en/readme/new.4.21.so	document describing new 4.21 features
-lib/en/readme/new.4.22.so	document describing new 4.22 features
+lib/en/readme/new.4.22.so	no manifest specified
 lib/en/readme/new.4.3.so	document describing new 4.3 features
 lib/en/readme/new.4.4.so	document describing new 4.4 features
 lib/en/readme/new.4.5.so	document describing new 4.5 features
@@ -2035,7 +2035,7 @@ libaegis/change/build/required.cc	implementation of the change_build_required cl
 libaegis/change/build/run_dev_com.cc	functions to manipulate run_dev_coms
 libaegis/change/build/run_int_com.cc	functions to manipulate run_int_coms
 libaegis/change/build/run_time_com.cc	functions to run the build_time_adjust_notify_command
-libaegis/change/build/symlinks.cc	functions to manipulate symlinks
+libaegis/change/build/symlinks.cc	no manifest specified
 libaegis/change/build/symlnk_maint.cc	implementation of the change_build_symlnk_maint class
 libaegis/change/build/time_set.cc	functions to manipulate time_sets
 libaegis/change/build/times_clear.cc	functions to manipulate times_clears
@@ -2088,7 +2088,7 @@ libaegis/change/file/find_fuzzy.cc	functions to manipulate find_fuzzys
 libaegis/change/file/find_legacy.cc	implementation of the change_file_find_legacy class
 libaegis/change/file/fingerprint/check.cc	functions to manipulate checks
 libaegis/change/file/fingerprint/same.cc	functions to manipulate sames
-libaegis/change/file/fstate.cc	functions to manipulate fstates
+libaegis/change/file/fstate.cc	no manifest specified
 libaegis/change/file/is_config.cc	functions to manipulate is_configs
 libaegis/change/file/list_get.cc	functions to manipulate list_gets
 libaegis/change/file/list_get.h	interface definition for libaegis/change/file/list_get.c
@@ -2187,7 +2187,7 @@ libaegis/change/outstanding.cc	functions to manipulate outstandings
 libaegis/change/pathconf.cc	functions to manipulate pathconfs
 libaegis/change/pconf/attribu_find.cc	implementation of the change_pconf_attribu_find class
 libaegis/change/pconf/copyri_owner.cc	implementation of the change_ty::pconf_copyright_owner_get method
-libaegis/change/pconf/get.cc	functions to manipulate gets
+libaegis/change/pconf/get.cc	no manifest specified
 libaegis/change/pfs.cc	implementation of the change_pfs class
 libaegis/change/pfs.h	interface of the change_pfs class
 libaegis/change/project_specifi/setenv/performe_get.cc	implementation of the
@@ -2911,6 +2911,7 @@ script/tkaer.in	tcl-tk review assist program contributed by Scott Finneran.
 script/xaegis.in	wish script to give aegis a GUI interface
 test/00/t0001a.sh	test -Help for each function
 test/00/t0002a-jerr.sh	Test multi-architecture testing functionality
+test/00/t0002a-smit.sh	no manifest specified
 test/00/t0002a.sh	Test core functionality.
 test/00/t0003a.sh	Test 'aegis -VERSion'
 test/00/t0004a.sh	Test the 'aegis -DIFFerence' command.
@@ -3025,7 +3026,7 @@ test/01/t0112a.sh	Test the subst subst functionality
 test/01/t0113a.sh	Test the aenf body_command functionality
 test/01/t0114a.sh	Test the aeb -minimum functionality
 test/01/t0115a.sh	Test the foreach nul functionality
-test/01/t0116a.sh	Test the aeclone vs aerm functionality
+test/01/t0116a.sh	no manifest specified
 test/01/t0117a.sh	Test the symlink farm functionality
 test/01/t0118a.sh	Test the gettime functionality
 test/01/t0119a.sh	Test the batch_test_command functionality
@@ -3096,7 +3097,7 @@ test/01/t0182a.sh	Test aedist -send functionality
 test/01/t0183a.sh	Test the aedist (mv) functionality
 test/01/t0187a.sh	Test the aecvsserver functionality
 test/01/t0188a.sh	Test change_file_nth functionality
-test/01/t0189a.sh	Test the aecvsserver commit functionality
+test/01/t0189a.sh	no manifest specified
 test/01/t0190a.sh	Test the aecvsserver update functionality
 test/01/t0191a.sh	Test aefa functionality
 test/01/t0192a.sh	Test the aecvsserver add functionality
@@ -3104,7 +3105,7 @@ test/01/t0193a.sh	Test the aecvsserver remove functionality
 test/01/t0195a.sh	Test patch -send functionality
 test/01/t0196a.sh	Test the aemv/merge functionality
 test/01/t0197a.sh	Test the aemeasure functionality
-test/01/t0198a.sh	Test the dev dir style functionality
+test/01/t0198a.sh	no manifest specified
 test/01/t0199a.sh	Test the protect dev dir functionality
 test/02/t0200a.sh	Test the aedist functionality
 test/02/t0201a.sh	Test the symlink farm against derived symlinks (maintain)
@@ -3136,7 +3137,7 @@ test/02/t0220a-pmil.sh	Test the aede-policy functionality
 test/02/t0220a-walt.sh	Test the integration dir style functionality
 test/02/t0221a-pmil.sh	Test the ae-repo-ci functionality
 test/02/t0221a-walt.sh	Test the change_pconf_get functionality
-test/02/t0222a-pmil.sh	Test the ae-repo-ci functionality
+test/02/t0222a-pmil.sh	no manifest specified
 test/02/t0223a-pmil.sh	Test the html_quote href functionality
 test/02/t0224a-walt.sh	Test the aedist functionality
 test/02/t0225a-pmil.sh	Test the bzip2 functionality
@@ -3152,15 +3153,22 @@ test/02/t0233a-walt.sh	Test aeipass vs. missing history_create_command
 test/02/t0234a-walt.sh	Test the aem -gp functionality
 test/02/t0235a-walt.sh	Test the ??? functionality
 test/02/t0237a-walt.sh	Test the aenf promotion functionality
+test/02/t0239a-pmil.sh	no manifest specified
 test/02/t0240a-walt.sh	Test the aeannotate functionality
 test/02/t0241a-walt.sh	Test the aeipass functionality
+test/02/t0242a-walt.sh	no manifest specified
+test/02/t0243a-walt.sh	Test the aecp -delta -ind functionality
 test/02/t0244a-walt.sh	Test the aenpr -keep functionality
+test/02/t0245a-walt.sh	Test the aecp -delta functionality
 test/02/t0247a-walt.sh	Test the aedist -rec functionality
 test/02/t0249a-walt.sh	Test the setenv:* functionality
 test/02/t0250a-ras.sh	Test the tricky symlink functionality
 test/02/t0251a-walt.sh	Test aedist branch move functionality
 test/02/t0252a-walt.sh	Test the aem functionality
 test/02/t0253a-walt.sh	Test the aedist -rec functionality
+test/02/t0256a-walt.sh	Test the aecp -delta functionality
+test/02/t0257a-walt.sh	no manifest specified
+test/02/t0262a-walt.sh	no manifest specified
 test/activity.awk	Renumber activity lines in tests
 test/activity.sh	shell script to manipulate activitys
 test_base64/main.cc	functions to manipulate mains

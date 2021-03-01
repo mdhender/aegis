@@ -5,11 +5,11 @@
 #
 Summary: project change supervisor
 Name: aegis
-Version: 4.22.1
+Version: 4.22.2
 Release: 1
 License: GPL
 Group: Development/Version Control
-Source: http://www.canb.auug.org.au/~millerp/aegis-4.22.1.tar.gz
+Source: http://www.canb.auug.org.au/~millerp/aegis-4.22.2.tar.gz
 URL: http://www.canb.auug.org.au/~millerp/aegis.html
 BuildRoot: /tmp/aegis-build-root
 Icon: aegis.xpm
@@ -105,7 +105,7 @@ make RPM_BUILD_ROOT=$RPM_BUILD_ROOT install
 %attr(4755,root,bin) /usr/bin/aegis
 %attr(4755,root,bin) /usr/bin/aeimport
 %attr(0755,root,bin) /usr/bin/aelcf
-%attr(0755,root,bin) /usr/bin/aelock
+%attr(4755,root,bin) /usr/bin/aelock
 %attr(0755,root,bin) /usr/bin/aelpf
 %attr(0755,root,bin) /usr/bin/aels
 %attr(0755,root,bin) /usr/bin/aemeasure

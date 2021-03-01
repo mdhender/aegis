@@ -1,7 +1,6 @@
 //
 //	aegis - project change supervisor
-//	Copyright (C) 2002-2005 Peter Miller;
-//	All rights reserved.
+//	Copyright (C) 2002-2007 Peter Miller
 //
 //	This program is free software; you can redistribute it and/or modify
 //	it under the terms of the GNU General Public License as published by
@@ -20,6 +19,8 @@
 // MANIFEST: functions to output to tar archivess
 //
 
+#include <common/ac/string.h>
+
 #include <common/error.h>
 #include <aetar/output/tar.h>
 #include <aetar/output/tar_child.h>
@@ -27,6 +28,19 @@
 
 output_tar_ty::~output_tar_ty()
 {
+    //
+    // Write a 512-byte block of zero (three times) to indicate end of
+    // file.  While GNU tar(1) doesn't care, BSD tar(1) and pax(1) do
+    // care.
+    //
+    char zero[512];
+    memset(zero, 0, sizeof(zero));
+    deeper->write(zero, sizeof(zero));
+    // Three times is weird, but it's what other tar format tools use.
+    // Don't ask me why: even one is redundant.
+    deeper->write(zero, sizeof(zero));
+    deeper->write(zero, sizeof(zero));
+
     //
     // Finish writing the archive file.
     //

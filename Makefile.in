@@ -6258,11 +6258,11 @@ aetar/main.$(OBJEXT): aetar/main.cc common/ac/stdio.h common/config.h \
 	$(CXX) -I. $(CXXFLAGS) -c aetar/main.cc
 	mv main.$(OBJEXT) $@
 
-aetar/output/tar.$(OBJEXT): aetar/output/tar.cc common/error.h \
+aetar/output/tar.$(OBJEXT): aetar/output/tar.cc common/ac/string.h \
+		common/config.h common/config.messy.h common/error.h \
 		common/main.h aetar/output/tar.h libaegis/output.h \
-		common/ac/stdarg.h common/config.h common/config.messy.h \
-		common/ac/stddef.h aetar/output/tar_child.h \
-		common/nstring.h common/str.h
+		common/ac/stdarg.h common/ac/stddef.h \
+		aetar/output/tar_child.h common/nstring.h common/str.h
 	$(CXX) -I. $(CXXFLAGS) -c aetar/output/tar.cc
 	mv tar.$(OBJEXT) $@
 
@@ -22258,6 +22258,10 @@ test/00/t0002a-jerr.ES: test/00/t0002a-jerr.sh all-bin etc/test.sh
 	CXX="$(CXX)" $(SH) etc/test.sh -shell $(SH) -run \
 		test/00/t0002a-jerr.sh test/00/t0002a-jerr.ES
 
+test/00/t0002a-smit.ES: test/00/t0002a-smit.sh all-bin etc/test.sh
+	CXX="$(CXX)" $(SH) etc/test.sh -shell $(SH) -run \
+		test/00/t0002a-smit.sh test/00/t0002a-smit.ES
+
 test/00/t0002a.ES: test/00/t0002a.sh all-bin etc/test.sh
 	CXX="$(CXX)" $(SH) etc/test.sh -shell $(SH) -run \
 		test/00/t0002a.sh test/00/t0002a.ES
@@ -23222,6 +23226,10 @@ test/02/t0237a-walt.ES: test/02/t0237a-walt.sh all-bin etc/test.sh
 	CXX="$(CXX)" $(SH) etc/test.sh -shell $(SH) -run \
 		test/02/t0237a-walt.sh test/02/t0237a-walt.ES
 
+test/02/t0239a-pmil.ES: test/02/t0239a-pmil.sh all-bin etc/test.sh
+	CXX="$(CXX)" $(SH) etc/test.sh -shell $(SH) -run \
+		test/02/t0239a-pmil.sh test/02/t0239a-pmil.ES
+
 test/02/t0240a-walt.ES: test/02/t0240a-walt.sh all-bin etc/test.sh
 	CXX="$(CXX)" $(SH) etc/test.sh -shell $(SH) -run \
 		test/02/t0240a-walt.sh test/02/t0240a-walt.ES
@@ -23230,9 +23238,21 @@ test/02/t0241a-walt.ES: test/02/t0241a-walt.sh all-bin etc/test.sh
 	CXX="$(CXX)" $(SH) etc/test.sh -shell $(SH) -run \
 		test/02/t0241a-walt.sh test/02/t0241a-walt.ES
 
+test/02/t0242a-walt.ES: test/02/t0242a-walt.sh all-bin etc/test.sh
+	CXX="$(CXX)" $(SH) etc/test.sh -shell $(SH) -run \
+		test/02/t0242a-walt.sh test/02/t0242a-walt.ES
+
+test/02/t0243a-walt.ES: test/02/t0243a-walt.sh all-bin etc/test.sh
+	CXX="$(CXX)" $(SH) etc/test.sh -shell $(SH) -run \
+		test/02/t0243a-walt.sh test/02/t0243a-walt.ES
+
 test/02/t0244a-walt.ES: test/02/t0244a-walt.sh all-bin etc/test.sh
 	CXX="$(CXX)" $(SH) etc/test.sh -shell $(SH) -run \
 		test/02/t0244a-walt.sh test/02/t0244a-walt.ES
+
+test/02/t0245a-walt.ES: test/02/t0245a-walt.sh all-bin etc/test.sh
+	CXX="$(CXX)" $(SH) etc/test.sh -shell $(SH) -run \
+		test/02/t0245a-walt.sh test/02/t0245a-walt.ES
 
 test/02/t0247a-walt.ES: test/02/t0247a-walt.sh all-bin etc/test.sh
 	CXX="$(CXX)" $(SH) etc/test.sh -shell $(SH) -run \
@@ -23257,6 +23277,18 @@ test/02/t0252a-walt.ES: test/02/t0252a-walt.sh all-bin etc/test.sh
 test/02/t0253a-walt.ES: test/02/t0253a-walt.sh all-bin etc/test.sh
 	CXX="$(CXX)" $(SH) etc/test.sh -shell $(SH) -run \
 		test/02/t0253a-walt.sh test/02/t0253a-walt.ES
+
+test/02/t0256a-walt.ES: test/02/t0256a-walt.sh all-bin etc/test.sh
+	CXX="$(CXX)" $(SH) etc/test.sh -shell $(SH) -run \
+		test/02/t0256a-walt.sh test/02/t0256a-walt.ES
+
+test/02/t0257a-walt.ES: test/02/t0257a-walt.sh all-bin etc/test.sh
+	CXX="$(CXX)" $(SH) etc/test.sh -shell $(SH) -run \
+		test/02/t0257a-walt.sh test/02/t0257a-walt.ES
+
+test/02/t0262a-walt.ES: test/02/t0262a-walt.sh all-bin etc/test.sh
+	CXX="$(CXX)" $(SH) etc/test.sh -shell $(SH) -run \
+		test/02/t0262a-walt.sh test/02/t0262a-walt.ES
 
 test_base64/main.$(OBJEXT): test_base64/main.cc common/ac/stdio.h \
 		common/config.h common/config.messy.h common/ac/stdlib.h \
@@ -24019,11 +24051,13 @@ bin/aelock$(EXEEXT): $(aelock_files) libaegis/libaegis.$(LIBEXT) .bin
 	@sleep 1
 	$(CXX) $(LDFLAGS) -o $@ $(aelock_files) \
 		libaegis/libaegis.$(LIBEXT) $(LIBS)
+	-chown root $@ && chmod 4755 $@
 	@sleep 1
 
 $(RPM_BUILD_ROOT)$(bindir)/$(PROGRAM_PREFIX)aelock$(PROGRAM_SUFFIX)$(EXEEXT): \
 		bin/aelock$(EXEEXT) .bindir
 	$(INSTALL_PROGRAM) bin/aelock$(EXEEXT) $@
+	-chown root $@ && chmod 4755 $@
 
 aelpf_files = aelpf/main.$(OBJEXT)
 
@@ -24255,8 +24289,8 @@ find_sizes_files = common/ac/libintl.$(OBJEXT) common/ac/stdlib.$(OBJEXT) \
 		common/nstring.$(OBJEXT) common/progname.$(OBJEXT) \
 		common/quit.$(OBJEXT) common/rsrc_limits.$(OBJEXT) \
 		common/str.$(OBJEXT) common/str/catenate.$(OBJEXT) \
-		common/str/format.$(OBJEXT) common/trace.$(OBJEXT) \
-		find_sizes/main.$(OBJEXT)
+		common/str/format.$(OBJEXT) common/stracc.$(OBJEXT) \
+		common/trace.$(OBJEXT) find_sizes/main.$(OBJEXT)
 
 bin/find_sizes$(EXEEXT): $(find_sizes_files) .bin
 	@sleep 1
@@ -26298,7 +26332,8 @@ uninstall-doc:
 
 install-doc-no:
 
-TestFiles = test/00/t0001a.ES test/00/t0002a-jerr.ES test/00/t0002a.ES \
+TestFiles = test/00/t0001a.ES test/00/t0002a-jerr.ES \
+		test/00/t0002a-smit.ES test/00/t0002a.ES \
 		test/00/t0003a.ES test/00/t0004a.ES test/00/t0005a.ES \
 		test/00/t0006a.ES test/00/t0007a.ES test/00/t0008a.ES \
 		test/00/t0009a.ES test/00/t0010a.ES test/00/t0011a.ES \
@@ -26388,11 +26423,15 @@ TestFiles = test/00/t0001a.ES test/00/t0002a-jerr.ES test/00/t0002a.ES \
 		test/02/t0230a-walt.ES test/02/t0231a-walt.ES \
 		test/02/t0232a-walt.ES test/02/t0233a-walt.ES \
 		test/02/t0234a-walt.ES test/02/t0235a-walt.ES \
-		test/02/t0237a-walt.ES test/02/t0240a-walt.ES \
-		test/02/t0241a-walt.ES test/02/t0244a-walt.ES \
+		test/02/t0237a-walt.ES test/02/t0239a-pmil.ES \
+		test/02/t0240a-walt.ES test/02/t0241a-walt.ES \
+		test/02/t0242a-walt.ES test/02/t0243a-walt.ES \
+		test/02/t0244a-walt.ES test/02/t0245a-walt.ES \
 		test/02/t0247a-walt.ES test/02/t0249a-walt.ES \
 		test/02/t0250a-ras.ES test/02/t0251a-walt.ES \
-		test/02/t0252a-walt.ES test/02/t0253a-walt.ES
+		test/02/t0252a-walt.ES test/02/t0253a-walt.ES \
+		test/02/t0256a-walt.ES test/02/t0257a-walt.ES \
+		test/02/t0262a-walt.ES
 
 clean-obj:
 	rm -f core
@@ -27960,6 +27999,7 @@ clean-obj:
 	rm -f libaegis/zero.$(OBJEXT)
 	rm -f test/00/t0001a.ES
 	rm -f test/00/t0002a-jerr.ES
+	rm -f test/00/t0002a-smit.ES
 	rm -f test/00/t0002a.ES
 	rm -f test/00/t0003a.ES
 	rm -f test/00/t0004a.ES
@@ -28201,15 +28241,22 @@ clean-obj:
 	rm -f test/02/t0234a-walt.ES
 	rm -f test/02/t0235a-walt.ES
 	rm -f test/02/t0237a-walt.ES
+	rm -f test/02/t0239a-pmil.ES
 	rm -f test/02/t0240a-walt.ES
 	rm -f test/02/t0241a-walt.ES
+	rm -f test/02/t0242a-walt.ES
+	rm -f test/02/t0243a-walt.ES
 	rm -f test/02/t0244a-walt.ES
+	rm -f test/02/t0245a-walt.ES
 	rm -f test/02/t0247a-walt.ES
 	rm -f test/02/t0249a-walt.ES
 	rm -f test/02/t0250a-ras.ES
 	rm -f test/02/t0251a-walt.ES
 	rm -f test/02/t0252a-walt.ES
 	rm -f test/02/t0253a-walt.ES
+	rm -f test/02/t0256a-walt.ES
+	rm -f test/02/t0257a-walt.ES
+	rm -f test/02/t0262a-walt.ES
 	rm -f test_base64/main.$(OBJEXT)
 	rm -f test_cfn/main.$(OBJEXT)
 	rm -f test_cpio/main.$(OBJEXT)

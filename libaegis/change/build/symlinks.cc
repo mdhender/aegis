@@ -1,7 +1,7 @@
 //
 //	aegis - project change supervisor
-//	Copyright (C) 1999, 2001-2006 Peter Miller;
-//	All rights reserved.
+//	Copyright (C) 1999, 2001-2006 Peter Miller
+//	Copyright (C) 2007 Walter Franzini
 //
 //	This program is free software; you can redistribute it and/or modify
 //	it under the terms of the GNU General Public License as published by
@@ -14,10 +14,8 @@
 //	GNU General Public License for more details.
 //
 //	You should have received a copy of the GNU General Public License
-//	along with this program; if not, write to the Free Software
-//	Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111, USA.
-//
-// MANIFEST: functions to manipulate symlinks
+//	along with this program.  If not, see
+//	<http://www.gnu.org/licenses/>.
 //
 
 #include <common/ac/errno.h>
@@ -565,12 +563,41 @@ maintain(void *p, dir_stack_walk_message_t msg, string_ty *path_rel,
 		}
 		else
 		{
-		    user_become_undo();
-		    nstring origin(project_file_path(pp, path_rel));
-		    user_become(sip->up);
-		    assert(!origin.empty());
-		    os_mkdir_between(sip->stack.string[0], path_rel, 02755);
-		    os_symlink_repair(origin.get_ref(), path_abs.get_ref());
+                     switch(p_src->usage)
+                     {
+                     case file_usage_build:
+                         //
+                         // Do not repair links related to build files.
+                         // They should follow the derived_files_* style.
+                         //
+                         break;
+
+                     case file_usage_config:
+                     case file_usage_source:
+                     case file_usage_manual_test:
+                     case file_usage_test:
+ #ifndef DEBUG
+                     default:
+ #endif
+                         {
+                             user_become_undo();
+                             nstring origin(project_file_path(pp, path_rel));
+                             user_become(sip->up);
+                             assert(!origin.empty());
+                             os_mkdir_between
+                             (
+                                 sip->stack.string[0],
+                                 path_rel,
+                                 02755
+                             );
+                             os_symlink_repair
+                             (
+                                 origin.get_ref(),
+                                 path_abs.get_ref()
+                             );
+                         }
+                         break;
+                     }
 		}
 		goto done;
 	    }
@@ -582,6 +609,11 @@ maintain(void *p, dir_stack_walk_message_t msg, string_ty *path_rel,
 		goto done;
 
 	    case file_status_out_of_date:
+                //
+                // Do not unlink derived file registered into aegis.
+                //
+                if (p_src && p_src->usage == file_usage_build)
+                    goto done;
 		trace(("rm %s\n", path_abs.c_str()));
 		os_unlink(path_abs.get_ref());
 		depth = 666;
@@ -674,6 +706,13 @@ maintain(void *p, dir_stack_walk_message_t msg, string_ty *path_rel,
 		)
 		    goto done;
 
+                //
+                // If the file is a registered derived file then we do
+                // not do anything else.
+                //
+                if (p_src->usage == file_usage_build)
+                    goto done;
+
 		//
 		// Not an accurate reflection of the baseline,
 		// get rid of it and start again.
@@ -765,6 +804,12 @@ maintain(void *p, dir_stack_walk_message_t msg, string_ty *path_rel,
 		if (origin.empty())
 		    break;
 
+                //
+                // Do not process derived files registered within Aegis.
+                //
+                if (c_src->usage == file_usage_build)
+                    break;
+
 		os_mkdir_between(sip->stack.string[0], path_rel, 02755);
 		if
 		(
@@ -839,6 +884,8 @@ maintain(void *p, dir_stack_walk_message_t msg, string_ty *path_rel,
 	    trace(("project file not at top\n"));
 	    if (p_src->action == file_action_remove)
 		break;
+            if (p_src->usage == file_usage_build)
+                break;
 	    os_mkdir_between(sip->stack.string[0], path_rel, 02755);
 
 	    //
