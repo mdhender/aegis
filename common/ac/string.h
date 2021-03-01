@@ -1,6 +1,6 @@
 //
 //	aegis - a project change supervisor
-//	Copyright (C) 1994, 1996, 1997, 2002, 2004-2008 Peter Miller
+//	Copyright (C) 1994, 1996, 1997, 2002, 2004-2009 Peter Miller
 //
 //      This program is free software; you can redistribute it and/or
 //      modify it under the terms of the GNU General Public License as
@@ -136,7 +136,7 @@ char *strendcpy(char *dst, const char *src, const char *end);
 #ifndef HAVE_MEMMEM
 void *memmem(const void *, size_t, const void *, size_t);
 #endif
-void *memmem_replacement(const void *, size_t, const void *, size_t);
+const void *memmem_replacement(const void *, size_t, const void *, size_t);
 
 // It is possible memmem is present, but severely broken.  See the GNU
 // libc memmem(3) man page for just how broken it can get.

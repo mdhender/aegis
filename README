@@ -3,7 +3,7 @@ Read Me(Aegis)							Read Me(Aegis)
 NAME
 	aegis -	project	change supervisor
 	Copyright (C) 1991, 1992, 1993,	1994, 1995, 1996, 1997,	1998, 1999,
-	2000, 2001, 2002, 2003,	2004, 2005, 2006, 2007,	2008, 2009 Peter
+	2000, 2001, 2002, 2003,	2004, 2005, 2006, 2007,	2008, 2009, 2010 Peter
 	Miller
 
 	Aegis is distributed under the terms of	the GNU	General	Public
@@ -98,11 +98,11 @@ ARCHIVE	SITE
 
 		URL:	http://www.canb.auug.org.au/~millerp/
 		File:	aegis.html	      #	the Aegis page
-		File:	aegis.4.24.2.README   #	Description, from tar file
-		File:	aegis.4.24.2.lsm      #	Description, in	LSM format
-		File:	aegis.4.24.2.ae	      #	the complete source, aedist format
-		File:	aegis.4.24.2.spec     #	RedHat package specification
-		File:	aegis.4.24.2.tar.gz   #	the complete source
+		File:	aegis.4.24.3.README   #	Description, from tar file
+		File:	aegis.4.24.3.lsm      #	Description, in	LSM format
+		File:	aegis.4.24.3.ae	      #	the complete source, aedist format
+		File:	aegis.4.24.3.spec     #	RedHat package specification
+		File:	aegis.4.24.3.tar.gz   #	the complete source
 
 	This directory also contains a few other pieces	of software written by
 	me.  Some are referred to in the Aegis documentation.  Please have a
@@ -115,11 +115,11 @@ ARCHIVE	SITE
 	will be	able to	find Aegis on any of its mirrors.
 
 		URL:	ftp://metalab.unc.edu/pub/Linux/devel/vc/
-		File:	aegis.4.24.2.README   #	Description, from tar file
-		File:	aegis.4.24.2.lsm      #	Description, in	LSM format
-		File:	aegis.4.24.2.spec     #	RedHat package specification
-		File:	aegis.4.24.2.ae	      #	the complete source, aedist format
-		File:	aegis.4.24.2.tar.gz   #	the complete source
+		File:	aegis.4.24.3.README   #	Description, from tar file
+		File:	aegis.4.24.3.lsm      #	Description, in	LSM format
+		File:	aegis.4.24.3.spec     #	RedHat package specification
+		File:	aegis.4.24.3.ae	      #	the complete source, aedist format
+		File:	aegis.4.24.3.tar.gz   #	the complete source
 	This site is extensively mirrored around the world, so look for	a copy
 	near you (you will get much better response).
 
@@ -250,6 +250,24 @@ RELEASE	NOTES
 	same release of	Aegis.	While the database format is backwards
 	compatible, it is rarely forwards compatible in	the face of new
 	capabilities.
+
+   Version 4.24.3 (08-Mar-2010)
+	* This release fixes definitly CVE-2008-4938 since the fix included in
+	4.24.1 was incomplete.
+
+	* The aecp(1) command has been corrected to not	issue a	multiple user
+	permission set bug when	invoked	as: aecp -ind -o.
+
+	* The aeib(1) command has been modified	to no copy into	the baseline
+	derived	files tracked by Aegis.
+
+	* A bug	has been fixed that made it possible to	delete the difference
+	files for removed files, making	it impossible to develop_end the
+	change.
+
+	* It is	now possible to	build Aegis on Debian under pbuilder.
+
+	* Various portability related improvement.
 
    Version 4.24.2 (25-Jun-2009)
 	* The branch fstate can	contain	fake transparent entries when a	change

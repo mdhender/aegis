@@ -36,7 +36,7 @@ addr=${USER-${LOGIN-`whoami`}}
 changes=`$aegis -l uc -v`
 if [ "$change" ]
 then
-    cat > /tmp/$$.intro << fubar
+    sendmail -t << fubar
 To: $addr
 Subject: Outstanding Changes
 

@@ -32043,6 +32043,10 @@ test/02/t0278a-walt.ES: test/02/t0278a-walt.sh all-bin etc/test.sh
 	CXX="$(CXX)" $(SH) etc/test.sh -shell $(SH) -run \
 		test/02/t0278a-walt.sh test/02/t0278a-walt.ES
 
+test/02/t0283a-walt.ES: test/02/t0283a-walt.sh all-bin etc/test.sh
+	CXX="$(CXX)" $(SH) etc/test.sh -shell $(SH) -run \
+		test/02/t0283a-walt.sh test/02/t0283a-walt.ES
+
 test_base64/main.$(OBJEXT): test_base64/main.cc common/ac/stdio.h \
 		common/config.h common/config.messy.h common/ac/stdlib.h \
 		common/arglex.h common/main.h common/error.h \
@@ -35341,7 +35345,8 @@ TestFiles = test/00/t0000a-pmil.ES test/00/t0001a.ES \
 		test/02/t0264a-walt.ES test/02/t0265a-walt.ES \
 		test/02/t0266a-walt.ES test/02/t0268a-walt.ES \
 		test/02/t0269a-walt.ES test/02/t0270a-walt.ES \
-		test/02/t0273a-walt.ES test/02/t0278a-walt.ES
+		test/02/t0273a-walt.ES test/02/t0278a-walt.ES \
+		test/02/t0283a-walt.ES
 
 clean-obj:
 	rm -f .bin
@@ -37356,6 +37361,7 @@ clean-obj:
 	rm -f test/02/t0270a-walt.ES
 	rm -f test/02/t0273a-walt.ES
 	rm -f test/02/t0278a-walt.ES
+	rm -f test/02/t0283a-walt.ES
 	rm -f test_base64/main.$(OBJEXT)
 	rm -f test_cfn/main.$(OBJEXT)
 	rm -f test_cpio/main.$(OBJEXT)

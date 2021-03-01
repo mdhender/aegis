@@ -1,17 +1,17 @@
 
 
 
-Project "aegis.4.24.2"							  Page 1
-Branch Details						Thu Jun 25 18:00:27 2009
+Project "aegis.4.24.3"							  Page 1
+Branch Details						Mon Mar	 8 18:35:55 2010
 
 NAME
-	Project "aegis.4.24", Change 2.
+	Project "aegis.4.24", Change 3.
 
 SUMMARY
-	The "aegis" program, branch 4.24.2.
+	The "aegis" program, branch 4.24.3.
 
 DESCRIPTION
-	The "aegis" program, branch 4.24.2.
+	The "aegis" program, branch 4.24.3.
 
 	This change is exempt from testing against the development directory.
 	This change is exempt from testing against the baseline.
@@ -19,7 +19,7 @@ DESCRIPTION
 BRANCH CONTENTS
 	Change	State		Description
 	------- -------		-------------
-	 500	being_		Prepare for release
+	 500	being_		Release aegis-4.24.3
 		integrated
 
 
@@ -64,8 +64,8 @@ ARCHITECTURES
 
 
 
-Project "aegis.4.24.2"							  Page 2
-Branch Details						Thu Jun 25 18:00:27 2009
+Project "aegis.4.24.3"							  Page 2
+Branch Details						Mon Mar	 8 18:35:55 2010
 
 CAUSE
 	This change was caused by internal_enhancement.
@@ -76,18 +76,18 @@ STATE
 FILES
 	Type	Action	 Edit	      File Name
 	------- -------- -------      -----------
-	source	transpar    8	      lib/en/readme/new.4.24.so
+	source	transpar   43	      etc/archive.cook
+		ent
+	source	transpar   10	      lib/en/readme/new.4.24.so
 		ent
 
 HISTORY
 	What		When		Who	 Comment
 	------		------		-----	 ---------
-	new_change	Thu Jun 25	walter
-			08:06:45 2009
-	develop_begin	Thu Jun 25	walter	 Elapsed time: 1.000 days.
-			08:06:45 2009
-
-
+	new_change	Mon Mar	 8	walter
+			07:57:37 2010
+	develop_begin	Mon Mar	 8	walter	 Elapsed time: 1.000 days.
+			07:57:37 2010
 
 
 
@@ -127,29 +127,23 @@ HISTORY
 
 
 
-Project "aegis.4.24.2", Change 500					  Page 3
-Change Details						Thu Jun 25 18:00:27 2009
+Project "aegis.4.24.3", Change 500					  Page 3
+Change Details						Mon Mar	 8 18:35:55 2010
 
 NAME
-	Project "aegis.4.24.2", Delta 1, Change 500.
+	Project "aegis.4.24.3", Delta 1, Change 500.
 
 SUMMARY
-	Prepare for release
+	Release aegis-4.24.3
 
 DESCRIPTION
-	Release 4.24.2
+	This is the third bugfix release of the 4.24 series.
 
 	Signed-off-by: Walter Franzini <walter.franzini@gmail.com>
 
 	This change must pass a full regression test.  This change is exempt
 	from testing against the development directory. This change is exempt
 	from testing against the baseline.
-
-ATTRIBUTES
-	Name		Value
-	-------		-------
-	foreign-	true
-	copyright
 
 
 ARCHITECTURE
@@ -169,55 +163,39 @@ STATE
 FILES
 	Type	Action	 Edit	      File Name
 	------- -------- -------      -----------
-	source	modify	    8	      lib/en/readme/new.4.24.so
+	source	modify	   43	      etc/archive.cook
+	source	modify	   10	      lib/en/readme/new.4.24.so
 
 HISTORY
 	What		When		Who	 Comment
 	------		------		-----	 ---------
-	new_change	Thu Jun 25	walter
-			08:07:20 2009
-	develop_begin	Thu Jun 25	walter	 Elapsed time: 0.721 days.
-			08:07:43 2009
-	develop_end_2ar Thu Jun 25	walter	 Elapsed time: 0.043 days.
-			13:32:14 2009
-	develop_end_	Thu Jun 25	walter	 Elapsed time: 0.028 days.
-	undo		13:51:48 2009
-	develop_end_2ar Thu Jun 25	walter
-			14:04:23 2009
-	review_begin	Thu Jun 25	walter
-			14:12:53 2009
-
+	new_change	Mon Mar	 8	walter
+			07:58:31 2010
+	develop_begin	Mon Mar	 8	walter	 Elapsed time: 1.000 days.
+			07:58:36 2010
+	develop_end_2ar Mon Mar	 8	walter
+			17:36:07 2010
+	review_begin	Mon Mar	 8	walter
+			17:36:14 2010
+	review_pass	Mon Mar	 8	walter
+			17:36:31 2010
+	integrate_begin Mon Mar	 8	walter	 Elapsed time: 0.024 days.
+			17:36:46 2010
+	integrate_fail	Mon Mar	 8	walter	 More compat stuff needed.
+			17:47:41 2010		 Elapsed time: 0.092 days.
+	develop_end_2ar Mon Mar	 8	walter
+			18:29:14 2010
+	review_begin	Mon Mar	 8	walter
+			18:29:18 2010
 
 
 
-Project "aegis.4.24.2", Change 500					  Page 4
-Change Details						Thu Jun 25 18:00:27 2009
+Project "aegis.4.24.3", Change 500					  Page 4
+Change Details						Mon Mar	 8 18:35:55 2010
 
 	What		When		Who	 Comment
 	------		------		-----	 ---------
-	review_pass	Thu Jun 25	walter
-			14:13:12 2009
-	integrate_begin Thu Jun 25	walter	 Elapsed time: 0.117 days.
-			14:13:18 2009
-	integrate_fail	Thu Jun 25	walter	 aet -reg failed!
-			15:06:08 2009		 Elapsed time: 0.205 days.
-	develop_end_2ar Thu Jun 25	walter	 Elapsed time: 0.023 days.
-			16:38:20 2009
-	review_begin	Thu Jun 25	walter
-			16:48:51 2009
-	review_pass	Thu Jun 25	walter
-			16:48:55 2009
-	integrate_begin Thu Jun 25	walter	 Elapsed time: 0.053 days.
-			16:49:27 2009
-	integrate_	Thu Jun 25	walter
-	begin_undo	17:13:06 2009
-	develop_end_	Thu Jun 25	walter	 Elapsed time: 0.065 days.
-	undo		17:13:11 2009
-	develop_end_2ar Thu Jun 25	walter	 Elapsed time: 0.023 days.
-			17:42:31 2009
-	review_begin	Thu Jun 25	walter
-			17:53:05 2009
-	review_pass	Thu Jun 25	walter
-			17:53:16 2009
-	integrate_begin Thu Jun 25	walter
-			17:53:31 2009
+	review_pass	Mon Mar	 8	walter
+			18:29:28 2010
+	integrate_begin Mon Mar	 8	walter
+			18:29:34 2010

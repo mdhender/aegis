@@ -1,7 +1,7 @@
 .\"
 .\" aegis - project change supervisor
 .\" Copyright (C) 2008 Peter Miller
-.\" Copyright (C) 2008, 2009 Walter Franzini
+.\" Copyright (C) 2008-2010 Walter Franzini
 .\"
 .\" This program is free software; you can redistribute it and/or modify
 .\" it under the terms of the GNU General Public License as published by
@@ -27,6 +27,41 @@
 .\" .\" Change NN
 .\" ------------------------------------------------------------------------
 .\" Place new text above this line.
+.SS Version 4.24.3 (08-Mar-2010)
+.PP
+.if n *
+.if t \(bu
+.\" change 604
+This release fixes definitly CVE-2008-4938 since the fix included in
+4.24.1 was incomplete.
+.PP
+.if n *
+.if t \(bu
+.\" change 190
+The \f[I]aecp\f[P](1) command has been corrected to not issue a multiple user
+permission set bug when invoked as: aecp -ind -o.
+.PP
+.if n *
+.if t \(bu
+.\" change 269
+The \f[I]aeib\f[P](1) command has been modified to no copy into the
+baseline derived files tracked by Aegis.
+.PP
+.if n *
+.if t \(bu
+.\" change 613
+A bug has been fixed that made it possible to delete the difference
+files for removed files, making it impossible to develop_end the
+change.
+.PP
+.if n *
+.if t \(bu
+.\" Change 601
+It is now possible to build Aegis on Debian under pbuilder.
+.PP
+.if n *
+.if t \(bu
+Various portability related improvement.
 .SS Version 4.24.2 (25-Jun-2009)
 .PP
 .if n *

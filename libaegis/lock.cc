@@ -43,7 +43,7 @@
 // lock the whole file (and our lock file has zero length) but not parts
 // of the file.
 //
-#ifdef __hurd__
+#if defined(__hurd__) || defined(__GNU__)
 #define WHOLE_FILE_LOCKS_ONLY
 #endif
 
@@ -1017,11 +1017,7 @@ lock_walk_hunt(long min, long max, lock_walk_callback callback)
     //
     // look for a lock in the given range
     //
-    file_lock.l_type = F_WRLCK;
-    file_lock.l_whence = SEEK_SET;
-    file_lock.l_start = min;
-    file_lock.l_len = max - min;
-    file_lock.l_pid = 0;
+    flock_construct(&file_lock, F_WRLCK, min, max - min);
     gonzo_become();
     if (glue_fcntl(fd, F_GETLK, &file_lock))
     {

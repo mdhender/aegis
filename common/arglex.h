@@ -1,6 +1,6 @@
 //
 //	aegis - project change supervisor
-//	Copyright (C) 1991-1993, 1995, 1999, 2001-2006, 2008 Peter Miller
+//	Copyright (C) 1991-1993, 1995, 1999, 2001-2006, 2008, 2009 Peter Miller
 //
 //	This program is free software; you can redistribute it and/or modify
 //	it under the terms of the GNU General Public License as published by
@@ -88,10 +88,10 @@ int arglex_prefetch(int *, int);
   * must matche excatly here.  This rather ugly feature is to support
   * "-I./dir" type options.
   *
-  * For example: "-project" and "-P' both match "-Project", as does
+  * For example: "-project" and "-P" both match "-Project", as does
   * "-proJ", but "-prj" does not.
   *
-  * For example: "-devDir" and "-d_d' both match
+  * For example: "-devDir" and "-d_d" both match
   * "-Development_Directory", but "-dvlpmnt_drctry" does not.
   *
   * For example: to match include path specifications, use a pattern

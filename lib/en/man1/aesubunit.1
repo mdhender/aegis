@@ -1,6 +1,6 @@
 '\" t
 .\"	aegis - project change supervisor
-.\"	Copyright (C) 2005-2008 Peter Miller
+.\"	Copyright (C) 2005-2009 Peter Miller
 .\"
 .\"	This program is free software; you can redistribute it and/or modify
 .\"	it under the terms of the GNU General Public License as published by
@@ -37,11 +37,11 @@ aesubunit \- run SubUnit tests
 .SH DESCRIPTION
 The \fPaesubunit\fP command is used to invoke tests via the
 http://\%www.robertcollins.net/\%unittest/\%subunit unit testing interface.
-.SH
+.PP
 The shape of the external unittest should not need to be known a-priori.
 After the test has run, tests should still exist as discrete objects, so that
 anything taking a reference to them doesn't get 50 copies of the same object.
-.SH
+.PP
 The \fIaesubunit\fP command may be used to replace the
 \fItest_command\fP or \fIbatch_test_command\fP fields of the project
 configuration file.

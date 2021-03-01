@@ -1,6 +1,6 @@
 //
 //	aegis - project change supervisor
-//	Copyright (C) 2006, 2008 Peter Miller
+//	Copyright (C) 2006, 2008, 2009 Peter Miller
 //
 //	This program is free software; you can redistribute it and/or modify
 //	it under the terms of the GNU General Public License as published by
@@ -24,7 +24,7 @@ static int
 find_stack_direction ()
 {
     static char *addr = 0;
-    auto char dummy;
+    char dummy;
     if (addr == 0)
     {
 	addr = &dummy;
@@ -47,7 +47,7 @@ variable_is_on_stack(void *p)
 	return false;
     if (stack_direction == 0)
 	stack_direction = find_stack_direction();
-    auto char dummy = 0;
+    char dummy = 0;
     char *cp = (char *)p;
     return (stack_direction < 0 ?  (&dummy < cp) : (&dummy > cp));
 }

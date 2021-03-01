@@ -53,7 +53,7 @@
 #
 msgid ""
 msgstr ""
-"POT-Creation-Date: Thu Jun 25 17:58:37 CEST 2009\n"
+"POT-Creation-Date: Mon Mar 08 18:34:53 CET 2010\n"
 "PO-Revision-Date: 2008-01-09\n"
 "Last-Translator: Ralf Fassel <ralf@akutech.de>\n"
 "MIME-Version: 1.0\n"
@@ -99,7 +99,7 @@ msgstr "Zur Option $Name muß eine gültige URL angegeben werden"
 #
 #       $File_Name      The name of the offending file.
 #
-#: aegis/aede.cc:416 aegis/aeib.cc:1066 aegis/aeib.cc:1096 aegis/aerb.cc:331
+#: aegis/aede.cc:416 aegis/aeib.cc:1110 aegis/aeib.cc:1140 aegis/aerb.cc:331
 #: aegis/aerb.cc:356 aegis/aerp.cc:469 aegis/aerp.cc:493
 msgid "$filename altered"
 msgstr "Datei \"$filename\" wurde verändert"
@@ -1464,7 +1464,7 @@ msgstr "füge Log an \"$filename\""
 # This progress message is issued when aeib copies the source files form
 # the development directory into the integration directory.
 #
-#: aegis/aeib.cc:1158
+#: aegis/aeib.cc:1202
 msgid "apply change to integration directory"
 msgstr "kopiere den Change in das Integrationsverzeichnis"
 
@@ -1879,7 +1879,7 @@ msgstr ""
 # This error message is issued when an aeib command is used on a change
 # which is not in the 'awaiting integration' state.
 #
-#: aegis/aeib.cc:863
+#: aegis/aeib.cc:907
 msgid "bad ib state"
 msgstr ""
 "Dieser Change ist im '$state' Status, er muß im 'awaiting integration' "
@@ -2728,7 +2728,7 @@ msgstr "Kopiere Baseline"
 # This progress message is issued when aeib creates a copy of
 # the baseline to construct the integration directory.
 #
-#: aegis/aeib.cc:1146
+#: aegis/aeib.cc:1190
 msgid "copy baseline to integration directory"
 msgstr "Kopiere Baseline ins Integrations-Verzeichnis"
 
@@ -2811,7 +2811,7 @@ msgstr ""
 #
 #       $Number         The change number of the current integration.
 #
-#: aegis/aeib.cc:890
+#: aegis/aeib.cc:934
 msgid "currently integrating $number"
 msgstr ""
 "Change $number ist die momentan aktive Integration, es kann nur einen "
@@ -2921,7 +2921,7 @@ msgstr "Bearbeitung wieder aufgenommen"
 # This error message is issued when a developer attempts to integrate her
 # own change, and the project is configured to disallow this.
 #
-#: aegis/aeib.cc:870
+#: aegis/aeib.cc:914
 msgid "developer may not integrate"
 msgstr "Der Entwickler eines Changes darf diesen nicht auch integrieren"
 
@@ -3140,7 +3140,7 @@ msgstr ""
 #
 #       $File_Name      The name of the offending file.
 #
-#: libaegis/lock.cc:597 libaegis/lock.cc:1221
+#: libaegis/lock.cc:597 libaegis/lock.cc:1217
 msgid "fcntl(\"$filename\", F_GETFD): $errno"
 msgstr "fcntl(\"$filename\", F_GETFD): $errno"
 
@@ -3151,7 +3151,7 @@ msgstr "fcntl(\"$filename\", F_GETFD): $errno"
 #       $File_Name      The name of the offending file.
 #       $Argument       The argument to the fcntl call.
 #
-#: libaegis/lock.cc:1036
+#: libaegis/lock.cc:1032
 msgid "fcntl(\"$filename\", F_GETLK, $arg): $errno"
 msgstr "fcntl(\"$filename\", F_GETLK, $arg): $errno"
 
@@ -3162,7 +3162,7 @@ msgstr "fcntl(\"$filename\", F_GETLK, $arg): $errno"
 #       $File_Name      The name of the offending file.
 #       $Argument       The argument to the fcntl call.
 #
-#: libaegis/lock.cc:612 libaegis/lock.cc:1236
+#: libaegis/lock.cc:612 libaegis/lock.cc:1232
 msgid "fcntl(\"$filename\", F_SETFD, $arg): $errno"
 msgstr "fcntl(\"$filename\", F_SETFD, $arg): $errno"
 
@@ -4107,7 +4107,7 @@ msgstr ""
 #
 # This progress message is issued when aeib complete successfully.
 #
-#: aegis/aeib.cc:1302
+#: aegis/aeib.cc:1346
 msgid "integrate begin complete"
 msgstr "Integration hat begonnen"
 
@@ -4222,7 +4222,7 @@ msgstr "Bitte verlassen Sie das Integrations-Verzeichnis"
 # This progress message is issued when aeib creates a virtual copy of
 # the baseline to construct the integration directory.
 #
-#: aegis/aeib.cc:1136
+#: aegis/aeib.cc:1180
 msgid "link baseline to integration directory"
 msgstr "Linke Baseline ins Integrations-Verzeichnis"
 
@@ -5310,7 +5310,7 @@ msgstr "you must give an even number of files to this command"
 # This error message is issued when a command which requires integrator
 # privileges is run, and the user is not an integrator.
 #
-#: aegis/aeib.cc:861
+#: aegis/aeib.cc:905
 msgid "not an integrator"
 msgstr "Benutzer \"$user\" ist kein Integrator"
 
@@ -5394,7 +5394,7 @@ msgstr "ungültig in aktuellem Kontext"
 #       $File_Name      The name of the offending file.
 #
 #: aesubunit/subunit.cc:71 libaegis/gif/open.cc:480 libaegis/input/file.cc:127
-#: libaegis/lock.cc:577 libaegis/lock.cc:1201 libaegis/os/edit/string.cc:42
+#: libaegis/lock.cc:577 libaegis/lock.cc:1197 libaegis/os/edit/string.cc:42
 #: libaegis/output/file.cc:185 libaegis/safe_freopen.cc:38
 msgid "open $filename: $errno"
 msgstr "öffnen von \"$filename\": $errno"
@@ -6005,7 +6005,7 @@ msgstr "Review-Pass zurückgenommen"
 # This error message is issued when a reviewer attempts to integrate
 # a change she reviewed, and the project is configured to disallow this.
 #
-#: aegis/aeib.cc:877
+#: aegis/aeib.cc:921
 msgid "reviewer may not integrate"
 msgstr "Der Reviewer eines Changes darf diesen nicht auch integrieren"
 

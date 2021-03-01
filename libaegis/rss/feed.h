@@ -1,6 +1,6 @@
 //
 //      aegis - project change supervisor
-//      Copyright (C) 2006-2008 Peter Miller
+//      Copyright (C) 2006-2009 Peter Miller
 //      Copyright (C) 2005 Matthew Lee;
 //
 //      This program is free software; you can redistribute it and/or modify
@@ -139,10 +139,10 @@ private:
 
     /**
       * The title instance variable is used to remember
-      * "The name of the channel.  It's how people refer to your
+      * The name of the channel.  It's how people refer to your
       * service.  If you have an HTML website that contains the same
       * information as your RSS file, the title of your channel should
-      * be the same as the title of your website."
+      * be the same as the title of your website.
       */
     nstring title;
 
@@ -160,10 +160,10 @@ private:
 
     /**
       * The pub_date instance variable is used to remember
-      * "The publication date for the content in the channel.  For
+      * The publication date for the content in the channel.  For
       * example, the New York Times publishes on a daily basis, the
       * publication date flips once every 24 hours.  That's when the
-      * pubDate of the channel changes."
+      * pubDate of the channel changes.
       */
     nstring pub_date;
 
@@ -181,10 +181,10 @@ private:
 
     /**
       * The docs instance variable is used to remember
-      * "A URL that points to the documentation for the format used in
+      * A URL that points to the documentation for the format used in
       * the RSS file. It's probably a pointer to this page. It's for
       * people who might stumble across an RSS file on a Web server 25
-      * years from now and wonder what it is."
+      * years from now and wonder what it is.
       */
     nstring docs;
 

@@ -44,7 +44,7 @@ then
             aliases=" ["`echo $aliases | tr ' ' ','`"]"
         fi
 
-        cat > /tmp/$$.intro << fubar
+        sendmail -t << fubar
 Subject: Outstanding "${project}$aliases" Reviews
 To: $addr
 

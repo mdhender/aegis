@@ -10,91 +10,91 @@ access
 T}
 aecpu(1)	\*[Page*Of*aecpu(1)]	T{
 .ad r
-aegis -CoPy file Undo - reverse
+aegis copy file undo - reverse
 T}	T{
 .ad l
 action of aecp
 T}
 aena(1)	\*[Page*Of*aena(1)]	T{
 .ad r
-aegis -New Administrator -
+aegis new administrator -
 T}	T{
 .ad l
 add a new administrator to a project
 T}
 aenc(1)	\*[Page*Of*aenc(1)]	T{
 .ad r
-aegis -New Change -
+aegis new change -
 T}	T{
 .ad l
 add a new change to a project
 T}
 aent(1)	\*[Page*Of*aent(1)]	T{
 .ad r
-aegis -New Test -
+aegis new test -
 T}	T{
 .ad l
 add a new test to a change
 T}
 aerm(1)	\*[Page*Of*aerm(1)]	T{
 .ad r
-aegis -ReMove file -
+aegis remove file -
 T}	T{
 .ad l
 add files to be deleted to a change
 T}
 aend(1)	\*[Page*Of*aend(1)]	T{
 .ad r
-aegis -New Developer -
+aegis new developer -
 T}	T{
 .ad l
 add new developers to a project
 T}
 aenf(1)	\*[Page*Of*aenf(1)]	T{
 .ad r
-aegis -New File -
+aegis new file -
 T}	T{
 .ad l
 add new files to be created by a change
 T}
 aeni(1)	\*[Page*Of*aeni(1)]	T{
 .ad r
-aegis -New Integrator -
+aegis new integrator -
 T}	T{
 .ad l
 add new integrators to a project
 T}
 aenrv(1)	\*[Page*Of*aenrv(1)]	T{
 .ad r
-aegis -New ReViewer -
+aegis new reviewer -
 T}	T{
 .ad l
 add new reviewers to a project
 T}
 aena(1)	\*[Page*Of*aena(1)]	T{
 .ad r
-aegis -New
+aegis new
 T}	T{
 .ad l
-Administrator - add a new administrator to a project
+administrator - add a new administrator to a project
 T}
 aera(1)	\*[Page*Of*aera(1)]	T{
 .ad r
-aegis -Remove
+aegis remove
 T}	T{
 .ad l
-Administrator - remove administrators from a project
+administrator - remove administrators from a project
 T}
 aera(1)	\*[Page*Of*aera(1)]	T{
 .ad r
-aegis -Remove Administrator - remove
+aegis remove administrator - remove
 T}	T{
 .ad l
 administrators from a project
 T}
 aena(1)	\*[Page*Of*aena(1)]	T{
 .ad r
-aegis -New Administrator - add a new
+aegis new administrator - add a new
 T}	T{
 .ad l
 administrator to a project
@@ -106,6 +106,13 @@ T}	T{
 .ad l
 aeannotate - annotated source file listing
 T}
+aebuffy(1)	\*[Page*Of*aebuffy(1)]	T{
+.ad r
+
+T}	T{
+.ad l
+aebuffy - watch for changes
+T}
 aecattr(5)	\*[Page*Of*aecattr(5)]	T{
 .ad r
 
@@ -115,17 +122,24 @@ aecattr - aegis change attributes file
 T}
 tkaeca(1)	\*[Page*Of*tkaeca(1)]	T{
 .ad r
-aegis - GUI interface for
+tkaeca - GUI interface for
 T}	T{
 .ad l
 aeca, using TCL/TK
 T}
 tkaepa(1)	\*[Page*Of*tkaepa(1)]	T{
 .ad r
-aegis - GUI interface for
+tkaepa - GUI interface for
 T}	T{
 .ad l
 aeca, using TCL/TK
+T}
+aecomp(1)	\*[Page*Of*aecomp(1)]	T{
+.ad r
+
+T}	T{
+.ad l
+aecomp - compare two changes
 T}
 aecomplete(1)	\*[Page*Of*aecomplete(1)]	T{
 .ad r
@@ -136,7 +150,7 @@ aecomplete - command completion
 T}
 aecpu(1)	\*[Page*Of*aecpu(1)]	T{
 .ad r
-aegis -CoPy file Undo - reverse action of
+aegis copy file undo - reverse action of
 T}	T{
 .ad l
 aecp
@@ -171,7 +185,7 @@ aecvsserver - serve CVS client protocol against Aegis projects
 T}
 aedbu(1)	\*[Page*Of*aedbu(1)]	T{
 .ad r
-aegis -Develop Begin Undo - undo the effects of
+aegis develop begin undo - undo the effects of
 T}	T{
 .ad l
 aedb
@@ -232,12 +246,26 @@ T}	T{
 .ad l
 aefattr - aegis file attribute file format
 T}
+aefind(1)	\*[Page*Of*aefind(1)]	T{
+.ad r
+
+T}	T{
+.ad l
+aefind - search for files in directory hierarchy
+T}
 aefinish(1)	\*[Page*Of*aefinish(1)]	T{
 .ad r
 
 T}	T{
 .ad l
 aefinish - finish a change
+T}
+aefp(1)	\*[Page*Of*aefp(1)]	T{
+.ad r
+
+T}	T{
+.ad l
+aefp - calculate file fingerprint
 T}
 aefstate(5)	\*[Page*Of*aefstate(5)]	T{
 .ad r
@@ -253,6 +281,13 @@ T}	T{
 .ad l
 aeget - Aegis CGI file access
 T}
+aeimport(1)	\*[Page*Of*aeimport(1)]	T{
+.ad r
+aeimport - import foreign repository into
+T}	T{
+.ad l
+Aegis
+T}
 aeget(1)	\*[Page*Of*aeget(1)]	T{
 .ad r
 aeget -
@@ -262,7 +297,7 @@ Aegis CGI file access
 T}
 tkaer(1)	\*[Page*Of*tkaer(1)]	T{
 .ad r
-aegis - GUI tool for reviewing
+tkaer - GUI tool for reviewing
 T}	T{
 .ad l
 Aegis change sets, using TCL/TK
@@ -283,7 +318,7 @@ Aegis projects
 T}
 tkaegis(1)	\*[Page*Of*tkaegis(1)]	T{
 .ad r
-aegis - GUI interface for
+tkaegis - GUI interface for
 T}	T{
 .ad l
 Aegis, using TCL/TK
@@ -300,14 +335,28 @@ aegstate(5)	\*[Page*Of*aegstate(5)]	T{
 
 T}	T{
 .ad l
-aegstate - aegis state file
+aegstate - aegis global state file
 T}
 aeibu(1)	\*[Page*Of*aeibu(1)]	T{
 .ad r
-aegis -Integrate Begin Undo - reverse the
+aegis integrate begin undo - reverse the
 T}	T{
 .ad l
 aeib command
+T}
+aeimport(1)	\*[Page*Of*aeimport(1)]	T{
+.ad r
+
+T}	T{
+.ad l
+aeimport - import foreign repository into Aegis
+T}
+aeintegratq(1)	\*[Page*Of*aeintegratq(1)]	T{
+.ad r
+
+T}	T{
+.ad l
+aeintegratq - integrate changes into projects
 T}
 aelcf(1)	\*[Page*Of*aelcf(1)]	T{
 .ad r
@@ -329,6 +378,13 @@ aelpf(1)	\*[Page*Of*aelpf(1)]	T{
 T}	T{
 .ad l
 aelpf - list project files
+T}
+aels(1)	\*[Page*Of*aels(1)]	T{
+.ad r
+
+T}	T{
+.ad l
+aels - annotated directory listing
 T}
 aemakegen(1)	\*[Page*Of*aemakegen(1)]	T{
 .ad r
@@ -353,17 +409,24 @@ aemetrics - metrics values file format
 T}
 tkaenc(1)	\*[Page*Of*tkaenc(1)]	T{
 .ad r
-aegis - GUI interface for
+tkaenc - GUI interface for
 T}	T{
 .ad l
 aenc, using TCL/TK
+T}
+aepatch(1)	\*[Page*Of*aepatch(1)]	T{
+.ad r
+
+T}	T{
+.ad l
+aepatch - send and receive changes as patches
 T}
 aepattr(5)	\*[Page*Of*aepattr(5)]	T{
 .ad r
 
 T}	T{
 .ad l
-aepattr - project attribute file
+aepattr - aegis project attribute file
 T}
 aepconf(5)	\*[Page*Of*aepconf(5)]	T{
 .ad r
@@ -391,7 +454,14 @@ aepstate(5)	\*[Page*Of*aepstate(5)]	T{
 
 T}	T{
 .ad l
-aepstate - project state file
+aepstate - aegis project state file
+T}
+aer(5)	\*[Page*Of*aer(5)]	T{
+.ad r
+
+T}	T{
+.ad l
+aer - aegis report script language definition
 T}
 aerect(1)	\*[Page*Of*aerect(1)]	T{
 .ad r
@@ -419,21 +489,21 @@ aerptidx(5)	\*[Page*Of*aerptidx(5)]	T{
 
 T}	T{
 .ad l
-aerptidx - report index file format
+aerptidx - aegis report index file format
 T}
-aer(5)	\*[Page*Of*aer(5)]	T{
+ae-sccs-put(1)	\*[Page*Of*ae-sccs-put(1)]	T{
 .ad r
 
 T}	T{
 .ad l
-aer - report script language definition
+ae-sccs-put - put sccs version
 T}
 aesub(5)	\*[Page*Of*aesub(5)]	T{
 .ad r
 
 T}	T{
 .ad l
-aesub - available command substitutions
+aesub - aegis command substitutions
 T}
 aesub(1)	\*[Page*Of*aesub(1)]	T{
 .ad r
@@ -468,7 +538,7 @@ aetest(5)	\*[Page*Of*aetest(5)]	T{
 
 T}	T{
 .ad l
-aetest - test results file format
+aetest - aegis test results file format
 T}
 aeuconf(5)	\*[Page*Of*aeuconf(5)]	T{
 .ad r
@@ -482,7 +552,7 @@ aeustate(5)	\*[Page*Of*aeustate(5)]	T{
 
 T}	T{
 .ad l
-aeustate - user state file
+aeustate - aegis user state file
 T}
 aexml(1)	\*[Page*Of*aexml(1)]	T{
 .ad r
@@ -507,42 +577,42 @@ against Aegis projects
 T}
 aenpa(1)	\*[Page*Of*aenpa(1)]	T{
 .ad r
-aegis -New Project Alias - create a new project
+aegis new project alias - create a new project
 T}	T{
 .ad l
 alias
 T}
 aerpa(1)	\*[Page*Of*aerpa(1)]	T{
 .ad r
-aegis -Remove Project Alias - remove a project
+aegis remove project alias - remove a project
 T}	T{
 .ad l
 alias
 T}
 aenpa(1)	\*[Page*Of*aenpa(1)]	T{
 .ad r
-aegis -New Project
+aegis new project
 T}	T{
 .ad l
-Alias - create a new project alias
+alias - create a new project alias
 T}
 aerpa(1)	\*[Page*Of*aerpa(1)]	T{
 .ad r
-aegis -Remove Project
+aegis remove project
 T}	T{
 .ad l
-Alias - remove a project alias
+alias - remove a project alias
 T}
 aeclone(1)	\*[Page*Of*aeclone(1)]	T{
 .ad r
-aegis -clone - make
+aegis clone - make
 T}	T{
 .ad l
 an exact copy of a change
 T}
 aels(1)	\*[Page*Of*aels(1)]	T{
 .ad r
-aegis -
+aels -
 T}	T{
 .ad l
 annotated directory listing
@@ -556,21 +626,21 @@ annotated source file listing
 T}
 aenrls(1)	\*[Page*Of*aenrls(1)]	T{
 .ad r
-aegis -New ReLeaSe - create a new project from
+aegis new release - create a new project from
 T}	T{
 .ad l
 an old-style project.
 T}
 aedn(1)	\*[Page*Of*aedn(1)]	T{
 .ad r
-aegis -DELta NAme -
+aegis delta name -
 T}	T{
 .ad l
 assign a symbolic name to a project delta
 T}
 aepattr(5)	\*[Page*Of*aepattr(5)]	T{
 .ad r
-aepattr - project
+aepattr - aegis project
 T}	T{
 .ad l
 attribute file
@@ -591,126 +661,119 @@ attributes file
 T}
 aeca(1)	\*[Page*Of*aeca(1)]	T{
 .ad r
-aegis -Change
+aegis change
 T}	T{
 .ad l
-Attributes - modify the attributes of a change
+attributes - modify the attributes of a change
 T}
 aefa(1)	\*[Page*Of*aefa(1)]	T{
 .ad r
-aegis -File
+aegis file
 T}	T{
 .ad l
-ATtributes - modify the attributes of a file
+attributes - modify the attributes of a file
 T}
 aepa(1)	\*[Page*Of*aepa(1)]	T{
 .ad r
-aegis -Project
+aegis project
 T}	T{
 .ad l
-Attributes - modify the attributes of a project
+attributes - modify the attributes of a project
 T}
 aeca(1)	\*[Page*Of*aeca(1)]	T{
 .ad r
-aegis -Change Attributes - modify the
+aegis change attributes - modify the
 T}	T{
 .ad l
 attributes of a change
 T}
 aefa(1)	\*[Page*Of*aefa(1)]	T{
 .ad r
-aegis -File ATtributes - modify the
+aegis file attributes - modify the
 T}	T{
 .ad l
 attributes of a file
 T}
 aepa(1)	\*[Page*Of*aepa(1)]	T{
 .ad r
-aegis -Project Attributes - modify the
+aegis project attributes - modify the
 T}	T{
 .ad l
 attributes of a project
 T}
-aesub(5)	\*[Page*Of*aesub(5)]	T{
-.ad r
-aesub -
-T}	T{
-.ad l
-available command substitutions
-T}
 aed(1)	\*[Page*Of*aed(1)]	T{
 .ad r
-aegis -DIFFerence - find differences between a change and the
+aegis difference - find differences between a change and the
 T}	T{
 .ad l
 baseline
 T}
 aerb(1)	\*[Page*Of*aerb(1)]	T{
 .ad r
-aegis -Review Begin -
+aegis review begin -
 T}	T{
 .ad l
 begin a change review
 T}
 aerb(1)	\*[Page*Of*aerb(1)]	T{
 .ad r
-aegis -Review
+aegis review
 T}	T{
 .ad l
-Begin - begin a change review
+begin - begin a change review
 T}
 aedb(1)	\*[Page*Of*aedb(1)]	T{
 .ad r
-aegis -Develop
+aegis develop
 T}	T{
 .ad l
-Begin - begin development of a change
+begin - begin development of a change
 T}
 aeib(1)	\*[Page*Of*aeib(1)]	T{
 .ad r
-aegis -Integrate
+aegis integrate
 T}	T{
 .ad l
-Begin - begin integrating a change
+begin - begin integrating a change
 T}
 aedb(1)	\*[Page*Of*aedb(1)]	T{
 .ad r
-aegis -Develop Begin -
+aegis develop begin -
 T}	T{
 .ad l
 begin development of a change
 T}
 aeib(1)	\*[Page*Of*aeib(1)]	T{
 .ad r
-aegis -Integrate Begin -
+aegis integrate begin -
 T}	T{
 .ad l
 begin integrating a change
 T}
 aeibu(1)	\*[Page*Of*aeibu(1)]	T{
 .ad r
-aegis -Integrate
+aegis integrate
 T}	T{
 .ad l
-Begin Undo - reverse the aeib command
+begin undo - reverse the aeib command
 T}
 aerbu(1)	\*[Page*Of*aerbu(1)]	T{
 .ad r
-aegis -Review
+aegis review
 T}	T{
 .ad l
-Begin Undo - stop reviewing a change
+begin undo - stop reviewing a change
 T}
 aedbu(1)	\*[Page*Of*aedbu(1)]	T{
 .ad r
-aegis -Develop
+aegis develop
 T}	T{
 .ad l
-Begin Undo - undo the effects of aedb
+begin undo - undo the effects of aedb
 T}
 aed(1)	\*[Page*Of*aed(1)]	T{
 .ad r
-aegis -DIFFerence - find differences
+aegis difference - find differences
 T}	T{
 .ad l
 between a change and the baseline
@@ -724,63 +787,63 @@ between deltas
 T}
 aenbr(1)	\*[Page*Of*aenbr(1)]	T{
 .ad r
-aegis -New BRanch - create a new
+aegis new branch - create a new
 T}	T{
 .ad l
 branch
 T}
 aenbru(1)	\*[Page*Of*aenbru(1)]	T{
 .ad r
-aegis -New BRanch Undo - remove a
+aegis new branch undo - remove a
 T}	T{
 .ad l
 branch
 T}
 aenbr(1)	\*[Page*Of*aenbr(1)]	T{
 .ad r
-aegis -New
+aegis new
 T}	T{
 .ad l
-BRanch - create a new branch
+branch - create a new branch
 T}
 aemt(1)	\*[Page*Of*aemt(1)]	T{
 .ad r
-aegis -Make Transparent - make
+aegis make transparent - make
 T}	T{
 .ad l
 branch file transparent
 T}
 aemtu(1)	\*[Page*Of*aemtu(1)]	T{
 .ad r
-aegis -Make Transparent Undo - no longer make
+aegis make transparent undo - no longer make
 T}	T{
 .ad l
 branch file transparent
 T}
 aenbru(1)	\*[Page*Of*aenbru(1)]	T{
 .ad r
-aegis -New
+aegis new
 T}	T{
 .ad l
-BRanch Undo - remove a branch
+branch undo - remove a branch
 T}
 aeb(1)	\*[Page*Of*aeb(1)]	T{
 .ad r
-aegis -Build -
+aegis build -
 T}	T{
 .ad l
 build a change
 T}
 aeb(1)	\*[Page*Of*aeb(1)]	T{
 .ad r
-aegis -
+aegis
 T}	T{
 .ad l
-Build - build a change
+build - build a change
 T}
 aefp(1)	\*[Page*Of*aefp(1)]	T{
 .ad r
-aegis -
+aefp -
 T}	T{
 .ad l
 calculate file fingerprint
@@ -815,126 +878,126 @@ change
 T}
 aeb(1)	\*[Page*Of*aeb(1)]	T{
 .ad r
-aegis -Build - build a
+aegis build - build a
 T}	T{
 .ad l
 change
 T}
 aeca(1)	\*[Page*Of*aeca(1)]	T{
 .ad r
-aegis -Change Attributes - modify the attributes of a
+aegis change attributes - modify the attributes of a
 T}	T{
 .ad l
 change
 T}
 aeclone(1)	\*[Page*Of*aeclone(1)]	T{
 .ad r
-aegis -clone - make an exact copy of a
+aegis clone - make an exact copy of a
 T}	T{
 .ad l
 change
 T}
 aecp(1)	\*[Page*Of*aecp(1)]	T{
 .ad r
-aegis -CoPy file - copy a file into a
+aegis copy file - copy a file into a
 T}	T{
 .ad l
 change
 T}
 aedb(1)	\*[Page*Of*aedb(1)]	T{
 .ad r
-aegis -Develop Begin - begin development of a
+aegis develop begin - begin development of a
 T}	T{
 .ad l
 change
 T}
 aede(1)	\*[Page*Of*aede(1)]	T{
 .ad r
-aegis -Develop End - complete development of a
+aegis develop end - complete development of a
 T}	T{
 .ad l
 change
 T}
 aeib(1)	\*[Page*Of*aeib(1)]	T{
 .ad r
-aegis -Integrate Begin - begin integrating a
+aegis integrate begin - begin integrating a
 T}	T{
 .ad l
 change
 T}
 aemv(1)	\*[Page*Of*aemv(1)]	T{
 .ad r
-aegis -MoVe file - rename one or more files as part of a
+aegis move file - rename one or more files as part of a
 T}	T{
 .ad l
 change
 T}
 aemvu(1)	\*[Page*Of*aemvu(1)]	T{
 .ad r
-aegis -MoVe file Undo - undo the rename a file as part of a
+aegis move file undo - undo the rename a file as part of a
 T}	T{
 .ad l
 change
 T}
 aenf(1)	\*[Page*Of*aenf(1)]	T{
 .ad r
-aegis -New File - add new files to be created by a
+aegis new file - add new files to be created by a
 T}	T{
 .ad l
 change
 T}
 aenfu(1)	\*[Page*Of*aenfu(1)]	T{
 .ad r
-aegis -New File Undo - remove new files from a
+aegis new file undo - remove new files from a
 T}	T{
 .ad l
 change
 T}
 aent(1)	\*[Page*Of*aent(1)]	T{
 .ad r
-aegis -New Test - add a new test to a
+aegis new test - add a new test to a
 T}	T{
 .ad l
 change
 T}
 aentu(1)	\*[Page*Of*aentu(1)]	T{
 .ad r
-aegis -New Test Undo - remove new tests from a
+aegis new test undo - remove new tests from a
 T}	T{
 .ad l
 change
 T}
 aerm(1)	\*[Page*Of*aerm(1)]	T{
 .ad r
-aegis -ReMove file - add files to be deleted to a
+aegis remove file - add files to be deleted to a
 T}	T{
 .ad l
 change
 T}
 aermu(1)	\*[Page*Of*aermu(1)]	T{
 .ad r
-aegis -ReMove file Undo - remove files to be deleted from a
+aegis remove file undo - remove files to be deleted from a
 T}	T{
 .ad l
 change
 T}
 aerbu(1)	\*[Page*Of*aerbu(1)]	T{
 .ad r
-aegis -Review Begin Undo - stop reviewing a
+aegis review begin undo - stop reviewing a
 T}	T{
 .ad l
 change
 T}
 aenc(1)	\*[Page*Of*aenc(1)]	T{
 .ad r
-aegis -New
+aegis new
 T}	T{
 .ad l
-Change - add a new change to a project
+change - add a new change to a project
 T}
 aed(1)	\*[Page*Of*aed(1)]	T{
 .ad r
-aegis -DIFFerence - find differences between a
+aegis difference - find differences between a
 T}	T{
 .ad l
 change and the baseline
@@ -948,24 +1011,24 @@ change attributes file
 T}
 aeca(1)	\*[Page*Of*aeca(1)]	T{
 .ad r
-aegis -
+aegis
 T}	T{
 .ad l
-Change Attributes - modify the attributes of a change
+change attributes - modify the attributes of a change
 T}
 aecd(1)	\*[Page*Of*aecd(1)]	T{
 .ad r
-aegis -Change Directory -
+aegis change directory -
 T}	T{
 .ad l
 change directory
 T}
 aecd(1)	\*[Page*Of*aecd(1)]	T{
 .ad r
-aegis -
+aegis
 T}	T{
 .ad l
-Change Directory - change directory
+change directory - change directory
 T}
 aelcf(1)	\*[Page*Of*aelcf(1)]	T{
 .ad r
@@ -976,28 +1039,28 @@ change files
 T}
 aedeu(1)	\*[Page*Of*aedeu(1)]	T{
 .ad r
-aegis -Develop End Undo - recall a
+aegis develop end undo - recall a
 T}	T{
 .ad l
 change for further development
 T}
 aencu(1)	\*[Page*Of*aencu(1)]	T{
 .ad r
-aegis -New Change Undo - remove a new
+aegis new change undo - remove a new
 T}	T{
 .ad l
 change from a project
 T}
 aeifail(1)	\*[Page*Of*aeifail(1)]	T{
 .ad r
-aegis -Integrate Fail - fail a
+aegis integrate fail - fail a
 T}	T{
 .ad l
 change integration
 T}
 aeipass(1)	\*[Page*Of*aeipass(1)]	T{
 .ad r
-aegis -Integrate Pass - pass a
+aegis integrate pass - pass a
 T}	T{
 .ad l
 change integration
@@ -1011,17 +1074,17 @@ change number
 T}
 aechown(1)	\*[Page*Of*aechown(1)]	T{
 .ad r
-aegis -Change Owner - set
+aegis change owner - set
 T}	T{
 .ad l
 change owner
 T}
 aechown(1)	\*[Page*Of*aechown(1)]	T{
 .ad r
-aegis -
+aegis
 T}	T{
 .ad l
-Change Owner - set change owner
+change owner - set change owner
 T}
 aepromptcmd(1)	\*[Page*Of*aepromptcmd(1)]	T{
 .ad r
@@ -1032,49 +1095,49 @@ change prompt color by change state
 T}
 aerb(1)	\*[Page*Of*aerb(1)]	T{
 .ad r
-aegis -Review Begin - begin a
+aegis review begin - begin a
 T}	T{
 .ad l
 change review
 T}
 aerfail(1)	\*[Page*Of*aerfail(1)]	T{
 .ad r
-aegis -Review FAIL - fail a
+aegis review fail - fail a
 T}	T{
 .ad l
 change review
 T}
 aerpass(1)	\*[Page*Of*aerpass(1)]	T{
 .ad r
-aegis -Review PASS - pass a
+aegis review pass - pass a
 T}	T{
 .ad l
 change review
 T}
 aerpu(1)	\*[Page*Of*aerpu(1)]	T{
 .ad r
-aegis -Review Pass Undo - rescind a
+aegis review pass undo - rescind a
 T}	T{
 .ad l
 change review pass
 T}
-aecomp(1)	\*[Page*Of*aecomp(1)]	T{
+aebuffy(1)	\*[Page*Of*aebuffy(1)]	T{
 .ad r
-aegis - compare two
+aebuffy - watch for
 T}	T{
 .ad l
 changes
 T}
-aebuffy(1)	\*[Page*Of*aebuffy(1)]	T{
+aecomp(1)	\*[Page*Of*aecomp(1)]	T{
 .ad r
-aegis - watch for
+aecomp - compare two
 T}	T{
 .ad l
 changes
 T}
 aepatch(1)	\*[Page*Of*aepatch(1)]	T{
 .ad r
-aegis - send and receive
+aepatch - send and receive
 T}	T{
 .ad l
 changes as patches
@@ -1095,7 +1158,7 @@ change sets
 T}
 tkaer(1)	\*[Page*Of*tkaer(1)]	T{
 .ad r
-aegis - GUI tool for reviewing Aegis
+tkaer - GUI tool for reviewing Aegis
 T}	T{
 .ad l
 change sets, using TCL/TK
@@ -1116,7 +1179,7 @@ change's files
 T}
 aeintegratq(1)	\*[Page*Of*aeintegratq(1)]	T{
 .ad r
-aegis - integrate
+aeintegratq - integrate
 T}	T{
 .ad l
 changes into projects
@@ -1144,17 +1207,17 @@ change supervisor
 T}
 aenc(1)	\*[Page*Of*aenc(1)]	T{
 .ad r
-aegis -New Change - add a new
+aegis new change - add a new
 T}	T{
 .ad l
 change to a project
 T}
 aencu(1)	\*[Page*Of*aencu(1)]	T{
 .ad r
-aegis -New
+aegis new
 T}	T{
 .ad l
-Change Undo - remove a new change from a project
+change undo - remove a new change from a project
 T}
 aetar(1)	\*[Page*Of*aetar(1)]	T{
 .ad r
@@ -1200,14 +1263,14 @@ ci - redundant repository checkin
 T}
 aeclean(1)	\*[Page*Of*aeclean(1)]	T{
 .ad r
-aegis -
+aegis
 T}	T{
 .ad l
-CLEan - clean files from development directory
+clEan - clean files from development directory
 T}
 aeclean(1)	\*[Page*Of*aeclean(1)]	T{
 .ad r
-aegis -CLEan -
+aegis clEan -
 T}	T{
 .ad l
 clean files from development directory
@@ -1221,7 +1284,7 @@ client protocol against Aegis projects
 T}
 aeclone(1)	\*[Page*Of*aeclone(1)]	T{
 .ad r
-aegis -
+aegis
 T}	T{
 .ad l
 clone - make an exact copy of a change
@@ -1242,7 +1305,7 @@ command
 T}
 aeibu(1)	\*[Page*Of*aeibu(1)]	T{
 .ad r
-aegis -Integrate Begin Undo - reverse the aeib
+aegis integrate begin undo - reverse the aeib
 T}	T{
 .ad l
 command
@@ -1263,7 +1326,7 @@ command runs
 T}
 aesub(5)	\*[Page*Of*aesub(5)]	T{
 .ad r
-aesub - available
+aesub - aegis
 T}	T{
 .ad l
 command substitutions
@@ -1277,14 +1340,14 @@ commands use them
 T}
 aecomp(1)	\*[Page*Of*aecomp(1)]	T{
 .ad r
-aegis -
+aecomp -
 T}	T{
 .ad l
 compare two changes
 T}
 aede(1)	\*[Page*Of*aede(1)]	T{
 .ad r
-aegis -Develop End -
+aegis develop end -
 T}	T{
 .ad l
 complete development of a change
@@ -1312,63 +1375,63 @@ configuration file
 T}
 aecp(1)	\*[Page*Of*aecp(1)]	T{
 .ad r
-aegis -CoPy file -
+aegis copy file -
 T}	T{
 .ad l
 copy a file into a change
 T}
 aecp(1)	\*[Page*Of*aecp(1)]	T{
 .ad r
-aegis -
+aegis
 T}	T{
 .ad l
-CoPy file - copy a file into a change
+copy file - copy a file into a change
 T}
 aecpu(1)	\*[Page*Of*aecpu(1)]	T{
 .ad r
-aegis -
+aegis
 T}	T{
 .ad l
-CoPy file Undo - reverse action of aecp
+copy file undo - reverse action of aecp
 T}
 aeclone(1)	\*[Page*Of*aeclone(1)]	T{
 .ad r
-aegis -clone - make an exact
+aegis clone - make an exact
 T}	T{
 .ad l
 copy of a change
 T}
 aenbr(1)	\*[Page*Of*aenbr(1)]	T{
 .ad r
-aegis -New BRanch -
+aegis new branch -
 T}	T{
 .ad l
 create a new branch
 T}
 aenpr(1)	\*[Page*Of*aenpr(1)]	T{
 .ad r
-aegis -New PRoject -
+aegis new project -
 T}	T{
 .ad l
 create a new project
 T}
 aenpa(1)	\*[Page*Of*aenpa(1)]	T{
 .ad r
-aegis -New Project Alias -
+aegis new project alias -
 T}	T{
 .ad l
 create a new project alias
 T}
 aenrls(1)	\*[Page*Of*aenrls(1)]	T{
 .ad r
-aegis -New ReLeaSe -
+aegis new release -
 T}	T{
 .ad l
 create a new project from an old-style project.
 T}
 aenf(1)	\*[Page*Of*aenf(1)]	T{
 .ad r
-aegis -New File - add new files to be
+aegis new file - add new files to be
 T}	T{
 .ad l
 created by a change
@@ -1408,40 +1471,47 @@ T}	T{
 .ad l
 database to XML
 T}
+aegis(5)	\*[Page*Of*aegis(5)]	T{
+.ad r
+aegis - meta-
+T}	T{
+.ad l
+data file format
+T}
 aer(5)	\*[Page*Of*aer(5)]	T{
 .ad r
-aer - report script language
+aer - aegis report script language
 T}	T{
 .ad l
 definition
 T}
 aermu(1)	\*[Page*Of*aermu(1)]	T{
 .ad r
-aegis -ReMove file Undo - remove files to be
+aegis remove file undo - remove files to be
 T}	T{
 .ad l
 deleted from a change
 T}
 aerm(1)	\*[Page*Of*aerm(1)]	T{
 .ad r
-aegis -ReMove file - add files to be
+aegis remove file - add files to be
 T}	T{
 .ad l
 deleted to a change
 T}
 aedn(1)	\*[Page*Of*aedn(1)]	T{
 .ad r
-aegis -DELta NAme - assign a symbolic name to a project
+aegis delta name - assign a symbolic name to a project
 T}	T{
 .ad l
 delta
 T}
 aedn(1)	\*[Page*Of*aedn(1)]	T{
 .ad r
-aegis -
+aegis
 T}	T{
 .ad l
-DELta NAme - assign a symbolic name to a project delta
+delta name - assign a symbolic name to a project delta
 T}
 aediff(1)	\*[Page*Of*aediff(1)]	T{
 .ad r
@@ -1452,84 +1522,84 @@ deltas
 T}
 aedb(1)	\*[Page*Of*aedb(1)]	T{
 .ad r
-aegis -
+aegis
 T}	T{
 .ad l
-Develop Begin - begin development of a change
+develop begin - begin development of a change
 T}
 aedbu(1)	\*[Page*Of*aedbu(1)]	T{
 .ad r
-aegis -
+aegis
 T}	T{
 .ad l
-Develop Begin Undo - undo the effects of aedb
+develop begin undo - undo the effects of aedb
 T}
 aede(1)	\*[Page*Of*aede(1)]	T{
 .ad r
-aegis -
+aegis
 T}	T{
 .ad l
-Develop End - complete development of a change
+develop end - complete development of a change
 T}
 aedeu(1)	\*[Page*Of*aedeu(1)]	T{
 .ad r
-aegis -
+aegis
 T}	T{
 .ad l
-Develop End Undo - recall a change for further development
+develop end undo - recall a change for further development
 T}
 aend(1)	\*[Page*Of*aend(1)]	T{
 .ad r
-aegis -New
+aegis new
 T}	T{
 .ad l
-Developer - add new developers to a project
+developer - add new developers to a project
 T}
 aerd(1)	\*[Page*Of*aerd(1)]	T{
 .ad r
-aegis -Remove
+aegis remove
 T}	T{
 .ad l
-Developer - remove developers from a project
+developer - remove developers from a project
 T}
 aerd(1)	\*[Page*Of*aerd(1)]	T{
 .ad r
-aegis -Remove Developer - remove
+aegis remove developer - remove
 T}	T{
 .ad l
 developers from a project
 T}
 aend(1)	\*[Page*Of*aend(1)]	T{
 .ad r
-aegis -New Developer - add new
+aegis new developer - add new
 T}	T{
 .ad l
 developers to a project
 T}
 aedeu(1)	\*[Page*Of*aedeu(1)]	T{
 .ad r
-aegis -Develop End Undo - recall a change for further
+aegis develop end undo - recall a change for further
 T}	T{
 .ad l
 development
 T}
 aeclean(1)	\*[Page*Of*aeclean(1)]	T{
 .ad r
-aegis -CLEan - clean files from
+aegis clEan - clean files from
 T}	T{
 .ad l
 development directory
 T}
 aedb(1)	\*[Page*Of*aedb(1)]	T{
 .ad r
-aegis -Develop Begin - begin
+aegis develop begin - begin
 T}	T{
 .ad l
 development of a change
 T}
 aede(1)	\*[Page*Of*aede(1)]	T{
 .ad r
-aegis -Develop End - complete
+aegis develop end - complete
 T}	T{
 .ad l
 development of a change
@@ -1550,14 +1620,14 @@ diff2htm - wraps the diff2html command
 T}
 aed(1)	\*[Page*Of*aed(1)]	T{
 .ad r
-aegis -
+aegis
 T}	T{
 .ad l
-DIFFerence - find differences between a change and the baseline
+difference - find differences between a change and the baseline
 T}
 aed(1)	\*[Page*Of*aed(1)]	T{
 .ad r
-aegis -DIFFerence - find
+aegis difference - find
 T}	T{
 .ad l
 differences between a change and the baseline
@@ -1571,35 +1641,35 @@ differences between deltas
 T}
 aecd(1)	\*[Page*Of*aecd(1)]	T{
 .ad r
-aegis -Change Directory - change
+aegis change directory - change
 T}	T{
 .ad l
 directory
 T}
 aeclean(1)	\*[Page*Of*aeclean(1)]	T{
 .ad r
-aegis -CLEan - clean files from development
+aegis clEan - clean files from development
 T}	T{
 .ad l
 directory
 T}
 aecd(1)	\*[Page*Of*aecd(1)]	T{
 .ad r
-aegis -Change
+aegis change
 T}	T{
 .ad l
-Directory - change directory
+directory - change directory
 T}
 aefind(1)	\*[Page*Of*aefind(1)]	T{
 .ad r
-aegis - search for files in
+aefind - search for files in
 T}	T{
 .ad l
 directory hierarchy
 T}
 aels(1)	\*[Page*Of*aels(1)]	T{
 .ad r
-aegis - annotated
+aels - annotated
 T}	T{
 .ad l
 directory listing
@@ -1648,59 +1718,59 @@ edit a change's files
 T}
 aedbu(1)	\*[Page*Of*aedbu(1)]	T{
 .ad r
-aegis -Develop Begin Undo - undo the
+aegis develop begin undo - undo the
 T}	T{
 .ad l
 effects of aedb
 T}
 aede(1)	\*[Page*Of*aede(1)]	T{
 .ad r
-aegis -Develop
+aegis develop
 T}	T{
 .ad l
-End - complete development of a change
+end - complete development of a change
 T}
 aedeu(1)	\*[Page*Of*aedeu(1)]	T{
 .ad r
-aegis -Develop
+aegis develop
 T}	T{
 .ad l
-End Undo - recall a change for further development
+end undo - recall a change for further development
 T}
 aeclone(1)	\*[Page*Of*aeclone(1)]	T{
 .ad r
-aegis -clone - make an
+aegis clone - make an
 T}	T{
 .ad l
 exact copy of a change
 T}
 aeifail(1)	\*[Page*Of*aeifail(1)]	T{
 .ad r
-aegis -Integrate Fail -
+aegis integrate fail -
 T}	T{
 .ad l
 fail a change integration
 T}
 aerfail(1)	\*[Page*Of*aerfail(1)]	T{
 .ad r
-aegis -Review FAIL -
+aegis review fail -
 T}	T{
 .ad l
 fail a change review
 T}
 aeifail(1)	\*[Page*Of*aeifail(1)]	T{
 .ad r
-aegis -Integrate
+aegis integrate
 T}	T{
 .ad l
-Fail - fail a change integration
+fail - fail a change integration
 T}
 aerfail(1)	\*[Page*Of*aerfail(1)]	T{
 .ad r
-aegis -Review
+aegis review
 T}	T{
 .ad l
-FAIL - fail a change review
+fail - fail a change review
 T}
 aecattr(5)	\*[Page*Of*aecattr(5)]	T{
 .ad r
@@ -1725,21 +1795,21 @@ file
 T}
 aefa(1)	\*[Page*Of*aefa(1)]	T{
 .ad r
-aegis -File ATtributes - modify the attributes of a
+aegis file attributes - modify the attributes of a
 T}	T{
 .ad l
 file
 T}
 aegstate(5)	\*[Page*Of*aegstate(5)]	T{
 .ad r
-aegstate - aegis state
+aegstate - aegis global state
 T}	T{
 .ad l
 file
 T}
 aepattr(5)	\*[Page*Of*aepattr(5)]	T{
 .ad r
-aepattr - project attribute
+aepattr - aegis project attribute
 T}	T{
 .ad l
 file
@@ -1753,7 +1823,7 @@ file
 T}
 aepstate(5)	\*[Page*Of*aepstate(5)]	T{
 .ad r
-aepstate - project state
+aepstate - aegis project state
 T}	T{
 .ad l
 file
@@ -1767,7 +1837,7 @@ file
 T}
 aeustate(5)	\*[Page*Of*aeustate(5)]	T{
 .ad r
-aeustate - user state
+aeustate - aegis user state
 T}	T{
 .ad l
 file
@@ -1781,21 +1851,21 @@ file access
 T}
 aerm(1)	\*[Page*Of*aerm(1)]	T{
 .ad r
-aegis -ReMove
+aegis remove
 T}	T{
 .ad l
 file - add files to be deleted to a change
 T}
 aenf(1)	\*[Page*Of*aenf(1)]	T{
 .ad r
-aegis -New
+aegis new
 T}	T{
 .ad l
-File - add new files to be created by a change
+file - add new files to be created by a change
 T}
 aemvu(1)	\*[Page*Of*aemvu(1)]	T{
 .ad r
-aegis -MoVe file Undo - undo the rename a
+aegis move file undo - undo the rename a
 T}	T{
 .ad l
 file as part of a change
@@ -1809,14 +1879,14 @@ file attribute file format
 T}
 aefa(1)	\*[Page*Of*aefa(1)]	T{
 .ad r
-aegis -
+aegis
 T}	T{
 .ad l
-File ATtributes - modify the attributes of a file
+file attributes - modify the attributes of a file
 T}
 aecp(1)	\*[Page*Of*aecp(1)]	T{
 .ad r
-aegis -CoPy
+aegis copy
 T}	T{
 .ad l
 file - copy a file into a change
@@ -1830,7 +1900,7 @@ file differences between deltas
 T}
 aefp(1)	\*[Page*Of*aefp(1)]	T{
 .ad r
-aegis - calculate
+aefp - calculate
 T}	T{
 .ad l
 file fingerprint
@@ -1844,7 +1914,7 @@ file format
 T}
 aegis(5)	\*[Page*Of*aegis(5)]	T{
 .ad r
-aegis -
+aegis - meta-data
 T}	T{
 .ad l
 file format
@@ -1858,14 +1928,14 @@ file format
 T}
 aerptidx(5)	\*[Page*Of*aerptidx(5)]	T{
 .ad r
-aerptidx - report index
+aerptidx - aegis report index
 T}	T{
 .ad l
 file format
 T}
 aetest(5)	\*[Page*Of*aetest(5)]	T{
 .ad r
-aetest - test results
+aetest - aegis test results
 T}	T{
 .ad l
 file format
@@ -1879,7 +1949,7 @@ file history
 T}
 aecp(1)	\*[Page*Of*aecp(1)]	T{
 .ad r
-aegis -CoPy file - copy a
+aegis copy file - copy a
 T}	T{
 .ad l
 file into a change
@@ -1907,7 +1977,7 @@ file metrics
 T}
 aemv(1)	\*[Page*Of*aemv(1)]	T{
 .ad r
-aegis -MoVe
+aegis move
 T}	T{
 .ad l
 file - rename one or more files as part of a change
@@ -1935,28 +2005,28 @@ files
 T}
 aemv(1)	\*[Page*Of*aemv(1)]	T{
 .ad r
-aegis -MoVe file - rename one or more
+aegis move file - rename one or more
 T}	T{
 .ad l
 files as part of a change
 T}
 aenfu(1)	\*[Page*Of*aenfu(1)]	T{
 .ad r
-aegis -New File Undo - remove new
+aegis new file undo - remove new
 T}	T{
 .ad l
 files from a change
 T}
 aeclean(1)	\*[Page*Of*aeclean(1)]	T{
 .ad r
-aegis -CLEan - clean
+aegis clEan - clean
 T}	T{
 .ad l
 files from development directory
 T}
 aefind(1)	\*[Page*Of*aefind(1)]	T{
 .ad r
-aegis - search for
+aefind - search for
 T}	T{
 .ad l
 files in directory hierarchy
@@ -1970,77 +2040,77 @@ file state file
 T}
 aenf(1)	\*[Page*Of*aenf(1)]	T{
 .ad r
-aegis -New File - add new
+aegis new file - add new
 T}	T{
 .ad l
 files to be created by a change
 T}
 aermu(1)	\*[Page*Of*aermu(1)]	T{
 .ad r
-aegis -ReMove file Undo - remove
+aegis remove file undo - remove
 T}	T{
 .ad l
 files to be deleted from a change
 T}
 aerm(1)	\*[Page*Of*aerm(1)]	T{
 .ad r
-aegis -ReMove file - add
+aegis remove file - add
 T}	T{
 .ad l
 files to be deleted to a change
 T}
 aemt(1)	\*[Page*Of*aemt(1)]	T{
 .ad r
-aegis -Make Transparent - make branch
+aegis make transparent - make branch
 T}	T{
 .ad l
 file transparent
 T}
 aemtu(1)	\*[Page*Of*aemtu(1)]	T{
 .ad r
-aegis -Make Transparent Undo - no longer make branch
+aegis make transparent undo - no longer make branch
 T}	T{
 .ad l
 file transparent
 T}
 aermu(1)	\*[Page*Of*aermu(1)]	T{
 .ad r
-aegis -ReMove
+aegis remove
 T}	T{
 .ad l
-file Undo - remove files to be deleted from a change
+file undo - remove files to be deleted from a change
 T}
 aenfu(1)	\*[Page*Of*aenfu(1)]	T{
 .ad r
-aegis -New
+aegis new
 T}	T{
 .ad l
-File Undo - remove new files from a change
+file undo - remove new files from a change
 T}
 aecpu(1)	\*[Page*Of*aecpu(1)]	T{
 .ad r
-aegis -CoPy
+aegis copy
 T}	T{
 .ad l
-file Undo - reverse action of aecp
+file undo - reverse action of aecp
 T}
 aemvu(1)	\*[Page*Of*aemvu(1)]	T{
 .ad r
-aegis -MoVe
+aegis move
 T}	T{
 .ad l
-file Undo - undo the rename a file as part of a change
+file undo - undo the rename a file as part of a change
 T}
 aed(1)	\*[Page*Of*aed(1)]	T{
 .ad r
-aegis -DIFFerence -
+aegis difference -
 T}	T{
 .ad l
 find differences between a change and the baseline
 T}
 aefp(1)	\*[Page*Of*aefp(1)]	T{
 .ad r
-aegis - calculate file
+aefp - calculate file
 T}	T{
 .ad l
 fingerprint
@@ -2054,14 +2124,14 @@ finish a change
 T}
 tkaeca(1)	\*[Page*Of*tkaeca(1)]	T{
 .ad r
-aegis - GUI interface
+tkaeca - GUI interface
 T}	T{
 .ad l
 for aeca, using TCL/TK
 T}
 tkaepa(1)	\*[Page*Of*tkaepa(1)]	T{
 .ad r
-aegis - GUI interface
+tkaepa - GUI interface
 T}	T{
 .ad l
 for aeca, using TCL/TK
@@ -2075,42 +2145,42 @@ for aede
 T}
 tkaegis(1)	\*[Page*Of*tkaegis(1)]	T{
 .ad r
-aegis - GUI interface
+tkaegis - GUI interface
 T}	T{
 .ad l
 for Aegis, using TCL/TK
 T}
 tkaenc(1)	\*[Page*Of*tkaenc(1)]	T{
 .ad r
-aegis - GUI interface
+tkaenc - GUI interface
 T}	T{
 .ad l
 for aenc, using TCL/TK
 T}
 aebuffy(1)	\*[Page*Of*aebuffy(1)]	T{
 .ad r
-aegis - watch
+aebuffy - watch
 T}	T{
 .ad l
 for changes
 T}
 aeimport(1)	\*[Page*Of*aeimport(1)]	T{
 .ad r
-aegis - import
+aeimport - import
 T}	T{
 .ad l
-foreign repository into
+foreign repository into Aegis
 T}
 aefind(1)	\*[Page*Of*aefind(1)]	T{
 .ad r
-aegis - search
+aefind - search
 T}	T{
 .ad l
 for files in directory hierarchy
 T}
 aedeu(1)	\*[Page*Of*aedeu(1)]	T{
 .ad r
-aegis -Develop End Undo - recall a change
+aegis develop end undo - recall a change
 T}	T{
 .ad l
 for further development
@@ -2124,7 +2194,7 @@ format
 T}
 aegis(5)	\*[Page*Of*aegis(5)]	T{
 .ad r
-aegis - file
+aegis - meta-data file
 T}	T{
 .ad l
 format
@@ -2138,91 +2208,91 @@ format
 T}
 aerptidx(5)	\*[Page*Of*aerptidx(5)]	T{
 .ad r
-aerptidx - report index file
+aerptidx - aegis report index file
 T}	T{
 .ad l
 format
 T}
 aetest(5)	\*[Page*Of*aetest(5)]	T{
 .ad r
-aetest - test results file
+aetest - aegis test results file
 T}	T{
 .ad l
 format
 T}
 tkaer(1)	\*[Page*Of*tkaer(1)]	T{
 .ad r
-aegis - GUI tool
+tkaer - GUI tool
 T}	T{
 .ad l
 for reviewing Aegis change sets, using TCL/TK
 T}
 aenfu(1)	\*[Page*Of*aenfu(1)]	T{
 .ad r
-aegis -New File Undo - remove new files
+aegis new file undo - remove new files
 T}	T{
 .ad l
 from a change
 T}
 aentu(1)	\*[Page*Of*aentu(1)]	T{
 .ad r
-aegis -New Test Undo - remove new tests
+aegis new test undo - remove new tests
 T}	T{
 .ad l
 from a change
 T}
 aermu(1)	\*[Page*Of*aermu(1)]	T{
 .ad r
-aegis -ReMove file Undo - remove files to be deleted
+aegis remove file undo - remove files to be deleted
 T}	T{
 .ad l
 from a change
 T}
 aenrls(1)	\*[Page*Of*aenrls(1)]	T{
 .ad r
-aegis -New ReLeaSe - create a new project
+aegis new release - create a new project
 T}	T{
 .ad l
 from an old-style project.
 T}
 aencu(1)	\*[Page*Of*aencu(1)]	T{
 .ad r
-aegis -New Change Undo - remove a new change
+aegis new change undo - remove a new change
 T}	T{
 .ad l
 from a project
 T}
 aera(1)	\*[Page*Of*aera(1)]	T{
 .ad r
-aegis -Remove Administrator - remove administrators
+aegis remove administrator - remove administrators
 T}	T{
 .ad l
 from a project
 T}
 aerd(1)	\*[Page*Of*aerd(1)]	T{
 .ad r
-aegis -Remove Developer - remove developers
+aegis remove developer - remove developers
 T}	T{
 .ad l
 from a project
 T}
 aeri(1)	\*[Page*Of*aeri(1)]	T{
 .ad r
-aegis -Remove Integrator - remove integrators
+aegis remove integrator - remove integrators
 T}	T{
 .ad l
 from a project
 T}
 aerrv(1)	\*[Page*Of*aerrv(1)]	T{
 .ad r
-aegis -Remove ReViewer - remove reviewers
+aegis remove reviewer - remove reviewers
 T}	T{
 .ad l
 from a project
 T}
 aeclean(1)	\*[Page*Of*aeclean(1)]	T{
 .ad r
-aegis -CLEan - clean files
+aegis clEan - clean files
 T}	T{
 .ad l
 from development directory
@@ -2236,7 +2306,7 @@ from file manifest
 T}
 aedeu(1)	\*[Page*Of*aedeu(1)]	T{
 .ad r
-aegis -Develop End Undo - recall a change for
+aegis develop end undo - recall a change for
 T}	T{
 .ad l
 further development
@@ -2250,17 +2320,24 @@ generate a Makefile.in from file manifest
 T}
 aer(1)	\*[Page*Of*aer(1)]	T{
 .ad r
-aegis -RePorT - report
+aegis report - report
 T}	T{
 .ad l
 generator
 T}
 aev(1)	\*[Page*Of*aev(1)]	T{
 .ad r
-aegis -VERSion -
+aegis version -
 T}	T{
 .ad l
 give version information
+T}
+aegstate(5)	\*[Page*Of*aegstate(5)]	T{
+.ad r
+aegstate - aegis
+T}	T{
+.ad l
+global state file
 T}
 aexver(1)	\*[Page*Of*aexver(1)]	T{
 .ad r
@@ -2271,42 +2348,42 @@ graphical file history
 T}
 tkaeca(1)	\*[Page*Of*tkaeca(1)]	T{
 .ad r
-aegis -
+tkaeca -
 T}	T{
 .ad l
 GUI interface for aeca, using TCL/TK
 T}
 tkaepa(1)	\*[Page*Of*tkaepa(1)]	T{
 .ad r
-aegis -
+tkaepa -
 T}	T{
 .ad l
 GUI interface for aeca, using TCL/TK
 T}
 tkaegis(1)	\*[Page*Of*tkaegis(1)]	T{
 .ad r
-aegis -
+tkaegis -
 T}	T{
 .ad l
 GUI interface for Aegis, using TCL/TK
 T}
 tkaenc(1)	\*[Page*Of*tkaenc(1)]	T{
 .ad r
-aegis -
+tkaenc -
 T}	T{
 .ad l
 GUI interface for aenc, using TCL/TK
 T}
 tkaer(1)	\*[Page*Of*tkaer(1)]	T{
 .ad r
-aegis -
+tkaer -
 T}	T{
 .ad l
 GUI tool for reviewing Aegis change sets, using TCL/TK
 T}
 aefind(1)	\*[Page*Of*aefind(1)]	T{
 .ad r
-aegis - search for files in directory
+aefind - search for files in directory
 T}	T{
 .ad l
 hierarchy
@@ -2341,28 +2418,28 @@ htm - wraps the diff2html command
 T}
 aeimport(1)	\*[Page*Of*aeimport(1)]	T{
 .ad r
-aegis -
+aeimport -
 T}	T{
 .ad l
-import foreign repository into
+import foreign repository into Aegis
 T}
 aerptidx(5)	\*[Page*Of*aerptidx(5)]	T{
 .ad r
-aerptidx - report
+aerptidx - aegis report
 T}	T{
 .ad l
 index file format
 T}
 aefind(1)	\*[Page*Of*aefind(1)]	T{
 .ad r
-aegis - search for files
+aefind - search for files
 T}	T{
 .ad l
 in directory hierarchy
 T}
 aev(1)	\*[Page*Of*aev(1)]	T{
 .ad r
-aegis -VERSion - give version
+aegis version - give version
 T}	T{
 .ad l
 information
@@ -2376,119 +2453,119 @@ in from file manifest
 T}
 aeib(1)	\*[Page*Of*aeib(1)]	T{
 .ad r
-aegis -
+aegis
 T}	T{
 .ad l
-Integrate Begin - begin integrating a change
+integrate begin - begin integrating a change
 T}
 aeibu(1)	\*[Page*Of*aeibu(1)]	T{
 .ad r
-aegis -
+aegis
 T}	T{
 .ad l
-Integrate Begin Undo - reverse the aeib command
+integrate begin undo - reverse the aeib command
 T}
 aeintegratq(1)	\*[Page*Of*aeintegratq(1)]	T{
 .ad r
-aegis -
+aeintegratq -
 T}	T{
 .ad l
 integrate changes into projects
 T}
 aeifail(1)	\*[Page*Of*aeifail(1)]	T{
 .ad r
-aegis -
+aegis
 T}	T{
 .ad l
-Integrate Fail - fail a change integration
+integrate fail - fail a change integration
 T}
 aeipass(1)	\*[Page*Of*aeipass(1)]	T{
 .ad r
-aegis -
+aegis
 T}	T{
 .ad l
-Integrate Pass - pass a change integration
+integrate pass - pass a change integration
 T}
 aeib(1)	\*[Page*Of*aeib(1)]	T{
 .ad r
-aegis -Integrate Begin - begin
+aegis integrate begin - begin
 T}	T{
 .ad l
 integrating a change
 T}
 aeifail(1)	\*[Page*Of*aeifail(1)]	T{
 .ad r
-aegis -Integrate Fail - fail a change
+aegis integrate fail - fail a change
 T}	T{
 .ad l
 integration
 T}
 aeipass(1)	\*[Page*Of*aeipass(1)]	T{
 .ad r
-aegis -Integrate Pass - pass a change
+aegis integrate pass - pass a change
 T}	T{
 .ad l
 integration
 T}
 aeni(1)	\*[Page*Of*aeni(1)]	T{
 .ad r
-aegis -New
+aegis new
 T}	T{
 .ad l
-Integrator - add new integrators to a project
+integrator - add new integrators to a project
 T}
 aeri(1)	\*[Page*Of*aeri(1)]	T{
 .ad r
-aegis -Remove
+aegis remove
 T}	T{
 .ad l
-Integrator - remove integrators from a project
+integrator - remove integrators from a project
 T}
 aeri(1)	\*[Page*Of*aeri(1)]	T{
 .ad r
-aegis -Remove Integrator - remove
+aegis remove integrator - remove
 T}	T{
 .ad l
 integrators from a project
 T}
 aeni(1)	\*[Page*Of*aeni(1)]	T{
 .ad r
-aegis -New Integrator - add new
+aegis new integrator - add new
 T}	T{
 .ad l
 integrators to a project
 T}
 ael(1)	\*[Page*Of*ael(1)]	T{
 .ad r
-aegis -List - list (possibly)
+aegis list - list (possibly)
 T}	T{
 .ad l
 interesting things
 T}
 tkaeca(1)	\*[Page*Of*tkaeca(1)]	T{
 .ad r
-aegis - GUI
+tkaeca - GUI
 T}	T{
 .ad l
 interface for aeca, using TCL/TK
 T}
 tkaepa(1)	\*[Page*Of*tkaepa(1)]	T{
 .ad r
-aegis - GUI
+tkaepa - GUI
 T}	T{
 .ad l
 interface for aeca, using TCL/TK
 T}
 tkaegis(1)	\*[Page*Of*tkaegis(1)]	T{
 .ad r
-aegis - GUI
+tkaegis - GUI
 T}	T{
 .ad l
 interface for Aegis, using TCL/TK
 T}
 tkaenc(1)	\*[Page*Of*tkaenc(1)]	T{
 .ad r
-aegis - GUI
+tkaenc - GUI
 T}	T{
 .ad l
 interface for aenc, using TCL/TK
@@ -2500,23 +2577,23 @@ T}	T{
 .ad l
 interface script
 T}
-aeimport(1)	\*[Page*Of*aeimport(1)]	T{
-.ad r
-aegis - import foreign repository
-T}	T{
-.ad l
-into
-T}
 aecp(1)	\*[Page*Of*aecp(1)]	T{
 .ad r
-aegis -CoPy file - copy a file
+aegis copy file - copy a file
 T}	T{
 .ad l
 into a change
 T}
+aeimport(1)	\*[Page*Of*aeimport(1)]	T{
+.ad r
+aeimport - import foreign repository
+T}	T{
+.ad l
+into Aegis
+T}
 aeintegratq(1)	\*[Page*Of*aeintegratq(1)]	T{
 .ad r
-aegis - integrate changes
+aeintegratq - integrate changes
 T}	T{
 .ad l
 into projects
@@ -2530,7 +2607,7 @@ is ready for aede
 T}
 aer(5)	\*[Page*Of*aer(5)]	T{
 .ad r
-aer - report script
+aer - aegis report script
 T}	T{
 .ad l
 language definition
@@ -2551,21 +2628,21 @@ listing
 T}
 aels(1)	\*[Page*Of*aels(1)]	T{
 .ad r
-aegis - annotated directory
+aels - annotated directory
 T}	T{
 .ad l
 listing
 T}
 ael(1)	\*[Page*Of*ael(1)]	T{
 .ad r
-aegis -
+aegis
 T}	T{
 .ad l
-List - list (possibly) interesting things
+list - list (possibly) interesting things
 T}
 ael(1)	\*[Page*Of*ael(1)]	T{
 .ad r
-aegis -List -
+aegis list -
 T}	T{
 .ad l
 list (possibly) interesting things
@@ -2600,28 +2677,28 @@ lock while a command runs
 T}
 aemtu(1)	\*[Page*Of*aemtu(1)]	T{
 .ad r
-aegis -Make Transparent Undo - no
+aegis make transparent undo - no
 T}	T{
 .ad l
 longer make branch file transparent
 T}
 aeclone(1)	\*[Page*Of*aeclone(1)]	T{
 .ad r
-aegis -clone -
+aegis clone -
 T}	T{
 .ad l
 make an exact copy of a change
 T}
 aemt(1)	\*[Page*Of*aemt(1)]	T{
 .ad r
-aegis -Make Transparent -
+aegis make transparent -
 T}	T{
 .ad l
 make branch file transparent
 T}
 aemtu(1)	\*[Page*Of*aemtu(1)]	T{
 .ad r
-aegis -Make Transparent Undo - no longer
+aegis make transparent undo - no longer
 T}	T{
 .ad l
 make branch file transparent
@@ -2635,17 +2712,17 @@ Makefile.in from file manifest
 T}
 aemt(1)	\*[Page*Of*aemt(1)]	T{
 .ad r
-aegis -
+aegis
 T}	T{
 .ad l
-Make Transparent - make branch file transparent
+make transparent - make branch file transparent
 T}
 aemtu(1)	\*[Page*Of*aemtu(1)]	T{
 .ad r
-aegis -
+aegis
 T}	T{
 .ad l
-Make Transparent Undo - no longer make branch file transparent
+make transparent undo - no longer make branch file transparent
 T}
 aemakegen(1)	\*[Page*Of*aemakegen(1)]	T{
 .ad r
@@ -2653,6 +2730,13 @@ aemakegen - generate a Makefile.in from file
 T}	T{
 .ad l
 manifest
+T}
+aegis(5)	\*[Page*Of*aegis(5)]	T{
+.ad r
+aegis -
+T}	T{
+.ad l
+meta-data file format
 T}
 aemeasure(1)	\*[Page*Of*aemeasure(1)]	T{
 .ad r
@@ -2670,45 +2754,45 @@ metrics values file format
 T}
 aeca(1)	\*[Page*Of*aeca(1)]	T{
 .ad r
-aegis -Change Attributes -
+aegis change attributes -
 T}	T{
 .ad l
 modify the attributes of a change
 T}
 aefa(1)	\*[Page*Of*aefa(1)]	T{
 .ad r
-aegis -File ATtributes -
+aegis file attributes -
 T}	T{
 .ad l
 modify the attributes of a file
 T}
 aepa(1)	\*[Page*Of*aepa(1)]	T{
 .ad r
-aegis -Project Attributes -
+aegis project attributes -
 T}	T{
 .ad l
 modify the attributes of a project
 T}
 aemv(1)	\*[Page*Of*aemv(1)]	T{
 .ad r
-aegis -MoVe file - rename one or
+aegis move file - rename one or
 T}	T{
 .ad l
 more files as part of a change
 T}
 aemv(1)	\*[Page*Of*aemv(1)]	T{
 .ad r
-aegis -
+aegis
 T}	T{
 .ad l
-MoVe file - rename one or more files as part of a change
+move file - rename one or more files as part of a change
 T}
 aemvu(1)	\*[Page*Of*aemvu(1)]	T{
 .ad r
-aegis -
+aegis
 T}	T{
 .ad l
-MoVe file Undo - undo the rename a file as part of a change
+move file undo - undo the rename a file as part of a change
 T}
 ae_p(1)	\*[Page*Of*ae_p(1)]	T{
 .ad r
@@ -2719,224 +2803,224 @@ name
 T}
 aedn(1)	\*[Page*Of*aedn(1)]	T{
 .ad r
-aegis -DELta
+aegis delta
 T}	T{
 .ad l
-NAme - assign a symbolic name to a project delta
+name - assign a symbolic name to a project delta
 T}
 aedn(1)	\*[Page*Of*aedn(1)]	T{
 .ad r
-aegis -DELta NAme - assign a symbolic
+aegis delta name - assign a symbolic
 T}	T{
 .ad l
 name to a project delta
 T}
 aena(1)	\*[Page*Of*aena(1)]	T{
 .ad r
-aegis -
+aegis
 T}	T{
 .ad l
-New Administrator - add a new administrator to a project
+new administrator - add a new administrator to a project
 T}
 aena(1)	\*[Page*Of*aena(1)]	T{
 .ad r
-aegis -New Administrator - add a
+aegis new administrator - add a
 T}	T{
 .ad l
 new administrator to a project
 T}
 aenbr(1)	\*[Page*Of*aenbr(1)]	T{
 .ad r
-aegis -New BRanch - create a
+aegis new branch - create a
 T}	T{
 .ad l
 new branch
 T}
 aenbr(1)	\*[Page*Of*aenbr(1)]	T{
 .ad r
-aegis -
+aegis
 T}	T{
 .ad l
-New BRanch - create a new branch
+new branch - create a new branch
 T}
 aenbru(1)	\*[Page*Of*aenbru(1)]	T{
 .ad r
-aegis -
+aegis
 T}	T{
 .ad l
-New BRanch Undo - remove a branch
+new branch undo - remove a branch
 T}
 aenc(1)	\*[Page*Of*aenc(1)]	T{
 .ad r
-aegis -
+aegis
 T}	T{
 .ad l
-New Change - add a new change to a project
+new change - add a new change to a project
 T}
 aencu(1)	\*[Page*Of*aencu(1)]	T{
 .ad r
-aegis -New Change Undo - remove a
+aegis new change undo - remove a
 T}	T{
 .ad l
 new change from a project
 T}
 aenc(1)	\*[Page*Of*aenc(1)]	T{
 .ad r
-aegis -New Change - add a
+aegis new change - add a
 T}	T{
 .ad l
 new change to a project
 T}
 aencu(1)	\*[Page*Of*aencu(1)]	T{
 .ad r
-aegis -
+aegis
 T}	T{
 .ad l
-New Change Undo - remove a new change from a project
+new change undo - remove a new change from a project
 T}
 aend(1)	\*[Page*Of*aend(1)]	T{
 .ad r
-aegis -
+aegis
 T}	T{
 .ad l
-New Developer - add new developers to a project
+new developer - add new developers to a project
 T}
 aend(1)	\*[Page*Of*aend(1)]	T{
 .ad r
-aegis -New Developer - add
+aegis new developer - add
 T}	T{
 .ad l
 new developers to a project
 T}
 aenf(1)	\*[Page*Of*aenf(1)]	T{
 .ad r
-aegis -
+aegis
 T}	T{
 .ad l
-New File - add new files to be created by a change
+new file - add new files to be created by a change
 T}
 aenfu(1)	\*[Page*Of*aenfu(1)]	T{
 .ad r
-aegis -New File Undo - remove
+aegis new file undo - remove
 T}	T{
 .ad l
 new files from a change
 T}
 aenf(1)	\*[Page*Of*aenf(1)]	T{
 .ad r
-aegis -New File - add
+aegis new file - add
 T}	T{
 .ad l
 new files to be created by a change
 T}
 aenfu(1)	\*[Page*Of*aenfu(1)]	T{
 .ad r
-aegis -
+aegis
 T}	T{
 .ad l
-New File Undo - remove new files from a change
+new file undo - remove new files from a change
 T}
 aeni(1)	\*[Page*Of*aeni(1)]	T{
 .ad r
-aegis -
+aegis
 T}	T{
 .ad l
-New Integrator - add new integrators to a project
+new integrator - add new integrators to a project
 T}
 aeni(1)	\*[Page*Of*aeni(1)]	T{
 .ad r
-aegis -New Integrator - add
+aegis new integrator - add
 T}	T{
 .ad l
 new integrators to a project
 T}
 aenpr(1)	\*[Page*Of*aenpr(1)]	T{
 .ad r
-aegis -New PRoject - create a
+aegis new project - create a
 T}	T{
 .ad l
 new project
 T}
 aenpa(1)	\*[Page*Of*aenpa(1)]	T{
 .ad r
-aegis -New Project Alias - create a
+aegis new project alias - create a
 T}	T{
 .ad l
 new project alias
 T}
 aenpa(1)	\*[Page*Of*aenpa(1)]	T{
 .ad r
-aegis -
+aegis
 T}	T{
 .ad l
-New Project Alias - create a new project alias
+new project alias - create a new project alias
 T}
 aenpr(1)	\*[Page*Of*aenpr(1)]	T{
 .ad r
-aegis -
+aegis
 T}	T{
 .ad l
-New PRoject - create a new project
+new project - create a new project
 T}
 aenrls(1)	\*[Page*Of*aenrls(1)]	T{
 .ad r
-aegis -New ReLeaSe - create a
+aegis new release - create a
 T}	T{
 .ad l
 new project from an old-style project.
 T}
 aenrls(1)	\*[Page*Of*aenrls(1)]	T{
 .ad r
-aegis -
+aegis
 T}	T{
 .ad l
-New ReLeaSe - create a new project from an old-style project.
+new release - create a new project from an old-style project.
 T}
 aenrv(1)	\*[Page*Of*aenrv(1)]	T{
 .ad r
-aegis -
+aegis
 T}	T{
 .ad l
-New ReViewer - add new reviewers to a project
+new reviewer - add new reviewers to a project
 T}
 aenrv(1)	\*[Page*Of*aenrv(1)]	T{
 .ad r
-aegis -New ReViewer - add
+aegis new reviewer - add
 T}	T{
 .ad l
 new reviewers to a project
 T}
 aent(1)	\*[Page*Of*aent(1)]	T{
 .ad r
-aegis -
+aegis
 T}	T{
 .ad l
-New Test - add a new test to a change
+new test - add a new test to a change
 T}
 aentu(1)	\*[Page*Of*aentu(1)]	T{
 .ad r
-aegis -New Test Undo - remove
+aegis new test undo - remove
 T}	T{
 .ad l
 new tests from a change
 T}
 aent(1)	\*[Page*Of*aent(1)]	T{
 .ad r
-aegis -New Test - add a
+aegis new test - add a
 T}	T{
 .ad l
 new test to a change
 T}
 aentu(1)	\*[Page*Of*aentu(1)]	T{
 .ad r
-aegis -
+aegis
 T}	T{
 .ad l
-New Test Undo - remove new tests from a change
+new test undo - remove new tests from a change
 T}
 aemtu(1)	\*[Page*Of*aemtu(1)]	T{
 .ad r
-aegis -Make Transparent Undo -
+aegis make transparent undo -
 T}	T{
 .ad l
 no longer make branch file transparent
@@ -2950,98 +3034,98 @@ number
 T}
 aenrls(1)	\*[Page*Of*aenrls(1)]	T{
 .ad r
-aegis -New ReLeaSe - create a new project from an
+aegis new release - create a new project from an
 T}	T{
 .ad l
 old-style project.
 T}
 aemv(1)	\*[Page*Of*aemv(1)]	T{
 .ad r
-aegis -MoVe file - rename
+aegis move file - rename
 T}	T{
 .ad l
 one or more files as part of a change
 T}
 aemv(1)	\*[Page*Of*aemv(1)]	T{
 .ad r
-aegis -MoVe file - rename one
+aegis move file - rename one
 T}	T{
 .ad l
 or more files as part of a change
 T}
 aechown(1)	\*[Page*Of*aechown(1)]	T{
 .ad r
-aegis -Change Owner - set change
+aegis change owner - set change
 T}	T{
 .ad l
 owner
 T}
 aechown(1)	\*[Page*Of*aechown(1)]	T{
 .ad r
-aegis -Change
+aegis change
 T}	T{
 .ad l
-Owner - set change owner
+owner - set change owner
 T}
 aemv(1)	\*[Page*Of*aemv(1)]	T{
 .ad r
-aegis -MoVe file - rename one or more files as
+aegis move file - rename one or more files as
 T}	T{
 .ad l
 part of a change
 T}
 aemvu(1)	\*[Page*Of*aemvu(1)]	T{
 .ad r
-aegis -MoVe file Undo - undo the rename a file as
+aegis move file undo - undo the rename a file as
 T}	T{
 .ad l
 part of a change
 T}
 aerpu(1)	\*[Page*Of*aerpu(1)]	T{
 .ad r
-aegis -Review Pass Undo - rescind a change review
+aegis review pass undo - rescind a change review
 T}	T{
 .ad l
 pass
 T}
 aeipass(1)	\*[Page*Of*aeipass(1)]	T{
 .ad r
-aegis -Integrate Pass -
+aegis integrate pass -
 T}	T{
 .ad l
 pass a change integration
 T}
 aerpass(1)	\*[Page*Of*aerpass(1)]	T{
 .ad r
-aegis -Review PASS -
+aegis review pass -
 T}	T{
 .ad l
 pass a change review
 T}
 aeipass(1)	\*[Page*Of*aeipass(1)]	T{
 .ad r
-aegis -Integrate
+aegis integrate
 T}	T{
 .ad l
-Pass - pass a change integration
+pass - pass a change integration
 T}
 aerpass(1)	\*[Page*Of*aerpass(1)]	T{
 .ad r
-aegis -Review
+aegis review
 T}	T{
 .ad l
-PASS - pass a change review
+pass - pass a change review
 T}
 aerpu(1)	\*[Page*Of*aerpu(1)]	T{
 .ad r
-aegis -Review
+aegis review
 T}	T{
 .ad l
-Pass Undo - rescind a change review pass
+pass undo - rescind a change review pass
 T}
 aepatch(1)	\*[Page*Of*aepatch(1)]	T{
 .ad r
-aegis - send and receive changes as
+aepatch - send and receive changes as
 T}	T{
 .ad l
 patches
@@ -3055,150 +3139,150 @@ policy - check change set is ready for aede
 T}
 ael(1)	\*[Page*Of*ael(1)]	T{
 .ad r
-aegis -List - list (
+aegis list - list (
 T}	T{
 .ad l
 possibly) interesting things
 T}
 aena(1)	\*[Page*Of*aena(1)]	T{
 .ad r
-aegis -New Administrator - add a new administrator to a
+aegis new administrator - add a new administrator to a
 T}	T{
 .ad l
 project
 T}
 aenc(1)	\*[Page*Of*aenc(1)]	T{
 .ad r
-aegis -New Change - add a new change to a
+aegis new change - add a new change to a
 T}	T{
 .ad l
 project
 T}
 aencu(1)	\*[Page*Of*aencu(1)]	T{
 .ad r
-aegis -New Change Undo - remove a new change from a
+aegis new change undo - remove a new change from a
 T}	T{
 .ad l
 project
 T}
 aend(1)	\*[Page*Of*aend(1)]	T{
 .ad r
-aegis -New Developer - add new developers to a
+aegis new developer - add new developers to a
 T}	T{
 .ad l
 project
 T}
 aeni(1)	\*[Page*Of*aeni(1)]	T{
 .ad r
-aegis -New Integrator - add new integrators to a
+aegis new integrator - add new integrators to a
 T}	T{
 .ad l
 project
 T}
 aenpr(1)	\*[Page*Of*aenpr(1)]	T{
 .ad r
-aegis -New PRoject - create a new
+aegis new project - create a new
 T}	T{
 .ad l
 project
 T}
 aenrls(1)	\*[Page*Of*aenrls(1)]	T{
 .ad r
-aegis -New ReLeaSe - create a new project from an old-style
+aegis new release - create a new project from an old-style
 T}	T{
 .ad l
 project.
 T}
 aenrv(1)	\*[Page*Of*aenrv(1)]	T{
 .ad r
-aegis -New ReViewer - add new reviewers to a
+aegis new reviewer - add new reviewers to a
 T}	T{
 .ad l
 project
 T}
 aepa(1)	\*[Page*Of*aepa(1)]	T{
 .ad r
-aegis -Project Attributes - modify the attributes of a
+aegis project attributes - modify the attributes of a
 T}	T{
 .ad l
 project
 T}
 aera(1)	\*[Page*Of*aera(1)]	T{
 .ad r
-aegis -Remove Administrator - remove administrators from a
+aegis remove administrator - remove administrators from a
 T}	T{
 .ad l
 project
 T}
 aerd(1)	\*[Page*Of*aerd(1)]	T{
 .ad r
-aegis -Remove Developer - remove developers from a
+aegis remove developer - remove developers from a
 T}	T{
 .ad l
 project
 T}
 aeri(1)	\*[Page*Of*aeri(1)]	T{
 .ad r
-aegis -Remove Integrator - remove integrators from a
+aegis remove integrator - remove integrators from a
 T}	T{
 .ad l
 project
 T}
 aermpr(1)	\*[Page*Of*aermpr(1)]	T{
 .ad r
-aegis -ReMove PRoject - remove
+aegis remove project - remove
 T}	T{
 .ad l
 project
 T}
 aerrv(1)	\*[Page*Of*aerrv(1)]	T{
 .ad r
-aegis -Remove ReViewer - remove reviewers from a
+aegis remove reviewer - remove reviewers from a
 T}	T{
 .ad l
 project
 T}
 aenpa(1)	\*[Page*Of*aenpa(1)]	T{
 .ad r
-aegis -New Project Alias - create a new
+aegis new project alias - create a new
 T}	T{
 .ad l
 project alias
 T}
 aerpa(1)	\*[Page*Of*aerpa(1)]	T{
 .ad r
-aegis -Remove Project Alias - remove a
+aegis remove project alias - remove a
 T}	T{
 .ad l
 project alias
 T}
 aenpa(1)	\*[Page*Of*aenpa(1)]	T{
 .ad r
-aegis -New
+aegis new
 T}	T{
 .ad l
-Project Alias - create a new project alias
+project alias - create a new project alias
 T}
 aerpa(1)	\*[Page*Of*aerpa(1)]	T{
 .ad r
-aegis -Remove
+aegis remove
 T}	T{
 .ad l
-Project Alias - remove a project alias
+project alias - remove a project alias
 T}
 aepattr(5)	\*[Page*Of*aepattr(5)]	T{
 .ad r
-aepattr -
+aepattr - aegis
 T}	T{
 .ad l
 project attribute file
 T}
 aepa(1)	\*[Page*Of*aepa(1)]	T{
 .ad r
-aegis -
+aegis
 T}	T{
 .ad l
-Project Attributes - modify the attributes of a project
+project attributes - modify the attributes of a project
 T}
 aegis(1)	\*[Page*Of*aegis(1)]	T{
 .ad r
@@ -3216,14 +3300,14 @@ project configuration file
 T}
 aenpr(1)	\*[Page*Of*aenpr(1)]	T{
 .ad r
-aegis -New
+aegis new
 T}	T{
 .ad l
-PRoject - create a new project
+project - create a new project
 T}
 aedn(1)	\*[Page*Of*aedn(1)]	T{
 .ad r
-aegis -DELta NAme - assign a symbolic name to a
+aegis delta name - assign a symbolic name to a
 T}	T{
 .ad l
 project delta
@@ -3237,7 +3321,7 @@ project files
 T}
 aenrls(1)	\*[Page*Of*aenrls(1)]	T{
 .ad r
-aegis -New ReLeaSe - create a new
+aegis new release - create a new
 T}	T{
 .ad l
 project from an old-style project.
@@ -3251,10 +3335,10 @@ project name
 T}
 aermpr(1)	\*[Page*Of*aermpr(1)]	T{
 .ad r
-aegis -ReMove
+aegis remove
 T}	T{
 .ad l
-PRoject - remove project
+project - remove project
 T}
 aecvsserver(1)	\*[Page*Of*aecvsserver(1)]	T{
 .ad r
@@ -3265,14 +3349,14 @@ projects
 T}
 aeintegratq(1)	\*[Page*Of*aeintegratq(1)]	T{
 .ad r
-aegis - integrate changes into
+aeintegratq - integrate changes into
 T}	T{
 .ad l
 projects
 T}
 aepstate(5)	\*[Page*Of*aepstate(5)]	T{
 .ad r
-aepstate -
+aepstate - aegis
 T}	T{
 .ad l
 project state file
@@ -3300,7 +3384,14 @@ p - set project name
 T}
 ae-sccs-put(1)	\*[Page*Of*ae-sccs-put(1)]	T{
 .ad r
-aegis -
+ae-sccs-
+T}	T{
+.ad l
+put - put sccs version
+T}
+ae-sccs-put(1)	\*[Page*Of*ae-sccs-put(1)]	T{
+.ad r
+ae-sccs-put -
 T}	T{
 .ad l
 put sccs version
@@ -3314,14 +3405,14 @@ ready for aede
 T}
 aedeu(1)	\*[Page*Of*aedeu(1)]	T{
 .ad r
-aegis -Develop End Undo -
+aegis develop end undo -
 T}	T{
 .ad l
 recall a change for further development
 T}
 aepatch(1)	\*[Page*Of*aepatch(1)]	T{
 .ad r
-aegis - send and
+aepatch - send and
 T}	T{
 .ad l
 receive changes as patches
@@ -3349,10 +3440,10 @@ redundant repository checkin
 T}
 aenrls(1)	\*[Page*Of*aenrls(1)]	T{
 .ad r
-aegis -New
+aegis new
 T}	T{
 .ad l
-ReLeaSe - create a new project from an old-style project.
+release - create a new project from an old-style project.
 T}
 aedist(1)	\*[Page*Of*aedist(1)]	T{
 .ad r
@@ -3370,147 +3461,147 @@ remotely distribute a change via tar
 T}
 aenbru(1)	\*[Page*Of*aenbru(1)]	T{
 .ad r
-aegis -New BRanch Undo -
+aegis new branch undo -
 T}	T{
 .ad l
 remove a branch
 T}
 aera(1)	\*[Page*Of*aera(1)]	T{
 .ad r
-aegis -
+aegis
 T}	T{
 .ad l
-Remove Administrator - remove administrators from a project
+remove administrator - remove administrators from a project
 T}
 aera(1)	\*[Page*Of*aera(1)]	T{
 .ad r
-aegis -Remove Administrator -
+aegis remove administrator -
 T}	T{
 .ad l
 remove administrators from a project
 T}
 aencu(1)	\*[Page*Of*aencu(1)]	T{
 .ad r
-aegis -New Change Undo -
+aegis new change undo -
 T}	T{
 .ad l
 remove a new change from a project
 T}
 aerpa(1)	\*[Page*Of*aerpa(1)]	T{
 .ad r
-aegis -Remove Project Alias -
+aegis remove project alias -
 T}	T{
 .ad l
 remove a project alias
 T}
 aerd(1)	\*[Page*Of*aerd(1)]	T{
 .ad r
-aegis -
+aegis
 T}	T{
 .ad l
-Remove Developer - remove developers from a project
+remove developer - remove developers from a project
 T}
 aerd(1)	\*[Page*Of*aerd(1)]	T{
 .ad r
-aegis -Remove Developer -
+aegis remove developer -
 T}	T{
 .ad l
 remove developers from a project
 T}
 aerm(1)	\*[Page*Of*aerm(1)]	T{
 .ad r
-aegis -
+aegis
 T}	T{
 .ad l
-ReMove file - add files to be deleted to a change
+remove file - add files to be deleted to a change
 T}
 aermu(1)	\*[Page*Of*aermu(1)]	T{
 .ad r
-aegis -ReMove file Undo -
+aegis remove file undo -
 T}	T{
 .ad l
 remove files to be deleted from a change
 T}
 aermu(1)	\*[Page*Of*aermu(1)]	T{
 .ad r
-aegis -
+aegis
 T}	T{
 .ad l
-ReMove file Undo - remove files to be deleted from a change
+remove file undo - remove files to be deleted from a change
 T}
 aeri(1)	\*[Page*Of*aeri(1)]	T{
 .ad r
-aegis -
+aegis
 T}	T{
 .ad l
-Remove Integrator - remove integrators from a project
+remove integrator - remove integrators from a project
 T}
 aeri(1)	\*[Page*Of*aeri(1)]	T{
 .ad r
-aegis -Remove Integrator -
+aegis remove integrator -
 T}	T{
 .ad l
 remove integrators from a project
 T}
 aenfu(1)	\*[Page*Of*aenfu(1)]	T{
 .ad r
-aegis -New File Undo -
+aegis new file undo -
 T}	T{
 .ad l
 remove new files from a change
 T}
 aentu(1)	\*[Page*Of*aentu(1)]	T{
 .ad r
-aegis -New Test Undo -
+aegis new test undo -
 T}	T{
 .ad l
 remove new tests from a change
 T}
 aermpr(1)	\*[Page*Of*aermpr(1)]	T{
 .ad r
-aegis -ReMove PRoject -
+aegis remove project -
 T}	T{
 .ad l
 remove project
 T}
 aerpa(1)	\*[Page*Of*aerpa(1)]	T{
 .ad r
-aegis -
+aegis
 T}	T{
 .ad l
-Remove Project Alias - remove a project alias
+remove project alias - remove a project alias
 T}
 aermpr(1)	\*[Page*Of*aermpr(1)]	T{
 .ad r
-aegis -
+aegis
 T}	T{
 .ad l
-ReMove PRoject - remove project
+remove project - remove project
 T}
 aerrv(1)	\*[Page*Of*aerrv(1)]	T{
 .ad r
-aegis -
+aegis
 T}	T{
 .ad l
-Remove ReViewer - remove reviewers from a project
+remove reviewer - remove reviewers from a project
 T}
 aerrv(1)	\*[Page*Of*aerrv(1)]	T{
 .ad r
-aegis -Remove ReViewer -
+aegis remove reviewer -
 T}	T{
 .ad l
 remove reviewers from a project
 T}
 aemvu(1)	\*[Page*Of*aemvu(1)]	T{
 .ad r
-aegis -MoVe file Undo - undo the
+aegis move file undo - undo the
 T}	T{
 .ad l
 rename a file as part of a change
 T}
 aemv(1)	\*[Page*Of*aemv(1)]	T{
 .ad r
-aegis -MoVe file -
+aegis move file -
 T}	T{
 .ad l
 rename one or more files as part of a change
@@ -3524,28 +3615,28 @@ repo-ci - redundant repository checkin
 T}
 aer(1)	\*[Page*Of*aer(1)]	T{
 .ad r
-aegis -RePorT -
+aegis report -
 T}	T{
 .ad l
 report generator
 T}
 aerptidx(5)	\*[Page*Of*aerptidx(5)]	T{
 .ad r
-aerptidx -
+aerptidx - aegis
 T}	T{
 .ad l
 report index file format
 T}
 aer(1)	\*[Page*Of*aer(1)]	T{
 .ad r
-aegis -
+aegis
 T}	T{
 .ad l
-RePorT - report generator
+report - report generator
 T}
 aer(5)	\*[Page*Of*aer(5)]	T{
 .ad r
-aer -
+aer - aegis
 T}	T{
 .ad l
 report script language definition
@@ -3559,143 +3650,143 @@ repository checkin
 T}
 aeimport(1)	\*[Page*Of*aeimport(1)]	T{
 .ad r
-aegis - import foreign
+aeimport - import foreign
 T}	T{
 .ad l
-repository into
+repository into Aegis
 T}
 aerpu(1)	\*[Page*Of*aerpu(1)]	T{
 .ad r
-aegis -Review Pass Undo -
+aegis review pass undo -
 T}	T{
 .ad l
 rescind a change review pass
 T}
 aetest(5)	\*[Page*Of*aetest(5)]	T{
 .ad r
-aetest - test
+aetest - aegis test
 T}	T{
 .ad l
 results file format
 T}
 aecpu(1)	\*[Page*Of*aecpu(1)]	T{
 .ad r
-aegis -CoPy file Undo -
+aegis copy file undo -
 T}	T{
 .ad l
 reverse action of aecp
 T}
 aeibu(1)	\*[Page*Of*aeibu(1)]	T{
 .ad r
-aegis -Integrate Begin Undo -
+aegis integrate begin undo -
 T}	T{
 .ad l
 reverse the aeib command
 T}
 aerb(1)	\*[Page*Of*aerb(1)]	T{
 .ad r
-aegis -Review Begin - begin a change
+aegis review begin - begin a change
 T}	T{
 .ad l
 review
 T}
 aerfail(1)	\*[Page*Of*aerfail(1)]	T{
 .ad r
-aegis -Review FAIL - fail a change
+aegis review fail - fail a change
 T}	T{
 .ad l
 review
 T}
 aerpass(1)	\*[Page*Of*aerpass(1)]	T{
 .ad r
-aegis -Review PASS - pass a change
+aegis review pass - pass a change
 T}	T{
 .ad l
 review
 T}
 aerb(1)	\*[Page*Of*aerb(1)]	T{
 .ad r
-aegis -
+aegis
 T}	T{
 .ad l
-Review Begin - begin a change review
+review begin - begin a change review
 T}
 aerbu(1)	\*[Page*Of*aerbu(1)]	T{
 .ad r
-aegis -
+aegis
 T}	T{
 .ad l
-Review Begin Undo - stop reviewing a change
+review begin undo - stop reviewing a change
 T}
 aenrv(1)	\*[Page*Of*aenrv(1)]	T{
 .ad r
-aegis -New
+aegis new
 T}	T{
 .ad l
-ReViewer - add new reviewers to a project
+reviewer - add new reviewers to a project
 T}
 aerrv(1)	\*[Page*Of*aerrv(1)]	T{
 .ad r
-aegis -Remove
+aegis remove
 T}	T{
 .ad l
-ReViewer - remove reviewers from a project
+reviewer - remove reviewers from a project
 T}
 aerrv(1)	\*[Page*Of*aerrv(1)]	T{
 .ad r
-aegis -Remove ReViewer - remove
+aegis remove reviewer - remove
 T}	T{
 .ad l
 reviewers from a project
 T}
 aenrv(1)	\*[Page*Of*aenrv(1)]	T{
 .ad r
-aegis -New ReViewer - add new
+aegis new reviewer - add new
 T}	T{
 .ad l
 reviewers to a project
 T}
 aerfail(1)	\*[Page*Of*aerfail(1)]	T{
 .ad r
-aegis -
+aegis
 T}	T{
 .ad l
-Review FAIL - fail a change review
+review fail - fail a change review
 T}
 aerbu(1)	\*[Page*Of*aerbu(1)]	T{
 .ad r
-aegis -Review Begin Undo - stop
+aegis review begin undo - stop
 T}	T{
 .ad l
 reviewing a change
 T}
 tkaer(1)	\*[Page*Of*tkaer(1)]	T{
 .ad r
-aegis - GUI tool for
+tkaer - GUI tool for
 T}	T{
 .ad l
 reviewing Aegis change sets, using TCL/TK
 T}
 aerpu(1)	\*[Page*Of*aerpu(1)]	T{
 .ad r
-aegis -Review Pass Undo - rescind a change
+aegis review pass undo - rescind a change
 T}	T{
 .ad l
 review pass
 T}
 aerpass(1)	\*[Page*Of*aerpass(1)]	T{
 .ad r
-aegis -
+aegis
 T}	T{
 .ad l
-Review PASS - pass a change review
+review pass - pass a change review
 T}
 aerpu(1)	\*[Page*Of*aerpu(1)]	T{
 .ad r
-aegis -
+aegis
 T}	T{
 .ad l
-Review Pass Undo - rescind a change review pass
+review pass undo - rescind a change review pass
 T}
 aerevml(1)	\*[Page*Of*aerevml(1)]	T{
 .ad r
@@ -3720,14 +3811,21 @@ run SubUnit tests
 T}
 aet(1)	\*[Page*Of*aet(1)]	T{
 .ad r
-aegis -Test -
+aegis test -
 T}	T{
 .ad l
 run tests
 T}
 ae-sccs-put(1)	\*[Page*Of*ae-sccs-put(1)]	T{
 .ad r
-aegis - put
+ae-
+T}	T{
+.ad l
+sccs-put - put sccs version
+T}
+ae-sccs-put(1)	\*[Page*Of*ae-sccs-put(1)]	T{
+.ad r
+ae-sccs-put - put
 T}	T{
 .ad l
 sccs version
@@ -3741,21 +3839,21 @@ script
 T}
 aer(5)	\*[Page*Of*aer(5)]	T{
 .ad r
-aer - report
+aer - aegis report
 T}	T{
 .ad l
 script language definition
 T}
 aefind(1)	\*[Page*Of*aefind(1)]	T{
 .ad r
-aegis -
+aefind -
 T}	T{
 .ad l
 search for files in directory hierarchy
 T}
 aepatch(1)	\*[Page*Of*aepatch(1)]	T{
 .ad r
-aegis -
+aepatch -
 T}	T{
 .ad l
 send and receive changes as patches
@@ -3783,7 +3881,7 @@ set change number
 T}
 aechown(1)	\*[Page*Of*aechown(1)]	T{
 .ad r
-aegis -Change Owner -
+aegis change owner -
 T}	T{
 .ad l
 set change owner
@@ -3811,7 +3909,7 @@ sets
 T}
 tkaer(1)	\*[Page*Of*tkaer(1)]	T{
 .ad r
-aegis - GUI tool for reviewing Aegis change
+tkaer - GUI tool for reviewing Aegis change
 T}	T{
 .ad l
 sets, using TCL/TK
@@ -3874,28 +3972,28 @@ state file
 T}
 aegstate(5)	\*[Page*Of*aegstate(5)]	T{
 .ad r
-aegstate - aegis
+aegstate - aegis global
 T}	T{
 .ad l
 state file
 T}
 aepstate(5)	\*[Page*Of*aepstate(5)]	T{
 .ad r
-aepstate - project
+aepstate - aegis project
 T}	T{
 .ad l
 state file
 T}
 aeustate(5)	\*[Page*Of*aeustate(5)]	T{
 .ad r
-aeustate - user
+aeustate - aegis user
 T}	T{
 .ad l
 state file
 T}
 aerbu(1)	\*[Page*Of*aerbu(1)]	T{
 .ad r
-aegis -Review Begin Undo -
+aegis review begin undo -
 T}	T{
 .ad l
 stop reviewing a change
@@ -3916,7 +4014,7 @@ structures
 T}
 aenrls(1)	\*[Page*Of*aenrls(1)]	T{
 .ad r
-aegis -New ReLeaSe - create a new project from an old-
+aegis new release - create a new project from an old-
 T}	T{
 .ad l
 style project.
@@ -3930,7 +4028,7 @@ substitute and echo strings
 T}
 aesub(5)	\*[Page*Of*aesub(5)]	T{
 .ad r
-aesub - available command
+aesub - aegis command
 T}	T{
 .ad l
 substitutions
@@ -3951,7 +4049,7 @@ supervisor
 T}
 aedn(1)	\*[Page*Of*aedn(1)]	T{
 .ad r
-aegis -DELta NAme - assign a
+aegis delta name - assign a
 T}	T{
 .ad l
 symbolic name to a project delta
@@ -3972,63 +4070,63 @@ tar
 T}
 tkaeca(1)	\*[Page*Of*tkaeca(1)]	T{
 .ad r
-aegis - GUI interface for aeca, using
-T}	T{
-.ad l
-TCL/TK
-T}
-tkaepa(1)	\*[Page*Of*tkaepa(1)]	T{
-.ad r
-aegis - GUI interface for aeca, using
+tkaeca - GUI interface for aeca, using
 T}	T{
 .ad l
 TCL/TK
 T}
 tkaegis(1)	\*[Page*Of*tkaegis(1)]	T{
 .ad r
-aegis - GUI interface for Aegis, using
+tkaegis - GUI interface for Aegis, using
 T}	T{
 .ad l
 TCL/TK
 T}
 tkaenc(1)	\*[Page*Of*tkaenc(1)]	T{
 .ad r
-aegis - GUI interface for aenc, using
+tkaenc - GUI interface for aenc, using
+T}	T{
+.ad l
+TCL/TK
+T}
+tkaepa(1)	\*[Page*Of*tkaepa(1)]	T{
+.ad r
+tkaepa - GUI interface for aeca, using
 T}	T{
 .ad l
 TCL/TK
 T}
 tkaer(1)	\*[Page*Of*tkaer(1)]	T{
 .ad r
-aegis - GUI tool for reviewing Aegis change sets, using
+tkaer - GUI tool for reviewing Aegis change sets, using
 T}	T{
 .ad l
 TCL/TK
 T}
 aent(1)	\*[Page*Of*aent(1)]	T{
 .ad r
-aegis -New
+aegis new
 T}	T{
 .ad l
-Test - add a new test to a change
+test - add a new test to a change
 T}
 aetest(5)	\*[Page*Of*aetest(5)]	T{
 .ad r
-aetest -
+aetest - aegis
 T}	T{
 .ad l
 test results file format
 T}
 aet(1)	\*[Page*Of*aet(1)]	T{
 .ad r
-aegis -
+aegis
 T}	T{
 .ad l
-Test - run tests
+test - run tests
 T}
 aet(1)	\*[Page*Of*aet(1)]	T{
 .ad r
-aegis -Test - run
+aegis test - run
 T}	T{
 .ad l
 tests
@@ -4042,24 +4140,24 @@ tests
 T}
 aentu(1)	\*[Page*Of*aentu(1)]	T{
 .ad r
-aegis -New Test Undo - remove new
+aegis new test undo - remove new
 T}	T{
 .ad l
 tests from a change
 T}
 aent(1)	\*[Page*Of*aent(1)]	T{
 .ad r
-aegis -New Test - add a new
+aegis new test - add a new
 T}	T{
 .ad l
 test to a change
 T}
 aentu(1)	\*[Page*Of*aentu(1)]	T{
 .ad r
-aegis -New
+aegis new
 T}	T{
 .ad l
-Test Undo - remove new tests from a change
+test undo - remove new tests from a change
 T}
 aelock(5)	\*[Page*Of*aelock(5)]	T{
 .ad r
@@ -4070,45 +4168,80 @@ them
 T}
 ael(1)	\*[Page*Of*ael(1)]	T{
 .ad r
-aegis -List - list (possibly) interesting
+aegis list - list (possibly) interesting
 T}	T{
 .ad l
 things
 T}
 tkaeca(1)	\*[Page*Of*tkaeca(1)]	T{
 .ad r
-aegis - GUI interface for aeca, using TCL/
-T}	T{
-.ad l
-TK
-T}
-tkaepa(1)	\*[Page*Of*tkaepa(1)]	T{
-.ad r
-aegis - GUI interface for aeca, using TCL/
+tkaeca - GUI interface for aeca, using TCL/
 T}	T{
 .ad l
 TK
 T}
 tkaegis(1)	\*[Page*Of*tkaegis(1)]	T{
 .ad r
-aegis - GUI interface for Aegis, using TCL/
+tkaegis - GUI interface for Aegis, using TCL/
 T}	T{
 .ad l
 TK
 T}
 tkaenc(1)	\*[Page*Of*tkaenc(1)]	T{
 .ad r
-aegis - GUI interface for aenc, using TCL/
+tkaenc - GUI interface for aenc, using TCL/
+T}	T{
+.ad l
+TK
+T}
+tkaepa(1)	\*[Page*Of*tkaepa(1)]	T{
+.ad r
+tkaepa - GUI interface for aeca, using TCL/
 T}	T{
 .ad l
 TK
 T}
 tkaer(1)	\*[Page*Of*tkaer(1)]	T{
 .ad r
-aegis - GUI tool for reviewing Aegis change sets, using TCL/
+tkaer - GUI tool for reviewing Aegis change sets, using TCL/
 T}	T{
 .ad l
 TK
+T}
+tkaeca(1)	\*[Page*Of*tkaeca(1)]	T{
+.ad r
+
+T}	T{
+.ad l
+tkaeca - GUI interface for aeca, using TCL/TK
+T}
+tkaegis(1)	\*[Page*Of*tkaegis(1)]	T{
+.ad r
+
+T}	T{
+.ad l
+tkaegis - GUI interface for Aegis, using TCL/TK
+T}
+tkaenc(1)	\*[Page*Of*tkaenc(1)]	T{
+.ad r
+
+T}	T{
+.ad l
+tkaenc - GUI interface for aenc, using TCL/TK
+T}
+tkaepa(1)	\*[Page*Of*tkaepa(1)]	T{
+.ad r
+
+T}	T{
+.ad l
+tkaepa - GUI interface for aeca, using TCL/TK
+T}
+tkaer(1)	\*[Page*Of*tkaer(1)]	T{
+.ad r
+
+T}	T{
+.ad l
+tkaer - GUI tool for reviewing Aegis change sets, using TCL/TK
 T}
 aesvt(1)	\*[Page*Of*aesvt(1)]	T{
 .ad r
@@ -4119,150 +4252,150 @@ tool
 T}
 tkaer(1)	\*[Page*Of*tkaer(1)]	T{
 .ad r
-aegis - GUI
+tkaer - GUI
 T}	T{
 .ad l
 tool for reviewing Aegis change sets, using TCL/TK
 T}
 aemt(1)	\*[Page*Of*aemt(1)]	T{
 .ad r
-aegis -Make Transparent - make branch file
+aegis make transparent - make branch file
 T}	T{
 .ad l
 transparent
 T}
 aemtu(1)	\*[Page*Of*aemtu(1)]	T{
 .ad r
-aegis -Make Transparent Undo - no longer make branch file
+aegis make transparent undo - no longer make branch file
 T}	T{
 .ad l
 transparent
 T}
 aemt(1)	\*[Page*Of*aemt(1)]	T{
 .ad r
-aegis -Make
+aegis make
 T}	T{
 .ad l
-Transparent - make branch file transparent
+transparent - make branch file transparent
 T}
 aemtu(1)	\*[Page*Of*aemtu(1)]	T{
 .ad r
-aegis -Make
+aegis make
 T}	T{
 .ad l
-Transparent Undo - no longer make branch file transparent
+transparent undo - no longer make branch file transparent
 T}
 aecomp(1)	\*[Page*Of*aecomp(1)]	T{
 .ad r
-aegis - compare
+aecomp - compare
 T}	T{
 .ad l
 two changes
 T}
 aemtu(1)	\*[Page*Of*aemtu(1)]	T{
 .ad r
-aegis -Make Transparent
+aegis make transparent
 T}	T{
 .ad l
-Undo - no longer make branch file transparent
+undo - no longer make branch file transparent
 T}
 aedeu(1)	\*[Page*Of*aedeu(1)]	T{
 .ad r
-aegis -Develop End
+aegis develop end
 T}	T{
 .ad l
-Undo - recall a change for further development
+undo - recall a change for further development
 T}
 aenbru(1)	\*[Page*Of*aenbru(1)]	T{
 .ad r
-aegis -New BRanch
+aegis new branch
 T}	T{
 .ad l
-Undo - remove a branch
+undo - remove a branch
 T}
 aencu(1)	\*[Page*Of*aencu(1)]	T{
 .ad r
-aegis -New Change
+aegis new change
 T}	T{
 .ad l
-Undo - remove a new change from a project
+undo - remove a new change from a project
 T}
 aermu(1)	\*[Page*Of*aermu(1)]	T{
 .ad r
-aegis -ReMove file
+aegis remove file
 T}	T{
 .ad l
-Undo - remove files to be deleted from a change
+undo - remove files to be deleted from a change
 T}
 aenfu(1)	\*[Page*Of*aenfu(1)]	T{
 .ad r
-aegis -New File
+aegis new file
 T}	T{
 .ad l
-Undo - remove new files from a change
+undo - remove new files from a change
 T}
 aentu(1)	\*[Page*Of*aentu(1)]	T{
 .ad r
-aegis -New Test
+aegis new test
 T}	T{
 .ad l
-Undo - remove new tests from a change
+undo - remove new tests from a change
 T}
 aerpu(1)	\*[Page*Of*aerpu(1)]	T{
 .ad r
-aegis -Review Pass
+aegis review pass
 T}	T{
 .ad l
-Undo - rescind a change review pass
+undo - rescind a change review pass
 T}
 aecpu(1)	\*[Page*Of*aecpu(1)]	T{
 .ad r
-aegis -CoPy file
+aegis copy file
 T}	T{
 .ad l
-Undo - reverse action of aecp
+undo - reverse action of aecp
 T}
 aeibu(1)	\*[Page*Of*aeibu(1)]	T{
 .ad r
-aegis -Integrate Begin
+aegis integrate begin
 T}	T{
 .ad l
-Undo - reverse the aeib command
+undo - reverse the aeib command
 T}
 aerbu(1)	\*[Page*Of*aerbu(1)]	T{
 .ad r
-aegis -Review Begin
+aegis review begin
 T}	T{
 .ad l
-Undo - stop reviewing a change
+undo - stop reviewing a change
 T}
 aedbu(1)	\*[Page*Of*aedbu(1)]	T{
 .ad r
-aegis -Develop Begin Undo -
+aegis develop begin undo -
 T}	T{
 .ad l
 undo the effects of aedb
 T}
 aemvu(1)	\*[Page*Of*aemvu(1)]	T{
 .ad r
-aegis -MoVe file Undo -
+aegis move file undo -
 T}	T{
 .ad l
 undo the rename a file as part of a change
 T}
 aedbu(1)	\*[Page*Of*aedbu(1)]	T{
 .ad r
-aegis -Develop Begin
+aegis develop begin
 T}	T{
 .ad l
-Undo - undo the effects of aedb
+undo - undo the effects of aedb
 T}
 aemvu(1)	\*[Page*Of*aemvu(1)]	T{
 .ad r
-aegis -MoVe file
+aegis move file
 T}	T{
 .ad l
-Undo - undo the rename a file as part of a change
+undo - undo the rename a file as part of a change
 T}
 aeuconf(5)	\*[Page*Of*aeuconf(5)]	T{
 .ad r
@@ -4273,7 +4406,7 @@ user configuration file
 T}
 aeustate(5)	\*[Page*Of*aeustate(5)]	T{
 .ad r
-aeustate -
+aeustate - aegis
 T}	T{
 .ad l
 user state file
@@ -4287,35 +4420,35 @@ use them
 T}
 tkaeca(1)	\*[Page*Of*tkaeca(1)]	T{
 .ad r
-aegis - GUI interface for aeca,
-T}	T{
-.ad l
-using TCL/TK
-T}
-tkaepa(1)	\*[Page*Of*tkaepa(1)]	T{
-.ad r
-aegis - GUI interface for aeca,
+tkaeca - GUI interface for aeca,
 T}	T{
 .ad l
 using TCL/TK
 T}
 tkaegis(1)	\*[Page*Of*tkaegis(1)]	T{
 .ad r
-aegis - GUI interface for Aegis,
+tkaegis - GUI interface for Aegis,
 T}	T{
 .ad l
 using TCL/TK
 T}
 tkaenc(1)	\*[Page*Of*tkaenc(1)]	T{
 .ad r
-aegis - GUI interface for aenc,
+tkaenc - GUI interface for aenc,
+T}	T{
+.ad l
+using TCL/TK
+T}
+tkaepa(1)	\*[Page*Of*tkaepa(1)]	T{
+.ad r
+tkaepa - GUI interface for aeca,
 T}	T{
 .ad l
 using TCL/TK
 T}
 tkaer(1)	\*[Page*Of*tkaer(1)]	T{
 .ad r
-aegis - GUI tool for reviewing Aegis change sets,
+tkaer - GUI tool for reviewing Aegis change sets,
 T}	T{
 .ad l
 using TCL/TK
@@ -4329,21 +4462,21 @@ values file format
 T}
 ae-sccs-put(1)	\*[Page*Of*ae-sccs-put(1)]	T{
 .ad r
-aegis - put sccs
+ae-sccs-put - put sccs
 T}	T{
 .ad l
 version
 T}
 aev(1)	\*[Page*Of*aev(1)]	T{
 .ad r
-aegis -
+aegis
 T}	T{
 .ad l
-VERSion - give version information
+version - give version information
 T}
 aev(1)	\*[Page*Of*aev(1)]	T{
 .ad r
-aegis -VERSion - give
+aegis version - give
 T}	T{
 .ad l
 version information
@@ -4364,7 +4497,7 @@ via tar
 T}
 aebuffy(1)	\*[Page*Of*aebuffy(1)]	T{
 .ad r
-aegis -
+aebuffy -
 T}	T{
 .ad l
 watch for changes

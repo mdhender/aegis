@@ -49,8 +49,8 @@ msgstr ""
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=ascii\n"
 "Content-Transfer-Encoding: 8bit\n"
-"Project-Id-Version: aegis 4.24.2\n"
-"POT-Creation-Date: Thu Jun 25 17:58:37 CEST 2009\n"
+"Project-Id-Version: aegis 4.24.3\n"
+"POT-Creation-Date: Mon Mar 08 18:34:53 CET 2010\n"
 
 #
 # This error message is issued when an environment variable is meant to
@@ -99,7 +99,7 @@ msgstr ""
 #
 #       $File_Name      The name of the offending file.
 #
-#: aegis/aede.cc:416 aegis/aeib.cc:1066 aegis/aeib.cc:1096 aegis/aerb.cc:331
+#: aegis/aede.cc:416 aegis/aeib.cc:1110 aegis/aeib.cc:1140 aegis/aerb.cc:331
 #: aegis/aerb.cc:356 aegis/aerp.cc:469 aegis/aerp.cc:493
 # For consistent translation, here is the English text:
 #  msgstr "file \"$filename\" has been altered"
@@ -1789,7 +1789,7 @@ msgstr ""
 # This progress message is issued when aeib copies the source files form
 # the development directory into the integration directory.
 #
-#: aegis/aeib.cc:1158
+#: aegis/aeib.cc:1202
 # For consistent translation, here is the English text:
 #  msgstr "applying the change to the integration directory"
 # Please translate the English msgstr, not the msgid.
@@ -2319,7 +2319,7 @@ msgstr ""
 # This error message is issued when an aeib command is used on a change
 # which is not in the 'awaiting integration' state.
 #
-#: aegis/aeib.cc:863
+#: aegis/aeib.cc:907
 # For consistent translation, here is the English text:
 #  msgstr ""
 #  "this change is in the '$state' state, it must be in the 'awaiting "
@@ -3413,7 +3413,7 @@ msgstr ""
 # This progress message is issued when aeib creates a copy of
 # the baseline to construct the integration directory.
 #
-#: aegis/aeib.cc:1146
+#: aegis/aeib.cc:1190
 # For consistent translation, here is the English text:
 #  msgstr "copying baseline to integration directory"
 # Please translate the English msgstr, not the msgid.
@@ -3519,7 +3519,7 @@ msgstr ""
 #
 #       $Number         The change number of the current integration.
 #
-#: aegis/aeib.cc:890
+#: aegis/aeib.cc:934
 # For consistent translation, here is the English text:
 #  msgstr ""
 #  "change $number is the currently active integration, only one integration may "
@@ -3663,7 +3663,7 @@ msgstr ""
 # This error message is issued when a developer attempts to integrate her
 # own change, and the project is configured to disallow this.
 #
-#: aegis/aeib.cc:870
+#: aegis/aeib.cc:914
 # For consistent translation, here is the English text:
 #  msgstr "the developer of a change may not also integrate it"
 # Please translate the English msgstr, not the msgid.
@@ -3951,7 +3951,7 @@ msgstr ""
 #
 #       $File_Name      The name of the offending file.
 #
-#: libaegis/lock.cc:597 libaegis/lock.cc:1221
+#: libaegis/lock.cc:597 libaegis/lock.cc:1217
 # For consistent translation, here is the English text:
 #  msgstr "fcntl(\"$filename\", F_GETFD): $errno"
 # Please translate the English msgstr, not the msgid.
@@ -3965,7 +3965,7 @@ msgstr ""
 #       $File_Name      The name of the offending file.
 #       $Argument       The argument to the fcntl call.
 #
-#: libaegis/lock.cc:1036
+#: libaegis/lock.cc:1032
 # For consistent translation, here is the English text:
 #  msgstr "fcntl(\"$filename\", F_GETLK, $arg): $errno"
 # Please translate the English msgstr, not the msgid.
@@ -3979,7 +3979,7 @@ msgstr ""
 #       $File_Name      The name of the offending file.
 #       $Argument       The argument to the fcntl call.
 #
-#: libaegis/lock.cc:612 libaegis/lock.cc:1236
+#: libaegis/lock.cc:612 libaegis/lock.cc:1232
 # For consistent translation, here is the English text:
 #  msgstr "fcntl(\"$filename\", F_SETFD, $arg): $errno"
 # Please translate the English msgstr, not the msgid.
@@ -5168,7 +5168,7 @@ msgstr ""
 #
 # This progress message is issued when aeib complete successfully.
 #
-#: aegis/aeib.cc:1302
+#: aegis/aeib.cc:1346
 # For consistent translation, here is the English text:
 #  msgstr "integration has begun"
 # Please translate the English msgstr, not the msgid.
@@ -5322,7 +5322,7 @@ msgstr ""
 # This progress message is issued when aeib creates a virtual copy of
 # the baseline to construct the integration directory.
 #
-#: aegis/aeib.cc:1136
+#: aegis/aeib.cc:1180
 # For consistent translation, here is the English text:
 #  msgstr "linking baseline to integration directory"
 # Please translate the English msgstr, not the msgid.
@@ -6716,7 +6716,7 @@ msgstr ""
 # This error message is issued when a command which requires integrator
 # privileges is run, and the user is not an integrator.
 #
-#: aegis/aeib.cc:861
+#: aegis/aeib.cc:905
 # For consistent translation, here is the English text:
 #  msgstr "user \"$user\" is not an integrator"
 # Please translate the English msgstr, not the msgid.
@@ -6818,7 +6818,7 @@ msgstr ""
 #       $File_Name      The name of the offending file.
 #
 #: aesubunit/subunit.cc:71 libaegis/gif/open.cc:480 libaegis/input/file.cc:127
-#: libaegis/lock.cc:577 libaegis/lock.cc:1201 libaegis/os/edit/string.cc:42
+#: libaegis/lock.cc:577 libaegis/lock.cc:1197 libaegis/os/edit/string.cc:42
 #: libaegis/output/file.cc:185 libaegis/safe_freopen.cc:38
 # For consistent translation, here is the English text:
 #  msgstr "open \"$filename\": $errno"
@@ -7609,7 +7609,7 @@ msgstr ""
 # This error message is issued when a reviewer attempts to integrate
 # a change she reviewed, and the project is configured to disallow this.
 #
-#: aegis/aeib.cc:877
+#: aegis/aeib.cc:921
 # For consistent translation, here is the English text:
 #  msgstr "the reviewer of a change may not also integrate it"
 # Please translate the English msgstr, not the msgid.

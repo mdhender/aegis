@@ -1,6 +1,6 @@
 //
 //      aegis - project change supervisor
-//      Copyright (C) 2007, 2008 Peter Miller
+//      Copyright (C) 2007-2009 Peter Miller
 //
 //      This program is free software; you can redistribute it and/or
 //      modify it under the terms of the GNU General Public License as
@@ -157,7 +157,7 @@ knuth_morris_pratt(const unsigned char *haystack,
 // HAYSTACK.
 //
 //
-extern "C" void *
+extern "C" const void *
 memmem_replacement(const void *haystack_start, size_t haystack_len,
     const void *needle_start, size_t needle_len)
 {

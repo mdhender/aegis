@@ -24,6 +24,22 @@ unset AEGIS_PATH
 unset AEGIS
 umask 022
 
+#
+# This test doesn't work for Hurd
+#
+system=`uname -s`
+case "$system" in
+*GNU*)
+    echo ''
+    echo '      This test is not meaningful for GNU Hurd'
+    echo '      It is declared to pass by default.'
+    echo ''
+    exit 0
+    ;;
+*)
+    ;;
+esac
+
 LINES=24
 export LINES
 COLS=80

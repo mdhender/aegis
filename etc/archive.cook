@@ -1,7 +1,7 @@
 /*
  * aegis - project change supervisor
  * Copyright (C) 1997-2008 Peter Miller
- * Copyright (C) 2006-2008 Walter Franzini
+ * Copyright (C) 2006-2010 Walter Franzini
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -20,7 +20,7 @@
 branch_version_normalized = [split "." [version_short]];
 is_stable_branch =
     [expr
-        [words [branch_version_normalized]] "==" 2
+        [words [branch_version_normalized]] ">=" 2
     &&
         [word 2 [branch_version_normalized] 1 1] % 2 "==" 0
     ];
@@ -33,9 +33,27 @@ if [is_stable_branch] then
             [expr [word 2 [branch_version_normalized]] ^ 1]
         ];
     integration-build-targets += archive/[other_branch]/index.html;
+
+    /*
+     * The following statement assumes that the development version of
+     * aegis is found using the $PATH variable, otherwise failures are
+     * expected since the stable version does not know about new field
+     * that may be present somewhere in the repository.
+     *
+     * In other places the [aegis]/[aedist] variables, defined below,
+     * should be used.
+     */
+    other_branch_baseline = [collect aegis -cd -br [other_branch] -bl];
+
+    aedist = [other_branch_baseline]/[arch]/bin/aedist;
+    aegis = [other_branch_baseline]/[arch]/bin/aegis;
 }
 else
+{
     branch_project_minus = [project_short]-[version];
+    aedist = [arch]/bin/aedist;
+    aegis = [arch]/bin/aegis;
+}
 
 integration-build-targets +=
         archive/change_log.txt
@@ -250,7 +268,7 @@ if [matches linux%1 [arch]] then
 
 etc/CHANGES.txt: [arch]/bin/aegis
 {
-    [resolve [arch]/bin/aegis] -list project_details -p [project]
+    [resolve [aegis]] -list project_details -p [project]
         -pw\=80 -pl\=66 -v > [target]
                                                                 set meter;
 }
@@ -348,7 +366,7 @@ archive/[project_minus].spec: [project_short].spec
         echo "Index:" [vs_file] > [target];
         prev =
                 [collect
-                        aegis -list version -p [project] -c [change]
+                        [aegis] -list version -p [project] -c [change]
                         | [awk] -F"'\"'" "'/previous/{print $2}'"
                 ];
         echo "'Prereq: \""[prev]"\"'" >> [target];
@@ -359,7 +377,7 @@ archive/[project_minus].spec: [project_short].spec
 %0%,P: %0%
         if [exists [resolve %0%]]
 {
-        aegis -cp %0% -delta 1 -output patch.orig -p [project] -c [change]
+        [aegis] -cp %0% -delta 1 -output patch.orig -p [project] -c [change]
                 || cp /dev/null patch.orig;
         sh [resolve etc/patch.fil.sh] patch.orig [resolve %0%] %0% > [target];
         rm patch.orig;
@@ -419,9 +437,17 @@ LICENSE: lib/en/cat1/aelic.1
         cat [resolve [need]] > [target];
 }
 
-archive/[branch_project_minus].ae: [source_files] [arch]/bin/aedist
+
+/*
+ * Since we use the development branch of aedist when creating the
+ * archive, even for stable branches, we add the -compat flag to
+ * ensure compatibility: the archive for the stable branch will be
+ * compatible with the stable release of aegis.
+ */
+archive/[branch_project_minus].ae: [source_files] [aedist]
 {
-    [arch]/bin/aedist --send --entire-source -ndh
+    [aedist] --send --entire-source -ndh
+      -compat\=[version]
         --comp-alg\=gzip
         -p\=[project] -c\=[change]
         -o [target] -naa;
@@ -431,7 +457,7 @@ archive/[branch_project_minus].ae: [source_files] [arch]/bin/aedist
 
 example-cook-aesvt-version = 1.0;
 example-cook-aesvt-baseline =
-     [collect aegis -cd -bl -p example-cook-aesvt.[example-cook-aesvt-version]
+     [collect [aegis] -cd -bl -p example-cook-aesvt.[example-cook-aesvt-version]
         '2>/dev/null' || true];
 
 if [example-cook-aesvt-baseline] then
@@ -460,7 +486,7 @@ if [example-cook-aesvt-baseline] then
 
 example-cook-fhist-version = 1.0;
 example-cook-fhist-baseline =
-     [collect aegis -cd -bl -p example-cook-fhist.[example-cook-fhist-version]
+     [collect [aegis] -cd -bl -p example-cook-fhist.[example-cook-fhist-version]
         '2>/dev/null' || true];
 
 if [example-cook-fhist-baseline] then
@@ -489,7 +515,7 @@ if [example-cook-fhist-baseline] then
 
 example-make-rcs-version = 1.0;
 example-make-rcs-baseline =
-        [collect aegis -cd -bl -p example-make-rcs.[example-make-rcs-version]
+        [collect [aegis] -cd -bl -p example-make-rcs.[example-make-rcs-version]
                 '2>/dev/null' || true];
 
 if [example-make-rcs-baseline] then
@@ -518,7 +544,7 @@ if [example-make-rcs-baseline] then
 
 example-c-plus-plus-version = 1.0;
 example-c-plus-plus-baseline =
-    [collect aegis -cd -bl -p example-c-plus-plus.[example-c-plus-plus-version]
+   [collect [aegis] -cd -bl -p example-c-plus-plus.[example-c-plus-plus-version]
         '2>/dev/null' || true];
 
 if [example-c-plus-plus-baseline] then
@@ -549,7 +575,7 @@ if [example-c-plus-plus-baseline] then
 
 example-c-plus-plus-version = 1.0;
 example-c-plus-plus-baseline =
-    [collect aegis -cd -bl -p example-c-plus-plus.[example-c-plus-plus-version]
+   [collect [aegis] -cd -bl -p example-c-plus-plus.[example-c-plus-plus-version]
         '2>/dev/null' || true];
 
 if [example-c-plus-plus-baseline] then
@@ -644,15 +670,6 @@ archive/eg_oss_%.ae: web/eg_oss_%.sh
 
 if [is_stable_branch] then
 {
-    /*
-     * The following statement needs to execute the "other branch"
-     * version of aegis because if the we added new fields to the
-     * database, the "current branch" aegis will fail.  Unless we add
-     * the definition, and only the definition, of new fields also in
-     * the current branch.
-     */
-    other_branch_baseline = [collect aegis -cd -br [other_branch] -bl];
-
     /*
      * The development branch index file is changed every delta, because
      * the delta number is in the page title.

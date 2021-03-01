@@ -1,6 +1,7 @@
 //
 //      aegis - project change supervisor
-//      Copyright (C) 1991-2008 Peter Miller
+//      Copyright (C) 1991-2009 Peter Miller
+//      Copyright (C) 2008, 2010 Walter Franzini
 //
 //      This program is free software; you can redistribute it and/or modify
 //      it under the terms of the GNU General Public License as published by
@@ -96,16 +97,26 @@ integrate_begin_list(void)
 }
 
 
+static bool
+ends_with_comma_d(string_ty *s)
+{
+    if (s->str_length < 2)
+        return false;
+
+    char *cp = s->str_text + s->str_length - 2;
+    if (cp[0] == ',' && cp[1] == 'D')
+        return true;
+
+    return false;
+}
+
+
 static string_ty *
 remove_comma_d_if_present(string_ty *s)
 {
-    char            *cp;
-
-    if (s->str_length < 2)
-        return str_copy(s);
-    cp = s->str_text + s->str_length - 2;
-    if (cp[0] == ',' && cp[1] == 'D')
+    if (ends_with_comma_d(s))
         return str_n_from_c(s->str_text, s->str_length - 2);
+
     return str_copy(s);
 }
 
@@ -174,7 +185,6 @@ link_tree_callback_minimum(void *arg, dir_walk_message_ty message,
     change::pointer cp;
     fstate_src_ty   *src;
     int             exists;
-    int             remove_the_file;
 
     trace(("link_tree_callback_minimum(message = %d, path = %08lX, "
         "st = %08lX)\n{\n", message, (long)path, (long)st));
@@ -242,6 +252,16 @@ link_tree_callback_minimum(void *arg, dir_walk_message_ty message,
         }
 
         //
+        // Don't link build "source" files.  We are tracking the
+        // contents in history, is all, but they are build artifacts.
+        //
+        if (src && src->usage == file_usage_build)
+        {
+            str_free(s1short);
+            break;
+        }
+
+        //
         // make sure the directory is there
         //
         os_mkdir_between(change_integration_directory_get(cp, 1), s1, 02755);
@@ -261,19 +281,31 @@ link_tree_callback_minimum(void *arg, dir_walk_message_ty message,
         // BUT keep primary source files and their diff files.
         //
         project_become_undo(cp->pp);
-        remove_the_file =
+        {
+            bool remove_the_file = false;
+            fstate_src_ty *psrc =
+                project_file_find(cp->pp, s1short, view_path_simple);
+            if
             (
-                !project_file_find(cp->pp, s1short, view_path_simple)
+                !psrc
+            &&
+                !ends_with_comma_d(s1)
             &&
                 isa_suppressed_filename(cp, s1short)
-            );
-        project_become(cp->pp);
-        if (remove_the_file)
-        {
+            )
+                remove_the_file = true;
+
+            //
+            // Don't link build "source" files.  We are tracking the
+            // contents in history, is all, but they are build artifacts.
+            //
+            if (psrc && psrc->usage == file_usage_build)
+                remove_the_file = true;
+            project_become(cp->pp);
             str_free(s1short);
-            break;
+            if (remove_the_file)
+                break;
         }
-        str_free(s1short);
 
         //
         // link the file and make sure it is a suitable mode
@@ -324,7 +356,6 @@ link_tree_callback(void *arg, dir_walk_message_ty message, string_ty *path,
     change::pointer cp;
     fstate_src_ty   *src;
     string_ty       *contents;
-    int             remove_the_file;
 
     trace(("link_tree_callback(message = %d, path = %08lX, st = %08lX)\n{\n",
         message, (long)path, (long)st));
@@ -375,21 +406,23 @@ link_tree_callback(void *arg, dir_walk_message_ty message, string_ty *path,
         //
         // Don't link a suppressed file.
         // BUT keep primary source files and their diff files.
+        // (This is not -minimum, so "build" sources are OK.)
         //
         project_become_undo(cp->pp);
-        remove_the_file =
-            (
-                !project_file_find(cp->pp, s1short, view_path_simple)
-            &&
-                isa_suppressed_filename(cp, s1short)
-            );
-        project_become(cp->pp);
-        if (remove_the_file)
         {
+            bool remove_the_file =
+                (
+                    !project_file_find(cp->pp, s1short, view_path_simple)
+                &&
+                    !ends_with_comma_d(s1)
+                &&
+                    isa_suppressed_filename(cp, s1short)
+                );
+            project_become(cp->pp);
             str_free(s1short);
-            break;
+            if (remove_the_file)
+                break;
         }
-        str_free(s1short);
 
         //
         // link the file and make sure it is a suitable mode
@@ -442,7 +475,6 @@ copy_tree_callback_minimum(void *arg, dir_walk_message_ty message,
     fstate_src_ty   *src;
     int             uid;
     int             exists;
-    int             remove_the_file;
 
     trace(("copy_tree_callback_minimum(message = %d, path = %08lX, "
         "st = %08lX)\n{\n", message, (long)path, (long)st));
@@ -505,17 +537,27 @@ copy_tree_callback_minimum(void *arg, dir_walk_message_ty message,
         //
         project_become_undo(cp->pp);
         src = project_file_find(cp->pp, s1short, view_path_simple);
-        remove_the_file =
-            (
-                !src
-            ||
-                (src->deleted_by && str_equal(s1, s1short))
-            );
-        project_become(cp->pp);
-        if (remove_the_file)
         {
-            str_free(s1short);
-            break;
+            bool remove_the_file =
+                (
+                    !src
+                ||
+                    (src->deleted_by && str_equal(s1, s1short))
+                );
+
+            //
+            // Don't link build "source" files.  We are tracking the
+            // contents in history, is all, but they are build artifacts.
+            //
+            if (src && src->usage == file_usage_build)
+                remove_the_file = true;
+
+            project_become(cp->pp);
+            if (remove_the_file)
+            {
+                str_free(s1short);
+                break;
+            }
         }
 
         //
@@ -538,19 +580,20 @@ copy_tree_callback_minimum(void *arg, dir_walk_message_ty message,
         // BUT keep primary source files and their diff files.
         //
         project_become_undo(cp->pp);
-        remove_the_file =
-            (
-                !project_file_find(cp->pp, s1short, view_path_extreme)
-            &&
-                isa_suppressed_filename(cp, s1short)
-            );
-        project_become(cp->pp);
-        if (remove_the_file)
         {
+            bool remove_the_file =
+                (
+                    !project_file_find(cp->pp, s1short, view_path_extreme)
+                &&
+                    !ends_with_comma_d(s1)
+                &&
+                    isa_suppressed_filename(cp, s1short)
+                );
+            project_become(cp->pp);
             str_free(s1short);
-            break;
+            if (remove_the_file)
+                break;
         }
-        str_free(s1short);
 
         //
         // copy the file
@@ -594,7 +637,6 @@ copy_tree_callback(void *arg, dir_walk_message_ty message, string_ty *path,
     int             uid;
     string_ty       *contents;
     int             exists;
-    int             remove_the_file;
 
     trace(("copy_tree_callback(message = %d, path = %08lX, st = %08lX)\n{\n",
         message, (long)path, (long)st));
@@ -661,21 +703,23 @@ copy_tree_callback(void *arg, dir_walk_message_ty message, string_ty *path,
         //
         // Don't copy a suppressed file.
         // BUT keep primary source files and their diff files.
+        // (This is not -minimum, so "build" sources are OK.)
         //
         project_become_undo(cp->pp);
-        remove_the_file =
-            (
-                !project_file_find(cp->pp, s1short, view_path_extreme)
-            &&
-                isa_suppressed_filename(cp, s1short)
-            );
-        project_become(cp->pp);
-        if (remove_the_file)
         {
+            bool remove_the_file =
+                (
+                    !project_file_find(cp->pp, s1short, view_path_extreme)
+                &&
+                    !ends_with_comma_d(s1)
+                &&
+                    isa_suppressed_filename(cp, s1short)
+                );
+            project_become(cp->pp);
             str_free(s1short);
-            break;
+            if (remove_the_file)
+                break;
         }
-        str_free(s1short);
 
         //
         // copy the file
@@ -1067,8 +1111,8 @@ integrate_begin_main(void)
             sub_context_delete(scp);
             errs++;
         }
-        assert(src_data->file_fp->youngest > 0);
-        assert(src_data->file_fp->oldest > 0);
+        assert(!src_data->file_fp || src_data->file_fp->youngest > 0);
+        assert(!src_data->file_fp || src_data->file_fp->oldest > 0);
 
 	if (change_diff_required(cp))
 	{

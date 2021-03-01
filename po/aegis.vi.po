@@ -51,7 +51,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: aegis 4.24\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: Thu Jun 25 17:58:37 CEST 2009\n"
+"POT-Creation-Date: Mon Mar 08 18:34:53 CET 2010\n"
 "PO-Revision-Date: 2008-04-11 21:39+0930\n"
 "Last-Translator: Clytie Siddall <clytie@riverland.net.au>\n"
 "Language-Team: Vietnamese <vi-VN@googlegroups.com>\n"
@@ -98,7 +98,7 @@ msgstr "Tùy chọn $Name cần một địa chỉ URL"
 #
 #       $File_Name      The name of the offending file.
 #
-#: aegis/aede.cc:416 aegis/aeib.cc:1066 aegis/aeib.cc:1096 aegis/aerb.cc:331
+#: aegis/aede.cc:416 aegis/aeib.cc:1110 aegis/aeib.cc:1140 aegis/aerb.cc:331
 #: aegis/aerb.cc:356 aegis/aerp.cc:469 aegis/aerp.cc:493
 msgid "$filename altered"
 msgstr "tập tin « $filename » bị sửa đổi"
@@ -1441,7 +1441,7 @@ msgstr "đang phụ thêm bản ghi vào « $filename »"
 # This progress message is issued when aeib copies the source files form
 # the development directory into the integration directory.
 #
-#: aegis/aeib.cc:1158
+#: aegis/aeib.cc:1202
 msgid "apply change to integration directory"
 msgstr "đang áp dụng thay đổi cho thư mục hợp nhất"
 
@@ -1852,7 +1852,7 @@ msgstr ""
 # This error message is issued when an aeib command is used on a change
 # which is not in the 'awaiting integration' state.
 #
-#: aegis/aeib.cc:863
+#: aegis/aeib.cc:907
 msgid "bad ib state"
 msgstr ""
 "thay đổi này ở tình trạng « $state »; nó phải ở tình trạng « đợi hợp nhất » để "
@@ -2706,7 +2706,7 @@ msgstr "đang sao chép đường cơ bản"
 # This progress message is issued when aeib creates a copy of
 # the baseline to construct the integration directory.
 #
-#: aegis/aeib.cc:1146
+#: aegis/aeib.cc:1190
 msgid "copy baseline to integration directory"
 msgstr "đang sao chép đường cơ bản vào thư mục hợp nhất"
 
@@ -2787,7 +2787,7 @@ msgstr "đang tạo các liên kết tượng trưng tới đường cơ bản"
 #
 #       $Number         The change number of the current integration.
 #
-#: aegis/aeib.cc:890
+#: aegis/aeib.cc:934
 msgid "currently integrating $number"
 msgstr ""
 "thay đổi $number là tiến trình hợp nhất đang chạy: chỉ một tiến trình hợp "
@@ -2896,7 +2896,7 @@ msgstr "tiến trình phát triển đã tiếp tục lại"
 # This error message is issued when a developer attempts to integrate her
 # own change, and the project is configured to disallow this.
 #
-#: aegis/aeib.cc:870
+#: aegis/aeib.cc:914
 msgid "developer may not integrate"
 msgstr "không cho phép nhà phát triển của thay đổi cũng hợp nhất nó"
 
@@ -3115,7 +3115,7 @@ msgstr ""
 #
 #       $File_Name      The name of the offending file.
 #
-#: libaegis/lock.cc:597 libaegis/lock.cc:1221
+#: libaegis/lock.cc:597 libaegis/lock.cc:1217
 msgid "fcntl(\"$filename\", F_GETFD): $errno"
 msgstr "fcntl(\"$filename\", F_GETFD): $errno"
 
@@ -3126,7 +3126,7 @@ msgstr "fcntl(\"$filename\", F_GETFD): $errno"
 #       $File_Name      The name of the offending file.
 #       $Argument       The argument to the fcntl call.
 #
-#: libaegis/lock.cc:1036
+#: libaegis/lock.cc:1032
 msgid "fcntl(\"$filename\", F_GETLK, $arg): $errno"
 msgstr "fcntl(\"$filename\", F_GETLK, $arg): $errno"
 
@@ -3137,7 +3137,7 @@ msgstr "fcntl(\"$filename\", F_GETLK, $arg): $errno"
 #       $File_Name      The name of the offending file.
 #       $Argument       The argument to the fcntl call.
 #
-#: libaegis/lock.cc:612 libaegis/lock.cc:1236
+#: libaegis/lock.cc:612 libaegis/lock.cc:1232
 msgid "fcntl(\"$filename\", F_SETFD, $arg): $errno"
 msgstr "fcntl(\"$filename\", F_SETFD, $arg): $errno"
 
@@ -4065,7 +4065,7 @@ msgstr ""
 #
 # This progress message is issued when aeib complete successfully.
 #
-#: aegis/aeib.cc:1302
+#: aegis/aeib.cc:1346
 msgid "integrate begin complete"
 msgstr "tiến trình hợp nhất đã bắt đầu"
 
@@ -4179,7 +4179,7 @@ msgstr "hãy rời thư mục hợp nhất"
 # This progress message is issued when aeib creates a virtual copy of
 # the baseline to construct the integration directory.
 #
-#: aegis/aeib.cc:1136
+#: aegis/aeib.cc:1180
 msgid "link baseline to integration directory"
 msgstr "đang liên kết đường cơ bản tới thư mục hợp nhất"
 
@@ -5240,7 +5240,7 @@ msgstr "đối với câu lệnh này thì bạn phải đưa ra số chẵn cá
 # This error message is issued when a command which requires integrator
 # privileges is run, and the user is not an integrator.
 #
-#: aegis/aeib.cc:861
+#: aegis/aeib.cc:905
 msgid "not an integrator"
 msgstr "người dùng « $user » không phải là một người hợp nhất"
 
@@ -5324,7 +5324,7 @@ msgstr "không thích hợp ở ngữ cảnh hiện thời"
 #       $File_Name      The name of the offending file.
 #
 #: aesubunit/subunit.cc:71 libaegis/gif/open.cc:480 libaegis/input/file.cc:127
-#: libaegis/lock.cc:577 libaegis/lock.cc:1201 libaegis/os/edit/string.cc:42
+#: libaegis/lock.cc:577 libaegis/lock.cc:1197 libaegis/os/edit/string.cc:42
 #: libaegis/output/file.cc:185 libaegis/safe_freopen.cc:38
 msgid "open $filename: $errno"
 msgstr "mở « $filename »: $errno"
@@ -5921,7 +5921,7 @@ msgstr "bước đỗ tiến trình xem lại đã bị hủy"
 # This error message is issued when a reviewer attempts to integrate
 # a change she reviewed, and the project is configured to disallow this.
 #
-#: aegis/aeib.cc:877
+#: aegis/aeib.cc:921
 msgid "reviewer may not integrate"
 msgstr "người xem lại một thay đổi nào đó thì không có quyển hợp nhất nó"
 

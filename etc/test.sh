@@ -2,7 +2,7 @@
 #
 #	aegis - project change supervisor
 #	Copyright (C) 1995, 1997, 2006-2008 Peter Miller
-#	Copyright (C) 2006 Walter Franzini
+#	Copyright (C) 2006, 2009 Walter Franzini
 #
 #	This program is free software; you can redistribute it and/or modify
 #	it under the terms of the GNU General Public License as published by
@@ -22,9 +22,12 @@
 progname=$0
 shell=/bin/sh
 
- # Get user name in a portable way
-whoami=${USER:-${LOGNAME:-`id | cut -d'(' -f2 | cut -d')' -f1`}}
- # Must set path so that test_funcs may be loaded correctly
+# Get user name in a portable way.
+# We use the id command to avoid strangeness in the way Debian's pbuilder
+# sets environment variables (see Debian Bug#393624 for more info).
+whoami=`id | cut -d'(' -f2 | cut -d')' -f1`
+USER=$whoami
+# Must set path so that test_funcs may be loaded correctly
 newbin=`pwd`/bin
 PATH=$newbin:$PATH
 export PATH

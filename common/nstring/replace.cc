@@ -1,6 +1,6 @@
 //
 //	aegis - project change supervisor
-//	Copyright (C) 2005, 2006, 2008 Peter Miller
+//	Copyright (C) 2005, 2006, 2008, 2009 Peter Miller
 //
 //	This program is free software; you can redistribute it and/or modify
 //	it under the terms of the GNU General Public License as published by
@@ -48,7 +48,7 @@ nstring::replace(const nstring &lhs, const nstring &rhs, int maximum)
     const char *ip_end = ip + size();
     while (ip < ip_end && (size_t)(ip_end - ip) >= lhs.size())
     {
-        void *p = memmem(ip, ip_end - ip, lhs.c_str(), lhs.size());
+        const void *p = memmem(ip, ip_end - ip, lhs.c_str(), lhs.size());
         if (!p)
             break;
         const char *pp = (const char *)p;

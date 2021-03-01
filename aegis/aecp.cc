@@ -657,8 +657,8 @@ copy_file_independent(void)
                     mode |= 0111;
                 mode &= ~original_umask;
                 os_chmod(to, mode);
-                os_become_undo();
             }
+            os_become_undo();
         }
         else
         {
