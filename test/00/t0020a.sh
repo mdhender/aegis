@@ -1,7 +1,7 @@
 #!/bin/sh
 #
 #	aegis - project change supervisor
-#	Copyright (C) 1994, 1995 Peter Miller;
+#	Copyright (C) 1994, 1995, 1996, 1997, 1998 Peter Miller;
 #	All rights reserved.
 #
 #	This program is free software; you can redistribute it and/or modify
@@ -16,15 +16,17 @@
 #
 #	You should have received a copy of the GNU General Public License
 #	along with this program; if not, write to the Free Software
-#	Foundation, Inc., 675 Mass Ave, Cambridge, MA 02139, USA.
+#	Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111, USA.
 #
-# MANIFEST: Test symlink farm fucntionality
+# MANIFEST: Test symlink farm functionality
 #
 
 unset AEGIS_PROJECT
 unset AEGIS_CHANGE
 unset AEGIS_PATH
 unset AEGIS
+unset LINES
+unset COLS
 umask 022
 
 USER=${USER:-${LOGNAME:-`whoami`}}
@@ -32,14 +34,23 @@ USER=${USER:-${LOGNAME:-`whoami`}}
 work=${AEGIS_TMP:-/tmp}/$$
 
 here=`pwd`
-if test $? -ne 0 ; then exit 1; fi
+if test $? -ne 0 ; then exit 2; fi
 
 if test "$1" != "" ; then bin="$here/$1/bin"; else bin="$here/bin"; fi
 
+no_result()
+{
+	set +x
+	echo "NO RESULT for test of symlink farm functionality ($activity)" 1>&2
+	cd $here
+	find $work -type d -user $USER -exec chmod u+w {} \;
+	rm -rf $work
+	exit 2
+}
 fail()
 {
 	set +x
-	echo FAILED test of symlink farm functionality 1>&2
+	echo "FAILED test of symlink farm functionality ($activity)" 1>&2
 	cd $here
 	find $work -type d -user $USER -exec chmod u+w {} \;
 	rm -rf $work
@@ -54,7 +65,7 @@ pass()
 	rm -rf $work
 	exit 0
 }
-trap "fail" 1 2 3 15
+trap "no_result" 1 2 3 15
 
 #
 # some variable to make things earier to read
@@ -63,7 +74,11 @@ PAGER=cat
 export PAGER
 
 AEGIS_FLAGS="delete_file_preference = no_keep; \
-	diff_preference = automatic_merge;"
+	lock_wait_preference = always; \
+	diff_preference = automatic_merge; \
+	pager_preference = never; \
+	persevere_preference = all; \
+	log_file_preference = never;"
 export AEGIS_FLAGS
 AEGIS_THROTTLE=2
 export AEGIS_THROTTLE
@@ -78,10 +93,32 @@ AEGIS_PROJECT=foo ; export AEGIS_PROJECT
 #
 # make the directories
 #
-mkdir $work
-if test $? -ne 0 ; then fail; fi
+activity="working directory 81"
+mkdir $work $work/lib
+if test $? -ne 0 ; then no_result; fi
+chmod 777 $work/lib
+if test $? -ne 0 ; then no_result; fi
 cd $work
-if test $? -ne 0 ; then fail; fi
+if test $? -ne 0 ; then no_result; fi
+
+#
+# If the C compiler is called something other than ``cc'', as discovered
+# by the configure script, create a shell script called ``cc'' which
+# invokes the correct C compiler.  Make sure the current directory is in
+# the path, so that it will be invoked.
+#
+if test "$CC" != "" -a "$CC" != "cc"
+then
+	cat >> $work/cc << fubar
+#!/bin/sh
+exec $CC \$*
+fubar
+	if test $? -ne 0 ; then no_result; fi
+	chmod a+rx $work/cc
+	if test $? -ne 0 ; then no_result; fi
+	PATH=${work}:${PATH}
+	export PATH
+fi
 
 #
 # program to ask questions about symlinks
@@ -89,7 +126,7 @@ if test $? -ne 0 ; then fail; fi
 cat > symlink.c << 'fubar'
 #include <sys/types.h>
 #include <sys/stat.h>
-void
+int
 main(argc, argv)
 	int	argc;
 	char	**argv;
@@ -104,14 +141,16 @@ main(argc, argv)
 		exit(1);
 	}
 	exit(0);
+	return 0;
 #else
 	exit(2);
+	return 2;
 #endif
 }
 fubar
-if test $? -ne 0 ; then fail; fi
+if test $? -ne 0 ; then no_result; fi
 cc -o symlink symlink.c
-if test $? -ne 0 ; then fail; fi
+if test $? -ne 0 ; then no_result; fi
 
 #
 # if this system has no symlinks
@@ -130,78 +169,92 @@ then
 fi
 
 #
+# use the built-in error messages
+#
+AEGIS_MESSAGE_LIBRARY=$work/no-such-dir
+export AEGIS_MESSAGE_LIBRARY
+unset LANG
+unset LANGUAGE
+
+#
 # make a new project
 #	and check files it should have made
 #
-$bin/aegis -npr foo -dir $workproj
-if test $? -ne 0 ; then fail; fi
+activity="new project 161"
+$bin/aegis -npr foo -vers "" -dir $workproj > log 2>&1
+if test $? -ne 0 ; then cat log; no_result; fi
 
 #
 # change project attributes
 #
+activity="project attributes 168"
 cat > $tmp << 'end'
 description = "A bogus project created to test the symlink farm functionality.";
 developer_may_review = true;
 developer_may_integrate = true;
 reviewer_may_integrate = true;
 end
-if test $? -ne 0 ; then fail; fi
-$bin/aegis -pa -f $tmp
-if test $? -ne 0 ; then fail; fi
+if test $? -ne 0 ; then no_result; fi
+$bin/aegis -pa -f $tmp > log 2>&1
+if test $? -ne 0 ; then cat log; no_result; fi
 
 #
 # create a new change
 #	make sure it creates the files it should
 #
+activity="new change 183"
 cat > $tmp << 'end'
 brief_description = "The first change";
 cause = internal_bug;
 end
-if test $? -ne 0 ; then fail; fi
-$bin/aegis -nc -f $tmp -p foo
-if test $? -ne 0 ; then fail; fi
+if test $? -ne 0 ; then no_result; fi
+$bin/aegis -nc 1 -f $tmp -p foo > log 2>&1
+if test $? -ne 0 ; then cat log; no_result; fi
 
 #
 # create a second change
 #
+activity="new change 195"
 cat > $tmp << 'end'
 brief_description = "The second change";
 cause = internal_bug;
 end
-if test $? -ne 0 ; then fail; fi
-$bin/aegis -nc -f $tmp -p foo
-if test $? -ne 0 ; then fail; fi
+if test $? -ne 0 ; then no_result; fi
+$bin/aegis -nc 2 -f $tmp -p foo > log 2>&1
+if test $? -ne 0 ; then cat log; no_result; fi
 
 #
 # add the staff
 #
-$bin/aegis -nd $USER
-if test $? -ne 0 ; then fail; fi
-$bin/aegis -nrv $USER
-if test $? -ne 0 ; then fail; fi
-$bin/aegis -ni $USER
-if test $? -ne 0 ; then fail; fi
+activity="staff 207"
+$bin/aegis -nd $USER > log 2>&1
+if test $? -ne 0 ; then cat log; no_result; fi
+$bin/aegis -nrv $USER > log 2>&1
+if test $? -ne 0 ; then cat log; no_result; fi
+$bin/aegis -ni $USER > log 2>&1
+if test $? -ne 0 ; then cat log; no_result; fi
 
 #
 # begin development of a change
 #
-$bin/aegis -db 1 -dir $workchan
-if test $? -ne 0 ; then fail; fi
+$bin/aegis -db 1 -dir $workchan > log 2>&1
+if test $? -ne 0 ; then cat log; no_result; fi
 
 #
 # add a new files to the change
 #
+activity="new file 224"
 $bin/aegis -nf $workchan/main.c $workchan/test.c $workchan/Makefile \
-	$workchan/config -nl
-if test $? -ne 0 ; then fail; fi
+	$workchan/config -nl > log 2>&1
+if test $? -ne 0 ; then cat log; no_result; fi
 cat > $workchan/main.c << 'end'
-void main() { test(); exit(0); }
+int main() { test(); exit(0); return 0; }
 end
-if test $? -ne 0 ; then fail; fi
+if test $? -ne 0 ; then no_result; fi
 cat > $workchan/test.c << 'end'
 void test() { }
 end
-if test $? -ne 0 ; then fail; fi
+if test $? -ne 0 ; then no_result; fi
 cat > $workchan/Makefile << 'end'
 .c.o:
 	rm -f $*.o
@@ -211,7 +264,7 @@ foo: main.o test.o
 	rm -f foo
 	$(CC) -o foo main.o test.o
 end
-if test $? -ne 0 ; then fail; fi
+if test $? -ne 0 ; then no_result; fi
 cat > $workchan/config << 'end'
 build_command = "make VERSION=$version";
 link_integration_directory = true;
@@ -228,16 +281,22 @@ diff_command = "set +e; diff $orig $i > $out; test $$? -le 1";
 diff3_command = "(diff3 -e $mr $orig $i | sed -e '/^w$$/d' -e '/^q$$/d'; \
 	echo '1,$$p' ) | ed - $mr > $out";
 end
-if test $? -ne 0 ; then fail; fi
+if test $? -ne 0 ; then no_result; fi
 
 #
 # create a new test
 #
-$bin/aegis -nt
-if test $? -ne 0 ; then fail; fi
+activity="new test 267"
+$bin/aegis -nt > log 2>&1
+if test $? -ne 0 ; then cat log; no_result; fi
 cat > $workchan/test/00/t0001a.sh << 'end'
 #!/bin/sh
 
+no_result()
+{
+	echo WHIMPER 1>&2
+	exit 2
+}
 fail()
 {
 	echo SHUZBUTT 1>&2
@@ -247,7 +306,7 @@ pass()
 {
 	exit 0
 }
-trap "fail" 1 2 3 15
+trap "no_result" 1 2 3 15
 
 ./foo
 if test $? -ne 0 ; then fail ; fi
@@ -255,69 +314,88 @@ if test $? -ne 0 ; then fail ; fi
 # it probably worked
 pass
 end
-if test $? -ne 0 ; then fail; fi
+if test $? -ne 0 ; then no_result; fi
 
 #
 # build the change
 #
-$bin/aegis -build -nl -v
-if test $? -ne 0 ; then fail; fi
+# This will try to do symlink stuff.
+#
+activity="build 295"
+$bin/aegis -build -nl -v > log 2>&1
+if test $? -ne 0 ; then cat log; fail; fi
 
 #
 # difference the change
 #
-$bin/aegis -diff > /dev/null 2>&1
-if test $? -ne 0 ; then fail; fi
+activity="diff 302"
+$bin/aegis -diff > log 2>&1
+if test $? -ne 0 ; then cat log; no_result; fi
 
 #
 # test the change
 #
-$bin/aegis -t -v
-if test $? -ne 0 ; then fail; fi
+activity="test 309"
+$bin/aegis -t -v > log 2>&1
+if test $? -ne 0 ; then cat log; no_result; fi
 
 #
 # finish development of the change
 #
-$bin/aegis -de
-if test $? -ne 0 ; then fail; fi
+#	It must ignore the symlinks when it chmod's
+#
+activity="develop end 316"
+$bin/aegis -de > log 2>&1
+if test $? -ne 0 ; then cat log; fail; fi
 
 #
 # pass the review
 #
-$bin/aegis -rpass -c 1
-if test $? -ne 0 ; then fail; fi
+activity="review pass 323"
+$bin/aegis -rpass -c 1 > log 2>&1
+if test $? -ne 0 ; then cat log; no_result; fi
 
 #
 # start integrating
 #
-$bin/aegis -ib 1
-if test $? -ne 0 ; then fail; fi
+activity="integrate begin 330"
+$bin/aegis -ib 1 > log 2>&1
+if test $? -ne 0 ; then cat log; no_result; fi
 
 #
 # integrate build and test
 #
-$bin/aegis -b -nl -v
-if test $? -ne 0 ; then fail; fi
-$bin/aegis -t -nl -v
-if test $? -ne 0 ; then fail; fi
+activity="build 337"
+$bin/aegis -b -nl -v > log 2>&1
+if test $? -ne 0 ; then cat log; no_result; fi
+activity="test 340"
+$bin/aegis -t -nl -v > log 2>&1
+if test $? -ne 0 ; then cat log; no_result; fi
 
 #
 # pass the integration
 #
-$bin/aegis -intpass -nl > /dev/null 2>&1
-if test $? -ne 0 ; then fail; fi
+activity="integrate pass 347"
+$bin/aegis -intpass -nl > log 2>&1
+if test $? -ne 0 ; then cat log; no_result; fi
 
 #
 # start work on change 2
 #
-$bin/aegis -db -c 2 -dir $workchan
-if test $? -ne 0 ; then fail; fi
+#	It will create symlinks into the baseline
+#
+activity="develop begin 354"
+$bin/aegis -db -c 2 -dir $workchan > log 2>&1
+if test $? -ne 0 ; then cat log; fail; fi
 
 #
 # copy a file into the change
 #
-$bin/aegis -cp $workchan/main.c -nl
-if test $? -ne 0 ; then fail; fi
+#	It will have to remove the symlink before copying
+#
+activity="copy file 361"
+$bin/aegis -cp $workchan/main.c -nl > log 2>&1
+if test $? -ne 0 ; then cat log; fail; fi
 
 #
 # change the file
@@ -325,7 +403,7 @@ if test $? -ne 0 ; then fail; fi
 cat > $workchan/main.c << 'end'
 #include <stdio.h>
 
-void
+int
 main(argc, argv)
 	int	argc;
 	char	**argv;
@@ -337,18 +415,25 @@ main(argc, argv)
 	}
 	test();
 	exit(0);
+	return 0;
 }
 end
-if test $? -ne 0 ; then fail; fi
+if test $? -ne 0 ; then no_result; fi
 
 #
 # need another test
 #
-$bin/aegis -nt
-if test $? -ne 0 ; then fail; fi
+activity="new test 390"
+$bin/aegis -nt > log 2>&1
+if test $? -ne 0 ; then cat log; no_result; fi
 cat > $workchan/test/00/t0002a.sh << 'end'
 #!/bin/sh
 
+no_result()
+{
+	echo WHIMPER 1>&2
+	exit 2
+}
 fail()
 {
 	echo SHUZBUTT 1>&2
@@ -358,7 +443,10 @@ pass()
 {
 	exit 0
 }
-trap "fail" 1 2 3 15
+trap "no_result" 1 2 3 15
+
+./foo > /dev/null 2>&1
+test $? -eq 0 || fail
 
 ./foo ickky
 if test $? -ne 1 ; then fail ; fi
@@ -366,54 +454,66 @@ if test $? -ne 1 ; then fail ; fi
 # it probably worked
 pass
 end
-if test $? -ne 0 ; then fail; fi
+if test $? -ne 0 ; then no_result; fi
 
 #
-# build the change
+# build the change - will double check symlinks
+#	and the make will fail if the symlinks are not there
 # diff the change
 # test the change
 #
-$bin/aegis -b -nl -v
-if test $? -ne 0 ; then fail; fi
-$bin/aegis -diff -nl > /dev/null 2>&1
-if test $? -ne 0 ; then fail; fi
-$bin/aegis -t -nl -v
-if test $? -ne 0 ; then fail; fi
-$bin/aegis -t -bl -nl -v
-if test $? -ne 0 ; then fail; fi
+activity="build 420"
+$bin/aegis -b -nl -v > log 2>&1
+if test $? -ne 0 ; then cat log; fail; fi
+activity="diff 423"
+$bin/aegis -diff -nl > log 2>&1
+if test $? -ne 0 ; then cat log; no_result; fi
+activity="test 426"
+$bin/aegis -t -nl -v > log 2>&1
+if test $? -ne 0 ; then cat log; no_result; fi
+activity="test baseline 429"
+$bin/aegis -t -bl -nl -v > log 2>&1
+if test $? -ne 0 ; then cat log; no_result; fi
 
 #
 # end development
 # review pass
 # start integrating
 #
-$bin/aegis -de
-if test $? -ne 0 ; then fail; fi
-$bin/aegis -revpass -c 2
-if test $? -ne 0 ; then fail; fi
-$bin/aegis -intbeg -c 2
-if test $? -ne 0 ; then fail; fi
+activity="develop end 438"
+$bin/aegis -de > log 2>&1
+if test $? -ne 0 ; then cat log; no_result; fi
+activity="review pass 441"
+$bin/aegis -revpass -c 2 > log 2>&1
+if test $? -ne 0 ; then cat log; no_result; fi
+activity="integrate begin 444"
+$bin/aegis -intbeg -c 2 > log 2>&1
+if test $? -ne 0 ; then cat log; no_result; fi
 
 #
 # build the integration
 # test the integration
 # test the integration against the baseline
 #
-$bin/aegis -b -nl -v
-if test $? -ne 0 ; then fail; fi
-$bin/aegis -t -nl -v
-if test $? -ne 0 ; then fail; fi
-$bin/aegis -t -bl -nl -v
-if test $? -ne 0 ; then fail; fi
+activity="build 453"
+$bin/aegis -b -nl -v > log 2>&1
+if test $? -ne 0 ; then cat log; no_result; fi
+activity="test 456"
+$bin/aegis -t -nl -v > log 2>&1
+if test $? -ne 0 ; then cat log; no_result; fi
+activity="test baseline 459"
+$bin/aegis -t -bl -nl -v > log 2>&1
+if test $? -ne 0 ; then cat log; no_result; fi
 
 #
 # pass the integration
 #
-$bin/aegis -intpass -nl > /dev/null 2>&1
-if test $? -ne 0 ; then fail; fi
+activity="integrate pass 466"
+$bin/aegis -intpass -nl > log 2>&1
+if test $? -ne 0 ; then cat log; no_result; fi
 
 # should be no automatic logging
-if test "`find $work -name 'aegis.log' -print`" != "" ; then fail; fi
+if test "`find $work -name 'aegis.log' -print`" != "" ; then no_result; fi
 
 #
 # the things tested in this test, worked

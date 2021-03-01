@@ -1,6 +1,6 @@
 /*
  *	aegis - project change supervisor
- *	Copyright (C) 1991, 1992, 1993, 1994, 1995 Peter Miller;
+ *	Copyright (C) 1991, 1992, 1993, 1994, 1995, 1997 Peter Miller;
  *	All rights reserved.
  *
  *	This program is free software; you can redistribute it and/or modify
@@ -15,7 +15,7 @@
  *
  *	You should have received a copy of the GNU General Public License
  *	along with this program; if not, write to the Free Software
- *	Foundation, Inc., 675 Mass Ave, Cambridge, MA 02139, USA.
+ *	Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111, USA.
  *
  * MANIFEST: lexical analyzer
  */
@@ -32,7 +32,7 @@
 #include <str.h>
 #include <symtab.h>
 #include <type.h>
-#include <word.h>
+#include <str_list.h>
 #include <parse.gen.h> /* must be last */
 
 
@@ -50,8 +50,8 @@ struct file_ty
 static	file_ty		*file;
 static	int		error_count;
 extern	parse_STYPE	parse_lval;
-static	wlist		ifiles;
-static	wlist		include_path;
+static	string_list_ty		ifiles;
+static	string_list_ty		include_path;
 static symtab_ty	*keyword;
 
 
@@ -126,7 +126,7 @@ lex_open(s)
 		int	j;
 
 		f->fp = 0;
-		for (j = 0; j < include_path.wl_nwords; ++j)
+		for (j = 0; j < include_path.nstrings; ++j)
 		{
 			char	buffer[2000];
 
@@ -134,7 +134,7 @@ lex_open(s)
 			(
 				buffer,
 				"%s/%s",
-				include_path.wl_word[j]->str_text,
+				include_path.string[j]->str_text,
 				s
 			);
 			f->fp = fopen(buffer, "r");
@@ -154,7 +154,7 @@ lex_open(s)
 			f->file_name = mem_copy_string(s);
 		}
 		f->next = file;
-		wl_append_unique(&ifiles, str_from_c(s));
+		string_list_append_unique(&ifiles, str_from_c(s));
 	}
 	f->line_number = 1;
 	file = f;
@@ -506,9 +506,9 @@ parse_error(s sva_last)
 	sva_init(ap, s);
 	vsprintf(buffer, s, ap);
 	va_end(ap);
-	error("%s: %d: %s", file->file_name, file->line_number, buffer);
+	error_raw("%s: %d: %s", file->file_name, file->line_number, buffer);
 	if (++error_count >= 20)
-		error("%s: too many errors, bye!", file->file_name);
+		error_raw("%s: too many errors, bye!", file->file_name);
 }
 
 
@@ -523,5 +523,5 @@ void
 lex_include_path(s)
 	char	*s;
 {
-	wl_append_unique(&include_path, str_from_c(s));
+	string_list_append_unique(&include_path, str_from_c(s));
 }

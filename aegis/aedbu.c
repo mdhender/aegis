@@ -1,6 +1,6 @@
 /*
  *	aegis - project change supervisor
- *	Copyright (C) 1991, 1992, 1993, 1994 Peter Miller.
+ *	Copyright (C) 1991, 1992, 1993, 1994, 1995, 1996, 1997, 1998 Peter Miller;
  *	All rights reserved.
  *
  *	This program is free software; you can redistribute it and/or modify
@@ -15,7 +15,7 @@
  *
  *	You should have received a copy of the GNU General Public License
  *	along with this program; if not, write to the Free Software
- *	Foundation, Inc., 675 Mass Ave, Cambridge, MA 02139, USA.
+ *	Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111, USA.
  *
  * MANIFEST: functions to implement develop begin undo
  */
@@ -32,6 +32,7 @@
 #include <ael.h>
 #include <arglex2.h>
 #include <change.h>
+#include <change_file.h>
 #include <col.h>
 #include <commit.h>
 #include <common.h>
@@ -39,9 +40,10 @@
 #include <error.h>
 #include <help.h>
 #include <lock.h>
-#include <option.h>
 #include <os.h>
+#include <progname.h>
 #include <project.h>
+#include <project_hist.h>
 #include <sub.h>
 #include <trace.h>
 #include <undo.h>
@@ -55,7 +57,7 @@ develop_begin_undo_usage()
 {
 	char		*progname;
 
-	progname = option_progname_get();
+	progname = progname_get();
 	fprintf(stderr, "usage: %s -Develop_Begin_Undo <change_number> [ <option>... ]\n", progname);
 	fprintf(stderr, "       %s -Develop_Begin_Undo -List [ <option>... ]\n", progname);
 	fprintf(stderr, "       %s -Develop_Begin_Undo -Help\n", progname);
@@ -68,12 +70,7 @@ static void develop_begin_undo_help _((void));
 static void
 develop_begin_undo_help()
 {
-	static char *text[] =
-	{
-#include <../man1/aedbu.h>
-	};
-
-	help(text, SIZEOF(text), develop_begin_undo_usage);
+	help("aedbu", develop_begin_undo_usage);
 }
 
 
@@ -97,12 +94,12 @@ develop_begin_undo_list()
 
 		case arglex_token_project:
 			if (arglex() != arglex_token_string)
-				develop_begin_undo_usage();
+				option_needs_name(arglex_token_project, develop_begin_undo_usage);
 			/* fall through... */
 		
 		case arglex_token_string:
 			if (project_name)
-				fatal("duplicate -Project option");
+				duplicate_option_by_name(arglex_token_project, develop_begin_undo_usage);
 			project_name = str_from_c(arglex_value.alv_string);
 			break;
 		}
@@ -127,16 +124,18 @@ develop_begin_undo_main()
 	string_ty	*project_name;
 	long		change_number;
 	project_ty	*pp;
+	user_ty		*admin_up;
 	user_ty		*up;
 	change_ty	*cp;
-	pstate		pstate_data;
 	cstate		cstate_data;
 	cstate_history	history_data;
 	string_ty	*dd;
+	string_ty	*usr_name;
 
 	trace(("develop_begin_undo_main()\n{\n"/*}*/));
 	project_name = 0;
 	change_number = 0;
+	usr_name = 0;
 	while (arglex_token != arglex_token_eoln)
 	{
 		switch (arglex_token)
@@ -148,31 +147,54 @@ develop_begin_undo_main()
 		case arglex_token_keep:
 		case arglex_token_interactive:
 		case arglex_token_no_keep:
-			user_delete_file_argument();
+			user_delete_file_argument(develop_begin_undo_usage);
 			break;
 
 		case arglex_token_change:
 			if (arglex() != arglex_token_number)
-				develop_begin_undo_usage();
+				option_needs_number(arglex_token_change, develop_begin_undo_usage);
 			/* fall through... */
 
 		case arglex_token_number:
 			if (change_number)
-				fatal("duplicate -Change option");
+				duplicate_option_by_name(arglex_token_change, develop_begin_undo_usage);
 			change_number = arglex_value.alv_number;
-			if (change_number < 1)
-				fatal("change %ld out of range", change_number);
+			if (change_number == 0)
+				change_number = MAGIC_ZERO;
+			else if (change_number < 1)
+			{
+				sub_context_ty	*scp;
+
+				scp = sub_context_new();
+				sub_var_set(scp, "Number", "%ld", change_number);
+				fatal_intl(scp, i18n("change $number out of range"));
+				/* NOTREACHED */
+				sub_context_delete(scp);
+			}
 			break;
 
 		case arglex_token_project:
 			if (arglex() != arglex_token_string)
-				develop_begin_undo_usage();
+				option_needs_name(arglex_token_project, develop_begin_undo_usage);
 			/* fall through... */
 		
 		case arglex_token_string:
 			if (project_name)
-				fatal("duplicate -Project option");
+				duplicate_option_by_name(arglex_token_project, develop_begin_undo_usage);
 			project_name = str_from_c(arglex_value.alv_string);
+			break;
+
+		case arglex_token_user:
+			if (arglex() != arglex_token_string)
+				option_needs_name(arglex_token_user, develop_begin_undo_usage);
+			if (usr_name)
+				duplicate_option_by_name(arglex_token_user, develop_begin_undo_usage);
+			usr_name = str_from_c(arglex_value.alv_string);
+			break;
+
+		case arglex_token_wait:
+		case arglex_token_wait_not:
+			user_lock_wait_argument(develop_begin_undo_usage);
 			break;
 		}
 		arglex();
@@ -190,7 +212,34 @@ develop_begin_undo_main()
 	/*
 	 * locate user data
 	 */
-	up = user_executing(pp);
+	if (usr_name)
+	{
+		admin_up = user_executing(pp);
+		up = user_symbolic(pp, usr_name);
+		if (str_equal(user_name(up), user_name(admin_up)))
+		{
+			/*
+			 * If the user specified themselves, silently
+			 * ignore such sillyness.
+			 */
+			user_free(up);
+			up = admin_up;
+			admin_up = 0;
+		}
+
+		/*
+		 * If a user name was specified on the command line,
+		 * check that the executing user is a project
+		 * administrator.
+		 */
+		if (admin_up && !project_administrator_query(pp, user_name(admin_up)))
+			project_fatal(pp, 0, i18n("not an administrator"));
+	}
+	else
+	{
+		admin_up = 0;
+		up = user_executing(pp);
+	}
 
 	/*
 	 * locate change data
@@ -210,38 +259,45 @@ develop_begin_undo_main()
 	user_ustate_lock_prepare(up);
 	lock_take();
 	cstate_data = change_cstate_get(cp);
-	pstate_data = project_pstate_get(pp);
+
+	/*
+	 * Race condition: check that the admin_up is still a project
+	 * administrator now that we have the project lock.
+	 */
+	if (admin_up && !project_administrator_query(pp, user_name(admin_up)))
+		project_fatal(pp, 0, i18n("not an administrator"));
 
 	/*
 	 * It is an error if the change is not in the being developed state.
 	 * It is an error if the change is not assigned to the current user.
 	 */
 	if (cstate_data->state != cstate_state_being_developed)
-	{
-		change_fatal
-		(
-			cp,
-"this change is in the '%s' state, \
-it must be in the 'being developed' state to undo develop begin",
-			cstate_state_ename(cstate_data->state)
-		);
-	}
+		change_fatal(cp, 0, i18n("bad dbu state"));
 	if (!str_equal(change_developer_name(cp), user_name(up)))
-	{
-		change_fatal
-		(
-			cp,
-    "user \"%S\" is not the developer, only user \"%S\" may undo develop begin",
-			user_name(up),
-			change_developer_name(cp)
-		);
-	}
+		change_fatal(cp, 0, i18n("not developer"));
+
+	/*
+	 * It is an error if an administrator is nuking the change and
+	 * the change has any files.  Mostly, because it is expected
+	 * that this is used to undo forced aedb's.
+	 */
+	if (admin_up && change_file_nth(cp, 0L))
+		change_fatal(cp, 0, i18n("aedbu, has files"));
 
 	/*
 	 * add to history for state change
 	 */
 	history_data = change_history_new(cp, up);
 	history_data->what = cstate_history_what_develop_begin_undo;
+	if (admin_up)
+	{
+		history_data->why =
+			str_format
+			(
+				"Forced by administrator \"%S\".",
+				user_name(admin_up)
+			);
+	}
 
 	/*
 	 * Send the change to the awaiting-development state.
@@ -252,8 +308,7 @@ it must be in the 'being developed' state to undo develop begin",
 	 */
 	cstate_data->state = cstate_state_awaiting_development;
 	change_build_times_clear(cp);
-	while (cstate_data->src->length)
-		change_src_remove(cp, cstate_data->src->list[0]->file_name);
+	change_file_remove_all(cp);
 
 	/*
 	 * Remove the change from the list of assigned changes in the user
@@ -267,7 +322,7 @@ it must be in the 'being developed' state to undo develop begin",
 	dd = change_development_directory_get(cp, 1);
 	if (user_delete_file_query(up, dd, 1))
 	{
-		change_verbose(cp, "remove development directory");
+		change_verbose(cp, 0, i18n("remove development directory"));
 		user_become(up);
 		commit_rmdir_tree_errok(dd);
 		user_become_undo();
@@ -292,10 +347,12 @@ it must be in the 'being developed' state to undo develop begin",
 	/*
 	 * verbose success message
 	 */
-	change_verbose(cp, "no longer being developed");
+	change_verbose(cp, 0, i18n("develop begin undo complete"));
 	change_free(cp);
 	project_free(pp);
 	user_free(up);
+	if (admin_up)
+		user_free(admin_up);
 	trace((/*{*/"}\n"));
 }
 

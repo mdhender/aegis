@@ -1,0 +1,52 @@
+.\"
+.\"	aegis - project change supervisor
+.\"	Copyright (C) 1997 Peter Miller;
+.\"	All rights reserved.
+.\"
+.\"	This program is free software; you can redistribute it and/or modify
+.\"	it under the terms of the GNU General Public License as published by
+.\"	the Free Software Foundation; either version 2 of the License, or
+.\"	(at your option) any later version.
+.\"
+.\"	This program is distributed in the hope that it will be useful,
+.\"	but WITHOUT ANY WARRANTY; without even the implied warranty of
+.\"	MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+.\"	GNU General Public License for more details.
+.\"
+.\"	You should have received a copy of the GNU General Public License
+.\"	along with this program; if not, write to the Free Software
+.\"	Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111, USA.
+.\"
+.\" MANIFEST: AUUGN Feb'98 Article
+.\"
+.PS
+boxwid = dir_wid
+boxht = dir_ht
+A: box invis
+   [ folder ] with .c at A.c
+   "\fIProject\fP" ljust at A.e
+
+   line from A.s then down boxht/2 then right boxwid/2
+B: box invis
+   [ document ] with .c at B.c
+   "\f(CWMakefile\fP" ljust at B.e
+
+   line from A.s then down 3*boxht/2 then right boxwid/2
+C: box invis
+   [ document ] with .c at C.c
+   "\f(CWmain.c\fP" ljust at C.e
+
+   line from A.s then down 5*boxht/2 then right boxwid/2
+D: box invis
+   [ document ] with .c at D.c
+   "\f(CWparse.c\fP" ljust at D.e
+
+   line from A.s then down 7*boxht/2 then right boxwid/2
+E: box invis
+   [ document ] with .c at E.c
+   "\f(CWparse.h\fP" ljust at E.e
+
+.\" Make sure the width of the text is taken into account when the
+.\" picture is centered within the column.
+box invis wid 1 with .w at E.e
+.PE

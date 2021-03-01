@@ -1,0 +1,75 @@
+.\"
+.\"	aegis - project change supervisor
+.\"	Copyright (C) 1998 Peter Miller;
+.\"	All rights reserved.
+.\"
+.\"	This program is free software; you can redistribute it and/or modify
+.\"	it under the terms of the GNU General Public License as published by
+.\"	the Free Software Foundation; either version 2 of the License, or
+.\"	(at your option) any later version.
+.\"
+.\"	This program is distributed in the hope that it will be useful,
+.\"	but WITHOUT ANY WARRANTY; without even the implied warranty of
+.\"	MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+.\"	GNU General Public License for more details.
+.\"
+.\"	You should have received a copy of the GNU General Public License
+.\"	along with this program; if not, write to the Free Software
+.\"	Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111, USA.
+.\"
+.\" MANIFEST: AUUGN Feb'98 Article
+.\"
+.nr PS 72
+.nr VS 75000
+.LP
+.ad c
+How Make Works
+.br
+.ad l
+.sp 0.3i
+.nr PS 36
+.nr VS 37
+.XP
+\(bu
+The Makefile is turned into pair-wise ordered dependencies.
+.br
+.ps 16
+.vs 17
+.sp 0.5
+.TS
+tab(;);
+lf(CW) l.
+prog: a.o b.o;prog \(<- a.o
+    cc a.o b.o -o prog;prog \(<- b.o
+.sp 0.5
+a.o: a.c a.h;a.o \(<- a.c
+    cc -c a.c;a.o \(<- a.h
+.sp 0.5
+b.o: b.c a.h;b.o \(<- b.c
+    cc -c b.c;b.o \(<- a.h
+.sp 0.5
+a.c a.h: a.y;a.c \(<- a.y
+    yacc -d a.y;a.h \(<- a.y
+    \fImv \&...\fI
+.TE
+.XP
+\(bu
+The pairs are then shuffled to find a valid ordering.
+.bp
+.nr PS 24
+.nr VS 25
+.XP
+\(bu
+The Makefile is turned into pair-wise ordered dependencies.
+.XP
+\(bu
+The order of appearance of the rules in the Makefile doesn't mean anything.
+.XP
+\(bu
+There is more than one valid ordering.
+.XP
+\(bu
+Recall \fIlorder\fP and \fItsort\fP from the days before \fIranlib\fP?
+Same thing.
+.br
+\(dg Only nastier, because of pattern rules.

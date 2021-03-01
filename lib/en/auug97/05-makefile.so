@@ -1,0 +1,346 @@
+.\"
+.\"	aegis - project change supervisor
+.\"	Copyright (C) 1997, 1998 Peter Miller;
+.\"	All rights reserved.
+.\"
+.\"	This program is free software; you can redistribute it and/or modify
+.\"	it under the terms of the GNU General Public License as published by
+.\"	the Free Software Foundation; either version 2 of the License, or
+.\"	(at your option) any later version.
+.\"
+.\"	This program is distributed in the hope that it will be useful,
+.\"	but WITHOUT ANY WARRANTY; without even the implied warranty of
+.\"	MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+.\"	GNU General Public License for more details.
+.\"
+.\"	You should have received a copy of the GNU General Public License
+.\"	along with this program; if not, write to the Free Software
+.\"	Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111, USA.
+.\"
+.\" MANIFEST: AUUGN Feb'98 Article
+.\"
+.nh 1 "Efficient Makefiles"
+The central theme of this paper is the
+.I semantic
+side-effects of artificially separating a \f(CWMakefile\fP into the
+pieces necessary to perform a recursive \fImake\fP.
+However, once you have a large number of \f(CWMakefile\fPs,
+the speed at which
+.I make
+can interpret this multitude of files also becomes an issue.
+.LP
+Builds can take ``forever'' for both these reasons: the traditional
+fixes for the separated DAG may be building too much
+.I and
+your \f(CWMakefile\fP may be inefficient.
+.nh 2 "Deferred Evaluation"
+The text in a \f(CWMakefile\fP must somehow be read from a text file and
+understood by
+.I make
+so that the DAG can be constructed, and the specified actions attached
+to the edges.
+This is all kept in memory.
+.LP
+The input language for \f(CWMakefile\fPs is deceptively simple.
+A crucial distinction that often escapes both novices and experts alike
+is that \fImake\fP's input language is
+.I "text based,"
+as opposed to token based, as is the case for C or AWK.
+.I Make
+does the very least possible to process input lines and stash them away
+in memory.
+.LP
+As an example of this, consider the following assignment:
+.TS
+box,center;
+lw(2.5i)f(CW).
+OBJ = main.o parse.o
+.TE
+Humans read this as the variable OBJ being assigned two filenames
+``main.o'' and ``parse.o''.
+But
+.I make
+does not see it that way.
+Instead  OBJ is assigned the \fIstring\fP ``main.o parse.o''.
+It gets worse:
+.TS
+box,center;
+lw(2.5i)f(CW).
+SRC = main.c parse.c
+OBJ = $(SRC:.c=.o)
+.TE
+In this case
+humans expect
+.I make
+to assign two filenames to OBJ, but
+.I make
+actually assigns the string ``$(SRC:.c=.o)''.
+This is because it is a
+.I macro
+language with deferred evaluation,
+as opposed to one with variables and immediate evaluation.
+.LP
+If this does not seem too problematic,
+consider the following \f(CWMakefile\fP:
+.TS
+box,center;
+lw(2.5i)f(CW).
+SRC = $(shell echo 'Ouch!' \e
+  1>&2 ; echo *.[cy])
+OBJ = \e
+  $(patsubst %.c,%.o,\e
+    $(filter %.c,$(SRC))) \e
+  $(patsubst %.y,%.o,\e
+    $(filter %.y,$(SRC)))
+.sp 0.2
+test: $(OBJ)
+  $(CC) -o $@ $(OBJ)
+.TE
+How many times will the shell command be executed?
+.B "Ouch!"
+It will be executed
+.I twice
+just to construct the DAG,
+and a further
+.I two
+times if the rule needs to be executed.
+.LP
+If this shell command does anything complex or time consuming (and it
+usually does) it will take
+.I four
+times longer than you thought.
+.LP
+But it is worth looking at the other portions of that OBJ macro.
+Each time it is named, a huge amount of processing is performed:
+.IP \(bu 2n
+The argument to \fIshell\fP is a single string
+(all built-in-functions take a single string argument).
+The string is executed in a sub-shell,
+and the standard output of this command is read back in,
+translating newlines into spaces.
+The result is a single string.
+.IP \(bu 2n
+The argument to \fIfilter\fP is a single string.
+This argument is broken into two strings at the first comma.
+These two strings are then each broken into
+sub-strings separated by spaces.  The first set are the patterns, the
+second set are the filenames.  Then, for each of the pattern sub-strings,
+if a filename sub-string matches it, that filename is included in the
+output.  Once all of the output has been found, it is re-assembled into
+a single space-separated string.
+.IP \(bu 2n
+The argument to \fIpatsubst\fP is a single string.
+This argument is broken into three strings at the first and second commas.
+The third string is then broken into sub-strings separated by spaces,
+these are the filenames.
+Then, for each of the filenames which match the first string
+it is substituted according to the second string.
+If a filename does not match, it is passed through unchanged.
+Once all of the output has been generated,
+it is re-assembled into a single space-separated string.
+.LP
+Notice how many times those strings are disassembled and re-assembled.
+Notice how many ways that happens.
+.I "This is slow."
+The example here names just two files
+but consider how inefficient this would be for 1000 files.
+Doing it \fIfour\fP times
+becomes decidedly inefficient.
+.LP
+If you
+are using a dumb \fImake\fP that has no substitutions and no built-in
+functions, this cannot bite you.  But a modern \fImake\fP has lots of
+built-in functions and can even invoke shell commands on-the-fly.
+The semantics of \fImake\fP's text manipulation is such that
+string manipulation in \fImake\fP is very CPU intensive, compared to
+performing the same string manipulations in C or AWK.
+.nh 2 "Immediate Evaluation"
+Modern
+.I make
+implementations have an
+immediate evaluation ``\f(CW:=\fP'' assignment operator.
+The above example can be re-written as
+.TS
+box,center;
+lw(2.5i)f(CW).
+.\" --------------------------|
+SRC := $(shell echo 'Ouch!' \e
+  1>&2 ; echo *.[cy])
+OBJ := \e
+  $(patsubst %.c,%.o,\e
+    $(filter %.c,$(SRC))) \e
+  $(patsubst %.y,%.o,\e
+    $(filter %.y,$(SRC)))
+.sp 0.2
+test: $(OBJ)
+  $(CC) -o $@ $(OBJ)
+.TE
+Note that \fIboth\fP assignments are immediate evaluation assignments.
+If the first were not, the shell command would always be executed twice.
+If the second were not, the expensive substitutions would be performed
+at least twice and possibly four times.
+.LP
+As a rule of thumb:
+always use immediate evaluation assignment unless you
+knowingly want deferred evaluation.
+.nh 2 "Include Files"
+Many \f(CWMakefile\fPs
+perform the same text processing (the filters above, for example)
+for every single \fImake\fP run,
+but the results of the processing rarely change.
+Wherever practical,
+it is more efficient to record the results of the text processing into a file,
+and have the \f(CWMakefile\fP include this file.
+.nh 2 "Dependencies"
+Don't be miserly with include files.
+They are relatively inexpensive to read,
+compared to \f[CW]$(shell)\fP,
+so more rather than less doesn't greatly affect efficiency.
+.LP
+As an example of this, it is first necessary to describe a useful
+feature of GNU Make: once a \f(CWMakefile\fP has been read in,
+if any of its included files were out-of-date (or do not yet exist),
+they are re-built, and then
+.I make
+starts again, which has the result that
+.I make
+is now working with up-to-date include files.
+This feature can be exploited to obtain automatic include file
+dependency tracking for C sources.
+The obvious way to implement it, however, has a subtle flaw.
+.TS
+box,center;
+lw(2.5i)f(CW).
+SRC := $(wildcard *.c)
+OBJ := $(SRC:.c=.o)
+.sp 0.2
+test: $(OBJ)
+  $(CC) -o $@ $(OBJ)
+.sp 0.2
+include dependencies
+.sp 0.2
+dependencies: $(SRC)
+  depend.sh $(CFLAGS) \e
+    $(SRC) > $@
+.TE
+The \f(CWdepend.sh\fP script prints lines of the form
+.QP
+\fIfile\fP\f(CW.o: \fP\fIfile\fP\f(CW.c\fP \fIinclude\fP\f(CW.h\fP ...
+.LP
+The most simple implementation of this is to use
+.I GCC,
+but you will need an equivalent awk script or C program
+if you have a different compiler:
+.TS
+box,center;
+lw(2.5i)f(CW).
+#!/bin/sh
+gcc -MM -MG $*
+.TE
+This implementation of tracking C include dependencies
+has several serious flaws, but the one most commonly discovered
+is that the \f(CWdependencies\fP file does not, itself,
+depend on the C include files.
+That is, it is not re-built in one of the include files changes.
+There is no edge in the DAG joining the \f(CWdependencies\fP vertex to
+any of the include file vertices.
+If an include file changes to include another file (a nested include),
+the dependencies will not be recalculated, and potentially the C file will not be recompiled,
+and thus the program will not be re-built correctly.
+.LP
+A classic build-too-little problem, caused by giving \fImake\fP
+inadequate information, and thus causing it to build an inadequate DAG
+and reach the wrong conclusion.
+.LP
+The traditional solution is to build too much:
+.TS
+box,center;
+lw(2.5i)f(CW).
+SRC := $(wildcard *.c)
+OBJ := $(SRC:.c=.o)
+.sp 0.2
+test: $(OBJ)
+  $(CC) -o $@ $(OBJ)
+.sp 0.2
+include dependencies
+.sp 0.2
+\&.PHONY: dependencies
+.sp 0.2
+dependencies: $(SRC)
+  depend.sh $(CFLAGS) \e
+    $(SRC) > $@
+.TE
+Now, even if the project is completely up-do-date,
+the dependencies will be re-built.
+For a large project, this is very wasteful, and can be a major contributor
+to \fImake\fP taking ``forever'' to work out that nothing needs to
+be done.
+.LP
+There is a second problem, and that is that if any \fIone\fP of the C
+files changes,
+\fIall\fP of the C files will be re-scanned for include dependencies.
+This is as inefficient as having a \f(CWMakefile\fP which reads
+.TS
+box,center;
+lw(2.5i)f(CW).
+prog: $(SRC)
+  $(CC) -o $@ $(SRC)
+.TE
+What is needed, in exact analogy to the C case,
+is to have an intermediate form.
+This is usually given a ``\f(CW.d\fP'' suffix.
+By exploiting the fact that more than one file may be named in an include line,
+there is no need to ``link'' all of the ``\f(CW.d\fP'' files together:
+.TS
+box,center;
+lw(2.5i)f(CW).
+SRC := $(wildcard *.c)
+OBJ := $(SRC:.c=.o)
+.sp 0.2
+test: $(OBJ)
+  $(CC) -o $@ $(OBJ)
+.sp 0.2
+include $(OBJ:.o=.d)
+.sp 0.2
+%.d: %.c
+  depend.sh $(CFLAGS) $< > $@
+.TE
+.LP
+This has one more thing to fix: just as the object (\f(CW.o\fP) files
+depend on the source files and the include files,
+so do the dependency (\f(CW.d\fP) files.
+.QP
+\fIfile\fP\f(CW.d \fIfile\fP\f(CW.o:
+\fP\fIfile\fP\f(CW.c\fP \fIinclude\fP\f(CW.h\fP
+.LP
+This means tinkering with the \f(CWdepend.sh\fP script once more:
+.TS
+box,center;
+lw(2.5i)f(CW).
+#!/bin/sh
+gcc -MM -MG $* |
+sed -e 's@^\e(.*\e)\e.o:@\e1.d \e1.o:@'
+.TE
+.LP
+This method of determining include file dependencies results in
+the \f(CWMakefile\fP including more files
+than the original method, but opening files is less expensive than
+rebuilding all of the dependencies every time.
+Typically a developer will edit one or two files before re-building;
+this method will rebuild the \fIexact\fP dependency file affected (or
+more than one, if you edited an include file).
+On balance, this will use less CPU, and less time.
+.LP
+In the case of a build where nothing needs to be done,
+.I make
+will actually do nothing,
+and will work this out very quickly.
+.nh 2 "Multiplier"
+All of the inefficiencies described in this section compound together.
+If you do 100
+\f(CWMakefile\fP interpretations, once for each module, checking 1000
+source files can take a very long time \-
+if the interpretation requires complex processing
+or performs unnecessary work, or both.
+A whole project \fImake\fP, on
+the other hand, only needs to interpret a single \f(CWMakefile\fP.

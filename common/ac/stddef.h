@@ -1,6 +1,6 @@
 /*
  *	aegis - a project change supervisor
- *	Copyright (C) 1994 Peter Miller.
+ *	Copyright (C) 1994, 1996, 1998 Peter Miller;
  *	All rights reserved.
  *
  *	This program is free software; you can redistribute it and/or modify
@@ -15,9 +15,9 @@
  *
  *	You should have received a copy of the GNU General Public License
  *	along with this program; if not, write to the Free Software
- *	Foundation, Inc., 675 Mass Ave, Cambridge, MA 02139, USA.
+ *	Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111, USA.
  *
- * MANIFEST: isolate stddef.h presence/absence
+ * MANIFEST: insulate against <stddef.h> presence or absence
  */
 
 #ifndef COMMON_AC_STDDEF_H
@@ -31,6 +31,14 @@
 
 #ifndef offsetof
 #define offsetof(a, b)	((size_t)((char *)&((a *)0)->b - (char *)0))
+#endif
+
+#ifndef HAVE_WINT_T
+#define HAVE_WINT_T
+#ifndef _WINT_T
+#define _WINT_T
+typedef wchar_t wint_t;
+#endif
 #endif
 
 #endif /* COMMON_AC_STDDEF_H */

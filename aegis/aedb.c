@@ -1,6 +1,6 @@
 /*
  *	aegis - project change supervisor
- *	Copyright (C) 1991, 1992, 1993, 1994, 1995 Peter Miller;
+ *	Copyright (C) 1991, 1992, 1993, 1994, 1995, 1996, 1997, 1998 Peter Miller;
  *	All rights reserved.
  *
  *	This program is free software; you can redistribute it and/or modify
@@ -15,7 +15,7 @@
  *
  *	You should have received a copy of the GNU General Public License
  *	along with this program; if not, write to the Free Software
- *	Foundation, Inc., 675 Mass Ave, Cambridge, MA 02139, USA.
+ *	Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111, USA.
  *
  * MANIFEST: functions to implement develop begin
  */
@@ -39,9 +39,11 @@
 #include <error.h>
 #include <help.h>
 #include <lock.h>
-#include <option.h>
+#include <log.h>
 #include <os.h>
+#include <progname.h>
 #include <project.h>
+#include <project_hist.h>
 #include <sub.h>
 #include <trace.h>
 #include <undo.h>
@@ -55,7 +57,7 @@ develop_begin_usage()
 {
 	char		*progname;
 
-	progname = option_progname_get();
+	progname = progname_get();
 	fprintf
 	(
 		stderr,
@@ -78,12 +80,7 @@ static void develop_begin_help _((void));
 static void
 develop_begin_help()
 {
-	static char *text[] =
-	{
-#include <../man1/aedb.h>
-	};
-
-	help(text, SIZEOF(text), develop_begin_usage);
+	help("aedb", develop_begin_usage);
 }
 
 
@@ -107,12 +104,12 @@ develop_begin_list()
 
 		case arglex_token_project:
 			if (arglex() != arglex_token_string)
-				develop_begin_usage();
+				option_needs_name(arglex_token_project, develop_begin_usage);
 			/* fall through... */
 		
 		case arglex_token_string:
 			if (project_name)
-				fatal("duplicate -Project option");
+				duplicate_option_by_name(arglex_token_project, develop_begin_usage);
 			project_name = str_from_c(arglex_value.alv_string);
 			break;
 		}
@@ -135,10 +132,8 @@ static void
 develop_begin_main()
 {
 	cstate		cstate_data;
-	pstate		pstate_data;
 	cstate_history	history_data;
 	string_ty	*devdir;
-	string_ty	*s2;
 	string_ty	*project_name;
 	project_ty	*pp;
 	long		change_number;
@@ -147,12 +142,14 @@ develop_begin_main()
 	pconf		pconf_data;
 	string_ty	*usr;
 	user_ty		*up2;
+	log_style_ty	log_style;
 
 	trace(("develop_begin_main()\n{\n"/*}*/));
 	project_name = 0;
 	change_number = 0;
 	devdir = 0;
 	usr = 0;
+	log_style = log_style_create_default;
 	while (arglex_token != arglex_token_eoln)
 	{
 		switch (arglex_token)
@@ -163,22 +160,32 @@ develop_begin_main()
 
 		case arglex_token_change:
 			if (arglex() != arglex_token_number)
-				develop_begin_usage();
+				option_needs_number(arglex_token_change, develop_begin_usage);
 			/* fall through... */
 
 		case arglex_token_number:
 			if (change_number)
-				fatal("duplicate -Change option");
+				duplicate_option_by_name(arglex_token_change, develop_begin_usage);
 			change_number = arglex_value.alv_number;
-			if (change_number < 1)
-				fatal("change %ld out of range", change_number);
+			if (change_number == 0)
+				change_number = MAGIC_ZERO;
+			else if (change_number < 1)
+			{
+				sub_context_ty	*scp;
+
+				scp = sub_context_new();
+				sub_var_set(scp, "Number", "%ld", change_number);
+				fatal_intl(scp, i18n("change $number out of range"));
+				/* NOTREACHED */
+				sub_context_delete(scp);
+			}
 			break;
 
 		case arglex_token_directory:
 			if (arglex() != arglex_token_string)
-				develop_begin_usage();
+				option_needs_dir(arglex_token_directory, develop_begin_usage);
 			if (devdir)
-				fatal("duplicate -DIRectory option");
+				duplicate_option_by_name(arglex_token_directory, develop_begin_usage);
 			/*
 			 * To cope with automounters, directories are stored as
 			 * given, or are derived from the home directory in the
@@ -191,21 +198,32 @@ develop_begin_main()
 
 		case arglex_token_project:
 			if (arglex() != arglex_token_string)
-				develop_begin_usage();
+				option_needs_name(arglex_token_project, develop_begin_usage);
 			/* fall through... */
 		
 		case arglex_token_string:
 			if (project_name)
-				fatal("duplicate -Project option");
+				duplicate_option_by_name(arglex_token_project, develop_begin_usage);
 			project_name = str_from_c(arglex_value.alv_string);
 			break;
 
 		case arglex_token_user:
 			if (usr)
-				fatal("duplicate -User option");
+				duplicate_option(develop_begin_usage);
 			if (arglex() != arglex_token_string)
-				develop_begin_usage();
+				option_needs_name(arglex_token_user, develop_begin_usage);
 			usr = str_from_c(arglex_value.alv_string);
+			break;
+
+		case arglex_token_nolog:
+			if (log_style == log_style_none)
+				duplicate_option(develop_begin_usage);
+			log_style = log_style_none;
+			break;
+
+		case arglex_token_wait:
+		case arglex_token_wait_not:
+			user_lock_wait_argument(develop_begin_usage);
 			break;
 		}
 		arglex();
@@ -236,20 +254,18 @@ develop_begin_main()
 			up2 = 0;
 		}
 		else if (!project_administrator_query(pp, user_name(up2)))
-		{
-			project_fatal
-			(
-				pp,
-				"user \"%S\" is not an administrator",
-				user_name(up2)
-			);
-		}
+			project_fatal(pp, 0, i18n("not an administrator"));
 	}
 	else
 	{
 		up = user_executing(pp);
 		up2 = 0;
 	}
+
+	/*
+	 * Make sure the tests don't go too fast.
+	 */
+	os_throttle();
 
 	/*
 	 * locate change data
@@ -260,7 +276,7 @@ develop_begin_main()
 	 * even though we could sometimes work this out for ourself.
 	 */
 	if (!change_number)
-		fatal("the change number must be stated explicitly");
+		fatal_intl(0, i18n("no change number"));
 	cp = change_alloc(pp, change_number);
 	change_bind_existing(cp);
 
@@ -274,7 +290,6 @@ develop_begin_main()
 	change_cstate_lock_prepare(cp);
 	lock_take();
 	cstate_data = change_cstate_get(cp);
-	pstate_data = project_pstate_get(pp);
 
 	/*
 	 * Extract the appropriate row of the change table.
@@ -282,24 +297,41 @@ develop_begin_main()
 	 * undevelop_begined state.
 	 */
 	if (cstate_data->state != cstate_state_awaiting_development)
-	{
-		change_fatal
-		(
-			cp,
-"this change is in the '%s' state, \
-it must be in the 'awaiting development' state to begin development",
-			cstate_state_ename(cstate_data->state)
-		);
-	}
+		change_fatal(cp, 0, i18n("bad db state"));
 	if (!project_developer_query(pp, user_name(up)))
 	{
-		project_fatal
-		(
-			pp,
-			"user \"%S\" is not a developer",
-			user_name(up)
-		);
+		sub_context_ty	*scp;
+
+		scp = sub_context_new();
+		if (up2)
+		{
+			sub_var_set(scp, "User", "%S", user_name(up));
+			sub_var_optional(scp, "User");
+			sub_var_override(scp, "User");
+		}
+		project_fatal(pp, scp, i18n("not a developer"));
+		/* NOTREACHED */
+		sub_context_delete(scp);
 	}
+
+	/*
+	 * Work out the development directory.
+	 *
+	 * (Do this before the state advances to being developed,
+	 * otherwise it tries to find the config file in the as-yet
+	 * non-existant development directory.)
+	 */
+	if (!devdir)
+	{
+		sub_context_ty	*scp;
+
+		scp = sub_context_new();
+		devdir = change_development_directory_template(cp, up);
+		sub_var_set(scp, "File_Name", "%S", devdir);
+		change_verbose(cp, scp, i18n("development directory \"$filename\""));
+		sub_context_delete(scp);
+	}
+	change_development_directory_set(cp, devdir);
 
 	/*
 	 * Set the change data to reflect the current user
@@ -320,82 +352,18 @@ it must be in the 'awaiting development' state to begin development",
 	}
 
 	/*
-	 * Update user change table to include this change in the list of
-	 * changes being developed by this user.
-	 */
-	user_own_add(up, project_name_get(pp), change_number);
-
-	/*
-	 * Create the change directory.
-	 */
-	if (!devdir)
-	{
-		unsigned long	k;
-		int		max;
-		string_ty	*pn;
-
-		/*
-		 * If the user did not give the directory to use,
-		 * we must construct one.
-		 * The length is limited by the available filename
-		 * length limit, trim the project name if necessary.
-		 */
-		pn = project_name_get(pp);
-		s2 = user_default_development_directory(up);
-		assert(s2);
-		os_become_orig();
-		max = os_pathconf_name_max(s2);
-		os_become_undo();
-		for (k = 0;; ++k)
-		{
-			char		suffix[30];
-			char		*tp;
-			unsigned long	n;
-			int		len;
-			int		exists;
-
-			tp = suffix;
-			*tp++ = '.';
-			n = k;
-			for (;;)
-			{
-				*tp++ = (n & 15) + 'C';
-				n >>= 4;
-				if (!n)
-					break;
-			}
-			sprintf(tp, "%3.3ld", change_number);
-
-			len = strlen(suffix);
-			if (len > max)
-			{
-				/* unlikely in the extreme */
-				len = max - 1;
-				suffix[len] = 0;
-			}
-			len = max - len;
-			if (len > pn->str_length)
-				len = pn->str_length;
-			devdir = str_format("%S/%.*S%s", s2, len, pn, suffix);
-			os_become_orig();
-			exists = os_exists(devdir);
-			os_become_undo();
-			if (!exists)
-				break;
-			str_free(devdir);
-		}
-		str_free(s2);
-		change_verbose(cp, "development directory \"%S\"", devdir);
-	}
-	change_development_directory_set(cp, devdir);
-
-	/*
 	 * Create the development directory.
 	 */
 	user_become(up);
 	os_mkdir(devdir, 02755);
 	undo_rmdir_errok(devdir);
 	user_become_undo();
+
+	/*
+	 * Update user change table to include this change in the list of
+	 * changes being developed by this user.
+	 */
+	user_own_add(up, project_name_get(pp), change_number);
 
 	/*
 	 * Clear the time fields.
@@ -415,6 +383,7 @@ it must be in the 'awaiting development' state to begin development",
 	/*
 	 * run the develop begin command
 	 */
+	log_open(change_logfile_get(cp), up, log_style);
 	change_run_develop_begin_command(cp, up);
 
 	/*
@@ -436,17 +405,12 @@ it must be in the 'awaiting development' state to begin development",
 	&&
 		!pconf_data->remove_symlinks_after_build
 	)
-		change_create_symlinks_to_baseline(cp, up);
+		change_create_symlinks_to_baseline(cp, pp, up, 0);
 
 	/*
 	 * verbose success message
 	 */
-	change_verbose
-	(
-		cp,
-		"user \"%S\" has begun development",
-		user_name(up)
-	);
+	change_verbose(cp, 0, i18n("develop begin complete"));
 	change_free(cp);
 	project_free(pp);
 	user_free(up);

@@ -1,7 +1,7 @@
 #!/bin/sh
 #
 #	aegis - project change supervisor
-#	Copyright (C) 1994, 1995 Peter Miller;
+#	Copyright (C) 1994, 1995, 1996, 1997, 1998 Peter Miller;
 #	All rights reserved.
 #
 #	This program is free software; you can redistribute it and/or modify
@@ -16,7 +16,7 @@
 #
 #	You should have received a copy of the GNU General Public License
 #	along with this program; if not, write to the Free Software
-#	Foundation, Inc., 675 Mass Ave, Cambridge, MA 02139, USA.
+#	Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111, USA.
 #
 # MANIFEST: Test the 'aegis -report' functionality
 #
@@ -25,6 +25,8 @@ unset AEGIS_PROJECT
 unset AEGIS_CHANGE
 unset AEGIS_PATH
 unset AEGIS
+unset LINES
+unset COLS
 umask 022
 
 USER=${USER:-${LOGNAME:-`whoami`}}
@@ -34,16 +36,29 @@ PAGER=cat
 export PAGER
 
 AEGIS_FLAGS="delete_file_preference = no_keep; \
-	diff_preference = automatic_merge;"
+	lock_wait_preference = always; \
+	diff_preference = automatic_merge; \
+	pager_preference = never; \
+	persevere_preference = all; \
+	log_file_preference = never;"
 export AEGIS_FLAGS
 AEGIS_THROTTLE=2
 export AEGIS_THROTTLE
 
 here=`pwd`
-if test $? -ne 0 ; then exit 1; fi
+if test $? -ne 0 ; then exit 2; fi
 
 if test "$1" != "" ; then bin="$here/$1/bin"; else bin="$here/bin"; fi
 
+no_result()
+{
+	set +x
+	echo 'NO RESULT for test of "aegis -report" help and lists' 1>&2
+	cd $here
+	find $work -type d -user $USER -exec chmod u+w {} \;
+	rm -rf $work
+	exit 2
+}
 fail()
 {
 	set +x
@@ -62,15 +77,15 @@ pass()
 	rm -rf $work
 	exit 0
 }
-trap \"fail\" 1 2 3 15
+trap \"no_result\" 1 2 3 15
 
 mkdir $work
-if test $? -ne 0 ; then fail; fi
+if test $? -ne 0 ; then no_result; fi
 cd $work
-if test $? -ne 0 ; then fail; fi
+if test $? -ne 0 ; then no_result; fi
 
 mkdir $work/lib $work/lib/report
-if test $? -ne 0 ; then fail; fi
+if test $? -ne 0 ; then no_result; fi
 
 AEGIS_PATH=$work/lib
 export AEGIS_PATH
@@ -78,7 +93,7 @@ export AEGIS_PATH
 #
 # make sure help and list work
 #
-$bin/aegis -rpt -help > /dev/null
+$bin/aegis -rpt -help > /dev/null 2>&1 < /dev/null
 if test $? -ne 0 ; then fail; fi
 $bin/aegis -rpt -list > /dev/null
 if test $? -ne 0 ; then fail; fi

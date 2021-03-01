@@ -1,0 +1,67 @@
+.\"
+.\"	aegis - project change supervisor
+.\"	Copyright (C) 1997 Peter Miller;
+.\"	All rights reserved.
+.\"
+.\"	This program is free software; you can redistribute it and/or modify
+.\"	it under the terms of the GNU General Public License as published by
+.\"	the Free Software Foundation; either version 2 of the License, or
+.\"	(at your option) any later version.
+.\"
+.\"	This program is distributed in the hope that it will be useful,
+.\"	but WITHOUT ANY WARRANTY; without even the implied warranty of
+.\"	MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+.\"	GNU General Public License for more details.
+.\"
+.\"	You should have received a copy of the GNU General Public License
+.\"	along with this program; if not, write to the Free Software
+.\"	Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111, USA.
+.\"
+.\" MANIFEST: AUUGN Feb'98 Article
+.\"
+.nh 1 "Introduction"
+.FS
+Copyright
+.if t \(co
+.if n (C)
+1997 Peter Miller;
+All rights reserved.
+.FE
+For large UNIX software development projects,
+the traditional methods of building the project use
+what has come to be known as ``recursive \fImake\fP.''
+This refers to the use use a hierarchy
+of directories containing source files for the modules which make up the
+project, where
+each of the sub-directories contains a
+.I Makefile
+which describes the rules and instructions for the
+.I make
+program.
+The complete project build is done by arranging for the top-level
+\f(CWMakefile\fP
+to change directory into each of the sub-directories and recursively
+invoke
+.I make.
+.LP
+This paper explores some significant problems encountered when
+developing software projects using the recursive \fImake\fP technique.
+A simple solution is offered, and some of the implications of that
+solution are explored.
+.LP
+Recursive \fImake\fP results in a directory tree which looks something
+like this:
+.so 01.figure1.so
+This hierarchy of modules can be nested arbitrarily deep.  Real-world
+projects often use two- and three-level structures.
+.nh 2 "Assumed Knowledge"
+This paper assumes that the reader is familiar with developing software
+on UNIX, with the
+.I make
+program, and with the issues of C programming and include file
+dependencies.
+.LP
+This paper assumes that you have installed GNU Make on your system
+and are moderately familiar with its features.
+Some features of \fImake\fP described below may not be available
+if you are using the limited version supplied by your vendor.

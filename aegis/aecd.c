@@ -1,6 +1,6 @@
 /*
  *	aegis - project change supervisor
- *	Copyright (C) 1991, 1992, 1993, 1994 Peter Miller.
+ *	Copyright (C) 1991, 1992, 1993, 1994, 1995, 1996, 1997 Peter Miller;
  *	All rights reserved.
  *
  *	This program is free software; you can redistribute it and/or modify
@@ -15,23 +15,26 @@
  *
  *	You should have received a copy of the GNU General Public License
  *	along with this program; if not, write to the Free Software
- *	Foundation, Inc., 675 Mass Ave, Cambridge, MA 02139, USA.
+ *	Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111, USA.
  *
  * MANIFEST: functions to change directory or determine paths
  */
 
 #include <stdio.h>
 #include <ac/stdlib.h>
+#include <ac/libintl.h>
 
 #include <aecd.h>
 #include <ael.h>
 #include <arglex2.h>
 #include <change.h>
+#include <change_bran.h>
 #include <error.h>
 #include <help.h>
-#include <option.h>
 #include <os.h>
+#include <progname.h>
 #include <project.h>
+#include <sub.h>
 #include <trace.h>
 #include <user.h>
 
@@ -43,7 +46,7 @@ change_directory_usage()
 {
 	char		*progname;
 
-	progname = option_progname_get();
+	progname = progname_get();
 	fprintf(stderr, "usage: %s -Change_Directory [ <option>... ][ <subdir> ]\n", progname);
 	fprintf(stderr, "       %s -Change_Directory -List [ <option>... ]\n", progname);
 	fprintf(stderr, "       %s -Change_Directory -Help\n", progname);
@@ -56,12 +59,7 @@ static void change_directory_help _((void));
 static void
 change_directory_help()
 {
-	static char *text[] =
-	{
-#include <../man1/aecd.h>
-	};
-
-	help(text, SIZEOF(text), change_directory_usage);
+	help("aecd", change_directory_usage);
 }
 
 
@@ -85,9 +83,9 @@ change_directory_list()
 
 		case arglex_token_project:
 			if (arglex() != arglex_token_string)
-				change_directory_usage();
+				option_needs_name(arglex_token_project, change_directory_usage);
 			if (project_name)
-				fatal("duplicate -Project option");
+				duplicate_option_by_name(arglex_token_project, change_directory_usage);
 			project_name = str_from_c(arglex_value.alv_string);
 			break;
 		}
@@ -117,6 +115,7 @@ static void change_directory_main _((void));
 static void
 change_directory_main()
 {
+	sub_context_ty	*scp;
 	char		*subdir = 0;
 	int		devdir = 0;
 	cstate		cstate_data;
@@ -127,10 +126,16 @@ change_directory_main()
 	long		change_number;
 	change_ty	*cp;
 	user_ty		*up;
+	int		trunk;
+	int		grandparent;
+	char		*branch;
 
 	trace(("change_directory_main()\n{\n"/*}*/));
 	project_name = 0;
 	change_number = 0;
+	trunk = 0;
+	grandparent = 0;
+	branch = 0;
 	while (arglex_token != arglex_token_eoln)
 	{
 		switch (arglex_token)
@@ -141,21 +146,23 @@ change_directory_main()
 
 		case arglex_token_string:
 			if (subdir)
-				fatal("too many subdirectories specified");
+				fatal_intl(0, i18n("too many dir"));
 			subdir = arglex_value.alv_string;
 			if (!*subdir || *subdir == '/')
-				fatal("subdirectory must be relative");
+				fatal_intl(0, i18n("dir must be rel"));
 			break;
 
 		case arglex_token_development_directory:
 			if (devdir)
-			       fatal("duplicate -Develompent_Directory option");
+				duplicate_option(change_directory_usage);
 			if (baseline)
 			{
 				bad_combo:
-				fatal
+				mutually_exclusive_options
 				(
-	     "only one of -BaseLine and -Development_Directory may be specified"
+					arglex_token_baseline,
+					arglex_token_development_directory,
+					change_directory_usage
 				);
 			}
 			devdir = 1;
@@ -163,7 +170,7 @@ change_directory_main()
 
 		case arglex_token_baseline:
 			if (baseline)
-				fatal("duplicate -BaseLine option");
+				duplicate_option(change_directory_usage);
 			if (devdir)
 				goto bad_combo;
 			baseline = 1;
@@ -171,26 +178,100 @@ change_directory_main()
 
 		case arglex_token_change:
 			if (arglex() != arglex_token_number)
-				change_directory_usage();
+				option_needs_number(arglex_token_change, change_directory_usage);
 			/* fall through... */
 
 		case arglex_token_number:
 			if (change_number)
-				fatal("duplicate -Change option");
+				duplicate_option_by_name(arglex_token_change, change_directory_usage);
 			change_number = arglex_value.alv_number;
-			if (change_number < 1)
-				fatal("change %ld out of range", change_number);
+			if (change_number == 0)
+				change_number = MAGIC_ZERO;
+			else if (change_number < 1)
+			{
+				scp = sub_context_new();
+				sub_var_set(scp, "Number", "%ld", change_number);
+				fatal_intl(scp, i18n("change $number out of range"));
+				/* NOTREACHED */
+				sub_context_delete(scp);
+			}
 			break;
 
 		case arglex_token_project:
 			if (arglex() != arglex_token_string)
-				change_directory_usage();
+				option_needs_name(arglex_token_project, change_directory_usage);
 			if (project_name)
-				fatal("duplicate -Project option");
+				duplicate_option_by_name(arglex_token_project, change_directory_usage);
 			project_name = str_from_c(arglex_value.alv_string);
+			break;
+
+		case arglex_token_branch:
+			if (branch)
+				duplicate_option(change_directory_usage);
+			switch (arglex())
+			{
+			default:
+				option_needs_number(arglex_token_branch, change_directory_usage);
+
+			case arglex_token_number:
+			case arglex_token_string:
+				branch = arglex_value.alv_string;
+				break;
+			}
+			break;
+
+		case arglex_token_trunk:
+			if (trunk)
+				duplicate_option(change_directory_usage);
+			++trunk;
+			break;
+
+		case arglex_token_grandparent:
+			if (grandparent)
+				duplicate_option(change_directory_usage);
+			++grandparent;
 			break;
 		}
 		arglex();
+	}
+
+	/*
+	 * reject illegal combinations of options
+	 */
+	if (grandparent)
+	{
+		if (branch)
+		{
+			mutually_exclusive_options
+			(
+				arglex_token_branch,
+				arglex_token_grandparent,
+				change_directory_usage
+			);
+		}
+		if (trunk)
+		{
+			mutually_exclusive_options
+			(
+				arglex_token_trunk,
+				arglex_token_grandparent,
+				change_directory_usage
+			);
+		}
+		branch = "..";
+	}
+	if (trunk)
+	{
+		if (branch)
+		{
+			mutually_exclusive_options
+			(
+				arglex_token_branch,
+				arglex_token_trunk,
+				change_directory_usage
+			);
+		}
+		branch = "";
 	}
 
 	/*
@@ -201,6 +282,12 @@ change_directory_main()
 	pp = project_alloc(project_name);
 	str_free(project_name);
 	project_bind_existing(pp);
+
+        /*
+	 * locate the other branch
+	 */
+	if (branch)
+		pp = project_find_branch(pp, branch);
 
 	/*
 	 * locate user data
@@ -214,9 +301,11 @@ change_directory_main()
 	{
 		if (change_number)
 		{
-			fatal
+			mutually_exclusive_options
 			(
-		      "the -BaseLine and -Change options are mutually exclusive"
+				arglex_token_baseline,
+				arglex_token_change,
+				change_directory_usage
 			);
 		}
 		d = project_baseline_path_get(pp, 0);
@@ -236,12 +325,7 @@ change_directory_main()
 		switch (cstate_data->state)
 		{
 		default:
-			change_fatal
-			(
-				cp,
-	     "this change is in the '%s' state, there is no directory to go to",
-				cstate_state_ename(cstate_data->state)
-			);
+			change_fatal(cp, 0, i18n("bad cd, no dir"));
 
 		case cstate_state_being_integrated:
 			if (!devdir)
@@ -255,6 +339,11 @@ change_directory_main()
 		case cstate_state_being_reviewed:
 		case cstate_state_being_developed:
 			d = change_development_directory_get(cp, 0);
+			if (change_was_a_branch(cp))
+			{
+				/* known memory leak */
+				d = str_format("%S/baseline", d);
+			}
 			break;
 		}
 	}
@@ -276,15 +365,20 @@ change_directory_main()
 
 	/*
 	 * print out the path
+	 *	(do NOT free d)
 	 */
 	printf("%s\n", d->str_text);
+	scp = sub_context_new();
+	sub_var_set(scp, "File_Name", "%S", d);
 	if (!cp)
-		project_verbose(pp, "%s", d->str_text);
+		project_verbose(pp, scp, i18n("change directory $filename complete"));
 	else
 	{
-		change_verbose(cp, "%s", d->str_text);
+		change_verbose(cp, scp, i18n("change directory $filename complete"));
 		change_free(cp);
 	}
+	sub_context_delete(scp);
+
 	project_free(pp);
 	user_free(up);
 	trace((/*{*/"}\n"));

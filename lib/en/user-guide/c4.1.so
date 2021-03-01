@@ -1,0 +1,171 @@
+.\"
+.\"	aegis - project change supervisor
+.\"	Copyright (C) 1993, 1994 Peter Miller.
+.\"	All rights reserved.
+.\"
+.\"	This program is free software; you can redistribute it and/or modify
+.\"	it under the terms of the GNU General Public License as published by
+.\"	the Free Software Foundation; either version 2 of the License, or
+.\"	(at your option) any later version.
+.\"
+.\"	This program is distributed in the hope that it will be useful,
+.\"	but WITHOUT ANY WARRANTY; without even the implied warranty of
+.\"	MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+.\"	GNU General Public License for more details.
+.\"
+.\"	You should have received a copy of the GNU General Public License
+.\"	along with this program; if not, write to the Free Software
+.\"	Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111, USA.
+.\"
+.\" MANIFEST: User Guide, The Dependency Maintenance Tool, Requirements
+.nh 2 "Required Features"
+.LP
+When selecting a Dependency Maintenance Tool
+it is important to keep in mind that, ideally, it must be able to
+cope with a hierarchy of parallel source directory trees.
+.LP
+The heart of any DMT is an \fIinference engine\fP.
+This inference engine accepts a \fIgoal\fP of what you want it to construct
+and a set of \fIrules\fP for how to construct things,
+and attempts to construct what you asked for given the rules you specified.
+This is exactly a description of an expert system,
+and the DMT needs to be an expert system for constructing files.
+.LP
+This perspective on what the aegis program needs from a DMT
+reveals that the old-faithful \fImake\fP(1) distributed
+with so many flavours of 
+.UX
+really isn't good enough,
+and that something like PROLOG is probably ideal.
+.nh 3 "Search Lists"
+.LP
+For the union of all files in a project and all files in a change
+(remembering that a change only copies those files it is modifying,
+plus it may add or remove files)
+for all files you must be able to say to the dependency maintenance
+tool,
+.QP
+"If and only if the file is up-to-date in the baseline,
+use the baseline copy of the file,
+otherwise construct the file in the development directory".
+.LP
+The presence of a source file in the change makes the copy
+in the baseline out-of-date.
+.LP
+Most DMTs with this capability implement it by using
+some sort of search path,
+allowing a hierarchy of directories to be scanned with little or
+no modification to the rules.
+.LP
+If your DMT of choice does not provide this functionality,
+the
+.I create_symlinks_before_build
+field of the project
+.I config
+file may be set to
+\fItrue\fP,
+which tells aegis to maintain symbolic links in the development directory
+for all files in the baseline which are not present in
+the development directory.
+(See
+\fIaepconf\fP(5)
+and
+\fIaeb\fP(1)
+for more information.)
+This incurs a certain amount of overhead when aegis maintains these links,
+but a similar amount of work is done within DMTs which have search path
+functionality.
+.nh 3 "Dynamic Include File Dependencies"
+.LP
+Include file dependencies are very important,
+because a change may alter an include file,
+and all of the sources in the baseline which use that include file
+must be recompiled.
+.LP
+Consider the example given earlier:
+the include file describing the interface definition of a function is
+copied into a change and edited,
+and so is the source file defining the function.
+It is essential that all source files in the baseline which
+include that file re recompiled,
+which will usually result in suitable diagnostic errors if any of the
+clients of the altered function have yet to be included in the change.
+.LP
+There are two ways of handling include file dependencies:
+.LP
+\(bu They can be kept in a file,
+and the file can be maintained by suitable programs
+(maintaining it manually never works, that's just human nature).
+.LP
+\(bu They can be determined by the DMT when it is scanning the rules
+to determine what needs updating.
+.nh 4 "Static File"
+.LP
+Keeping include dependencies in a file has a number of advantages:
+.LP
+\(bu Most existing DMTs have the ability to include other rules files,
+so that when performing a development build
+from a baseline rules file,
+it could include a
+dependencies file in the development directory.
+.LP
+\(bu Reading a file is much faster than scanning all of the source files.
+.LP
+Keeping include dependencies in a file has a number of disadvantages:
+.LP
+\(bu The file is independent of the DMT,
+it is either generated before the DMT is invoked,
+in which case it may do more work than is necessary,
+or it may be invoked after the DMT (or after the DMT has scanned its rules),
+in which case it may well be out-of-date when the DMT needs it.
+.LP
+For example,
+the use of
+.I "gcc -M"
+produces "dot d" files,
+which may be merged to 
+construct such an includable dependency file.
+This happens after the DMT has read and applied the rules,
+but possibly before the DMT has finished executing.\**
+.FS
+See the
+.I "Using Make"
+section for how GNU Make may be used.
+It effectively combines both methods:
+keeping \fI.d\fP files and dynamically updating them.
+Because it combines both methods,
+it has some of the advantages and disadvantages of both.
+.FE
+.LP
+\(bu Many tools which can generate this information,
+such as the
+.I "gcc -M"
+option,
+are triggered by source files,
+and are unable to manage a case where it is an include file which is changing,
+to include a different set of other include files.
+In this case,
+the inaccurate dependencies file may contain references to 
+the old set of nested include files,
+some of which may no longer exist,
+This causes
+the DMT to incorrectly generate an error stating that the
+old include file is missing,
+when it is actually no longer required.
+.LP
+If a DMT can only support this kind of include file dependencies,
+it is not suitable for use with aegis.
+.nh 4 "Dynamic"
+.LP
+In order for a DMT to be suitable for use with aegis,
+it is essential that rules for the DMT may be specified in such a way that
+include file dependencies are determined "on the fly"
+when the DMT is determining if a given rule is applicable,
+and before the rule is applied.
+.LP
+This method suffers from the problem being rather slow;
+but this is amenable to some caching and the losses of performance
+are not as bad as could be imagined.
+.LP
+This method has the advantage of correctness in all cases,
+where a static file may at times be out-of-date.

@@ -1,6 +1,6 @@
 /*
  *	aegis - a project change supervisor
- *	Copyright (C) 1994 Peter Miller.
+ *	Copyright (C) 1994, 1995, 1996 Peter Miller;
  *	All rights reserved.
  *
  *	This program is free software; you can redistribute it and/or modify
@@ -15,9 +15,9 @@
  *
  *	You should have received a copy of the GNU General Public License
  *	along with this program; if not, write to the Free Software
- *	Foundation, Inc., 675 Mass Ave, Cambridge, MA 02139, USA.
+ *	Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111, USA.
  *
- * MANIFEST: isolate stdlib.h presence/absence
+ * MANIFEST: insulate against <stdlib.h> presence or absence
  */
 
 #ifndef COMMON_AC_STDLIB_H
@@ -27,6 +27,49 @@
 
 #ifdef HAVE_STDLIB_H
 #include <stdlib.h>
+#else
+
+#ifndef _WCHAR_T
+#ifndef _T_WCHAR_
+#ifndef _T_WCHAR
+#ifndef __WCHAR_T
+#ifndef _WCHAR_T_
+#ifndef _WCHAR_T_H
+#ifndef ___int_wchar_t_h
+#ifndef __INT_WCHAR_T_H
+#ifndef _GCC_WCHAR_T
+#define _WCHAR_T
+#define _T_WCHAR_
+#define _T_WCHAR
+#define __WCHAR_T
+#define _WCHAR_T_
+#define _WCHAR_T_H
+#define ___int_wchar_t_h
+#define __INT_WCHAR_T_H
+#define _GCC_WCHAR_T
+#ifndef __WCHAR_TYPE__
+#define __WCHAR_TYPE__ int
+#endif
+typedef __WCHAR_TYPE__ wchar_t;
+typedef int wchar_t;
+#endif
+#endif
+#endif
+#endif
+#endif
+#endif
+#endif
+#endif
+#endif
+
+#ifndef MB_LEN_MAX
+#define MB_LEN_MAX 1
+#endif
+
+#ifndef MB_CUR_MAX
+#define MB_CUR_MAX 1
+#endif
+
 #endif
 
 #endif /* COMMON_AC_STDLIB_H */

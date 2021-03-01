@@ -1,0 +1,127 @@
+'\" t
+.\"	aegis - project change supervisor
+.\"	Copyright (C) 1991, 1992, 1993, 1994 Peter Miller.
+.\"	All rights reserved.
+.\"
+.\"	This program is free software; you can redistribute it and/or modify
+.\"	it under the terms of the GNU General Public License as published by
+.\"	the Free Software Foundation; either version 2 of the License, or
+.\"	(at your option) any later version.
+.\"
+.\"	This program is distributed in the hope that it will be useful,
+.\"	but WITHOUT ANY WARRANTY; without even the implied warranty of
+.\"	MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+.\"	GNU General Public License for more details.
+.\"
+.\"	You should have received a copy of the GNU General Public License
+.\"	along with this program; if not, write to the Free Software
+.\"	Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111, USA.
+.\"
+.\" MANIFEST: description of aegis change attribute file format
+.\"
+.TP 8n
+description = string;
+.br
+This field contains a detailed description of the change. 
+.TP 8n
+brief_description = string;
+.br
+This field contains a brief description of the change. 
+.TP 8n
+cause = ( ... );
+.br
+This field describes the cause which motivated the change.
+.RS 8n
+.TP 8n
+external_bug
+.br
+The change was created in response to
+a bug report
+from outside the development team.
+This repairs existing functionality.
+.TP 8n
+external_enhancement
+.br
+The change was created in response to
+an enhancement request
+from outside the development team.
+This adds new functionality.
+.TP 8n
+external_improvement
+.br
+The change was created in response to
+an improvement request
+from outside the development team.
+This improves existing functionality.
+.TP 8n
+internal_bug
+.br
+The change was created in response to
+a bug report
+from inside the development team.
+This repairs existing functionality.
+.TP 8n
+internal_enhancement
+.br
+The change was created in response to
+an enhancement request
+from inside the development team.
+This adds new functionality.
+.TP 8n
+internal_improvement
+.br
+The change was created in response to
+an improvement request
+from inside the development team.
+This improves existing functionality.
+.TP 8n
+chain
+.br
+This cause is where you have a fix to fix a fix;
+tracking these is an interesting quality metric.
+.RE
+.TP 8n
+test_exempt = boolean;
+.br
+This field is true if it is not necessary
+to test the change.
+It is, in general, desirable to test all changes,
+whether new functionality or a bug fix.
+This is, however, a project management issue.
+.TP 8n
+test_baseline_exempt = boolean;
+.br
+This field is true if it is not necessary
+to test the change against the baseline before it is changed.
+The test of the baseline is required to fail;
+this is to establish that the test has isolated the bug,
+and that the change has fixed that isolated bug.
+.TP 8n
+regression_test_exempt = boolean;
+.br
+This field is true if it is not necessary
+to perform a full regression test on the change.
+If absent, defaults to true for all causes except improvements.
+.TP 8n
+architecture = [ string ];
+.br
+This field is a list of names of
+system and machine architectures on which the change
+must successfully build and test.
+.TP 8n
+copyright_years = [ integer ];
+.RS
+This field details the years in which the change was worked on.
+This field is present in trunk, branch and leaf nodes.
+.PP
+As a change is edited, years in which the chnage was worked on
+accumulate in this field automatically.
+Branches accumulate years as integrations occur.
+You may need to manually edit this,
+though it should be rare.
+.RE
+.TP 8n
+version_previous = string;
+This field records the "previous" version, mostly to simplify patch generation.
+It is only meaningful for trunks and branches.
+It is set automatically when a branch is started or integrated.

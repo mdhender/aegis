@@ -1,0 +1,65 @@
+.\"
+.\"	aegis - project change supervisor
+.\"	Copyright (C) 1996 Peter Miller;
+.\"	All rights reserved.
+.\"
+.\"	This program is free software; you can redistribute it and/or modify
+.\"	it under the terms of the GNU General Public License as published by
+.\"	the Free Software Foundation; either version 2 of the License, or
+.\"	(at your option) any later version.
+.\"
+.\"	This program is distributed in the hope that it will be useful,
+.\"	but WITHOUT ANY WARRANTY; without even the implied warranty of
+.\"	MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+.\"	GNU General Public License for more details.
+.\"
+.\"	You should have received a copy of the GNU General Public License
+.\"	along with this program; if not, write to the Free Software
+.\"	Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111, USA.
+.\"
+.\" MANIFEST: document describing foil.09.so
+.\"
+.bp
+.nr PS 8
+.nr VS 9
+.LP
+.ps 46
+.vs 48
+.hy 0
+.ad c
+The WWW Build Step
+.sp
+.ad l
+.nr PS 34
+.nr VS 35
+.LP
+.ps 24
+.vs 25
+.PS c
+boxwid = 2
+boxht = 0.8
+B1: box "\fImaster/\fP"
+L1: arrow 1.2 "chew" "on them"
+B2: box "\fIexport/\fP"
+B3: box "Development" "Directory" with .s at L1.c+(0,0.8)
+line from B1.n to 1/3<B3.sw,B3.se>
+line from B2.n to 2/3<B3.sw,B3.se>
+.PE
+.IP "" 2n
+.IP \(bu 2n
+.hy 0
+Server-side includes are resolved
+.IP \(bu 2n
+.hy 0
+Include dependencies automatic
+.IP \(bu 2n
+.hy 0
+HTML is checked against DTD
+.IP \(bu 2n
+.hy 0
+Reports generated, e.g.
+.I "What's New"
+.IP \(bu 2n
+.hy 0
+SQR compiled,
+.I "etc, etc"

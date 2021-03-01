@@ -1,0 +1,116 @@
+/*
+ *	aegis - project change supervisor
+ *	Copyright (C) 1997 Peter Miller;
+ *	All rights reserved.
+ *
+ *	This program is free software; you can redistribute it and/or modify
+ *	it under the terms of the GNU General Public License as published by
+ *	the Free Software Foundation; either version 2 of the License, or
+ *	(at your option) any later version.
+ *
+ *	This program is distributed in the hope that it will be useful,
+ *	but WITHOUT ANY WARRANTY; without even the implied warranty of
+ *	MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ *	GNU General Public License for more details.
+ *
+ *	You should have received a copy of the GNU General Public License
+ *	along with this program; if not, write to the Free Software
+ *	Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111, USA.
+ *
+ * MANIFEST: functions to report configured values
+ */
+
+#include <libdir.h>
+
+
+/*
+ * On a network, may ONLY be shared betwen machines of identical
+ * cpu-vendor-os flavour.  Probably mounted read-only.
+ *
+ * This is where the executable files live.
+ */
+
+char *
+configured_bindir()
+{
+	return "@bindir@";
+}
+
+
+/*
+ * On a network, may ONLY be shared betwen machines of identical
+ * cpu-vendor-os flavour.  Probably mounted read-only.
+ *
+ * This is where the error message (.mo) files are parked.
+ */
+
+char *
+configured_libdir()
+{
+	return "@libdir@";
+}
+
+
+/*
+ * On a network, may be shared betwen all machines.
+ * Probably mounted read-only.
+ *
+ * This is where the various translations of the user documentation are
+ * parked, all documents, papers and manual pages, for all languages.
+ *
+ * This is where the various shell scripts are parked.
+ *
+ * This is where the reort scripts are parked.
+ */
+
+char *
+configured_datadir()
+{
+	return "@datadir@";
+}
+
+
+/*
+ * On a network, may be shared betwen all machines.
+ * Probably mounted read-only.
+ *
+ * This is where the default-language manual entries are parked.
+ */
+
+char *
+configured_mandir()
+{
+	return "@mandir@";
+}
+
+
+/*
+ * On a network, must be shared betwen all machines.
+ * MUST BE mounted Read-Write.
+ *
+ * This is where the lockfile lives.
+ *
+ * This is where the global state (project index) file lives.
+ *
+ * This is where the user ownership state files live.
+ */
+
+char *
+configured_comdir()
+{
+	return "@sharedstatedir@";
+}
+
+
+int
+configured_aegis_uid()
+{
+	return @AEGIS_UID@;
+}
+
+
+int
+configured_aegis_gid()
+{
+	return @AEGIS_GID@;
+}

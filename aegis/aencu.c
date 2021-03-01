@@ -1,6 +1,6 @@
 /*
  *	aegis - project change supervisor
- *	Copyright (C) 1991, 1992, 1993, 1994 Peter Miller.
+ *	Copyright (C) 1991, 1992, 1993, 1994, 1995, 1996, 1997, 1998 Peter Miller;
  *	All rights reserved.
  *
  *	This program is free software; you can redistribute it and/or modify
@@ -15,7 +15,7 @@
  *
  *	You should have received a copy of the GNU General Public License
  *	along with this program; if not, write to the Free Software
- *	Foundation, Inc., 675 Mass Ave, Cambridge, MA 02139, USA.
+ *	Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111, USA.
  *
  * MANIFEST: functions to implement new change undo
  */
@@ -36,9 +36,11 @@
 #include <error.h>
 #include <help.h>
 #include <lock.h>
-#include <option.h>
 #include <os.h>
+#include <progname.h>
 #include <project.h>
+#include <project_hist.h>
+#include <sub.h>
 #include <trace.h>
 #include <user.h>
 
@@ -50,7 +52,7 @@ new_change_undo_usage()
 {
 	char	*progname;
 
-	progname = option_progname_get();
+	progname = progname_get();
 	fprintf(stderr, "usage: %s -New_Change_Undo [ <option>... ]\n", progname);
 	fprintf(stderr, "       %s -New_Change_Undo -List [ <option>... ]\n", progname);
 	fprintf(stderr, "       %s -New_Change_Undo -Help\n", progname);
@@ -63,12 +65,7 @@ static void new_change_undo_help _((void));
 static void
 new_change_undo_help()
 {
-	static char *text[] =
-	{
-#include <../man1/aencu.h>
-	};
-
-	help(text, SIZEOF(text), new_change_undo_usage);
+	help("aencu", new_change_undo_usage);
 }
 
 
@@ -92,9 +89,9 @@ new_change_undo_list()
 
 		case arglex_token_project:
 			if (arglex() != arglex_token_string)
-				new_change_undo_usage();
+				option_needs_name(arglex_token_project, new_change_undo_usage);
 			if (project_name)
-				fatal("duplicate -Project option");
+				duplicate_option_by_name(arglex_token_project, new_change_undo_usage);
 			project_name = str_from_c(arglex_value.alv_string);
 			break;
 		}
@@ -122,7 +119,6 @@ new_change_undo_main()
 	user_ty		*up;
 	change_ty	*cp;
 	cstate		cstate_data;
-	pstate		pstate_data;
 
 	trace(("new_change_undo_main()\n{\n"/*}*/));
 	project_name = 0;
@@ -137,26 +133,41 @@ new_change_undo_main()
 
 		case arglex_token_change:
 			if (arglex() != arglex_token_number)
-				new_change_undo_usage();
+				option_needs_number(arglex_token_change, new_change_undo_usage);
 			/* fall through... */
 
 		case arglex_token_number:
 			if (change_number)
-				fatal("duplicate -Change option");
+				duplicate_option_by_name(arglex_token_change, new_change_undo_usage);
 			change_number = arglex_value.alv_number;
-			if (change_number < 1)
-				fatal("change %ld out of range", change_number);
+			if (change_number == 0)
+				change_number = MAGIC_ZERO;
+			else if (change_number < 1)
+			{
+				sub_context_ty	*scp;
+
+				scp = sub_context_new();
+				sub_var_set(scp, "Number", "%ld", change_number);
+				fatal_intl(scp, i18n("change $number out of range"));
+				/* NOTREACHED */
+				sub_context_delete(scp);
+			}
 			break;
 
 		case arglex_token_project:
 			if (arglex() != arglex_token_string)
-				new_change_undo_usage();
+				option_needs_name(arglex_token_project, new_change_undo_usage);
 			/* fall through... */
 		
 		case arglex_token_string:
 			if (project_name)
-				fatal("duplicate -Project option");
+				duplicate_option_by_name(arglex_token_project, new_change_undo_usage);
 			project_name = str_from_c(arglex_value.alv_string);
+			break;
+
+		case arglex_token_wait:
+		case arglex_token_wait_not:
+			user_lock_wait_argument(new_change_undo_usage);
 			break;
 		}
 		arglex();
@@ -197,7 +208,6 @@ new_change_undo_main()
 	change_cstate_lock_prepare(cp);
 	lock_take();
 	cstate_data = change_cstate_get(cp);
-	pstate_data = project_pstate_get(pp);
 
 	/*
 	 * Extract the appropriate row of the change table.
@@ -205,24 +215,9 @@ new_change_undo_main()
 	 * awaiting_development state.
 	 */
 	if (cstate_data->state != cstate_state_awaiting_development)
-	{
-		change_fatal
-		(
-			cp,
-"this change is in the '%s' state, \
-it must be in the 'awaiting development' state to undo a new change",
-			cstate_state_ename(cstate_data->state)
-		);
-	}
+		change_fatal(cp, 0, i18n("bad ncu state"));
 	if (!project_administrator_query(pp, user_name(up)))
-	{
-		project_fatal
-		(
-			pp,
-			"user \"%S\" is not an administrator",
-			user_name(up)
-		);
-	}
+		project_fatal(pp, 0, i18n("not an administrator"));
 
 	/*
 	 * tell the project to forget this change
@@ -233,7 +228,8 @@ it must be in the 'awaiting development' state to undo a new change",
 	 * delete the change state file
 	 */
 	project_become(pp);
-	commit_unlink_errok(cp->filename);
+	commit_unlink_errok(change_cstate_filename_get(cp));
+	commit_unlink_errok(change_fstate_filename_get(cp));
 	project_become_undo();
 
 	/*
@@ -248,7 +244,7 @@ it must be in the 'awaiting development' state to undo a new change",
 	/*
 	 * verbose success message
 	 */
-	change_verbose(cp, "removed");
+	change_verbose(cp, 0, i18n("new change undo complete"));
 	change_free(cp);
 	project_free(pp);
 	user_free(up);

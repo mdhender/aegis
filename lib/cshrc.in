@@ -1,0 +1,107 @@
+#
+#	aegis - project change supervisor
+#	Copyright (C) 1991, 1992, 1993, 1994, 1995, 1996 Peter Miller;
+#	All rights reserved.
+#
+#	This program is free software; you can redistribute it and/or modify
+#	it under the terms of the GNU General Public License as published by
+#	the Free Software Foundation; either version 2 of the License, or
+#	(at your option) any later version.
+#
+#	This program is distributed in the hope that it will be useful,
+#	but WITHOUT ANY WARRANTY; without even the implied warranty of
+#	MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+#	GNU General Public License for more details.
+#
+#	You should have received a copy of the GNU General Public License
+#	along with this program; if not, write to the Free Software
+#	Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111, USA.
+#
+# MANIFEST: csh user config for aegis
+#
+if ( -d $HOME/lib/aegis/. ) then
+	setenv AEGIS_PATH $HOME/lib/aegis
+endif
+
+#
+# If the user has not set their preferred language, default it to
+# English here.  This will give behaviour consistent with previous Aegis
+# behaviour.
+#
+if ( ! $?LANGUAGE ) then
+	setenv LANGUAGE en
+endif
+
+#
+# Set the MANPATH environment variable to include the Aegis' library
+# directory.  This directory contains subdirectories for each of the
+# supported languages, structured in such a way that man(1) programs
+# which understand the $LANGUAGE environment variable will be able to find
+# manual pages in the user's preferred language.
+#
+if ( ! $?MANPATH ) then
+	setenv MANPATH /usr/man
+endif
+setenv MANPATH ${MANPATH}:@mandir@:@datadir@
+
+#
+# Each of the Aegis commands has its own alias This is essential for
+# aecd, and convenient for the others.  (Splitting Aegis into many
+# commands is only efficient if the target system has shared libraries,
+# because the size of the common code portion usually greatly exceeds
+# the size of the unique portions.)
+#
+alias	aeb	'aegis -b \!* -v'
+alias	aeca	'aegis -ca \!* -v'
+alias	aecd	'cd `aegis -cd \!* -v`'
+alias	aechown	'aegis -chown \!* -v'
+alias	aeclean	'aegis -clean \!* -v'
+alias	aeclone	'aegis -clone \!* -v'
+alias	aecp	'aegis -cp \!* -v'
+alias	aecpu	'aegis -cpu \!* -v'
+alias	aed	'aegis -diff \!* -v'
+alias	aedb	'aegis -db \!* -v'
+alias	aedbu	'aegis -dbu \!* -v'
+alias	aede	'aegis -de \!* -v'
+alias	aedeu	'aegis -deu \!* -v'
+alias	aedless	'less `find . -type f -name "*,D" -print | sort`'
+alias	aedmore	'more `find . -type f -name "*,D" -print | sort`'
+alias	aedn	'aegis -dn \!* -v'
+alias	aeib	'aegis -ib \!* -v'
+alias	aeibu	'aegis -ibu \!* -v'
+alias	aeifail	'aegis -ifail \!* -v'
+alias	aeipass	'aegis -ipass \!* -v'
+alias	ael	'aegis -l \!* -v'
+alias	aem	'aegis -diff -only_merge \!* -v'
+alias	aemv	'aegis -mv \!* -v'
+alias	aena	'aegis -na \!* -v'
+alias	aenbr	'aegis -nbr \!* -v'
+alias	aenbru	'aegis -nbru \!* -v'
+alias	aenc	'aegis -nc \!* -v'
+alias	aencu	'aegis -ncu \!* -v'
+alias	aend	'aegis -nd \!* -v'
+alias	aenf	'aegis -nf \!* -v'
+alias	aenfu	'aegis -nfu \!* -v'
+alias	aeni	'aegis -ni \!* -v'
+alias	aenpr	'aegis -npr \!* -v'
+alias	aenrls	'aegis -nrls \!* -v'
+alias	aenrv	'aegis -nrv \!* -v'
+alias	aent	'aegis -nt \!* -v'
+alias	aentu	'aegis -ntu \!* -v'
+alias	aepa	'aegis -pa \!* -v'
+alias	aeq	'aegis -q \!* -v'
+alias	aer	'aereport \!* -v'
+alias	aera	'aegis -ra \!* -v'
+alias	aerd	'aegis -rd \!* -v'
+alias	aerfail	'aegis -rfail \!* -v'
+alias	aeri	'aegis -ri \!* -v'
+alias	aerm	'aegis -rm \!* -v'
+alias	aermu	'aegis -rmu \!* -v'
+alias	aerpass	'aegis -rpass \!* -v'
+alias	aerpu	'aegis -rpu \!* -v'
+alias	aermpr	'aegis -rmpr \!* -v'
+alias	aerrv	'aegis -rrv \!* -v'
+alias	aet	'aegis -t \!* -v'
+
+alias	ae_c	'setenv AEGIS_CHANGE "\!*"'
+alias	ae_p	'setenv AEGIS_PROJECT "\!*"'

@@ -1,0 +1,191 @@
+#
+#	aegis - a project change supervisor
+#	Copyright (C) 1990, 1991, 1992, 1993, 1994, 1995, 1996, 1997,
+#	1998 Peter Miller; All rights reserved.
+#
+#	This program is free software; you can redistribute it and/or modify
+#	it under the terms of the GNU General Public License as published by
+#	the Free Software Foundation; either version 2 of the License, or
+#	(at your option) any later version.
+#
+#	This program is distributed in the hope that it will be useful,
+#	but WITHOUT ANY WARRANTY; without even the implied warranty of
+#	MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+#	GNU General Public License for more details.
+#
+#	You should have received a copy of the GNU General Public License
+#	along with this program; if not, write to the Free Software
+#	Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111, USA.
+#
+# MANIFEST: instructions to make, how to build the Aegis package
+#
+# @configure_input@
+#
+
+#
+# directory containing the source
+#
+srcdir = @srcdir@
+VPATH = @srcdir@
+
+#
+# the name of the install program to use
+#
+INSTALL = @INSTALL@
+INSTALL_PROGRAM = @INSTALL_PROGRAM@
+INSTALL_DATA = @INSTALL_DATA@
+
+#
+# the name of the compiler to use
+#
+CC = @CC@
+
+#
+# The compiler flags to use
+#
+CFLAGS = @CPPFLAGS@ @CFLAGS@
+
+#
+# The linker flags to use
+#
+LDFLAGS = @LDFLAGS@
+
+#
+# prefix for installation path
+#
+#	If you need to change the prefix, it is best to re-run configure
+#	using the --prefix=PATH option, as this will re-write all of the
+#	files which contain the prefix, not just this one.  See the
+#	instructions in the BUILDING file for more information.
+#
+prefix = @prefix@
+exec_prefix = @exec_prefix@
+
+#
+# where to put the data directories
+#
+# ${datadir} is for architecture-neutral files
+#	On a network, this would be shared between all machines
+#	on the network.  It can be mounted read-only.
+#
+# This is where shell scripts are parked.
+# This is where report scripts are parked.
+# This is where documents are parked.
+#
+datadir = @datadir@
+
+#
+# where to put the data directories
+#
+# ${comdir} is for architecture-neutral files
+#	On a network, this would be shared between all machines
+#	on the network.  MUST BE mounted Read-WRITE.
+#
+# This is where the lock file lives.
+# This is where the global state file lives.
+#
+comdir = @sharedstatedir@
+
+#
+# ${libdir} is for architecture-specific files
+#	On a network, this would only be shared between machines
+#	of identical cpu-hw-os flavour.  It can be mounted read-only.
+#
+# This is where the error message (.mo) files are parked.
+#
+libdir = @libdir@
+
+#
+# Where to put the executables
+#	On a network, this would only be shared between machines
+#	of identical cpu-hw-os flavour.  It can be mounted read-only.
+#
+bindir = @bindir@
+
+#
+# Where to put the on-line manuals
+#	On a network, this would be shared between all machines
+#	on the network.  It can be mounted read-only.
+#
+mandir = @mandir@
+
+#
+# Which yacc to use
+#
+YACC = @YACC@
+
+#
+# extra libraries required for your system
+#
+LIBS = @LIBS@
+
+#
+# The program used to compile the message catalogues.  Ideally, you
+# should use the msgfmt in the GNU Gettext package.  (The SunOS one is
+# brain-dead, and the Solaris one is hardly better.)
+#
+MSGFMT = @MSGFMT@
+HAVE_MSGFMT = @po_files@
+
+#
+# shell to use to run tests and commands
+#
+SH = @SH@
+
+#
+# command used to construct libraries
+#
+AR = ar
+
+#
+# program used to place index within libraries
+#
+RANLIB = @RANLIB@
+
+#
+# commands used to format the documents
+#
+SOELIM = @SOELIM@
+GROFF = @GROFF@
+HAVE_GROFF = @HAVE_GROFF@
+
+#
+# Suitable owner for storing Aegis' global files, so that Aegis may
+# access them when they are on NFS mounted partitions (when root is
+# mapped to the [inconsistently numbered] "nobody" user).
+#
+# Do not confuse this with the fact that Aegis must be set-uid-root.
+# Aegis MUST be set-uid-root to manipulate file ownerships, etc.
+# See the Aegis User Guide, Appendix D, for more detail.
+#
+AEGIS_UID = @AEGIS_UID@
+AEGIS_GID = @AEGIS_GID@
+
+#
+# Set MANLANG to English, to select the man pages to be installed into
+# $(mandir).  If you want your manual pages in some other (supported)
+# language, set it here.
+#
+# The man pages for all supported languages are also installed into
+# $(libdir)/$(MANLANG)/manX/Y.X, so that it is only necessary to append
+# $(libdir) to $MANPATH, if your man understands $LANG.  This is already
+# done for you if you use one of the the $(libdir)/cshrc or
+# $(libdir)/profile files.
+#
+MANLANG = en
+
+#
+# Web Server configurartion information
+#
+HAVE_WEB = @web@
+DocumentRoot = @DocumentRoot@
+ScriptRoot = @ScriptRoot@
+
+#
+# You should not need to alter anything below this point.
+#------------------------------------------------------------
+
+all: all-bin all-lib all-doc
+
+all-lib: .po_files
+all-doc: .doc_files

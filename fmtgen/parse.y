@@ -1,6 +1,6 @@
 /*
  *	aegis - project change supervisor
- *	Copyright (C) 1991, 1992, 1993, 1994 Peter Miller.
+ *	Copyright (C) 1991, 1992, 1993, 1994, 1997, 1998 Peter Miller;
  *	All rights reserved.
  *
  *	This program is free software; you can redistribute it and/or modify
@@ -15,14 +15,14 @@
  *
  *	You should have received a copy of the GNU General Public License
  *	along with this program; if not, write to the Free Software
- *	Foundation, Inc., 675 Mass Ave, Cambridge, MA 02139, USA.
+ *	Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111, USA.
  *
  * MANIFEST: grammar and functions to parse aegis file contents definitions
  */
 
 %{
 
-#include <ctype.h>
+#include <ac/ctype.h>
 #include <stdio.h>
 #include <ac/stdlib.h>
 #include <ac/string.h>
@@ -41,7 +41,7 @@
 #include <type/string.h>
 #include <type/structure.h>
 #include <type/time.h>
-#include <word.h>
+#include <str_list.h>
 
 #ifdef DEBUG
 #define YYDEBUG 1
@@ -88,7 +88,7 @@ static size_t	emit_length_max;
 static type_ty	**emit_list;
 static int	time_used;
 static symtab_ty *typedef_symtab;
-static wlist	initialize;
+static string_list_ty	initialize;
 
 
 static void push_name _((string_ty *));
@@ -327,7 +327,9 @@ generate_code_file(code_file, include_file)
 	indent_printf("os_become_must_be_active();\n");
 	indent_less();
 	indent_printf("indent_open(filename);\n");
+	indent_printf("io_comment_emit();\n");
 	indent_printf("%s_write(value);\n", s->str_text);
+	indent_printf("type_enum_option_clear();\n");
 	indent_printf("indent_close();\n");
 	indent_printf("trace((/*{*/\"}\\n\"));\n");
 	indent_printf(/*{*/"}\n");
@@ -337,8 +339,8 @@ generate_code_file(code_file, include_file)
 	indent_printf("%s__rpt_init()\n", s->str_text);
 	indent_printf("{\n"/*}*/);
 	indent_printf("trace((\"%s__rpt_init()\\n{\\n\"/*}*/));\n", cp1);
-	for (j = 0; j < initialize.wl_nwords; ++j)
-		indent_printf("%s\n", initialize.wl_word[j]->str_text);
+	for (j = 0; j < initialize.nstrings; ++j)
+		indent_printf("%s\n", initialize.string[j]->str_text);
 	indent_printf("trace((/*{*/\"}\\n\"));\n");
 	indent_printf(/*{*/"}\n");
 	indent_close();
@@ -350,7 +352,7 @@ void
 generate_code__init(s)
 	string_ty	*s;
 {
-	wl_append(&initialize, s);
+	string_list_append(&initialize, s);
 }
 
 
@@ -361,6 +363,7 @@ parse(definition_file, code_file, include_file)
 	char		*include_file;
 {
 	string_ty	*s;
+	extern int yyparse _((void));
 
 	/*
 	 * initial name is the basename of the definition file
@@ -424,6 +427,7 @@ typedef
 			lex_open($3->str_text);
 			str_free($3);
 		}
+	| error
 	;
 
 type_name
@@ -442,6 +446,10 @@ field
 				current->name_short,
 				$3
 			);
+			pop_name();
+		}
+	| field_name error
+		{
 			pop_name();
 		}
 	;

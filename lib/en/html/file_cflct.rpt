@@ -1,0 +1,187 @@
+/*
+ *	aegis - project change supervisor
+ *	Copyright (C) 1997 Peter Miller;
+ *	All rights reserved.
+ *
+ *	This program is free software; you can redistribute it and/or modify
+ *	it under the terms of the GNU General Public License as published by
+ *	the Free Software Foundation; either version 2 of the License, or
+ *	(at your option) any later version.
+ *
+ *	This program is distributed in the hope that it will be useful,
+ *	but WITHOUT ANY WARRANTY; without even the implied warranty of
+ *	MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ *	GNU General Public License for more details.
+ *
+ *	You should have received a copy of the GNU General Public License
+ *	along with this program; if not, write to the Free Software
+ *	Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111, USA.
+ *
+ * MANIFEST: report the conflicting files in a project
+ */
+
+auto script_name;
+script_name = getenv("SCRIPT_NAME");
+if (script_name == "")
+	script_name = "http://localhost/cgi-bin/aegis.cgi";
+
+columns({width = 1000;});
+print("Content-Type: text/html");
+print("");
+print("<html><head><title>");
+print("File Conflicts");
+print("</title></head><body><h1><center>");
+if (change_number_set())
+{
+	print("Project ``" ## project_name() ##
+		"'', Change " ## change_number() ## ",<br>");
+}
+else
+{
+	print("Project ``" ## project_name() ## "'',<br>");
+}
+print("File Conflicts");
+print("</center></h1>");
+
+/*
+ * get the project state
+ */
+auto ps, ps_nobr;
+ps_nobr = project[project_name()].state;
+ps = ps_nobr.branch;
+
+/*
+ * default to all project files
+ * if no files named on the command line
+ */
+auto file;
+if (count(arg) == 0)
+{
+	if (change_number_set())
+	{
+		for (file in ps.change[change_number()].src)
+			arg ##= file.file_name;
+	}
+	else
+	{
+		for (file in ps_nobr.src)
+			arg ##= file.file_name;
+	}
+}
+
+/*
+ * check the files in every active change
+ */
+auto cn, cs, ch;
+auto active;
+active = {};
+for (cn in  keys(ps.change))
+{
+	cs = ps.change[cn];
+	if (cs.state < being_developed || cs.state >= completed)
+		continue;
+	for (file in cs.src)
+	{
+		if (!(file.file_name in arg))
+			continue;
+		if (file.usage == build && file.action == modify)
+			continue;
+		if (!(file.file_name in keys(active)))
+			active[file.file_name] = [];
+		auto developer, integrator;
+		developer = "";
+		integrator = "";
+		for (ch in cs.history)
+		{
+			if (ch.what == develop_begin)
+				developer = ch.who;
+			else if (ch.what == integrate_begin)
+				integrator = ch.who;
+			else if (ch.what == integrate_begin_undo)
+				integrator = "";
+			else if (ch.what == integrate_fail)
+				integrator = "";
+		}
+		active[file.file_name] ##=
+			{
+				usage = file.usage;
+				action = file.action;
+				edit = file.edit_number;
+				who = (cs.state == being_developed ?  developer
+					: cs.state == being_integrated
+					? integrator : "");
+				change = cn;
+				state = cs.state;
+				description = cs.brief_description;
+			};
+	}
+}
+
+/*
+ * list all of the active files
+ */
+auto fn, num_active;
+num_active = 0;
+print("<dl>");
+for (fn in sort(keys(active)))
+{
+	if (count(active[fn]) < 2)
+		continue;
+
+	print("<p><dt>");
+	auto href;
+	href = script_name ## "?file@file_menu+" ## fn;
+	href ##= "+project@" ## project_name();
+	print("<a href=\"" ## href ## "\">");
+	print("<tt>" ## fn ## "</tt></a>");
+	print("<dd>");
+
+	print("<table>");
+	print("<tr><th>Action</th><th>Type</th><th>Edit</th><th>Who</th>");
+	print("<th>Change</th><th>State</th><th>Description</th></tr>");
+
+	++num_active;
+	auto actions, usages;
+	actions = "BS";
+	usages = "BS";
+	for (file in active[fn])
+	{
+		print("<tr><td valign=top>");
+		if (file.usage != usages)
+			print(file.usage);
+		print("</td><td valign=top>");
+		if (file.action != actions)
+			print(file.action);
+		print("</td><td valign=top align=right>");
+		print(file.edit);
+		print("</td><td valign=top>");
+		print(file.who);
+		print("</td><td valign=top align=right>");
+		href = script_name ## "?file@chan_menu";
+		href ##= "+project@" ## project_name();
+		href ##= "+change@" ## file.change;
+		print("<a href=\"" ## href ## "\">");
+		print(file.change ## "</a>");
+		print("</td><td valign=top>");
+		print(file.state);
+		print("</td><td valign=top>");
+		print(file.description);
+		print("</td></tr>");
+		actions = file.action;
+		usages = file.usage;
+	}
+	print("</table>");
+}
+print("</dl>");
+if (num_active == 1)
+	print("Listed one conflicted file.");
+else if (num_active)
+	print("Listed " ## num_active ## " conflicted files.");
+else
+	print("There are no conflicted files in this project.");
+print("<hr>");
+print("A similar report may be obtained from the command line, with");
+print("<blockquote><tt>aer file_conflicts -p " ## project_name() ## "</tt></blockquote>");
+print("<hr>");
+print("This page was generated " ## now() ## ".");
+print("</body></html>");

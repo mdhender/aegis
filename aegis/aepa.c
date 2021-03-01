@@ -1,6 +1,6 @@
 /*
  *	aegis - project change supervisor
- *	Copyright (C) 1991, 1992, 1993, 1994, 1995 Peter Miller;
+ *	Copyright (C) 1991, 1992, 1993, 1994, 1995, 1996, 1997, 1998 Peter Miller;
  *	All rights reserved.
  *
  *	This program is free software; you can redistribute it and/or modify
@@ -15,7 +15,7 @@
  *
  *	You should have received a copy of the GNU General Public License
  *	along with this program; if not, write to the Free Software
- *	Foundation, Inc., 675 Mass Ave, Cambridge, MA 02139, USA.
+ *	Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111, USA.
  *
  * MANIFEST: functions to list and modify project attributes
  */
@@ -28,11 +28,14 @@
 #include <commit.h>
 #include <error.h>
 #include <help.h>
+#include <io.h>
 #include <lock.h>
-#include <option.h>
 #include <os.h>
+#include <progname.h>
 #include <pattr.h>
 #include <project.h>
+#include <project_hist.h>
+#include <sub.h>
 #include <trace.h>
 #include <undo.h>
 #include <user.h>
@@ -45,7 +48,7 @@ project_attributes_usage()
 {
 	char		*progname;
 
-	progname = option_progname_get();
+	progname = progname_get();
 	fprintf(stderr, "usage: %s -Project_Attributes -File <attr-file> [ <option>... ]\n", progname);
 	fprintf(stderr, "       %s -Project_Attributes -Edit [ <option>... ]\n", progname);
 	fprintf(stderr, "       %s -Project_Attributes -List [ <option>... ]\n", progname);
@@ -59,131 +62,109 @@ static void project_attributes_help _((void));
 static void
 project_attributes_help()
 {
-	static char *text[] =
-	{
-#include <../man1/aepa.h>
-	};
-
-	help(text, SIZEOF(text), project_attributes_usage);
+	help("aepa", project_attributes_usage);
 }
 
 
-static void pattr_copy _((pattr, pstate));
+static void pattr_copy _((pattr, project_ty *));
 
 static void
-pattr_copy(a, s)
-	pattr	a;
-	pstate	s;
+pattr_copy(a, pp)
+	pattr		a;
+	project_ty	*pp;
 {
-	if (!a->description && s->description)
-		a->description = str_copy(s->description);
-	if (!a->owner_name && s->owner_name)
-		a->owner_name = str_copy(s->owner_name);
-	if (!a->group_name && s->group_name)
-		a->group_name = str_copy(s->group_name);
-	if
-	(
-		!a->default_development_directory
-	&&
-		s->default_development_directory
-	)
-		a->default_development_directory =
-			str_copy(s->default_development_directory);
+	string_ty	*s;
 
-	if (!(a->mask & pattr_developer_may_review_mask))
-		a->developer_may_review = s->developer_may_review;
-	if (!(a->mask & pattr_developer_may_integrate_mask))
-		a->developer_may_integrate = s->developer_may_integrate;
-	if (!(a->mask & pattr_reviewer_may_integrate_mask))
-		a->reviewer_may_integrate = s->reviewer_may_integrate;
-	if (!(a->mask & pattr_developers_may_create_changes_mask))
-		a->developers_may_create_changes =
-			s->developers_may_create_changes;
-	if (!(a->mask & pattr_umask_mask))
-		a->umask = s->umask;
-	if (!(a->mask & pattr_default_test_exemption_mask))
-		a->default_test_exemption = s->default_test_exemption;
-	
-	if (!a->copyright_years && s->copyright_years)
+	if (!a->description)
 	{
-		size_t		j;
-
-		a->copyright_years = pattr_copyright_years_list_type.alloc();
-		for (j = 0; j < s->copyright_years->length; ++j)
-		{
-			long		*year_p;
-			type_ty		*type_p;
-
-			year_p =
-				pattr_copyright_years_list_type.list_parse
-				(
-					a->copyright_years,
-					&type_p
-				);
-			assert(type_p = &integer_type);
-			*year_p = s->copyright_years->list[j];
-		}
+		s = project_description_get(pp);
+		if (s)
+			a->description = str_copy(s);
 	}
 
-	if
-	(
-		!a->forced_develop_begin_notify_command
-	&&
-		s->forced_develop_begin_notify_command
-	)
-		a->forced_develop_begin_notify_command =
-			str_copy(s->forced_develop_begin_notify_command);
-	if (!a->develop_end_notify_command && s->develop_end_notify_command)
-		a->develop_end_notify_command =
-			str_copy(s->develop_end_notify_command);
-	if
-	(
-		!a->develop_end_undo_notify_command
-	&&
-		s->develop_end_undo_notify_command
-	)
-		a->develop_end_undo_notify_command =
-			str_copy(s->develop_end_undo_notify_command);
-	if
-	(
-		!a->review_pass_notify_command
-	&&
-		s->review_pass_notify_command
-	)
-		a->review_pass_notify_command =
-			str_copy(s->review_pass_notify_command);
-	if
-	(
-		!a->review_pass_undo_notify_command
-	&&
-		s->review_pass_undo_notify_command
-	)
-		a->review_pass_undo_notify_command =
-			str_copy(s->review_pass_undo_notify_command);
-	if
-	(
-		!a->review_fail_notify_command
-	&&
-		s->review_fail_notify_command
-	)
-		a->review_fail_notify_command =
-			str_copy(s->review_fail_notify_command);
-	if
-	(
-		!a->integrate_pass_notify_command
-	&&
-		s->integrate_pass_notify_command
-	)
-		a->integrate_pass_notify_command =
-			str_copy(s->integrate_pass_notify_command);
-	if
-	(
-		!a->integrate_fail_notify_command
-	&&
-		s->integrate_fail_notify_command
-	)
-		a->integrate_fail_notify_command =
-			str_copy(s->integrate_fail_notify_command);
+	if (!a->default_development_directory)
+	{
+		s = project_default_development_directory_get(pp);
+		if (s)
+			a->default_development_directory = str_copy(s);
+	}
+
+	if (!(a->mask & pattr_developer_may_review_mask))
+		a->developer_may_review = project_developer_may_review_get(pp);
+	if (!(a->mask & pattr_developer_may_integrate_mask))
+		a->developer_may_integrate =
+			project_developer_may_integrate_get(pp);
+	if (!(a->mask & pattr_reviewer_may_integrate_mask))
+		a->reviewer_may_integrate =
+			project_reviewer_may_integrate_get(pp);
+	if (!(a->mask & pattr_developers_may_create_changes_mask))
+		a->developers_may_create_changes =
+			project_developers_may_create_changes_get(pp);
+	if (!(a->mask & pattr_umask_mask))
+		a->umask = project_umask_get(pp);
+	if (!(a->mask & pattr_default_test_exemption_mask))
+		a->default_test_exemption =
+			project_default_test_exemption_get(pp);
+	
+	if (!a->forced_develop_begin_notify_command)
+	{
+		s = project_forced_develop_begin_notify_command_get(pp);
+		if (s)
+			a->forced_develop_begin_notify_command = str_copy(s);
+	}
+
+	if (!a->develop_end_notify_command)
+	{
+		s = project_develop_end_notify_command_get(pp);
+		if (s)
+			a->develop_end_notify_command = str_copy(s);
+	}
+
+	if (!a->develop_end_undo_notify_command)
+	{
+		s = project_develop_end_undo_notify_command_get(pp);
+		if (s)
+			a->develop_end_undo_notify_command = str_copy(s);
+	}
+
+	if (!a->review_pass_notify_command)
+	{
+		s = project_review_pass_notify_command_get(pp);
+		if (s)
+			a->review_pass_notify_command = str_copy(s);
+	}
+
+	if (!a->review_pass_undo_notify_command)
+	{
+		s = project_review_pass_undo_notify_command_get(pp);
+		if (s)
+			a->review_pass_undo_notify_command = str_copy(s);
+	}
+
+	if (!a->review_fail_notify_command)
+	{
+		s = project_review_fail_notify_command_get(pp);
+		if (s)
+			a->review_fail_notify_command = str_copy(s);
+	}
+
+	if (!a->integrate_pass_notify_command)
+	{
+		s = project_integrate_pass_notify_command_get(pp);
+		if (s)
+			a->integrate_pass_notify_command = str_copy(s);
+	}
+
+	if (!a->integrate_fail_notify_command)
+	{
+		s = project_integrate_fail_notify_command_get(pp);
+		if (s)
+			a->integrate_fail_notify_command = str_copy(s);
+	}
+
+	if (!a->minimum_change_number)
+		a->minimum_change_number =
+			project_minimum_change_number_get(pp);
 }
 
 
@@ -193,7 +174,6 @@ static void
 project_attributes_list()
 {
 	pattr		pattr_data;
-	pstate		pstate_data;
 	string_ty	*project_name;
 	project_ty	*pp;
 
@@ -210,12 +190,12 @@ project_attributes_list()
 
 		case arglex_token_project:
 			if (arglex() != arglex_token_string)
-				project_attributes_usage();
+				option_needs_name(arglex_token_project, project_attributes_usage);
 			/* fall through... */
 
 		case arglex_token_string:
 			if (project_name)
-				fatal("duplicate -Project option");
+				duplicate_option_by_name(arglex_token_project, project_attributes_usage);
 			project_name = str_from_c(arglex_value.alv_string);
 			break;
 		}
@@ -231,9 +211,8 @@ project_attributes_list()
 	str_free(project_name);
 	project_bind_existing(pp);
 
-	pstate_data = project_pstate_get(pp);
 	pattr_data = (pattr)pattr_type.alloc();
-	pattr_copy(pattr_data, pstate_data);
+	pattr_copy(pattr_data, pp);
 	pattr_write_file((char *)0, pattr_data);
 	pattr_type.free(pattr_data);
 	project_free(pp);
@@ -241,12 +220,14 @@ project_attributes_list()
 }
 
 
-static void pattr_edit _((pattr *));
+static void pattr_edit _((pattr *, edit_ty));
 
 static void
-pattr_edit(dp)
+pattr_edit(dp, et)
 	pattr		*dp;
+	edit_ty		et;
 {
+	sub_context_ty	*scp;
 	pattr		d;
 	string_ty	*filename;
 	string_ty	*msg;
@@ -264,14 +245,17 @@ pattr_edit(dp)
 	/*
 	 * error message to issue if anything goes wrong
 	 */
-	msg = str_format("attributes text left in the \"%S\" file", filename);
+	scp = sub_context_new();
+	sub_var_set(scp, "File_Name", "%S", filename);
+	msg = subst_intl(scp, i18n("attributes in $filename"));
+	sub_context_delete(scp);
 	undo_message(msg);
 	str_free(msg);
 
 	/*
 	 * edit the file
 	 */
-	os_edit(filename);
+	os_edit(filename, et);
 
 	/*
 	 * read it in again
@@ -295,13 +279,7 @@ check_permissions(pp, up)
 	 * it is an error if the user is not an administrator
 	 */
 	if (!project_administrator_query(pp, user_name(up)))
-	{
-		project_fatal
-		(
-			pp,
-		     "attributes may only be changed by a project administrator"
-		);
-	}
+		project_fatal(pp, 0, i18n("not an administrator"));
 }
 
 
@@ -310,17 +288,17 @@ static void project_attributes_main _((void));
 static void
 project_attributes_main()
 {
+	sub_context_ty	*scp;
 	pattr		pattr_data = 0;
-	pstate		pstate_data;
 	string_ty	*project_name;
 	project_ty	*pp;
 	string_ty	*s;
-	int		edit;
+	edit_ty		edit;
 	user_ty		*up;
 
 	trace(("project_attributes_main()\n{\n"/*}*/));
 	project_name = 0;
-	edit = 0;
+	edit = edit_not_set;
 	while (arglex_token != arglex_token_eoln)
 	{
 		switch (arglex_token)
@@ -330,26 +308,19 @@ project_attributes_main()
 			continue;
 
 		case arglex_token_string:
-			error
-			(
-"warning: please use the -File option when specifying an attributes file, \
-the unadorned form is now obsolescent"
-			);
+			scp = sub_context_new();
+			sub_var_set(scp, "Name", "%s", arglex_token_name(arglex_token_file));
+			error_intl(scp, i18n("warning: use $name option"));
+			sub_context_delete(scp);
 			if (pattr_data)
-				fatal("too many files named");
+				fatal_intl(0, i18n("too many files"));
 			goto read_input_file;
 
 		case arglex_token_file:
 			if (pattr_data)
-				goto duplicate;
+				duplicate_option(project_attributes_usage);
 			if (arglex() != arglex_token_string)
-			{
-				error
-				(
-				 "the -File option requires a filename argument"
-				);
-				project_attributes_usage();
-			}
+				option_needs_file(arglex_token_file, project_attributes_usage);
 			read_input_file:
 			os_become_orig();
 			pattr_data = pattr_read_file(arglex_value.alv_string);
@@ -359,33 +330,68 @@ the unadorned form is now obsolescent"
 
 		case arglex_token_project:
 			if (project_name)
-				goto duplicate;
+				duplicate_option(project_attributes_usage);
 			if (arglex() != arglex_token_string)
-				project_attributes_usage();
+				option_needs_name(arglex_token_project, project_attributes_usage);
 			project_name = str_from_c(arglex_value.alv_string);
 			break;
 
 		case arglex_token_edit:
-			if (edit)
+			if (edit == edit_foreground)
+				duplicate_option(project_attributes_usage);
+			if (edit != edit_not_set)
 			{
-				duplicate:
-				fatal
+				too_many_edits:
+				mutually_exclusive_options
 				(
-					"duplicate %s option",
-					arglex_value.alv_string
+					arglex_token_edit,
+					arglex_token_edit_bg,
+					project_attributes_usage
 				);
 			}
-			edit++;
+			edit = edit_foreground;
+			break;
+
+		case arglex_token_edit_bg:
+			if (edit == edit_background)
+				duplicate_option(project_attributes_usage);
+			if (edit != edit_not_set)
+				goto too_many_edits;
+			edit = edit_background;
+			break;
+
+		case arglex_token_wait:
+		case arglex_token_wait_not:
+			user_lock_wait_argument(project_attributes_usage);
 			break;
 		}
 		arglex();
 	}
-	if (!edit && !pattr_data)
+	if (edit != edit_not_set && pattr_data)
 	{
-		error("warning: no -File specified, assuming -Editr desired");
-		++edit;
+		mutually_exclusive_options
+		(
+			(
+				edit == edit_foreground
+			?
+				arglex_token_edit
+			:
+				arglex_token_edit_bg
+			),
+			arglex_token_file,
+			project_attributes_usage
+		);
 	}
-	if (edit && !pattr_data)
+	if (edit == edit_not_set && !pattr_data)
+	{
+		scp = sub_context_new();
+		sub_var_set(scp, "Name1", "%s", arglex_token_name(arglex_token_file));
+		sub_var_set(scp, "Name2", "%s", arglex_token_name(arglex_token_edit));
+		error_intl(scp, i18n("warning: no $name1, assuming $name2"));
+		sub_context_delete(scp);
+		edit = edit_foreground;
+	}
+	if (edit != edit_not_set && !pattr_data)
 		pattr_data = (pattr)pattr_type.alloc();
 
 	/*
@@ -405,7 +411,7 @@ the unadorned form is now obsolescent"
 	/*
 	 * edit the attributes
 	 */
-	if (edit)
+	if (edit != edit_not_set)
 	{
 		/*
 		 * make sure they are allowed to,
@@ -416,13 +422,16 @@ the unadorned form is now obsolescent"
 		/*
 		 * copy things from project
 		 */
-		pstate_data = project_pstate_get(pp);
-		pattr_copy(pattr_data, pstate_data);
+		pattr_copy(pattr_data, pp);
 
 		/*
 		 * edit them
 		 */
-		pattr_edit(&pattr_data);
+		scp = sub_context_new();
+		sub_var_set(scp, "Name", "%S", project_name_get(pp));
+		io_comment_append(scp, "Project $name");
+		sub_context_delete(scp);
+		pattr_edit(&pattr_data, edit);
 	}
 
 	/*
@@ -430,7 +439,6 @@ the unadorned form is now obsolescent"
 	 */
 	project_pstate_lock_prepare(pp);
 	lock_take();
-	pstate_data = project_pstate_get(pp);
 
 	/*
 	 * make sure they are allowed to
@@ -442,183 +450,153 @@ the unadorned form is now obsolescent"
 	 * copy the attributes across
 	 */
 	if (pattr_data->description)
-	{
-		if (pstate_data->description)
-			str_free(pstate_data->description);
-		pstate_data->description = str_copy(pattr_data->description);
-	}
+		project_description_set(pp, pattr_data->description);
 
-	if (pattr_data->owner_name)
-	{
-		if (!user_uid_check(pattr_data->owner_name))
-		{
-			fatal
-			(
-				"user \"%s\" is too privileged",
-				pattr_data->owner_name->str_text
-			);
-		}
-		if (pstate_data->owner_name)
-			str_free(pstate_data->owner_name);
-		pstate_data->owner_name = str_copy(pattr_data->owner_name);
-	}
-
-	if (pattr_data->group_name)
-	{
-		if (!user_gid_check(pattr_data->group_name))
-		{
-			fatal
-			(
-				"group \"%s\" is too privileged",
-				pattr_data->group_name->str_text
-			);
-		}
-		if (pstate_data->group_name)
-			str_free(pstate_data->group_name);
-		pstate_data->group_name = str_copy(pattr_data->group_name);
-	}
 
 	if (pattr_data->mask & pattr_developer_may_review_mask)
-		pstate_data->developer_may_review =
-			pattr_data->developer_may_review;
+	{
+		project_developer_may_review_set
+		(
+			pp,
+			pattr_data->developer_may_review
+		);
+	}
 	if (pattr_data->mask & pattr_developer_may_integrate_mask)
-		pstate_data->developer_may_integrate =
-			pattr_data->developer_may_integrate;
+	{
+		project_developer_may_integrate_set
+		(
+			pp,
+			pattr_data->developer_may_integrate
+		);
+	}
 	if (pattr_data->mask & pattr_reviewer_may_integrate_mask)
-		pstate_data->reviewer_may_integrate =
-			pattr_data->reviewer_may_integrate;
+	{
+		project_reviewer_may_integrate_set
+		(
+			pp,
+			pattr_data->reviewer_may_integrate
+		);
+	}
 	if (pattr_data->mask & pattr_developers_may_create_changes_mask)
-		pstate_data->developers_may_create_changes =
-			pattr_data->developers_may_create_changes;
+	{
+		project_developers_may_create_changes_set
+		(
+			pp,
+			pattr_data->developers_may_create_changes
+		);
+	}
 
-	/*
-	 * only some combos work,
-	 * umask is basically for the "other" permissions
-	 */
 	if (pattr_data->mask & pattr_umask_mask)
-		pstate_data->umask = (pattr_data->umask & 5) | 022;
+		project_umask_set(pp, pattr_data->umask);
 	
 	if (pattr_data->mask & pattr_default_test_exemption_mask)
-		pstate_data->default_test_exemption =
-			pattr_data->default_test_exemption;
-
-	if (pattr_data->copyright_years)
 	{
-		size_t		j;
-
-		if (pstate_data->copyright_years)
-			pstate_copyright_years_list_type.free
-			(
-				pstate_data->copyright_years
-			);
-		pstate_data->copyright_years =
-			pstate_copyright_years_list_type.alloc();
-		for (j = 0; j < pattr_data->copyright_years->length; ++j)
-		{
-			long		*year_p;
-			type_ty		*type_p;
-			
-			year_p =
-				pstate_copyright_years_list_type.list_parse
-				(
-					pstate_data->copyright_years,
-					&type_p
-				);
-			assert(type_p == &integer_type);
-			*year_p = pattr_data->copyright_years->list[j];
-		}
+		project_default_test_exemption_set
+		(
+			pp,
+			pattr_data->default_test_exemption
+		);
 	}
 
 	if (pattr_data->forced_develop_begin_notify_command)
 	{
-		if (pstate_data->forced_develop_begin_notify_command)
-			str_free(pstate_data->forced_develop_begin_notify_command);
-		pstate_data->forced_develop_begin_notify_command =
-			str_copy(pattr_data->forced_develop_begin_notify_command);
+		project_forced_develop_begin_notify_command_set
+		(
+			pp,
+			pattr_data->forced_develop_begin_notify_command
+		);
 	}
 
 	if (pattr_data->develop_end_notify_command)
 	{
-		if (pstate_data->develop_end_notify_command)
-			str_free(pstate_data->develop_end_notify_command);
-		pstate_data->develop_end_notify_command =
-			str_copy(pattr_data->develop_end_notify_command);
+		project_develop_end_notify_command_set
+		(
+			pp,
+			pattr_data->develop_end_notify_command
+		);
 	}
 
 	if (pattr_data->develop_end_undo_notify_command)
 	{
-		if (pstate_data->develop_end_undo_notify_command)
-			str_free(pstate_data->develop_end_undo_notify_command);
-		pstate_data->develop_end_undo_notify_command =
-			str_copy(pattr_data->develop_end_undo_notify_command);
+		project_develop_end_undo_notify_command_set
+		(
+			pp,
+			pattr_data->develop_end_undo_notify_command
+		);
 	}
 
 	if (pattr_data->review_pass_notify_command)
 	{
-		if (pstate_data->review_pass_notify_command)
-			str_free(pstate_data->review_pass_notify_command);
-		pstate_data->review_pass_notify_command =
-			str_copy(pattr_data->review_pass_notify_command);
+		project_review_pass_notify_command_set
+		(
+			pp,
+			pattr_data->review_pass_notify_command
+		);
 	}
 
 	if (pattr_data->review_pass_undo_notify_command)
 	{
-		if (pstate_data->review_pass_undo_notify_command)
-			str_free(pstate_data->review_pass_undo_notify_command);
-		pstate_data->review_pass_undo_notify_command =
-			str_copy(pattr_data->review_pass_undo_notify_command);
+		project_review_pass_undo_notify_command_set
+		(
+			pp,
+			pattr_data->review_pass_undo_notify_command
+		);
 	}
 
 	if (pattr_data->review_fail_notify_command)
 	{
-		if (pstate_data->review_fail_notify_command)
-			str_free(pstate_data->review_fail_notify_command);
-		pstate_data->review_fail_notify_command =
-			str_copy(pattr_data->review_fail_notify_command);
+		project_review_fail_notify_command_set
+		(
+			pp,
+			pattr_data->review_fail_notify_command
+		);
 	}
 
 	if (pattr_data->integrate_pass_notify_command)
 	{
-		if (pstate_data->integrate_pass_notify_command)
-			str_free(pstate_data->integrate_pass_notify_command);
-		pstate_data->integrate_pass_notify_command =
-			str_copy(pattr_data->integrate_pass_notify_command);
+		project_integrate_pass_notify_command_set
+		(
+			pp,
+			pattr_data->integrate_pass_notify_command
+		);
 	}
 
 	if (pattr_data->integrate_fail_notify_command)
 	{
-		if (pstate_data->integrate_fail_notify_command)
-			str_free(pstate_data->integrate_fail_notify_command);
-		pstate_data->integrate_fail_notify_command =
-			str_copy(pattr_data->integrate_fail_notify_command);
+		project_integrate_fail_notify_command_set
+		(
+			pp,
+			pattr_data->integrate_fail_notify_command
+		);
 	}
 
 	if (pattr_data->default_development_directory)
 	{
-		if (pstate_data->default_development_directory)
-			str_free(pstate_data->default_development_directory);
 		s = pattr_data->default_development_directory;
 		if (!s->str_length)
-			pstate_data->default_development_directory = 0;
+			s = 0;
 		else
 		{
 			if (s->str_text[0] != '/')
-			{
-				fatal
-				(
-	"default development directory must be specified as an absolute path"
-				);
-			}
-			pstate_data->default_development_directory =
-				str_copy(s);
+				fatal_intl(0, i18n("bad pa, rel def dev dir"));
+			project_default_development_directory_set(pp, s);
 		}
+	}
+
+	if (pattr_data->mask & pattr_minimum_change_number_mask)
+	{
+		project_minimum_change_number_set
+		(
+			pp,
+			pattr_data->minimum_change_number
+		);
 	}
 
 	pattr_type.free(pattr_data);
 	project_pstate_write(pp);
 	commit();
 	lock_release();
-	project_verbose(pp, "attributes changed");
+	project_verbose(pp, 0, i18n("project attributes complete"));
 	project_free(pp);
 	user_free(up);
 	trace((/*{*/"}\n"));

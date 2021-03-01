@@ -1,0 +1,52 @@
+.\"
+.\"	aegis - project change supervisor
+.\"	Copyright (C) 1998 Peter Miller;
+.\"	All rights reserved.
+.\"
+.\"	This program is free software; you can redistribute it and/or modify
+.\"	it under the terms of the GNU General Public License as published by
+.\"	the Free Software Foundation; either version 2 of the License, or
+.\"	(at your option) any later version.
+.\"
+.\"	This program is distributed in the hope that it will be useful,
+.\"	but WITHOUT ANY WARRANTY; without even the implied warranty of
+.\"	MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+.\"	GNU General Public License for more details.
+.\"
+.\"	You should have received a copy of the GNU General Public License
+.\"	along with this program; if not, write to the Free Software
+.\"	Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111, USA.
+.\"
+.\" MANIFEST: AUUGN Feb'98 Article
+.\"
+.nr PS 72
+.nr VS 75000
+.LP
+.ad c
+Does it Scale?
+.br
+.ad l
+.sp
+.nr PS 36
+.nr VS 37
+.XP
+\(bu Can make build the graph fast enough?
+.XP
+\(bu Can make stat the files fast enough?
+.XP
+\(bu Stuff that, can I get my work done?
+.bp
+.nr PS 24
+.nr VS 25
+.XP
+\(bu Fast enough for \fIwhat?\fP
+.XP
+\(bu The more build problems you find, and the earlier you find them,
+the better.  Using VPATH, this happens in the developer's work area,
+not in the project repository build.
+.XP
+\(bu Some make implementations are \fIO(n\u2\d)\fP.
+This is bad;  \fIO(n)\fP is possible.
+.XP
+\(bu As for previous ``My Little Bit'' foil,
+build less, and it takes less time.

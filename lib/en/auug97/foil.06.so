@@ -1,0 +1,123 @@
+.\"
+.\"	aegis - project change supervisor
+.\"	Copyright (C) 1998 Peter Miller;
+.\"	All rights reserved.
+.\"
+.\"	This program is free software; you can redistribute it and/or modify
+.\"	it under the terms of the GNU General Public License as published by
+.\"	the Free Software Foundation; either version 2 of the License, or
+.\"	(at your option) any later version.
+.\"
+.\"	This program is distributed in the hope that it will be useful,
+.\"	but WITHOUT ANY WARRANTY; without even the implied warranty of
+.\"	MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+.\"	GNU General Public License for more details.
+.\"
+.\"	You should have received a copy of the GNU General Public License
+.\"	along with this program; if not, write to the Free Software
+.\"	Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111, USA.
+.\"
+.\" MANIFEST: AUUGN Feb'98 Article
+.\"
+.nr PS 72
+.nr VS 75000
+.LP
+.ad c
+Recursive
+.br
+.ad l
+.sp 0.3i
+.nr PS 36
+.nr VS 37
+.XP
+\(bu
+Multiple makefiles
+.br
+.ps 16
+.vs 17
+.ft CW
+.TS
+tab(@);
+l | l.
+@prog: ../a/a.o b.o
+@  cc -o prog ../a/a.o b.o
+.sp 0.5
+a.o: a.c a.h@a.o: \fIforce\fP
+  cc -c a.c@  cd ../a;make a.o
+.sp 0.5
+a.c a.h: a.y@b.o: b.c ../a/a.h
+  yacc -d a.y@  cc -c b.c
+  \fImv \&...\fP
+.TE
+.XP
+\(bu
+Multiple graphs
+.br
+.ps 16
+.vs 17
+.sp 0.5
+.PS
+.ft CW
+ellipseht = 0.4
+ellipsewid = ellipseht * 2.5
+down
+A1: ellipse "prog"
+move 3*ellipseht
+C2: ellipse "a.h"
+C3: ellipse "b.c" with .w at C2.e+(ellipseht,0)
+B2: ellipse "b.o" with .c at 0.5<A1.s,C3.n>
+B1: ellipse "a.o" with .c at (A1.c.x*2-B2.c.x,B2.c.y)
+arrow from B1.n to A1.sw
+arrow from B2.n to A1.se
+arrow from C2.n to B2.sw
+arrow from C3.n to B2.se
+.\" -------------------------------------------
+CC2: ellipse "a.h" with .e at C2.w-(ellipseht,0)
+C1: ellipse "a.c" with .e at CC2.w-(ellipseht,0)
+BB1: ellipse "a.o" with .e at B1.w-(ellipseht,0)
+D1: ellipse "a.y" with .n at 0.5<C1.s,CC2.s>-(0,ellipseht)
+arrow from C1.n to BB1.sw
+arrow from CC2.n to BB1.se
+arrow from D1.n to C1.se
+arrow from D1.n to CC2.sw
+.ft P
+.PE
+.bp
+.nr PS 24
+.nr VS 25
+.XP
+\(bu
+Ignore the picky details, like -I options.
+And yacc files, \fIetc\fP.
+.XP
+\(bu
+The first traditional fix:
+building too much (\f(CWa.o\fP) every single time.
+.XP
+\(bu
+The second traditional fix:
+building too little (\f(CWa.h \(<- a.y\fP)
+.XP
+\(bu
+The third traditional fix:
+building more than once (not shown)
+.XP
+\(bu
+If you read \f(CWliba.a\fP instead of \f(CWa.o\fP,
+you can see how hard it may be to tell if
+it is out of date.
+.XP
+\(bu
+(Include) dependencies are nasty, they can multiply without you knowing
+.br
+\(dg and they are repaired in the \fIconsumer\fP,
+but how does the producer know?
+.br
+\(dg remember \fBlarge\fP projects, with 100s of directories
+.XP
+\(bu
+Make then performs two separate traversals of these graphs.
+.br
+\(dg To work properly, \fImake\fP needs the whole graph.
+.br
+\(dg To work properly, \fImake\fP needs to be free to choose its own order.

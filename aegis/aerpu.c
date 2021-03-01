@@ -1,6 +1,6 @@
 /*
  *	aegis - project change supervisor
- *	Copyright (C) 1991, 1992, 1993, 1994 Peter Miller.
+ *	Copyright (C) 1991, 1992, 1993, 1994, 1995, 1996, 1997, 1998 Peter Miller;
  *	All rights reserved.
  *
  *	This program is free software; you can redistribute it and/or modify
@@ -15,7 +15,7 @@
  *
  *	You should have received a copy of the GNU General Public License
  *	along with this program; if not, write to the Free Software
- *	Foundation, Inc., 675 Mass Ave, Cambridge, MA 02139, USA.
+ *	Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111, USA.
  *
  * MANIFEST: functions to implement review pass undo
  */
@@ -37,8 +37,8 @@
 #include <help.h>
 #include <lock.h>
 #include <mem.h>
-#include <option.h>
 #include <os.h>
+#include <progname.h>
 #include <project.h>
 #include <sub.h>
 #include <trace.h>
@@ -53,7 +53,7 @@ review_pass_undo_usage()
 {
 	char		*progname;
 
-	progname = option_progname_get();
+	progname = progname_get();
 	fprintf(stderr, "usage: %s -Review_Pass_Undo <change_number> [ <option>... ]\n", progname);
 	fprintf(stderr, "       %s -Review_Pass_Undo -List [ <option>... ]\n", progname);
 	fprintf(stderr, "       %s -Review_Pass_Undo -Help\n", progname);
@@ -66,12 +66,7 @@ static void review_pass_undo_help _((void));
 static void
 review_pass_undo_help()
 {
-	static char *text[] =
-	{
-#include <../man1/aerpu.h>
-	};
-
-	help(text, SIZEOF(text), review_pass_undo_usage);
+	help("aerpu", review_pass_undo_usage);
 }
 
 
@@ -96,12 +91,12 @@ review_pass_undo_list(usage)
 
 		case arglex_token_project:
 			if (arglex() != arglex_token_string)
-				usage();
+				option_needs_name(arglex_token_project, usage);
 			/* fall through... */
 
 		case arglex_token_string:
 			if (project_name)
-				fatal("duplicate -Project option");
+				duplicate_option_by_name(arglex_token_project, usage);
 			project_name = str_from_c(arglex_value.alv_string);
 			break;
 		}
@@ -124,7 +119,6 @@ static void
 review_pass_undo_main()
 {
 	cstate		cstate_data;
-	pstate		pstate_data;
 	cstate_history	history_data;
 	string_ty	*project_name;
 	project_ty	*pp;
@@ -145,26 +139,41 @@ review_pass_undo_main()
 
 		case arglex_token_change:
 			if (arglex() != arglex_token_number)
-				review_pass_undo_usage();
+				option_needs_number(arglex_token_change, review_pass_undo_usage);
 			/* fall through... */
 
 		case arglex_token_number:
 			if (change_number)
-				fatal("duplicate -Change option");
+				duplicate_option_by_name(arglex_token_change, review_pass_undo_usage);
 			change_number = arglex_value.alv_number;
-			if (change_number < 1)
-				fatal("change %ld out of range", change_number);
+			if (change_number == 0)
+				change_number = MAGIC_ZERO;
+			else if (change_number < 1)
+			{
+				sub_context_ty	*scp;
+
+				scp = sub_context_new();
+				sub_var_set(scp, "Number", "%ld", change_number);
+				fatal_intl(scp, i18n("change $number out of range"));
+				/* NOTREACHED */
+				sub_context_delete(scp);
+			}
 			break;
 
 		case arglex_token_project:
 			if (arglex() != arglex_token_string)
-				review_pass_undo_usage();
-			/* fall through... */
+				option_needs_name(arglex_token_project, review_pass_undo_usage);
+						/* fall through... */
 
 		case arglex_token_string:
 			if (project_name)
-				fatal("duplicate -Project option");
+				duplicate_option_by_name(arglex_token_project, review_pass_undo_usage);
 			project_name = str_from_c(arglex_value.alv_string);
+			break;
+
+		case arglex_token_wait:
+		case arglex_token_wait_not:
+			user_lock_wait_argument(review_pass_undo_usage);
 			break;
 		}
 		arglex();
@@ -198,32 +207,15 @@ review_pass_undo_main()
 	change_cstate_lock_prepare(cp);
 	lock_take();
 	cstate_data = change_cstate_get(cp);
-	pstate_data = project_pstate_get(pp);
 
 	/*
 	 * it is an error if the change is not in the 'being_reviewed' state.
 	 * it is an error if the current user is not the original reviewer
 	 */
 	if (cstate_data->state != cstate_state_awaiting_integration)
-	{
-		change_fatal
-		(
-			cp,
-"this change is in the '%s' state, \
-it must be in the 'awaiting integration' state to undo a review pass",
-			cstate_state_ename(cstate_data->state)
-		);
-	}
+		change_fatal(cp, 0, i18n("bad rpu state"));
 	if (!str_equal(change_reviewer_name(cp), user_name(up)))
-	{
-		change_fatal
-		(
-			cp,
-  "user \"%S\" was not the reviewer, only user \"%S\" may undo the review pass",
-			user_name(up),
-			change_reviewer_name(cp)
-		);
-	}
+		change_fatal(cp, 0, i18n("was not reviewer"));
 
 	/*
 	 * change the state
@@ -248,7 +240,7 @@ it must be in the 'awaiting integration' state to undo a review pass",
 	/*
 	 * verbose success message
 	 */
-	change_verbose(cp, "review pass rescinded");
+	change_verbose(cp, 0, i18n("review pass undo complete"));
 	change_free(cp);
 	project_free(pp);
 	user_free(up);

@@ -1,7 +1,7 @@
 #!/bin/sh
 #
 #	aegis - project change supervisor
-#	Copyright (C) 1994, 1995 Peter Miller;
+#	Copyright (C) 1994, 1995, 1996, 1997, 1998 Peter Miller;
 #	All rights reserved.
 #
 #	This program is free software; you can redistribute it and/or modify
@@ -16,7 +16,7 @@
 #
 #	You should have received a copy of the GNU General Public License
 #	along with this program; if not, write to the Free Software
-#	Foundation, Inc., 675 Mass Ave, Cambridge, MA 02139, USA.
+#	Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111, USA.
 #
 # MANIFEST: Test the basic report language
 #
@@ -34,16 +34,29 @@ PAGER=cat
 export PAGER
 
 AEGIS_FLAGS="delete_file_preference = no_keep; \
-	diff_preference = automatic_merge;"
+	lock_wait_preference = always; \
+	diff_preference = automatic_merge; \
+	pager_preference = never; \
+	persevere_preference = all; \
+	log_file_preference = never;"
 export AEGIS_FLAGS
 AEGIS_THROTTLE=2
 export AEGIS_THROTTLE
 
 here=`pwd`
-if test $? -ne 0 ; then exit 1; fi
+if test $? -ne 0 ; then exit 2; fi
 
 if test "$1" != "" ; then bin="$here/$1/bin"; else bin="$here/bin"; fi
 
+no_result()
+{
+	set +x
+	echo 'NO RESULT for test of basic report language' 1>&2
+	cd $here
+	find $work -type d -user $USER -exec chmod u+w {} \;
+	rm -rf $work
+	exit 2
+}
 fail()
 {
 	set +x
@@ -62,17 +75,17 @@ pass()
 	rm -rf $work
 	exit 0
 }
-trap \"fail\" 1 2 3 15
+trap \"no_result\" 1 2 3 15
 
 mkdir $work
-if test $? -ne 0 ; then fail; fi
+if test $? -ne 0 ; then no_result; fi
 cd $work
-if test $? -ne 0 ; then fail; fi
+if test $? -ne 0 ; then no_result; fi
 
 mkdir $work/lib $work/lib/report
-if test $? -ne 0 ; then fail; fi
+if test $? -ne 0 ; then no_result; fi
 chmod 777 $work/lib
-if test $? -ne 0 ; then fail; fi
+if test $? -ne 0 ; then no_result; fi
 
 AEGIS_PATH=$work/lib
 export AEGIS_PATH
@@ -85,8 +98,8 @@ export COLS
 #
 # create a project for later tests
 #
-$bin/aegis -new_proj foo -dir $work/proj -v
-if test $? -ne 0 ; then fail; fi
+$bin/aegis -new_proj foo -dir $work/proj -v > log 2>&1
+if test $? -ne 0 ; then cat log; no_result; fi
 
 #
 # test the basic report language
@@ -100,12 +113,12 @@ print(3.4e-2);
 print();
 print("hello", "world");
 fubar
-if test $? -ne 0 ; then fail; fi
+if test $? -ne 0 ; then no_result; fi
 $bin/aegis -report -file test.in -o test.out.raw
 if test $? -ne 0 ; then fail; fi
 
 sed '/delete this line/d' < test.out.raw > test.out
-if test $? -ne 0 ; then fail; fi
+if test $? -ne 0 ; then no_result; fi
 
 cat > test.ok << 'fubar'
 
@@ -120,7 +133,7 @@ First		Second
 
 hello		world
 fubar
-if test $? -ne 0 ; then fail; fi
+if test $? -ne 0 ; then no_result; fi
 
 diff test.ok test.out
 if test $? -ne 0 ; then fail; fi
@@ -134,12 +147,12 @@ columns("r+r\n-------", "r+i\n-------", "i+r\n-------", "i+i\n-------");
 print("6.1" + 7.2, 3.4 + 5, "1" + 0.2, 1 + 2 + 3);
 print("6.1" * 7.2, 3.4 * 5, "12" * 0.2, 2 * 3);
 fubar
-if test $? -ne 0 ; then fail; fi
+if test $? -ne 0 ; then no_result; fi
 $bin/aegis -report -file test.in -o test.out.raw
 if test $? -ne 0 ; then fail; fi
 
 sed '/delete this line/d' < test.out.raw > test.out
-if test $? -ne 0 ; then fail; fi
+if test $? -ne 0 ; then no_result; fi
 
 cat > test.ok << 'fubar'
 
@@ -152,7 +165,7 @@ r+r	r+i	i+r	i+i
 13.3	8.4	1.2	6
 43.92	17	2.4	6
 fubar
-if test $? -ne 0 ; then fail; fi
+if test $? -ne 0 ; then no_result; fi
 
 diff test.ok test.out
 if test $? -ne 0 ; then fail; fi
@@ -168,12 +181,12 @@ auto j;
 for (j = -16; j < 10; j = j + 1)
 	print(j, j * j, j < 3, j <= 3, j > 3, j >= 3, j == 3, j != 3, j ~~ "A1");
 fubar
-if test $? -ne 0 ; then fail; fi
+if test $? -ne 0 ; then no_result; fi
 $bin/aegis -report -file test.in -o test.out.raw
 if test $? -ne 0 ; then fail; fi
 
 sed '/delete this line/d' < test.out.raw > test.out
-if test $? -ne 0 ; then fail; fi
+if test $? -ne 0 ; then no_result; fi
 
 cat > test.ok << 'fubar'
 
@@ -210,7 +223,7 @@ N	N^2	<	<=	>	>=	==	!=	~~
 8	64	false	false	true	true	false	true	0
 9	81	false	false	true	true	false	true	0
 fubar
-if test $? -ne 0 ; then fail; fi
+if test $? -ne 0 ; then no_result; fi
 
 diff test.ok test.out
 if test $? -ne 0 ; then fail; fi
@@ -233,12 +246,12 @@ for (j = 1; j < 32; j = j + 1)
 		sprintf("%2X", j)
 	);
 fubar
-if test $? -ne 0 ; then fail; fi
+if test $? -ne 0 ; then no_result; fi
 $bin/aegis -report -file test.in -o test.out.raw
 if test $? -ne 0 ; then fail; fi
 
 sed '/delete this line/d' < test.out.raw > test.out
-if test $? -ne 0 ; then fail; fi
+if test $? -ne 0 ; then no_result; fi
 
 cat > test.ok << 'fubar'
 
@@ -279,7 +292,7 @@ sprintf							  Page 1
 30	^	30.00	8.10000e+05	3025	1E
 31	_	31.00	9.23521e+05	3126	1F
 fubar
-if test $? -ne 0 ; then fail; fi
+if test $? -ne 0 ; then no_result; fi
 
 diff test.ok test.out
 if test $? -ne 0 ; then fail; fi
@@ -300,7 +313,10 @@ columns
 auto j, p, w;
 for (j in sort(keys(passwd)))
 {
-	p = passwd[j];
+	try
+		p = passwd[j];
+	catch (p)
+		continue;
 	w = p.pw_name ~~ "pmiller";
 	if (w < 0.8)
 		continue;
@@ -314,9 +330,9 @@ for (j in sort(keys(passwd)))
 	);
 }
 fubar
-if test $? -ne 0 ; then fail; fi
-$bin/aegis -report -file test.in
-if test $? -ne 0 ; then fail; fi
+if test $? -ne 0 ; then no_result; fi
+$bin/aegis -report -file test.in > log 2>&1
+if test $? -ne 0 ; then cat log; fail; fi
 
 #
 # test the ``projects variable'' functionality
@@ -339,9 +355,9 @@ for (j in sort(keys(project)))
 if (n == 0)
 	print("", "", "Found no projects.");
 fubar
-if test $? -ne 0 ; then fail; fi
-$bin/aegis -report -file test.in
-if test $? -ne 0 ; then fail; fi
+if test $? -ne 0 ; then no_result; fi
+$bin/aegis -report -file test.in > log 2>&1
+if test $? -ne 0 ; then cat log; fail; fi
 
 #
 # Only definite negatives are possible.

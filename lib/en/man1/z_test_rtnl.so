@@ -1,0 +1,69 @@
+.\"
+.\"	aegis - project change supervisor
+.\"	Copyright (C) 1996 Peter Miller;
+.\"	All rights reserved.
+.\"
+.\"	This program is free software; you can redistribute it and/or modify
+.\"	it under the terms of the GNU General Public License as published by
+.\"	the Free Software Foundation; either version 2 of the License, or
+.\"	(at your option) any later version.
+.\"
+.\"	This program is distributed in the hope that it will be useful,
+.\"	but WITHOUT ANY WARRANTY; without even the implied warranty of
+.\"	MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+.\"	GNU General Public License for more details.
+.\"
+.\"	You should have received a copy of the GNU General Public License
+.\"	along with this program; if not, write to the Free Software
+.\"	Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111, USA.
+.\"
+.\" MANIFEST: document describing z_test_rtnl.so
+.\"
+.SH TEST PROCESS
+Each change is required to be accompanied by tests, and those tests are
+required to be run against the built development directory, and they
+must pass.  This ensures that new functionality is accompanied by tests
+to verify its correctness, and bug fixes are accompanied by tests which
+confirm that the bug has been fixed.
+.SS Regression Tests
+Tests are treated as any other source file, and are maintained in the
+baseline and history with all other source files.  The tests which must
+accompany every change accumulate in the project baseline, providing a
+definition of correct function for the baseline.  These accumulated
+tests may be executed using an ``\*(n) -REGression'' command, to verify
+that the project will not ``regress'' as a result of a change.
+.SS Baseline Tests
+Bug fixes are required to have their tests
+.I fail
+against the project baseline (in contrast to the development directory).
+This ensures that the test actually demonstrates the bug in the
+baseline, as well as demonstrating that it is fixed by the change.  New
+functionality trivially fails against the baseline, and so \*(n) does
+not attempt to guess if a test is a bug fix test or new functionality
+test, it simply requires tests to fail against the baseline.
+.PP
+This requirement applies both to new tests being created by a change and
+also to tests which have been copied into a change for modification.
+.SS Reviewing Tests
+Reviewers may be confident that \*(n) has enforced the test
+requirements; that a change must have tests, that the change must build,
+that the tests pass against the development directory, and that the
+tests fail against the baseline.  These conditions are enforced by
+.IR aede (1)
+and the change will not be advanced to the
+.I "being reviewed"
+state until these conditions are met.  Reviewers should thus review
+tests for
+.I completeness
+of coverage of the code in the change, and insensitivity to changes in
+the execution environment (e.g. not date sensitive).  Reviewers should
+also use ``\*(n) -list change_details'' to verify that a change does or
+does not have testing exemptions.
+.SS Exemptions
+Various test exemptions may be granted by project administrators, see
+.IR aepa (1)
+and
+.IR aepattr (5)
+for more information.
+Copying tests into a change, or adding new tests to a change,
+may cancel those exemptions.

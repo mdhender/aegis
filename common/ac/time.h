@@ -1,6 +1,6 @@
 /*
  *	aegis - a project change supervisor
- *	Copyright (C) 1994 Peter Miller.
+ *	Copyright (C) 1994, 1996, 1997 Peter Miller;
  *	All rights reserved.
  *
  *	This program is free software; you can redistribute it and/or modify
@@ -15,15 +15,26 @@
  *
  *	You should have received a copy of the GNU General Public License
  *	along with this program; if not, write to the Free Software
- *	Foundation, Inc., 675 Mass Ave, Cambridge, MA 02139, USA.
+ *	Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111, USA.
  *
- * MANIFEST: isolate time.h differences
+ * MANIFEST: insulate against <time.h> vs <sys/time.h> differences
  */
 
 #ifndef COMMON_AC_TIME_H
 #define COMMON_AC_TIME_H
 
 #include <config.h>
+
+/*
+ * Catch-22: Dec Alpha OSF/1: need to include time.h before sys/time.h
+ * before time.h
+ */
+#ifdef __alpha__
+#ifndef _CLOCK_ID_T
+#define _CLOCK_ID_T
+typedef int clockid_t;
+#endif
+#endif
 
 #ifdef TIME_WITH_SYS_TIME
 #include <sys/time.h>

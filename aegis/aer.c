@@ -1,6 +1,6 @@
 /*
  *	aegis - project change supervisor
- *	Copyright (C) 1994 Peter Miller.
+ *	Copyright (C) 1994, 1995, 1996, 1997 Peter Miller;
  *	All rights reserved.
  *
  *	This program is free software; you can redistribute it and/or modify
@@ -15,7 +15,7 @@
  *
  *	You should have received a copy of the GNU General Public License
  *	along with this program; if not, write to the Free Software
- *	Foundation, Inc., 675 Mass Ave, Cambridge, MA 02139, USA.
+ *	Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111, USA.
  *
  * MANIFEST: functions to implement the 'aegis -RePorT' command
  */
@@ -30,8 +30,10 @@
 #include <arglex2.h>
 #include <error.h>
 #include <help.h>
-#include <option.h>
+#include <progname.h>
+#include <sub.h>
 #include <trace.h>
+#include <zero.h>
 
 
 /*
@@ -53,7 +55,7 @@ report_usage()
 {
 	char		*progname;
 
-	progname = option_progname_get();
+	progname = progname_get();
 	fprintf(stderr, "usage: %s -RePorT [ <option>... ] <report-name>\n", progname);
 	fprintf(stderr, "       %s -RePorT [ <option>... ] -File <filename>\n", progname);
 	fprintf(stderr, "       %s -RePorT -List [ <option>... ]\n", progname);
@@ -79,12 +81,7 @@ static void report_help _((void));
 static void
 report_help()
 {
-	static char *text[] =
-	{
-#include <../man1/aer.h>
-	};
-
-	help(text, SIZEOF(text), report_usage);
+	help("aer", report_usage);
 }
 
 
@@ -108,7 +105,7 @@ report_main()
 {
 	string_ty	*project_name;
 	long		change_number;
-	wlist		arg;
+	string_list_ty		arg;
 	string_ty	*infile;
 	string_ty	*outfile;
 	string_ty	*s;
@@ -118,7 +115,7 @@ report_main()
 	change_number = 0;
 	infile = 0;
 	outfile = 0;
-	wl_zero(&arg);
+	string_list_constructor(&arg);
 	while (arglex_token != arglex_token_eoln)
 	{
 		switch (arglex_token)
@@ -129,51 +126,56 @@ report_main()
 
 		case arglex_token_change:
 			if (change_number)
-				goto duplicate;
+				duplicate_option(report_usage);
 			if (arglex() != arglex_token_number)
-				report_usage();
+				option_needs_number(arglex_token_change, report_usage);
 			change_number = arglex_value.alv_number;
-			if (change_number < 1)
-				fatal("change %ld out of range", change_number);
+			if (change_number == 0)
+				change_number = MAGIC_ZERO;
+			else if (change_number < 1)
+			{
+				sub_context_ty *scp;
+
+				scp = sub_context_new();
+				sub_var_set(scp, "Number", "%ld", change_number);
+				fatal_intl
+				(
+					scp,
+					i18n("change $number out of range")
+				);
+				/*NOTREACHED*/
+			}
 			break;
 
 		case arglex_token_project:
 			if (project_name)
-				goto duplicate;
+				duplicate_option(report_usage);
 			if (arglex() != arglex_token_string)
-				report_usage();
+				option_needs_name(arglex_token_project, report_usage);
 			project_name = str_from_c(arglex_value.alv_string);
 			break;
 
 		case arglex_token_file:
 			if (infile)
-			{
-				duplicate:
-				error("duplicate %s option", arglex_value.alv_string);
-				report_usage();
-			}
+				duplicate_option(report_usage);
 			if (arglex() != arglex_token_string)
-			{
-				fatal("the -File option requires a string argument");
-			}
+				option_needs_file(arglex_token_file, report_usage);
 			trace(("accepting -File option\n"));
 			infile = str_from_c(arglex_value.alv_string);
 			break;
 
 		case arglex_token_output:
 			if (outfile)
-				goto duplicate;
+				duplicate_option(report_usage);
 			if (arglex() != arglex_token_string)
-			{
-				fatal("the -Output option requires a string argument");
-			}
+				option_needs_file(arglex_token_output, report_usage);
 			outfile = str_from_c(arglex_value.alv_string);
 			break;
 
 		case arglex_token_string:
 		case arglex_token_number:
 			s = str_from_c(arglex_value.alv_string);
-			wl_append(&arg, s);
+			string_list_append(&arg, s);
 			str_free(s);
 			break;
 		}
@@ -182,12 +184,16 @@ report_main()
 	if (infile)
 	{
 		trace(("prepending report file name to args\n"));
-		wl_prepend(&arg, infile);
+		string_list_prepend(&arg, infile);
 	}
-	else if (arg.wl_nwords == 0)
+	else if (arg.nstrings == 0)
 	{
-		error("no report name specified");
+		sub_context_ty	*scp;
+
+		scp = sub_context_new();
+		error_intl(scp, i18n("no report name"));
 		report_usage();
+		/*NOTREACHED*/
 	}
 
 	/*
@@ -223,7 +229,7 @@ report_main()
 		str_free(infile);
 	if (outfile)
 		str_free(outfile);
-	wl_free(&arg);
+	string_list_destructor(&arg);
 	trace((/*{*/"}\n"));
 }
 

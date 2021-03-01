@@ -1,6 +1,6 @@
 /*
  *	aegis - project change supervisor
- *	Copyright (C) 1991, 1992, 1993 Peter Miller.
+ *	Copyright (C) 1991, 1992, 1993, 1995 Peter Miller;
  *	All rights reserved.
  *
  *	This program is free software; you can redistribute it and/or modify
@@ -15,7 +15,7 @@
  *
  *	You should have received a copy of the GNU General Public License
  *	along with this program; if not, write to the Free Software
- *	Foundation, Inc., 675 Mass Ave, Cambridge, MA 02139, USA.
+ *	Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111, USA.
  *
  * MANIFEST: interface definition for common/error.c
  */
@@ -25,9 +25,10 @@
 
 #include <main.h>
 
-void error _((char *, ...));
-void fatal _((char *, ...));
-void verbose _((char *, ...));
+#define error @!@!@
+void error_raw _((char *, ...));
+#define fatal @!@!@
+void fatal_raw _((char *, ...));
 
 void nerror _((char *, ...));
 void nfatal _((char *, ...));
@@ -35,8 +36,6 @@ void nfatal _((char *, ...));
 typedef void (*quit_ty)_((int));
 void quit_register _((quit_ty));
 void quit _((int));
-
-char *signal_name _((int));
 
 int assert_failed _((char *condition, char *file, int line));
 #ifdef DEBUG
@@ -49,8 +48,12 @@ int assert_failed _((char *condition, char *file, int line));
 # define assert(c)
 #endif
 
-typedef void (*error_id_ty)_((int *uid, int *gid));
-
-void error_set_id_func _((error_id_ty));
+#define this_is_a_bug() \
+	fatal_raw							\
+	(								\
+"you have found a bug (file %s, line %d) please report it immediately", \
+		__FILE__,						\
+		__LINE__						\
+	)
 
 #endif /* ERROR_H */

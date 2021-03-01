@@ -1,6 +1,6 @@
 /*
  *	aegis - a project change supervisor
- *	Copyright (C) 1994 Peter Miller.
+ *	Copyright (C) 1994, 1996, 1997 Peter Miller;
  *	All rights reserved.
  *
  *	This program is free software; you can redistribute it and/or modify
@@ -15,15 +15,28 @@
  *
  *	You should have received a copy of the GNU General Public License
  *	along with this program; if not, write to the Free Software
- *	Foundation, Inc., 675 Mass Ave, Cambridge, MA 02139, USA.
+ *	Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111, USA.
  *
- * MANIFEST: isolate unistd.h presnce/absence
+ * MANIFEST: insulate against <unistd.h> presence or absence
  */
 
 #ifndef COMMON_AC_UNISTD_H
 #define COMMON_AC_UNISTD_H
 
 #include <config.h>
+
+/*
+ * Need to define __USE_BSD on Linux to get prototypes for the symlink
+ * and readlink functions.
+ */
+#ifdef __linux__
+#ifndef _BSD_SOURCE
+#define _BSD_SOURCE
+#endif
+#ifndef __USE_BSD
+#define __USE_BSD
+#endif
+#endif
 
 #ifdef HAVE_UNISTD_H
 #include <sys/types.h>

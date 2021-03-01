@@ -1,0 +1,140 @@
+/*
+ *	aegis - project change supervisor
+ *	Copyright (C) 1997 Peter Miller;
+ *	All rights reserved.
+ *
+ *	This program is free software; you can redistribute it and/or modify
+ *	it under the terms of the GNU General Public License as published by
+ *	the Free Software Foundation; either version 2 of the License, or
+ *	(at your option) any later version.
+ *
+ *	This program is distributed in the hope that it will be useful,
+ *	but WITHOUT ANY WARRANTY; without even the implied warranty of
+ *	MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ *	GNU General Public License for more details.
+ *
+ *	You should have received a copy of the GNU General Public License
+ *	along with this program; if not, write to the Free Software
+ *	Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111, USA.
+ *
+ * MANIFEST: report conflicting files of a change
+ */
+
+title
+(
+	sprintf("Project \"%s\", Change %d", project_name(), change_number()),
+	"File Conflict Report"
+);
+
+columns
+(
+	{ name = "File Name\n-----------"; right = 0; },
+	{ name = ""; left = 2; width = 6; },
+	{ name = ""; width = 6; },
+	{ name = "Edit\n------"; width = 6; },
+	{ name = "Who\n--------"; width = 8; },
+	{ name = "Change\n------"; width = 6; },
+	{ name = "State\n-------"; width = 10; },
+	{ name = "Description\n-------------"; right = 0; }
+);
+auto ps;
+ps = project[project_name()].state;
+
+/*
+ * use the files named on the command line,
+ * or all change files if not specified
+ */
+auto file;
+if (count(arg) == 0)
+{
+	for (file in ps.branch.change[change_number()].src)
+		arg ##= file.file_name;
+}
+
+/*
+ * create an empty history for each file
+ */
+auto hist;
+for (file in arg)
+	hist[file] = [];
+
+/*
+ * scan all active changes
+ * for any of the named files
+ */
+auto cn, cs, cf;
+for (cn in keys(ps.branch.change))
+{
+	cs = ps.branch.change[cn];
+	if (cs.state < being_developed || cs.state >= completed)
+		continue;
+	for (cf in cs.src)
+	{
+		if (!(cf.file_name in arg))
+			continue;
+		if (cf.usage == build && cf.action == modify)
+			continue;
+		auto ch, developer, integrator;
+		developer = "";
+		integrator = "";
+		for (ch in cs.history)
+		{
+			if (ch.what == develop_begin)
+				developer = ch.who;
+			else if (ch.what == integrate_begin)
+				integrator = ch.who;
+			else if (ch.what == integrate_begin_undo)
+				integrator = "";
+			else if (ch.what == integrate_fail)
+				integrator = "";
+		}
+		hist[cf.file_name] ##=
+			{
+				usage = cf.usage;
+				action = cf.action;
+				edit = cf.edit_number;
+				change = cs.change_number;
+				state = cs.state;
+				who = (cs.state == being_developed ? developer
+					: cs.state == being_integrated
+					? integrator : "");
+				description = cs.brief_description;
+			};
+	}
+}
+
+/*
+ * print the accumulated file information
+ * if two or more changes have the file in common
+ */
+auto fh, actions, usages;
+auto num_conflicts;
+num_conflicts = 0;
+for (file in sort(keys(hist)))
+{
+	if (count(hist[file]) < 2)
+		continue;
+	need(4);
+	print(file);
+	actions = "BS";
+	usages = "BS";
+	for (fh in hist[file])
+	{
+		print
+		(
+			"",
+			(fh.usage == usages ? "" : fh.usage),
+			(fh.action == actions ? "" : fh.action),
+			sprintf("%4s", fh.edit),
+			fh.who,
+			sprintf("%4d", fh.change),
+			fh.state,
+			fh.description
+		);
+		actions = fh.action;
+		usages = fh.usage;
+	}
+	++num_conflicts;
+}
+if (num_conflicts == 0)
+	print("There are no files that conflict with this change.");

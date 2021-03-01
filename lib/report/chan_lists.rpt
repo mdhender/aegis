@@ -1,6 +1,6 @@
 /*
  *	aegis - project change supervisor
- *	Copyright (C) 1994 Peter Miller.
+ *	Copyright (C) 1994, 1997 Peter Miller;
  *	All rights reserved.
  *
  *	This program is free software; you can redistribute it and/or modify
@@ -15,7 +15,7 @@
  *
  *	You should have received a copy of the GNU General Public License
  *	along with this program; if not, write to the Free Software
- *	Foundation, Inc., 675 Mass Ave, Cambridge, MA 02139, USA.
+ *	Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111, USA.
  *
  * MANIFEST: report the changes in a project
  */
@@ -27,9 +27,17 @@ columns
 	{ name = "Description\n-----------"; right = 0; }
 );
 auto ps, cn, cs;
-ps = project[project_name()].state;
+ps = project[project_name()].state.branch;
 for (cn in sort(keys(ps.change)))
 {
 	cs = ps.change[cn];
-	print(sprintf("%4d", cn), cs.state, cs.brief_description);
+	auto state;
+	state = cs.state;
+	if (state == being_developed || state == being_integrated)
+	{
+		auto who;
+		who = cs.history[count(cs.history)-1].who;
+		state = state ## "\n(" ## who ## ")";
+	}
+	print(sprintf("%4d", cn), state, cs.brief_description);
 }

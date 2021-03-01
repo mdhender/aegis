@@ -1,6 +1,6 @@
 /*
  *	aegis - project change supervisor
- *	Copyright (C) 1991, 1992, 1993, 1994 Peter Miller;
+ *	Copyright (C) 1991, 1992, 1993, 1994, 1995, 1997, 1998 Peter Miller;
  *	All rights reserved.
  *
  *	This program is free software; you can redistribute it and/or modify
@@ -15,18 +15,19 @@
  *
  *	You should have received a copy of the GNU General Public License
  *	along with this program; if not, write to the Free Software
- *	Foundation, Inc., 675 Mass Ave, Cambridge, MA 02139, USA.
+ *	Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111, USA.
  *
  * MANIFEST: lexical analysis of command line arguments
  */
 
 #include <ac/stddef.h>
 #include <ac/string.h>
-#include <ctype.h>
+#include <ac/ctype.h>
 
 #include <arglex.h>
 #include <error.h>
-#include <option.h>
+#include <mem.h>
+#include <progname.h>
 #include <str.h>
 #include <trace.h>
 
@@ -35,7 +36,7 @@ static arglex_table_ty table[] =
 	{ "-",			arglex_token_stdio,		},
 	{ "-Help",		arglex_token_help,		},
 	{ "-VERSion",		arglex_token_version,		},
-	{ "-TRace",		arglex_token_trace,		},
+	{ "-TRAce",		arglex_token_trace,		},
 };
 
 static	int		argc;
@@ -72,7 +73,7 @@ arglex_init(ac, av, tp)
 	char		**av;
 	arglex_table_ty	*tp;
 {
-	option_progname_set(av[0]);
+	progname_set(av[0]);
 	argc = ac - 1;
 	argv = av + 1;
 	utable = tp;
@@ -399,7 +400,7 @@ arglex()
 	string_ty	*s1;
 	string_ty	*s2;
 
-	trace(("arglex()\n{\n"));
+	trace(("arglex()\n{\n"/*}*/));
 	if (pushback)
 	{
 		/*
@@ -527,9 +528,9 @@ arglex()
 		{
 			s2 = str_format("%S, %s", s1, hit[j]->t_name);
 			str_free(s1);
-			s2 = s2;
+			s1 = s2;
 		}
-		fatal
+		fatal_raw
 		(
 			"option \"%s\" abmiguous (%s)",
 			arg,
@@ -545,4 +546,73 @@ arglex()
 	trace(("return %d; /* %s */\n", arglex_token, arglex_value.alv_string));
 	trace((/*{*/"}\n"));
 	return arglex_token;
+}
+
+
+char *
+arglex_token_name(n)
+	arglex_token_ty	n;
+{
+	arglex_table_ty	*tp;
+
+	switch (n)
+	{
+	case arglex_token_eoln:
+		return "end of command line";
+
+	case arglex_token_number:
+		return "number";
+
+	case arglex_token_option:
+		return "option";
+
+	case arglex_token_stdio:
+		return "standard input or output";
+
+	case arglex_token_string:
+		return "string";
+
+	default:
+		break;
+	}
+	for (tp = table; tp < ENDOF(table); tp++)
+	{
+		if (tp->t_token == n)
+			return tp->t_name;
+	}
+	if (utable)
+	{
+		for (tp = utable; tp->t_name; tp++)
+		{
+			if (tp->t_token == n)
+				return tp->t_name;
+		}
+	}
+
+	assert(0);
+	return "unknown command line token";
+}
+
+
+arglex_table_ty *
+arglex_table_catenate(tp1, tp2)
+	arglex_table_ty	*tp1;
+	arglex_table_ty	*tp2;
+{
+	size_t		len1;
+	size_t		len2;
+	size_t		len;
+	arglex_table_ty	*tp;
+	static arglex_table_ty zero = ARGLEX_END_MARKER;
+
+	for (len1 = 0; tp1[len1].t_name; ++len1)
+		;
+	for (len2 = 0; tp2[len2].t_name; ++len2)
+		;
+	len = len1 + len2;
+	tp = mem_alloc((len + 1) * sizeof(arglex_table_ty));
+	memcpy(tp, tp1, len1 * sizeof(arglex_table_ty));
+	memcpy(tp + len1, tp2, len2 * sizeof(arglex_table_ty));
+	tp[len] = zero;
+	return tp;
 }

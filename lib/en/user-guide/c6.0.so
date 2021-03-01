@@ -1,0 +1,281 @@
+.\"
+.\"	aegis - project change supervisor
+.\"	Copyright (C) 1991, 1992, 1993, 1994, 1998 Peter Miller;
+.\"	All rights reserved.
+.\"
+.\"	This program is free software; you can redistribute it and/or modify
+.\"	it under the terms of the GNU General Public License as published by
+.\"	the Free Software Foundation; either version 2 of the License, or
+.\"	(at your option) any later version.
+.\"
+.\"	This program is distributed in the hope that it will be useful,
+.\"	but WITHOUT ANY WARRANTY; without even the implied warranty of
+.\"	MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+.\"	GNU General Public License for more details.
+.\"
+.\"	You should have received a copy of the GNU General Public License
+.\"	along with this program; if not, write to the Free Software
+.\"	Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111, USA.
+.\"
+.\" MANIFEST: User Guide, Tips and Traps
+.\"
+.bp
+.2C
+.nh 1 "Tips and Traps"
+.LP
+This chapter contains hints for how to use the aegis program
+more efficiently
+and documents a number of pitfalls you may encounter.
+.LP
+This chapter is at present very "ad hoc" with no particular ordering.
+Fortunately, it is, as yet, rather small.
+The final size of this chapter is expected to be quite large.
+.nh 2 "Renaming Include Files"
+.LP
+Renaming include files can be a disaster,
+either finding all of the clients,
+or making sure the new copy is used rather than the old copy
+still in the baseline.
+.LP
+Aegis provides some assistance.
+When the
+.I aemv (1)
+command is used,
+a file in the development directory is created in the
+.I old
+location,
+filled with garbage.
+Compiles will fail very diagnostically,
+and you can change the reference in the source file,
+probably after \fIaecp\fP(1)ing it first.
+.LP
+If you are moving an include file from one directory to another,
+but leaving the basename unchanged,
+create a link\**
+.FS
+A hard link uses fewer disk blocks.
+Symbolic links survive the subject file being deleted and recreated.
+.FE
+between the new and old names,
+but only in the development directory
+(i.e. replacing the "garbage" file aegis created for you).
+Create the link after \fIaemv\fP(1) has succeeded.
+This insulates you from a number of nasty Catch-22 situations
+in writing the dependency maintenance tool's rules file.
+.nh 2 "Symbolic Links"
+.LP
+If you are on a flavour of 
+.UX
+which has symbolic links,
+it is often useful to create a symbolic link from the development directory
+to the baseline.
+This can make browsing the baseline very simple.
+.LP
+Assuming that the project and change defaults are appropriate,
+the following command
+.E(
+ln -s `aegis -cd -bl` bl
+.E)
+is all that is required to create a symbolic link called
+.I bl
+pointing to the baseline.
+Note that the
+.I aecd
+alias is inappropriate in this case.
+.LP
+This can be done automatically for every change,
+by placing the line
+.E(
+develop_begin_command =
+	"ln -s $baseline bl";
+.E)
+into the project
+.I config
+file.
+.nh 2 "User Setup"
+.LP
+There are a number of things which users
+of aegis can do to make it more useful,
+or more user friendly.
+This section describes just a few of them.
+.nh 3 "The \&.cshrc file"
+.LP
+The aliases for the various user commands used throughout this manual
+are obtained by appending a line of the form
+.E(
+source /usr/local/lib/aegis/cshrc
+.E)
+to the
+.I \&.cshrc
+file in the user's home directory.
+.nh 3 "The AEGIS_PATH environment variable"
+.LP
+If users wish to use aegis for their own projects,
+in addition to the "system" projects,
+the
+.I AEGIS_PATH
+environment variable forms a colon separated search path
+of aegis "library" directories.
+The
+.I /usr/local/lib/aegis
+directory is always implicitly added to this list.
+.LP
+The user should not create this library directory,
+but let aegis do this for itself (otherwise you will get an error message).
+.LP
+The
+.I AEGIS_PATH
+environment variable should be set in the
+.I \&.cshrc
+file in the user's home directory.
+Typical setting is
+.E(
+setenv AEGIS_PATH ~/lib/aegis
+.E)
+and this is the default used in the
+.I /usr/local/lib/\%aegis/cshrc
+file.
+.nh 3 "The \&.aegisrc file"
+.LP
+The
+.I \&.aegisrc
+file in the user's home directory
+contains a number of useful fields.
+See
+.I aeuconf (5)
+for more information.
+.nh 3 "The defaulting mechanism"
+.LP
+In order for you to specify the minimum possible information
+on the command line,
+aegis has been designed to work most of it out itself.
+.LP
+The default project is the project which you are working on changes for,
+if there is only one, otherwise it is gleaned from the
+.I \&.aegisrc
+file.
+The command line overrides any default.
+.LP
+The default change is the one you are
+working on within the (default or specified) project,
+if there is only one.
+The command line overrides any default.
+.nh 2 "The Project Owner"
+.LP
+For the greatest protection from accidental change,
+it is best if the project is owned by a
+.UX
+account which is none of the staff.
+This account is often named the same as the project,
+or sometimes there is a single umbrella account for all projects.
+.LP
+When an aegis project is created,
+the owner is the user creating the project,
+and the group is the user's default group.
+The creating user is installed as the project's first administrator.
+.LP
+A new project administrator should be created - an actual user account.
+The
+.UX
+password should then be disabled on the project
+account - it will never be necessary to use it again.\**
+.FS
+Unless bugs in aegis corrupt the database,
+in which case repairs can be accomplished as
+the project account using a text editor.
+.FE
+.LP
+The user nominated as project administrator many then assign
+all of the other staff roles.
+Aegis takes care of ensuring that the baseline is owned by the project account,
+not any of the other staff,
+while development directories always belong to the developer
+(but the group will always be the project group,
+irrespective of the developer's default group).
+.LP
+All of the staff working on a project should be members of the
+project's group,
+to be able to browse the baseline,
+for reviewers to be able to review changes.
+This use of
+.UX
+groups means that projects may be as secure or open as desired.
+.nh 2 "USENET Publication Standards"
+.LP
+If you are writing software to publish on USENET,
+a number of the source newsgroups have publication standards.
+This section describes ways of generating the following files,
+required by many of the newsgroups' moderators:
+.TS
+tab(;);
+l lw(1.5i).
+MANIFEST;T{
+List of files in the distribution.
+T}
+Makefile;T{
+How to build the distribution.
+T}
+CHANGES;T{
+What happened for this distribution.
+T}
+patchlevel.h;T{
+An identification of this distribution.
+T}
+.TE
+.LP
+Each of these files may be generated from information
+known to aegis,
+with the aid of some fairly simple shell scripts.
+.nh 3 "CHANGES"
+.LP
+Write this section.
+.LP
+Look in the
+.I aux/CHANGES.sh
+file included in the aegis distribution
+for an example of one way to do this.
+.nh 3 "MANIFEST"
+.LP
+Write this section.
+.LP
+Look in the
+.I aux/MANIFEST.sh
+and
+.I aux/MANIFEST.awk
+files included in the aegis distribution
+for an example of one way to do this.
+.nh 3 "Makefile"
+.LP
+Write this section.
+.LP
+Look in the
+.I aux/Makefile.sh
+and
+.I aux/Makefile.awk
+files included in the aegis distribution
+for an example of one way to do this.
+.nh 3 "patchlevel.h"
+.LP
+Write this section.
+.LP
+Look in the
+.I aux/Howto.cook
+file included in the aegis distribution
+for an example of one way to do this.
+.nh 3 "Building Patch Files"
+.LP
+The
+.I patch
+program by Larry Wall is one of the enduring marvels of USENET.
+This section describes how to build input files
+for this miracle program.
+.LP
+Write this section.
+.LP
+Look in the
+.I aux/patches.sh
+file included in the aegis distribution
+for an example of one way to do this.
+.so c6.1.so
+.so c6.2.so
+.so c6.3.so

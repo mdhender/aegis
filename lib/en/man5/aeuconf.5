@@ -1,0 +1,248 @@
+'\" t
+.\"	aegis - project change supervisor
+.\"	Copyright (C) 1991, 1992, 1993, 1994, 1995, 1996, 1998 Peter Miller;
+.\"	All rights reserved.
+.\"
+.\"	This program is free software; you can redistribute it and/or modify
+.\"	it under the terms of the GNU General Public License as published by
+.\"	the Free Software Foundation; either version 2 of the License, or
+.\"	(at your option) any later version.
+.\"
+.\"	This program is distributed in the hope that it will be useful,
+.\"	but WITHOUT ANY WARRANTY; without even the implied warranty of
+.\"	MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+.\"	GNU General Public License for more details.
+.\"
+.\"	You should have received a copy of the GNU General Public License
+.\"	along with this program; if not, write to the Free Software
+.\"	Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111, USA.
+.\"
+.\" MANIFEST: description of aegis user config file format
+.\"
+.so z_name.so
+.TH aeuconf 5 \*(N) "Reference Manual"
+.SH NAME
+aeuconf - user configuration file
+.XX "aeuconf(5)" "user configuration file format"
+.SH SYNOPSIS
+\fI$HOME\f(CW/.\*(n)rc\fR
+.SH DESCRIPTION
+A user configuration file
+is used to hold user defaults.
+This file is created and edited by the user.
+This file is only ever read by \*(n), it is never written.
+.SS AEGIS_FLAGS
+This environment variable has the same format.
+It is read first, and over-rides the
+.I \&.\*(n)rc
+file contents.
+This is intended to be used within the tests distributed with aegis,
+but can also be of use within some shell scripts.
+.SH CONTENTS
+The file contains the following fields:
+.TP 8n
+default_development_directory = string;
+.br
+The pathname of where to place new development directories.
+The pathname may be relative,
+in which case it is relative to \fI$HOME\fP.
+The default is the field of the same name in the project attributes,
+or \fI$HOME\fP neither is set.
+.TP 8n
+default_project_directory = string;
+.br
+The pathname of where to place new project directories.
+The pathname may be relative.
+If this path is relative,
+it is relative to \fI$HOME\fP.
+The default is \fI$HOME\fP.
+.TP 8n
+delete_file_preference = (no_keep, interactive, keep);
+.br
+All of the commands which delete files will
+consult this field to determine if the file should be deleted.
+Defaults to
+.I no_keep
+if not set.
+.TP 8n
+default_project_name = string;
+.br
+The name of a project.
+.TP 8n
+default_change_number = integer;
+.br
+The number of a change.
+.PP
+Please note that the
+.I default_project_name
+field and the
+.I default_change_number
+field
+are unrelated.
+Specifying both does not mean that single change within that single project,
+they have nothing to do with each other.
+.TP 8n
+diff_preference = (automatic_merge, no_merge, only_merge);
+.RS
+The
+.IR aed(1)
+command will consult this field to determine what to do:
+.TP 8n
+.B no_merge
+means only diff the files,
+even if some have out of date versions.
+.TP 8n
+.B only_merge
+means merge those files with out of date versions,
+and do not do anything else,
+even if they need to be diffed.
+.TP 8n
+.B automatic_merge
+means to do
+.I only_merge
+if any source files require merging,
+otherwise do
+.IR no_merge .
+It never combines merges and differences in the same pass.
+.PP
+The corresponding command line options to the
+.IR aed (1)
+command take precedence,
+this field is only consulted if you do not give
+a corresponding command line argument.
+Defaults to
+.I automatic_merge
+if not set.
+.RE
+.TP 8n
+pager_preference = (foreground, never);
+.RS
+This field is consulted for listings and help.
+The standard output is only piped to a pager if the command is run in the
+foreground and the standard output is directed at a terminal.
+.TP 8n
+foreground
+The standard output will be piped through the command given in the
+\f(CWPAGER\fP environment variable (or \fImore\fP if not set).
+.TP 8n 
+never
+The standard output will not be redirected.
+.PP
+This field defaults to \fIforeground\fP if not set.
+.RE
+.TP 8n
+persevere_preference = (all, stop);
+.RS
+This field is consulted by the
+.IR aet (1)
+command,
+to determine if it should run all tests,
+or stop after the first failure.
+This field defaults to \fIall\fP if not set.
+.RE
+.TP 8n
+log_file_preference = (snuggle, append, replace, never);
+.RS
+This field controls the behavior of the log file.  It usually defaults
+to \fIsnuggle\fP if not set, although some commands may default it to
+\fIappend\fP.  When the log file is in use, the output continues to be
+sent to the screen if the process is in the foreground and the standard
+output is a terminal.
+.TP 8n
+never
+Do not redirect the output to a log file.
+.TP 8n
+replace
+Replace any log file that is present,
+create a new one if none already exists.
+.TP 8n
+append
+Append the log to the end of any existing log file,
+create a new one if none already exists.
+.TP 8n
+snuggle
+Append the log to the end of any existing log file if that log file was
+last modified less than 30 seconds ago, otherwise replace any existing
+log file; create a new one if none already exists.  This option allows
+runs of aegis commands to produce a meaningful log file.
+.RE
+.TP 8n
+lock_wait_preference = (always, background, never);
+.RS
+This field is consulted by all commands which wait for locks.
+.TP 8n
+always
+The "always" setting says that all commands should always wait
+for locks.  This is the default.
+.TP 8n
+background
+The "background" setting says that background commands should
+always wait for locks, and foreground commands will not.
+.TP 8n
+never
+The "never" setting says that no command should ever wait
+for locks.  If the command would wait, it will exit with status 1.
+.PP
+This user preference can be over-ridden by the
+.B \-wait
+and
+.B \-nowait
+command line options.
+.RE
+.TP 8n
+symbolic_link_preference = (verify, assume);
+.RS
+This field is consulted by
+.IR aeb (1)
+when the project config file specifies
+.I create_symbolic_links_before_build
+as true.
+The verification of the links can
+be quite time consuming; if you are confident that they are already
+correct (say, from a recent build run) you may wish to assume they
+are correct and not verify them repeatedly.
+.TP 8n
+verify
+This setting says to always verify the symbolic links
+to the baseline.  This is the default.
+.TP 8n
+assume
+This setting says to always assume the links are correct,
+unless there has been a recent integration.
+.PP
+This user preference can be over-ridden by the
+.B -Verify_Symbolic_Links
+and
+.B -Assume_Symbolic_Links
+command line options.
+.RE
+.TP 8n
+relative_filename_preference = (current, base);
+.RS
+This field is consulted by most commands which accept filenames on the
+command line.  It controls wether relative filenames are relative to
+the current directory (this is the default), or relative to the base
+of the project source tree.
+.TP 8n
+current
+This setting says to interpret relative filenames against
+the current directory.
+.TP 8n
+base
+This setting says to interpret relative filenames against
+the base of the source tree.
+.PP
+This user preference can be over-ridden by the
+.B -BAse_RElative
+and
+.B -CUrrent_RElative
+command line options.
+.RE
+.SH SEE ALSO
+.TP 8n
+.IR aegis (5)
+\*(n) file format syntax
+.TP 8n
+.IR aed (1)
+difference and merge files
+.so ../man1/z_cr.so

@@ -1,6 +1,6 @@
 /*
  *	aegis - project change supervisor
- *	Copyright (C) 1994 Peter Miller.
+ *	Copyright (C) 1994, 1997 Peter Miller;
  *	All rights reserved.
  *
  *	This program is free software; you can redistribute it and/or modify
@@ -15,18 +15,39 @@
  *
  *	You should have received a copy of the GNU General Public License
  *	along with this program; if not, write to the Free Software
- *	Foundation, Inc., 675 Mass Ave, Cambridge, MA 02139, USA.
+ *	Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111, USA.
  *
  * MANIFEST: report the active files in a project
  */
 
-title("The File Activity Report", sprintf("Project \"%s\"", project_name()));
+if (change_number_set())
+{
+	title
+	(
+		sprintf
+		(
+			"Project \"%s\", Change %d",
+			project_name(),
+			change_number()
+		),
+		"File Activity Report"
+	);
+}
+else
+{
+	title
+	(
+		"The File Activity Report",
+		sprintf("Project \"%s\"", project_name())
+	);
+}
 
 /*
  * get the project state
  */
-auto ps;
-ps = project[project_name()].state;
+auto ps, ps_nobr;
+ps_nobr = project[project_name()].state;
+ps = ps_nobr.branch;
 
 /*
  * default to all project files
@@ -35,8 +56,16 @@ ps = project[project_name()].state;
 auto file;
 if (count(arg) == 0)
 {
-	for (file in ps.src)
-		arg ##= file.file_name;
+	if (change_number_set())
+	{
+		for (file in ps.change[change_number()].src)
+			arg ##= file.file_name;
+	}
+	else
+	{
+		for (file in ps_nobr.src)
+			arg ##= file.file_name;
+	}
 }
 
 /*
@@ -59,6 +88,8 @@ for (cn in  keys(ps.change))
 		if (!(file.file_name in keys(active)))
 			active[file.file_name] = [];
 		auto developer, integrator;
+		developer = "";
+		integrator = "";
 		for (ch in cs.history)
 		{
 			if (ch.what == develop_begin)
@@ -72,13 +103,15 @@ for (cn in  keys(ps.change))
 		}
 		active[file.file_name] ##=
 			{
-				change = cn;
 				usage = file.usage;
 				action = file.action;
-				description = cs.brief_description;
+				edit = file.edit_number;
+				who = (cs.state == being_developed ?  developer
+					: cs.state == being_integrated
+					? integrator : "");
+				change = cn;
 				state = cs.state;
-				developer = developer;
-				integrator = integrator;
+				description = cs.brief_description;
 			};
 	}
 }
@@ -89,35 +122,42 @@ for (cn in  keys(ps.change))
 columns
 (
 	{ name = "File Name\n-----------"; right = 0; },
-	{ name = ""; left = 2; width = 6; },
-	{ name = ""; width = 6; },
+	{ name = ""; left = 2; width = 8; }, /* action */
+	{ name = ""; width = 7; }, /* usage */
+	{ name = "Edit\n------"; width = 6; },
+	{ name = "Who\n-------"; width = 8; },
 	{ name = "Change\n------"; width = 6; },
 	{ name = "State\n-------"; width = 10; },
-	{ name = "Staff\n-------"; width = 8; },
 	{ name = "Description\n-------------"; right = 0; }
 );
-auto fn;
+auto fn, num_active;
+num_active = 0;
 for (fn in sort(keys(active)))
 {
+	if (count(active[fn]) < 1)
+		continue;
+	++num_active;
 	need(4);
 	print(fn);
+	auto actions, usages;
+	actions = "BS";
+	usages = "BS";
 	for (file in active[fn])
 	{
 		print
 		(
 			"",
-			file.action,
-			file.usage,
+			(file.usage != usages ? file.usage : ""),
+			(file.action != actions ? file.action : ""),
+			sprintf("%4s", file.edit),
+			file.who,
 			sprintf("%4d", file.change),
 			file.state,
-			(
-				file.integrator
-			?
-				(file.developer ## " " ## file.integrator)
-			:
-				file.developer
-			),
 			file.description
 		);
+		actions = file.action;
+		usages = file.usage;
 	}
 }
+if (num_active == 0)
+	print("There are no active files in this project.");

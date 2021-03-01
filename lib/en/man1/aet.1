@@ -1,0 +1,241 @@
+'\" t
+.\"	aegis - project change supervisor
+.\"	Copyright (C) 1991, 1992, 1993, 1996, 1997, 1998 Peter Miller;
+.\"	All rights reserved.
+.\"
+.\"	This program is free software; you can redistribute it and/or modify
+.\"	it under the terms of the GNU General Public License as published by
+.\"	the Free Software Foundation; either version 2 of the License, or
+.\"	(at your option) any later version.
+.\"
+.\"	This program is distributed in the hope that it will be useful,
+.\"	but WITHOUT ANY WARRANTY; without even the implied warranty of
+.\"	MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+.\"	GNU General Public License for more details.
+.\"
+.\"	You should have received a copy of the GNU General Public License
+.\"	along with this program; if not, write to the Free Software
+.\"	Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111, USA.
+.\"
+.\" MANIFEST: manual entry for the 'aegis -Test' command
+.\"
+.so z_name.so
+.TH "\*(n) -Test" 1 \*(N) "Reference Manual"
+.SH NAME
+\*(n) -Test \- run tests
+.XX "aet(1)" "run tests"
+.SH SYNOPSIS
+.B \*(n)
+.B -Test
+[
+.IR file-name ...
+][
+.IR option ...
+]
+.br
+.B \*(n)
+.B -Test
+.B -INDependent
+[
+.IR file-name ...
+][
+.IR option ...
+]
+.br
+.B \*(n)
+.B -Test
+.B -List
+[
+.IR option ...
+]
+.br
+.B \*(n)
+.B -Test
+.B -Help
+.SH DESCRIPTION
+The
+.I \*(n)
+.I -Test
+command is used to
+run tests.
+If no files are named, all relevant tests are run.
+By default both automatic and manual tests are run.
+.PP
+Each architecture must be tested separately.
+This is because there may be subtle problems that are only
+revealed on some architectures.
+Some projects may also have different code for different architectures.
+.PP
+The status of the last test run is remembered so that tests are not run
+if there is no need.
+(This does not apply to
+.I -REGression
+tests, unfortunately.)
+Tests must be re-run
+if the test previously failed,
+if the test file has changed,
+if there has been a build,
+and for each architecture.
+.PP
+The command used to execute tests is defined by the
+.I test_command
+field in the project
+.I config
+file (see
+.IR aepconf (5)
+for more information),
+this defaults to using the Bourne shell if not set.
+The current directory will be the top of the appropriate directory tree.
+If tests require temporary files, they should create them in
+.IR /tmp ,
+as a test cannot expect to have write permission
+in the current directory.
+.PP
+You may name directories on the command line, and all relevant tests in
+that directory tree in the change will be run.
+It is an error if there are no relevant tests.
+.so z_intuit.so
+.so z_test_rtnl.so
+.SH "TEST RESULT CODES"
+As each test is run
+(via the
+.I test_command
+field in the project
+.I config
+file),
+\*(n) determines whether the test succeeded or failed by looking at its
+exit status.
+This exit status is mostly as expected for UNIX commands.
+.TP 4n
+Success
+A test should exit 0 to indicate success,
+i.e. that the specific function under test worked as expected.
+.TP 4n
+Failure
+A test should exit 1 to indicate failure,
+i.e. that the specific function under test did not work as expected.
+.TP 4n
+No Result
+A test should exit 2 to indicate no result,
+i.e. that the specific function under test could not be exersized
+because something else went wrong.
+For example, running out of disk space when creating the test input
+files in the
+.I /tmp
+directory. 
+.PP
+Actually, any exit code other than 0 or 1 will be interpreted as ``no
+result''.  However, always using 0, 1 or 2 means that if a new result
+code is required by a later release of \*(n), your existing tests will
+continue to work.
+.PP
+If you want to use a more sophisticated test engine, rather than a
+simple shell script, but this test engine does not return result codes
+suitable for use with \*(n), you could wrap it in a shell script which
+re-writes the exit status into the values \*(n) expects.
+You could also achieve the same results by writing a more complex
+.I test_command
+in the project
+.I config
+file.
+.so z_test_corr.so
+.SH OPTIONS
+The following options are understood:
+.so o_auto.so
+.so o_baselin.so
+.so o_baserel.so
+.so o_change.so
+.so o_help.so
+.so o_indep.so
+.so o_list.so
+.so o_manual.so
+.TP 8n
+.B -PErsevere
+This option may be used to specify that all tests should be run,
+even if some fail.
+Defaults to the user's
+.I persevere_preference
+if not specified, see
+.IR aeuconf (5)
+for more information.
+.TP 8n
+.B -No_PErsevere
+This option may be used to specify that the test run should
+stop after the first failure.
+Defaults to the user's
+.I persevere_preference
+if not specified, see
+.IR aeuconf (5)
+for more information.
+.so o_project.so
+.so o_regress.so
+.TP 8n
+\fB-SUGgest\fP [ \fInumber\fP ]
+.br
+The ``\fI\*(n) -Integrate_Pass\fP'' command collects test
+correlation statistics when changes are integrated.
+This option may be used to request that \*(n) suggest
+which tests should be run, using these testing correlations.
+If no number is specified, 10 tests will be suggested.
+This option implies the
+.B -REGression
+option.
+.TP 8n
+\fB-SUGgest_Noise \fInumber\fP
+.br
+This option may be used to control the amount of noise injected into the
+test selection performed by the \fB-SUGgest\fP option.
+The number is a percentage of noise to be injected.
+Defaults to 10 if not specified.
+The injection of noise ensures that a variety of tests are run
+on subsequent runs, and also some from left-field as a sanity check.
+.so o_terse.so
+.so o_verbose.so
+.so o_wait.so
+.so o__rules.so
+.SH RECOMMENDED ALIAS
+The recommended alias for this command is
+.nf
+.ta 8n 16n
+csh%	alias aet '\*(n) -t \e!* -v'
+sh$	aet(){\*(n) -t $* -v}
+.fi
+.SH ERRORS
+It is an error if
+the change is not in one of the
+.I "being developed"
+or
+.I "being integrated"
+states.
+.br
+It is an error if
+the change is not assigned to the current user.
+.so z_exit.so
+.br
+.ne 1i
+.SH SEE ALSO
+.TP 8n
+.IR aeb (1)
+build a change
+.TP 8n
+.IR aeca (1)
+modify the attributes of a change
+.TP 8n
+.IR aedb (1)
+begin development of a change
+.TP 8n
+.IR aeib (1)
+begin integration of a change
+.TP 8n
+.IR aent (1)
+add a new test to a change
+.TP 8n
+.IR aecp (1)
+copy an existing test into a change
+.TP 8n
+.IR aepconf (5)
+project configuration file format
+.TP 8n
+.IR aeuconf (5)
+user configuration file format
+.so z_cr.so

@@ -1,0 +1,145 @@
+.\"
+.\"	aegis - project change supervisor
+.\"	Copyright (C) 1998 Peter Miller;
+.\"	All rights reserved.
+.\"
+.\"	This program is free software; you can redistribute it and/or modify
+.\"	it under the terms of the GNU General Public License as published by
+.\"	the Free Software Foundation; either version 2 of the License, or
+.\"	(at your option) any later version.
+.\"
+.\"	This program is distributed in the hope that it will be useful,
+.\"	but WITHOUT ANY WARRANTY; without even the implied warranty of
+.\"	MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+.\"	GNU General Public License for more details.
+.\"
+.\"	You should have received a copy of the GNU General Public License
+.\"	along with this program; if not, write to the Free Software
+.\"	Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111, USA.
+.\"
+.\" MANIFEST: AUUGN Feb'98 Article
+.\"
+.nr PS 72
+.nr VS 75000
+.LP
+.ad c
+What Make Does
+.br
+.ad l
+.sp 0.3i
+.nr PS 36
+.nr VS 37
+.XP
+\(bu
+It works out the order to do things,
+from the information you give it.
+.br
+.ps 20
+.vs 21
+.nf
+.ft CW
+.sp 0.5
+prog: a.o b.o
+    cc a.o b.o -o prog
+.sp 0.5
+a.o: a.c a.h
+    cc -c a.c
+.sp 0.5
+b.o: b.c a.h
+    cc -c b.c
+.sp 0.5
+a.c a.h: a.y
+    yacc -d a.y
+    mv y.tab.c a.c
+    mv y.tab.h a.h
+.ft P
+.fi
+.XP
+\(bu
+It's not a fancy shell interpreter.
+.bp
+.nr PS 24
+.nr VS 25
+.XP
+\(bu
+Make works out the order to do things,
+from the information you give it.
+This is in the form of ``this file before that file'' sets.
+.XP
+\(bu
+Make is not a fancy shell interpreter.
+.br
+\(dg It doesn't do things in the order you say.
+.br
+\(dg You can continue after errors
+.br
+\(dg You can parallelize things
+.br
+\(dg Plus nine billion other options
+.XP
+\(bu
+Make is goal driven \- you tell it what you want,
+and it tries to find a way to do it.
+.XP
+\(bu
+Even if you have a sources macro, which you text bash to get the objects,
+\fImake\fP will apply all its rules to try to find a way to build the
+\fIobjects\fP.
+.bp
+.XP
+\(bu
+It's not a fancy shell interpreter.
+.br
+.ps 16
+.vs 17
+.nf
+.ft CW
+.sp 0.5
+#!/bin/sh
+# \fIin particular, it doesn't say this\fP
+if test ! -e a.c -o a.y -nt a.c \e
+    -o ! -e a.h -o a.y -nt a.h
+then
+    echo "yacc -d a.y"
+    ( yacc -d a.y ) || exit 1
+    echo "mv y.tab.c a.c"
+    ( mv y.tab.c a.c ) || exit 1
+    echo "mv y.tab.h a.h"
+    ( mv y.tab.h a.h ) || exit 1
+fi
+if test ! -e a.o \e
+    -o a.c -nt a.o \e
+    -o a.h -nt a.o
+then
+    echo "cc -c a.c"
+    ( cc -c a.c ) || exit 1
+fi
+if test ! -e b.o \e
+    -o b.c -nt b.o \e
+    -o a.h -nt b.o
+then
+    echo "cc -c b.c"
+    ( cc -c b.c ) || exit 1
+fi
+if test ! -e prog \e
+    -o a.o -nt prog \e
+    -o b.o -nt prog
+then
+    echo "cc -o prog a.o b.o"
+    ( cc -o prog a.o b.o ) || exit 1
+fi
+exit 0
+.ft R
+.fi
+.bp
+.XP
+\(bu
+It's not a fancy shell interpreter.
+.br
+\(dg \fIIt doesn't do things in the order you say.\fP
+.br
+\(dg You can continue after errors
+.br
+\(dg You can parallelize things
+.br
+\(dg Plus nine billion other options

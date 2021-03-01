@@ -1,0 +1,53 @@
+.\"
+.\"	aegis - project change supervisor
+.\"	Copyright (C) 1996 Peter Miller;
+.\"	All rights reserved.
+.\"
+.\"	This program is free software; you can redistribute it and/or modify
+.\"	it under the terms of the GNU General Public License as published by
+.\"	the Free Software Foundation; either version 2 of the License, or
+.\"	(at your option) any later version.
+.\"
+.\"	This program is distributed in the hope that it will be useful,
+.\"	but WITHOUT ANY WARRANTY; without even the implied warranty of
+.\"	MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+.\"	GNU General Public License for more details.
+.\"
+.\"	You should have received a copy of the GNU General Public License
+.\"	along with this program; if not, write to the Free Software
+.\"	Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111, USA.
+.\"
+.\" MANIFEST: document describing foil.11.so
+.\"
+.bp
+.nr PS 8
+.nr VS 9
+.LP
+.ps 46
+.vs 48
+.hy 0
+.ad c
+The WWW Integration Step
+.sp
+.ad l
+.nr PS 34
+.nr VS 35
+.IP "" 2n
+.IP \(bu 2n
+.hy 0
+Integration build also constructs the indexes and other files not
+normally interesting to developers.
+.IP \(bu 2n
+.hy 0
+Same picture as before, integration directory renamed to be the
+baseline.
+.IP \(bu 2n
+.hy 0
+Conflicts are detected and managed.
+.IP \(bu 2n
+.hy 0
+This is when history is updated.
+.IP \(bu 2n
+.hy 0
+Server is sufficiently lightly loaded to run from \fIinetd\fP, so
+no notification required.

@@ -1,0 +1,44 @@
+
+/*
+ * This defines the file creation mask.  See umask(2) for more information.
+ * Some bits are not available, because aegis is _meant_ to be paranoid.
+ * Owner: always has read, write and search/exec.
+ * Group: always has read and search/exec, so that developers can get at the
+ *	baseline.  There is never group write, because then developers
+ *	could trash the baseline, which is counter-productive.
+ * Others: There is never others write, for the same reason as group.
+ *	Others read and search/execute is configurable.
+ *
+ * The permissions mask in binary looks like
+ *	000 010 X1X
+ * where the Xs may be configured.
+ *
+ * Alternatives for default umask are thus
+ *	027	others get nothing
+ *	026	others can execute the results if they know where they are going
+ *	022	others can see and copy and execute anything
+ *	023	don't do this (why is left as an exersize for the reader)
+ *
+ * Projects have a configurable umask, this is just the default.
+ *	See aepattr(1) for more information.
+ */
+#define DEFAULT_UMASK 026
+
+/*
+ * These symbols define where non-system user IDs start,
+ * and where non-system group IDs start.
+ * This is mostly to ensure that accounts "root" and "bin"
+ * and "uucp" are not project owners.
+ */
+#define AEGIS_MIN_UID 100
+#define AEGIS_MIN_GID 10
+
+/*
+ * There is more to do, but we need to insulate it from config.status,
+ * because it screws up the #undef lines.  They are all implications of
+ * the above information, so there is not need for you to edit the file,
+ * if you are configuring Aegis manually.
+ */
+#include <config.messy.h>
+
+#endif /* COMMON_CONFIG_H */

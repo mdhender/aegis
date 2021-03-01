@@ -1,6 +1,6 @@
 /*
  *	aegis - project change supervisor
- *	Copyright (C) 1990, 1991, 1992, 1993, 1994 Peter Miller.
+ *	Copyright (C) 1990, 1991, 1992, 1993, 1994, 1995 Peter Miller;
  *	All rights reserved.
  *
  *	This program is free software; you can redistribute it and/or modify
@@ -15,7 +15,7 @@
  *
  *	You should have received a copy of the GNU General Public License
  *	along with this program; if not, write to the Free Software
- *	Foundation, Inc., 675 Mass Ave, Cambridge, MA 02139, USA.
+ *	Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111, USA.
  *
  * MANIFEST: functions to manipulate symbol tables
  */
@@ -427,12 +427,12 @@ symtab_dump(stp, caption)
 	int		j;
 	symtab_row_ty	*p;
 
-	error("symbol table %s = {", caption);
+	error_raw("symbol table %s = {", caption);
 	for (j = 0; j < stp->hash_modulus; ++j)
 	{
 		for (p = stp->hash_table[j]; p; p = p->overflow)
 		{
-			error
+			error_raw
 			(
 				"key = \"%s\", data = %08lX",
 				p->key->str_text,
@@ -440,7 +440,7 @@ symtab_dump(stp, caption)
 			);
 		}
 	}
-	error("}");
+	error_raw("}");
 }
 
 #endif

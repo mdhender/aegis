@@ -1,6 +1,6 @@
 /*
  *	aegis - project change supervisor
- *	Copyright (C) 1991, 1992, 1993, 1994, 1995 Peter Miller;
+ *	Copyright (C) 1991, 1992, 1993, 1994, 1995, 1996, 1997, 1998 Peter Miller;
  *	All rights reserved.
  *
  *	This program is free software; you can redistribute it and/or modify
@@ -15,7 +15,7 @@
  *
  *	You should have received a copy of the GNU General Public License
  *	along with this program; if not, write to the Free Software
- *	Foundation, Inc., 675 Mass Ave, Cambridge, MA 02139, USA.
+ *	Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111, USA.
  *
  * MANIFEST: functions to impliment copy file undo
  */
@@ -23,24 +23,28 @@
 #include <stdio.h>
 #include <ac/stdlib.h>
 #include <ac/unistd.h>
+#include <ac/libintl.h>
 
 #include <aecpu.h>
 #include <ael.h>
 #include <arglex2.h>
 #include <commit.h>
-#include <change.h>
+#include <change_bran.h>
+#include <change_file.h>
 #include <error.h>
 #include <file.h>
 #include <help.h>
 #include <lock.h>
 #include <log.h>
-#include <option.h>
 #include <os.h>
+#include <progname.h>
 #include <project.h>
+#include <project_file.h>
+#include <sub.h>
 #include <trace.h>
 #include <undo.h>
 #include <user.h>
-#include <word.h>
+#include <str_list.h>
 
 
 static void copy_file_undo_usage _((void));
@@ -50,7 +54,7 @@ copy_file_undo_usage()
 {
 	char		*progname;
 
-	progname = option_progname_get();
+	progname = progname_get();
 	fprintf
 	(
 		stderr,
@@ -73,12 +77,7 @@ static void copy_file_undo_help _((void));
 static void
 copy_file_undo_help()
 {
-	static char *text[] =
-	{
-#include <../man1/aecpu.h>
-	};
-
-	help(text, SIZEOF(text), copy_file_undo_usage);
+	help("aecpu", copy_file_undo_usage);
 }
 
 
@@ -104,22 +103,32 @@ copy_file_undo_list()
 
 		case arglex_token_change:
 			if (arglex() != arglex_token_number)
-				copy_file_undo_usage();
+				option_needs_number(arglex_token_change, copy_file_undo_usage);
 			/* fall through... */
 
 		case arglex_token_number:
 			if (change_number)
-				fatal("duplicate -Change option");
+				duplicate_option_by_name(arglex_token_change, copy_file_undo_usage);
 			change_number = arglex_value.alv_number;
-			if (change_number < 1)
-				fatal("change %ld out of range", change_number);
+			if (change_number == 0)
+				change_number = MAGIC_ZERO;
+			else if (change_number < 1)
+			{
+				sub_context_ty	*scp;
+
+				scp = sub_context_new();
+				sub_var_set(scp, "Number", "%ld", change_number);
+				fatal_intl(scp, i18n("change $number out of range"));
+				/* NOTREACHED */
+				sub_context_delete(scp);
+			}
 			break;
 
 		case arglex_token_project:
 			if (arglex() != arglex_token_string)
-				copy_file_undo_usage();
+				option_needs_name(arglex_token_project, copy_file_undo_usage);
 			if (project_name)
-				fatal("duplicate -Project option");
+				duplicate_option_by_name(arglex_token_project, copy_file_undo_usage);
 			project_name = str_from_c(arglex_value.alv_string);
 			break;
 		}
@@ -137,30 +146,33 @@ static void copy_file_undo_main _((void));
 static void
 copy_file_undo_main()
 {
-	wlist		wl;
+	sub_context_ty	*scp;
+	string_list_ty	wl, wl2;
 	cstate		cstate_data;
-	pstate		pstate_data;
-	int		j;
+	size_t		j, k;
 	string_ty	*s1;
 	string_ty	*s2;
 	string_ty	*project_name;
 	project_ty	*pp;
 	long		change_number;
 	change_ty	*cp;
-	int		nolog;
+	log_style_ty	log_style;
 	user_ty		*up;
 	int		config_seen;
 	string_ty	*config_name;
-	string_ty	*dd;
-	string_ty	*bl;
 	int		unchanged;
 	int		number_of_errors;
+	string_list_ty	search_path;
+	int		mend_symlinks;
+	pconf		pconf_data;
+	int		based;
+	string_ty	*base;
 
 	trace(("copy_file_undo_main()\n{\n"/*}*/));
-	wl_zero(&wl);
+	string_list_constructor(&wl);
 	project_name = 0;
 	change_number = 0;
-	nolog = 0;
+	log_style = log_style_append_default;
 	unchanged = 0;
 	while (arglex_token != arglex_token_eoln)
 	{
@@ -170,74 +182,85 @@ copy_file_undo_main()
 			generic_argument(copy_file_undo_usage);
 			continue;
 
+		case arglex_token_directory:
+			if (arglex() != arglex_token_string)
+				option_needs_dir(arglex_token_directory, copy_file_undo_usage);
+			goto get_file_names;
+
+
+		case arglex_token_file:
+			if (arglex() != arglex_token_string)
+				option_needs_files(arglex_token_file, copy_file_undo_usage);
+			/* fall through... */
+
 		case arglex_token_string:
-			s1 = str_from_c(arglex_value.alv_string);
-			os_become_orig();
-			s2 = os_pathname(s1, 1);
-			os_become_undo();
-			str_free(s1);
-			if (wl_member(&wl, s2))
-			{
-				fatal
-				(
-					"file \"%s\" named more than once",
-					arglex_value.alv_string
-				);
-			}
-			wl_append(&wl, s2);
+			get_file_names:
+			s2 = str_from_c(arglex_value.alv_string);
+			string_list_append(&wl, s2);
 			str_free(s2);
 			break;
 
 		case arglex_token_keep:
 		case arglex_token_interactive:
 		case arglex_token_no_keep:
-			user_delete_file_argument();
+			user_delete_file_argument(copy_file_undo_usage);
 			break;
 
 		case arglex_token_change:
 			if (arglex() != arglex_token_number)
-				copy_file_undo_usage();
+				option_needs_number(arglex_token_change, copy_file_undo_usage);
 			/* fall through... */
 
 		case arglex_token_number:
 			if (change_number)
-				fatal("duplicate -Change option");
+				duplicate_option_by_name(arglex_token_change, copy_file_undo_usage);
 			change_number = arglex_value.alv_number;
-			if (change_number < 1)
-				fatal("change %ld out of range", change_number);
+			if (change_number == 0)
+				change_number = MAGIC_ZERO;
+			else if (change_number < 1)
+			{
+				scp = sub_context_new();
+				sub_var_set(scp, "Number", "%ld", change_number);
+				fatal_intl(scp, i18n("change $number out of range"));
+				/* NOTREACHED */
+				sub_context_delete(scp);
+			}
 			break;
 
 		case arglex_token_project:
 			if (arglex() != arglex_token_string)
-				copy_file_undo_usage();
+				option_needs_name(arglex_token_project, copy_file_undo_usage);
 			if (project_name)
-				fatal("duplicate -Project option");
+				duplicate_option_by_name(arglex_token_project, copy_file_undo_usage);
 			project_name = str_from_c(arglex_value.alv_string);
 			break;
 
 		case arglex_token_nolog:
-			if (nolog)
-			{
-				duplicate:
-				fatal
-				(
-					"duplicate %s option",
-					arglex_value.alv_string
-				);
-			}
-			nolog = 1;
+			if (log_style == log_style_none)
+				duplicate_option(copy_file_undo_usage);
+			log_style = log_style_none;
 			break;
 
 		case arglex_token_unchanged:
 			if (unchanged)
-				goto duplicate;
+				duplicate_option(copy_file_undo_usage);
 			unchanged = 1;
+			break;
+
+		case arglex_token_wait:
+		case arglex_token_wait_not:
+			user_lock_wait_argument(copy_file_undo_usage);
+			break;
+
+		case arglex_token_base_relative:
+		case arglex_token_current_relative:
+			user_relative_filename_preference_argument(copy_file_undo_usage);
 			break;
 		}
 		arglex();
 	}
-	if (!unchanged && !wl.wl_nwords)
-		fatal("no filenames specified");
+	if (!unchanged && !wl.nstrings)
+		fatal_intl(0, i18n("no file names"));
 
 	/*
 	 * locate project data
@@ -267,56 +290,27 @@ copy_file_undo_main()
 	change_cstate_lock_prepare(cp);
 	lock_take();
 	cstate_data = change_cstate_get(cp);
-	pstate_data = project_pstate_get(pp);
+
+	log_open(change_logfile_get(cp), up, log_style);
 
 	/*
 	 * It is an error if the change is not in the in_development state.
 	 * It is an error if the change is not assigned to the current user.
 	 */
 	if (cstate_data->state != cstate_state_being_developed)
-	{
-		change_fatal
-		(
-			cp,
-"this change is in the '%s' state, it must be in the \
-'being developed' state to be able to remove a copied file from it",
-			cstate_state_ename(cstate_data->state)
-		);
-	}
+		change_fatal(cp, 0, i18n("bad cp undo state"));
+	if (change_is_a_branch(cp))
+		change_fatal(cp, 0, i18n("bad cp undo branch"));
 	if (!str_equal(change_developer_name(cp), user_name(up)))
-	{
-		change_fatal
-		(
-			cp,
-   "user \"%S\" is not the developer, only user \"%S\" may work on this change",
-			user_name(up),
-			change_developer_name(cp)
-		);
-	}
+		change_fatal(cp, 0, i18n("not developer"));
 
 	/*
 	 * If no files were named and the -unchanged option was used,
 	 * add all of the modified files in the change.
 	 * It is an error if there are none.
 	 */
-	dd = change_development_directory_get(cp, 1);
-	if (!wl.wl_nwords)
-	{
-		assert(unchanged);
-		for (j = 0; j < cstate_data->src->length; ++j)
-		{
-			cstate_src	src;
-
-			src = cstate_data->src->list[j];
-			if (src->action != file_action_modify)
-				continue;
-			s1 = str_format("%S/%S", dd, src->file_name);
-			wl_append(&wl, s1);
-			str_free(s1);
-		}
-		if (!wl.wl_nwords)
-			change_fatal(cp, "no files being modified");
-	}
+	if (!wl.nstrings)
+		string_list_append(&wl, change_development_directory_get(cp, 1));
 
 	/*
 	 * resolve the path of each file
@@ -326,97 +320,241 @@ copy_file_undo_main()
 	 * 4.	if neither, error
 	 */
 	config_seen = 0;
-	config_name = str_from_c(THE_CONFIG_FILE);
-	bl = project_baseline_path_get(pp, 1);
-	for (j = 0; j < wl.wl_nwords; ++j)
+	change_search_path_get(cp, &search_path, 1);
+
+	/*
+	 * Find the base for relative filenames.
+	 */
+	based =
+		(
+			search_path.nstrings >= 1
+		&&
+			(
+				user_relative_filename_preference
+				(
+					up,
+				      uconf_relative_filename_preference_current
+				)
+			==
+				uconf_relative_filename_preference_base
+			)
+		);
+	if (based)
+		base = search_path.string[0];
+	else
 	{
-		s1 = wl.wl_word[j];
-		assert(s1->str_text[0] == '/');
-		s2 = os_below_dir(dd, s1);
-		if (!s2)
-			s2 = os_below_dir(bl, s1);
-		if (!s2)
-			change_fatal(cp, "path \"%S\" unrelated", s1);
-		str_free(s1);
-		wl.wl_word[j] = s2;
-		if (str_equal(s2, config_name))
-			config_seen++;
+		os_become_orig();
+		base = os_curdir();
+		os_become_undo();
 	}
+
+	config_name = str_from_c(THE_CONFIG_FILE);
+	string_list_constructor(&wl2);
+	number_of_errors = 0;
+	for (j = 0; j < wl.nstrings; ++j)
+	{
+		string_list_ty		wl_in;
+
+		s1 = wl.string[j];
+		if (s1->str_text[0] == '/')
+			s2 = str_copy(s1);
+		else
+			s2 = str_format("%S/%S", base, s1);
+		user_become(up);
+		s1 = os_pathname(s2, 1);
+		user_become_undo();
+		str_free(s2);
+		s2 = 0;
+		for (k = 0; k < search_path.nstrings; ++k)
+		{
+			s2 = os_below_dir(search_path.string[k], s1);
+			if (s2)
+				break;
+		}
+		str_free(s1);
+		if (!s2)
+		{
+			scp = sub_context_new();
+			sub_var_set(scp, "File_Name", "%S", wl.string[j]);
+			change_error(cp, scp, i18n("$filename unrelated"));
+			sub_context_delete(scp);
+			++number_of_errors;
+			continue;
+		}
+		change_file_dir(cp, s2, &wl_in, 0);
+		if (wl_in.nstrings)
+		{
+			int	used;
+
+			/*
+			 * If the user named a directory, add all of the
+			 * source files in this change in that
+			 * directory, provided they were added using
+			 * the aecp command.
+			 */
+			used = 0;
+			for (k = 0; k < wl_in.nstrings; ++k)
+			{
+				string_ty	*s3;
+				fstate_src	src_data;
+
+				s3 = wl_in.string[k];
+				src_data = change_file_find(cp, s3);
+				assert(src_data);
+				if (src_data)
+				{
+					switch (src_data->action)
+					{
+					case file_action_modify:
+					case file_action_insulate:
+						if (string_list_member(&wl2, s3))
+						{
+							scp = sub_context_new();
+							sub_var_set(scp, "File_Name", "%S", s3);
+							change_error(cp, scp, i18n("too many $filename"));
+							sub_context_delete(scp);
+							++number_of_errors;
+						}
+						else
+							string_list_append(&wl2, s3);
+						if (str_equal(s3, config_name))
+							++config_seen;
+						++used;
+						break;
+
+					case file_action_create:
+					case file_action_remove:
+						break;
+					}
+				}
+			}
+			if (!used)
+			{
+				scp = sub_context_new();
+				if (s2->str_length)
+					sub_var_set(scp, "File_Name", "%S", s2);
+				else
+					sub_var_set(scp, "File_Name", ".");
+				sub_var_set(scp, "Number", "%ld", (long)wl_in.nstrings);
+				sub_var_optional(scp, "Number");
+				change_error
+				(
+					cp,
+					scp,
+			  i18n("directory $filename contains no relevant files")
+				);
+				sub_context_delete(scp);
+				++number_of_errors;
+			}
+		}
+		else
+		{
+			if (string_list_member(&wl2, s2))
+			{
+				scp = sub_context_new();
+				sub_var_set(scp, "File_Name", "%S", s2);
+				change_error(cp, scp, i18n("too many $filename"));
+				sub_context_delete(scp);
+				++number_of_errors;
+			}
+			else
+				string_list_append(&wl2, s2);
+			if (str_equal(s2, config_name))
+				++config_seen;
+		}
+		string_list_destructor(&wl_in);
+		str_free(s2);
+	}
+	string_list_destructor(&wl);
+	wl = wl2;
 	str_free(config_name);
+	string_list_destructor(&search_path);
 
 	/*
 	 * ensure that each file
 	 * 1. is already part of the change
 	 * 2. is being modified by this change
 	 */
-	number_of_errors = 0;
-	for (j = 0; j < wl.wl_nwords; ++j)
+	for (j = 0; j < wl.nstrings; ++j)
 	{
-		cstate_src	src_data;
+		fstate_src	src_data;
 
-		s1 = wl.wl_word[j];
-		src_data = change_src_find(cp, s1);
+		s1 = wl.string[j];
+		src_data = change_file_find(cp, s1);
 		if (!src_data)
 		{
-			src_data = change_src_find_fuzzy(cp, s1);
+			scp = sub_context_new();
+			src_data = change_file_find_fuzzy(cp, s1);
+			sub_var_set(scp, "File_Name", "%S", s1);
 			if (src_data)
 			{
+				sub_var_set(scp, "Guess", "%S", src_data->file_name);
 				change_error
 				(
 					cp,
-		       "file \"%S\" not in change, closest was the \"%S\" file",
-					s1,
-					src_data->file_name
+					scp,
+					i18n("no $filename, closest is $guess")
 				);
 			}
 			else
-			{
-				change_error
-				(
-					cp,
-					"file \"%S\" not in change",
-					s1
-				);
-			}
+				change_error(cp, scp, i18n("no $filename"));
+			sub_context_delete(scp);
 			++number_of_errors;
 			continue;
 		}
-		if (src_data->action != file_action_modify)
+		switch (src_data->action)
 		{
-			change_error
-			(
-				cp,
-		    "file \"%S\" was not added to this change using -CoPy_file",
-				s1
-			);
+		case file_action_modify:
+		case file_action_insulate:
+			break;
+
+		case file_action_create:
+		case file_action_remove:
+			scp = sub_context_new();
+			sub_var_set(scp, "File_Name", "%S", s1);
+			change_error(cp, scp, i18n("bad cp undo $filename"));
+			sub_context_delete(scp);
 			++number_of_errors;
 			continue;
 		}
-		if (config_seen)
-			src_data->diff_time = 0;
+		if (config_seen && src_data->file_fp)
+		{
+			fingerprint_type.free(src_data->file_fp);
+			src_data->file_fp = 0;
+		}
 	}
 	if (number_of_errors)
 	{
-		change_fatal
-		(
-			cp,
-			"found %d fatal error%s, no copied files removed",
-			number_of_errors,
-			(number_of_errors == 1 ? "" : "s")
-		);
+		scp = sub_context_new();
+		sub_var_set(scp, "Number", "%d", number_of_errors);
+		sub_var_optional(scp, "Number");
+		change_fatal(cp, scp, i18n("no files uncopied"));
+		sub_context_delete(scp);
 	}
+
+	/*
+	 * Figure out if we need to mend symlinks as we go.
+	 */
+	pconf_data = change_pconf_get(cp, 0);
+	mend_symlinks =
+		(
+			pconf_data->create_symlinks_before_build
+		&&
+			!pconf_data->remove_symlinks_after_build
+		);
 
 	/*
 	 * Remove each file from the development directory,
 	 * if it still exists.
 	 * Remove the difference file, too.
 	 */
-	for (j = 0; j < wl.wl_nwords; ++j)
+	for (j = 0; j < wl.nstrings; ++j)
 	{
 		int		exists;
 
-		s1 = wl.wl_word[j];
-		s2 = str_format("%S/%S", dd, s1);
+		s1 = wl.string[j];
+		s2 = change_file_path(cp, s1);
+		assert(s2);
 		user_become(up);
 		exists = os_exists(s2);
 		user_become_undo();
@@ -429,18 +567,29 @@ copy_file_undo_main()
 		{
 			string_ty	*blf;
 			int		different;
+			fstate_src	src_data;
 
-			blf = str_format("%S/%S", bl, s1);
+			/*
+			 * Leave cross branch merges alone, even if they
+			 * don't change anything.  The information is
+			 * about the merge, not the file contents.
+			 */
+			src_data = change_file_find(cp, s1);
+			if (src_data && src_data->edit_number_origin_new)
+				goto not_this_one;
+
+			blf = project_file_path(pp, s1);
+			assert(blf);
 			user_become(up);
 			different = files_are_different(s2, blf);
 			user_become_undo();
 			str_free(blf);
 			if (different)
 			{
-				wl_delete(&wl, s1);
+				not_this_one:
+				string_list_remove(&wl, s1);
 				--j;
-				str_free(s2);
-				continue;
+				goto next;
 			}
 		}
 
@@ -450,20 +599,75 @@ copy_file_undo_main()
 		 */
 		if (exists && user_delete_file_query(up, s1, 0))
 		{
-			user_become(up);
-			commit_unlink_errok(s2);
-			user_become_undo();
+			fstate_src	psrc_data;
+
+			if (mend_symlinks)
+			{
+				psrc_data = project_file_find(pp, s1);
+				if
+				(
+					psrc_data
+				&&
+					(
+						psrc_data->deleted_by
+					||
+					       psrc_data->about_to_be_created_by
+					)
+				)
+					psrc_data = 0;
+			}
+			else
+				psrc_data = 0;
+
+			if (psrc_data)
+			{
+				string_ty *blf;
+
+				/*
+				 * This is not as robust in the face of
+				 * errors as using commit.  Its merit
+				 * is its simplicity.
+				 *
+				 * Also, the rename-and-delete shenanigans
+				 * take a long time over NFS, and users
+				 * expect this to be fast.
+				 */
+				blf = project_file_path(pp, s1);
+				assert(blf);
+				user_become(up);
+				os_unlink(s2);
+				os_symlink(blf, s2);
+				user_become_undo();
+				str_free(blf);
+			}
+			else
+			{
+				user_become(up);
+				commit_unlink_errok(s2);
+				user_become_undo();
+			}
 		}
-		str_free(s2);
 
 		/*
 		 * always delete the difference file
+		 * and the merge backup file
 		 */
-		s2 = str_format("%S/%S,D", dd, s1);
 		user_become(up);
-		if (os_exists(s2))
-			commit_unlink_errok(s2);
+		s1 = str_format("%S,D", s2);
+		if (os_exists(s1))
+			commit_unlink_errok(s1);
+		str_free(s1);
+
+		/*
+		 * always delete the backup merge file
+		 */
+		s1 = str_format("%S,B", s2);
+		if (os_exists(s1))
+			commit_unlink_errok(s1);
+		str_free(s1);
 		user_become_undo();
+
+		next:
 		str_free(s2);
 	}
 
@@ -471,14 +675,21 @@ copy_file_undo_main()
 	 * Remove each file from the change file,
 	 * and write it back out.
 	 */
-	for (j = 0; j < wl.wl_nwords; ++j)
-		change_src_remove(cp, wl.wl_word[j]);
+	for (j = 0; j < wl.nstrings; ++j)
+		change_file_remove(cp, wl.string[j]);
 
 	/*
 	 * the number of files changed,
 	 * so stomp on the validation fields.
 	 */
 	change_build_times_clear(cp);
+
+	/*
+	 * run the change file command
+	 * and the project file command if necessary
+	 */
+	change_run_change_file_command(cp, &wl, up);
+	change_run_project_file_command(cp, up);
 
 	/*
 	 * release the locks
@@ -490,23 +701,15 @@ copy_file_undo_main()
 	/*
 	 * verbose success message
 	 */
-	for (j = 0; j < wl.wl_nwords; ++j)
+	for (j = 0; j < wl.nstrings; ++j)
 	{
-		change_verbose
-		(
-			cp,
-			"file \"%S\" no longer in change",
-			wl.wl_word[j]
-		);
+		scp = sub_context_new();
+		sub_var_set(scp, "File_Name", "%S", wl.string[j]);
+		change_verbose(cp, scp, i18n("$filename gone"));
+		sub_context_delete(scp);
 	}
 
-	/*
-	 * run the change file command
-	 */
-	if (!nolog)
-		log_open(change_logfile_get(cp), up, log_style_append);
-	change_run_change_file_command(cp, &wl, up);
-	wl_free(&wl);
+	string_list_destructor(&wl);
 	project_free(pp);
 	change_free(cp);
 	user_free(up);

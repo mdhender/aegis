@@ -1,0 +1,82 @@
+'\" t
+.\"	aegis - project change supervisor
+.\"	Copyright (C) 1994, 1995 Peter Miller;
+.\"	All rights reserved.
+.\"
+.\"	This program is free software; you can redistribute it and/or modify
+.\"	it under the terms of the GNU General Public License as published by
+.\"	the Free Software Foundation; either version 2 of the License, or
+.\"	(at your option) any later version.
+.\"
+.\"	This program is distributed in the hope that it will be useful,
+.\"	but WITHOUT ANY WARRANTY; without even the implied warranty of
+.\"	MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+.\"	GNU General Public License for more details.
+.\"
+.\"	You should have received a copy of the GNU General Public License
+.\"	along with this program; if not, write to the Free Software
+.\"	Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111, USA.
+.\"
+.\" MANIFEST: manual page describing the aerptidx.5 command.
+.\"
+.so z_name.so
+.so libdir.so
+.TH aerptidx 5 \*(N) "Reference Manual"
+.SH NAME
+aerptidx \- report index file format
+.XX "aerptidx(5)" "report index file format"
+.SH SYNOPSIS
+.ft CW
+\*(D)/report.index
+.br
+\*(D)/report.local
+.ft R
+.SH DESCRIPTION
+The report index file is used to store pointers to report scripts,
+and descriptions of the reports.
+.PP
+When searching for a report,
+the
+.IR aer (1)
+command searches down the
+.I AEGIS_PATH
+looking for
+.I report.index
+files,
+and searching them for the report named.
+.SH CONTENTS
+.TP 8n
+where = [{ ... }];
+.br
+This field is a table relating report name to file name.
+The structure is as follows:
+.RS
+.TP 8n
+name = string;
+.br
+The name of a report.
+The command line argument naming scheme is used,
+to provide abbreviatable names.
+.TP 8n
+description = string;
+.br
+A brief description of the report.
+It should not be very long,
+one or two lines at most.
+.TP 8n
+filename = string;
+.br
+The name of the file containing the report script.
+If a relative path is given,
+it will be interpreted to be relative to the directory containing the
+.I report.index
+file.
+.RE
+.SH SEE ALSO
+.TP 8n
+.IR aer (1)
+report generator
+.TP 8n
+.IR aegis (5)
+\*(n) file format syntax
+.so ../man1/z_cr.so

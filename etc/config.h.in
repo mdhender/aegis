@@ -1,0 +1,62 @@
+/*
+ * define this symbol if your system as <sys/ioctl.h> AND it
+ * defines TIOCGWINSZ and struct winsize.
+ */
+#undef HAVE_winsize_SYS_IOCTL_H
+
+/*
+ * define this symbol if your system as <termios.h> AND it
+ * defines TIOCGWINSZ and struct winsize.
+ */
+#undef HAVE_winsize_TERMIOS_H
+
+/*
+ * Define this symbol of your system has <stdarg.h> AND it works.
+ */
+#undef HAVE_STDARG_H
+
+/*
+ * Define this symbol of your system has iswprint() AND it works.
+ */
+#undef HAVE_ISWPRINT
+
+/*
+ * Define this symbol of your system has the wint_t type defined.
+ * It is usually in <stddef.h> or <wctype.h>
+ */
+#undef HAVE_WINT_T
+
+/*
+ * Define this symbol of your system has mblen AND it works.
+ */
+#undef HAVE_MBLEN
+
+/*
+ * Set this to a suitable argument for the getpgrp function to discover
+ * the process group of the current process.
+ */
+#define CONF_getpgrp_arg broken
+
+/*
+ * Set this to be the absolute path of a Bourne shell
+ * which understands functions.
+ */
+#define CONF_SHELL "/bin/sh"
+
+/*
+ * Define this symbol if your system has
+ * the pw_comment field in the passwd struct defined in <pwd.h>
+ */
+#undef HAVE_pw_comment
+
+/*
+ * Define this symbol if your system has
+ * the tm_zone field in the tm struct defined in <time.h>
+ */
+#undef HAVE_tm_zone
+
+/*
+ * Define this symbol if your compiler
+ * makes all enums the same size as ints
+ */
+#undef CONF_enum_is_int

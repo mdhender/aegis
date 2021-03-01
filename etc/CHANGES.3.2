@@ -1,0 +1,665 @@
+
+
+Project "aegis.3.2"						 Page 1
+List of Changes				       Sat Apr	4 21:13:19 1998
+
+Change	State		Description
+------- -------		-------------
+  10	completed	prepare for release
+  11	completed	errno in glue
+  12	completed	aeb symlinks_to_baseline -minimum
+  13	completed	Manual page corrections.
+  14	completed	fix iswprint problems
+  15	completed	check RPM build
+  16	completed	aenbr user assign
+  17	completed	more install fixes
+  18	completed	more install problems
+
+
+
+Project "aegis.3.2", Change 10					 Page 1
+Change Details				       Sat Apr	4 21:13:19 1998
+
+NAME
+	Project "aegis.3.2", Delta 1, Change 10.
+
+SUMMARY
+	prepare for release
+
+DESCRIPTION
+	This change prepares Aegis for release.
+
+	This change is exempt from testing against the development
+	directory.  This change is exempt from testing against the
+	baseline.
+
+
+ARCHITECTURE
+	This change must build and test in the "linux-i486"
+	architecture.
+
+CAUSE
+	This change was caused by internal_enhancement.
+
+FILES
+	Type	Action	 Edit	      File Name
+	------- -------- -------      -----------
+	build	modify	    5 -> 6    BUILDING
+	build	modify	    8 -> 9    MANIFEST
+	build	modify	   10 -> 11   Makefile.in
+	build	modify	    6 -> 7    README
+	source	create	    1	      aux/CHANGES.3.1
+	source	modify	    2 -> 3    aux/Howto.cook
+	source	modify	    1 -> 2    aux/archive.cook
+	build	modify	   27 -> 28   aux/version.so
+	build	modify	    2	      common/config.h.in
+	build	modify	   27 -> 28   common/patchlevel.h
+	build	modify	    2	      configure
+	source	modify	    2 -> 3    lib/en/lsm/main.roff
+	source	modify	    2 -> 3    lib/en/readme/main.man
+	source	modify	    4 -> 5    lib/en/readme/new.3.1.so
+	source	create	    1	      lib/en/readme/new.3.2.so
+
+HISTORY
+	What		When		Who	 Comment
+	------		------		-----	 ---------
+	new_change	Sun Mar 22	pmiller
+			21:29:51 1998
+	develop_begin	Sun Mar 22	pmiller	 Elapsed time: 0.181
+			21:29:55 1998		 days.
+	develop_end	Sun Mar 22	pmiller
+			22:51:16 1998
+	review_pass	Sun Mar 22	pmiller
+			22:51:41 1998
+	integrate_begin Sun Mar 22	pmiller	 Elapsed time: 0.036
+			22:51:50 1998		 days.
+	integrate_pass	Sun Mar 22	pmiller
+			23:08:12 1998
+
+
+
+Project "aegis.3.2", Change 11					 Page 1
+Change Details				       Sat Apr	4 21:13:19 1998
+
+NAME
+	Project "aegis.3.2", Delta 2, Change 11.
+
+SUMMARY
+	errno in glue
+
+DESCRIPTION
+	This change corrects a problem where errno is defined to
+	something else, and a minor problem where the expected number
+	of grammar errors was wrong in the generated makefile.in
+
+	My thanks to Steven Knight <knight@baldmt.com> for reporting
+	these problems.
+
+	This change is exempt from testing against the development
+	directory.  This change is exempt from testing against the
+	baseline.
+
+
+ARCHITECTURE
+	This change must build and test in the "linux-i486"
+	architecture.
+
+CAUSE
+	This change was caused by external_bug.
+
+FILES
+	Type	Action	 Edit	      File Name
+	------- -------- -------      -----------
+	build	modify	    5 -> 6    BUILDING
+	build	modify	    8 -> 10   MANIFEST
+	build	modify	   10 -> 12   Makefile.in
+	build	modify	    6 -> 7    README
+	source	modify	    1 -> 2    aux/Makefi.file.sh
+	build	modify	   27 -> 29   aux/version.so
+	build	modify	    2	      common/config.h.in
+	build	modify	   27 -> 29   common/patchlevel.h
+	build	modify	    2	      configure
+	source	modify	    2 -> 3    libaegis/glue.c
+
+HISTORY
+	What		When		Who	 Comment
+	------		------		-----	 ---------
+	new_change	Tue Mar 24	pmiller
+			17:47:36 1998
+	develop_begin	Tue Mar 24	pmiller	 Elapsed time: 0.636
+			17:47:40 1998		 days.
+	develop_end	Tue Mar 24	pmiller
+			22:33:45 1998
+	review_pass	Tue Mar 24	pmiller
+			22:33:47 1998
+	integrate_begin Tue Mar 24	pmiller	 Elapsed time: 0.031
+			22:33:51 1998		 days.
+	integrate_pass	Tue Mar 24	pmiller
+			22:47:57 1998
+
+
+
+Project "aegis.3.2", Change 12					 Page 1
+Change Details				       Sat Apr	4 21:13:19 1998
+
+NAME
+	Project "aegis.3.2", Delta 6, Change 12.
+
+SUMMARY
+	aeb symlinks_to_baseline -minimum
+
+DESCRIPTION
+	suggested Ralf Fassel <ralf@venture.de>
+
+
+ARCHITECTURE
+	This change must build and test in the "linux-i486"
+	architecture.
+
+CAUSE
+	This change was caused by external_enhancement.
+
+FILES
+	Type	Action	 Edit	      File Name
+	------- -------- -------      -----------
+	build	modify	    5 -> 6    BUILDING
+	build	modify	    8 -> 14   MANIFEST
+	build	modify	   10 -> 15   Makefile.in
+	build	modify	    6 -> 7    README
+	source	modify	    1 -> 2    aegis/aeb.c
+	source	modify	    1 -> 2    aegis/aechown.c
+	source	modify	    1 -> 2    aegis/aedb.c
+	build	modify	   27 -> 33   aux/version.so
+	build	modify	    2	      common/config.h.in
+	build	modify	   27 -> 33   common/patchlevel.h
+	build	modify	    2	      configure
+	source	modify	    4 -> 5    lib/en/LC_MESSAGES/aegis.po
+	source	modify	    1 -> 2    lib/en/man1/aeb.1
+	source	modify	    3 -> 4    libaegis/change.c
+	source	modify	    1 -> 2    libaegis/change.h
+	test	create	    1	      test/00/t0070a.sh
+
+HISTORY
+	What		When		Who	 Comment
+	------		------		-----	 ---------
+	new_change	Tue Mar 24	pmiller
+			23:20:21 1998
+	develop_begin	Tue Mar 24	pmiller	 Elapsed time: 3.000
+			23:20:45 1998		 days.
+	develop_end	Fri Mar 27	pmiller
+			13:09:53 1998
+	review_pass	Fri Mar 27	pmiller
+			13:10:01 1998
+	integrate_begin Fri Mar 27	pmiller	 Elapsed time: 0.180
+			13:10:05 1998		 days.
+	integrate_pass	Fri Mar 27	pmiller
+			14:30:53 1998
+
+
+
+Project "aegis.3.2", Change 13					 Page 1
+Change Details				       Sat Apr	4 21:13:19 1998
+
+NAME
+	Project "aegis.3.2", Delta 3, Change 13.
+
+SUMMARY
+	Manual page corrections.
+
+DESCRIPTION
+	This change corrects a number of typos on man pages.
+
+	My thanks to Ralf Fassel <ralf@atg.venture.de> for reporting
+	these.
+
+	This change is exempt from testing against the development
+	directory.  This change is exempt from testing against the
+	baseline.
+
+
+ARCHITECTURE
+	This change must build and test in the "linux-i486"
+	architecture.
+
+CAUSE
+	This change was caused by external_bug.
+
+FILES
+	Type	Action	 Edit	      File Name
+	------- -------- -------      -----------
+	build	modify	    5 -> 6    BUILDING
+	build	modify	    8 -> 11   MANIFEST
+	build	modify	   10 -> 12   Makefile.in
+	build	modify	    6 -> 7    README
+	build	modify	   27 -> 30   aux/version.so
+	build	modify	    2	      common/config.h.in
+	build	modify	   27 -> 30   common/patchlevel.h
+	build	modify	    2	      configure
+	source	modify	    1 -> 2    lib/en/man1/o_symlnk.so
+	source	modify	    1 -> 2    lib/en/man1/z_bl_lock.so
+	source	modify	    1 -> 2    lib/en/man5/aepconf.5
+
+HISTORY
+	What		When		Who	 Comment
+	------		------		-----	 ---------
+	new_change	Tue Mar 24	pmiller
+			23:21:40 1998
+	develop_begin	Tue Mar 24	pmiller	 Elapsed time: 0.028
+			23:21:44 1998		 days.
+	develop_end	Tue Mar 24	pmiller
+			23:34:23 1998
+	review_pass	Tue Mar 24	pmiller
+			23:34:31 1998
+	integrate_begin Tue Mar 24	pmiller	 Elapsed time: 0.025
+			23:34:36 1998		 days.
+	integrate_pass	Tue Mar 24	pmiller
+			23:45:59 1998
+
+
+
+Project "aegis.3.2", Change 14					 Page 1
+Change Details				       Sat Apr	4 21:13:19 1998
+
+NAME
+	Project "aegis.3.2", Delta 4, Change 14.
+
+SUMMARY
+	fix iswprint problems
+
+DESCRIPTION
+	This change corrects a problem using the wide character
+	functions on some systems.
+
+	My thanks to Wayne Collins <wcollins@entrenet.com> for reporing
+	this problem.
+
+	This change is exempt from testing against the development
+	directory.  This change is exempt from testing against the
+	baseline.
+
+
+ARCHITECTURE
+	This change must build and test in the "linux-i486"
+	architecture.
+
+CAUSE
+	This change was caused by external_bug.
+
+FILES
+	Type	Action	 Edit	      File Name
+	------- -------- -------      -----------
+	build	modify	    5 -> 6    BUILDING
+	build	modify	    8 -> 12   MANIFEST
+	build	modify	   10 -> 13   Makefile.in
+	build	modify	    6 -> 7    README
+	source	modify	    1 -> 2    aegis/aenpr.c
+	source	modify	    3 -> 4    aegis/aenrls.c
+	source	modify	    2 -> 3    aux/configure.in
+	build	modify	   27 -> 31   aux/version.so
+	source	modify	    1 -> 2    common/abbreviate.c
+	source	create	    1	      common/ac/ctype.h
+	source	modify	    1 -> 2    common/ac/wctype.c
+	source	modify	    2 -> 3    common/ac/wctype.h
+	source	modify	    1 -> 2    common/arglex.c
+	build	modify	    2	      common/config.h.in
+	source	modify	    1 -> 2    common/error.c
+	source	modify	    1 -> 2    common/gettime.y
+	build	modify	   27 -> 31   common/patchlevel.h
+	source	modify	    1 -> 2    common/str.c
+	source	modify	    1 -> 2    common/str_list.c
+	build	modify	    2	      configure
+	source	modify	    1 -> 2    fmtgen/parse.y
+	source	modify	    2 -> 3    libaegis/aer/func/wrap.c
+	source	modify	    1 -> 2    libaegis/aer/lex.c
+	source	modify	    1 -> 2    libaegis/aer/value/string.c
+	source	modify	    2 -> 3    libaegis/change.c
+	source	modify	    2 -> 3    libaegis/col.c
+	source	modify	    2 -> 3    libaegis/file.c
+	source	modify	    2 -> 3    libaegis/io.c
+	source	modify	    1 -> 2    libaegis/lex.c
+
+
+
+Project "aegis.3.2", Change 14					 Page 2
+Change Details				       Sat Apr	4 21:13:19 1998
+
+	Type	Action	 Edit	      File Name
+	------- -------- -------      -----------
+	source	modify	    3 -> 4    libaegis/project.c
+	source	modify	    2 -> 3    libaegis/sub.c
+	source	modify	    1 -> 2    libaegis/uname.c
+	source	modify	    1 -> 2    libaegis/user.c
+
+HISTORY
+	What		When		Who	 Comment
+	------		------		-----	 ---------
+	new_change	Wed Mar 25	pmiller
+			15:29:09 1998
+	develop_begin	Wed Mar 25	pmiller	 Elapsed time: 0.759
+			15:29:13 1998		 days.
+	develop_end	Wed Mar 25	pmiller
+			21:10:43 1998
+	review_pass	Wed Mar 25	pmiller
+			21:11:25 1998
+	integrate_begin Wed Mar 25	pmiller	 Elapsed time: 0.139
+			21:11:31 1998		 days.
+	integrate_pass	Wed Mar 25	pmiller
+			22:14:15 1998
+
+
+
+Project "aegis.3.2", Change 15					 Page 1
+Change Details				       Sat Apr	4 21:13:19 1998
+
+NAME
+	Project "aegis.3.2", Delta 5, Change 15.
+
+SUMMARY
+	check RPM build
+
+DESCRIPTION
+	This change introduces Cook recipes making it easier to perform
+	RPM builds.  This is not done for every integration, because it
+	take far too long.
+
+	This change is exempt from testing against the development
+	directory.  This change is exempt from testing against the
+	baseline.
+
+
+ARCHITECTURE
+	This change must build and test in the "linux-i486"
+	architecture.
+
+CAUSE
+	This change was caused by internal_improvement.
+
+FILES
+	Type	Action	 Edit	      File Name
+	------- -------- -------      -----------
+	build	modify	    5 -> 6    BUILDING
+	build	modify	    8 -> 13   MANIFEST
+	build	modify	   10 -> 14   Makefile.in
+	build	modify	    6 -> 7    README
+	source	modify	    2 -> 3    aux/Makefi.file.sh
+	source	modify	    2 -> 3    aux/archive.cook
+	source	create	    1	      aux/rpm-build.sh
+	build	modify	   27 -> 32   aux/version.so
+	build	modify	    2	      common/config.h.in
+	build	modify	   27 -> 32   common/patchlevel.h
+	build	modify	    2	      configure
+
+HISTORY
+	What		When		Who	 Comment
+	------		------		-----	 ---------
+	new_change	Fri Mar 27	pmiller
+			10:44:25 1998
+	develop_begin	Fri Mar 27	pmiller	 Elapsed time: 0.076
+			10:44:30 1998		 days.
+	develop_end	Fri Mar 27	pmiller
+			11:18:32 1998
+	review_pass	Fri Mar 27	pmiller
+			11:19:14 1998
+	integrate_begin Fri Mar 27	pmiller	 Elapsed time: 0.022
+			11:19:18 1998		 days.
+	integrate_pass	Fri Mar 27	pmiller
+			11:29:18 1998
+
+
+
+Project "aegis.3.2", Change 16					 Page 1
+Change Details				       Sat Apr	4 21:13:20 1998
+
+NAME
+	Project "aegis.3.2", Delta 8, Change 16.
+
+SUMMARY
+	aenbr user assign
+
+DESCRIPTION
+	This change corrects a fault in aenbr where it assigns the
+	branch to the user.  This is unnecessary.
+
+	This change is exempt from testing against the baseline.
+
+
+ARCHITECTURE
+	This change must build and test in the "linux-i486"
+	architecture.
+
+CAUSE
+	This change was caused by internal_bug.
+
+FILES
+	Type	Action	 Edit	      File Name
+	------- -------- -------      -----------
+	build	modify	    5 -> 6    BUILDING
+	build	modify	    8 -> 16   MANIFEST
+	build	modify	   10 -> 16   Makefile.in
+	build	modify	    6 -> 7    README
+	source	modify	    2 -> 3    aegis/aenbr.c
+	source	modify	    2 -> 3    aegis/aenpr.c
+	build	modify	   27 -> 35   aux/version.so
+	build	modify	    2 -> 3    common/config.h.in
+	build	modify	   27 -> 35   common/patchlevel.h
+	build	modify	    2 -> 3    configure
+	test	modify	    1 -> 2    test/00/t0031a.sh
+
+HISTORY
+	What		When		Who	 Comment
+	------		------		-----	 ---------
+	new_change	Fri Mar 27	pmiller
+			21:32:10 1998
+	develop_begin	Fri Mar 27	pmiller	 Elapsed time: 1.246
+			21:32:30 1998		 days.
+	develop_end	Sun Mar 29	pmiller	 Elapsed time: 5.000
+			22:23:16 1998		 days.
+	review_pass	Fri Apr	 3	pmiller	 Elapsed time: 0.218
+			16:48:05 1998		 days.
+	integrate_begin Fri Apr	 3	pmiller	 Elapsed time: 0.263
+			18:26:01 1998		 days.
+	integrate_pass	Fri Apr	 3	pmiller
+			20:24:22 1998
+
+
+
+Project "aegis.3.2", Change 17					 Page 1
+Change Details				       Sat Apr	4 21:13:20 1998
+
+NAME
+	Project "aegis.3.2", Delta 7, Change 17.
+
+SUMMARY
+	more install fixes
+
+DESCRIPTION
+	This change adds more install fixes for weird ctype vs wctype
+	problems.
+
+	This change is exempt from testing against the development
+	directory.  This change is exempt from testing against the
+	baseline.
+
+
+ARCHITECTURE
+	This change must build and test in the "linux-i486"
+	architecture.
+
+CAUSE
+	This change was caused by external_bug.
+
+FILES
+	Type	Action	 Edit	      File Name
+	------- -------- -------      -----------
+	build	modify	    5 -> 6    BUILDING
+	build	modify	    8 -> 15   MANIFEST
+	build	modify	   10 -> 16   Makefile.in
+	build	modify	    6 -> 7    README
+	source	modify	    1 -> 2    aux/config.h.in
+	source	modify	    3 -> 4    aux/configure.in
+	build	modify	   27 -> 34   aux/version.so
+	source	modify	    1 -> 2    common/ac/stddef.h
+	source	modify	    2 -> 3    common/ac/wctype.c
+	source	modify	    3 -> 4    common/ac/wctype.h
+	build	modify	    2 -> 3    common/config.h.in
+	build	modify	   27 -> 34   common/patchlevel.h
+	source	modify	    1 -> 2    common/wstr.c
+	build	modify	    2 -> 3    configure
+	source	modify	    3 -> 4    libaegis/sub.c
+
+HISTORY
+	What		When		Who	 Comment
+	------		------		-----	 ---------
+	new_change	Wed Apr	 1	pmiller
+			08:33:25 1998
+	develop_begin	Wed Apr	 1	pmiller	 Elapsed time: 3.000
+			08:33:31 1998		 days.
+	develop_end	Fri Apr	 3	pmiller
+			16:46:48 1998
+	review_pass	Fri Apr	 3	pmiller
+			16:47:01 1998
+	integrate_begin Fri Apr	 3	pmiller	 Elapsed time: 0.089
+			16:47:07 1998		 days.
+	integrate_pass	Fri Apr	 3	pmiller
+			17:27:10 1998
+
+
+
+Project "aegis.3.2", Change 18					 Page 1
+Change Details				       Sat Apr	4 21:13:20 1998
+
+NAME
+	Project "aegis.3.2", Delta 9, Change 18.
+
+SUMMARY
+	more install problems
+
+DESCRIPTION
+	This change corrects a number of install problems.
+
+	My thanks to Ralf Fassel <ralf@atg.venture.de> for reporting
+	this problem.
+
+	This change is exempt from testing against the baseline.
+
+
+ARCHITECTURE
+	This change must build and test in the "linux-i486"
+	architecture.
+
+CAUSE
+	This change was caused by external_bug.
+
+FILES
+	Type	Action	 Edit	      File Name
+	------- -------- -------      -----------
+	build	remove	    5	      BUILDING
+	build	remove	    8	      MANIFEST
+	build	remove	   10	      Makefile.in
+	build	remove	    6	      README
+	source	modify	    1 -> 2    aux/Makefile.sh
+	source	modify	    3 -> 4    aux/archive.cook
+	source	modify	    1 -> 2    aux/template/test
+	build	remove	   27	      aux/version.so
+	build	remove	    2	      common/config.h.in
+	build	remove	   27	      common/patchlevel.h
+	build	remove	    2	      configure
+	source	modify	    5 -> 6    lib/en/LC_MESSAGES/aegis.po
+	source	modify	    3 -> 4    lib/en/building/main.man
+	test	modify	    1 -> 2    test/00/t0001a.sh
+	test	modify	    1 -> 2    test/00/t0002a.sh
+	test	modify	    1 -> 2    test/00/t0003a.sh
+	test	modify	    1 -> 2    test/00/t0004a.sh
+	test	modify	    1 -> 2    test/00/t0005a.sh
+	test	modify	    1 -> 2    test/00/t0006a.sh
+	test	modify	    1 -> 2    test/00/t0007a.sh
+	test	modify	    1 -> 2    test/00/t0008a.sh
+	test	modify	    1 -> 2    test/00/t0009a.sh
+	test	modify	    1 -> 2    test/00/t0010a.sh
+	test	modify	    1 -> 2    test/00/t0011a.sh
+	test	modify	    1 -> 2    test/00/t0012a.sh
+	test	modify	    1 -> 2    test/00/t0013a.sh
+	test	modify	    1 -> 2    test/00/t0014a.sh
+	test	modify	    1 -> 2    test/00/t0015a.sh
+	test	modify	    1 -> 2    test/00/t0016a.sh
+	test	modify	    1 -> 2    test/00/t0017a.sh
+	test	modify	    1 -> 2    test/00/t0018a.sh
+	test	modify	    1 -> 2    test/00/t0019a.sh
+
+
+
+Project "aegis.3.2", Change 18					 Page 2
+Change Details				       Sat Apr	4 21:13:20 1998
+
+	Type	Action	 Edit	      File Name
+	------- -------- -------      -----------
+	test	modify	    1 -> 2    test/00/t0020a.sh
+	test	modify	    1 -> 2    test/00/t0021a.sh
+	test	modify	    1 -> 2    test/00/t0025a.sh
+	test	modify	    1 -> 2    test/00/t0027a.sh
+	test	modify	    1 -> 2    test/00/t0028a.sh
+	test	modify	    1 -> 2    test/00/t0029a.sh
+	test	modify	    1 -> 2    test/00/t0030a.sh
+	test	modify	    2 -> 3    test/00/t0031a.sh
+	test	modify	    1 -> 2    test/00/t0032a.sh
+	test	modify	    1 -> 2    test/00/t0033a.sh
+	test	modify	    1 -> 2    test/00/t0034a.sh
+	test	modify	    1 -> 2    test/00/t0035a.sh
+	test	modify	    1 -> 2    test/00/t0036a.sh
+	test	modify	    1 -> 2    test/00/t0038a.sh
+	test	modify	    1 -> 2    test/00/t0039a.sh
+	test	modify	    1 -> 2    test/00/t0040a.sh
+	test	modify	    1 -> 2    test/00/t0041a.sh
+	test	modify	    1 -> 2    test/00/t0042a.sh
+	test	modify	    1 -> 2    test/00/t0043a.sh
+	test	modify	    1 -> 2    test/00/t0044a.sh
+	test	modify	    1 -> 2    test/00/t0045a.sh
+	test	modify	    1 -> 2    test/00/t0046a.sh
+	test	modify	    1 -> 2    test/00/t0047a.sh
+	test	modify	    1 -> 2    test/00/t0048a.sh
+	test	modify	    1 -> 2    test/00/t0049a.sh
+	test	modify	    1 -> 2    test/00/t0050a.sh
+	test	modify	    1 -> 2    test/00/t0051a.sh
+	test	modify	    1 -> 2    test/00/t0052a.sh
+	test	modify	    1 -> 2    test/00/t0053a.sh
+	test	modify	    1 -> 2    test/00/t0054a.sh
+	test	modify	    1 -> 2    test/00/t0055a.sh
+	test	modify	    1 -> 2    test/00/t0056a.sh
+	test	modify	    1 -> 2    test/00/t0057a.sh
+	test	modify	    1 -> 2    test/00/t0058a.sh
+	test	modify	    1 -> 2    test/00/t0059a.sh
+	test	modify	    1 -> 2    test/00/t0060a.sh
+	test	modify	    1 -> 2    test/00/t0061a.sh
+	test	modify	    1 -> 2    test/00/t0062a.sh
+	test	modify	    1 -> 2    test/00/t0063a.sh
+	test	modify	    1 -> 2    test/00/t0064a.sh
+	test	modify	    1 -> 2    test/00/t0065a.sh
+	test	modify	    1 -> 2    test/00/t0066a.sh
+	test	modify	    1 -> 2    test/00/t0067a.sh
+	test	modify	    1 -> 2    test/00/t0068a.sh
+	test	modify	    1 -> 2    test/00/t0069a.sh
+	test	modify	    1 -> 2    test/00/t0070a.sh
+
+HISTORY
+	What		When		Who	 Comment
+	------		------		-----	 ---------
+	new_change	Fri Apr	 3	pmiller
+			16:51:18 1998
+	develop_begin	Fri Apr	 3	pmiller	 Elapsed time: 0.865
+			16:51:28 1998		 days.
+	develop_end	Fri Apr	 3	pmiller
+
+
+
+Project "aegis.3.2", Change 18					 Page 3
+Change Details				       Sat Apr	4 21:13:20 1998
+
+	What		When		Who	 Comment
+	------		------		-----	 ---------
+			23:20:45 1998
+	review_pass	Fri Apr	 3	pmiller
+			23:20:52 1998
+	integrate_begin Fri Apr	 3	pmiller	 Elapsed time: 1.000
+			23:20:57 1998		 days.
+	integrate_pass	Sat Apr	 4	pmiller
+			17:30:09 1998

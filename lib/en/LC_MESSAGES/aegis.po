@@ -1,0 +1,2377 @@
+#
+#	aegis - project change supervisor
+#	Copyright (C) 1995, 1996, 1997, 1998 Peter Miller;
+#	All rights reserved.
+#
+#	This program is free software; you can redistribute it and/or modify
+#	it under the terms of the GNU General Public License as published by
+#	the Free Software Foundation; either version 2 of the License, or
+#	(at your option) any later version.
+#
+#	This program is distributed in the hope that it will be useful,
+#	but WITHOUT ANY WARRANTY; without even the implied warranty of
+#	MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+#	GNU General Public License for more details.
+#
+#	You should have received a copy of the GNU General Public License
+#	along with this program; if not, write to the Free Software
+#	Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111, USA.
+#
+# MANIFEST: English localization
+#
+# Just A Few Notes...
+#
+#	When translating these error messages, all of the substitutions
+#	described in aesub(5) are also available.  Substitution variable
+#	names and function names may be abbreviated, in the same way
+#	that command line options are abbreviated, but abbreviation
+#	should probably be avoided.
+#
+#	While Aegis was written by an English speaker, this English
+#	localization file is necessary, to translate the ``terse
+#	programmer'' style error messages into something more user
+#	friendly.
+#
+#	Messages which include state names need to leave the state names
+#	untranslated, because they will probably never be translated.
+#
+#	Messages which include command line options need to leave them
+#	untranslated, because they are not yet internationalized, though
+#	they will be one day.
+#
+#	The list names (known to ael) have not been internationalized (yet).
+#
+#	Substitution names will Never be internationalized.
+#	Otherwise the substitutions will stop working, Catch-22.
+#
+# -------------------------------------------------------------------------
+#
+# This error message is issued when a file has been tampered with while
+# in the 'being reviewed' or 'awaiting integration' state.  Files in
+# these states must be left strictly alone, or Aegis will assume that
+# the developer is trying to subvert the process.
+#
+#	$File_Name	The name of the offending file.
+#
+msgid	"$filename altered"
+msgstr	"file \"$filename\" has been altered"
+
+#
+# This progress message is issued when a test run against the baseline
+# fails.  This is what it is meant to do because either (a) it is new
+# functionality, and will fail because it is not in the baseline, or (b)
+# it is a bug fix, and failing against the baseline demonstrates that
+# the test reproduces the bug.
+#
+#	$File_Name	The name of the test file.
+#
+msgid	"$filename baseline fail, good"
+msgstr	"test \"$filename\" on baseline failed (as it should)"
+
+#
+# This error message is issued when a test run against the baseline
+# passes.  See above for why this is not good.
+#
+#	$File_Name	The name of the test file.
+#
+msgid	"$filename baseline pass, not good"
+msgstr	"test \"$filename\" on baseline passed (it must fail)"
+
+#
+# This error message is issued when a request is made to run a specific
+# test file, but the file specified is being removed not created or modified.
+#
+#	$File_Name	The name of the offending file.
+#
+msgid	"$filename being removed"
+msgstr	"file \"$filename\" is being removed"
+
+#
+# This error message is issued when aede finds a file which has been
+# modified since it was last built.
+#
+#	$File_Name	The name of the offending file.
+#	$Outstanding	A list of outstanding architectures to be built,
+#			or empty if all are outstanding.  (Optional)
+#
+msgid	"$filename changed after build"
+msgstr	"the \"$filename\" file was modified after the last build, this "
+	"change must successfully complete another 'aegis -Build' "
+	"$outstanding before it can leave the '$state' state"
+
+#
+# This error message is issued when aede finds a file which has been
+# modified since it was last differenced.  Can occur in both the 'being
+# developed' and 'being integrated' states.
+#
+#	$File_Name	The name of the offending file.
+#
+msgid	"$filename changed after diff"
+msgstr	"the \"$filename\" file was modified after the last difference, "
+	"this change must successfully complete another 'aegis -Diff' "
+	"before it can leave the '$state' state"
+
+#
+# This progress message is issued when aed merges a file, and notifies the
+# user that the merge has taken place.
+#
+msgid	"$filename diff3ed"
+msgstr	"file \"$filename\" was out of date, see \"$filename,D\" for "
+	"merged source"
+
+#
+# This error message is issued when a test against the change fails.
+#
+#	$File_Name	The name of the test file.
+#
+msgid	"$filename fail"
+msgstr	"test \"$filename\" failed"
+
+#
+# This progress message is issued when the aecpu command completes
+# successfully.  It details files which have been removed from the
+# change.  Please note: this is NOT the same as files added to the
+# change, which are to be removed BY the change.
+#
+#	$File_Name	Name of the file removed from the change.
+#
+msgid	"$filename gone"
+msgstr	"file \"$filename\" no longer in change"
+
+#
+# This error message is issued when an aed is performed on a change
+# which contains a new file which has been added to the baseline
+# by another change.
+#
+#	$File_Name	The name of the offending file.
+#
+msgid	"$filename in baseline"
+msgstr	"file \"$filename\" already exists in the project"
+
+#
+# This error message is issued when an attempt is made to copy a file
+# marked as "built" (created by aenf -b) into a change.
+#
+#	$File_Name	The offending file name.
+#
+msgid	"$filename is built"
+msgstr	"file \"$filename\" is built, it may not be copied into a change"
+
+#
+# This error message is issued when an attempt is made to end
+# development (aede) when a file copied for insulation (aecp -ro) is
+# still present in the change.
+#
+#     $File_Name      The offending file name.
+#
+msgid	"$filename is insulation"
+msgstr	"file \"$filename\" was copied read-only, it must be uncopied "
+	"before this change can leave the '$state' state"
+
+#
+# This progress message is issued when aed merges a file, and notifies the
+# user that the merge has taken place.
+#
+msgid	"$filename merged"
+msgstr	"file \"$filename\" was out of date and has been merged with the "
+	"up to date version, see \"$filename,B\" for the original source"
+
+#
+# This error message is issued when aet runs a test which returns a ``no
+# result'' exit status.
+#
+#	$File_Name	The name of the offending file.
+#
+msgid	"$filename no result"
+msgstr	"test \"$filename\" returned no result; some other problem "
+	"prevented the functionality under test from being exercised"
+
+#
+# This error message is issued when aede cannot find a file in the
+# development directory corresponding to a file listed as part of the
+# change.
+#
+#	$File_Name	The name of the offending file.
+#
+msgid	"$filename not found"
+msgstr	"file \"$filename\" not found"
+
+#
+# This error message is issued when a request is made to run a specific
+# test file, but the file specified is not a test.
+#
+#	$File_Name	The name of the offending file.
+#
+msgid	"$filename not test"
+msgstr	"file \"$filename\" is not a test"
+
+#
+# This progress message is issued when a test against the change passes.
+#
+#	$File_Name	The name of the test file.
+#
+msgid	"$filename pass"
+msgstr	"test \"$filename\" passed"
+
+#
+# This error message is issued when a command line option requires a
+# small positive integer as its argument, and has been given a negative
+# number or zero.
+#
+#	$Name		The name of the offending option.
+#	$Number		The value given to the option.
+#
+msgid	"$name $number must be pos"
+msgstr	"the $name $number option is out of range, the $name option "
+	"requires a small positive integer as its argument"
+
+#
+# This error message is issued when a command line option requires a
+# non-negative integer as its argument, and has been given a negative
+# number.
+#
+#	$Name		The name of the offending option.
+#	$Number		The value given to the option.
+#
+msgid	"$name $number must not be neg"
+msgstr	"the $name $number option is out of range, the $name option "
+	"requires zero or a small positive integer as its argument"
+
+#
+# This error message is issued when aena is asked to add an
+# administrator to a project, but the user is already an administrator.
+#
+#	$Name		The offending user name.
+#
+msgid	"$name already administrator"
+msgstr	"user \"$name\" is already an administrator"
+
+#
+# This error message is issued when aena is asked to add a
+# developer to a project, but the user is already an developer.
+#
+#	$Name		The offending user name.
+#
+msgid	"$name already developer"
+msgstr	"user \"$name\" is already a developer"
+
+#
+# This error message is issued when aena is asked to add an
+# integrator to a project, but the user is already an integrator.
+#
+#	$Name		The offending user name.
+#
+msgid	"$name already integrator"
+msgstr	"user \"$name\" is already an integrator"
+
+#
+# This error message is issued when aena is asked to add a
+# reviewer to a project, but the user is already an reviewer.
+#
+#	$Name		The offending user name.
+#
+msgid	"$name already reviewer"
+msgstr	"user \"$name\" is already a reviewer"
+
+#
+# This error message is given when a command line option is not
+# meaningful, but could be at other times.
+#
+#	$Name		The offending command line option.
+#
+msgid	"$name option not meaningful"
+msgstr	"the ``$name'' option is not meaningful in this context"
+
+#
+# This error message is issued when an aechown command attempts to
+# change the ownership of a change to a user who is not a developer.
+#
+#	$Target		The login name of the non-developer.
+#
+msgid	"$target not developer"
+msgstr	"user \"$target\" is not a developer"
+
+#
+# This text is used to describe change 1 of a new release.
+#
+#	$Name		The name of the old project.
+#
+msgid	"New release derived from $name."
+msgstr	"New release derived from $name."
+
+#
+# This text is used when a project name is inserted at the top of a file
+# or listing.  Usually in the C locale, so avoid non-ascii characters if
+# at all possible.
+#
+#	$Name		The name of a project.
+#
+msgid	"Project $name"
+msgstr	"Project \"$name\""
+
+#
+# This text is used when a project name and change number are inserted
+# at the top of a file or listing.  Usually in the C locale, so avoid
+# non-ascii characters if at all possible.
+#
+#	$Name		The name of a project.
+#	$Number		The number of a change.
+#
+msgid	"Project $name, Change $number"
+msgstr	"Project \"$name\", Change $number"
+
+#
+# This verbose message is issued when aeip is updating the modification
+# times of all the files in the integration directory.
+#
+msgid	"adjust file modification times"
+msgstr	"adjusting file modification times"
+
+#
+# This error message is issued when a project administrator attempts to
+# use aedbu on a change which has files.  The expected used of aedbu by
+# an administrator is to undo a forced aedb; thus if the change has been
+# worked on at all, this is probably not a good idea.
+#
+msgid	"aedbu, has files"
+msgstr	"this change has files associated with it, you may only use this "
+	"command on changes with no associated files"
+
+#
+# This error messages is issued when a user attempts to create a new
+# test, and all the test numbers appear to have been consumed.  This error
+# message should be impossible.
+#
+msgid	"all test numbers used"
+msgstr	"it appears that all test numbers have been consumed"
+
+#
+# This progress message is issued when an 'aegis -diff -anticipate'
+# command completes successfully.
+#
+msgid	"anticipated merge complete"
+msgstr	"anticipated merge complete"
+
+#
+# This progress message is issued when aeib copies the source files form
+# the development directory into the integration directory.
+#
+msgid	"apply change to integration directory"
+msgstr	"applying the change to the integration directory"
+
+#
+# This message is issued when an aeca is successfully completed.
+#
+msgid	"attributes changed"
+msgstr	"attributes modified"
+
+#
+# This error message is issued when an aenc command or aeca command
+# fails, to inform the user where s/he may find the text of failed
+# attributes file.
+#
+#	$File_Name	The absolute path of the file containing the
+#			offending attributes text file.
+#
+msgid	"attributes in $filename"
+msgstr	"attributes text left in the \"$filename\" file"
+
+#
+# This error message is issued when an attempt is made to difference
+# against a change which is in an inappropriate state.
+#
+msgid	"bad anticipate diff"
+msgstr	"this change is in the '$state' state, it must be in one of the "
+	"'being reviewed', 'awaiting integration' or 'being integrated' "
+	"states to be anticipated"
+
+#
+# This error message is issued when a user requests a build of a branch
+# which is in the 'being developed' state.
+#
+msgid	"bad branch build"
+msgstr	"this branch may not be built directly in the '$state' state, it "
+	"must be in the 'being integrated' state to do this"
+
+#
+# This error message is issued when an attempt is made to copy files
+# directly into a branch.  You must use a change on the branch for
+# that.
+#
+msgid	"bad branch cp"
+msgstr	"you may not copy files into a branch directly, you must create a "
+	"change to modify files"
+
+#
+# This error message is issued when an aed command is used on a branch
+# which is not in the 'being integrated' state.
+#
+msgid	"bad branch diff"
+msgstr	"this branch is in the '$state' state, it must be in the 'being "
+	"integrated' state to do a difference"
+
+#
+# This error message is issued when a user requests a build of a branch
+# which is in the 'being developed' state.
+#
+msgid	"bad branch test"
+msgstr	"this branch may not be tested directly in the '$state' state, it "
+	"must be in the 'being integrated' state to do this"
+
+#
+# This error message is issued when a user requests a build of a change
+# from the wrong state.
+#
+msgid	"bad build state"
+msgstr	"this change is in the '$state' state, it must be in the 'being "
+	"developed' or 'being integrated' state to do a build"
+
+#
+# This error message is issued when a partial integration is requested
+# for a change in the 'being integrated' state.
+#
+msgid	"bad build, partial"
+msgstr	"you may not do a partial build in the \"$state\" state"
+
+#
+# This error message is issued when a developer who is not an administrator
+# attempts to grant an architecture exemption to a change.
+#
+msgid	"bad ca, no arch exempt"
+msgstr	"only a project administrator may grant architecture exemptions"
+
+#
+# This error message is issued when a user who is not an administrator
+# attempts to grant a test exemption to a change.
+#
+msgid	"bad ca, no test exempt"
+msgstr	"only project administrators may exempt changes from testing"
+
+#
+# This error message is issued when a user without sufficient
+# authorization attempts to modify a change's attributes.
+#
+msgid	"bad ca, not auth"
+msgstr	"user \"$user\" may not modify the change's attributes; "
+	"attributes may only be modified by a project administrator, or "
+	"by the developer during development"
+
+#
+# This error message is issued when a user attempts to set change
+# attributes to include an architecture not named in the project
+# 'config' file.
+#
+msgid	"bad ca, unknown architecture"
+msgstr	"architecture contains variations not listed in the project "
+	"``config'' file"
+
+#
+# This error message is issued when an aecd is requested for a change
+# which does not have a directory.
+#
+msgid	"bad cd, no dir"
+msgstr	"this change is in the '$state' state, there is no directory to "
+	"go to"
+
+#
+# This error message is issued when an attempt is made to change the
+# owner of a change, when that change is not in the 'being developed'
+# state.
+#
+msgid	"bad chown state"
+msgstr	"this change is in the '$state' state, it must be in the 'being "
+	"developed' state to change its owner"
+
+#
+# This error message is issued when an attempt is made to clean a change
+# which is not in the 'being developed' state.
+#
+msgid	"bad clean state"
+msgstr	"this change is in the '$state' state, it must be in the 'being "
+	"developed' state to be cleaned"
+
+#
+# This error message is issued when an attempt is made to clone a change
+# which is in the 'awaiting development' state.  Any other state is acceptable.
+#
+msgid	"bad clone state"
+msgstr	"this change is in the '$state' state, it must be in the 'being "
+	"developed' state, or later, to be cloned"
+
+#
+# This error message is issued when an attempt is made to copy files
+# into a change which is not in the 'being developed' state.
+#
+msgid	"bad cp state"
+msgstr	"this change is in the '$state' state, it must be in the 'being "
+	"developed' state to modify files with it"
+
+#
+# This error message is issued when an aecpu command is used
+# on a file which is not suitable.  (also used by aed -ant)
+#
+#	$File_Name	The name of the offending file.
+#
+msgid	"bad cp undo $filename"
+msgstr	"file \"$filename\" was not added to this change using the 'aegis "
+	"-CoPy_file' command"
+
+#
+# This error message is issued when an aecpu command is used directly on
+# a branch.  Branches may only be altered via a change.
+#
+msgid	"bad cp undo branch"
+msgstr	"you may not remove files from a branch directly, you must create "
+	"a change to remove files"
+
+#
+# This error message is issued when the aecpu command is used on a change
+# which is not in the 'being developed' state.
+#
+msgid	"bad cp undo state"
+msgstr	"this change is in the '$state' state, it must be in the 'being "
+	"developed' state to be able to remove a copied file from it"
+
+#
+# This error message is issued when a file which is already in the
+# change is copied into it again.  This is an error unless the
+# -OverWriting option is specified.
+#
+#	$File_Name	The name of the offending file.
+#
+msgid	"bad cp, file $filename dup"
+msgstr	"file \"$filename\" is already in the change, it will not be "
+	"overwritten; use the -OverWriting option if you want to "
+	"overwrite it"
+
+#
+# This error message is issued when an attempt is made to begin
+# development on a change which is not in the 'awaiting development'
+# state.
+#
+msgid	"bad db state"
+msgstr	"this change is in the '$state' state, it must be in the "
+	"'awaiting development' state to begin development"
+
+#
+# This error message is issued when aedbu is asked to operate on
+# a change which is not in the 'being developed' state.
+#
+msgid	"bad dbu state"
+msgstr	"this change is in the '$state' state, it must be in the 'being "
+	"developed' state to undo develop begin"
+
+#
+# This error message is issued when aede is invokes on a change which is
+# not in the 'being developed' state.
+#
+msgid	"bad de state"
+msgstr	"this change is in the '$state' state, it must be in the 'being "
+	"developed' state to end development"
+
+#
+# This error message is issued when aedeu is invoked for a change which
+# is not in the 'being reviewed' or 'awaiting integration' state.
+#
+msgid	"bad deu state"
+msgstr	"this change is in the '$state' state, it must be in the 'being "
+	"reviewed' or 'awaiting development' state to undo develop end"
+
+#
+# This error message is issued when an aed command used on a change
+# which is not in the 'being developed' state.
+#
+msgid	"bad diff state"
+msgstr	"this change is in the '$state' state, it must be in the 'being "
+	"developed' state to do a difference"
+
+#
+# This error message is issued when an aeib command is used on a change
+# which is not in the 'awaiting integration' state.
+#
+msgid	"bad ib state"
+msgstr	"this change is in the '$state' state, it must be in the "
+	"'awaiting integration' state to begin integration"
+
+#
+# This error message is issued when aeibu is used on a change which is
+# not in the 'being integrated' state.
+#
+msgid	"bad ibu state"
+msgstr	"this change is in the '$state' state, it must be in the 'being "
+	"integrated' state to undo integrate begin"
+
+#
+# This error message is issued when an aed command used on a change
+# which is not in the 'being developed' or 'being integrated' state.
+#
+msgid	"bad idiff state"
+msgstr	"this change is in the '$state' state, it must be in the 'being "
+	"developed' or 'being integrated' state to do a difference"
+
+#
+# This error message is issued when aeif is invoked for a change which
+# is not in the 'being integrated' state.
+#
+msgid	"bad if state"
+msgstr	"this change is in the '$state' state, it must be in the 'being "
+	"integrated' state to fail integration"
+
+#
+# This error message is issued when an aeipass command is invoked on a
+# change which is not in the 'being integrated' state.
+#
+msgid	"bad ip state"
+msgstr	"this change is in the '$state' state, it must be in the 'being "
+	"integrated' state to pass integration"
+
+#
+# This error message is issued when aeipass finds a file which has not been
+# built.
+#
+#	$Outstanding	A list of outstanding architectures to be built,
+#			or empty if all are outstanding.  (Optional)
+#
+msgid	"bad ip, build required"
+msgstr	"this change must successfully complete an 'aegis -Build' "
+	"$outstanding before it can pass integration"
+
+#
+# This error message is issued when aeipass finds a file which has not been
+# tested against the baseline.
+#
+#	$Outstanding	A list of outstanding architectures to be tested,
+#			or empty if all are outstanding.  (Optional)
+#
+msgid	"bad ip, test -bl required"
+msgstr	"this change must successfully complete an 'aegis -Test "
+	"-BaseLine' $outstanding before it can pass integration"
+
+#
+# This error message is issued when aeipass finds a file which has not been
+# regression tested.
+#
+#	$Outstanding	A list of outstanding architectures to be tested,
+#			or empty if all are outstanding.  (Optional)
+#
+msgid	"bad ip, test -reg required"
+msgstr	"this change must successfully complete an 'aegis -Test "
+	"-REGression' $outstanding before it can pass integration"
+
+#
+# This error message is issued when aede finds a file which has not been
+# tested.
+#
+#	$Outstanding	A list of outstanding architectures to be tested,
+#			or empty if all are outstanding.  (Optional)
+#
+msgid	"bad ip, test required"
+msgstr	"this change must successfully complete an 'aegis -Test' "
+	"$outstanding before it can pass integration"
+
+#
+# This error message is issued when aemv is asked to operate on a change
+# which is not in the 'being developed' state.
+#
+msgid	"bad mv state"
+msgstr	"this change is in the '$state' state, it must be in the 'being "
+	"developed' state to rename files with it"
+
+#
+# This error message is issued when aencu is requested of a change which
+# is not in the 'awaiting development' state.
+#
+msgid	"bad ncu state"
+msgstr	"this change is in the '$state' state, it must be in the "
+	"'awaiting development' state to undo a new change"
+
+#
+# This error message is issued when aenf is invoked on a branch in the
+# 'being developed' state.  You must use a change on the branch for
+# that.
+#
+msgid	"bad nf branch"
+msgstr	"you may not add files into a branch directly, you must create a "
+	"change to create new files"
+
+#
+# This error message is issued when aenf is invoked on a change which is
+# not in the 'being developed' state.
+#
+msgid	"bad nf state"
+msgstr	"this change is in the '$state' state, it must be in the 'being "
+	"developed' state to create new files with it"
+
+#
+# This error message is issued when an aenfu command is used
+# on a file which is not suitable.
+#
+#	$File_Name	The name of the offending file.
+#
+msgid	"bad nf undo $filename"
+msgstr	"file \"$filename\" was not added to this change using the 'aegis "
+	"-New_File' command"
+
+#
+# This error message is issued when aenfu is invoked on a branch in the
+# 'being developed' state.  You must use a change on the branch for
+# that.
+#
+msgid	"bad nfu branch"
+msgstr	"you may not remove files from a branch directly, you must create "
+	"a change to create new files"
+
+#
+# This error message is issued when aenfu is invoked on a change which is
+# not in the 'being developed' state.
+#
+msgid	"bad nfu state"
+msgstr	"this change is in the '$state' state, it must be in the 'being "
+	"developed' state to create new files with it"
+
+#
+# This error message is issued when aenrls is asked to operate on a
+# project which is already in the branch format, dating from aegis.3.0
+# onwards.  The New_ReLeaSe command is only used to convert the old
+# branch-less style to the new branch style.
+#
+msgid	"bad nrls, too modern"
+msgstr	"The `aegis -New_ReLeaSe' command may only be used to convert "
+	"projects created by aegis.2.3 and earlier.  This project is more "
+	"recent, use the `aegis -New_BRanch' command instead."
+
+#
+# This error message is issued when aent is invoked fro a change which
+# is not in the 'being developed' state.
+#
+msgid	"bad nt state"
+msgstr	"this change is in the '$state' state, it must be in the 'being "
+	"developed' state to create a new test with it"
+
+#
+# This error message is issued when an aentu command is used
+# on a file which is not suitable.
+#
+#	$File_Name	The name of the offending file.
+#
+msgid	"bad nt undo $filename"
+msgstr	"file \"$filename\" was not added to this change using the 'aegis "
+	"-New_Test' command"
+
+#
+# This error message is issued when aentu is invoked for a change which
+# is not in the 'being developed' state.
+#
+msgid	"bad ntu state"
+msgstr	"this change is in the '$state' state, it must be in the 'being "
+	"developed' state to undo new tests"
+
+#
+# This error message is issued when aepa is given a default development
+# directory which is not an absolute path.
+#
+msgid	"bad pa, rel def dev dir"
+msgstr	"default development directory must be specified as an absolute "
+	"path"
+
+#
+# This error message is issued when a project name is given to aenpr
+# which contains unprintable characters or spaces.
+#
+#	$Name		The offending project name.
+#
+msgid	"bad project $name"
+msgstr	"project name \"$name\" is invalid"
+
+#
+# This error message is issued when a request is made to fail a review
+# of a change, but that change is not in the 'being reviewed' state.
+#
+msgid	"bad rf state"
+msgstr	"this change is in the '$state' state, it must be in the 'being "
+	"reviewed' state to fail review"
+
+#
+# This error message is issued when aerm is invoked for a change which
+# is not in the 'being developed' state.
+#
+msgid	"bad rm state"
+msgstr	"this change is in the '$state' state, it must be in the 'being "
+	"developed' state to remove a file with it"
+
+#
+# This error message is issued when an aermu command is used
+# on a file which is not suitable.
+#
+#	$File_Name	The name of the offending file.
+#
+msgid	"bad rm undo $filename"
+msgstr	"file \"$filename\" was not added to this change using the 'aegis "
+	"-ReMove_file' command"
+
+#
+# This error message is issued when aermu is invoked for a change which
+# is not in the 'being developed' state.
+#
+msgid	"bad rmu state"
+msgstr	"this change is in the '$state' state, it must be in the 'being "
+	"developed' state to undo remove files"
+
+#
+# This error message is issued when aerp is invoked for a change which is
+# not in the 'being reviewed' state.
+#
+msgid	"bad rp state"
+msgstr	"this change is in the '$state' state, it must be in the 'being "
+	"reviewed' state to pass review"
+
+msgid	"bad rpu state"
+msgstr	"this change is in the '$state' state, it must be in the "
+	"'awaiting integration' state to undo a review pass"
+
+#
+# This error message is issued when a user requests a test of a change
+# from the wrong state.
+#
+msgid	"bad test state"
+msgstr	"this change is in the '$state' state, it must be in the 'being "
+	"developed' or 'being integrated' state to do run tests"
+
+#
+# This error message is issued when aede finds a file which has been
+# modified in the baseline since it was last differenced.
+#
+#	$File_Name	The name of the offending file.
+#
+msgid	"baseline $filename changed"
+msgstr	"file \"$filename\" in the baseline has changed since the last "
+	"'aegis -DIFFerence' command, you need to do a merge"
+
+#
+# This error message is issued when an absurd branch number is given.
+# This is different to an unknown but valid branch number.
+#
+#	$Number		The offending branch number.
+#
+msgid	"branch $number out of range"
+msgstr	"branch $number out of range, it must be a small positive number"
+
+#
+# This error message is issued when aenbr is given an explicit branch
+# number, but that number has already been used as branch number or as
+# a change number.
+#
+#	$Number		The offending branch number.
+#
+msgid	"branch $number used"
+msgstr	"branch number $number has already been used, please choose "
+	"another; or do not specify one if you want one to be allocated "
+	"automatically"
+
+#
+# This error message is issued when aenc or aenbr are issued against a
+# project branch which is no longer in the `being developed' state.
+#
+msgid	"branch completed"
+msgstr	"you may only create changes and branches on branches which are "
+	"active, this branch is not in the 'being developed' state"
+
+#
+# This error message is issued when aede finds a file which has not been
+# built.
+#
+#	$Outstanding	A list of outstanding architectures to be built,
+#			or empty if all are outstanding.  (Optional)
+#
+msgid	"build required"
+msgstr	"this change must successfully complete an 'aegis -Build' "
+	"$outstanding before it can end development"
+
+#
+# This error message is issued when aenbr is given an explicit change
+# number, but that number has already been used as change number or as
+# a change number.
+#
+#	$Number		The offending change number.
+#
+msgid	"change $number used"
+msgstr	"change number $number has already been used, please choose "
+	"another; or do not specify one if you want one to be allocated "
+	"automatically"
+
+#
+# This message is issued when an aecd command is successfully completed.
+#
+#	$File_Name	The absolute path of the directory changed to.
+#
+msgid	"change directory $filename complete"
+msgstr	"$filename"
+
+#
+# This message is issued when an aechown command completes successfully.
+#
+#	$ORiginal	The login name of the original owner.  (Optional)
+#	$Target		The login name of the new owner.  (Optional)
+#
+msgid	"chown complete"
+msgstr	"ownership changed from user \"$original\" to user \"$target\""
+
+#
+# This message is issued when an aeclean command completes successfully.
+#
+msgid	"clean complete"
+msgstr	"clean completed"
+
+#
+# This message is issued when an aeclone command completes successfully.
+#
+#	$ORiginal	The login the original change.  (Optional)
+#
+msgid	"clone complete"
+msgstr	"copy of change $original completed"
+
+#
+# This progress message is issued for aecp file when aecp completes
+# successfully.
+#
+msgid	"copied $filename"
+msgstr	"file \"$filename\" copied"
+
+#
+# This progress message is issued when aenrls creates a copy of the
+# baseline in the new project.
+#
+msgid	"copy baseline"
+msgstr	"copying baseline"
+
+#
+# This progress message is issued when aeib creates a copy of
+# the baseline to construct the integration directory.
+#
+msgid	"copy baseline to integration directory"
+msgstr	"copying baseline to integration directory"
+
+#
+# This progress message is issued when copying the change source files
+# during an aechown command.
+#
+msgid	"copy change source files"
+msgstr	"copying change source files"
+
+#
+# This success message is issued when aecp has finished copying files
+# into a change.
+#
+#	$Number		The number of files copied.
+#			(Optional)
+#
+msgid	"copy file complete"
+msgstr	"copied $number ${plural $number files file}"
+
+#
+# This error message is issued when a file create fails
+#
+#	$File_Name	The name of the offending file.
+#
+msgid	"create $filename: $errno"
+msgstr	"create \"$filename\": $errno"
+
+#
+# This error message is issued when an aeib command is given, but there
+# is already an integration in progress.  Only one integration may be
+# performed at a time.
+#
+#	$Number		The change number of the current integration.
+#
+msgid	"currently integrating $number"
+msgstr	"change $number is the currently active integration, only one "
+	"integration may be performed at a time"
+
+#
+# This fatal error message is issued when a user-supplied string can't
+# be interpreted as a date (time_t).
+#
+#	$Name		The offending string.
+#
+msgid	"date $name unknown"
+msgstr	"the string \"$name\" does not look like a date"
+
+#
+# This error message is issued when an attempt is made to reuse an
+# existing delta name, without the -OverWriting option.
+#
+#	$Name		The offending delta name.
+#	$Number		The delta number the user wants to associate
+#			with the delta name.  (Optional)
+#	$Other		The delta number already associated with the
+#			delta name.
+#
+msgid	"delta $name in use"
+msgstr	"the delta name \"$name\" is already assigned to delta $other; to "
+	"reassign this name to delta $number you must use the "
+	"-OverWriting option"
+
+#
+# This error message is issued when an absurd delta number is given.
+# This is different to an unknown but valid delta number.
+#
+#	$Number		The offending delta number.
+#
+msgid	"delta $number out of range"
+msgstr	"delta $number out of range, it must be a small positive number"
+
+#
+# This progress message is issued when aedn completes successfully.
+#
+#	$Name		The name of the delta.  (Optional)
+#	$Number		The number of the delta.  (Optional)
+#
+msgid	"delta name complete"
+msgstr	"delta $number may now be referred to as delta \"$name\""
+
+#
+# This progress message is issued when aedb completes successfully.
+#
+msgid	"develop begin complete"
+msgstr	"user \"$user\" has begun development"
+
+#
+# This progress message is issued when aedbu completes successfully.
+#
+msgid	"develop begin undo complete"
+msgstr	"no longer being developed"
+
+#
+# This error message is issued when all of the other errors in aede have
+# been found.  Because they are often grouped, as many errors as
+# possible are found before aede aborts.
+#
+msgid	"develop end fail"
+msgstr	"found $number error${plural $number s}, this change remains in "
+	"the '$state' state"
+
+#
+# This progress message is issued when aedeu completes successfully.
+#
+msgid	"develop end undo complete"
+msgstr	"development resumed"
+
+#
+# This error message is issued when a developer attempts to review her
+# own change, and the project is configured to disallow this.
+#
+msgid	"developer may not review"
+msgstr	"the developer of a change may not also review it"
+
+#
+# This message is issued when development builds are completed.
+#
+msgid	"development build complete"
+msgstr	"development build complete ${date %%H:%%M}"
+
+#
+# This message is issued when development builds are commenced.
+#
+msgid	"development build started"
+msgstr	"development build started ${date %%H:%%M}"
+
+#
+# This progress message is issued when aede completes successfully.
+#
+msgid	"development completed"
+msgstr	"development completed"
+
+#
+# This information message is issued when an Aegis command automatically
+# generates a development directory, to inform the user of the action
+# taken.
+#
+#	$File_Name	The absolute path of the generated development
+#			directory.
+#
+msgid	"development directory \"$filename\""
+msgstr	"development directory \"$filename\""
+
+#
+# This error message is issued when an aed command found errors in the
+# specified list of files.
+#
+#	$Number		The number of errors found.
+#			(Optional)
+#
+msgid	"diff fail"
+msgstr	"found $number error${plural $number s}, no files were differenced"
+
+#
+# This error message is issued when aede finds a file which has not been
+# differenced.  Can occur in both the 'being developed' and 'being
+# integrated' states.
+#
+msgid	"diff required"
+msgstr	"this change must successfully complete an 'aegis -Diff' before "
+	"it can leave the '$state' state"
+
+#
+# This progress message is issued when the aed command completes successfully.
+#
+msgid	"difference complete"
+msgstr	"difference complete"
+
+#
+# This error message is issued when an option which must be a relative
+# directory is specified as an absolute directory.
+#
+msgid	"dir must be rel"
+msgstr	"directory must be relative (must not start with /)"
+
+#
+# This error message is issued when a directory has been named on the
+# command line, and it has been examined for files.  While a file or files
+# were found, none of them are suitable.
+#
+#	$File_Name	The name of the offending directory
+#	$Number		The number of files found in the directory
+#			(Optional)
+#
+msgid	"directory $filename contains no relevant files"
+msgstr	"directory \"$filename\" contains $number likely ${plural $number "
+	"files file}, however ${plural $number 'none of them are' 'it is "
+	"not a'} suitable ${plural $number arguments argument} for this "
+	"command"
+
+#
+# This progress message is issued when aeipass is deleting the
+# development directory and the old baseline directory.
+#
+msgid	"discard old directories"
+msgstr	"discarding old directories"
+
+#
+# This error message is issued when the obsolete -major or -minor
+# options are used with the new modern better improved preferred -version
+# option.
+#
+msgid	"don't mix old and new version options"
+msgstr	"the -MAJor and -MINOr options are incompatible with the -VERSion "
+	"option"
+
+#
+# This error message is issued when aet completes unsuccessfully.
+#
+#	$Number		The number of tests which failed.
+#
+msgid	"failed $number tests"
+msgstr	"failed $number test${plural $number s}"
+
+#
+# This warning message is issued when aet has been asked to suggest a
+# number of tests, and there are too few candidate tests.
+#
+#	$Number1	The number of tests available.
+#	$Number2	The number of tests requested by the user.
+#
+msgid	"few candidate tests"
+msgstr	"warning: there are only $number1 suitable tests, however you "
+	"have asked for $number2 tests to be suggested; all $number1 "
+	"tests will be used"
+
+#
+# This error message is issued when aeclean discovers that a change
+# source file does not exist.
+#
+#	$File_Name	The name of the offending file.
+#
+msgid	"file \"$filename\" does not exist"
+msgstr	"file \"$filename\" does not exist, and yet is a change source "
+	"file"
+
+#
+# This error message is issued when aede finds a file which has been
+# locked.  The user should try again later, after the file has been
+# integrated.
+#
+#	$File_Name	The name of the offending file.
+#	$Number		The change number of the change which locked the file.
+#
+msgid	"file \"$filename\" locked for change $number"
+msgstr	"file \"$filename\" locked for change $number, try again later"
+
+#
+# This error message is issued when a command attempts to add a new file
+# to a change, but the file is already part of the change.
+#
+#	$File_Name	The name of the offending file.
+#
+msgid	"file $filename dup"
+msgstr	"file \"$filename\" already in change"
+
+#
+# This error message is issued when aena is asked to add an
+# administrator to a project, but the group's gid is too low (too
+# privileged).
+#
+#	$Name		The offending group name.
+#
+msgid	"group \"$name\" is too privileged"
+msgstr	"group \"$name\" is too privileged"
+
+#
+# This error message is issued when a request is made to run tests, but
+# there are no files which are candidates of the options specified, or
+# the project may have no tests at all.
+#
+msgid	"has no tests"
+msgstr	"this change requires tests before this command may be used"
+
+#
+# This error message is issued when a command is given an inappropriate
+# command line option.
+#
+#	$Name		The name of the offending command line option.
+#
+msgid	"inappropriate $name option"
+msgstr	"inappropriate $name option"
+
+#
+# This error message is issued when an ambiguous information name is given
+# to the aev command.
+#
+#	$Name		The offending info name.
+#	$Name_List	The list of possible alternatives.
+#
+msgid	"info $name ambig ($name_list)"
+msgstr	"version information name \"$name\" ambiguous ($name_list)"
+
+#
+# This error message is issued when an aed command is used on a change in
+# the being 'integrated state' and files are named on the command line.
+# You must not name files, and thus you must difference all files in the
+# change.
+#
+msgid	"int must diff all"
+msgstr	"when differencing a change in the 'being integrated' state you "
+	"may not name files on the command line"
+
+#
+# This error message is issued when an aet command is used on a change in
+# the being 'integrated state' and files are named on the command line.
+# You must not name files, and thus you must run all tests in the change.
+#
+msgid	"int must test all"
+msgstr	"when testing a change in the 'being integrated' state you may "
+	"not name files on the command line"
+
+#
+# This progress message is issued when aeib complete successfully.
+#
+msgid	"integrate begin complete"
+msgstr	"integration has begun"
+
+#
+# This verbose message is issued when integrate begin undo completes
+# successfully.
+#
+msgid	"integrate begin undo complete"
+msgstr	"integrate begin undo complete, change returned to the '$state' "
+	"state"
+
+#
+# This progress message is issued when aeifail completes successfully.
+#
+msgid	"integrate fail complete"
+msgstr	"failed integration, returned to developer"
+
+#
+# This progress message is issued when aeipass completes successfully.
+#
+msgid	"integrate pass complete"
+msgstr	"integrate pass"
+
+#
+# This error message is issued when aeipass fails.  Errors tend to
+# happen together, to aeipass finds as many as possible before aborting.
+#
+#	$Number		Number of fatal errors found.
+#
+msgid	"integrate pass fail"
+msgstr	"found $number error${plural $number s}, this change remains in "
+	"the '$state' state"
+
+#
+# This message is issued when integration builds are completed.
+#
+msgid	"integration build complete"
+msgstr	"integration build complete ${date %%H:%%M}"
+
+#
+# This message is issued when integration builds are commenced.
+#
+msgid	"integration build started"
+msgstr	"integration build started ${date %%H:%%M}"
+
+#
+# This error message is issued when aeipass wants to delete the
+# baseline, and the user issued the command from there.
+# Some UNIX will allow to delete an active directory, and some will
+# not, so it is an error.
+#
+msgid	"leave baseline"
+msgstr	"please leave the baseline directory"
+
+#
+# This error message is issued when aeipass wants to delete the
+# development directory, and the user issued the command from there.
+# Some UNIX will allow to delete an active directory, and some will
+# not, so it is an error.
+#
+msgid	"leave dev dir"
+msgstr	"please leave the development directory"
+
+#
+# This error message is issued when aeibu wants to delete the
+# integration directory, and the user issued the command from there.
+# Some UNIX will allow to delete an active directory, and some will
+# not, so it is an error.
+#
+msgid	"leave int dir"
+msgstr	"please leave the integration directory"
+
+#
+# This progress message is issued when aeib creates a virtual copy of
+# the baseline to construct the integration directory.
+#
+msgid	"link baseline to integration directory"
+msgstr	"linking baseline to integration directory"
+
+#
+# This error message is issued when ael is given an ambiguous list name.
+#
+#	$Name		The offending list name.
+#	$Name_List	A list of possible interpretations.  (Optional)
+#
+msgid	"list $name ambiguous"
+msgstr	"list name \"$name\" is ambiguous ($name_list)"
+
+#
+# This error message is issued when the used attempts to create the
+# project ``config'' file with the -Build option.  The file must be
+# available to Aegis at all times, and thus must be an ordinary source
+# file.
+#
+#	$File_Name	The name of the offending file.
+#
+msgid	"may not build $filename"
+msgstr	"the \"$filename\" file must be an ordinary source file, it may "
+	"not be constructed at build time"
+
+#
+# This error message is issued when the user attempts to use the aerm
+# command to remove the project config file.  There may be other files
+# in the future, hence the variable.
+#
+#	$File_Name	The name of the offending file.
+#
+msgid	"may not remove $filename"
+msgstr	"file \"$filename\" may not be removed"
+
+#
+# This error message is issued when the user attempts to use the aent
+# command to create the project config file as a test.  There may be
+# other files in the future, hence the variable.
+#
+#	$File_Name	The name of the offending file.
+#
+msgid	"may not test $filename"
+msgstr	"file \"$filename\" may not be a test"
+
+#
+# This progress message is issued when aed successfully completes a merge.
+#
+#	$Number		The number of files merged.
+#			(Optional)
+#
+msgid	"merge complete"
+msgstr	"merged $number file${plural $number s}, new 'aegis -Build' "
+	"required"
+
+#
+# This progress message is issued when aemv completes successfully.
+#
+#	$File_Name1	The name of the original file.
+#	$File_Name2	The name of the destination file.
+#
+msgid	"move $filename1 to $filename2 complete"
+msgstr	"file \"$filename1\" moved to \"$filename2\""
+
+#
+# This text is used when aenc -edit creates a template attributes file,
+# and makes a suggestion as to how to obtain default settings.  Usually
+# in the C locale, so avoid non-ascii characters if at all possible.
+# (A leading newline is a good idea.  Internal newlines are also a good
+# idea, because io_comment_append does not automatically wrap.)
+#
+msgid	"nc dflt hint"
+msgstr	" \n"
+	"Hint: deleting everything below the \"cause\" field will set\n"
+	"the defaults appropriately for the cause you have chosen."
+
+#
+# This progress message is issued when aena completes successfully.
+#
+#	$Name		The user name of the new administrator.
+#
+msgid	"new administrator $name complete"
+msgstr	"user \"$name\" is now an administrator"
+
+#
+# This progress message is issued when aenbr completes successfully.
+#
+msgid	"new branch complete"
+msgstr	"created"
+
+#
+# This progress message is issued when aenbr completes successfully.
+#
+msgid	"new change complete"
+msgstr	"created"
+
+#
+# This progress message is issued when aencu completes successfully.
+#
+msgid	"new change undo complete"
+msgstr	"removed"
+
+#
+# This progress message is issued when aend completes successfully.
+#
+#	$Name		The user name of the new developer.
+#
+msgid	"new developer $name complete"
+msgstr	"user \"$name\" is now a developer"
+
+#
+# This progress message is issued when aenf completes successfully
+#
+msgid	"new file $filename completed"
+msgstr	"file \"$filename\" added"
+
+#
+# This progress message is issued when aenfu completes successfully.
+#
+#	$File_Name	The name of a removed file.
+#
+msgid	"new file undo $filename complete"
+msgstr	"new file \"$filename\" removed"
+
+#
+# This error message is issued when an aenfu command fails.  Errors are
+# printed out as they are found, but frequently errors happen together,
+# so the aenfu command finds as many as possible before aborting.  This
+# error is emitted when it aborts.
+#
+#	$Number		Number of fatal errors found.
+#			(Optional)
+#
+msgid	"new file undo fail"
+msgstr	"found $number fatal error${plural $number s}, no files were "
+	"removed from the change"
+
+#
+# This progress message is issued when aeni completes successfully.
+#
+#	$Name		The user name of the new integrator.
+#
+msgid	"new integrator $name complete"
+msgstr	"user \"$name\" is now an integrator"
+
+#
+# This progress message is issued when aenpr completes successfully.
+#
+msgid	"new project complete"
+msgstr	"created"
+
+#
+# This progress message is issued when aenrls completes successfully.
+#
+msgid	"new release complete"
+msgstr	"created"
+
+#
+# This progress message is issued when aenrv completes successfully.
+#
+#	$Name		The user name of the new reviewer.
+#
+msgid	"new reviewer $name complete"
+msgstr	"user \"$name\" is now a reviewer"
+
+#
+# This progress message is issued when aent completes successfully.
+#
+msgid	"new test $filename complete"
+msgstr	"file \"$filename\" new test"
+
+#
+# This error message is issued when an aent command fails.  Errors are
+# printed out as they are found, but frequently errors happen together,
+# so the aent command finds as many as possible before aborting.  This
+# error is emitted when it aborts.
+#
+#	$Number		Number of fatal errors found.
+#			(Optional)
+#
+msgid	"new test failed"
+msgstr	"found $number fatal error${plural $number s}, no new tests were "
+	"added to the change"
+
+#
+# This progress message is issued when aentu completes successfully.
+#
+#	$File_Name	The name of the test removed.
+#
+msgid	"new test undo $filename complete"
+msgstr	"file \"$filename\" new test undo"
+
+#
+# This error message is issued when an aentu command fails.  Errors are
+# printed out as they are found, but frequently errors happen together,
+# so the aentu command finds as many as possible before aborting.  This
+# error is emitted when it aborts.
+#
+#	$Number		Number of fatal errors found.
+#			(Optional)
+#
+msgid	"new test undo fail"
+msgstr	"found $number fatal error${plural $number s}, no tests were "
+	"removed from the change"
+
+#
+# This error message is issued when an aemv command is issued with the
+# source and destination files the same.  Use aecp if you don't want to
+# change the name of the file.
+#
+#	$File_Name	The name of the offending file.
+#
+msgid	"nil move $filename"
+msgstr	"you may not move the \"$filename\" file on top of itself"
+
+#
+# This error message is issued when the named file cannot be found in a
+# change or project (context will tell which) and no best guess is
+# available.  This is used by many commands.
+#
+#	$File_Name	The offending file name.
+#
+msgid	"no $filename"
+msgstr	"file \"$filename\" is unknown"
+
+#
+# This error message is issued when an aed is performed on a change
+# which contains a copied file which has been removed from the baseline
+# by another change.
+#
+#	$File_Name	The name of the offending file.
+#
+msgid	"no $filename in baseline"
+msgstr	"file \"$filename\" no longer in baseline"
+
+#
+# This error message is issued when the named file cannot be found in a
+# change or project (context will tell which).  This is used by many
+# commands.
+#
+#	$File_Name	The offending file name.
+#	$Guess		The best guess as to the most possible filename
+#			the user may have meant.
+#
+msgid	"no $filename, closest is $guess"
+msgstr	"file \"$filename\" is unknown, closest is the \"$guess\" file"
+
+#
+# This error message is issued when ael is given a list name it does not
+# understand.
+#
+#	$Name		The offending list name.
+#
+msgid	"no $name list"
+msgstr	"list name \"$name\" unknown"
+
+#
+# This fatal error message is issued when an attempt is made to aechown
+# a branch.
+#
+msgid	"no branch chown"
+msgstr	"this change is a branch; it is not possible to change the "
+	"ownership of a branch"
+
+#
+# This fatal error message is issued when a user attempts to perform a
+# cross branch merge on a change in the ``being integrated'' state.
+#
+msgid	"no cross branch int merge"
+msgstr	"you may not perform a cross branch merge on a change in the "
+	"'$state' state"
+
+#
+# This error message is issued when an unknown delta number is given.
+#
+#	$Number		The offending delta number.
+#
+msgid	"no delta $number"
+msgstr	"delta $number unknown"
+
+#
+# This error message is issued when a delta name should have been given
+# on the command line, and was not.
+#
+msgid	"no delta name"
+msgstr	"no delta name specified"
+
+#
+# This error message is issued when a user has requested that a delta
+# name be attached to the "latest" delta, but the project (or branch)
+# does not yet have an integrations, and so nothing to attache a delta
+# name to.
+#
+msgid	"no delta yet"
+msgstr	"no integrations have been completed, so it is not yet possible "
+	"to assign a delta name"
+
+#
+# This error message is issued when an attempt is made to specify a
+# directory name in combination with the -Output option of aecp.  Only
+# single source file may be specified with the -Output option.
+#
+#	$Name		The name of the -Output option.
+#
+msgid	"no dir with $name"
+msgstr	"may not name directories and use the $name option"
+
+#
+# This error message is issued when a command which requires file names
+# on the command line is not given any.
+#
+msgid	"no file names"
+msgstr	"no file names were specified on the command line"
+
+#
+# This error message is issued when an attempt is made to specify a
+# file name in combination with a conflicting option.
+#
+#	$Name		The name of the conflicting option.
+#
+msgid	"no file with $name"
+msgstr	"may not name files and use the $name option"
+
+#
+# This error message is issued when an otherwise valid command is
+# used for a change which does not yet have any files attached to it.
+#
+msgid	"no files"
+msgstr	"this change has no files, you must add some before you may "
+	"proceed"
+
+#
+# This error message is issued when an aecp command fails.  Errors are
+# printed out as they are found, but frequently errors happen together,
+# so the aecp command finds as many as possible before aborting.  This
+# error is emitted when it aborts.
+#
+#	$Number		Number of fatal errors found.
+#			(Optional)
+#
+msgid	"no files copied"
+msgstr	"found $number fatal error${plural $number s}, no files copied"
+
+#
+# This error message is issued when an aecpu command fails.  Errors are
+# printed out as they are found, but frequently errors happen together,
+# so the aecpu command finds as many as possible before aborting.  This
+# error is emitted when it aborts.
+#
+#	$Number		Number of fatal errors found.
+#			(Optional)
+#
+msgid	"no files uncopied"
+msgstr	"found $number fatal error${plural $number s}, no files were "
+	"removed from the change"
+
+#
+# This error message is issued when an unknown information name is given
+# to the aev command.
+#
+#	$Name		The offending info name.
+#
+msgid	"no info $name"
+msgstr	"version information name \"$name\" unknown"
+
+#
+# This error message is issued when an aed -merge command is issued for a
+# change in the 'being integrated' state.  The integrator has no mandate
+# to fix things, and so a merge in this state is illegal.
+#
+msgid	"no int merge"
+msgstr	"a change in the 'being integrated' state may not be merged"
+
+#
+# This error message is issued when ael is not given a list name.
+#
+msgid	"no list"
+msgstr	"no list name specified"
+
+#
+# This error message is issued when the user gives a merge option to
+# aed, as well as the -anticipate option.
+#
+msgid	"no merge anticipate"
+msgstr	"you may not specify a merge option with -ANticipate"
+
+#
+# This error message is issued when aemv is asked to move the project
+# 'config' file.
+#
+#	$File_Name	The name of the offending file.
+#
+msgid	"no move $filename"
+msgstr	"may not rename the \"$filename\" file"
+
+#
+# This error message is issued when aenf command fails.  Errors are
+# printed out as they are found, but frequently errors happen together,
+# so the aenf command finds as many as possible before aborting.  This
+# error is emitted when it aborts.
+#
+#	$Number		Number of fatal errors found.
+#			(Optional)
+#
+msgid	"no new files"
+msgstr	"found $number fatal error${plural $number s}, no new files added"
+
+#
+# This error message is issued when aet completes unsuccessfully because
+# one or more tests returned a ``no result'' exit code.
+#
+#	$Number		The number of tests which failed.
+#
+msgid	"no result $number tests"
+msgstr	"there ${plural $number were was} $number test${plural $number s} "
+	"which returned no result"
+
+#
+# This error message is issued when aed attempts to anticipate another
+# change, and the two files don't have any suitable files in common.
+#
+msgid	"no suitable files in common"
+msgstr	"no suitable files in common"
+
+#
+# This error message is issued when a command which requires an explicit
+# user name is not given one.
+#
+msgid	"no user name"
+msgstr	"you must give the user name explicitly to this command"
+
+#
+# This error message is issued when a command which requires a list
+# of user names is not given any name on the command line.
+#
+msgid	"no user names"
+msgstr	"no user names specified"
+
+#
+# This error message is issued when a command which requires
+# developer privileges is used, and the user is not a developer.
+#
+msgid	"not a developer"
+msgstr	"user \"$user\" is not a developer"
+
+#
+# This error message is issued when a command which requires
+# reviewer privileges is used, and the user is not a reviewer.
+#
+msgid	"not a reviewer"
+msgstr	"user \"$user\" is not a reviewer"
+
+#
+# This error message is issued when a command which requires
+# administrator privileges is used, and the user is not an administrator.
+#
+msgid	"not an administrator"
+msgstr	"user \"$user\" is not an administrator"
+
+#
+# This error message is issued when a command which requires integrator
+# privileges is run, and the user is not an integrator.
+#
+msgid	"not an integrator"
+msgstr	"user \"$user\" is not an integrator"
+
+#
+# This error message is issued when a build request is given for a
+# change which is in the being developed state, but the requesting user
+# is not the change's developer.
+#
+msgid	"not developer"
+msgstr	"user \"$user\" is not the developer, only user \"$developer\" "
+	"may work on this change"
+
+#
+# This error message is issued when a request is made to delete the last
+# administrator of a project.  There must always be at least one project
+# administrator at all times.
+#
+msgid	"not enough admin"
+msgstr	"must have at least one administrator at all times"
+
+#
+# This error message is issued when a build request is given for a
+# change which is in the 'being integrated' state, but the requesting user
+# is not the change's integrator.
+#
+msgid	"not integrator"
+msgstr	"user \"$user\" is not the integrator, only user \"$integrator\" "
+	"may work on this change"
+
+#
+# This error message is issued by aede when attempting to end the
+# development of a branch and there is still an outstanding change on
+# the branch.  This message will be issued for each outstanding change.
+#
+msgid	"outstanding change"
+msgstr	"this change is in the '$state' state"
+
+#
+# This error message is issued by aede when attempting to end the
+# development of a branch and there is one or more outstanding changes
+# on the branch.
+#
+#	$Number		Number of changes outstanding.  (Optional)
+#
+msgid	"outstanding changes"
+msgstr	"there ${plural $number are is} $number outstanding ${plural "
+	"$number changes change}; development of a branch may not end if "
+	"there are any outstanding changes"
+
+#
+# This message is issued when partial development builds are completed.
+#
+msgid	"partial build complete"
+msgstr	"partial build complete ${date %%H:%%M}"
+
+#
+# This message is issued when partial development builds are commenced.
+#
+msgid	"partial build started"
+msgstr	"partial build started ${date %%H:%%M}"
+
+#
+# This progress message is issued when aet completes, both successfully
+# or unsuccessfully.
+#
+#	$Number		The number of tests which passed.
+#
+msgid	"passed $number tests"
+msgstr	"passed $number test${plural $number s}"
+
+#
+# This information message is issued when aenpr automatically allocates
+# the project home directory.
+#
+#	$File_Name	The absolute path of the project home directory.
+#
+msgid	"proj dir $filename"
+msgstr	"project directory \"$filename\""
+
+#
+# This error message is issued when aenpr is given a project name which
+# is too long.  The only restriction on project name length is the
+# file system on which it must reside.
+#
+#	$Name		The offending project name.
+#	$Number		How many characters too long (how many to remove)
+#			(Optional)
+#
+msgid	"project \"$name\" too long"
+msgstr	"project name \"$name\" too long (by $number)"
+
+#
+# This string is used to format the various "file unacceptable" error messages
+# to indicate that they refer to project files, not change files. (***)
+#
+#	$Message	The message to be supplemented.
+#
+msgid	"project $message"
+msgstr	"project $message"
+
+#
+# This progress message is issued when aepa completes successfully.
+#
+msgid	"project attributes complete"
+msgstr	"attributes changed"
+
+#
+# This progress message is issued when aera completes successfully.
+#
+#	$Name		The name of the removed user.
+#
+msgid	"remove administrator $name complete"
+msgstr	"user \"$name\" is no longer an administrator"
+
+#
+# This progress message is issued when aerd completes successfully.
+#
+#	$Name		The name of the removed user.
+#
+msgid	"remove developer $name complete"
+msgstr	"user \"$name\" is no longer a developer"
+
+#
+# This progress message is issued when removing the development
+# directory during an aedbu command.
+#
+msgid	"remove development directory"
+msgstr	"removing development directory"
+
+#
+# This progress message is issued when aerm completes successfully.
+#
+#	$File_Name	The name of the file to be removed.
+#
+msgid	"remove file $filename complete"
+msgstr	"file \"$filename\" being removed by this change"
+
+#
+# This error message is issued when an aerm command fails.  Errors are
+# printed out as they are found, but frequently errors happen together,
+# so the aerm command finds as many as possible before aborting.  This
+# error is emitted when it aborts.
+#
+#	$Number		Number of fatal errors found.
+#			(Optional)
+#
+msgid	"remove file fail"
+msgstr	"found $number fatal error${plural $number s}, no files were "
+	"added to the change"
+
+#
+# This progress message is issued when aerm completes successfully.
+#
+#	$File_Name	The name of the file to be removed.
+#
+msgid	"remove file undo $filename complete"
+msgstr	"file \"$filename\" no longer being removed by this change"
+
+#
+# This error message is issued when an aermu command fails.  Errors are
+# printed out as they are found, but frequently errors happen together,
+# so the aermu command finds as many as possible before aborting.  This
+# error is emitted when it aborts.
+#
+#	$Number		Number of fatal errors found.
+#			(Optional)
+#
+msgid	"remove file undo fail"
+msgstr	"found $number fatal error${plural $number s}, no files were "
+	"removed from the change"
+
+#
+# This progress message is issued when removing the integration
+# directory during an aeibu command.
+#
+msgid	"remove integration directory"
+msgstr	"removing integration directory"
+
+#
+# This progress message is issued when aeri completes successfully.
+#
+#	$Name		The name of the removed user.
+#
+msgid	"remove integrator $name complete"
+msgstr	"user \"$name\" is no longer an integrator"
+
+#
+# This progress message is issued when removing the old development
+# directory during an aechown command.
+#
+msgid	"remove old development directory"
+msgstr	"removing old development directory"
+
+#
+# This progress message is issued when aermpr completes successfully.
+#
+msgid	"remove project complete"
+msgstr	"removed"
+
+#
+# This progress message is issued to inform the user that the project's
+# directory is being deleted.
+#
+msgid	"remove project directory"
+msgstr	"removing project directory"
+
+#
+# This progress message is issued when aerrv completes successfully.
+#
+#	$Name		The user name of the removed reviewer.
+#
+msgid	"remove reviewer $name complete"
+msgstr	"user \"$name\" is no longer a reviewer"
+
+#
+# This error message is issued by aeip when a change was being
+# integrated when aegis was upgraded from 2.3 to 3.0.  The file
+# fingerprints are absent, and restarting the integration will cause
+# them to be created.
+#
+msgid	"restart integration after upgrade"
+msgstr	"no change should be in the $state state when Aegis is upgraded "
+	"because some file state is not available, please use ``aegis "
+	"-ibu'' and then ``aegis -ib'' on this change to restart the "
+	"integration"
+
+#
+# This progress message is issued when aerf completes successfully.
+#
+msgid	"review fail complete"
+msgstr	"failed review, returned to developer"
+
+#
+# This progress message is issued when aerp completes successfully.
+#
+msgid	"review pass complete"
+msgstr	"passed review"
+
+#
+# This progress message is issued when aerpu completes successfully.
+#
+msgid	"review pass undo complete"
+msgstr	"review pass rescinded"
+
+#
+# This progress message is issued when aeifail is removing the
+# integration directory.
+#
+msgid	"rm int dir"
+msgstr	"removing the integration directory"
+
+#
+# This error message is issued when too many or too few source file
+# names are given to the aecp -Output command.
+#
+#	$Number		The number of files actually given.
+#			(Optional)
+#
+msgid	"single file with -Output"
+msgstr	"exactly one source file may be specified when the -Output option "
+	"is used (you gave $number)"
+
+#
+# This error message is issued when a request is issued to remove a
+# project, and there are still active changes.
+#
+msgid	"still active"
+msgstr	"this change is still active"
+
+#
+# This error message is issued when something checked before a lock was
+# obtained, has changed by the time the lock was obtained.  This is only
+# seen rarely.
+#
+msgid	"sync error, try again"
+msgstr	"something changed, operation aborted, please try again"
+
+#
+# This verbose message is issued when aent determines the list of
+# suggestions.  This allows the user to know which are exact, and which
+# are noise.
+#
+msgid	"test $filename scored $number"
+msgstr	"$number $filename"
+
+#
+# This error message is issued when aede finds a file which has not been
+# tested against the baseline.
+#
+#	$Outstanding	A list of outstanding architectures to be tested,
+#			or empty if all are outstanding.  (Optional)
+#
+msgid	"test -bl required"
+msgstr	"this change must successfully complete an 'aegis -Test "
+	"-BaseLine' $outstanding before it can end development"
+
+#
+# This error message is issued when aede finds a file which has not been
+# regression tested.
+#
+#	$Outstanding	A list of outstanding architectures to be tested,
+#			or empty if all are outstanding.  (Optional)
+#
+msgid	"test -reg required"
+msgstr	"this change must successfully complete an 'aegis -Test "
+	"-REGression' $outstanding before it can end development"
+
+#
+# This error message is issued when aede finds a file which has not been
+# tested.
+#
+#	$Outstanding	A list of outstanding architectures to be tested,
+#			or empty if all are outstanding.  (Optional)
+#
+msgid	"test required"
+msgstr	"this change must successfully complete an 'aegis -Test' "
+	"$outstanding before it can end development"
+
+#
+# This error message is issued when too few files names are specified on
+# the command line.
+#
+msgid	"too few files named"
+msgstr	"too few files named"
+
+#
+# This error message is issued when a file is named more than one in a
+# list of file names on the command line.
+#
+#	$File_Name	The name of the offending file.
+#
+msgid	"too many $filename"
+msgstr	"file \"$filename\" named more than once"
+
+#
+# This error message is issued when too many delta names are given on
+# the command line.
+#
+msgid	"too many delta names"
+msgstr	"too many delta names specified"
+
+#
+# This error message is issued when too many delta numbers are given on
+# the command line.
+#
+msgid	"too many delta numbers"
+msgstr	"too many delta numbers specified"
+
+#
+# This error message is issued when a command which expects one
+# directory to be specified on the command line, receives more than one.
+#
+msgid	"too many dir"
+msgstr	"too many directories specified"
+
+#
+# This error message is issued when too many file names are specified on
+# the command line.
+#
+msgid	"too many files"
+msgstr	"too many file names specified"
+
+#
+# This error message is issued when too many information names are
+# specified to the aev command.  It only accepts one.
+#
+msgid	"too many info names"
+msgstr	"too many version information names specified"
+
+#
+# This error message is issued when ael is given too many list names on
+# the command line.
+#
+msgid	"too many lists"
+msgstr	"too many list names specified"
+
+#
+# This error message is issued when there are too many project names
+# specified on the command line.
+#
+msgid	"too many proj name"
+msgstr	"too many project names specified"
+
+#
+# This error message is issued when aena is given a user name more than once.
+#
+#	$Name		The offending user name.
+#
+msgid	"too many user $name"
+msgstr	"user \"$name\" named more than once"
+
+#
+# This error message is issued when a request is made to remove a
+# developer from a project, and the user named is not a
+# developer.
+#
+#	$Name		The offending user name.
+#
+msgid	"user \"$name\" is not a developer"
+msgstr	"user \"$name\" is not a developer"
+
+#
+# This error message is issued when a request is made to remove a
+# reviewer from a project, and the user named is not a reviewer.
+#
+#	$Name		The offending user name.
+#
+msgid	"user \"$name\" is not a reviewer"
+msgstr	"user \"$name\" is not a reviewer"
+
+#
+# This error message is issued when a request is made to remove an
+# administrator from a project, and the user named is not an
+# administrator.
+#
+#	$Name		The offending user name.
+#
+msgid	"user \"$name\" is not an administrator"
+msgstr	"user \"$name\" is not an administrator"
+
+#
+# This error message is issued when a request is made to remove an
+# integrator from a project, and the user named is not an
+# integrator.
+#
+#	$Name		The offending user name.
+#
+msgid	"user \"$name\" is not an integrator"
+msgstr	"user \"$name\" is not an integrator"
+
+#
+# This error message is issued when aena is asked to add an
+# administrator to a project, but the user's uid is too low (too
+# privileged).
+#
+#	$Name		The offending user name.
+#
+msgid	"user \"$name\" is too privileged"
+msgstr	"user \"$name\" is too privileged"
+
+#
+# This warning message is issued when aed automatically alters the file
+# action from create to modify.  This happens when two separate change
+# create the same file, and the second change is differenced after the
+# first change is integrated.
+#
+#	$File_Name	The name of the affected file.
+#
+msgid	"warning: $filename in baseline, copying"
+msgstr	"warning: file \"$filename\" already exists in the project, "
+	"action automatically changed from \"create\" to \"modify\""
+
+#
+# This warning is issued when an obsolete option is used.
+#
+#	$Name1		The name of the obsolete option.
+#	$Name2		The name of the preferred option.
+#
+msgid	"warning: $name1 obsolete, use $name2 option"
+msgstr	"warning: the $name1 option is obsolete, please the $name2 option "
+	"in future"
+
+#
+# This warning message is issued when Aegis finds files which require
+# merging, but has been (explicitly or implicitly) requested no to
+# perform any merges.
+#
+#	$Number		The number of files requiring merging.
+#			(Optional)
+#
+msgid	"warning: diffable files"
+msgstr	"warning: there ${plural $number 'are $number files which need' "
+	"'is a file which needs' } to be differenced"
+
+#
+# This warning message is issued when aeclean notices that a file needs
+# to be differenced.
+#
+#	$FileName	The name of the offending file.
+#
+msgid	"warning: file \"$filename\" needs diff"
+msgstr	"warning: file \"$filename\" needs to be differenced"
+
+#
+# This warning message is issued when aeclean notices that a file needs
+# to be merged.
+#
+#	$FileName	The name of the offending file.
+#
+msgid	"warning: file \"$filename\" needs merge"
+msgstr	"warning: file \"$filename\" needs to be merged"
+
+#
+# This warning message is issued when aeipass adjust file modification
+# times, and finds that one or more file have modification times a few
+# seconds into the future.
+#
+#	$Number		The number of seconds into the future.
+#			(Optional)
+#
+msgid	"warning: file times in future"
+msgstr	"warning: file modification times extend $number second${plural "
+	"$number s} into the future"
+
+#
+# This warning message is issued when Aegis finds files which require
+# merging, but has been (explicitly or implicitly) requested no to
+# perform any merges.
+#
+#	$Number		The number of files requiring merging.
+#			(Optional)
+#
+msgid	"warning: mergable files"
+msgstr	"warning: there ${plural $number 'are $number files which need' "
+	"'is a file which needs' } merging"
+
+#
+# This warning message is issued when aed automatically alters the file
+# action from modify to create.  This happens when two separate change
+# act on the same file, one to remove it and another to modify it, and
+# the second change is differenced after the first change is integrated.
+#
+#	$File_Name	The name of the affected file.
+#
+msgid	"warning: no $filename in baseline, creating"
+msgstr	"warning: file \"$filename\" is no longer in the baseline, action "
+	"automatically changed from \"modify\" to \"create\""
+
+#
+# This warning message is issued when a non-intuitive default is
+# taken by the program.
+#
+#	$Name1		The name of a command line option.
+#	$Name2		The name of a command line option.
+#
+msgid	"warning: no $name1, assuming $name2"
+msgstr	"warning: no $name1 specified, assuming $name2 desired"
+
+#
+# This warning message is issued when an aechown command attempts to
+# change the owner of a change to the current owner.
+#
+msgid	"warning: no chown"
+msgstr	"warning: no need to change owner, already being developed by "
+	"user \"$user\", a new development directory will be constructed"
+
+#
+# This warning message is issued when a command which accepts both -Edit
+# and -File is given a file name without the -File option.  This usage
+# is being phased out, so that -Edit can become the default.
+#
+#	$Name		The name of the -File option,
+#			assuming option names will be internationalized RSN
+#
+msgid	"warning: use $name option"
+msgstr	"warning: please use the $name option when specifying an "
+	"attributes file, the unadorned form is now obsolescent"
+
+#
+# This error message is issued when a aedbu command is run by a
+# user who was not the developer of the change being operated on.
+#
+msgid	"was not developer"
+msgstr	"user \"$user\" was not the developer of this change, only user "
+	"\"$developer\" may undo develop end"
+
+#
+# This error message is issued when a aerpu command is run by a
+# user who was not the reviewer of the change being operated on.
+#
+msgid	"was not reviewer"
+msgstr	"user \"$user\" was not the reviewer of this change, only user "
+	"\"$reviewer\" may undo the review pass"

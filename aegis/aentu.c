@@ -1,6 +1,6 @@
 /*
  *	aegis - project change supervisor
- *	Copyright (C) 1991, 1992, 1993, 1994 Peter Miller.
+ *	Copyright (C) 1991, 1992, 1993, 1994, 1995, 1996, 1997, 1998 Peter Miller;
  *	All rights reserved.
  *
  *	This program is free software; you can redistribute it and/or modify
@@ -15,7 +15,7 @@
  *
  *	You should have received a copy of the GNU General Public License
  *	along with this program; if not, write to the Free Software
- *	Foundation, Inc., 675 Mass Ave, Cambridge, MA 02139, USA.
+ *	Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111, USA.
  *
  * MANIFEST: functions to implement new test undo
  */
@@ -27,19 +27,22 @@
 #include <ael.h>
 #include <aentu.h>
 #include <arglex2.h>
-#include <change.h>
+#include <change_bran.h>
+#include <change_file.h>
 #include <col.h>
 #include <commit.h>
 #include <error.h>
 #include <glue.h>
 #include <help.h>
 #include <lock.h>
-#include <option.h>
+#include <log.h>
 #include <os.h>
+#include <progname.h>
 #include <project.h>
+#include <sub.h>
 #include <trace.h>
 #include <user.h>
-#include <word.h>
+#include <str_list.h>
 
 
 static void new_test_undo_usage _((void));
@@ -49,7 +52,7 @@ new_test_undo_usage()
 {
 	char		*progname;
 
-	progname = option_progname_get();
+	progname = progname_get();
 	fprintf(stderr, "usage: %s -New_Test_Undo <filename>... [ <option>... ]\n", progname);
 	fprintf(stderr, "       %s -New_Test_Undo -List [ <option>... ]\n", progname);
 	fprintf(stderr, "       %s -New_Test_Undo -Help\n", progname);
@@ -62,12 +65,7 @@ static void new_test_undo_help _((void));
 static void
 new_test_undo_help()
 {
-	static char *text[] =
-	{
-#include <../man1/aentu.h>
-	};
-
-	help(text, SIZEOF(text), new_test_undo_usage);
+	help("aentu", new_test_undo_usage);
 }
 
 
@@ -93,22 +91,32 @@ new_test_undo_list()
 
 		case arglex_token_change:
 			if (arglex() != arglex_token_number)
-				new_test_undo_usage();
+				option_needs_number(arglex_token_change, new_test_undo_usage);
 			/* fall through... */
 
 		case arglex_token_number:
 			if (change_number)
-				fatal("duplicate -Change option");
+				duplicate_option_by_name(arglex_token_change, new_test_undo_usage);
 			change_number = arglex_value.alv_number;
-			if (change_number < 1)
-				fatal("change %ld out of range", change_number);
+			if (change_number == 0)
+				change_number = MAGIC_ZERO;
+			else if (change_number < 1)
+			{
+				sub_context_ty	*scp;
+
+				scp = sub_context_new();
+				sub_var_set(scp, "Number", "%ld", change_number);
+				fatal_intl(scp, i18n("change $number out of range"));
+				/* NOTREACHED */
+				sub_context_delete(scp);
+			}
 			break;
 
 		case arglex_token_project:
 			if (arglex() != arglex_token_string)
-				new_test_undo_usage();
+				option_needs_name(arglex_token_project, new_test_undo_usage);
 			if (project_name)
-				fatal("duplicate -Project option");
+				duplicate_option_by_name(arglex_token_project, new_test_undo_usage);
 			project_name = str_from_c(arglex_value.alv_string);
 			break;
 		}
@@ -126,10 +134,9 @@ static void new_test_undo_main _((void));
 static void
 new_test_undo_main()
 {
-	wlist		wl;
+	string_list_ty	wl, wl2;
 	cstate		cstate_data;
-	pstate		pstate_data;
-	int		j;
+	size_t		j, k;
 	string_ty	*s1;
 	string_ty	*s2;
 	string_ty	*project_name;
@@ -137,14 +144,17 @@ new_test_undo_main()
 	long		change_number;
 	change_ty	*cp;
 	user_ty		*up;
-	string_ty	*dd;
-	string_ty	*bl;
 	int		number_of_errors;
+	string_list_ty	search_path;
+	log_style_ty	log_style;
+	int		based;
+	string_ty	*base;
 
 	trace(("new_test_undo_main()\n{\n"/*}*/));
 	project_name = 0;
 	change_number = 0;
-	wl_zero(&wl);
+	log_style = log_style_append_default;
+	string_list_constructor(&wl);
 	while (arglex_token != arglex_token_eoln)
 	{
 		switch (arglex_token)
@@ -153,55 +163,78 @@ new_test_undo_main()
 			generic_argument(new_test_undo_usage);
 			continue;
 
+		case arglex_token_file:
+		case arglex_token_directory:
+			if (arglex() != arglex_token_string)
+				new_test_undo_usage();
+			/* fall through... */
+
 		case arglex_token_string:
-			s1 = str_from_c(arglex_value.alv_string);
-			os_become_orig();
-			s2 = os_pathname(s1, 1);
-			os_become_undo();
-			str_free(s1);
-			if (wl_member(&wl, s2))
-			{
-				fatal
-				(
-					"file \"%s\" named more than once",
-					arglex_value.alv_string
-				);
-			}
-			wl_append(&wl, s2);
+			s2 = str_from_c(arglex_value.alv_string);
+			string_list_append(&wl, s2);
 			str_free(s2);
 			break;
 
 		case arglex_token_keep:
 		case arglex_token_interactive:
 		case arglex_token_no_keep:
-			user_delete_file_argument();
+			user_delete_file_argument(new_test_undo_usage);
 			break;
 
 		case arglex_token_change:
 			if (arglex() != arglex_token_number)
-				new_test_undo_usage();
+				option_needs_number(arglex_token_change, new_test_undo_usage);
 			/* fall through... */
 
 		case arglex_token_number:
 			if (change_number)
-				fatal("duplicate -Change option");
+				duplicate_option_by_name(arglex_token_change, new_test_undo_usage);
 			change_number = arglex_value.alv_number;
-			if (change_number < 1)
-				fatal("change %ld out of range", change_number);
+			if (change_number == 0)
+				change_number = MAGIC_ZERO;
+			else if (change_number < 1)
+			{
+				sub_context_ty	*scp;
+
+				scp = sub_context_new();
+				sub_var_set(scp, "Number", "%ld", change_number);
+				fatal_intl(scp, i18n("change $number out of range"));
+				/* NOTREACHED */
+				sub_context_delete(scp);
+			}
 			break;
 
 		case arglex_token_project:
 			if (arglex() != arglex_token_string)
-				new_test_undo_usage();
+				option_needs_name(arglex_token_project, new_test_undo_usage);
 			if (project_name)
-				fatal("duplicate -Project option");
+				duplicate_option_by_name(arglex_token_project, new_test_undo_usage);
 			project_name = str_from_c(arglex_value.alv_string);
+			break;
+
+		case arglex_token_nolog:
+			if (log_style == log_style_none)
+				duplicate_option(new_test_undo_usage);
+			log_style = log_style_none;
+			break;
+
+		case arglex_token_wait:
+		case arglex_token_wait_not:
+			user_lock_wait_argument(new_test_undo_usage);
+			break;
+
+		case arglex_token_base_relative:
+		case arglex_token_current_relative:
+			user_relative_filename_preference_argument(new_test_undo_usage);
 			break;
 		}
 		arglex();
 	}
-	if (!wl.wl_nwords)
-		fatal("no files named");
+	if (!wl.nstrings)
+	{
+		error_intl(0, i18n("no file names"));
+		new_test_undo_usage();
+	}
 
 	/*
 	 * locate project data
@@ -231,31 +264,49 @@ new_test_undo_main()
 	change_cstate_lock_prepare(cp);
 	lock_take();
 	cstate_data = change_cstate_get(cp);
-	pstate_data = project_pstate_get(pp);
+
+	log_open(change_logfile_get(cp), up, log_style);
 
 	/*
 	 * It is an error if the change is not in the in_development state.
 	 * It is an error if the change is not assigned to the current user.
 	 */
 	if (cstate_data->state != cstate_state_being_developed)
-	{
-		change_fatal
-		(
-			cp,
-"this change is in the '%s' state, \
-it must be in the 'being developed' state to undo new tests",
-			cstate_state_ename(cstate_data->state)
-		);
-	}
+		change_fatal(cp, 0, i18n("bad ntu state"));
+	if (change_is_a_branch(cp))
+		change_fatal(cp, 0, i18n("bad nfu branch"));
 	if (!str_equal(change_developer_name(cp), user_name(up)))
-	{
-		change_fatal
+		change_fatal(cp, 0, i18n("not developer"));
+
+	/*
+	 * search path for resolving filenames
+	 */
+	change_search_path_get(cp, &search_path, 1);
+
+	/*
+	 * Find the base for relative filenames.
+	 */
+	based =
 		(
-			cp,
-	"user \"%S\" is not the developer, only user \"%S\" may undo new tests",
-			user_name(up),
-			change_developer_name(cp)
+			search_path.nstrings >= 1
+		&&
+			(
+				user_relative_filename_preference
+				(
+					up,
+				      uconf_relative_filename_preference_current
+				)
+			==
+				uconf_relative_filename_preference_base
+			)
 		);
+	if (based)
+		base = search_path.string[0];
+	else
+	{
+		os_become_orig();
+		base = os_curdir();
+		os_become_undo();
 	}
 
 	/*
@@ -265,54 +316,162 @@ it must be in the 'being developed' state to undo new tests",
 	 * 3.	if the file is inside the baseline, ok
 	 * 4.	if neither, error
 	 */
-	dd = change_development_directory_get(cp, 1);
-	bl = project_baseline_path_get(pp, 1);
-	for (j = 0; j < wl.wl_nwords; ++j)
+	number_of_errors = 0;
+	string_list_constructor(&wl2);
+	for (j = 0; j < wl.nstrings; ++j)
 	{
-		s1 = wl.wl_word[j];
-		assert(s1->str_text[0] == '/');
-		s2 = os_below_dir(dd, s1);
-		if (!s2)
-			s2 = os_below_dir(bl, s1);
-		if (!s2)
-			change_fatal(cp, "path \"%S\" unrelated", s1);
+		string_list_ty	wl_in;
+
+		s1 = wl.string[j];
+		if (s1->str_text[0] == '/')
+			s2 = str_copy(s1);
+		else
+			s2 = str_format("%S/%S", base, s1);
+		user_become(up);
+		s1 = os_pathname(s2, 1);
+		user_become_undo();
+		str_free(s2);
+		s2 = 0;
+		for (k = 0; k < search_path.nstrings; ++k)
+		{
+			s2 = os_below_dir(search_path.string[k], s1);
+			if (s2)
+				break;
+		}
 		str_free(s1);
-		wl.wl_word[j] = s2;
+		if (!s2)
+		{
+			sub_context_ty	*scp;
+
+			scp = sub_context_new();
+			sub_var_set(scp, "File_Name", "%S", wl.string[j]);
+			change_error(cp, scp, i18n("$filename unrelated"));
+			sub_context_delete(scp);
+			++number_of_errors;
+			continue;
+		}
+		change_file_dir(cp, s2, &wl_in, 0);
+		if (wl_in.nstrings)
+		{
+			int	used;
+
+			/*
+			 * If the user named a directory, add all of the
+			 * source files in that directory, provided they
+			 * are not already in the change.
+			 */
+			used = 0;
+			for (k = 0; k < wl_in.nstrings; ++k)
+			{
+				string_ty	*s3;
+				fstate_src	src_data;
+
+				s3 = wl_in.string[k];
+				src_data = change_file_find(cp, s3);
+				assert(src_data);
+				if
+				(
+					src_data
+				&&
+					src_data->action == file_action_create
+				&&
+					(
+						src_data->usage == file_usage_test
+					||
+						src_data->usage == file_usage_manual_test
+					)
+				)
+				{
+					if (string_list_member(&wl2, s3))
+					{
+						sub_context_ty	*scp;
+
+						scp = sub_context_new();
+						sub_var_set(scp, "File_Name", "%S", s3);
+						change_error(cp, scp, i18n("too many $filename"));
+						sub_context_delete(scp);
+						++number_of_errors;
+					}
+					else
+						string_list_append(&wl2, s3);
+					++used;
+				}
+			}
+			if (!used)
+			{
+				sub_context_ty	*scp;
+
+				scp = sub_context_new();
+				if (s2->str_length)
+					sub_var_set(scp, "File_Name", "%S", s2);
+				else
+					sub_var_set(scp, "File_Name", ".");
+				sub_var_set(scp, "Number", "%ld", (long)wl_in.nstrings);
+				sub_var_optional(scp, "Number");
+				change_error
+				(
+					cp,
+					scp,
+			  i18n("directory $filename contains no relevant files")
+				);
+				sub_context_delete(scp);
+				++number_of_errors;
+			}
+		}
+		else
+		{
+			if (string_list_member(&wl2, s2))
+			{
+				sub_context_ty	*scp;
+
+				scp = sub_context_new();
+				sub_var_set(scp, "File_Name", "%S", s2);
+				change_error(cp, scp, i18n("too many $filename"));
+				sub_context_delete(scp);
+				++number_of_errors;
+			}
+			else
+				string_list_append(&wl2, s2);
+		}
+		string_list_destructor(&wl_in);
+		str_free(s2);
 	}
+	string_list_destructor(&wl);
+	wl = wl2;
+	string_list_destructor(&search_path);
 
 	/*
 	 * ensure that each file
 	 * 1. is already part of the change
 	 * 2. is being created by this change
 	 */
-	number_of_errors = 0;
-	for (j = 0; j < wl.wl_nwords; ++j)
+	for (j = 0; j < wl.nstrings; ++j)
 	{
-		cstate_src	src_data;
+		fstate_src	src_data;
 
-		s1 = wl.wl_word[j];
-		src_data = change_src_find(cp, s1);
+		s1 = wl.string[j];
+		src_data = change_file_find(cp, s1);
 		if (!src_data)
 		{
-			src_data = change_src_find_fuzzy(cp, s1);
+			src_data = change_file_find_fuzzy(cp, s1);
 			if (src_data)
 			{
-				change_error
-				(
-					cp,
-		       "file \"%S\" not in change, closest was the \"%S\" file",
-					s1,
-					src_data->file_name
-				);
+				sub_context_ty	*scp;
+
+				scp = sub_context_new();
+				sub_var_set(scp, "File_Name", "%S", s1);
+				sub_var_set(scp, "Guess", "%S", src_data->file_name);
+				change_error(cp, scp, i18n("no $filename, closest is $guess"));
+				sub_context_delete(scp);
 			}
 			else
 			{
-				change_error
-				(
-					cp,
-					"file \"%S\" not in change",
-					s1
-				);
+				sub_context_ty	*scp;
+
+				scp = sub_context_new();
+				sub_var_set(scp, "File_Name", "%S", s1);
+				change_error(cp, scp, i18n("no $filename"));
+				sub_context_delete(scp);
 			}
 			++number_of_errors;
 			continue;
@@ -328,36 +487,36 @@ it must be in the 'being developed' state to undo new tests",
 			)
 		)
 		{
-			change_error
-			(
-				cp,
-		      "file \"%S\" was not added to this change with -New_Test",
-				s1
-			);
+			sub_context_ty	*scp;
+
+			scp = sub_context_new();
+			sub_var_set(scp, "File_Name", "%S", s1);
+			change_error(cp, scp, i18n("bad nt undo $filename"));
+			sub_context_delete(scp);
 			++number_of_errors;
 		}
 	}
 	if (number_of_errors)
 	{
-		change_fatal
-		(
-			cp,
-			"found %d fatal error%s, no new tests removed",
-			number_of_errors,
-			(number_of_errors == 1 ? "" : "s")
-		);
+		sub_context_ty	*scp;
+
+		scp = sub_context_new();
+		sub_var_set(scp, "Number", "%d", number_of_errors);
+		sub_var_optional(scp, "Number");
+		change_fatal(cp, scp, i18n("new test undo fail"));
 	}
 
 	/*
 	 * Remove each file from the development directory,
 	 * if it still exists.
 	 */
-	for (j = 0; j < wl.wl_nwords; ++j)
+	for (j = 0; j < wl.nstrings; ++j)
 	{
 		int		exists;
 
-		s1 = wl.wl_word[j];
-		s2 = str_format("%S/%S", dd, s1);
+		s1 = wl.string[j];
+		s2 = change_file_path(cp, s1);
+		assert(s2);
 		user_become(up);
 		exists = os_exists(s2);
 		user_become_undo();
@@ -367,9 +526,10 @@ it must be in the 'being developed' state to undo new tests",
 			commit_unlink_errok(s2);
 			user_become_undo();
 		}
-		str_free(s2);
 
-		s2 = str_format("%S/%S,D", dd, s1);
+		s1 = str_format("%S,D", s2);
+		str_free(s2);
+		s2 = s1;
 		user_become(up);
 		if (os_exists(s2))
 			commit_unlink_errok(s2);
@@ -381,14 +541,21 @@ it must be in the 'being developed' state to undo new tests",
 	 * Remove each file to the change file,
 	 * and write it back out.
 	 */
-	for (j = 0; j < wl.wl_nwords; ++j)
-		change_src_remove(cp, wl.wl_word[j]);
+	for (j = 0; j < wl.nstrings; ++j)
+		change_file_remove(cp, wl.string[j]);
 
 	/*
 	 * the number of files changed, or the version did,
 	 * so stomp on the validation fields.
 	 */
 	change_build_times_clear(cp);
+
+	/*
+	 * run the change file command
+	 * and the project file command if necessary
+	 */
+	change_run_change_file_command(cp, &wl, up);
+	change_run_project_file_command(cp, up);
 
 	/*
 	 * release the locks
@@ -400,9 +567,16 @@ it must be in the 'being developed' state to undo new tests",
 	/*
 	 * verbose success message
 	 */
-	for (j = 0; j < wl.wl_nwords; ++j)
-		change_verbose(cp, "file \"%S\": new test undo", wl.wl_word[j]);
-	wl_free(&wl);
+	for (j = 0; j < wl.nstrings; ++j)
+	{
+		sub_context_ty	*scp;
+
+		scp = sub_context_new();
+		sub_var_set(scp, "File_Name", "%S", wl.string[j]);
+		change_verbose(cp, scp, i18n("new test undo $filename complete"));
+		sub_context_delete(scp);
+	}
+	string_list_destructor(&wl);
 	project_free(pp);
 	change_free(cp);
 	user_free(up);

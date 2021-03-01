@@ -1,0 +1,69 @@
+
+
+
+Project "aegis.3.8"						 Page 1
+List of Changes				       Fri Oct	2 15:38:47 1998
+
+Change	State		Description
+------- -------		-------------
+  10	being_		prepare for release
+	integrated
+	pmiller
+
+
+
+Project "aegis.3.8", Change 10					 Page 1
+Change Details				       Fri Oct	2 15:38:47 1998
+
+NAME
+	Project "aegis.3.8", Delta 1, Change 10.
+
+SUMMARY
+	prepare for release
+
+DESCRIPTION
+	This change prepares Aegis for public release.
+
+	This change is exempt from testing against the development
+	directory.  This change is exempt from testing against the
+	baseline.
+
+
+ARCHITECTURE
+	This change must build and test in the "linux-i486"
+	architecture.
+
+	arch.	 host	  aeb	    aet	      aet -bl	aet -reg
+	-------- -------- --------- --------- --------- ---------
+	linux-		  required  exempt    exempt	exempt
+	i486
+
+CAUSE
+	This change was caused by internal_enhancement.
+
+STATE
+	This change is in the 'being_integrated' state.
+
+FILES
+	Type	Action	 Edit	      File Name
+	------- -------- -------      -----------
+	source	modify	    1	      common/column_width.c
+	source	modify	    1	      common/config.messy.h
+	source	create		      etc/CHANGES.3.7
+	source	modify	    1	      etc/Makefi.file.sh
+	source	modify	    3	      etc/aegis.html
+	source	create		      lib/en/readme/new.3.8.so
+
+HISTORY
+	What		When		Who	 Comment
+	------		------		-----	 ---------
+	new_change	Thu Oct	 1	pmiller
+			23:21:35 1998
+	develop_begin	Thu Oct	 1	pmiller	 Elapsed time: 1.000
+			23:21:50 1998		 days.
+	develop_end	Fri Oct	 2	pmiller	 Elapsed time: 0.051
+			15:05:45 1998		 days.
+	review_pass	Fri Oct	 2	pmiller
+			15:28:46 1998
+	integrate_begin Fri Oct	 2	pmiller
+			15:28:50 1998

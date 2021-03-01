@@ -1,0 +1,46 @@
+.\"
+.\"	aegis - project change supervisor
+.\"	Copyright (C) 1992, 1993 Peter Miller.
+.\"	All rights reserved.
+.\"
+.\"	This program is free software; you can redistribute it and/or modify
+.\"	it under the terms of the GNU General Public License as published by
+.\"	the Free Software Foundation; either version 2 of the License, or
+.\"	(at your option) any later version.
+.\"
+.\"	This program is distributed in the hope that it will be useful,
+.\"	but WITHOUT ANY WARRANTY; without even the implied warranty of
+.\"	MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+.\"	GNU General Public License for more details.
+.\"
+.\"	You should have received a copy of the GNU General Public License
+.\"	along with this program; if not, write to the Free Software
+.\"	Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111, USA.
+.\"
+.\" MANIFEST: description of -LIBrary command line option
+.\"
+.TP 8n
+\fB-LIBrary\fP \fIabspath\fP
+.br
+This option may be used to
+specify a directory to be searched for global state files and
+user state files.
+(See
+.IR aegstate (5)
+and
+.IR aeustate (5)
+for more information.)
+Several library options may be present on the command line,
+and are search in the order given.
+Appended to this explicit search path are the directories specified
+by the
+.I AEGIS_PATH
+environment variable (colon separated),
+and finally,
+.I /usr/local/lib/aegis
+is always searched.
+All paths specified,
+either on the command line or in the
+.I AEGIS_PATH
+environment variable,
+must be absolute.

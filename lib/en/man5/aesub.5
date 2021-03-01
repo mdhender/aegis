@@ -1,0 +1,534 @@
+'\" t
+.\"	aegis - project change supervisor
+.\"	Copyright (C) 1993, 1994, 1995, 1997, 1998 Peter Miller;
+.\"	All rights reserved.
+.\"
+.\"	This program is free software; you can redistribute it and/or modify
+.\"	it under the terms of the GNU General Public License as published by
+.\"	the Free Software Foundation; either version 2 of the License, or
+.\"	(at your option) any later version.
+.\"
+.\"	This program is distributed in the hope that it will be useful,
+.\"	but WITHOUT ANY WARRANTY; without even the implied warranty of
+.\"	MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+.\"	GNU General Public License for more details.
+.\"
+.\"	You should have received a copy of the GNU General Public License
+.\"	along with this program; if not, write to the Free Software
+.\"	Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111, USA.
+.\"
+.\" MANIFEST: manual page describing command substitutions
+.\"
+.so z_name.so
+.TH aesub 5 \*(N) "Reference Manual"
+.SH NAME
+aesub \- available command substitutions
+.XX "aesub(5)" "available command substitutions"
+.SH DESCRIPTION
+When other programs are invoked by the
+.I aegis
+program,
+it is usually via a command string in a configuration file.
+This section describes the format of these command strings.
+.SH GENERAL FORM
+The command strings are very similar to shell variables.
+An example will illustrate this:
+.RS 8n
+.nf
+build_command =
+	"cook project=${project} change=${change}";
+.fi
+.RE
+In this command definition,
+the "${project}" part is a substitution:
+the name of the project will be substituted
+in the command at this point.
+.PP
+Substitutions may take several forms:
+.TP 8n
+$name
+.br
+This is the same as saying "${name}".
+The name must start with an alphabetic,
+and be followed by zero or more alphanumerics.
+.TP 8n
+${name}
+.br
+The name in this form may contain any non-blank characters,
+and it may be subject to substitution.
+.TP 8n
+${name \fIarg\fP...}
+.br
+The name and the arguments in this form may contain any non-blank characters,
+and it may be subject to further substitution.
+Within the braces (\fB{\fP and \fB}\fP)
+pairs of single quote characters (\fB'\fP\fIblah blah\fP\fB'\fP)
+may be used to insulate spaces and other special characters,
+or you may use the back quote (\fB\e\fP) to escape a single character.
+.TP 8n
+$$
+.br
+This is replaced by a single $ character.
+It avoid RCS expansions, you can also use ${$}.
+.TP 8n
+%%
+.br
+This is replaced by a single % character.
+Percent (\fB%\fP) followed by anything else is illegal.
+.TP 8n
+$#...\en
+This is a comment, usually found in template files
+read in using the ${read_file} substitution.
+It consumes all characters up to and including the next newline. 
+(See also ${comment}, below.)
+.PP
+As another example,
+the
+.I dirname
+substitution is replaced by the directory name of the argument,
+rather like the
+.IR dirname (1)
+command.
+In the command
+.RS
+.nf
+history_query_command =
+	"get -t -g ${Dirname $History}/s.${Basename $History}";
+.fi
+.RE
+the
+.I Dirname
+and
+.I Basename
+substitutions are used to construct a suitable path to the SCCS
+file in the history directory.
+.SH ABBREVIATIONS
+The names of the various substitutions may be abbreviated.
+In the above examples,
+and in the lists which follow,
+the minimum abbreviation is the uppercase letters.
+All substitution name are case insensitive.
+.PP
+The above example could be abbreviated to
+.RS
+.nf
+history_query_command =
+	"get -t -g ${d $h}/s.${b $h}";
+.fi
+.RE
+.PP
+Ambiguous abbreviations will result in a fatal error message.
+.SH SUBSTITUTIONS
+There are many substitutions which are always understood,
+and some which are specific to the command being substituted.
+Specific entries will be defined in the relevant manual section.
+.PP
+The following lists contains those substitutions which are always understood:
+.\" -------------------- A --------------------
+.TP 8n
+Administrator_List
+.br
+Space separated list of the project's administrators.
+.TP 8n
+ARCHitecture
+.br
+This substitution is replaced by the architecture name
+appropriate for the current execution environment.
+Requires no arguments.
+See the
+.I architecture
+field of
+.IR aepconf (5)
+for more information.
+When used in commands, you may need to surround this substitution with
+the \fIquote\fP substitution (see below), if any of your architecture
+names contain shell special characters.
+.\" -------------------- B --------------------
+.TP 8n
+BaseLine
+.br
+Absolute path of the the project's baseline.
+.TP 8n
+Basename
+.br
+This substitution takes one argument,
+a pathname.
+The value of the substitution will be the last element of the pathname.
+This is similar to the
+.IR basename (1)
+command.
+.\" -------------------- C --------------------
+.TP 8n
+Change
+.br
+The change number.
+.TP 8n
+COMment
+.br
+Inserts exactly nothing; any and all arguments are ignored.
+Another form of comment is ``$#'' which extends to the end of the current line.
+.TP 8n
+Copyright_Years
+.br
+Inserts a comma separated list of copyright years from the project attributes.
+This list of years is maintained by
+.I aegis
+at integrate begin,
+and so is only guaranteed to be up-to-date
+in the'\fIbeing integrated\fP' state.
+Do not use this substitution in new file templates,
+it is not guaranteed to be up-to-date in the '\fIbeing developed\fP' state;
+use the ${date %Y} substitution in new file templates.
+.\" -------------------- D --------------------
+.TP 8n
+DAte
+.br
+With no arguments,
+the output is the current date.
+If there are arguments,
+they form a format string.
+This is similar to the
+.IR date (1)
+command on many UNIX systems.
+For a description of the date formats,
+see the
+.I DATE
+section,
+below.
+.TP 8n
+DELta
+.br
+The delta number of the change.
+This is only available when the change is in the
+.I "being integrated"
+state or the
+.I completed
+state.
+.TP 8n
+DEVeloper
+.br
+The name of the developer.
+.TP 8n
+DEVeloper_List
+.br
+Space separated list of the project's developers.
+.TP 8n
+Development_Directory
+.br
+The absolute path of the change's development directory.
+Only available when the change is between the
+.I "being developed"
+state and the
+.I "being integrated"
+state.
+.TP 8n
+Dirname
+.br
+This substitution takes one argument,
+a pathname.
+The value of the substitution will be everything but
+the last element of the pathname.
+This is similar to the
+.IR dirname (1)
+command.
+.TP 8n
+DownCase
+.br
+This substitution takes one argument.
+The value of the substitution will be the argument with
+any upper case letters mapped to lower case.
+.\" -------------------- E --------------------
+.TP 8n
+ERrno
+.br
+This substitution takes no arguments.
+The value of the substitution will be
+the value if the \fIerrno\fP variable provided by the system,
+as mapped through the \fIstrerror\fP function.
+Thus you may give the users informative system error messages.
+.TP 8n
+EXpression
+This substitution evaluates simple arithmetic expressions.
+The arguments must constitute a valid expression,
+white space and word boundaries are ignored.
+.\" -------------------- F --------------------
+.\" -------------------- G --------------------
+.\" -------------------- H --------------------
+.\" -------------------- I --------------------
+.TP 8n
+IDentifier
+.br
+This substitution takes one argument.
+The value of the substitution will be the argument with
+all characters but alpha numerics mapped into an underscore (_),
+so as to form a legal C identifier.
+.TP 8n
+INTegration_Directory
+.br
+The absolute path of the change's integration directory.
+Only available when the change is in the
+.I "being integrated"
+state.
+.TP 8n
+INTegrator
+.br
+The name of the change's integrator.
+Only available when the change is in the
+.I "being integrated"
+state or the
+.I "completed"
+state.
+.TP 8n
+INTegrator_List
+.br
+Space separated list of the project's integrators.
+.\" -------------------- J --------------------
+.\" -------------------- K --------------------
+.\" -------------------- L --------------------
+.TP 8n
+LEFt
+This substitution
+extracts the left hand side of strings.
+It takes two arguments:
+the first is the string, the second is the number of characters.
+.TP 8n
+LENgth
+This substitution
+determines the length of strings,
+the result is a number.
+It takes one argument:
+the string to be measured.
+.TP 8n
+LIBrary
+.br
+The absolute path of aegis' library directory.
+.\" -------------------- M --------------------
+.\" -------------------- N --------------------
+.TP 8n
+Name_Maximum
+This substitution is used to get the maximum file name length
+within a file system.
+It takes one argument:
+the name of a directory within the file system.
+Frequently used with ${left} to crop filenames
+to the file system maximum.
+.\" -------------------- O --------------------
+.\" -------------------- P --------------------
+.TP 8n
+PLural
+.br
+This function requires 2 or 3 arguments.
+The first argument is evaluated as a number,
+if it is plural (not equal to 1) the second argument is the result,
+otherwise the thrid argument is the result (or empty if not given).
+This is mostly used to pluralize sentences in error messages.
+.TP 8n
+Project
+.br
+The name of the project.
+.\" -------------------- Q --------------------
+.TP 8n
+QUote
+.br
+This substitution may be used to quote shell special characters.  If no
+quoting is required, not quotes will be inserted.  This is used to
+insulate shell special characters in filenames when forming commands.
+.\" -------------------- R --------------------
+.TP 8n
+Read_File
+.br
+Read a file and substitute the contents of the file.
+Requires exactly one argument, the pathname of the file to be read.
+If the pathname is a project source file,
+you will need to use the
+.I source
+substitution to resolve the path.
+It is a fatal error if the file does not exist,
+or is not readable.
+It is a fatal error if the pathname is not absolute
+(because the current directory is undefined).
+.TP 8n
+Reviewer
+.br
+The name of the change's reviewer.
+Only available when the change is between the
+.I "awaiting integration"
+state and the
+.I "completed"
+state.
+.TP 8n
+Reviewer_List
+.br
+Space separated list of the project's reviewers.
+.TP 8n
+RIght
+This substitution
+extracts the right hand side of strings.
+It takes two arguments:
+the first is the string, the second is the number of characters.
+.\" -------------------- S --------------------
+.TP 8n
+Search_Path
+The Search_Path substitution is replaced by a
+colon separated list of absolute paths to search when building a
+change, it will point from a change to its branch and so on up
+to the project trunk.
+.TP 8n
+SHell
+.br
+The absolute path of a Bourne shell
+which understands functions.
+Requires exactly zero arguments.
+.TP 8n
+Source
+.br
+Resolve the argument filename into a pathname.
+It is an error if the file is not a source file.
+An optional second argument may be "Absolute" or "Relative",
+and may be abbreviated.
+Relative will attempt to provide a development-directory-relative pathname
+whenever possible,
+absolute will always result in an absolute path.
+The default is "Relative".
+.TP 8n
+STate
+.br
+The state the current change is in.
+It is an error if the substitution does not refer to a change.
+.\" -------------------- T --------------------
+.TP 8n
+Trim_DIRectory
+This substitution takes one or two arguments.  If given one argument,
+one directory component (if present) is removed from the argument,
+which is assumed to be a file name.  If two arguments are present,
+the first is a directory count; at most this many directory components
+(if present) will be removed.  The base file name is always left.
+.TP 8n
+Trim_EXTension
+This substitution takes one argument.  Any file name extension (a dot
+characters and the characters following) will be removed from the final
+filename section of the argument.
+.\" -------------------- U --------------------
+.TP 8n
+UpCase
+.br
+This substitution takes one argument.
+The value of the substitution will be the argument with
+any lower case letters mapped to upper case.
+.TP 8n
+USer
+.br
+This substitution takes zero arguments.
+The value of the substitution will be the login name of
+the user who executed the command.
+.\" -------------------- V --------------------
+.TP 8n
+Version
+.br
+The version of the change.
+If the change is in the
+.I "being integrated"
+state or the
+.I "completed"
+state,
+the version will be of the form "\fIa\fB.\fIb\fB.D\fIddd\fR",
+where "a" is the project's major version number,
+"b" is the project's minor version number, and
+"ddd" is the change's delta number.
+If the change is in any other state,
+the version will be of the form "\fIa\fB.\fIb\fB.C\fIccc\fR",
+where "ccc" is the change number.
+.\" -------------------- W --------------------
+.\" -------------------- X --------------------
+.\" -------------------- Y --------------------
+.\" -------------------- Z --------------------
+.TP 8n
+Zero_Pad
+This substitution is used to zero pad a string on the left.
+It takes two arguments:
+the first is the string to be padded, the second is the minimum string width.
+.SH DATE
+This section describes the format specifiers accepted by the
+date substitution.
+These are the same specifiers as defined
+by the ANSI C standard
+for the strftime function.
+.TP 8n
+%%
+The percent character (%)
+.TP 8n
+%a
+the abbreviated weekday name
+.TP 8n
+%A
+the full weekday name
+.TP 8n
+%b
+the abbreviated month name
+.TP 8n
+%B
+the full month name
+.TP 8n
+%c
+the date and time
+.TP 8n
+%d
+the day of the month,
+zero padded
+.TP 8n
+%H
+the hour of the 24-hour day
+.TP 8n
+%I
+the hour of the 12-hour day
+.TP 8n
+%j
+the day number of year,
+zero padded, one based
+.TP 8n
+%m
+the month of the year,
+zero padded, one based
+.TP 8n
+%M
+the minute of the hour,
+zero padded
+.TP 8n
+%p
+meridian indicator,
+AM or PM as appropriate
+.TP 8n
+%S
+the second of the minute
+.TP 8n
+%U
+the Sunday week of the year
+.TP 8n
+%w
+the day of the week,
+Sunday is 0
+.TP 8n
+%W
+the Monday week of the year
+.TP 8n
+%x
+the date,
+as \fImmm dd yyyy\fP
+.TP 8n
+%X
+the time,
+as \fIhh:mm:ss\fP
+.TP 8n
+%y
+the year of the century
+.TP 8n
+%Y
+the year including the century
+.TP 8n
+%Z
+time zone abbreviation
+.PP
+Using an undefined format specifier will
+produce random results,
+depending on the version of UNIX you are on.
+.so ../man1/z_cr.so

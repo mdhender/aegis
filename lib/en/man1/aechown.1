@@ -1,0 +1,100 @@
+'\" t
+.\"	aegis - project change supervisor
+.\"	Copyright (C) 1994, 1998 Peter Miller;
+.\"	All rights reserved.
+.\"
+.\"	This program is free software; you can redistribute it and/or modify
+.\"	it under the terms of the GNU General Public License as published by
+.\"	the Free Software Foundation; either version 2 of the License, or
+.\"	(at your option) any later version.
+.\"
+.\"	This program is distributed in the hope that it will be useful,
+.\"	but WITHOUT ANY WARRANTY; without even the implied warranty of
+.\"	MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+.\"	GNU General Public License for more details.
+.\"
+.\"	You should have received a copy of the GNU General Public License
+.\"	along with this program; if not, write to the Free Software
+.\"	Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111, USA.
+.\"
+.\" MANIFEST: manual page describing the aechown command.
+.\"
+.so z_name.so
+.TH "\*(n) -Change_Owner" 1 \*(N) "Reference Manual"
+.SH NAME
+\*(n) -Change_Owner \- set change owner
+.XX "aechown(1)" "set change owner"
+.SH SYNOPSIS
+.B \*(n)
+.B -Change_Owner
+.I change-number
+.I user-name
+[
+.IR option \&...
+]
+.br
+.B \*(n)
+.B -Change_Owner
+.B -Help
+.br
+.B \*(n)
+.B -Change_Owner
+.B -VERSion
+.SH DESCRIPTION
+The
+.I "\*(n) -Change_Owner"
+command is used to
+reassign a change from one developer to another.
+.PP
+A new development directory is created for the change in the
+new developers default area (see
+.IR aedb (1)
+for more information)
+and the change files are copied across.
+Derived files are ignored,
+so a new build will be required.
+The old development directory will be deleted.
+.PP
+This command must be performed by a project administrator,
+and the new assignee must be a developer.
+.PP
+Warning:
+capricious use of this command will alienate developers very rapidly.
+.SH OPTIONS
+The following options are understood:
+.so o_change.so
+.so o_dir.so
+.so o_help.so
+.so o_interact.so
+.so o_keep.so
+.so o_list.so
+.so o_project.so
+.so o_terse.so
+.so o_user.so
+.so o_verbose.so
+.so o_wait.so
+.so o__rules.so
+.br
+.ne 1i
+.SH RECOMMENDED ALIAS
+The recommended alias for this command is
+.nf
+.ta 8n 16n
+csh%	alias aechown '\*(n) -chown \e!* -v'
+sh$	aechown(){\*(n) -chown $* -v}
+.fi
+.br
+.ne 1i
+.SH ERRORS
+It is an error if
+the user issuing the command is not a project administrator.
+.br
+It is an error if
+the change is not in the
+.I "being developed"
+state.
+.br
+It is an error if
+the user given is not a developer.
+.so z_exit.so
+.so z_cr.so

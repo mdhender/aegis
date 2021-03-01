@@ -1,0 +1,91 @@
+.\"
+.\"	aegis - project change supervisor
+.\"	Copyright (C) 1995, 1998 Peter Miller;
+.\"	All rights reserved.
+.\"
+.\"	This program is free software; you can redistribute it and/or modify
+.\"	it under the terms of the GNU General Public License as published by
+.\"	the Free Software Foundation; either version 2 of the License, or
+.\"	(at your option) any later version.
+.\"
+.\"	This program is distributed in the hope that it will be useful,
+.\"	but WITHOUT ANY WARRANTY; without even the implied warranty of
+.\"	MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+.\"	GNU General Public License for more details.
+.\"
+.\"	You should have received a copy of the GNU General Public License
+.\"	along with this program; if not, write to the Free Software
+.\"	Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111, USA.
+.\"
+.\" MANIFEST: document describing cI.0.so
+.\"
+.bp
+.2C
+.nh 1 "Appendix I: Internationalization and Localization
+.LP
+The Aegis source code has been internationalized,
+which is the process of modifying the original source code to permit
+error messages and other text to be presented in a language other than the
+author's native English.
+This was a large and often painful task,
+but it allows a degree of customization of error messages and other behaviours
+which would not have been otherwise possible.
+(It also makes the job of running a spell-checker over the error
+messages significantly easier.)
+.LP
+Localization is the process of translating the error messages and other
+text into various different languages or nationalities.
+This appendix is primarily aimed at localizers of Aegis.
+.nh 2 "The ``po/en.po'' File"
+.LP
+The ``po'' directory in the source tree contains the various
+message files needed to localize Aegis.
+You will find a ``en.po'' file in this directory,
+it translates ``programmer cryptic'' into English.
+You will see that each message has a comment attached,
+describing the message and the context in which it is used.
+Many messages also have ``substitutions'' described,
+which are strings similar to shell variables which may be substituted into
+the message - such as the file name for messages which have
+something to do with a specific file.
+.LP
+The substitution mechanism is the same one as is used for
+the various commands in the project \fIconfig\fP file,
+and so all of the substitutions described in \fIaesub\fP(5)
+are available to the translator.
+Of frequent use is the \fIplural\fP substitution,
+which allows grammatically correct error messages to be issued
+when faced with the singular/plural dictotomy.
+Other substitutions include the login name of the executing user,
+names of projects, number and state of changes, etc.
+.LP
+Ideally, the task for a translator is to take the \fIen.po\fP file
+and translate the \f(CWmsgstr\fP lines into the appropriate language.
+The job will, of course, not be that simple
+and so references into the code has been included,
+so that you can read the code should context be necessary to
+correctly translate the message.
+.nh 2 "Checking the Code"
+.LP
+There are a number of keywords you need to have the \fIxgettext\fP program
+when extracting message strings.
+The \f(CWgettext\fP keyword is not used directly,
+because of the substitution mechanism wrapped around it.
+.TS
+center,tab(;);
+l l.
+i18n;error_intl
+io_comment_append;fatal_intl
+report_error;verbose_intl
+report_error;gram_error
+rpt_value_error;
+.TE
+.LP
+In general, the \fIaux/Howto.cook\fP file causes the
+messages to be extracted into \fIpo/messages.po\fP for checking
+during the build.
+.LP
+Assuming the author has located all such instances,
+the translator need only translate the \fIpo/en.po\fP file,
+and the author will add the file to the project on receipt
+of your translation.

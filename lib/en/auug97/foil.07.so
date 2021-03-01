@@ -1,0 +1,133 @@
+.\"
+.\"	aegis - project change supervisor
+.\"	Copyright (C) 1998 Peter Miller;
+.\"	All rights reserved.
+.\"
+.\"	This program is free software; you can redistribute it and/or modify
+.\"	it under the terms of the GNU General Public License as published by
+.\"	the Free Software Foundation; either version 2 of the License, or
+.\"	(at your option) any later version.
+.\"
+.\"	This program is distributed in the hope that it will be useful,
+.\"	but WITHOUT ANY WARRANTY; without even the implied warranty of
+.\"	MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+.\"	GNU General Public License for more details.
+.\"
+.\"	You should have received a copy of the GNU General Public License
+.\"	along with this program; if not, write to the Free Software
+.\"	Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111, USA.
+.\"
+.\" MANIFEST: AUUGN Feb'98 Article
+.\"
+.nr PS 72
+.nr VS 75000
+.LP
+.ad c
+But!
+.br
+.ad l
+.sp 0.3i
+.nr PS 36
+.nr VS 37
+.XP
+\(bu A single makefile is Too Big
+.XP
+\(bu A single makefile is Too Complex
+.XP
+\(bu A single makefile is Not Modular
+.XP
+\(bu
+It is too hard to write the rules
+.XP
+\(bu
+The tools can't do it
+.XP
+\(bu
+You'll run out of memory
+.\" ---------------------------------------------------------------------------
+.bp
+.nr PS 24
+.nr VS 25
+.XP
+\(bu
+A single makefile is Too Big
+.br
+\(dg if it was all in a single file, it would be
+.br
+\(dg use include, and segment (same as recursive)
+.br
+\(dg total file size/count is the same
+.XP
+\(bu
+A single makefile is Too Complex
+.br
+\(dg interactions between makefile segs are greater, \fBbut\fP
+\(dg they contain the same information as now.
+\(dg \fBR\fPigor in chosing variable names helps.
+.XP
+\(bu
+A single makefile is Not Modular
+\(dg Just as modular as recursive: same contents, same location.
+.XP
+\(bu
+It is too hard to write the rules
+.br
+\(dg Nothing stops the rules from coping with directories \f(CW$(*D)
+$(*F)\fP, \fIetc\fP
+.br
+\(dg You need add directory to all the filenames
+.br
+\(dg current directory at top, rule bodies written so
+.XP
+\(bu
+The tools can't do it
+.br
+Some unresonable, some ``help'', most work
+.XP
+\(bu
+You'll run out of memory
+.br
+\(dg Long long ago, on a CPU far far away \fImaybe\fP but
+not on modern machines
+.\" ---------------------------------------------------------------------------
+.bp
+.nr PS 72
+.nr VS 75000
+.LP
+.ad c
+But I only want to build My Little Bit!
+.br
+.ad l
+.sp
+.nr PS 36
+.nr VS 37
+.XP
+\(bu Builds will take Too Long
+.XP
+\(bu Project Builds
+.XP
+\(bu Development Builds
+.\" ---------------------------------------------------------------------------
+.bp
+.nr PS 24
+.nr VS 25
+.XP
+\(bu Builds will take Too Long
+.br
+\(dg As described, is a whole project build
+.br
+\(dg This paper does not discusss the \fIefficient makefiles\fP portion
+of the paper.
+\(dg The stat(2)s are not the slow part.
+.XP
+\(bu Project Builds
+.br
+\(dg whole proj build explores all implications
+(good if you don't know all 42M LOC)
+.XP
+\(bu Development Builds
+.br
+\(dg every developer, every time, \fByes\fP is too slow
+\(dg use explicit target
+.br
+\(dg Use VPATH, avoids corrupting master source

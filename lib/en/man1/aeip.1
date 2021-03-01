@@ -1,0 +1,154 @@
+'\" t
+.\"	aegis - project change supervisor
+.\"	Copyright (C) 1991, 1992, 1993, 1996, 1998 Peter Miller;
+.\"	All rights reserved.
+.\"
+.\"	This program is free software; you can redistribute it and/or modify
+.\"	it under the terms of the GNU General Public License as published by
+.\"	the Free Software Foundation; either version 2 of the License, or
+.\"	(at your option) any later version.
+.\"
+.\"	This program is distributed in the hope that it will be useful,
+.\"	but WITHOUT ANY WARRANTY; without even the implied warranty of
+.\"	MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+.\"	GNU General Public License for more details.
+.\"
+.\"	You should have received a copy of the GNU General Public License
+.\"	along with this program; if not, write to the Free Software
+.\"	Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111, USA.
+.\"
+.\" MANIFEST: manual entry for 'aegis -Integrate_Pass' command
+.\"
+.so z_name.so
+.TH "\*(n) -Integrate_Pass" 1 \*(N) "Reference Manual"
+.SH NAME
+\*(n) -Integrate_Pass \- pass a change integration
+.XX "aeip(1)" "pass a change integration"
+.SH SYNOPSIS
+.B \*(n)
+.B -Integrate_Pass
+[
+.IR option ...
+]
+.br
+.B \*(n)
+.B -Integrate_Pass
+.B -List
+[
+.IR option ...
+]
+.br
+.B \*(n)
+.B -Integrate_Pass
+.B -Help
+.SH DESCRIPTION
+The
+.I \*(n)
+.I -Integrate_Pass
+command is used to
+notify \*(n) that a change has passed integration.
+The change is advanced
+from the
+.I "being integrated"
+state to the
+.I "completed"
+state.
+.PP
+This command updates the file histories, so that future
+.IR aecp (1)
+commands may extract previous file versions from history,
+and so that future
+.IR aed (1)
+commands may merge out-of-date files.
+The history is updated using the
+.I history_create_command
+and
+.I history_put_command
+from the project
+.I config
+file (see
+.IR aepconf (5)
+for more information.  The integrate pass will abort with an error if
+one of these history commands should fail, e.g. by running out of disk
+space.  If this should happen, the change will remain in the
+.I "being integrated"
+state, and the integration directory is unaltered.
+.PP
+The integration directory is renamed as the baseline directory, and the
+baseline directory is deleted.  The modification times of all files
+modified since the beginning of integration (see
+.IR aeib (1)
+for more information) are updated to be since the beginning of integrate
+pass.  The order of modification times will be preserved, however the
+time range will be compressed to the greatest extent possible.  This
+ensures that subsequent development builds will notice that baseline
+files have changed.
+.PP
+Once integrate pass is complete
+the change is no longer assigned to the current user.
+.so z_bl_lock.so
+.SS The History Lock
+Where a project has a number of branches active simultaneously, it is
+possible for independent integrate pass commands for different branches
+to be issued very close together.
+The is an exclusive
+.I "history lock"
+taken by integrate pass to ensure that only one branch is
+updating the file history at a time,
+thus preventing history file corruption.
+.so z_test_corr.so
+.SH OPTIONS
+The following options are understood:
+.so o_change.so
+.so o_help.so
+.so o_list.so
+.so o_nolog.so
+.so o_project.so
+.so o_terse.so
+.so o_verbose.so
+.so o_wait.so
+.so o__rules.so
+.SH RECOMMENDED ALIAS
+The recommended alias for this command is
+.nf
+.ta 8n 16n
+csh%	alias aeipass '\*(n) -ipass \e!* -v'
+sh$	aeipass(){\*(n) -ipass $* -v}
+.fi
+.SH ERRORS
+It is an error if
+the change is not assigned to the current user.
+.br
+It is an error if
+The change is not in the
+.I "being integrated"
+state.
+.br
+It is an error if
+there has been no successful
+.I "'\*(n) -Build'"
+command for the integration.
+.br
+It is an error if
+there has been no successful
+.I "'\*(n) -Test'"
+command for the integration.
+.br
+It is an error if
+there has been no successful
+.I "'\*(n) -Test -BaseLine'"
+command for the integration.
+.so z_exit.so
+.br
+.ne 1i
+.SH SEE ALSO
+.TP 8n
+.IR aeib (1)
+begin integration of a change
+.TP 8n
+.IR aeif (1)
+fail integration of a change
+.TP 8n
+.IR aeuconf (5)
+user configuration file format
+.so z_cr.so

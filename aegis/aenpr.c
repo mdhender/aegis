@@ -1,6 +1,6 @@
 /*
  *	aegis - project change supervisor
- *	Copyright (C) 1991, 1992, 1993, 1994 Peter Miller.
+ *	Copyright (C) 1991, 1992, 1993, 1994, 1995, 1996, 1997, 1998 Peter Miller;
  *	All rights reserved.
  *
  *	This program is free software; you can redistribute it and/or modify
@@ -15,26 +15,32 @@
  *
  *	You should have received a copy of the GNU General Public License
  *	along with this program; if not, write to the Free Software
- *	Foundation, Inc., 675 Mass Ave, Cambridge, MA 02139, USA.
+ *	Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111, USA.
  *
  * MANIFEST: functions to implement new project
  */
 
+#include <ac/ctype.h>
 #include <stdio.h>
 #include <ac/stdlib.h>
 #include <ac/string.h>
 
 #include <ael.h>
+#include <aenbr.h>
 #include <aenpr.h>
 #include <arglex2.h>
+#include <change.h>
+#include <change_bran.h>
 #include <commit.h>
 #include <error.h>
 #include <gonzo.h>
 #include <help.h>
 #include <lock.h>
-#include <option.h>
 #include <os.h>
+#include <progname.h>
 #include <project.h>
+#include <project_hist.h>
+#include <sub.h>
 #include <trace.h>
 #include <undo.h>
 #include <user.h>
@@ -47,7 +53,7 @@ new_project_usage()
 {
 	char	*progname;
 
-	progname = option_progname_get();
+	progname = progname_get();
 	fprintf(stderr, "usage: %s -New_Project <name> [ <option>... ]\n", progname);
 	fprintf(stderr, "       %s -New_Project -List [ <option>... ]\n", progname);
 	fprintf(stderr, "       %s -New_Project -Help\n", progname);
@@ -60,12 +66,7 @@ static void new_project_help _((void));
 static void
 new_project_help()
 {
-	static char *text[] =
-	{
-#include <../man1/aenpr.h>
-	};
-
-	help(text, SIZEOF(text), new_project_usage);
+	help("aenpr", new_project_usage);
 }
 
 
@@ -86,24 +87,28 @@ static void new_project_main _((void));
 static void
 new_project_main()
 {
-	pstate		pstate_data;
+	sub_context_ty	*scp;
 	string_ty	*home;
 	string_ty	*s1;
 	string_ty	*project_name;
 	project_ty	*pp;
+	project_ty	*ppp;
 	user_ty		*up;
 	string_ty	*bl;
 	string_ty	*hp;
 	string_ty	*ip;
-	long		major;
-	long		minor;
-	int		um;
+	long		version_number[10];
+	int		version_number_length;
+	project_ty	*version_pp[SIZEOF(version_number)];
+	string_ty	*version_string;
+	string_ty	*s;
+	long		j;
 
 	trace(("new_project_main()\n{\n"/*}*/));
 	project_name = 0;
 	home = 0;
-	major = 0;
-	minor = 0;
+	version_number_length = 0;
+	version_string = 0;
 	while (arglex_token != arglex_token_eoln)
 	{
 		switch (arglex_token)
@@ -114,33 +119,20 @@ new_project_main()
 
 		case arglex_token_project:
 			if (arglex() != arglex_token_string)
-				new_project_usage();
+				option_needs_name(arglex_token_project, new_project_usage);
 			/* fall through... */
 
 		case arglex_token_string:
 			if (project_name)
-				fatal("duplicate -Project option");
+				duplicate_option_by_name(arglex_token_project, new_project_usage);
 			project_name = str_from_c(arglex_value.alv_string);
 			break;
 
 		case arglex_token_directory:
 			if (home)
-			{
-				duplicate:
-				fatal
-				(
-					"duplicate %s option",
-					arglex_value.alv_string
-				);
-			}
+				duplicate_option(new_project_usage);
 			if (arglex() != arglex_token_string)
-			{
-		  		fatal
-				(
-			  "the -DIRectory option must be followed by a pathname"
-				);
-			}
-
+				option_needs_dir(arglex_token_directory, new_project_usage);
 			/*
 			 * To cope with automounters, directories are stored as
 			 * given, or are derived from the home directory in the
@@ -152,53 +144,131 @@ new_project_main()
 			break;
 
 		case arglex_token_major:
-			if (major)
-				goto duplicate;
+			if (version_number_length > 0 && version_number[0])
+				duplicate_option(new_project_usage);
+			scp = sub_context_new();
+			sub_var_set(scp, "Name1", "%s", arglex_token_name(arglex_token_major));
+			sub_var_set(scp, "Name2", "%s", arglex_token_name(arglex_token_version));
+			error_intl(scp, i18n("warning: $name1 obsolete, use $name2 option"));
+			sub_context_delete(scp);
 			if (arglex() != arglex_token_number)
-			{
-				major_bad:
-				error
-				(
-		       "the -MAJor option must be followed by a positive number"
-				);
-				new_project_usage();
-			}
-			major = arglex_value.alv_number;
-			if (major <= 0)
-				goto major_bad;
+				option_needs_number(arglex_token_major, new_project_usage);
+			if (version_number_length < 1)
+				version_number_length = 1;
+			version_number[0] = arglex_value.alv_number;
+			if (version_number[0] <= 0)
+				option_needs_number(arglex_token_major, new_project_usage);
 			break;
 
 		case arglex_token_minor:
-			if (minor)
-				goto duplicate;
+			if (version_number_length >= 2 && version_number[1])
+				duplicate_option(new_project_usage);
+			scp = sub_context_new();
+			sub_var_set(scp, "Name1", "%s", arglex_token_name(arglex_token_minor));
+			sub_var_set(scp, "Name2", "%s", arglex_token_name(arglex_token_version));
+			error_intl(scp, i18n("warning: $name1 obsolete, use $name2 option"));
+			sub_context_delete(scp);
 			if (arglex() != arglex_token_number)
+				option_needs_number(arglex_token_minor, new_project_usage);
+			if (version_number_length < 1)
+				version_number[0] = 0;
+			if (version_number_length < 2)
+				version_number_length = 2;
+			version_number[1] = arglex_value.alv_number;
+			if (version_number[1] <= 0)
+				option_needs_number(arglex_token_minor, new_project_usage);
+			break;
+
+		case arglex_token_version:
+			if (version_string)
+				duplicate_option(new_project_usage);
+			switch (arglex())
 			{
-				minor_bad:
-				error
-				(
-		       "the -MINOr option must be followed by a positive number"
-				);
-				new_project_usage();
+			default:
+				option_needs_number(arglex_token_version, new_project_usage);
+
+			case arglex_token_number:
+			case arglex_token_string:
+				break;
 			}
-			minor = arglex_value.alv_number;
-			if (minor <= 0)
-				goto minor_bad;
+			version_string = str_from_c(arglex_value.alv_string);
+			break;
+
+		case arglex_token_wait:
+		case arglex_token_wait_not:
+			user_lock_wait_argument(new_project_usage);
 			break;
 		}
 		arglex();
 	}
 	if (!project_name)
-		fatal("no project name given");
-	if (!major)
-		major = 1;
-	if (!minor)
-		minor = 0;
-	
-	/*
-	 * read in the table
-	 */
-	gonzo_gstate_lock_prepare_new();
-	lock_take();
+	{
+		error_intl(0, i18n("no project name"));
+		new_project_usage();
+	}
+	if (version_number_length > 0)
+	{
+		if (version_string)
+		{
+			error_intl(0, i18n("don't mix old and new version options"));
+			new_project_usage();
+		}
+		while (version_number_length < 2)
+			version_number[version_number_length++] = 0;
+		if (version_number[0] == 0)
+			version_number[0] = 1;
+	}
+	extract_version_from_project_name
+	(
+		&project_name,
+		version_number,
+		(int)SIZEOF(version_number),
+		&version_number_length
+	);
+	if (!project_name_ok(project_name))
+	{
+		scp = sub_context_new();
+		sub_var_set(scp, "Name", "%S", project_name);
+		fatal_intl(scp, i18n("bad project $name"));
+		/* NOTREACHED */
+		sub_context_delete(scp);
+	}
+	if (!version_number_length && !version_string)
+	{
+		/*
+		 * Only do this if there is no version number implicit
+		 * in the project name AND no version string was given.
+		 *
+		 * This test is done BEFORE the version string break up,
+		 * because if the version string is the empty string, it
+		 * means to use NO version numbers.
+		 */
+		version_number_length = 2;
+		version_number[0] = 1;
+		version_number[1] = 0;
+	}
+	if (version_string && version_string->str_length)
+	{
+		int	err;
+
+		err =
+			break_up_version_string
+			(
+				version_string->str_text,
+				version_number,
+				(int)SIZEOF(version_number),
+				&version_number_length,
+				0
+			);
+		if (err)
+		{
+			scp = sub_context_new();
+			sub_var_set(scp, "Number", "%S", version_string);
+			fatal_intl(scp, i18n("bad version $number"));
+			/* NOTREACHED */
+			sub_context_delete(scp);
+		}
+	}
 
 	/*
 	 * locate user data
@@ -206,23 +276,29 @@ new_project_main()
 	up = user_executing((project_ty *)0);
 
 	/*
+	 * read in the table
+	 */
+	gonzo_gstate_lock_prepare_new();
+	lock_take();
+
+	/*
 	 * make sure not too privileged
 	 */
 	if (!user_uid_check(up->name))
 	{
-		fatal
-		(
-			"user \"%s\" is too privileged",
-			up->name->str_text
-		);
+		scp = sub_context_new();
+		sub_var_set(scp, "Name", "%S", user_name(up));
+		fatal_intl(scp, i18n("user \"$name\" is too privileged"));
+		/* NOTREACHED */
+		sub_context_delete(scp);
 	}
 	if (!user_gid_check(up->group))
 	{
-		fatal
-		(
-			"group \"%s\" is too privileged",
-			up->group->str_text
-		);
+		scp = sub_context_new();
+		sub_var_set(scp, "Name", "%S", user_group(up));
+		fatal_intl(scp, i18n("group \"$name\" is too privileged"));
+		/* NOTREACHED */
+		sub_context_delete(scp);
 	}
 
 	/*
@@ -233,28 +309,10 @@ new_project_main()
 	project_bind_new(pp);
 
 	/*
-	 * create a new project state file
+	 * the user who ran the command is the project administrator.
+	 * no other staff are defined at this time.
 	 */
-	pstate_data = project_pstate_get(pp);
-	pstate_data->description =
-		str_format("The \"%S\" program.", project_name_get(pp));
-	pstate_data->next_change_number = 1;
-	pstate_data->next_delta_number = 1;
-	pstate_data->version_major = major;
-	pstate_data->version_minor = minor;
-	pstate_data->owner_name = str_copy(user_name(up));
-	pstate_data->group_name = str_copy(user_group(up));
-	assert(pstate_data->administrator);
 	project_administrator_add(pp, user_name(up));
-
-	/*
-	 * default the umask from the creating user
-	 */
-	os_become_orig_query((int *)0, (int *)0, &um);
-	um = (um & 5) | 022;
-	if (um == 023)
-		um = 022;
-	pstate_data->umask = um;
 
 	/*
 	 * if no project directory was specified
@@ -271,31 +329,36 @@ new_project_main()
 		os_become_undo();
 		if (project_name_get(pp)->str_length > max)
 		{
-			fatal
-			(
-				"project name \"%s\" too long (by %ld)",
-				project_name_get(pp)->str_text,
-				project_name_get(pp)->str_length - max
-			);
+			scp = sub_context_new();
+			sub_var_set(scp, "Name", "%S", project_name_get(pp));
+			sub_var_set(scp, "Number", "%d", (int)(project_name_get(pp)->str_length - max));
+			sub_var_optional(scp, "Number");
+			fatal_intl(scp, i18n("project \"$name\" too long"));
+			/* NOTREACHED */
+			sub_context_delete(scp);
 		}
 		home = str_format("%S/%S", s1, project_name_get(pp));
 		str_free(s1);
-		project_verbose(pp, "project directory \"%S\"", home);
+
+		scp = sub_context_new();
+		sub_var_set(scp, "File_Name", "%S", home);
+		project_verbose(pp, scp, i18n("proj dir $filename"));
+		sub_context_delete(scp);
 	}
 	project_home_path_set(pp, home);
 	str_free(home);
 
 	/*
-	 * create the diectory and subdirectories.
+	 * create the directory and subdirectories.
 	 * It is an error if the directories can't be created.
 	 */
-	s1 = project_home_path_get(pp);
+	home = project_home_path_get(pp);
 	bl = project_baseline_path_get(pp, 0);
 	hp = project_history_path_get(pp);
 	ip = project_info_path_get(pp);
 	project_become(pp);
-	os_mkdir(s1, 02755);
-	undo_rmdir_errok(s1);
+	os_mkdir(home, 02755);
+	undo_rmdir_errok(home);
 	os_mkdir(bl, 02755);
 	undo_rmdir_errok(bl);
 	os_mkdir(hp, 02755);
@@ -310,18 +373,53 @@ new_project_main()
 	gonzo_project_add(pp);
 
 	/*
-	 * write the project pointer back out
-	 * release locks
+	 * copy the description into the change state
+	 */
+	s = str_format("The \"%S\" program.", project_name_get(pp));
+	project_description_set(pp, s);
+	str_free(s);
+
+	/*
+	 * create each of the branches
+	 */
+	ppp = pp;
+	for (j = 0; j < version_number_length; ++j)
+	{
+		long		change_number;
+
+		trace(("ppp = %8.8lX\n", (long)ppp));
+		change_number = magic_zero_encode(version_number[j]);
+		trace(("change_number = %ld;\n", change_number));
+		ppp = new_branch_internals(up, ppp, change_number, (string_ty *)0);
+		version_pp[j] = ppp;
+	}
+
+	/*
+	 * write the project state
+	 *	(the trunk change state is implicitly written)
+	 *
+	 * Write each of the branch state.  You must write *after* the
+	 * next branch down is created, because creating a branch alters
+	 * pstate.
 	 */
 	project_pstate_write(pp);
+	for (j = 0; j < version_number_length; ++j)
+		project_pstate_write(version_pp[j]);
 	gonzo_gstate_write();
+
+	/*
+	 * release locks
+	 */
 	commit();
 	lock_release();
 
 	/*
 	 * verbose success message
 	 */
-	project_verbose(pp, "created");
+	project_verbose(pp, 0, i18n("new project complete"));
+	for (j = 0; j < version_number_length; ++j)
+		project_verbose(version_pp[j], 0, i18n("new branch complete"));
+
 	project_free(pp);
 	user_free(up);
 	trace((/*{*/"}\n"));

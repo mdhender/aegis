@@ -1,6 +1,6 @@
 /*
  *	aegis - project change supervisor
- *	Copyright (C) 1994 Peter Miller.
+ *	Copyright (C) 1994, 1995, 1996, 1997 Peter Miller;
  *	All rights reserved.
  *
  *	This program is free software; you can redistribute it and/or modify
@@ -15,7 +15,7 @@
  *
  *	You should have received a copy of the GNU General Public License
  *	along with this program; if not, write to the Free Software
- *	Foundation, Inc., 675 Mass Ave, Cambridge, MA 02139, USA.
+ *	Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111, USA.
  *
  * MANIFEST: report the files constituting a project
  */
@@ -54,17 +54,42 @@ else
 	columns
 	(
 		{ name = "Type\n------"; },
-		{ name = "Edit\n------"; },
+		{ name = "Edit\n------"; width = 12;},
 		{ name = "File Name\n-----------"; right = 0; },
-		{ left = 18; right = 0; },
-		{ left = 18; right = 0; }
+		{ left = 22; right = 0; },
+		{ left = 22; right = 0; },
+		{ left = 22; right = 0; },
+		{ left = 22; right = 0; },
+		{ left = 22; right = 0; }
 	);
 	for (j in ps)
 	{
+		auto en;
+
+		if (j.edit_number_origin != "" && j.edit_number != "")
+		{
+			if (j.edit_number_origin == j.edit_number)
+				en = sprintf("%4s", j.edit_number);
+			else
+			{
+				en =
+					sprintf
+					(
+						"%4s -> %s",
+						j.edit_number_origin,
+						j.edit_number
+					);
+			}
+		}
+		else if (j.edit_number_origin != "")
+			en = sprintf("%4s", j.edit_number_origin);
+		else if (j.edit_number != "")
+			en = sprintf("%4s", j.edit_number);
+
 		print
 		(
 			j.usage,
-			j.edit_number,
+			en,
 			j.file_name,
 			(
 				j.deleted_by
@@ -80,6 +105,36 @@ else
 				(
 					"About to be created by change %d.",
 					j.about_to_be_created_by
+				)
+			:
+				""
+			),
+			(
+				j.locked_by
+			?
+				sprintf("Locked by change %d.", j.locked_by)
+			:
+				""
+			),
+			(
+				j.about_to_be_copied_by
+			?
+				sprintf
+				(
+					"About to be copied by change %d.",
+					j.about_to_be_copied_by
+				)
+			:
+				""
+			),
+			(
+				j.move != ""
+			?
+				sprintf
+				(
+					"Moved %s %s",
+					(j.action == create ? "from" : "to"),
+					j.move
 				)
 			:
 				""

@@ -1,6 +1,6 @@
 /*
  *	aegis - project change supervisor
- *	Copyright (C) 1991, 1992, 1993, 1994, 1995 Peter Miller;
+ *	Copyright (C) 1991, 1992, 1993, 1994, 1995, 1996, 1997, 1998 Peter Miller;
  *	All rights reserved.
  *
  *	This program is free software; you can redistribute it and/or modify
@@ -15,7 +15,7 @@
  *
  *	You should have received a copy of the GNU General Public License
  *	along with this program; if not, write to the Free Software
- *	Foundation, Inc., 675 Mass Ave, Cambridge, MA 02139, USA.
+ *	Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111, USA.
  *
  * MANIFEST: list interesting things about changes and projects
  *
@@ -27,24 +27,53 @@
 #include <ac/string.h>
 #include <ac/stdlib.h>
 #include <ac/time.h>
+#include <ac/pwd.h>
 
 #include <ael.h>
 #include <aer/func/now.h>
 #include <arglex2.h>
 #include <col.h>
-#include <change.h>
+#include <change_bran.h>
+#include <change_file.h>
 #include <error.h>
 #include <gonzo.h>
 #include <help.h>
+#include <itab.h>
 #include <lock.h>
 #include <option.h>
 #include <os.h>
+#include <progname.h>
 #include <project.h>
+#include <project_file.h>
+#include <project_hist.h>
+#include <sub.h>
 #include <trace.h>
 #include <user.h>
-#include <word.h>
+#include <str_list.h>
 
 #define ELAPSED_TIME_THRESHOLD (10L * 60L) /* ten minutes */
+
+/*
+ * widths of the various columns
+ *
+ * (Many are 8n-1; this does nice things with tabs.)
+ */
+#define USAGE_WIDTH	7	/* strlen("manual_") = 7 */
+#define ACTION_WIDTH	8	/* strlen("insulate") = 8 */
+#define EDIT_WIDTH	12	/* strlen("1.23 (4.56)") = 11,
+				   strlen("1.23 -> 4.56") = 12 */
+#define LOGIN_WIDTH	8	/* login names will be <= 8 */
+#define WHAT_WIDTH	15	/* widest is 20, worst is 10 */
+#define WHEN_WIDTH	15	/* ctime fits in 2 lines */
+#define WHO_WIDTH	LOGIN_WIDTH
+#define	CHANGE_WIDTH	7
+#define	STATE_WIDTH	15	/* widest is 20, worst is 11 */
+#define ARCH_WIDTH	8
+#define HOST_WIDTH	8
+#define TIME_WIDTH	9	/* strlen("99-Oct-99") = 9 */
+#define INDENT_WIDTH	8	/* used for change_details */
+#define PROJECT_WIDTH	15
+#define DIRECTORY_WIDTH 23
 
 
 typedef struct table_ty table_ty;
@@ -164,7 +193,7 @@ list_usage()
 {
 	char		*progname;
 
-	progname = option_progname_get();
+	progname = progname_get();
 	fprintf
 	(
 		stderr,
@@ -182,12 +211,7 @@ static void list_help _((void));
 static void
 list_help()
 {
-	static char *text[] =
-	{
-#include <../man1/ael.h>
-	};
-
-	help(text, SIZEOF(text), list_usage);
+	help("ael", list_usage);
 }
 
 
@@ -210,10 +234,11 @@ static void list_main _((void));
 static void
 list_main()
 {
+	sub_context_ty	*scp;
 	char		*listname;
-	table_ty		*tp;
+	table_ty	*tp;
 	int		j;
-	table_ty		*hit[SIZEOF(table)];
+	table_ty	*hit[SIZEOF(table)];
 	int		nhit;
 	string_ty	*s1;
 	string_ty	*s2;
@@ -234,35 +259,45 @@ list_main()
 
 		case arglex_token_string:
 			if (listname)
-				fatal("too many lists named");
+			{
+				fatal_intl(0, i18n("too many lists"));
+			}
 			listname = arglex_value.alv_string;
 			break;
 
 		case arglex_token_change:
 			if (arglex() != arglex_token_number)
-				list_usage();
+				option_needs_number(arglex_token_change, list_usage);
 			/* fall through... */
 
 		case arglex_token_number:
 			if (change_number)
-				fatal("duplicate -Change option");
+				duplicate_option_by_name(arglex_token_change, list_usage);
 			change_number = arglex_value.alv_number;
-			if (change_number < 1)
-				fatal("change %ld out of range", change_number);
+			if (change_number == 0)
+				change_number = MAGIC_ZERO;
+			else if (change_number < 1)
+			{
+				scp = sub_context_new();
+				sub_var_set(scp, "Number", "%ld", change_number);
+				fatal_intl(scp, i18n("change $number out of range"));
+				/* NOTREACHED */
+				sub_context_delete(scp);
+			}
 			break;
 
 		case arglex_token_project:
 			if (arglex() != arglex_token_string)
-				list_usage();
+				option_needs_name(arglex_token_project, list_usage);
 			if (project_name)
-				fatal("duplicate -Project option");
+				duplicate_option_by_name(arglex_token_project, list_usage);
 			project_name = str_from_c(arglex_value.alv_string);
 			break;
 		}
 		arglex();
 	}
 	if (!listname)
-		fatal("no list name given");
+		fatal_intl(0, i18n("no list"));
 
 	nhit = 0;
 	for (tp = table; tp < ENDOF(table); ++tp)
@@ -273,7 +308,11 @@ list_main()
 	switch (nhit)
 	{
 	case 0:
-		fatal("list name \"%s\" unknown", listname);
+		scp = sub_context_new();
+		sub_var_set(scp, "Name", "%s", listname);
+		fatal_intl(scp, i18n("no $name list"));
+		/* NOTREACHED */
+		sub_context_delete(scp);
 
 	case 1:
 		hit[0]->func(project_name, change_number);
@@ -287,15 +326,16 @@ list_main()
 			str_free(s1);
 			s1 = s2;
 		}
-		fatal
-		(
-			"list name \"%s\" ambiguous (%s)",
-			listname,
-			s1->str_text
-		);
+		scp = sub_context_new();
+		sub_var_set(scp, "Name", "%s", listname);
+		sub_var_set(scp, "Name_List", "%S", s1);
+		str_free(s1);
+		sub_var_optional(scp, "Name_List");
+		fatal_intl(scp, i18n("list $name ambiguous"));
+		/* NOTREACHED */
+		sub_context_delete(scp);
+		break;
 	}
-	if (project_name)
-		str_free(project_name);
 	trace((/*{*/"}\n"));
 }
 
@@ -322,94 +362,98 @@ list()
 }
 
 
-static int name_cmp _((const void *, const void *));
-
-static int
-name_cmp(va, vb)
-	const void	*va;
-	const void	*vb;
-{
-	string_ty	*a;
-	string_ty	*b;
-
-	a = *(string_ty **)va;
-	b = *(string_ty **)vb;
-	return strcmp(a->str_text, b->str_text);
-}
-
-
 void
 list_projects(project_name, change_number)
 	string_ty	*project_name;
 	long		change_number;
 {
-	wlist		name;
+	sub_context_ty	*scp;
+	string_list_ty	name;
 	int		name_col = 0;
 	int		dir_col = 0;
 	int		desc_col = 0;
 	int		j;
+	int		left;
 
 	trace(("list_projects()\n{\n"/*}*/));
 	if (project_name)
-		fatal("inappropriate -Project option");
+	{
+		scp = sub_context_new();
+		sub_var_set(scp, "Name", "%s", arglex_token_name(arglex_token_project));
+		fatal_intl(scp, i18n("inappropriate $name option"));
+		/* NOTREACHED */
+		sub_context_delete(scp);
+	}
 	if (change_number)
-		fatal("inappropriate -Change option");
+	{
+		scp = sub_context_new();
+		sub_var_set(scp, "Name", "%s", arglex_token_name(arglex_token_change));
+		fatal_intl(scp, i18n("inappropriate $name option"));
+		/* NOTREACHED */
+		sub_context_delete(scp);
+	}
 
 	/*
 	 * list the projects
 	 */
-	gonzo_project_list(&name);
-	qsort
-	(
-		name.wl_word,
-		name.wl_nwords,
-		sizeof(name.wl_word[0]),
-		name_cmp
-	);
+	project_list_get(&name);
 
 	/*
 	 * create the columns
 	 */
 	col_open((char *)0);
 	col_title("List of Projects", (char *)0);
-	name_col = col_create(0, 15);
+
+	left = 0;
+	name_col = col_create(left, left + PROJECT_WIDTH);
+	left += PROJECT_WIDTH + 1;
 	col_heading(name_col, "Project\n---------");
+
 	if (!option_terse_get())
 	{
-		dir_col = col_create(16, 39);
-		desc_col = col_create(40, 0);
+		dir_col = col_create(left, left + DIRECTORY_WIDTH);
+		left += DIRECTORY_WIDTH + 1;
 		col_heading(dir_col, "Directory\n-----------");
+
+		desc_col = col_create(left, 0);
 		col_heading(desc_col, "Description\n-------------");
 	}
 
 	/*
 	 * list each project
 	 */
-	for (j = 0; j < name.wl_nwords; ++j)
+	for (j = 0; j < name.nstrings; ++j)
 	{
 		project_ty	*pp;
 		int		err;
 
-		pp = project_alloc(name.wl_word[j]);
+		pp = project_alloc(name.string[j]);
 		project_bind_existing(pp);
 
-		os_become_orig();
-		err = os_readable(project_pstate_path_get(pp));
-		os_become_undo();
+		err = project_is_readable(pp);
 
 		col_puts(name_col, project_name_get(pp)->str_text);
 		if (!option_terse_get())
 		{
-			col_puts(dir_col, project_home_path_get(pp)->str_text);
 			if (err)
 				col_puts(desc_col, strerror(err));
 			else
 			{
+				string_ty	*top;
+
+				/*
+				 * The development directory of the
+				 * project change is the one which
+				 * contains the trunk or branch
+				 * baseline.
+				 */
+				top = project_top_path_get(pp, 0);
+				col_puts(dir_col, top->str_text);
+
 				col_puts
 				(
 					desc_col,
-					project_pstate_get(pp)->description->
-						str_text
+					project_description_get(pp)->str_text
 				);
 			}
 		}
@@ -421,9 +465,80 @@ list_projects(project_name, change_number)
 	 * clean up and go home
 	 */
 	col_close();
-	if (!name.wl_nwords)
-		verbose("there are no projects");
 	trace((/*{*/"}\n"));
+}
+
+
+static void format_edit_number _((int, fstate_src));
+
+static void
+format_edit_number(edit_col, src_data)
+	int		edit_col;
+	fstate_src	src_data;
+{
+	if
+	(
+		src_data->edit_number_origin
+	&&
+		src_data->edit_number
+	)
+	{
+		/*
+		 * We have both the original version copied, and the
+		 * current head revision.  Print them both, with a
+		 * notation implying ``from the old one to the new one''
+		 * if they differ.  Only print one if thay are the same.
+		 */
+		col_printf
+		(
+			edit_col,
+			"%4s",
+			src_data->edit_number_origin->str_text
+		);
+		if
+		(
+			str_equal
+			(
+				src_data->edit_number,
+				src_data->edit_number_origin
+			)
+		)
+			return;
+		col_printf
+		(
+			edit_col,
+			" -> %s",
+			src_data->edit_number->str_text
+		);
+		return;
+	}
+
+	if (src_data->edit_number_origin)
+	{
+		/*
+		 * The "original version" copied.
+		 */
+		col_printf
+		(
+			edit_col,
+			"%4s",
+			src_data->edit_number_origin->str_text
+		);
+	}
+	if (src_data->edit_number)
+	{
+		/*
+		 * For active branches, the current
+		 * head revision.  For completed changes
+		 * and branches, the revision at aeipass.
+		 */
+		col_printf
+		(
+			edit_col,
+			"%4s",
+			src_data->edit_number->str_text
+		);
+	}
 }
 
 
@@ -432,7 +547,6 @@ list_project_files(project_name, change_number)
 	string_ty	*project_name;
 	long		change_number;
 {
-	pstate		pstate_data;
 	project_ty	*pp;
 	change_ty	*cp;
 	user_ty		*up;
@@ -441,6 +555,7 @@ list_project_files(project_name, change_number)
 	int		file_name_col = 0;
 	int		j;
 	string_ty	*line1;
+	int		left;
 
 	/*
 	 * locate project data
@@ -448,8 +563,6 @@ list_project_files(project_name, change_number)
 	trace(("list_project_files()\n{\n"/*}*/));
 	if (!project_name)
 		project_name = user_default_project();
-	else
-		project_name = str_copy(project_name);
 	pp = project_alloc(project_name);
 	str_free(project_name);
 	project_bind_existing(pp);
@@ -470,44 +583,49 @@ list_project_files(project_name, change_number)
 	else
 		cp = 0;
 
-	pstate_data = project_pstate_get(pp);
-	assert(pstate_data->src);
-
 	/*
 	 * create the columns
 	 */
 	col_open((char *)0);
 	if (change_number)
+	{
 		line1 =
 			str_format
 			(
 				"Project \"%S\"  Change %ld",
-				project_name,
-				change_number
+				project_name_get(pp),
+				magic_zero_decode(change_number)
 			);
+	}
 	else
-		line1 = str_format("Project \"%S\"", project_name);
+		line1 = str_format("Project \"%S\"", project_name_get(pp));
 	col_title(line1->str_text, "List of Project's Files");
 	str_free(line1);
 
+	left = 0;
 	if (!option_terse_get())
 	{
-		usage_col = col_create(0, 7);
-		edit_col = col_create(8, 15);
+		usage_col = col_create(left, left + USAGE_WIDTH);
+		left += USAGE_WIDTH + 1;
 		col_heading(usage_col, "Type\n-------");
+
+		edit_col = col_create(left, left + EDIT_WIDTH);
+		left += EDIT_WIDTH + 1;
 		col_heading(edit_col, "Edit\n-------");
 	}
-	file_name_col = col_create(16, 0);
+	file_name_col = col_create(left, 0);
 	col_heading(file_name_col, "File Name\n-----------");
 
 	/*
 	 * list the project's files
 	 */
-	for (j = 0; j < pstate_data->src->length; ++j)
+	for (j = 0; ; ++j)
 	{
-		pstate_src	src_data;
+		fstate_src	src_data;
 
-		src_data = pstate_data->src->list[j];
+		src_data = project_file_nth(pp, j);
+		if (!src_data)
+			break;
 		if
 		(
 			(
@@ -519,7 +637,7 @@ list_project_files(project_name, change_number)
 			!option_verbose_get()
 		)
 			continue;
-		if (cp && change_src_find(cp, src_data->file_name))
+		if (cp && change_file_find(cp, src_data->file_name))
 			continue;
 		if (option_terse_get())
 		{
@@ -535,13 +653,33 @@ list_project_files(project_name, change_number)
 				usage_col,
 				file_usage_ename(src_data->usage)
 			);
-			if (src_data->edit_number)
+			format_edit_number(edit_col, src_data);
+			if
+			(
+				pp->parent
+			&&
+				change_is_a_branch(project_change_get(pp))
+			&&
+				!change_file_up_to_date(pp->parent, src_data)
+			)
 			{
-				col_puts
-				(
-					edit_col,
-					src_data->edit_number->str_text
-				);
+				fstate_src	psrc_data;
+
+				psrc_data =
+					project_file_find
+					(
+						pp->parent,
+						src_data->file_name
+					);
+				if (psrc_data && psrc_data->edit_number)
+				{
+					col_printf
+					(
+						edit_col,
+						" (%s)",
+						psrc_data->edit_number->str_text
+					);
+				}
 			}
 		}
 		assert(src_data->file_name);
@@ -557,7 +695,7 @@ list_project_files(project_name, change_number)
 			(
 				file_name_col,
 				"About to be created by change %ld.",
-				src_data->about_to_be_created_by
+				magic_zero_decode(src_data->about_to_be_created_by)
 			);
 		}
 		if (src_data->deleted_by)
@@ -567,7 +705,7 @@ list_project_files(project_name, change_number)
 			(
 				file_name_col,
 				"Deleted by change %ld.",
-				src_data->deleted_by
+				magic_zero_decode(src_data->deleted_by)
 			);
 		}
 		if (src_data->locked_by)
@@ -577,8 +715,28 @@ list_project_files(project_name, change_number)
 			(
 				file_name_col,
 				"Locked by change %ld.",
-				src_data->locked_by
+				magic_zero_decode(src_data->locked_by)
 			);
+		}
+		if (src_data->about_to_be_copied_by)
+		{
+			col_bol(file_name_col);
+			col_printf
+			(
+				file_name_col,
+				"About to be copied by change %ld.",
+				magic_zero_decode(src_data->about_to_be_copied_by)
+			);
+		}
+		if (src_data->move)
+		{
+			col_bol(file_name_col);
+			col_puts(file_name_col, "Moved ");
+			if (src_data->action == file_action_create)
+				col_puts(file_name_col, "from ");
+			else
+				col_puts(file_name_col, "to ");
+			col_puts(file_name_col, src_data->move->str_text);
 		}
 		col_eoln();
 	}
@@ -587,8 +745,6 @@ list_project_files(project_name, change_number)
 	 * clean up and go home
 	 */
 	col_close();
-	if (!pstate_data->src->length)
-		project_verbose(pp, "no files");
 	project_free(pp);
 	if (cp)
 		change_free(cp);
@@ -602,55 +758,63 @@ list_administrators(project_name, change_number)
 	string_ty	*project_name;
 	long		change_number;
 {
-	pstate		pstate_data;
 	project_ty	*pp;
 	int		login_col = 0;
 	int		name_col = 0;
 	int		j;
 	string_ty	*line1;
+	int		left;
 
 	trace(("list_administrators()\n{\n"/*}*/));
 	if (change_number)
-		fatal("inappropriate -Change option");
+	{
+		sub_context_ty	*scp;
+
+		scp = sub_context_new();
+		sub_var_set(scp, "Name", "%s", arglex_token_name(arglex_token_change));
+		fatal_intl(scp, i18n("inappropriate $name option"));
+		/* NOTREACHED */
+		sub_context_delete(scp);
+	}
 
 	/*
 	 * locate project data
 	 */
 	if (!project_name)
 		project_name = user_default_project();
-	else
-		project_name = str_copy(project_name);
 	pp = project_alloc(project_name);
 	str_free(project_name);
 	project_bind_existing(pp);
-
-	pstate_data = project_pstate_get(pp);
-	assert(pstate_data->administrator);
 
 	/*
 	 * create the columns
 	 */
 	col_open((char *)0);
-	line1 = str_format("Project \"%S\"", project_name);
+	line1 = str_format("Project \"%S\"", project_name_get(pp));
 	col_title(line1->str_text, "List of Administrators");
 	str_free(line1);
 
-	login_col = col_create(0, 15);
+	left = 0;
+	login_col = col_create(left, left + LOGIN_WIDTH);
+	left += LOGIN_WIDTH + 2;
 	col_heading(login_col, "User\n------");
+
 	if (!option_terse_get())
 	{
-		name_col = col_create(16, 0);
+		name_col = col_create(left, 0);
 		col_heading(name_col, "Full Name\n-----------");
 	}
 
 	/*
 	 * list project's administrators
 	 */
-	for (j = 0; j < pstate_data->administrator->length; ++j)
+	for (j = 0; ; ++j)
 	{
 		string_ty	*logname;
 
-		logname = pstate_data->administrator->list[j];
+		logname = project_administrator_nth(pp, j);
+		if (!logname)
+			break;
 		col_puts(login_col, logname->str_text);
 		if (!option_terse_get())
 			col_puts(name_col, user_full_name(logname));
@@ -661,8 +825,6 @@ list_administrators(project_name, change_number)
 	 * clean up and go home
 	 */
 	col_close();
-	if (!pstate_data->administrator->length)
-		project_verbose(pp, "no administrators");
 	project_free(pp);
 	trace((/*{*/"}\n"));
 }
@@ -683,6 +845,7 @@ list_change_files(project_name, change_number)
 	int		file_name_col = 0;
 	int		j;
 	string_ty	*line1;
+	int		left;
 
 	/*
 	 * locate project data
@@ -690,8 +853,6 @@ list_change_files(project_name, change_number)
 	trace(("list_change_files()\n{\n"/*}*/));
 	if (!project_name)
 		project_name = user_default_project();
-	else
-		project_name = str_copy(project_name);
 	pp = project_alloc(project_name);
 	str_free(project_name);
 	project_bind_existing(pp);
@@ -710,7 +871,7 @@ list_change_files(project_name, change_number)
 	change_bind_existing(cp);
 
 	cstate_data = change_cstate_get(cp);
-	assert(cstate_data->src);
+	assert(change_file_nth(cp, 0));
 
 	/*
 	 * create the columns
@@ -720,32 +881,40 @@ list_change_files(project_name, change_number)
 		str_format
 		(
 			"Project \"%S\"  Change %ld",
-			project_name,
-			change_number
+			project_name_get(pp),
+			magic_zero_decode(change_number)
 		);
 	col_title(line1->str_text, "List of Change's Files");
 	str_free(line1);
 
+	left = 0;
 	if (!option_terse_get())
 	{
-		usage_col = col_create(0, 7);
-		action_col = col_create(8, 15);
-		edit_col = col_create(16, 23);
+		usage_col = col_create(left, left + USAGE_WIDTH);
+		left += USAGE_WIDTH + 1;
 		col_heading(usage_col, "Type\n-------");
-		col_heading(action_col, "Action\n-------");
+
+		action_col = col_create(left, left + ACTION_WIDTH);
+		left += ACTION_WIDTH + 1;
+		col_heading(action_col, "Action\n--------");
+
+		edit_col = col_create(left, left + EDIT_WIDTH);
+		left += EDIT_WIDTH + 1;
 		col_heading(edit_col, "Edit\n-------");
 	}
-	file_name_col = col_create(24, 0);
+	file_name_col = col_create(left, 0);
 	col_heading(file_name_col, "File Name\n-----------");
 
 	/*
 	 * list the change's files
 	 */
-	for (j = 0; j < cstate_data->src->length; ++j)
+	for (j = 0; ; ++j)
 	{
-		cstate_src	src_data;
+		fstate_src	src_data;
 
-		src_data = cstate_data->src->list[j];
+		src_data = change_file_nth(cp, j);
+		if (!src_data)
+			break;
 		assert(src_data->file_name);
 		if (option_terse_get())
 		{
@@ -764,49 +933,49 @@ list_change_files(project_name, change_number)
 				action_col,
 				file_action_ename(src_data->action)
 			);
-			if (src_data->edit_number)
+			format_edit_number(edit_col, src_data);
+			if
+			(
+			      cstate_data->state == cstate_state_being_developed
+			&&
+				!change_file_up_to_date(pp, src_data)
+			)
 			{
-				pstate_src	psrc_data;
+				fstate_src	psrc_data;
 
-				col_puts
-				(
-					edit_col,
-					src_data->edit_number->str_text
-				);
-				if
-				(
-					cstate_data->state
-				==
-					cstate_state_being_developed
-				)
-					psrc_data =
-						project_src_find
-						(
-							pp,
-						     src_data->file_name
-						);
-				else
-					psrc_data = 0;
-				if
-				(
-					psrc_data
-				&&
-					psrc_data->edit_number
-				&&
-					!str_equal
+				/*
+				 * The current head revision of the
+				 * branch may not equal the version
+				 * ``originally'' copied.
+				 */
+				psrc_data =
+					project_file_find
 					(
-						src_data->edit_number,
-						psrc_data->edit_number
-					)
-				)
+						pp,
+						src_data->file_name
+					);
+				if (psrc_data && psrc_data->edit_number)
 				{
 					col_printf
 					(
 						edit_col,
 						" (%s)",
-					psrc_data->edit_number->str_text
+						psrc_data->edit_number->str_text
 					);
 				}
+			}
+			if (src_data->edit_number_origin_new)
+			{
+				/*
+				 * The ``cross branch merge'' version.
+				 */
+				col_bol(edit_col);
+				col_printf
+				(
+					edit_col,
+					"{cross %4s}",
+				      src_data->edit_number_origin_new->str_text
+				);
 			}
 		}
 		col_puts
@@ -814,6 +983,46 @@ list_change_files(project_name, change_number)
 			file_name_col,
 			src_data->file_name->str_text
 		);
+		if (src_data->about_to_be_created_by)
+		{
+			col_bol(file_name_col);
+			col_printf
+			(
+				file_name_col,
+				"About to be created by change %ld.",
+				magic_zero_decode(src_data->about_to_be_created_by)
+			);
+		}
+		if (src_data->deleted_by)
+		{
+			col_bol(file_name_col);
+			col_printf
+			(
+				file_name_col,
+				"Deleted by change %ld.",
+				magic_zero_decode(src_data->deleted_by)
+			);
+		}
+		if (src_data->locked_by)
+		{
+			col_bol(file_name_col);
+			col_printf
+			(
+				file_name_col,
+				"Locked by change %ld.",
+				magic_zero_decode(src_data->locked_by)
+			);
+		}
+		if (src_data->about_to_be_copied_by)
+		{
+			col_bol(file_name_col);
+			col_printf
+			(
+				file_name_col,
+				"About to be copied by change %ld.",
+				magic_zero_decode(src_data->about_to_be_copied_by)
+			);
+		}
 		if (src_data->move)
 		{
 			col_bol(file_name_col);
@@ -831,8 +1040,6 @@ list_change_files(project_name, change_number)
 	 * clean up and go home
 	 */
 	col_close();
-	if (!cstate_data->src->length)
-		change_verbose(cp, "no files");
 	project_free(pp);
 	change_free(cp);
 	user_free(up);
@@ -855,6 +1062,7 @@ list_change_history(project_name, change_number)
 	int		why_col;
 	int		j;
 	string_ty	*line1;
+	int		left;
 
 	/*
 	 * locate project data
@@ -862,8 +1070,6 @@ list_change_history(project_name, change_number)
 	trace(("list_change_history()\n{\n"/*}*/));
 	if (!project_name)
 		project_name = user_default_project();
-	else
-		project_name = str_copy(project_name);
 	pp = project_alloc(project_name);
 	str_free(project_name);
 	project_bind_existing(pp);
@@ -882,7 +1088,7 @@ list_change_history(project_name, change_number)
 	change_bind_existing(cp);
 
 	cstate_data = change_cstate_get(cp);
-	assert(cstate_data->src);
+	assert(change_file_nth(cp, (size_t)0));
 
 	/*
 	 * create the columns
@@ -892,19 +1098,26 @@ list_change_history(project_name, change_number)
 		str_format
 		(
 			"Project \"%S\"  Change %ld",
-			project_name,
-			change_number
+			project_name_get(pp),
+			magic_zero_decode(change_number)
 		);
 	col_title(line1->str_text, "History");
 	str_free(line1);
 
-	what_col = col_create(0, 15);
-	when_col = col_create(16, 31);
-	who_col = col_create(32, 40);
-	why_col = col_create(41, 0);
+	left = 0;
+	what_col = col_create(left, left + WHAT_WIDTH);
+	left += WHAT_WIDTH + 1;
 	col_heading(what_col, "What\n------");
+
+	when_col = col_create(left, left + WHEN_WIDTH);
+	left += WHEN_WIDTH + 1;
 	col_heading(when_col, "When\n------");
+
+	who_col = col_create(left, left + WHO_WIDTH);
+	left += WHO_WIDTH + 1;
 	col_heading(who_col, "Who\n-----");
+
+	why_col = col_create(left, 0);
 	col_heading(why_col, "Comment\n---------");
 
 	/*
@@ -953,8 +1166,6 @@ list_change_history(project_name, change_number)
 	 * clean up and go home
 	 */
 	col_close();
-	if (!cstate_data->history->length)
-		change_verbose(cp, "no history");
 	change_free(cp);
 	project_free(pp);
 	user_free(up);
@@ -1003,7 +1214,6 @@ list_changes_in_state_mask(project_name, state_mask)
 	string_ty	*project_name;
 	int		state_mask;
 {
-	pstate		pstate_data;
 	int		number_col = 0;
 	int		state_col = 0;
 	int		description_col = 0;
@@ -1011,6 +1221,7 @@ list_changes_in_state_mask(project_name, state_mask)
 	project_ty	*pp;
 	string_ty	*line1;
 	string_ty	*line2;
+	int		left;
 
 	/*
 	 * locate project data
@@ -1019,19 +1230,15 @@ list_changes_in_state_mask(project_name, state_mask)
 		state_mask));
 	if (!project_name)
 		project_name = user_default_project();
-	else
-		project_name = str_copy(project_name);
 	pp = project_alloc(project_name);
 	str_free(project_name);
 	project_bind_existing(pp);
-
-	pstate_data = project_pstate_get(pp);
 
 	/*
 	 * create the columns
 	 */
 	col_open((char *)0);
-	line1 = str_format("Project \"%S\"", project_name);
+	line1 = str_format("Project \"%S\"", project_name_get(pp));
 	j = single_bit(state_mask);
 	if (j >= 0)
 		line2 = str_format("List of Changes %s", cstate_state_ename(j));
@@ -1054,32 +1261,43 @@ list_changes_in_state_mask(project_name, state_mask)
 	str_free(line1);
 	str_free(line2);
 
-	number_col = col_create(0, 7);
+	left = 0;
+	number_col = col_create(left, left + CHANGE_WIDTH);
+	left += CHANGE_WIDTH + 1;
 	col_heading(number_col, "Change\n-------");
+
 	if (!option_terse_get())
 	{
-		state_col = col_create(8, 23);
-		description_col = col_create(24, 0);
+		state_col = col_create(left, left + STATE_WIDTH);
+		left += STATE_WIDTH + 1;
 		col_heading(state_col, "State\n-------");
+
+		description_col = col_create(left, 0);
 		col_heading(description_col, "Description\n-------------");
 	}
 
 	/*
 	 * list the project's changes
 	 */
-	for (j = 0; j < pstate_data->change->length; ++j)
+	for (j = 0; ; ++j)
 	{
 		cstate		cstate_data;
 		long		change_number;
 		change_ty	*cp;
 
-		change_number = pstate_data->change->list[j];
+		if (!project_change_nth(pp, j, &change_number))
+			break;
 		cp = change_alloc(pp, change_number);
 		change_bind_existing(cp);
 		cstate_data = change_cstate_get(cp);
 		if (state_mask & (1 << cstate_data->state))
 		{
-			col_printf(number_col, "%4ld", change_number);
+			col_printf
+			(
+				number_col,
+				"%4ld",
+				magic_zero_decode(change_number)
+			);
 			if (!option_terse_get())
 			{
 				col_puts
@@ -1087,6 +1305,34 @@ list_changes_in_state_mask(project_name, state_mask)
 					state_col,
 					cstate_state_ename(cstate_data->state)
 				);
+				if
+				(
+					option_verbose_get()
+				&&
+			      cstate_data->state == cstate_state_being_developed
+				)
+				{
+					col_bol(state_col);
+					col_puts
+					(
+						state_col,
+					     change_developer_name(cp)->str_text
+					);
+				}
+				if
+				(
+					option_verbose_get()
+				&&
+			     cstate_data->state == cstate_state_being_integrated
+				)
+				{
+					col_bol(state_col);
+					col_puts
+					(
+						state_col,
+					    change_integrator_name(cp)->str_text
+					);
+				}
 				if (cstate_data->brief_description)
 				{
 					col_puts
@@ -1105,8 +1351,6 @@ list_changes_in_state_mask(project_name, state_mask)
 	 * clean up and go home
 	 */
 	col_close();
-	if (!pstate_data->change->length)
-		project_verbose(pp, "no changes");
 	project_free(pp);
 	trace((/*{*/"}\n"));
 }
@@ -1119,7 +1363,15 @@ list_changes(project_name, change_number)
 {
 	trace(("list_changes()\n{\n"/*}*/));
 	if (change_number)
-		fatal("inappropriate -Change option");
+	{
+		sub_context_ty	*scp;
+
+		scp = sub_context_new();
+		sub_var_set(scp, "Name", "%s", arglex_token_name(arglex_token_change));
+		fatal_intl(scp, i18n("inappropriate $name option"));
+		/* NOTREACHED */
+		sub_context_delete(scp);
+	}
 	list_changes_in_state_mask(project_name, ~0);
 	trace((/*{*/"}\n"));
 }
@@ -1136,9 +1388,25 @@ list_list_list(project_name, change_number)
 
 	trace(("list_list_list()\n{\n"/*}*/));
 	if (project_name)
-		fatal("inappropriate -Project option");
+	{
+		sub_context_ty	*scp;
+
+		scp = sub_context_new();
+		sub_var_set(scp, "Name", "%s", arglex_token_name(arglex_token_project));
+		fatal_intl(scp, i18n("inappropriate $name option"));
+		/* NOTREACHED */
+		sub_context_delete(scp);
+	}
 	if (change_number)
-		fatal("inappropriate -Change option");
+	{
+		sub_context_ty	*scp;
+
+		scp = sub_context_new();
+		sub_var_set(scp, "Name", "%s", arglex_token_name(arglex_token_change));
+		fatal_intl(scp, i18n("inappropriate $name option"));
+		/* NOTREACHED */
+		sub_context_delete(scp);
+	}
 
 	/*
 	 * create the columns
@@ -1177,55 +1445,63 @@ list_developers(project_name, change_number)
 	string_ty	*project_name;
 	long		change_number;
 {
-	pstate		pstate_data;
 	project_ty	*pp;
 	int		login_col = 0;
 	int		name_col = 0;
 	int		j;
 	string_ty	*line1;
+	int		left;
 
 	trace(("list_developers()\n{\n"/*}*/));
 	if (change_number)
-		fatal("inappropriate -Change option");
+	{
+		sub_context_ty	*scp;
+
+		scp = sub_context_new();
+		sub_var_set(scp, "Name", "%s", arglex_token_name(arglex_token_change));
+		fatal_intl(scp, i18n("inappropriate $name option"));
+		/* NOTREACHED */
+		sub_context_delete(scp);
+	}
 
 	/*
 	 * locate project data
 	 */
 	if (!project_name)
 		project_name = user_default_project();
-	else
-		project_name = str_copy(project_name);
 	pp = project_alloc(project_name);
 	str_free(project_name);
 	project_bind_existing(pp);
-
-	pstate_data = project_pstate_get(pp);
-	assert(pstate_data->developer);
 
 	/*
 	 * create the columns
 	 */
 	col_open((char *)0);
-	line1 = str_format("Project \"%S\"", project_name);
+	line1 = str_format("Project \"%S\"", project_name_get(pp));
 	col_title(line1->str_text, "List of Developers");
 	str_free(line1);
 
-	login_col = col_create(0, 15);
+	left = 0;
+	login_col = col_create(left, left + LOGIN_WIDTH);
+	left += LOGIN_WIDTH + 2;
 	col_heading(login_col, "User\n------");
+
 	if (!option_terse_get())
 	{
-		name_col = col_create(16, 0);
+		name_col = col_create(left, 0);
 		col_heading(name_col, "Full Name\n-----------");
 	}
 
 	/*
 	 * list the project's developers
 	 */
-	for (j = 0; j < pstate_data->developer->length; ++j)
+	for (j = 0; ; ++j)
 	{
 		string_ty	*logname;
 
-		logname = pstate_data->developer->list[j];
+		logname = project_developer_nth(pp, j);
+		if (!logname)
+			break;
 		col_puts(login_col, logname->str_text);
 		if (!option_terse_get())
 			col_puts(name_col, user_full_name(logname));
@@ -1236,8 +1512,6 @@ list_developers(project_name, change_number)
 	 * clean up and go home
 	 */
 	col_close();
-	if (!pstate_data->developer->length)
-		project_verbose(pp, "no developers");
 	project_free(pp);
 	trace((/*{*/"}\n"));
 }
@@ -1248,55 +1522,63 @@ list_integrators(project_name, change_number)
 	string_ty	*project_name;
 	long		change_number;
 {
-	pstate		pstate_data;
 	project_ty	*pp;
 	int		login_col = 0;
 	int		name_col = 0;
 	int		j;
 	string_ty	*line1;
+	int		left;
 
 	trace(("list_integrators()\n{\n"/*}*/));
 	if (change_number)
-		fatal("inappropriate -Change option");
+	{
+		sub_context_ty	*scp;
+
+		scp = sub_context_new();
+		sub_var_set(scp, "Name", "%s", arglex_token_name(arglex_token_change));
+		fatal_intl(scp, i18n("inappropriate $name option"));
+		/* NOTREACHED */
+		sub_context_delete(scp);
+	}
 
 	/*
 	 * locate project data
 	 */
 	if (!project_name)
 		project_name = user_default_project();
-	else
-		project_name = str_copy(project_name);
 	pp = project_alloc(project_name);
 	str_free(project_name);
 	project_bind_existing(pp);
-
-	pstate_data = project_pstate_get(pp);
-	assert(pstate_data->integrator);
 
 	/*
 	 * create the columns
 	 */
 	col_open((char *)0);
-	line1 = str_format("Project \"%S\"", project_name);
+	line1 = str_format("Project \"%S\"", project_name_get(pp));
 	col_title(line1->str_text, "List of Integrators");
 	str_free(line1);
 
-	login_col = col_create(0, 15);
+	left = 0;
+	login_col = col_create(left, left + LOGIN_WIDTH);
+	left += LOGIN_WIDTH + 2;
 	col_heading(login_col, "User\n------");
+
 	if (!option_terse_get())
 	{
-		name_col = col_create(16, 0);
+		name_col = col_create(left, 0);
 		col_heading(name_col, "Full Name\n-----------");
 	}
 
 	/*
 	 * list the project's integrators
 	 */
-	for (j = 0; j < pstate_data->integrator->length; ++j)
+	for (j = 0; ; ++j)
 	{
 		string_ty	*logname;
 
-		logname = pstate_data->integrator->list[j];
+		logname = project_integrator_nth(pp, j);
+		if (!logname)
+			break;
 		col_puts(login_col, logname->str_text);
 		if (!option_terse_get())
 			col_puts(name_col, user_full_name(logname));
@@ -1307,8 +1589,6 @@ list_integrators(project_name, change_number)
 	 * clean up and go home
 	 */
 	col_close();
-	if (!pstate_data->integrator->length)
-		project_verbose(pp, "no integrators");
 	project_free(pp);
 	trace((/*{*/"}\n"));
 }
@@ -1319,55 +1599,63 @@ list_reviewers(project_name, change_number)
 	string_ty	*project_name;
 	long		change_number;
 {
-	pstate		pstate_data;
 	project_ty	*pp;
 	int		login_col = 0;
 	int		name_col = 0;
 	int		j;
 	string_ty	*line1;
+	int		left;
 
 	trace(("list_reviewers()\n{\n"/*}*/));
 	if (change_number)
-		fatal("inappropriate -Change option");
+	{
+		sub_context_ty	*scp;
+
+		scp = sub_context_new();
+		sub_var_set(scp, "Name", "%s", arglex_token_name(arglex_token_change));
+		fatal_intl(scp, i18n("inappropriate $name option"));
+		/* NOTREACHED */
+		sub_context_delete(scp);
+	}
 
 	/*
 	 * locate project data
 	 */
 	if (!project_name)
 		project_name = user_default_project();
-	else
-		project_name = str_copy(project_name);
 	pp = project_alloc(project_name);
 	str_free(project_name);
 	project_bind_existing(pp);
-
-	pstate_data = project_pstate_get(pp);
-	assert(pstate_data->reviewer);
 
 	/*
 	 * create the columns
 	 */
 	col_open((char *)0);
-	line1 = str_format("Project \"%S\"", project_name);
+	line1 = str_format("Project \"%S\"", project_name_get(pp));
 	col_title(line1->str_text, "List of Reviewers");
 	str_free(line1);
 
-	login_col = col_create(0, 15);
+	left = 0;
+	login_col = col_create(left, left + LOGIN_WIDTH);
+	left += LOGIN_WIDTH + 2;
 	col_heading(login_col, "User\n------");
+
 	if (!option_terse_get())
 	{
-		name_col = col_create(16, 0);
+		name_col = col_create(left, 0);
 		col_heading(name_col, "Full Name\n-----------");
 	}
 
 	/*
 	 * list the project's reviewers
 	 */
-	for (j = 0; j < pstate_data->reviewer->length; ++j)
+	for (j = 0; ; ++j)
 	{
 		string_ty	*logname;
 
-		logname = pstate_data->reviewer->list[j];
+		logname = project_reviewer_nth(pp, j);
+		if (!logname)
+			break;
 		col_puts(login_col, logname->str_text);
 		if (!option_terse_get())
 			col_puts(name_col, user_full_name(logname));
@@ -1378,8 +1666,6 @@ list_reviewers(project_name, change_number)
 	 * clean up and go home
 	 */
 	col_close();
-	if (!pstate_data->reviewer->length)
-		project_verbose(pp, "no reviewers");
 	project_free(pp);
 	trace((/*{*/"}\n"));
 }
@@ -1390,7 +1676,6 @@ list_project_history(project_name, change_number)
 	string_ty	*project_name;
 	long		change_number;
 {
-	pstate		pstate_data;
 	int		name_col = 0;
 	int		delta_col = 0;
 	int		date_col = 0;
@@ -1399,60 +1684,75 @@ list_project_history(project_name, change_number)
 	size_t		j, k;
 	project_ty	*pp;
 	string_ty	*line1;
+	int		left;
 
 	trace(("list_project_history()\n{\n"/*}*/));
 	if (change_number)
-		fatal("inappropriate -Change option");
+	{
+		sub_context_ty	*scp;
+
+		scp = sub_context_new();
+		sub_var_set(scp, "Name", "%s", arglex_token_name(arglex_token_change));
+		fatal_intl(scp, i18n("inappropriate $name option"));
+		/* NOTREACHED */
+		sub_context_delete(scp);
+	}
 
 	/*
 	 * locate project data
 	 */
 	if (!project_name)
 		project_name = user_default_project();
-	else
-		project_name = str_copy(project_name);
 	pp = project_alloc(project_name);
 	str_free(project_name);
 	project_bind_existing(pp);
-
-	pstate_data = project_pstate_get(pp);
 
 	/*
 	 * create the columns
 	 */
 	col_open((char *)0);
-	line1 = str_format("Project \"%S\"", project_name);
+	line1 = str_format("Project \"%S\"", project_name_get(pp));
 	col_title(line1->str_text, "History");
 	str_free(line1);
 
+	/* the delta name column is the whole page wide */
 	name_col = col_create(0, 0);
-	delta_col = col_create(0, 7);
+
+	left = 0;
+	delta_col = col_create(left, left + CHANGE_WIDTH);
+	left += CHANGE_WIDTH + 1;
 	col_heading(delta_col, "Delta\n-------");
+
 	if (!option_terse_get())
 	{
-		date_col = col_create(8, 23);
-		change_col = col_create(24, 31);
-		description_col = col_create(32, 0);
+		date_col = col_create(left, left + WHEN_WIDTH);
+		left += WHEN_WIDTH + 1;
 		col_heading(date_col, "Date and Time\n---------------");
+
+		change_col = col_create(left, left + CHANGE_WIDTH);
+		left += CHANGE_WIDTH + 1;
 		col_heading(change_col, "Change\n-------");
+
+		description_col = col_create(left, 0);
 		col_heading(description_col, "Description\n-------------");
 	}
 
 	/*
-	 * list the project's sucessful i9ntegrations
+	 * list the project's successful integrations
 	 */
-	for (j = 0; j < pstate_data->history->length; ++j)
+	for (j = 0; ; ++j)
 	{
-		pstate_history	history_data;
+		long		cn;
+		long		dn;
+		string_list_ty	name;
 
-		history_data = pstate_data->history->list[j];
+		if (!project_history_nth(pp, j, &cn, &dn, &name))
+			break;
 		if
 		(
 			!option_terse_get()
 		&&
-			history_data->name
-		&&
-			history_data->name->length
+			name.nstrings
 		)
 		{
 			col_need(4);
@@ -1460,9 +1760,9 @@ list_project_history(project_name, change_number)
 			(
 				name_col,
 				"Name%s: ",
-				(history_data->name->length==1?"":"s")
+				(name.nstrings == 1 ? "" : "s")
 			);
-			for (k = 0; k < history_data->name->length; ++k)
+			for (k = 0; k < name.nstrings; ++k)
 			{
 				if (k)
 					col_printf(name_col, ", ");
@@ -1470,19 +1770,18 @@ list_project_history(project_name, change_number)
 				(
 					name_col,
 					"\"%s\"",
-					history_data->name->list[k]
-						->str_text
+					name.string[k]->str_text
 				);
 			}
 		}
-		col_printf(delta_col, "%4ld", history_data->delta_number);
+		col_printf(delta_col, "%4ld", dn);
 		if (!option_terse_get())
 		{
 			cstate		cstate_data;
 			time_t		t;
 			change_ty	*cp;
 
-			cp = change_alloc(pp, history_data->change_number);
+			cp = change_alloc(pp, cn);
 			change_bind_existing(cp);
 			cstate_data = change_cstate_get(cp);
 			t =
@@ -1495,7 +1794,7 @@ list_project_history(project_name, change_number)
 			(
 				change_col,
 				"%4ld",
-				history_data->change_number
+				cn
 			);
 			assert(cstate_data->brief_description);
 			col_puts
@@ -1506,14 +1805,13 @@ list_project_history(project_name, change_number)
 			change_free(cp);
 		}
 		col_eoln();
+		string_list_destructor(&name);
 	}
 
 	/*
 	 * clean up and go home
 	 */
 	col_close();
-	if (!pstate_data->history->length)
-		project_verbose(pp, "no integrations");
 	project_free(pp);
 	trace((/*{*/"}\n"));
 }
@@ -1524,11 +1822,11 @@ list_version(project_name, change_number)
 	string_ty	*project_name;
 	long		change_number;
 {
-	pstate		pstate_data;
 	project_ty	*pp;
 	cstate		cstate_data;
 	change_ty	*cp;
 	user_ty		*up;
+	string_ty	*vs;
 
 	/*
 	 * locate project data
@@ -1536,8 +1834,6 @@ list_version(project_name, change_number)
 	trace(("list_version()\n{\n"/*}*/));
 	if (!project_name)
 		project_name = user_default_project();
-	else
-		project_name = str_copy(project_name);
 	pp = project_alloc(project_name);
 	str_free(project_name);
 	project_bind_existing(pp);
@@ -1555,37 +1851,45 @@ list_version(project_name, change_number)
 	cp = change_alloc(pp, change_number);
 	change_bind_existing(cp);
 
-	pstate_data = project_pstate_get(pp);
 	cstate_data = change_cstate_get(cp);
+	vs = project_version_short_get(pp);
 	if (option_terse_get())
 	{
 		if (cstate_data->state == cstate_state_being_developed)
 		{
+			/* ...punctuation? */
 			printf
 			(
-				"%ld.%ld.C%3.3ld\n",
-				pstate_data->version_major,
-				pstate_data->version_minor,
-				change_number
+				"%s.C%3.3ld\n",
+				vs->str_text,
+				magic_zero_decode(change_number)
 			);
 		}
 		else
 		{
-			printf
-			(
-				"%ld.%ld.D%3.3ld\n",
-				pstate_data->version_major,
-				pstate_data->version_minor,
-				cstate_data->delta_number
-			);
+			/* ...punctuation? */
+			printf("%s.D%3.3ld\n", vs->str_text, cstate_data->delta_number);
 		}
 	}
 	else
 	{
-		printf("version_major = %ld;\n", pstate_data->version_major);
-		printf("version_minor = %ld;\n", pstate_data->version_minor);
+		/*
+		 * a century should be enough
+		 * for a while, at least :-)
+		 */
+		int		cy[100];
+		int		ncy;
+		string_ty	*s;
+
+		printf("version = \"%s\";\n", vs->str_text);
 		if (cstate_data->state == cstate_state_being_developed)
-			printf("change_number = %ld;\n", change_number);
+		{
+			printf
+			(
+				"change_number = %ld;\n",
+				magic_zero_decode(change_number)
+			);
+		}
 		else
 		{
 			printf
@@ -1594,26 +1898,20 @@ list_version(project_name, change_number)
 				cstate_data->delta_number
 			);
 		}
-		if (pstate_data->version_previous)
+		s = project_version_previous_get(pp);
+		if (s)
+			printf("version_previous = \"%s\";\n", s->str_text);
+		change_copyright_years_get(cp, cy, SIZEOF(cy), &ncy);
+		if (ncy)
 		{
-			printf
-			(
-				"version_previous = \"%s\";\n",
-				pstate_data->version_previous->str_text
-			);
-		}
-		if (pstate_data->copyright_years)
-		{
-			pstate_copyright_years_list p;
-			size_t		j;
+			int		j;
 
-			p = pstate_data->copyright_years;
 			printf("copyright_years = [");
-			for (j = 0; j < p->length; ++j)
+			for (j = 0; j < ncy; ++j)
 			{
 				if (j)
 					printf(", ");
-				printf("%ld", p->list[j]);
+				printf("%d", cy[j]);
 			}
 			printf("];\n");
 		}
@@ -1662,6 +1960,7 @@ list_change_details(project_name, change_number)
 	cstate		cstate_data;
 	user_ty		*up;
 	string_ty	*line1;
+	int		left;
 
 	/*
 	 * locate project data
@@ -1669,8 +1968,6 @@ list_change_details(project_name, change_number)
 	trace(("list_change_details()\n{\n"/*}*/));
 	if (!project_name)
 		project_name = user_default_project();
-	else
-		project_name = str_copy(project_name);
 	pp = project_alloc(project_name);
 	str_free(project_name);
 	project_bind_existing(pp);
@@ -1697,21 +1994,31 @@ list_change_details(project_name, change_number)
 		str_format
 		(
 			"Project \"%S\", Change %ld",
-			project_name,
-			change_number
+			project_name_get(pp),
+			magic_zero_decode(change_number)
 		);
 	col_title(line1->str_text, "Change Details");
 	str_free(line1);
 
+	/* the heading columns is the whole page wide */
 	head_col = col_create(0, 0);
-	body_col = col_create(8, 0);
+
+	/* the body columns is indented */
+	body_col = col_create(INDENT_WIDTH, 0);
 	col_puts(head_col, "NAME");
 	col_eoln();
-	col_printf(body_col, "Project \"%s\"", project_name->str_text);
+	col_printf(body_col, "Project \"%s\"", project_name_get(pp)->str_text);
 	if (cstate_data->delta_number)
 		col_printf(body_col, ", Delta %ld", cstate_data->delta_number);
 	if (cstate_data->state < cstate_state_completed || option_verbose_get())
-		col_printf(body_col, ", Change %ld", change_number);
+	{
+		col_printf
+		(
+			body_col,
+			", Change %ld",
+			magic_zero_decode(change_number)
+		);
+	}
 	col_puts(body_col, ".");
 	col_eoln();
 
@@ -1759,6 +2066,79 @@ list_change_details(project_name, change_number)
 		      "This change is exempt from testing against the baseline."
 			);
 		}
+	}
+	col_eoln();
+
+	/*
+	 * show the sub-changes of a branch
+	 */
+	if (cstate_data->branch && option_verbose_get())
+	{
+		project_ty	*sub_pp;
+		int		number_col;
+		int		state_col;
+		int		description_col;
+
+		col_need(5);
+		col_puts(head_col, "BRANCH CONTENTS");
+		col_eoln();
+
+		/*
+		 * create the columns
+		 */
+		left = INDENT_WIDTH;
+		number_col = col_create(left, left + CHANGE_WIDTH);
+		left += CHANGE_WIDTH + 1;
+		col_heading(number_col, "Change\n-------");
+
+		state_col = col_create(left, left + STATE_WIDTH);
+		left += STATE_WIDTH + 1;
+		col_heading(state_col, "State\n-------");
+
+		description_col = col_create(left, 0);
+		col_heading(description_col, "Description\n-------------");
+
+		/*
+		 * list the sub changes
+		 */
+		sub_pp = project_bind_branch(pp, cp);
+		for (j = 0; ; ++j)
+		{
+			long		sub_cn;
+			change_ty	*sub_cp;
+			cstate		sub_cstate_data;
+
+			if (!project_change_nth(sub_pp, j, &sub_cn))
+				break;
+			sub_cp = change_alloc(sub_pp, sub_cn);
+			change_bind_existing(sub_cp);
+
+			sub_cstate_data = change_cstate_get(sub_cp);
+			col_printf
+			(
+				number_col,
+				"%4ld",
+				magic_zero_decode(sub_cn)
+			);
+			col_puts
+			(
+				state_col,
+				cstate_state_ename(sub_cstate_data->state)
+			);
+			if (cstate_data->brief_description)
+			{
+				col_puts
+				(
+					description_col,
+					sub_cstate_data->brief_description->str_text
+				);
+			}
+			col_eoln();
+			change_free(sub_cp);
+		}
+		col_heading(number_col, (char *)0);
+		col_heading(state_col, (char *)0);
+		col_heading(description_col, (char *)0);
 	}
 	col_eoln();
 
@@ -1814,17 +2194,29 @@ list_change_details(project_name, change_number)
 		int	test_reg_col;
 
 		col_need(5);
-		arch_col = col_create(8, 16);
-		host_col = col_create(17, 25);
-		build_col = col_create(26, 35);
-		test_col = col_create(36, 45);
-		test_bl_col = col_create(46, 55);
-		test_reg_col = col_create(56, 65);
+		left = INDENT_WIDTH;
+		arch_col = col_create(left, left + ARCH_WIDTH);
+		left += ARCH_WIDTH + 1;
 		col_heading(arch_col, "arch.\n--------");
+
+		host_col = col_create(left, left + HOST_WIDTH);
+		left += HOST_WIDTH + 1;
 		col_heading(host_col, "host\n--------");
+
+		build_col = col_create(left, left + TIME_WIDTH);
+		left += TIME_WIDTH + 1;
 		col_heading(build_col, "aeb\n---------");
+
+		test_col = col_create(left, left + TIME_WIDTH);
+		left += TIME_WIDTH + 1;
 		col_heading(test_col, "aet\n---------");
+
+		test_bl_col = col_create(left, left + TIME_WIDTH);
+		left += TIME_WIDTH + 1;
 		col_heading(test_bl_col, "aet -bl\n---------");
+
+		test_reg_col = col_create(left, left + TIME_WIDTH);
+		left += TIME_WIDTH + 1;
 		col_heading(test_reg_col, "aet -reg\n---------");
 
 		for (j = 0; j < cstate_data->architecture->length; ++j)
@@ -1914,12 +2306,7 @@ list_change_details(project_name, change_number)
 	/*
 	 * state
 	 */
-	if
-	(
-		option_verbose_get()
-	&&
-		cstate_data->state != cstate_state_completed
-	)
+	if (cstate_data->state != cstate_state_completed)
 	{
 		col_need(5);
 		col_puts(head_col, "STATE");
@@ -1939,26 +2326,35 @@ list_change_details(project_name, change_number)
 	col_need(5);
 	col_puts(head_col, "FILES");
 	col_eoln();
-	if (cstate_data->src->length)
+	if (change_file_nth(cp, (size_t)0))
 	{
 		int	usage_col;
 		int	action_col;
 		int	edit_col;
 		int	file_name_col;
 
-		usage_col = col_create(8, 15);
-		action_col = col_create(16, 23);
-		edit_col = col_create(24, 31);
-		file_name_col = col_create(32, 0);
+		left = INDENT_WIDTH;
+		usage_col = col_create(left, left + USAGE_WIDTH);
+		left += USAGE_WIDTH + 1;
 		col_heading(usage_col, "Type\n-------");
-		col_heading(action_col, "Action\n-------");
+
+		action_col = col_create(left, left + ACTION_WIDTH);
+		left += ACTION_WIDTH + 1;
+		col_heading(action_col, "Action\n--------");
+
+		edit_col = col_create(left, left + EDIT_WIDTH);
+		left += EDIT_WIDTH + 1;
 		col_heading(edit_col, "Edit\n-------");
+
+		file_name_col = col_create(left, 0);
 		col_heading(file_name_col, "File Name\n-----------");
-		for (j = 0; j < cstate_data->src->length; ++j)
+		for (j = 0; ; ++j)
 		{
-			cstate_src	src_data;
+			fstate_src	src_data;
 	
-			src_data = cstate_data->src->list[j];
+			src_data = change_file_nth(cp, j);
+			if (!src_data)
+				break;
 			assert(src_data->file_name);
 			col_puts(usage_col, file_usage_ename(src_data->usage));
 			col_puts
@@ -1966,41 +2362,28 @@ list_change_details(project_name, change_number)
 				action_col,
 				file_action_ename(src_data->action)
 			);
-			if (src_data->edit_number)
+			format_edit_number(edit_col, src_data);
+			if
+			(
+			      cstate_data->state == cstate_state_being_developed
+			&&
+				!change_file_up_to_date(pp, src_data)
+			)
 			{
-				pstate_src	psrc_data;
-	
-				col_puts
-				(
-					edit_col,
-					src_data->edit_number->str_text
-				);
-				if
-				(
-					cstate_data->state
-				==
-					cstate_state_being_developed
-				)
-					psrc_data =
-						project_src_find
-						(
-							pp,
-						     src_data->file_name
-						);
-				else
-					psrc_data = 0;
-				if
-				(
-					psrc_data
-				&&
-					psrc_data->edit_number
-				&&
-					!str_equal
+				fstate_src	psrc_data;
+
+				/*
+				 * The current head revision of the
+				 * branch may not equal the version
+				 * ``originally'' copied.
+				 */
+				psrc_data =
+					project_file_find
 					(
-						src_data->edit_number,
-						psrc_data->edit_number
-					)
-				)
+						pp,
+						src_data->file_name
+					);
+				if (psrc_data && psrc_data->edit_number)
 				{
 					col_printf
 					(
@@ -2009,6 +2392,19 @@ list_change_details(project_name, change_number)
 						psrc_data->edit_number->str_text
 					);
 				}
+			}
+			if (src_data->edit_number_origin_new)
+			{
+				/*
+				 * The ``cross branch merge'' version.
+				 */
+				col_bol(edit_col);
+				col_printf
+				(
+					edit_col,
+					"{cross %4s}",
+				      src_data->edit_number_origin_new->str_text
+				);
 			}
 			col_puts(file_name_col, src_data->file_name->str_text);
 			if (src_data->move)
@@ -2051,13 +2447,20 @@ list_change_details(project_name, change_number)
 		int	who_col;
 		int	why_col;
 
-		what_col = col_create(8, 23);
-		when_col = col_create(24, 39);
-		who_col = col_create(40, 48);
-		why_col = col_create(49, 0);
+		left = INDENT_WIDTH;
+		what_col = col_create(left, left + WHAT_WIDTH);
+		left += WHAT_WIDTH + 1;
 		col_heading(what_col, "What\n------");
+
+		when_col = col_create(left, left + WHEN_WIDTH);
+		left += WHEN_WIDTH + 1;
 		col_heading(when_col, "When\n------");
+
+		who_col = col_create(left, left + WHO_WIDTH);
+		left += WHO_WIDTH + 1;
 		col_heading(who_col, "Who\n-----");
+
+		why_col = col_create(left, 0);
 		col_heading(why_col, "Comment\n---------");
 		for (j = 0; j < cstate_data->history->length; ++j)
 		{
@@ -2163,35 +2566,38 @@ list_user_changes(project_name, change_number)
 	int		state_col;
 	int		description_col;
 	string_ty	*s;
-	wlist		name;
+	string_list_ty	name;
 	long		j;
+	int		left;
 
 	trace(("list_user_changes()\n{\n"/*}*/));
 	if (project_name)
-		fatal("inappropriate -Project option");
+	{
+		sub_context_ty	*scp;
+
+		scp = sub_context_new();
+		sub_var_set(scp, "Name", "%s", arglex_token_name(arglex_token_project));
+		fatal_intl(scp, i18n("inappropriate $name option"));
+		/* NOTREACHED */
+		sub_context_delete(scp);
+	}
 	if (change_number)
-		fatal("inappropriate -Change option");
+	{
+		sub_context_ty	*scp;
+
+		scp = sub_context_new();
+		sub_var_set(scp, "Name", "%s", arglex_token_name(arglex_token_change));
+		fatal_intl(scp, i18n("inappropriate $name option"));
+		/* NOTREACHED */
+		sub_context_delete(scp);
+	}
 
 	/*
 	 * get the list of projects
 	 */
-	gonzo_project_list(&name);
-	if (!name.wl_nwords)
-	{
-		verbose("there are no projects");
+	project_list_get(&name);
+	if (!name.nstrings)
 		goto done;
-	}
-
-	/*
-	 * sort the list so the listing is pretty
-	 */
-	qsort
-	(
-		name.wl_word,
-		name.wl_nwords,
-		sizeof(name.wl_word[0]),
-		name_cmp
-	);
 
 	/*
 	 * open listing
@@ -2206,20 +2612,27 @@ list_user_changes(project_name, change_number)
 	/*
 	 * create the columns
 	 */
-	project_col = col_create(0, 10);
-	change_col = col_create(11, 17);
-	state_col = col_create(18, 28);
-	description_col = col_create(29, 0);
+	left = 0;
+	project_col = col_create(left, left + PROJECT_WIDTH);
+	left += PROJECT_WIDTH + 1;
 	col_heading(project_col, "Project\n----------");
+
+	change_col = col_create(left, left + CHANGE_WIDTH);
+	left += CHANGE_WIDTH + 1;
 	col_heading(change_col, "Change\n------");
+
+	state_col = col_create(left, left + STATE_WIDTH);
+	left += STATE_WIDTH + 1;
 	col_heading(state_col, "State\n----------");
+
+	description_col = col_create(left, 0);
 	col_heading(description_col, "Description\n-------------");
 
 	/*
 	 * for each project, see if the current user
 	 * is working on any of them.
 	 */
-	for (j = 0; j < name.wl_nwords; ++j)
+	for (j = 0; j < name.nstrings; ++j)
 	{
 		project_ty	*pp;
 		int		err;
@@ -2229,11 +2642,9 @@ list_user_changes(project_name, change_number)
 		 * locate the project,
 		 * and make sure we are allowed to look at it
 		 */
-		pp = project_alloc(name.wl_word[j]);
+		pp = project_alloc(name.string[j]);
 		project_bind_existing(pp);
-		os_become_orig();
-		err = os_readable(project_pstate_path_get(pp));
-		os_become_undo();
+		err = project_is_readable(pp);
 		if (err)
 		{
 			project_free(pp);
@@ -2267,7 +2678,12 @@ list_user_changes(project_name, change_number)
 			 * emit the info
 			 */
 			col_puts(project_col, project_name_get(pp)->str_text);
-			col_printf(change_col, "%4ld", change_number);
+			col_printf
+			(
+				change_col,
+				"%4ld",
+				magic_zero_decode(change_number)
+			);
 			cstate_data = change_cstate_get(cp);
 			col_puts
 			(
@@ -2312,7 +2728,7 @@ static int list_locks_project_col;
 static int list_locks_change_col;
 static int list_locks_address_col;
 static int list_locks_process_col;
-static wlist list_locks_pnames;
+static string_list_ty list_locks_pnames;
 static long list_locks_count;
 
 
@@ -2327,8 +2743,11 @@ list_locks_callback(found)
 	char		*project_str;
 	long		change_number;
 	long		j;
+	static itab_ty	*user_name_by_uid;
+	string_ty	*s;
 
 	list_locks_count++;
+	name_str = "unknown";
 	switch (found->name)
 	{
 	case lock_walk_name_master:
@@ -2351,15 +2770,19 @@ list_locks_callback(found)
 		name_str = "user";
 		break;
 
-	case lock_walk_name_build:
-		name_str = "build";
+	case lock_walk_name_baseline:
+		name_str = "baseline";
 		break;
 
-	default:
-		name_str = "unknown";
+	case lock_walk_name_history:
+		name_str = "history";
+		break;
+
+	case lock_walk_name_unknown:
 		break;
 	}
 
+	type_str = "unknown";
 	switch (found->type)
 	{
 	case lock_walk_type_shared:
@@ -2370,8 +2793,7 @@ list_locks_callback(found)
 		type_str = "exclusive";
 		break;
 
-	default:
-		type_str = "unknown";
+	case lock_walk_type_unknown:
 		break;
 	}
 
@@ -2380,12 +2802,11 @@ list_locks_callback(found)
 	switch (found->name)
 	{
 	case lock_walk_name_pstate:
-	case lock_walk_name_build:
-		for (j = 0; j < list_locks_pnames.wl_nwords; ++j)
+	case lock_walk_name_baseline:
+	case lock_walk_name_history:
+		for (j = 0; j < list_locks_pnames.nstrings; ++j)
 		{
-			string_ty *s;
-
-			s = list_locks_pnames.wl_word[j];
+			s = list_locks_pnames.string[j];
 			if ((s->str_hash & 0xFFFF) == found->subset)
 			{
 				project_str = s->str_text;
@@ -2397,9 +2818,8 @@ list_locks_callback(found)
 		break;
 
 	case lock_walk_name_cstate:
-		for (j = 0; j < list_locks_pnames.wl_nwords; ++j)
+		for (j = 0; j < list_locks_pnames.nstrings; ++j)
 		{
-			string_ty *s;
 			long	cn;
 
 			/*
@@ -2407,7 +2827,7 @@ list_locks_callback(found)
 			 * number is added to the project name hash.
 			 *
 			 * Work out the change number,
-			 * and the assume it can be more than,
+			 * and the assume it can't be more than,
 			 * say, 5000.  We could do better by looking
 			 * in each project, but what the hell.
 			 *
@@ -2417,7 +2837,7 @@ list_locks_callback(found)
 			 * Loop and find the smallest change number.
 			 * Use that as a probable "best" fit.
 			 */
-			s = list_locks_pnames.wl_word[j];
+			s = list_locks_pnames.string[j];
 			cn = (found->subset - s->str_hash) & 0xFFFF;
 			if
 			(
@@ -2436,7 +2856,33 @@ list_locks_callback(found)
 			project_str = "unknown";
 		break;
 
-	default:
+	case lock_walk_name_ustate:
+		/* This is the UID */
+		change_number = found->subset;
+
+		if (!user_name_by_uid)
+		{
+			user_name_by_uid = itab_alloc(100);
+			setpwent();
+			for (;;)
+			{
+				struct passwd	*pw;
+
+				pw = getpwent();
+				if (!pw)
+					break;
+				s = str_from_c(pw->pw_name);
+				itab_assign(user_name_by_uid, pw->pw_uid, s);
+			}
+			endpwent();
+		}
+		s = itab_query(user_name_by_uid, change_number);
+		project_str = s ? s->str_text : "unknown";
+		break;
+
+	case lock_walk_name_master:
+	case lock_walk_name_gstate:
+	case lock_walk_name_unknown:
 		break;
 	}
 
@@ -2448,7 +2894,14 @@ list_locks_callback(found)
 	if (project_str)
 		col_printf(list_locks_project_col, "%s", project_str);
 	if (change_number)
-		col_printf(list_locks_change_col, "%4ld", change_number);
+	{
+		col_printf
+		(
+			list_locks_change_col,
+			"%4ld",
+			magic_zero_decode(change_number)
+		);
+	}
 	col_printf(list_locks_address_col, "%8.8lX", found->address);
 	col_printf(list_locks_process_col, "%5d", found->pid);
 	if (!found->pid_is_local)
@@ -2467,14 +2920,30 @@ list_locks(project_name, change_number)
 	 */
 	trace(("list_locks()\n{\n"/*}*/));
 	if (project_name)
-		fatal("inappropriate -Project option");
+	{
+		sub_context_ty	*scp;
+
+		scp = sub_context_new();
+		sub_var_set(scp, "Name", "%s", arglex_token_name(arglex_token_project));
+		fatal_intl(scp, i18n("inappropriate $name option"));
+		/* NOTREACHED */
+		sub_context_delete(scp);
+	}
 	if (change_number)
-		fatal("inappropriate -Change option");
+	{
+		sub_context_ty	*scp;
+
+		scp = sub_context_new();
+		sub_var_set(scp, "Name", "%s", arglex_token_name(arglex_token_change));
+		fatal_intl(scp, i18n("inappropriate $name option"));
+		/* NOTREACHED */
+		sub_context_delete(scp);
+	}
 
 	/*
 	 * get the list of projects
 	 */
-	gonzo_project_list(&list_locks_pnames);
+	project_list_get(&list_locks_pnames);
 
 	/*
 	 * open the columns
@@ -2503,7 +2972,7 @@ list_locks(project_name, change_number)
 	 * list the locks found
 	 */
 	lock_walk(list_locks_callback);
-	wl_free(&list_locks_pnames);
+	string_list_destructor(&list_locks_pnames);
 	if (list_locks_count == 0)
 	{
 		int info = col_create(4, 0);
@@ -2525,9 +2994,25 @@ list_default_project(project_name, change_number)
 	 */
 	trace(("list_default_project()\n{\n"/*}*/));
 	if (project_name)
-		fatal("inappropriate -Project option");
+	{
+		sub_context_ty	*scp;
+
+		scp = sub_context_new();
+		sub_var_set(scp, "Name", "%s", arglex_token_name(arglex_token_project));
+		fatal_intl(scp, i18n("inappropriate $name option"));
+		/* NOTREACHED */
+		sub_context_delete(scp);
+	}
 	if (change_number)
-		fatal("inappropriate -Change option");
+	{
+		sub_context_ty	*scp;
+
+		scp = sub_context_new();
+		sub_var_set(scp, "Name", "%s", arglex_token_name(arglex_token_change));
+		fatal_intl(scp, i18n("inappropriate $name option"));
+		/* NOTREACHED */
+		sub_context_delete(scp);
+	}
 
 	/*
 	 * Find default project name;
@@ -2556,15 +3041,21 @@ list_default_change(project_name, change_number)
 	 */
 	trace(("list_default_change()\n{\n"/*}*/));
 	if (change_number)
-		fatal("inappropriate -Change option");
+	{
+		sub_context_ty	*scp;
+
+		scp = sub_context_new();
+		sub_var_set(scp, "Name", "%s", arglex_token_name(arglex_token_change));
+		fatal_intl(scp, i18n("inappropriate $name option"));
+		/* NOTREACHED */
+		sub_context_delete(scp);
+	}
 
 	/*
 	 * resolve the project name
 	 */
 	if (!project_name)
 		project_name = user_default_project();
-	else
-		project_name = str_copy(project_name);
 	pp = project_alloc(project_name);
 	str_free(project_name);
 	project_bind_existing(pp);
@@ -2583,7 +3074,7 @@ list_default_change(project_name, change_number)
 	/*
 	 * print it out
 	 */
-	printf("%ld\n", change_number);
+	printf("%ld\n", magic_zero_decode(change_number));
 
 	/*
 	 * clean up and go home
@@ -2601,7 +3092,15 @@ list_outstanding_changes(project_name, change_number)
 {
 	trace(("list_outstanding_changes()\n{\n"/*}*/));
 	if (change_number)
-		fatal("inappropriate -Change option");
+	{
+		sub_context_ty	*scp;
+
+		scp = sub_context_new();
+		sub_var_set(scp, "Name", "%s", arglex_token_name(arglex_token_change));
+		fatal_intl(scp, i18n("inappropriate $name option"));
+		/* NOTREACHED */
+		sub_context_delete(scp);
+	}
 	list_changes_in_state_mask
 	(
 		project_name,
@@ -2616,66 +3115,81 @@ list_outstanding_changes_all(project_name, change_number)
 	string_ty	*project_name;
 	long		change_number;
 {
-	pstate		pstate_data;
 	int		project_col = 0;
 	int		number_col = 0;
 	int		state_col = 0;
 	int		description_col = 0;
 	int		j, k;
-	wlist		name;
+	string_list_ty	name;
+	int		left;
 
 	trace(("list_outstanding_changes_all()\n{\n"/*}*/));
 	if (project_name)
-		fatal("inappropriate -Project option");
+	{
+		sub_context_ty	*scp;
+
+		scp = sub_context_new();
+		sub_var_set(scp, "Name", "%s", arglex_token_name(arglex_token_project));
+		fatal_intl(scp, i18n("inappropriate $name option"));
+		/* NOTREACHED */
+		sub_context_delete(scp);
+	}
 	if (change_number)
-		fatal("inappropriate -Change option");
+	{
+		sub_context_ty	*scp;
+
+		scp = sub_context_new();
+		sub_var_set(scp, "Name", "%s", arglex_token_name(arglex_token_change));
+		fatal_intl(scp, i18n("inappropriate $name option"));
+		/* NOTREACHED */
+		sub_context_delete(scp);
+	}
 
 	/*
 	 * list the projects
 	 */
-	gonzo_project_list(&name);
-	qsort
-	(
-		name.wl_word,
-		name.wl_nwords,
-		sizeof(name.wl_word[0]),
-		name_cmp
-	);
+	project_list_get(&name);
 
 	/*
 	 * create the columns
 	 */
 	col_open((char *)0);
 	col_title("List of Outstanding Changes", "for all projects");
-	project_col = col_create(0, 15);
+
+	left = 0;
+	project_col = col_create(left, left + PROJECT_WIDTH);
+	left += PROJECT_WIDTH + 1;
 	col_heading(project_col, "Project\n---------");
-	number_col = col_create(16, 23);
+
+	number_col = col_create(left, left + CHANGE_WIDTH);
+	left += CHANGE_WIDTH + 1;
 	col_heading(number_col, "Change\n------");
+
 	if (!option_terse_get())
 	{
-		state_col = col_create(24, 35);
+		state_col = col_create(left, left + STATE_WIDTH);
+		left += STATE_WIDTH + 1;
 		col_heading(state_col, "State\n-------");
-		description_col = col_create(36, 0);
+
+		description_col = col_create(left, 0);
 		col_heading(description_col, "Description\n-------------");
 	}
 
 	/*
 	 * scan each project
 	 */
-	for (j = 0; j < name.wl_nwords; ++j)
+	for (j = 0; j < name.nstrings; ++j)
 	{
 		project_ty	*pp;
 		int		err;
 
-		pp = project_alloc(name.wl_word[j]);
+		pp = project_alloc(name.string[j]);
 		project_bind_existing(pp);
 
 		/*
 		 * make sure we have permission
 		 */
-		os_become_orig();
-		err = os_readable(project_pstate_path_get(pp));
-		os_become_undo();
+		err = project_is_readable(pp);
 		if (err)
 		{
 			project_free(pp);
@@ -2685,8 +3199,7 @@ list_outstanding_changes_all(project_name, change_number)
 		/*
 		 * list the project's changes
 		 */
-		pstate_data = project_pstate_get(pp);
-		for (k = 0; k < pstate_data->change->length; ++k)
+		for (k = 0; ; ++k)
 		{
 			cstate		cstate_data;
 			change_ty	*cp;
@@ -2694,7 +3207,8 @@ list_outstanding_changes_all(project_name, change_number)
 			/*
 			 * make sure the change is not completed
 			 */
-			change_number = pstate_data->change->list[k];
+			if (!project_change_nth(pp, k, &change_number))
+				break;
 			cp = change_alloc(pp, change_number);
 			change_bind_existing(cp);
 			cstate_data = change_cstate_get(cp);
@@ -2708,7 +3222,12 @@ list_outstanding_changes_all(project_name, change_number)
 			 * print the details
 			 */
 			col_puts(project_col, project_name_get(pp)->str_text);
-			col_printf(number_col, "%4ld", change_number);
+			col_printf
+			(
+				number_col,
+				"%4ld",
+				magic_zero_decode(change_number)
+			);
 			if (!option_terse_get())
 			{
 				col_puts
@@ -2716,6 +3235,34 @@ list_outstanding_changes_all(project_name, change_number)
 					state_col,
 					cstate_state_ename(cstate_data->state)
 				);
+				if
+				(
+					option_verbose_get()
+				&&
+			      cstate_data->state == cstate_state_being_developed
+				)
+				{
+					col_bol(state_col);
+					col_puts
+					(
+						state_col,
+					     change_developer_name(cp)->str_text
+					);
+				}
+				if
+				(
+					option_verbose_get()
+				&&
+			     cstate_data->state == cstate_state_being_integrated
+				)
+				{
+					col_bol(state_col);
+					col_puts
+					(
+						state_col,
+					    change_integrator_name(cp)->str_text
+					);
+				}
 				if (cstate_data->brief_description)
 				{
 					col_puts
@@ -2726,6 +3273,11 @@ list_outstanding_changes_all(project_name, change_number)
 				}
 			}
 			col_eoln();
+
+			/*
+			 * At some point, will need to recurse
+			 * if it is a branch and not a leaf.
+			 */
 			change_free(cp);
 		}
 		project_free(pp);

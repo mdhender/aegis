@@ -1,6 +1,6 @@
 /*
  *	aegis - project change supervisor
- *	Copyright (C) 1991, 1992, 1993, 1994, 1995 Peter Miller;
+ *	Copyright (C) 1991, 1992, 1993, 1994, 1995, 1997 Peter Miller;
  *	All rights reserved.
  *
  *	This program is free software; you can redistribute it and/or modify
@@ -15,7 +15,7 @@
  *
  *	You should have received a copy of the GNU General Public License
  *	along with this program; if not, write to the Free Software
- *	Foundation, Inc., 675 Mass Ave, Cambridge, MA 02139, USA.
+ *	Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111, USA.
  *
  * MANIFEST: operating system start-up point
  */
@@ -26,8 +26,8 @@
 #include <arglex.h>
 #include <error.h>
 #include <lex.h>
-#include <option.h>
 #include <parse.h>
+#include <progname.h>
 #include <str.h>
 #include <trace.h>
 
@@ -39,7 +39,7 @@ usage()
 {
 	char	*progname;
 
-	progname = option_progname_get();
+	progname = progname_get();
 	fprintf
 	(
 		stderr,
@@ -110,7 +110,7 @@ help()
 "",
 "COPYRIGHT",
 "	The %s program is Copyright (C) 1990, 1991, 1992, 1993,",
-"	1994 Peter Miller.  All rights reserved.",
+"	1994, 1995, 1997 Peter Miller;  All rights reserved.",
 "",
 "	The %s program comes with ABSOLUTELY NO WARRANTY; for",
 "	details use the 'aegis -VERSion Warranty' command.  This",
@@ -119,20 +119,22 @@ help()
 "	-VERSion Redistribution' command.",
 "",
 "AUTHOR",
-"	Peter Miller   UUCP     uunet!munnari!agso.gov.au!pmiller",
-"	/\\/\\*          Internet pmiller@agso.gov.au",
+"	Peter Miller   E-Mail: millerp@canb.auug.org.au",
+"	/\\/\\*             WWW: http://www.canb.auug.org.au/~millerp/",
 		0
 	};
 
 	char	**cpp;
 	char	*progname;
 
-	progname = option_progname_get();
+	trace(("help()\n{\n"/*}*/));
+	progname = progname_get();
 	for (cpp = text; *cpp; ++cpp)
 	{
 		printf(*cpp, progname);
 		printf("\n");
 	}
+	trace((/*{*/"}\n"));
 }
 
 
@@ -177,7 +179,7 @@ main(argc, argv)
 		switch (arglex_token)
 		{
 		default:
-			error
+			error_raw
 			(
 				"misplaced \"%s\" command line argument",
 				arglex_value.alv_string
@@ -198,7 +200,7 @@ main(argc, argv)
 				if (!filename[j])
 					break;
 			if (j >= SIZEOF(filename))
-				fatal("too many file names specified");
+				fatal_raw("too many file names specified");
 			filename[j] = arglex_value.alv_string;
 			break;
 #ifdef DEBUG
@@ -212,7 +214,7 @@ main(argc, argv)
 	}
 	for (j = 0; j < SIZEOF(filename); ++j)
 		if (!filename[j])
-			fatal("too few file names specified");
+			fatal_raw("too few file names specified");
 
 	parse(filename[0], filename[1], filename[2]);
 	exit(0);

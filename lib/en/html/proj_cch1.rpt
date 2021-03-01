@@ -1,0 +1,215 @@
+/*
+ *	aegis - project change supervisor
+ *	Copyright (C) 1998 Peter Miller;
+ *	All rights reserved.
+ *
+ *	This program is free software; you can redistribute it and/or modify
+ *	it under the terms of the GNU General Public License as published by
+ *	the Free Software Foundation; either version 2 of the License, or
+ *	(at your option) any later version.
+ *
+ *	This program is distributed in the hope that it will be useful,
+ *	but WITHOUT ANY WARRANTY; without even the implied warranty of
+ *	MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ *	GNU General Public License for more details.
+ *
+ *	You should have received a copy of the GNU General Public License
+ *	along with this program; if not, write to the Free Software
+ *	Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111, USA.
+ *
+ * MANIFEST: report change causes over years
+ */
+
+auto ps, cs;
+ps = project[project_name()].state;
+auto ph, when, n, max, href;
+
+auto script_name;
+script_name = getenv("SCRIPT_NAME");
+if (script_name == "")
+	script_name = "http://localhost/cgi-bin/aegis.cgi";
+
+auto cmap;
+cmap =
+{
+	chain			= "255+0+0";
+	internal_bug		= "255+255+0";
+	internal_enhancement	= "0+255+0";
+	internal_improvement	= "0+255+255";
+	external_bug		= "192+192+0";
+	external_enhancement	= "0+192+0";
+	external_improvement	= "0+192+192";
+};
+
+columns({width = 1000;});
+print("Content-Type: text/html");
+print("");
+print("<html><head><title>");
+print("Project Change Cause Histogram");
+print("</title><head><body><h1><center>");
+print("Project ``" ## project_name() ## "'',<br>");
+print("Change Cause Histogram");
+print("</center></h1>");
+
+auto earliest_year, latest_year;
+earliest_year = 0;
+latest_year = 0;
+auto bucket, year;
+bucket = {};
+for (ph in ps.branch.history)
+{
+	cs = ps.branch.change[ph.change_number];
+	when = cs.history[count(cs.history) - 1].when;
+	year = 0 + strftime("%Y", when);
+	if (typeof(bucket[year]) == "nul")
+		bucket[year] = {};
+	bucket[year][cs.cause]++;
+	bucket[year].Total++;
+	if (earliest_year == 0 || earliest_year > year)
+		earliest_year = year;
+	if (latest_year < year)
+		latest_year = year;
+}
+
+max = 1;
+for (year in keys(bucket))
+{
+	n = 0 + bucket[year].Total;
+	if (n > max)
+		max = n;
+}
+max = 400. / max;
+
+auto clr;
+print("<center><table>");
+print("<tr><th>Year</th><th>Count</th></tr>");
+for (year = earliest_year; year <= latest_year; ++year)
+{
+	n = 0 + bucket[year].Total;
+	print("<tr><td valign=top align=right>");
+	if (n > 0)
+	{
+		href = script_name ## "?file@proj_cch2";
+		href ##= "+project@" ## project_name();
+		href ##=  "+" ## year;
+		print("<a href=\"" ## href ## "\">");
+	}
+	print(year);
+	if (n > 0)
+		print("</a>");
+	print("</td><td valign=top align=right>");
+	print(n);
+	print("</td><td valign=top>");
+	auto cause;
+	for (cause in [chain,
+		internal_bug, internal_enhancement, internal_improvement,
+		external_bug, external_enhancement, external_improvement])
+	{
+		n = 0 + bucket[year][cause];
+		if (n > 0)
+		{
+			clr = cmap[cause];
+			if (clr == "")
+				clr = "255+0+255";
+			n = round(n * max);
+			if (n < 3)
+				n = 3;
+			href = script_name ## "?file@rect+" ## n ## "+12";
+			href ##= "+color+" ## clr;
+			print("<img src=\"" ## href ## "\" width="##n##" height=12>");
+		}
+	}
+	print("</td></tr>");
+}
+print("</table></center>");
+print("<hr>");
+
+print("<h2><center>Legend</center></h2>");
+print("This table associates each color in the above graph with");
+print("a change cause.  A brief description of each cause is");
+print("also given.");
+print("<center><table>");
+print("<tr><th>Color</th><th>Cause</th><th>Description</th></tr>");
+
+clr = cmap[chain];
+href = script_name ## "?file@rect+50+12+color+" ## clr;
+print("<tr><td valign=top>");
+print("<img src=\""##href##"\" width=50 height=12>");
+print("</td><td valign=top align=center>");
+print("chain");
+print("</td><td valign=top>");
+print("This cause is used for bugs introduced by previous changes.");
+print("This is a special case of the <i>internal_bug</i> cause.");
+print("</td></tr>");
+
+clr = cmap[internal_bug];
+href = script_name ## "?file@rect+50+12+color+" ## clr;
+print("<tr><td valign=top>");
+print("<img src=\""##href##"\" width=50 height=12>");
+print("</td><td valign=top align=center>");
+print("internal_bug");
+print("</td><td valign=top>");
+print("This cause is used for bugs found by the development team, or by");
+print("the development organization.");
+print("</td></tr>");
+
+clr = cmap[internal_enhancement];
+href = script_name ## "?file@rect+50+12+color+" ## clr;
+print("<tr><td valign=top>");
+print("<img src=\""##href##"\" width=50 height=12>");
+print("</td><td valign=top align=center>");
+print("internal_enhancement");
+print("</td><td valign=top>");
+print("This cause is used for new functionality requested by the");
+print("development team, or by the development organization.");
+print("</td></tr>");
+
+clr = cmap[internal_improvement];
+href = script_name ## "?file@rect+50+12+color+" ## clr;
+print("<tr><td valign=top>");
+print("<img src=\""##href##"\" width=50 height=12>");
+print("</td><td valign=top align=center>");
+print("internal_improvement");
+print("</td><td valign=top>");
+print("This cause is used for improvement to existing functionality");
+print("(e.g. performance) requested by the development team, or by the");
+print("development organization.");
+print("</td></tr>");
+
+clr = cmap[external_bug];
+href = script_name ## "?file@rect+50+12+color+" ## clr;
+print("<tr><td valign=top>");
+print("<img src=\""##href##"\" width=50 height=12>");
+print("</td><td valign=top align=center>");
+print("external_bug");
+print("</td><td valign=top>");
+print("This cause is used for bugs found by the customer, or by a source");
+print("outside the development organization.");
+print("</td></tr>");
+
+clr = cmap[external_enhancement];
+href = script_name ## "?file@rect+50+12+color+" ## clr;
+print("<tr><td valign=top>");
+print("<img src=\""##href##"\" width=50 height=12>");
+print("</td><td valign=top align=center>");
+print("external_enhancement");
+print("</td><td valign=top>");
+print("This cause is used for new functionality requested by the customer,");
+print("or by a source outside the development organization.");
+print("</td></tr>");
+
+clr = cmap[external_improvement];
+href = script_name ## "?file@rect+50+12+color+" ## clr;
+print("<tr><td valign=top>");
+print("<img src=\""##href##"\" width=50 height=12>");
+print("</td><td valign=top align=center>");
+print("external_improvement");
+print("</td><td valign=top>");
+print("This cause is used for improvement to existing functionality");
+print("(e.g. performance) requested by the customer, or a source outside");
+print("the development development organization.");
+print("</td></tr>");
+
+print("</table></center><hr>");
+print("This page was generated " ## now() ## ".");
+print("</body></html>");

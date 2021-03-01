@@ -1,6 +1,6 @@
 /*
  *	aegis - project change supervisor
- *	Copyright (C) 1991, 1992, 1993, 1994 Peter Miller.
+ *	Copyright (C) 1991, 1992, 1993, 1994, 1995, 1996, 1998 Peter Miller;
  *	All rights reserved.
  *
  *	This program is free software; you can redistribute it and/or modify
@@ -15,7 +15,7 @@
  *
  *	You should have received a copy of the GNU General Public License
  *	along with this program; if not, write to the Free Software
- *	Foundation, Inc., 675 Mass Ave, Cambridge, MA 02139, USA.
+ *	Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111, USA.
  *
  * MANIFEST: instructions to aegis, per-project configuration
  */
@@ -25,8 +25,8 @@
  * mandatory
  */
 build_command =
-	"cook -b ${source aux/Howto.cook} project=$project \
-change=$change version=$version arch=$uname -nl -st";
+	"cook -b ${source etc/Howto.cook} project=$project \
+change=$change version=$version arch=$uname -nl -st search_path=$search_path";
 
 /*
  * When do -Integrate_Begin, link the baseline to the integration directory,
@@ -42,22 +42,24 @@ link_integration_directory = true;
  * always executed as the project owner
  */
 history_create_command =
-	"fhist ${basename $history} -create -i $input -p ${dirname $history} -r";
+	"fhist ${quote ${basename $history}} -cr -cu -i ${quote $input} \
+-p ${quote ${dirname $history}} -r";
 
 /*
  * get a file from history
  * may be executed by developers
  */
 history_get_command =
-	"fhist ${basename $history} -e '$edit' -o $output \
--p ${dirname $history} -v 0";
+	"fhist ${quote ${basename $history}} -e ${quote $edit} \
+-o ${quote $output} -p ${quote ${dirname $history}} -v 0";
 
 /*
  * add a new change to the history
  * always executed as the project owner
  */
 history_put_command =
-	"fhist ${basename $history} -cu -i $input -p ${dirname $history} -r";
+	"fhist ${quote ${basename $history}} -cr -cu -i ${quote $input} \
+-p ${quote ${dirname $history}} -r";
 
 /*
  * query the topmost edit of a history file
@@ -65,17 +67,21 @@ history_put_command =
  * may be executed by developers
  */
 history_query_command =
-	"fhist ${basename $history} -l 0 -p ${dirname $history} -q";
+	"fhist ${quote ${basename $history}} -l 0 \
+-p ${quote ${dirname $history}} -q";
 
 /*
  * difference of 2 files
  */
-diff_command = "fcomp -w -s $original $input -o $output";
+diff_command =
+	"fcomp -w -s ${quote $original} ${quote $input} -o ${quote $output}";
 
 /*
  * difference of 3 files
  */
-diff3_command = "fmerge $original $mostrecent $input -o $output -c $input,C";
+merge_command =
+	"fmerge ${quote $original} ${quote $mostrecent} ${quote $input} \
+-o ${quote $output} -c ${quote $output,C}";
 
 /*
  * whenever files are added to or removed from the change,
@@ -90,35 +96,35 @@ file_template =
 [
 	{
 		pattern = [ "*.[cyl]" ];
-		body = "${read_file ${source aux/template/c abs}}";
+		body = "${read_file ${source etc/template/c abs}}";
 	},
 	{
 		pattern = [ "*.h" ];
-		body = "${read_file ${source aux/template/h abs}}";
+		body = "${read_file ${source etc/template/h abs}}";
 	},
 	{
 		pattern = [ "test/*/*.sh" ];
-		body = "${read_file ${source aux/template/test abs}}";
+		body = "${read_file ${source etc/template/test abs}}";
 	},
 	{
 		pattern = [ "*.sh" ];
-		body = "${read_file ${source aux/template/sh abs}}";
+		body = "${read_file ${source etc/template/sh abs}}";
 	},
 	{
 		pattern = [ "*.man", "*.[12345678]" ];
-		body = "${read_file ${source aux/template/man abs}}";
+		body = "${read_file ${source etc/template/man abs}}";
 	},
 	{
 		pattern = [ "*.rpt" ];
-		body = "${read_file ${source aux/template/report abs}}";
+		body = "${read_file ${source etc/template/report abs}}";
 	},
 	{
 		pattern = [ "*.so", "*.ms", "*.me" ];
-		body = "${read_file ${source aux/template/ms abs}}";
+		body = "${read_file ${source etc/template/ms abs}}";
 	},
 	{
 		pattern = [ "*" ];
-		body = "${read_file ${source aux/template/generic abs}}";
+		body = "${read_file ${source etc/template/generic abs}}";
 	}
 ];
 
@@ -126,34 +132,21 @@ develop_begin_command = "ln -s $baseline bl";
 
 /*
  * This command is run at the beginning of an integration.
- * The aux/Howto.cook file assumes this has been done.
+ * The etc/Howto.cook file assumes this has been done.
  */
 integrate_begin_command =
-       "rm -f .cook.fp common/patchlevel.h aux/new.so doc/version.so aegis.log";
+       "rm -f .cook.fp common/patchlevel.h etc/new.so etc/version.so aegis.log";
 
 /*
  * list of architectures on which each change must build and test
  */
 architecture =
 [
-   /*
 	{
-		name = "aix";
-		pattern = "AIX-*-*-*";
-	},
-   */
-	{
-		name = "alpha";
-		pattern = "OSF1-*-*-alpha";
-	},
-	{
-		name = "sun4";
-		pattern = "SunOS-4.1*-*-sun4*";
-	},
-	{
-		name = "sun5";
-		pattern = "SunOS-5.*-*-sun4*";
+		name = "linux-i486";
+		pattern = "Linux-*-*-i[4-9]86";
 	},
 ];
 
-test_command = "$sh $filename $arch";
+test_command =
+	"AEGIS_SEARCH_PATH=$search_path $sh ${quote $filename} ${quote $arch}";

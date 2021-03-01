@@ -1,0 +1,151 @@
+'\" t
+.\"	aegis - project change supervisor
+.\"	Copyright (C) 1991, 1992, 1993, 1996, 1997, 1998 Peter Miller;
+.\"	All rights reserved.
+.\"
+.\"	This program is free software; you can redistribute it and/or modify
+.\"	it under the terms of the GNU General Public License as published by
+.\"	the Free Software Foundation; either version 2 of the License, or
+.\"	(at your option) any later version.
+.\"
+.\"	This program is distributed in the hope that it will be useful,
+.\"	but WITHOUT ANY WARRANTY; without even the implied warranty of
+.\"	MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+.\"	GNU General Public License for more details.
+.\"
+.\"	You should have received a copy of the GNU General Public License
+.\"	along with this program; if not, write to the Free Software
+.\"	Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111, USA.
+.\"
+.\" MANIFEST: manual entry for 'aegis -New_Test' command
+.\"
+.so z_name.so
+.TH "\*(n) -New_Test" 1 \*(N) "Reference Manual"
+.SH NAME
+\*(n) -New_Test \- add a new test to a change
+.XX "aent(1)" "add a new test to a change"
+.SH SYNOPSIS
+.B \*(n)
+.B -New_Test
+[
+.IR option ...
+][
+.IR filename ...
+]
+.br
+.B \*(n)
+.B -New_Test
+.B -List
+[
+.IR option ...
+]
+.br
+.B \*(n)
+.B -New_Test
+.B -Help
+.SH DESCRIPTION
+The
+.I \*(n)
+.I -New_Test
+command is used to
+add a new test to a change.
+A new file is created in the development directory.
+The
+.I config
+file will be searched for a template for the new file.
+If a template is found,
+the new file will be initialized to the template,
+otherwise it will be created empty.
+See
+.IR aepconf (5)
+for more information.
+.PP
+New tests default to ``automatic'' unless otherwise specified.
+.so z_intuit.so
+.SS Test Filename Generation
+You may choose your own filename for a test,
+by specifying it on the command line.
+.PP
+If no filename is specified on the command line,
+a test filename is automatically generated.
+This is controlled by the
+.I new_test_filename
+field of the project
+.I config
+file (see
+.IR aepconf (5)
+for more information.
+All automatically generated test filenames within a project are
+numbered uniquely.
+The default pattern for new test filenames
+is "\fItest/XX/tXXXX[am].sh\fP",
+where
+.I XX
+is the first 2 digits of the test number,
+.I XXXX
+is the whole test number, and
+.I [am] 
+is \f(CWa\fP for automatic tests
+and \f(CWm\fP for manual tests.
+.SS Modifying Tests
+Tests may be modified in future by adding them to a change
+with the
+.IR aecp (1)
+command.
+Tests are treated just like any other source file,
+and are subject to the same process.
+.so z_filesize.so
+.so z_test_rtnl.so
+.so z_test_corr.so
+.SH OPTIONS
+The following options are understood;
+.so o_auto.so
+.so o_baserel.so
+.so o_change.so
+.so o_help.so
+.so o_list.so
+.so o_manual.so
+.so o_nolog.so
+.so o_project.so
+.so o_terse.so
+.so o_verbose.so
+.so o_wait.so
+.so o__rules.so
+.SH RECOMMENDED ALIAS
+The recommended alias for this command is
+.nf
+.ta 8n 16n
+csh%	alias aent '\*(n) -nt \e!* -v'
+sh$	aent(){\*(n) -nt $* -v}
+.fi
+.SH ERRORS
+It is an error if
+the change is not in the
+.I "being developed"
+state.
+.br
+It is an error if
+the change is not assigned to the current user.
+.so z_exit.so
+.br
+.ne 1i
+.SH SEE ALSO
+.TP 8n
+.IR aecp (1)
+copy an existing test into a change
+.TP 8n
+.IR aedb (1)
+begin development of a change
+.TP 8n
+.IR aentu (1)
+remove a new test from a change
+.TP 8n
+.IR aerm (1)
+remove an existing test as part of a change
+.TP 8n
+.IR aet (1)
+run tests
+.TP 8n
+.IR aeuconf (5)
+user configuration file format
+.so z_cr.so

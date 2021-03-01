@@ -1,0 +1,46 @@
+'\" t
+.\"	aegis - project change supervisor
+.\"	Copyright (C) 1997 Peter Miller;
+.\"	All rights reserved.
+.\"
+.\"	This program is free software; you can redistribute it and/or modify
+.\"	it under the terms of the GNU General Public License as published by
+.\"	the Free Software Foundation; either version 2 of the License, or
+.\"	(at your option) any later version.
+.\"
+.\"	This program is distributed in the hope that it will be useful,
+.\"	but WITHOUT ANY WARRANTY; without even the implied warranty of
+.\"	MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+.\"	GNU General Public License for more details.
+.\"
+.\"	You should have received a copy of the GNU General Public License
+.\"	along with this program; if not, write to the Free Software
+.\"	Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111, USA.
+.\"
+.\" MANIFEST: manual page describing the ae_p command.
+.\"
+.so z_name.so
+.TH "ae_c" 1 \*(N) "Reference Manual" ""
+.SH NAME
+ae_c \- set change number
+.XX "ae_c(1)" "set change number"
+.SH SYNOPSIS
+.B ae_c
+.I change-number
+.SH DESCRIPTION
+The
+.I "ae_c"
+command is an alias used to set the
+AEGIS_CHANGE
+environment variable.
+No checking of the argument is performed.
+.PP
+This can make changing the change you are working on quick and simple.
+.SH SEE ALSO
+.TP 8n
+.IR aegis (1)
+For information on environment variables.
+.TP 8n
+.IR ae_p (1)
+Set project name.
+.so z_cr.so

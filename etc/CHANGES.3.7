@@ -1,0 +1,288 @@
+
+
+
+Project "aegis.3.7"						 Page 1
+List of Changes				       Fri Oct	2 06:41:56 1998
+
+Change	State		Description
+------- -------		-------------
+  10	completed	prepare for release
+  11	completed	correct build problems
+  12	completed	release notes
+  13	completed	trim_directory
+  14	completed	configure problems
+
+
+
+Project "aegis.3.7", Change 10					 Page 1
+Change Details				       Fri Oct	2 06:41:56 1998
+
+NAME
+	Project "aegis.3.7", Delta 1, Change 10.
+
+SUMMARY
+	prepare for release
+
+DESCRIPTION
+	This change prepares for release.
+
+	This change is exempt from testing against the development
+	directory.  This change is exempt from testing against the
+	baseline.
+
+
+ARCHITECTURE
+	This change must build and test in the "linux-i486"
+	architecture.
+
+CAUSE
+	This change was caused by internal_enhancement.
+
+FILES
+	Type	Action	 Edit	      File Name
+	------- -------- -------      -----------
+	source	create	    1	      etc/CHANGES.3.6
+	source	modify	    8 -> 9    lib/en/readme/new.3.6.so
+	source	create	    1	      lib/en/readme/new.3.7.so
+
+HISTORY
+	What		When		Who	 Comment
+	------		------		-----	 ---------
+	new_change	Tue Sep 22	pmiller
+			21:30:09 1998
+	develop_begin	Tue Sep 22	pmiller	 Elapsed time: 0.194
+			21:30:43 1998		 days.
+	develop_end	Tue Sep 22	pmiller
+			22:58:01 1998
+	review_pass	Tue Sep 22	pmiller
+			22:58:11 1998
+	integrate_begin Tue Sep 22	pmiller	 Elapsed time: 0.103
+			22:58:15 1998		 days.
+	integrate_pass	Tue Sep 22	pmiller
+			23:44:38 1998
+
+
+
+Project "aegis.3.7", Change 11					 Page 1
+Change Details				       Fri Oct	2 06:41:56 1998
+
+NAME
+	Project "aegis.3.7", Delta 2, Change 11.
+
+SUMMARY
+	correct build problems
+
+DESCRIPTION
+	This change corrects minor problems found testing Aegis on
+	various platforms.
+
+	This change is exempt from testing against the baseline.
+
+
+ARCHITECTURE
+	This change must build and test in the "linux-i486"
+	architecture.
+
+CAUSE
+	This change was caused by internal_bug.
+
+FILES
+	Type	Action	 Edit	      File Name
+	------- -------- -------      -----------
+	source	modify	    1 -> 2    aegis/aeclean.c
+	source	modify	    2 -> 3    common/ac/libintl.c
+	source	modify	    2 -> 3    common/ac/libintl.h
+	source	modify	    3 -> 4    common/ac/stddef.h
+	source	modify	    5 -> 6    common/ac/wchar.h
+	source	create	    1	      common/config.messy.h
+	source	modify	    3 -> 4    common/gettime.y
+	source	modify	    2 -> 3    common/gmatch.c
+	source	modify	    3 -> 4    common/str.c
+	source	modify	    3 -> 4    common/wstr.c
+	source	modify	    1 -> 2    etc/MANIFEST.sh
+	source	modify	    1 -> 2    etc/config.h.in2
+	source	modify	    1 -> 2    etc/configure.in
+	source	modify	    7 -> 8    lib/en/building/main.man
+	source	modify	    4 -> 5    lib/en/faq/main.roff
+	source	modify	    5 -> 6    libaegis/change_bran.c
+	source	modify	    7 -> 8    libaegis/change_file.c
+	source	modify	    3 -> 4    libaegis/project_hist.h
+	test	modify	    3 -> 4    test/00/t0022a.sh
+
+HISTORY
+	What		When		Who	 Comment
+	------		------		-----	 ---------
+	new_change	Wed Sep 23	pmiller
+			09:50:46 1998
+	develop_begin	Wed Sep 23	pmiller	 Elapsed time: 4.000
+			09:50:53 1998		 days.
+	develop_end	Tue Sep 29	pmiller
+			09:00:29 1998
+	review_pass	Tue Sep 29	pmiller
+			09:00:32 1998
+	integrate_begin Tue Sep 29	pmiller	 Elapsed time: 0.240
+			09:00:37 1998		 days.
+	integrate_pass	Tue Sep 29	pmiller
+
+
+
+Project "aegis.3.7", Change 11					 Page 2
+Change Details				       Fri Oct	2 06:41:56 1998
+
+	What		When		Who	 Comment
+	------		------		-----	 ---------
+			10:48:28 1998
+
+
+
+Project "aegis.3.7", Change 12					 Page 1
+Change Details				       Fri Oct	2 06:41:56 1998
+
+NAME
+	Project "aegis.3.7", Delta 3, Change 12.
+
+SUMMARY
+	release notes
+
+DESCRIPTION
+	This change adds some text to the release announcement.
+
+	This change is exempt from testing against the development
+	directory.  This change is exempt from testing against the
+	baseline.
+
+
+ARCHITECTURE
+	This change must build and test in the "linux-i486"
+	architecture.
+
+CAUSE
+	This change was caused by internal_bug.
+
+FILES
+	Type	Action	 Edit	      File Name
+	------- -------- -------      -----------
+	source	modify	    4 -> 5    lib/en/release/main.man
+
+HISTORY
+	What		When		Who	 Comment
+	------		------		-----	 ---------
+	new_change	Tue Sep 29	pmiller
+			16:02:42 1998
+	develop_begin	Tue Sep 29	pmiller	 Elapsed time: 1.000
+			16:02:48 1998		 days.
+	develop_end	Wed Sep 30	pmiller
+			06:25:52 1998
+	review_pass	Wed Sep 30	pmiller
+			06:25:59 1998
+	integrate_begin Wed Sep 30	pmiller	 Elapsed time: 0.051
+			06:26:05 1998		 days.
+	integrate_pass	Wed Sep 30	pmiller
+			06:49:07 1998
+
+
+
+Project "aegis.3.7", Change 13					 Page 1
+Change Details				       Fri Oct	2 06:41:56 1998
+
+NAME
+	Project "aegis.3.7", Delta 4, Change 13.
+
+SUMMARY
+	trim_directory
+
+DESCRIPTION
+	This change adds the trim_directory and trim_extension
+	substitutions.
+
+
+ARCHITECTURE
+	This change must build and test in the "linux-i486"
+	architecture.
+
+CAUSE
+	This change was caused by internal_enhancement.
+
+FILES
+	Type	Action	 Edit	      File Name
+	------- -------- -------      -----------
+	source	modify	    4 -> 5    lib/en/man5/aesub.5
+	source	modify	   10 -> 11   libaegis/sub.c
+	source	create	    1	      libaegis/sub/trim_directo.c
+	source	create	    1	      libaegis/sub/trim_directo.h
+	source	create	    1	      libaegis/sub/trim_extensi.c
+	source	create	    1	      libaegis/sub/trim_extensi.h
+	test	create	    1	      test/00/t0076a.sh
+
+HISTORY
+	What		When		Who	 Comment
+	------		------		-----	 ---------
+	new_change	Tue Sep 29	pmiller
+			21:27:02 1998
+	develop_begin	Tue Sep 29	pmiller	 Elapsed time: 1.000
+			21:27:16 1998		 days.
+	develop_end	Wed Sep 30	pmiller
+			07:22:29 1998
+	review_pass	Wed Sep 30	pmiller
+			07:23:04 1998
+	integrate_begin Wed Sep 30	pmiller	 Elapsed time: 0.042
+			07:23:10 1998		 days.
+	integrate_pass	Wed Sep 30	pmiller
+			07:41:57 1998
+
+
+
+Project "aegis.3.7", Change 14					 Page 1
+Change Details				       Fri Oct	2 06:41:57 1998
+
+NAME
+	Project "aegis.3.7", Delta 5, Change 14.
+
+SUMMARY
+	configure problems
+
+DESCRIPTION
+	This change corrects a number of configure problems found by
+	folks in the field.
+	My thanks to Steven Knight <knight@baldmt.com> and Ralf Fassel
+	<ralf@akutech.de> for reporting this problem so promptly.
+
+	This change is exempt from testing against the development
+	directory.  This change is exempt from testing against the
+	baseline.
+
+
+ARCHITECTURE
+	This change must build and test in the "linux-i486"
+	architecture.
+
+CAUSE
+	This change was caused by external_bug.
+
+FILES
+	Type	Action	 Edit	      File Name
+	------- -------- -------      -----------
+	source	modify	    7 -> 8    common/ac/wctype.h
+	source	modify	    1 -> 2    etc/Makefile.sh
+	source	modify	    2 -> 3    etc/aegis.html
+	source	modify	    7 -> 8    lib/en/man1/aeb.1
+	source	modify	    4 -> 5    lib/en/man1/o_symlnk.so
+	source	modify	    3 -> 4    lib/en/man1/z_bl_lock.so
+	source	modify	    5 -> 6    lib/en/readme/main.man
+	source	modify	    1 -> 2    lib/en/readme/new.3.7.so
+
+HISTORY
+	What		When		Who	 Comment
+	------		------		-----	 ---------
+	new_change	Thu Oct	 1	pmiller
+			08:35:04 1998
+	develop_begin	Thu Oct	 1	pmiller	 Elapsed time: 0.998
+			08:35:23 1998		 days.
+	develop_end	Thu Oct	 1	pmiller	 Elapsed time: 0.027
+			16:04:26 1998		 days.
+	review_pass	Thu Oct	 1	pmiller
+			16:16:23 1998
+	integrate_begin Thu Oct	 1	pmiller	 Elapsed time: 0.876
+			16:16:28 1998		 days.
+	integrate_pass	Thu Oct	 1	pmiller
+			22:50:52 1998

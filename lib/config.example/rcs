@@ -1,6 +1,6 @@
 /*
  *	aegis - project change supervisor
- *	This file is in the Public Domain, 1995, Peter Miller.
+ *	This file is in the Public Domain, 1995, 1998 Peter Miller.
  *
  * MANIFEST: example of using rcs in the project config file
  *
@@ -18,6 +18,11 @@
  *
  * One advantage of using RCS version 5.6 or later is that binary files are
  * supported, should you want to have binary files in the baseline.
+ *
+ * The ${quote ...} construct is used to quote filenames which contain
+ * shell special characters.  A minimum of quoting is performed, so if
+ * the filenames do not contail shell special characters, no quotes will
+ * be used.
  */
 
 /*
@@ -47,7 +52,8 @@
  *	unstrict locking.
  */
 history_create_command =
-	"ci -f -u -d -M -m$c -t/dev/null $i $h,v; rcs -U $h,v";
+	"ci -f -u -d -M -m$c -t/dev/null ${quote $input} ${quote $history,v}; \
+rcs -U ${quote $history,v}";
 
 
 /*
@@ -68,7 +74,7 @@ history_create_command =
  *	look anything like the history source filename.
  */
 history_get_command =
-	"co -r'$e' -p $h,v > $o";
+	"co -r${quote $edit} -p ${quote $history,v} > ${quote $output}";
 
 /*
  * This command is used to add a new "top-most" entry to the history file.
@@ -97,7 +103,7 @@ history_get_command =
  * the history_create_command.
  */
 history_put_command =
-	"ci -f -u -d -M -m$c $i $h,v";
+	"ci -f -u -d -M -m$c ${quote $input} ${quote $history,v}";
 
 /*
  * This command is used to query what the history mechanism calls the top-most
@@ -113,7 +119,7 @@ history_put_command =
  *	absolute path of the history file
  */
 history_query_command =
-	"rlog -r $h,v | awk '/^head:/ {print $$2}'";
+	"rlog -r ${quote $history,v} | awk '/^head:/ {print $$2}'";
 
 /*
  * RCS also provides a merge program, which can be used to provide a three-way
@@ -152,5 +158,6 @@ history_query_command =
 
 diff3_command =
 	"set +e; \
-	merge -p -L baseline -L C$c $mr $orig $in > $out; \
-	test $? -le 1";
+merge -p -L baseline -L C$c ${quote $mostrecent} ${quote $original} \
+${quote $input} > ${quote $output}; \
+test $? -le 1";

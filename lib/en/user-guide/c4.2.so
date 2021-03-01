@@ -1,0 +1,410 @@
+.\"
+.\"	aegis - project change supervisor
+.\"	Copyright (C) 1993, 1994, 1995, 1998 Peter Miller;
+.\"	All rights reserved.
+.\"
+.\"	This program is free software; you can redistribute it and/or modify
+.\"	it under the terms of the GNU General Public License as published by
+.\"	the Free Software Foundation; either version 2 of the License, or
+.\"	(at your option) any later version.
+.\"
+.\"	This program is distributed in the hope that it will be useful,
+.\"	but WITHOUT ANY WARRANTY; without even the implied warranty of
+.\"	MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+.\"	GNU General Public License for more details.
+.\"
+.\"	You should have received a copy of the GNU General Public License
+.\"	along with this program; if not, write to the Free Software
+.\"	Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111, USA.
+.\"
+.\" MANIFEST: User Guide, The Dependency Maintenance Tool, Using Cook
+.\"
+.bp
+.nh 2 "Using Cook"
+.LP
+The
+.I cook
+program is the only dependency maintenance tool,
+known to the author,
+which is sufficiently capable to supply aegis' needs.\**
+.FS
+The version in use when writing this section was 1.5.
+All versions from 1.3 onwards are known to work with
+the recipes described here.
+.FE
+Tools such as
+.I cake
+and
+.I "GNU Make"
+are described later.
+They need a special tweak to make them work.
+.LP
+This section describes appropriate contents for the
+.I Howto.cook
+file,
+input to the
+.I cook (1)
+program.
+It also discusses the
+.I build_command
+and
+.I integrate_\%build_\%command
+and
+.I link_\%baseline
+and
+.I change_\%file_\%command
+and
+.I project_\%file_\%command
+and
+.I link_\%integration_\%directory
+fields of the
+.I config
+file.
+See
+.I aepconf (5)
+for more information
+about this file.
+.nh 3 "Invoking Cook"
+.LP
+The
+.I build_command
+field of the
+.I config
+file is used to invoke the relevant build command.
+In this case, it is set as follows
+.E(
+build_command =
+  "cook -b ${s Howto.cook} -nl\e
+   project=$p change=$c version=$v";
+.E)
+.LP
+This command tells cook
+where to find the recipes.
+The \f(CW${s Howto.cook}\fR expands to a path into the baseline
+during development
+if the file is not in the change.
+Look in
+.I aesub (5)
+for more information about command substitutions.
+.LP
+The recipes which follow will all remove their targets before constructing
+them, which qualifies them for the next entry in the
+.I config
+file:
+.E(
+link_integration_directory = true;
+.E)
+.LP
+The files must be removed first, otherwise the baseline would
+cease to be self-consistent.
+.nh 3 "The Recipe File"
+.LP
+The file containing the recipes is called
+.I Howto.cook
+and is given to cook on the command line.
+.LP
+The following items are preamble to the rest of the file;
+they ask aegis for the source files of the project and change
+so that cook can determine what needs to be compiled and linked.
+.E(
+project_files =
+  [collect aegis -l pf -terse
+    -p [project] -c [change]];
+change_files =
+  [collect aegis -l cf -terse
+    -p [project] -c [change]];
+source_files =
+  [sort [project_files]
+    [change_files]];
+.E)
+.LP
+This example continues the one from chapter 3,
+and thus has a single executable
+to be linked from all the object files
+.E(
+object_files =
+  [fromto %.y %.o [match_mask %.y
+    [source_files]]]
+  [fromto %.l %.o [match_mask %.l
+    [source_files]]]
+  [fromto %.c %.o [match_mask %.c
+    [source_files]]]
+  ;
+.E)
+.LP
+It is necessary to determine if this is a development build,
+and thus has the baseline for additional ingredients searches,
+or an integration build, which does not.
+The version supplied by aegis will tell us this information,
+because it will be \fImajor.minor.\fRC\fIchange\fR for development builds and
+\fImajor.minor.\fRD\fIdelta\fR for integration builds.
+.E(
+if [match_mask %1C%2 [version]] then
+{
+  baseline = [collect aegis -cd -bl
+    -p [project]];
+  search_list = . [baseline];
+}
+.E)
+.LP
+The
+.I search_list
+variable in cook is the list of directories to search for dependencies;
+it defaults to only the current directory.
+The
+.I resolve
+builtin function of cook
+may be used to ask cook for the name of the file
+actually used to resolve dependencies,
+so that recipe bodies may reference the appropriate file:
+.E(
+example: [object_files]
+{
+  [cc] -o example
+    [resolve [object_files]]
+    -ly -ll;
+}
+.E)
+.LP
+This recipe says that to cook the example program,
+you need the object files determined earlier,
+and them link them together.
+Object files which were up to date in the baseline are used wherever possible,
+but files which were out of date are constructed in the current directory
+and those will be linked.
+.nh 3 "The Recipe for C"
+.LP
+Next we need to tell cook how to manage C sources.
+On the surface, this is a simple recipe:
+.E(
+%.o: %.c
+{
+  rm %.o;
+  [cc] [cc_flags] -c %.c;
+}
+.E)
+.LP
+Unfortunately it has forgotten about finding the include file dependencies.
+The cook package includes a program called
+.I c_incl
+which is used to find them.
+The recipe now becomes
+.E(
+%.o: %.c: [collect c_incl -eia %.c]
+{
+  rm %.o;
+  [cc] [cc_flags] -c %.c;
+}
+.E)
+.LP
+The file may not always be present to be removed (causing a fatal error),
+and it is irritating to execute a redundant command,
+so the remove is mangled to look like this:
+.E(
+%.o: %.c: [collect c_incl -eia %.c]
+{
+  if [exists %.o] then
+    rm %.o
+      set clearstat;
+  [cc] [cc_flags] -c %.c;
+}
+.E)
+.LP
+The "set clearstat" clause tells cook that the command will
+invalidate parts of its
+.I stat
+cache,
+and to look at the command for what to invalidate.
+.LP
+Another thing this recipe needs is to use the baseline
+for include files not in a change,
+and so the recipe is altered again:
+.E(
+%.o: %.c: [collect c_incl -eia
+  [prepost "-I" "" [search_list]]
+    %.c]
+{
+ if [exists %.o] then
+    rm %.o
+      set clearstat;
+  [cc] [cc_flags] [prepost "-I" ""
+    [search_list]] -c %.c;
+}
+.E)
+.LP
+See the
+.I "Cook Reference Manual"
+for a description of the
+.I prepost
+builtin function,
+and other cook details.
+.LP
+There is one last change that must be made to this recipe,
+it must use the resolve function to reference the appropriate file
+once cook has found it on the search list:
+.E(
+%.o: %.c: [collect c_incl -eia
+  [prepost "-I" "" [search_list]]
+    [resolve %.c]]
+{
+  if [exists %.o] then
+    rm %.o
+      set clearstat;
+  [cc] [cc_flags] [prepost "-I" ""
+    [search_list]] -c [resolve %.c];
+}
+.E)
+.LP
+Only use this last recipe for C sources,
+the others are only shown so that the derivation of the recipe is clear;
+while it is very similar to the original,
+it looks daunting at first.
+.nh 4 "C Include Semantics"
+.LP
+The semantics of C include directives make the
+.E(
+#include "\fIfilename\fP"
+.E)
+directive dangerous in a project developed with the aegis program
+and cook.
+.LP
+Depending on the age of your compiler,
+whether it is AT&T traditional C or newer ANSI C,
+this form of directive will search first in the current directory and then
+along the search path,
+or in the directory of the including file and then along the search path.
+.LP
+The first case is fairly benign,
+except that compilers are rapidly becoming ANSI C compliant,
+and an operating system upgrade could result in a nasty surprise.
+.LP
+The second case is bad news.
+If the source file is in the baseline and the include file is in the change,
+you don't want the source file to use the include file in the baseline.
+.LP
+Always use the
+.E(
+#include <\fIfilename\fP>
+.E)
+form of the include directive,
+and set the include search path explicitly on the command line
+used by cook.
+.LP
+Cook is able to dynamically adapt
+to include file dependencies,
+because they are not static.
+The presence of an include file in a change
+means that any file which includes this include file,
+whether that source file is in the baseline or in the change,
+must have a dependency on the change's include file.
+Potentially,
+files in the baseline will need to be recompiled,
+and the object file stored in the change,
+not the baseline.
+Subsequent linking needs to pick up the object file
+in the change, not from the baseline.
+.nh 3 "The Recipe for Yacc"
+.LP
+Having explained the complexities of the recipes in the above section about C,
+the recipe for yacc will be given without delay:
+.E(
+%.c %.h: %.y
+{
+  if [exists %.c] then
+    rm %.c
+      set clearstat;
+  if [exists %.h] then
+    rm %.h
+      set clearstat;
+  [yacc] [yacc_flags] -d
+    [resolve %.y];
+  mv y.tab.c %.c;
+  mv y.tab.h %.h;
+}
+.E)
+.LP
+This  recipe could be jazzed up to cope with the listing file,
+too,
+if that was desired,
+but this is sufficient to work with the example.
+.LP
+Cook's ability to cope with transitive dependencies will
+pick up the generated .c file and construct the necessary .o file.
+.nh 3 "The Recipe for Lex"
+.LP
+The recipe for lex is vary similar to the recipe for yacc.
+.E(
+%.c: %.l
+{
+  if [exists %.c] then
+    rm %.c
+      set clearstat;
+  [lex] [lex_flags] -d [resolve %.l];
+  mv lex.yy.c %.c;
+}
+.E)
+.LP
+Cook's ability to cope with transitive dependencies will
+pick up the generated .c file and construct the necessary .o file.
+.nh 3 "Recipes for Documents"
+.LP
+You can format documents,
+such as user guides and manual entries with aegis and cook,
+and the recipes are similar
+to the ones above.
+.E(
+%.ps: %.ms: [collect c_incl -r -eia
+  [prepost "-I" "" [search_list]]
+  [resolve %.ms]]
+{
+  if [exists %.ps] then
+    rm %.ps
+      set clearstat;
+  roffpp [prepost "-I" ""
+    [search_list]] [resolve %.ms]
+    | groff -p -t -ms
+    > [target];
+}
+.E)
+.LP
+This recipe says to run the document through groff,
+with the
+.I pic (1)
+and
+.I tbl (1)
+filters,
+use the
+.I ms (7)
+macro package,
+to produce PostScript output.
+The
+.I roffpp
+program comes with cook,
+and is like
+.I soelim (1)
+but it accepts include search path options on the command line.
+.LP
+Manual entries may be handled in a similar way
+.E(
+%.cat: %.man: [collect c_incl -r -eia
+  [prepost "-I" "" [search_list]]
+  [resolve %.man]]
+{
+  if [exists %.cat] then
+    rm %.cat
+      set clearstat;
+  roffpp [prepost "-I" ""
+    [search_list]] [resolve %.man]
+    | groff -Tascii -t -man
+    > [target];
+}
+.E)
+.nh 3 "Templates"
+.LP
+The
+.I lib/config.example/cook
+file in the Aegis distribution
+contains all of the above commands,
+so that you may readily insert them into your project
+.I config
+file.

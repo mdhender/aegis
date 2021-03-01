@@ -1,0 +1,66 @@
+.\"
+.\"	aegis - project change supervisor
+.\"	Copyright (C) 1996, 1998 Peter Miller;
+.\"	All rights reserved.
+.\"
+.\"	This program is free software; you can redistribute it and/or modify
+.\"	it under the terms of the GNU General Public License as published by
+.\"	the Free Software Foundation; either version 2 of the License, or
+.\"	(at your option) any later version.
+.\"
+.\"	This program is distributed in the hope that it will be useful,
+.\"	but WITHOUT ANY WARRANTY; without even the implied warranty of
+.\"	MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+.\"	GNU General Public License for more details.
+.\"
+.\"	You should have received a copy of the GNU General Public License
+.\"	along with this program; if not, write to the Free Software
+.\"	Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111, USA.
+.\"
+.\" MANIFEST: document describing z_bl_lock.so
+.\"
+.SH THE BASELINE LOCK
+The baseline lock is used to ensure that the baseline remains in a
+consistent state for the duration of commands which need to read the
+contents of files in the baseline.
+.PP
+The commands which require the baseline to be consistent
+(these include the
+.IR aeb (1),
+.IR aecp (1)
+and
+.IR aed (1)
+commands)
+take a baseline
+.I read
+lock.
+This is a non-exclusive lock,
+so the concurrent development of changes is not hindered.
+.PP
+The command which modifies the baseline,
+.IR aeip (1),
+takes a baseline
+.I write
+lock.
+This is an exclusive lock,
+forcing 
+.IR aeip (1)
+to block until there are no active baseline read locks.
+.PP
+It is possible that
+one of the above development commands
+will block until an in-progress
+.I "\*(n) -Integrate_PASS"
+completes.
+This is usually of short duration while the project history is updated.
+The delay is essential so that these commands receive a consistent view
+of the baseline.
+No other integration command will cause the above development commands
+to block.
+.PP
+When \*(n)' branch functionality is in use,
+a read (non-exclusive) lock is taken on the branch baseline and also
+each of the "parent" baselines.
+However,
+a baseline write (exclusive) lock is only taken on the branch baseline;
+the "parent" baselines are only read (non-exclusive) locked.

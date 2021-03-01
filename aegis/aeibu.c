@@ -1,6 +1,6 @@
 /*
  *	aegis - project change supervisor
- *	Copyright (C) 1991, 1992, 1993, 1994 Peter Miller.
+ *	Copyright (C) 1991, 1992, 1993, 1994, 1995, 1996, 1997, 1998 Peter Miller;
  *	All rights reserved.
  *
  *	This program is free software; you can redistribute it and/or modify
@@ -15,7 +15,7 @@
  *
  *	You should have received a copy of the GNU General Public License
  *	along with this program; if not, write to the Free Software
- *	Foundation, Inc., 675 Mass Ave, Cambridge, MA 02139, USA.
+ *	Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111, USA.
  *
  * MANIFEST: functions for implementing integrate begin undo
  */
@@ -32,15 +32,17 @@
 #include <arglex2.h>
 #include <commit.h>
 #include <change.h>
+#include <change_file.h>
 #include <dir.h>
 #include <error.h>
 #include <file.h>
 #include <help.h>
 #include <lock.h>
 #include <log.h>
-#include <option.h>
+#include <progname.h>
 #include <os.h>
 #include <project.h>
+#include <project_hist.h>
 #include <sub.h>
 #include <trace.h>
 #include <undo.h>
@@ -54,7 +56,7 @@ integrate_begin_undo_usage()
 {
 	char		*progname;
 
-	progname = option_progname_get();
+	progname = progname_get();
 	fprintf(stderr, "usage: %s -Integrate_Begin_Undo [ <option>... ]\n", progname);
 	fprintf(stderr, "       %s -Integrate_Begin_Undo -List [ <option>... ]\n", progname);
 	fprintf(stderr, "       %s -Integrate_Begin_Undo -Help\n", progname);
@@ -67,12 +69,7 @@ static void integrate_begin_undo_help _((void));
 static void
 integrate_begin_undo_help()
 {
-	static char *text[] =
-	{
-#include <../man1/aeibu.h>
-	};
-
-	help(text, SIZEOF(text), integrate_begin_undo_usage);
+	help("aeibu", integrate_begin_undo_usage);
 }
 
 
@@ -97,9 +94,9 @@ integrate_begin_undo_list(usage)
 
 		case arglex_token_project:
 			if (arglex() != arglex_token_string)
-				usage();
+				option_needs_name(arglex_token_project, usage);
 			if (project_name)
-				fatal("duplicate -Project option");
+				duplicate_option_by_name(arglex_token_project, usage);
 			project_name = str_from_c(arglex_value.alv_string);
 			break;
 		}
@@ -122,7 +119,6 @@ static void
 integrate_begin_undo_main()
 {
 	cstate		cstate_data;
-	pstate		pstate_data;
 	cstate_history	history_data;
 	string_ty	*dir;
 	string_ty	*project_name;
@@ -130,6 +126,7 @@ integrate_begin_undo_main()
 	long		change_number;
 	change_ty	*cp;
 	user_ty		*up;
+	size_t		j;
 
 	trace(("integrate_begin_main()\n{\n"/*}*/));
 	project_name = 0;
@@ -144,26 +141,47 @@ integrate_begin_undo_main()
 
 		case arglex_token_change:
 			if (arglex() != arglex_token_number)
-				integrate_begin_undo_usage();
+				option_needs_number(arglex_token_change, integrate_begin_undo_usage);
 			/* fall through... */
 
 		case arglex_token_number:
 			if (change_number)
-				fatal("duplicate -Change option");
+				duplicate_option_by_name(arglex_token_change, integrate_begin_undo_usage);
 			change_number = arglex_value.alv_number;
-			if (change_number < 1)
-				fatal("change %ld out of range", change_number);
+			if (change_number == 0)
+				change_number = MAGIC_ZERO;
+			else if (change_number < 1)
+			{
+				sub_context_ty	*scp;
+
+				scp = sub_context_new();
+				sub_var_set(scp, "Number", "%ld", change_number);
+				fatal_intl(scp, i18n("change $number out of range"));
+				/* NOTREACHED */
+				sub_context_delete(scp);
+			}
 			break;
 
 		case arglex_token_project:
 			if (arglex() != arglex_token_string)
-				integrate_begin_undo_usage();
+				option_needs_name(arglex_token_project, integrate_begin_undo_usage);
 			/* fall through... */
 
 		case arglex_token_string:
 			if (project_name)
-				fatal("duplicate -Project option");
+				duplicate_option_by_name(arglex_token_project, integrate_begin_undo_usage);
 			project_name = str_from_c(arglex_value.alv_string);
+			break;
+
+		case arglex_token_keep:
+		case arglex_token_interactive:
+		case arglex_token_no_keep:
+			user_delete_file_argument(integrate_begin_undo_usage);
+			break;
+
+		case arglex_token_wait:
+		case arglex_token_wait_not:
+			user_lock_wait_argument(integrate_begin_undo_usage);
 			break;
 		}
 		arglex();
@@ -199,31 +217,14 @@ integrate_begin_undo_main()
 	user_ustate_lock_prepare(up);
 	lock_take();
 	cstate_data = change_cstate_get(cp);
-	pstate_data = project_pstate_get(pp);
 
 	/*
 	 * it is an error if the change is not in the 'being_integrated' state.
 	 */
 	if (cstate_data->state != cstate_state_being_integrated)
-	{
-		change_fatal
-		(
-			cp,
-"this change is in the '%s' state, \
-it must be in the 'being integrated' state to undo integrate begin",
-			cstate_state_ename(cstate_data->state)
-		);
-	}
+		change_fatal(cp, 0, i18n("bad ibu state"));
 	if (!str_equal(change_integrator_name(cp), user_name(up)))
-	{
-		change_fatal
-		(
-			cp,
- "user \"%S\" is not the integrator, only user \"%S\" may undo integrate begin",
-			user_name(up),
-			change_integrator_name(cp)
-		);
-	}
+		change_fatal(cp, 0, i18n("not integrator"));
 
 	/*
 	 * Change the state.
@@ -234,6 +235,31 @@ it must be in the 'being integrated' state to undo integrate begin",
 	history_data->what = cstate_history_what_integrate_begin_undo;
 
 	/*
+	 * clear the idiff times
+	 */
+	for (j = 0; ; ++j)
+	{
+		fstate_src	src_data;
+
+		src_data = change_file_nth(cp, j);
+		if (!src_data)
+			break;
+		if (src_data->idiff_file_fp)
+		{
+			fingerprint_type.free(src_data->idiff_file_fp);
+			src_data->idiff_file_fp = 0;
+		}
+		if (src_data->architecture_times)
+		{
+			fstate_src_architecture_times_list_type.free
+			(
+				src_data->architecture_times
+			);
+			src_data->architecture_times = 0;
+		}
+	}
+
+	/*
 	 * remove it from the user's change list
 	 */
 	user_own_remove(up, project_name_get(pp), change_number);
@@ -241,7 +267,7 @@ it must be in the 'being integrated' state to undo integrate begin",
 	/*
 	 * Note that the project has no current integration
 	 */
-	pstate_data->currently_integrating_change = 0;
+	project_current_integration_set(pp, 0);
 	dir = str_copy(change_integration_directory_get(cp, 1));
 	change_integration_directory_clear(cp);
 	change_build_times_clear(cp);
@@ -253,8 +279,19 @@ it must be in the 'being integrated' state to undo integrate begin",
 	 */
 	os_become_orig();
 	if (os_below_dir(dir, os_curdir()))
-		change_fatal(cp, "please leave the integration directory");
+		change_fatal(cp, 0, i18n("leave int dir"));
 	os_become_undo();
+
+	/*
+	 * remove the integration directory on success
+	 */
+	if (user_delete_file_query(up, dir, 1))
+	{
+		change_verbose(cp, 0, i18n("remove integration directory"));
+		project_become(pp);
+		commit_rmdir_tree_errok(dir);
+		project_become_undo();
+	}
 
 	/*
 	 * write out the data and release the locks
@@ -262,9 +299,6 @@ it must be in the 'being integrated' state to undo integrate begin",
 	change_cstate_write(cp);
 	user_ustate_write(up);
 	project_pstate_write(pp);
-	project_become(pp);
-	commit_rmdir_tree_errok(dir);
-	project_become_undo();
 	str_free(dir);
 	commit();
 	lock_release();
@@ -272,7 +306,7 @@ it must be in the 'being integrated' state to undo integrate begin",
 	/*
 	 * verbose success message
 	 */
-	change_verbose(cp, "integrate begin undo");
+	change_verbose(cp, 0, i18n("integrate begin undo complete"));
 	change_free(cp);
 	project_free(pp);
 	user_free(up);

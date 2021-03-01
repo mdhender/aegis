@@ -1,0 +1,462 @@
+'\" t
+.\"	aegis - project change supervisor
+.\"	Copyright (C) 1997, 1998 Peter Miller;
+.\"	All rights reserved.
+.\"
+.\"	This program is free software; you can redistribute it and/or modify
+.\"	it under the terms of the GNU General Public License as published by
+.\"	the Free Software Foundation; either version 2 of the License, or
+.\"	(at your option) any later version.
+.\"
+.\"	This program is distributed in the hope that it will be useful,
+.\"	but WITHOUT ANY WARRANTY; without even the implied warranty of
+.\"	MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+.\"	GNU General Public License for more details.
+.\"
+.\"	You should have received a copy of the GNU General Public License
+.\"	along with this program; if not, write to the Free Software
+.\"	Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111, USA.
+.\"
+.\" MANIFEST: manual page describing the aefind command.
+.\"
+.so z_name.so
+.ds n) aefind
+.TH "\*(n)" 1 \*(N) "Reference Manual" ""
+.SH NAME
+\*(n) \- search for files in directory hierarchy
+.XX "aefind" "search for files in directory hierarchy"
+.SH SYNOPSIS
+.B \*(n)
+[
+.IR option \&...
+]
+.IR path \&...
+.I expression
+.br
+.B \*(n)
+.B -Help
+.br
+.B \*(n)
+.B -VERSion
+.SH DESCRIPTION
+The
+.I \*(n)
+command is used to
+search the combined directory tree of a change and its project.
+It is intentionally similar to
+.I find (1),
+however it unifies the directory stack of a change and its branch
+baseline, and the branch's ancestors' baselines if any.
+.PP
+For each file found in the directory tree, the given expression is
+evaluated from left to right, according to the rules of precedence (see
+the section on OPERATORS, below), only until the outcome is known,
+at which point \*(n) moves on to the next file name.
+.SH OPTIONS
+The following options are understood:
+.so o_baselin.so
+.so o_baserel.so
+.so o_change.so
+.so o_help.so
+.so o_project.so
+.TP 8n
+.B \-Resolve
+This option may be used to request that filenames be absolute paths,
+referring to the fully resolved file name.  By default, relative file
+names are used, relative to the root of the ``stacked'' directory tree.
+.TP 8n
+.B \-Verbose
+This option may be used to request that the expression be printed
+again on the standard output.  This is the expression as understood by
+\fI\*(n)\fP, to assist you in ensuring that you and the command agree.
+The expression is fully parenthesized, and all implicit operators made
+explicit.  Where possible, constant expressions will have been folded.
+.so o__rules.so
+.SH EXPRESSIONS
+The expression is made up of
+basic elements,
+tests (which return a true or false value), and actions
+(which have side effects and return a true or false value),
+all separated by operators.
+.SS BASIC ELEMENTS
+.TP 8n
+\fB{}\fP
+The value of this expression is the full file name of the file
+currently being considered.  The value is affected the the \fB-Resolve\fP
+option.
+.TP 8n
+\fInumber\fP
+Numbers may be specified directly, for use with other tests and operators.
+In the style of C, they may be hexadecimal with a ``0x'' prefix, octal
+with a ``0'' prefix, or decimal otherwise.
+.TP 8n
+\fIstring\fP
+Strings may be specified directly, for use with other tests and operators.
+If the string contains shell meta-characters, you may need to quote it.
+.TP 8n
+\fB\-FAlse\fP
+The value of this expression is always false.
+.TP 8n
+.B \-NOW
+The value of this expression is the current time,
+at the start of execution.
+.TP 8n
+\fB\-TRue\fP
+The value of this expression is always true.
+.SS OPERATORS
+The \fB\-and\fP operator is assumed where the operator is omitted.
+You will need to quote many of the operators,
+to protect them from interpretation by the shell.
+Each operator must be a separate command line argument.
+.TP 8n
+\fB(\fP \fIexpr\fP \fB)\fP
+Force precedence.
+.TP 8n
+\fB+\fP \fIexpr\fP
+Unary plus.
+Is is an error if the argument cannot be coerced to a number.
+.TP 8n
+\fB-\fP \fIexpr\fP
+Unary minus.
+Result is the numeric negative of the argument.
+Is is an error if the argument cannot be coerced to a number.
+.TP 8n
+\fB!\fP \fIexpr\fP
+Logical negation of the sense of the expression.
+Is is an error if the argument cannot be coerced to a boolean.
+.br
+Synonym: \fB\-Not\fP
+.TP 8n
+\fB~\fP \fIexpr\fP
+Bitwise not of the argument. 
+Is is an error if the argument cannot be coerced to an integer.
+.TP 8n
+\fIexpr1\fP \fB*\fP \fIexpr2\fP
+This operation multiplies the two values.
+Is is an error if the arguments cannot be coerced to numbers.
+.TP 8n
+\fIexpr1\fP \fB/\fP \fIexpr2\fP
+This operation divides the argument value by the second.
+Is is an error if the arguments cannot be coerced to numbers.
+Is is an error if the second argument is zero.
+.TP 8n
+\fIexpr1\fP \fB%\fP \fIexpr2\fP
+This operation produces the remainder of the division of the first
+argument by the argument.  Is is an error if the arguments cannot be
+coerced to numbers.  Is is an error if the second argument is zero.
+.TP 8n
+\fIexpr1\fP \fB~\fP \fIexpr2\fP
+Is is an error if the arguments cannot be coerced to strings.
+Is is an error if the first argument is not a valid pattern.
+The first argument is the pattern, and the second is the string
+The result is true if the pattern matches, and false if it does not.
+This operation performs a shell file pattern comparison.
+to be compared.
+.TP 8n
+\fIexpr1\fP \fB+\fP \fIexpr2\fP
+This operation adds the two values.
+Is is an error if the values cannot be coerced to numbers.
+.TP 8n
+\fIexpr1\fP \fB-\fP \fIexpr2\fP
+This operation subtracts the second values from the first.
+Is is an error if the values cannot be coerced to numbers.
+.TP 8n
+\fIexpr1\fP \fB##\fP \fIexpr2\fP
+This operation concatenates the arguments.
+Is is an error if the arguments cannot be coerced to strings.
+(Note: this is \fInot\fP the same as the \fB:\fP operator of the
+\fIexpr\fP(1) command.)
+.TP 8n
+\fIexpr1\fP \fB<<\fP \fIexpr2\fP
+Shift the first argument left by the number of bits specified by the
+second argument.  The left argument is treated as an \fIunsigned\fP
+number.  Is is an error if the values cannot be coerced to numbers.
+.TP 8n
+\fIexpr1\fP \fB>>\fP \fIexpr2\fP
+Shift the first argument right by the number of bits specified by the
+second argument.  The left argument is treated as an \fIunsigned\fP
+number.  Is is an error if the values cannot be coerced to numbers.
+.TP 8n
+\fIexpr1\fP \fB<\fP \fIexpr2\fP
+Compare the values and produce true if the first value is
+less than
+the second value, false otherwise.
+If both values can be coerced to numbers, the comparison is numeric;
+if both values can be coerced to strings, the comparison is lexicographic;
+otherwise is it an error.
+.TP 8n
+\fIexpr1\fP \fB<=\fP \fIexpr2\fP
+Compare the values and produce true if the first value is
+less than or equal to
+the second value, false otherwise.
+If both values can be coerced to numbers, the comparison is numeric;
+if both values can be coerced to strings, the comparison is lexicographic;
+otherwise is it an error.
+.TP 8n
+\fIexpr1\fP \fB>\fP \fIexpr2\fP
+Compare the values and produce true if the first value is
+greater than
+the second value, false otherwise.
+If both values can be coerced to numbers, the comparison is numeric;
+if both values can be coerced to strings, the comparison is lexicographic;
+otherwise is it an error.
+.TP 8n
+\fIexpr1\fP \fB>=\fP \fIexpr2\fP
+Compare the values and produce true if the first value is
+greater than or equal to
+the second value, false otherwise.
+If both values can be coerced to numbers, the comparison is numeric;
+if both values can be coerced to strings, the comparison is lexicographic;
+otherwise is it an error.
+.TP 8n
+\fIexpr1\fP \fB==\fP \fIexpr2\fP
+Compare the values and produce true if the first value is
+equal to
+the second value, false otherwise.
+If both values can be coerced to numbers, the comparison is numeric;
+if both values can be coerced to strings, the comparison is lexicographic;
+otherwise is it an error.
+.TP 8n
+\fIexpr1\fP \fB!=\fP \fIexpr2\fP
+Compare the values and produce true if the first value is
+not equal to
+the second value, false otherwise.
+If both values can be coerced to numbers, the comparison is numeric;
+if both values can be coerced to strings, the comparison is lexicographic;
+otherwise is it an error.
+.TP 8n
+\fIexpr1\fP \fB&\fP \fIexpr2\fP
+This operation produces the bitwise-and of the two values.
+Is is an error if the values cannot be coerced to numbers.
+.TP 8n
+\fIexpr1\fP \fB|\fP \fIexpr2\fP
+This operation produces the bitwise-or of the two values.
+Is is an error if the values cannot be coerced to numbers.
+.TP 8n
+\fIexpr1\fP \fB&&\fP \fIexpr2\fP
+Result is true if both expressions are true.
+Short circuit evaluation is used,
+and so \fIexpr2\fP is not evaluated if \fIexpr1\fP is false.
+Is is an error if the arguments cannot be coerced to booleans.
+.br
+Synonym: \fB\-And\fP
+.TP 8n
+\fIexpr1 expr2\fP
+Logical and (implied).
+Result is true if both expressions are true.
+Short circuit evaluation is used,
+and so \fIexpr2\fP is not evaluated if \fIexpr1\fP is false.
+Please note that implicit operator plays merry hell with operator
+precedence, because there is no operator.
+If you are getting odd results, use explicit operators.
+.TP 8n
+\fIexpr1\fP \fB||\fP \fIexpr2\fP
+Result is true if either expression is true.
+Short circuit evaluation is used,
+and so \fIexpr2\fP is not evaluated if \fIexpr1\fP is true.
+Is is an error if the arguments cannot be coerced to booleans.
+.br
+Synonym: \fB\-Or\fP
+.TP 8n
+\fIexpr1\fP \fB?\fP \fIexpr2\fP \fB:\fP \fIexpr3\fP
+The value of this expression is \fIexpr2\fP if \fIexpr1\fP is true,
+and \fIexpr3\fP otherwise.
+The \fIexpr1\fP is always evaluated,
+but only one of \fIexpr2\fP or \fIexpr3\fP will be evaluated.
+It is an error if the value of \fIexpr1\fP cannot be coerced to boolean.
+.TP 8n
+\fIexpr1\fP \fB,\fP \fIexpr2\fP
+Both \fIexpr1\fP and \fIexpr2\fP are always evaluated.
+The value of \fIexpr1\fP is discarded;
+the value of the expression is the value of \fIexpr2\fP.
+.PP
+Operators have precedence as described by the following table,
+highest to lowest:
+.TS
+box,center,tab(;);
+c c
+l c.
+Operator;Direction
+_
+\fI(unary)\fP + - ~ !;\(<-
+* / % ~;\(->
++ - :;\(->
+<< >>;\(->
+< <= > >=;\(->
+== !=;\(->
+&;\(->
+^;\(->
+|;\(->
+&&;\(->
+||;\(->
+? :;\(->
+,;\(->
+.TE
+.SS FUNCTIONS
+There are a number of built-in functions which may be used in the expression.
+Functions may be invoked using a syntax similar to C functions.
+.TS
+center;
+l.
+\fIname\fP \fB(\fP \fIarguments\fP \fB)\fP
+.TE
+You need to leave spaces around the parentheses
+so that they are separate command line arguments.
+.TP 8n
+atime
+This function may be used to
+determine the last-accessed-time of a file.
+It takes one argument.
+.TP 8n
+basename
+This function returns the basename of the string argument passed to it.
+It takes one argument.
+.TP 8n
+ctime
+This function may be used to
+determine the last-change-time of an inode.
+It takes one argument.
+.TP 8n
+gid
+This function may be used to
+determine the gid of a file.
+It takes one argument.
+.TP 8n
+inode
+This function may be used to
+determine the inode number of a file.
+It takes one argument.
+.TP 8n
+mode
+This function may be used to
+determine the access mode (permissions) of a file.
+It takes one argument.
+.TP 8n
+mtime
+This function may be used to
+determine the last-modified-time of a file.
+It takes one argument.
+.TP 8n
+print
+This function may be used to print a value.
+It takes one argument.
+Always returns true.
+.TP 8n
+size
+This function may be used to
+determine the size in bytes of a file.
+It takes one argument.
+.TP 8n
+type
+This function may be used to determine the type of a file.  It takes
+one argument.  It returns a string: "block_special", "character_special",
+"directory", "file", "named_pipe", "socket" or "symbolic_link".
+.TP 8n
+uid
+This function may be used to
+determine the uid of a file.
+It takes one argument.
+.SS TESTS
+Most tests exist to provide compatibility with
+.IR find (1).
+.TP 8n
+\fB\-Access_Minutes\fP [ \fIrelative-operator\fP ] \fInumber\fP
+True if the current file was accessed exactly \fInumber\fP minutes ago,
+false otherwise.
+If a relative operator is given (<, <=, ==, !=, > or >=)
+a relative comparison will be made, rather than the implicit equality test.
+This is \fInot\fP identical to the similar \fIfind\fP(1) test.
+This is shorthand for
+the ``( now - atime ( {} )) / 60 \fIrelative-operator\fP \fInumber\fP''
+expression.
+.TP 8n
+\fB\-Access_Time\fP [ \fIrelative-operator\fP ] \fInumber\fP
+True if the current file was accessed exactly \fInumber\fP days ago,
+false otherwise.
+If a relative operator is given (<, <=, ==, !=, > or >=)
+a relative comparison will be made, rather than the implicit equality test.
+This is \fInot\fP identical to the similar \fIfind\fP(1) test.
+This is shorthand for
+the ``( now - atime ( {} )) / 86400 \fIrelative-operator\fP \fInumber\fP''
+expression.
+.TP 8n
+\fB\-Change_Minutes\fP \fInumber\fP
+True if the current file's inode was changed exactly \fInumber\fP minutes ago,
+false otherwise.
+If a relative operator is given (<, <=, ==, !=, > or >=)
+a relative comparison will be made, rather than the implicit equality test.
+This is \fInot\fP identical to the similar \fIfind\fP(1) test.
+This is shorthand for
+the ``( now - ctime ( {} )) / 60 \fIrelative-operator\fP \fInumber\fP''
+expression.
+.TP 8n
+\fB\-Change_Time\fP \fInumber\fP
+True if the current file's inode was changed exactly \fInumber\fP days ago,
+false otherwise.
+If a relative operator is given (<, <=, ==, !=, > or >=)
+a relative comparison will be made, rather than the implicit equality test.
+This is \fInot\fP identical to the similar \fIfind\fP(1) test.
+This is shorthand for
+the ``( now - ctime ( {} )) / 86400 \fIrelative-operator\fP \fInumber\fP''
+expression.
+.TP 8n
+\fB\-Modify_Minutes\fP \fInumber\fP
+True if the current file was modified exactly \fInumber\fP minutes ago,
+false otherwise.
+If a relative operator is given (<, <=, ==, !=, > or >=)
+a relative comparison will be made, rather than the implicit equality test.
+This is \fInot\fP identical to the similar \fIfind\fP(1) test.
+This is shorthand for
+the ``( now - mtime ( {} )) / 60 \fIrelative-operator\fP \fInumber\fP''
+expression.
+.TP 8n
+\fB\-Modify_Time\fP \fInumber\fP
+True if the current file was modified exactly \fInumber\fP days ago,
+false otherwise.
+If a relative operator is given (<, <=, ==, !=, > or >=)
+a relative comparison will be made, rather than the implicit equality test.
+This is \fInot\fP identical to the similar \fIfind\fP(1) test.
+This is shorthand for
+the ``( now - mtime ( {} )) / 86400 \fIrelative-operator\fP \fInumber\fP''
+expression.
+.TP 8n
+\fB\-Newer\fP \fIfilename\fP
+True if the current file was modified after the given file.
+This is shorthand for
+the ``mtime ( {} ) > mtime ( \fIfilename\fP )''
+expression.
+.TP 8n
+\fB-Name\fP \fIpattern\fP
+Base of file name (the path with the leading directories removed)
+matches shell pattern \fIpattern\fP.
+This is short-hand for the ``\fIpattern\fP ~ basename ( {} )'' expression.
+.TP 8n
+\fB-PAth\fP \fIpattern\fP
+File name matches shell pattern \fIpattern\fP.
+Note that the file name if affected by the \fB\-resolve\fP option.
+This is short-hand for the ``\fIpattern\fP ~ {}'' expression.
+.TP 8n
+\fB\-Type\fP \fIstring\fP
+The file type matches the type given.
+This is shorthand for the ``type ( {} ) == \fIstring\fP'' expression.
+Type names are matched similar to options:
+.TS
+center;
+l l.
+Block	The file is a block special file.
+Character	The file is a character special file.
+Directory	The file is a directory.
+File	The file is a normal file.
+Link	The file is a symbolic link.
+Pipe	The file is FIFO (a named pipe).
+Socket	The file is a UNIX domain socket.
+.TE
+.SS ACTIONS
+.TP 8n
+.B \-print
+This will print the full file name on the standard output,
+followed by a newline.
+The \fB-Resolve\fP option will affect what is printed.
+This is short-hand for the ``print ( {} )'' expression.
+.so z_exit.so
+.so z_cr.so

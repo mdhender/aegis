@@ -1,0 +1,525 @@
+'\" t
+.\"	aegis - project change supervisor
+.\"	Copyright (C) 1991, 1992, 1993, 1994, 1995, 1996, 1997 Peter Miller;
+.\"	All rights reserved.
+.\"
+.\"	This program is free software; you can redistribute it and/or modify
+.\"	it under the terms of the GNU General Public License as published by
+.\"	the Free Software Foundation; either version 2 of the License, or
+.\"	(at your option) any later version.
+.\"
+.\"	This program is distributed in the hope that it will be useful,
+.\"	but WITHOUT ANY WARRANTY; without even the implied warranty of
+.\"	MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+.\"	GNU General Public License for more details.
+.\"
+.\"	You should have received a copy of the GNU General Public License
+.\"	along with this program; if not, write to the Free Software
+.\"	Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111, USA.
+.\"
+.\" MANIFEST: description of aegis change state file format
+.\"
+.so z_name.so
+.TH aecstate 5 \*(N) "Reference Manual"
+.SH NAME
+aecstate \- \*(n) change state file
+.XX "aecstate(5)" "change state file format"
+.SH SYNOPSIS
+\fIproject\fP\f(CW/info/change/\fP\fI[0-9]\fP\f(CW/\fP\fI[0-9][0-9][0-9]\fP
+.SH DESCRIPTION
+A change state file is used to store information about a change.
+These files are created and maintained by \*(n).
+These files should not be edited by humans.
+These files is owned by the project owner and group.
+.PP
+The change number is at least 3 digits, zero padded if necessary.
+(More digits will be used if a project has a 
+thousand or more changes in any one release,
+although this is rare.)
+The files are spread across a directory tree,
+100 per subdirectory,
+to improve the directory search times,
+and to avoid various systems' directory length limitations.
+.SH CONTENTS
+.so aecattr.so
+.TP 8n
+state = ( ... );
+.br
+This field is used to describe what state the change is in.
+The state determines what operations may be performed on the change.
+.RS 8n
+.TP 8n
+awaiting_development
+.br
+The change has been created,
+but has yet to be worked on.
+.TP 8n
+being_developed
+.br
+The change is being developed.
+.TP 8n
+being_reviewed
+.br
+The change has been developed,
+and is being reviewed.
+(There is no 'awaiting_review' state.)
+.TP 8n
+awaiting_integration
+.br
+The change has passed review,
+and is queued ready for integration.
+.TP 8n
+being_integrated
+.br
+The change is being integrated.
+.TP 8n
+completed
+.br
+The change has been completed and is now
+part of the baseline.
+Changes in this state can not be reversed.
+.RE
+.TP 8n
+delta_number = integer;
+.br
+This field records the delta number for this change.
+It is only present if the change is in one of
+the
+.I being_integrated
+or
+.I completed
+states.
+.TP 8n
+project_file_command_sync = integer;
+.br
+This field records the last change integrated into the project.
+If it disagrees with the project, a 'project_file_command' (from pconf)
+needs to be executed at the next build.
+.TP 8n
+test_time = time;
+.br
+This field records the time the last successful
+.I "\*(n) -Test"
+command was run for all architectures.
+It is only present in the
+.I being_developed
+and
+.I being_integrated
+states.
+.TP 8n
+test_baseline_time = time;
+.br
+This field records the time the last successful
+.I "\*(n) -Test -BaseLine"
+command was run for all architectures.
+It is only present in the
+.I being_developed
+and
+.I being_integrated
+states.
+.TP 8n
+regression_test_time = time;
+.br
+This field records the time the last successful
+.I "\*(n) -Test -REGression"
+command was run for all architectures.
+It is only present in the
+.I being_developed
+and
+.I being_integrated
+states.
+.TP 8n
+build_time = time;
+.br
+This field records the last time the last successful
+.I "\*(n) -Build"
+command was run for all architectures.
+It is only present in the
+.I being_developed
+and
+.I being_integrated
+states.
+.TP 8n
+architecture_times = [{ ... }];
+.br
+This field records the time of various operations
+for each variant named in the
+.I architecture
+field.
+It is only present in the
+.I being_developed
+and
+.I being_integrated
+states.
+.RS
+.TP 8n
+variant = string;
+.br
+This field is one of the patterns named in the
+.I architecture
+field.
+.TP 8n
+node = string;
+.br
+This field is the computer on which the command was run
+which last changed this structure.
+.TP 8n
+test_time = time;
+.br
+This field records the last time the last successful
+.I "\*(n) -Test"
+command was run for this specific pattern instance.
+.TP 8n
+test_baseline_time = time;
+.br
+This field records the last time the last successful
+.I "\*(n) -Test -BaseLine"
+command was run for this specific pattern instance.
+.TP 8n
+regression_test_time = time;
+.br
+This field records the last time the last successful
+.I "\*(n) -Test -REGression"
+command was run for this specific pattern instance.
+.TP 8n
+build_time = time;
+.br
+This field records the last time the last successful
+.I "\*(n) -Build"
+command was run for this specific pattern instance.
+.RE
+.TP 8n
+development_directory = string;
+.br
+This field is the absolute path of the change's development directory.
+It is only present of the change is in a state
+between
+.I being_developed
+and
+.I being_integrated
+inclusive.
+.TP 8n
+integration_directory = string;
+.br
+This field is the absolute path of the change's integration directory.
+It is only present of the change is in the
+.I being_integrated
+state.
+.TP 8n
+history = [ { ... }, ... ];
+.br
+This field records the history of the change,
+in the form of state transitions.
+The history records have the form
+.RS 8n
+.TP 8n
+when = time;
+.br
+This field records the time the state transition occurred.
+.TP 8n
+what = ( ... );
+.br
+This field records what happened.
+Valid value names echo the various \*(n) functions.
+.TP 8n
+who = string;
+.br
+This field records the user name of the user who caused the state transition.
+.TP 8n
+why = string;
+.br
+This field is optional.
+It is a comment of some sort.
+In the cases of
+.I review_fail
+and
+.IR integrate_fail ,
+this field will contain why the change failed.
+.RE
+.TP 8n
+branch = { ... };
+.RS
+This field is only present for branches (long transactions).
+.TP 8n
+umask = integer;
+.br
+File permission mode mask.
+See
+.IR umask (2)
+for more information.
+This value will always be OR'ed with 022,
+because
+.I aegis
+is paranoid.
+.TP 8n
+developer_may_review = boolean;
+If this field is true, then a developer may review her own change.
+This is probably only a good idea for projects of less than 3 people.
+The idea is for as many people as possible to critically examine a change.
+.TP 8n
+developer_may_integrate = boolean;
+If this field is true, then a developer may integrate her own change.
+This is probably only a good idea for projects of less than 3 people.
+The idea is for as many people as possible to critically examine a change.
+.TP 8n
+reviewer_may_integrate = boolean;
+If this field is true, then a reviewer may integrate a change she reviewed.
+This is probably only a good idea for projects of less than 3 people.
+The idea is for as many people as possible to critically examine a change.
+.TP 8n
+developers_may_create_changes = boolean;
+This field is true if developers may created changes,
+in addition to administrators.
+This tends to be a very useful thing,
+since developers find most of the bugs.
+.TP 8n
+forced_develop_begin_notify_command = string;
+This command is used to notify a developer
+that a change requires developing;
+it is issued when a project administrator uses an
+.I "aedb -User"
+command to force development of a change by a specific user.
+All of the substitutions described in
+.IR aesub (5)
+are available.
+This field is optional.
+.TP 8n
+develop_end_notify_command = string;
+This command is used to
+notify that a change is ready for review.
+It will probably use mail,
+or it could be an in-house bulletin board.
+This field is optional,
+if not present no notification will be given.
+This command could also be used to notify other management systems,
+such as progress and defect tracking.
+All of the substitutions described by
+.IR aesub (5)
+are available.
+.TP 8n
+develop_end_undo_notify_command = string;
+This command is used to
+notify that a change had been withdrawn from review
+for further development.
+It will probably use mail,
+or it could be an in-house bulletin board.
+This field is optional,
+if not present no notification will be given.
+This command could also be used to notify other management systems,
+such as progress and defect tracking.
+All of the substitutions described by
+.IR aesub (5)
+are available.
+.TP 8n
+review_pass_notify_command = string;
+This command is used to
+notify that a review has passed.
+It will probably use mail,
+or it could be an in-house bulletin board.
+This field is optional,
+if not present no notification will be given.
+This command could also be used to notify other management systems,
+such as progress and defect tracking.
+All of the substitutions described by
+.IR aesub (5)
+are available.
+.TP 8n
+review_pass_undo_notify_command = string;
+This command is used to
+notify that a review has passed.
+It will probably use mail,
+or it could be an in-house bulletin board.
+This field is optional,
+if not present no notification will be given.
+This command could also be used to notify other management systems,
+such as progress and defect tracking.
+Defaults to the same action as the \fIdevelop_end_notify_command\fP field.
+All of the substitutions described by
+.IR aesub (5)
+are available.
+.TP 8n
+review_fail_notify_command = string;
+This command is used to
+notify that a review has failed.
+It will probably use mail,
+or it could be an in-house bulletin board.
+This field is optional,
+if not present no notification will be given.
+This command could also be used to notify other management systems,
+such as progress and defect tracking.
+All of the substitutions described by
+.IR aesub (5)
+are available.
+.TP 8n
+integrate_pass_notify_command = string;
+This command is used to
+notify that an integration has passed.
+It will probably use mail,
+or it could be an in-house bulletin board.
+This field is optional,
+if not present no notification will be given.
+This command could also be used to notify other management systems,
+such as progress and defect tracking.
+All of the substitutions described by
+.IR aesub (5)
+are available.
+.TP 8n
+integrate_fail_notify_command = string;
+This command is used to
+notify that an integration has failed.
+It will probably use mail,
+or it could be an in-house bulletin board.
+This field is optional,
+if not present no notification will be given.
+This command could also be used to notify other management systems,
+such as progress and defect tracking.
+All of the substitutions described by
+.IR aesub (5)
+are available.
+.TP 8n
+default_test_exemption = boolean;
+.br
+This field contains what to do when a change is created with
+no test exemption specified.
+.TP
+history = [{ ... }];
+This field contains a history of integrations for the project.
+Updated by each successful '\*(n) -Integrate_Pass' command.
+.RS
+.TP 8n
+delta_number = integer;
+The delta number of the integration.
+.TP 8n
+change_number = integer;
+The number of the change which was integrated.
+.TP 8n
+name = [ string ];
+The names by which this delta is known.
+.RE
+.TP 8n
+change = [integer];
+The list of changes which have been created on this branch to date.
+.TP 8n
+sub_branch = [integer];
+The list of branches which have been created on this branch to date.
+This will be a subset of the above (possibly empty, possibly complete,
+never larger).
+.TP 8n
+administrator = [string];
+The list of administrators of the branch.
+.TP 8n
+developer = [string];
+The list of developers of the branch.
+.TP 8n
+reviewer = [string];
+The list of reviewers of the branch.
+.TP 8n
+integrator = [string];
+The list of integrators of the branch.
+.TP 8n
+currently_integrating_change = integer;
+The change currently being integrated.
+Only one change (within a branch) may be integrated at a time.
+Only set when an integration is in progress.
+.TP 8n
+default_development_directory = string;
+The pathname of where to place new development directories.
+The pathname must be absolute.
+This field is only consulted if
+the field of the same name in the user configuration file is not set.
+.TP 8n
+minimum_change_number = integer;
+The minimum change number for
+.IR aenc(1),
+if no change number is specified.
+This allows the low-numbered change numbers to be
+used for branches later in the project.
+Defaults to 10 if not set, may not be less than 1.
+.RE
+.SS Obsolete Fields
+The following fields are only present is old projects.
+They will be moved to an appropritate file state
+when the change is next modified.
+See
+.IR aefstate (5)
+for more information.
+.TP 8n
+src = [ { ... }, ... ];
+.br
+This field is a list of all the files in the change.
+The records have the form
+.RS 8n
+.TP 8n
+file_name = string;
+.br
+This file names the file.
+The name is relative to the root of the baseline directory tree.
+.TP 8n
+action = (create, modify, remove);
+.br
+This field describes what is being done with the file.
+.TP 8n
+edit_number = string;
+.br
+This field records the edit number of the file
+when it was added to the change (or updated using the
+.I "\*(n) -DIFFerence"
+command).
+This field is not present for new files.
+.TP 8n
+usage = (source, test, manual_test);
+.br
+This field describes what function the file serves.
+.TP 8n
+diff_time = time;
+.br
+This field records the last time modified of the change file
+when the last
+.I "\*(n) -DIFFerence"
+command was run.
+It is only present between the
+.I being_developed
+and
+.I being_integrated
+states,
+inclusive.
+It is not present for files which are being deleted.
+This field is used to determine if a difference has been done,
+and if the file has been tampered with before state transitions.
+.TP 8n
+diff_file_time = time;
+.br
+This field records the last time modified of the difference file
+when the last
+.I "\*(n) -DIFFerence"
+command was run.
+It is only present between the
+.I being_developed
+and
+.I being_integrated
+states,
+inclusive.
+This field is used to determine if a difference has been done,
+and if the difference file has been tampered with before state transitions.
+.TP 8n
+move = string;
+.br
+To change the name of a file,
+a combination of deleting the old name and creating the new name is used.
+With deleted files, this field is used to say where it went.
+With new files, this field is used to say where it came from.
+.RE
+.SH SEE ALSO
+.TP 8n
+.IR aenc (1)
+create a new change
+.TP 8n
+.IR aegis (5)
+\*(n) file format syntax
+.TP 8n
+.IR aecattr (5)
+change attributes file format
+.TP 8n
+.IR aefstate (5)
+file state file format
+.so ../man1/z_cr.so

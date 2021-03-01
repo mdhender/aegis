@@ -1,0 +1,198 @@
+.\"
+.\"	aegis - project change supervisor
+.\"	Copyright (C) 1991, 1992, 1993 Peter Miller.
+.\"	All rights reserved.
+.\"
+.\"	This program is free software; you can redistribute it and/or modify
+.\"	it under the terms of the GNU General Public License as published by
+.\"	the Free Software Foundation; either version 2 of the License, or
+.\"	(at your option) any later version.
+.\"
+.\"	This program is distributed in the hope that it will be useful,
+.\"	but WITHOUT ANY WARRANTY; without even the implied warranty of
+.\"	MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+.\"	GNU General Public License for more details.
+.\"
+.\"	You should have received a copy of the GNU General Public License
+.\"	along with this program; if not, write to the Free Software
+.\"	Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111, USA.
+.\"
+.\" MANIFEST: User Guide, The Change Development Cycle, The Integrator
+.\"
+.bp
+.nh 2 "The Integrator"
+.LP
+This section shows what the integrator must do for each of the
+changes shown to date.
+The integrator does not have the ability to alter anything in the change;
+if a change being integrated is defective,
+it is simply failed back to the developer.
+This documented example has no such failures,
+in order to keep it manageably small.
+.nh 3 "The First Change"
+.LP
+The first change of a project is often the trickiest,
+and the integrator is the last to know.
+This example goes smoothly,
+and you may want to consider using the example project
+as a template.
+.LP
+The integrator for this example project is Isa.
+Isa knows there is a change ready for integration
+from the notification which arrived by email.
+.E(
+isa% \f(CBaeib -l -p example\fP
+
+Project "example"
+List of Changes
+
+Change  State           Description
+------- -------         -------------
+   1    awaiting_       Place under aegis
+        integration
+isa% \f(CBaeib example 1\fP
+aegis: project "example": change 1: link baseline to integration
+        directory
+aegis: project "example": change 1: apply change to integration
+        directory
+aegis: project "example": change 1: integration has begun
+isa%
+.E)
+.LP
+The integrator must rebuild and retest each change.
+This ensures that it was no quirk of the developer's
+environment which resulted in the success at the development stage.
+.E(
+isa% \f(CBaeb\fP
+aegis: logging to "/projects/example/delta.001/aegis.log"
+aegis: project "example": change 1: integration build started
+aegis: cook -b Howto.cook project=example change=1
+        version=1.0.D001 -nl
+cook: yacc -d gram.y
+cook: mv y.tab.c gram.c
+cook: mv y.tab.h gram.h
+cook: cc -I. -O -c gram.c
+cook: lex lex.l
+cook: mv lex.yy.c lex.c
+cook: cc -I. -O -c lex.c
+cook: cc -I. -O -c main.c
+cook: cc -o example gram.o lex.o main.o -ll -ly
+aegis: project "example": change 1: integration build complete
+isa%
+.E)
+.LP
+Notice how the above build differed from the builds that were done
+while in the
+.I "being developed"
+state;
+the extra baseline include is gone.
+This is because the integration directory will shortly be the new baseline,
+and must be entirely internally consistent and self-sufficient.
+.LP
+You are probably wondering why this isn't all rolled into the
+one aegis command.
+It is not because there may be some manual process to be
+performed after the build and before the test.
+This may be making a command set-uid-root (as in the case of aegis)
+or it may require some tinkering with the local oracle or ingress database.
+Instructions for the integrator may be placed in the
+description field of the change attributes.
+.LP
+The change is now re-tested:
+.E(
+isa% \f(CBaet\fP
+aegis: logging to "/projects/example/delta.001/aegis.log"
+aegis: sh /project/example/delta.001/test/00/t0001a.sh
+aegis: project "example": change 1: test "test/00/t0001a.sh"
+        passed
+aegis: project "example": change 1: passed 1 test
+isa%
+.E)
+The change builds and tests.
+Once Isa is happy with the change,
+perhaps after browsing the files,
+Isa then passes the integration,
+causing the history files to be updated
+and the integration directory becomes the baseline.
+.E(
+isa% \f(CBaeipass\fP
+aegis: logging to "/projects/example/delta.001/aegis.log"
+aegis: ci -u -m/dev/null -t/dev/null /projects/example/delta.001/
+        Howto.cook /projects/example/history/Howto.cook,v;
+        rcs -U /projects/example/history/Howto.cook,v
+/projects/example/history/Howto.cook,v  <--
+        /projects/example/delta.001/Howto.cook
+initial revision: 1.1
+done
+RCS file: /projects/example/history/Howto.cook,v
+done
+aegis: rlog -r /projects/example/history/Howto.cook,v | awk
+        '/^head:/ {print $2}' > /tmp/aegis.15309
+\fI\&...lots of similar RCS output...\fP
+aegis: project "example": change 1: remove development directory
+aegis: sh /usr/local/lib/aegis/ip.sh example 1 pat robyn isa
+aegis: project "example": change 1: integrate pass
+isa%
+.E)
+.LP
+All of the staff involved,
+will receive email to say that the change has been integrated.
+This notification is a shell script,
+so USENET could be usefully used instead.
+.PP
+You should note that the development directory has been deleted.
+It is expected that each development directory will only contain
+files necessary to develop the change.
+You should keep "precious" files somewhere else.
+.nh 3 "The Other Changes"
+.LP
+There is no difference to integrating any of the later changes.
+The integration process is very simple,
+as it is a cut-down version of what the developer does,
+without all the complexity.
+.LP
+Your project may elect to have the integrator also monitor
+the quality of the reviews.
+An answer to "who will watch the watchers" if you like.
+.LP
+It is also a good idea to rotate people out of the integrator
+position after a few weeks in a busy project,
+this is a very stressful position.
+The position of integrator gives a unique perspective to software quality,
+but the person also needs to be able to say "NO!" when a cruddy
+change comes along.
+.bp
+.nh 3 "Integrator Command Summary"
+.LP
+Only a few of the aegis commands available to integrators have
+been used in this example.
+The following table (very tersely) describes the aegis commands
+most useful to integrators.
+.sp
+.TS
+center,tab(;);
+l l.
+Command;Description
+_
+aeb;Build
+aecd;Change Directory
+aeib;Integrate Begin
+aeibu;Integrate Begin Undo
+aeifail;Integrate Fail
+ael;List Stuff
+aet;Test
+aeipass;Integrate Pass
+.TE
+.LP
+You will want to read the manual entries for all of these commands.
+Note that all aegis commands have a
+.I \-Help
+option,
+which will give a result very similar to the
+corresponding
+.I man (1)
+output.
+Most aegis commands also have a
+.I \-List
+option,
+which usually lists interesting context sensitive information.

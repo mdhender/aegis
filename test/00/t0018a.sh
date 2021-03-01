@@ -1,7 +1,7 @@
 #!/bin/sh
 #
 #	aegis - project change supervisor
-#	Copyright (C) 1993, 1994, 1995 Peter Miller;
+#	Copyright (C) 1993, 1994, 1995, 1996, 1997, 1998 Peter Miller;
 #	All rights reserved.
 #
 #	This program is free software; you can redistribute it and/or modify
@@ -16,7 +16,7 @@
 #
 #	You should have received a copy of the GNU General Public License
 #	along with this program; if not, write to the Free Software
-#	Foundation, Inc., 675 Mass Ave, Cambridge, MA 02139, USA.
+#	Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111, USA.
 #
 # MANIFEST: Test the 'aegis -NewFile -Build' command.
 #
@@ -25,6 +25,8 @@ unset AEGIS_PROJECT
 unset AEGIS_CHANGE
 unset AEGIS_PATH
 unset AEGIS
+unset LINES
+unset COLS
 umask 022
 
 USER=${USER:-${LOGNAME:-`whoami`}}
@@ -32,14 +34,23 @@ USER=${USER:-${LOGNAME:-`whoami`}}
 work=${AEGIS_TMP:-/tmp}/$$
 
 here=`pwd`
-if test $? -ne 0; then exit 1; fi
+if test $? -ne 0; then exit 2; fi
 
 if test "$1" != "" ; then bin="$here/$1/bin"; else bin="$here/bin"; fi
 
+no_result()
+{
+	set +x
+	echo "NO RESULT for test of 'aegis -NewFile -Build' command ($activity)" 1>&2
+	cd $here
+	find $work -type d -user $USER -exec chmod u+w {} \;
+	rm -rf $work
+	exit 2
+}
 fail()
 {
 	set +x
-	echo "FAILED test of 'aegis -NewFile -Build' command" 1>&2
+	echo "FAILED test of 'aegis -NewFile -Build' command ($activity)" 1>&2
 	cd $here
 	find $work -type d -user $USER -exec chmod u+w {} \;
 	rm -rf $work
@@ -54,7 +65,7 @@ pass()
 	rm -rf $work
 	exit 0
 }
-trap "fail" 1 2 3 15
+trap "no_result" 1 2 3 15
 
 #
 # some variable to make things earier to read
@@ -63,7 +74,11 @@ PAGER=cat
 export PAGER
 
 AEGIS_FLAGS="delete_file_preference = no_keep; \
-	diff_preference = automatic_merge;"
+	lock_wait_preference = always; \
+	diff_preference = automatic_merge; \
+	pager_preference = never; \
+	persevere_preference = all; \
+	log_file_preference = never;"
 export AEGIS_FLAGS
 AEGIS_THROTTLE=2
 export AEGIS_THROTTLE
@@ -74,71 +89,102 @@ workchan=$work/foo.chan
 tmp=$work/tmp
 
 #
-# echo commands so we can tell what failed
-#
-set -x
-
-#
 # make the directories
 #
-mkdir $work
-if test $? -ne 0 ; then fail; fi
+activity="create working directory 79"
+mkdir $work $work/lib
+if test $? -ne 0 ; then no_result; fi
+chmod 777 $work/lib
+if test $? -ne 0 ; then no_result; fi
 cd $work
-if test $? -ne 0 ; then fail; fi
+if test $? -ne 0 ; then no_result; fi
+
+#
+# use the built-in error messages
+#
+AEGIS_MESSAGE_LIBRARY=$work/no-such-dir
+export AEGIS_MESSAGE_LIBRARY
+unset LANG
+unset LANGUAGE
+
+#
+# If the C compiler is called something other than ``cc'', as discovered
+# by the configure script, create a shell script called ``cc'' which
+# invokes the correct C compiler.  Make sure the current directory is in
+# the path, so that it will be invoked.
+#
+if test "$CC" != "" -a "$CC" != "cc"
+then
+	cat >> cc << fubar
+#!/bin/sh
+exec $CC \$*
+fubar
+	if test $? -ne 0 ; then no_result; fi
+	chmod a+rx cc
+	if test $? -ne 0 ; then no_result; fi
+	PATH=${work}:${PATH}
+	export PATH
+fi
 
 #
 # make a new project
 #
-$bin/aegis -newpro foo -dir $workproj -v -lib $worklib
-if test $? -ne 0 ; then fail; fi
+activity="new project 112"
+$bin/aegis -newpro foo -vers "" -dir $workproj -v -lib $worklib > test.out 2>&1
+if test $? -ne 0 ; then cat test.out; no_result; fi
 
 #
 # change project attributes
 #
+activity="project attributes 119"
 cat > $tmp << 'end'
 description = "A bogus project created to test things.";
 developer_may_review = true;
 developer_may_integrate = true;
 reviewer_may_integrate = true;
 end
-$bin/aegis -proatt -f $tmp -proj foo -v -lib $worklib
-if test $? -ne 0 ; then fail; fi
+$bin/aegis -proatt -f $tmp -proj foo -v -lib $worklib > test.out 2>&1
+if test $? -ne 0 ; then cat test.out; no_result; fi
 
 #
 # create a new change
 #	make sure it creates the files it should
 #
+activity="new change 133"
 cat > $tmp << 'end'
 brief_description = "This change is used to test the aegis functionality \
 with respect to change descriptions.";
 cause = internal_bug;
 end
-$bin/aegis -new_change -f $tmp -project foo -v -lib $worklib
-if test $? -ne 0 ; then fail; fi
+$bin/aegis -new_change 1 -f $tmp -project foo -v -lib $worklib > test.out 2>&1
+if test $? -ne 0 ; then cat test.out; no_result; fi
 
 #
 # add a new developer
 #
-$bin/aegis -newdev $USER -p foo -v -lib $worklib
-if test $? -ne 0 ; then fail; fi
+activity="new developer 145"
+$bin/aegis -newdev $USER -p foo -v -lib $worklib > test.out 2>&1
+if test $? -ne 0 ; then cat test.out; no_result; fi
 
 #
 # begin development of a change
 #
-$bin/aegis -devbeg 1 -p foo -dir $workchan -v -lib $worklib
-if test $? -ne 0 ; then fail; fi
+activity="begin development 152"
+$bin/aegis -devbeg 1 -p foo -dir $workchan -v -lib $worklib > test.out 2>&1
+if test $? -ne 0 ; then cat test.out; no_result; fi
 
 #
 # add a new files to the change
 #
-$bin/aegis -new_file $workchan/main.c -nl -v -lib $worklib -p foo
-if test $? -ne 0 ; then fail; fi
-$bin/aegis -new_file $workchan/fubar -nl -v -lib $worklib -p foo
-if test $? -ne 0 ; then fail; fi
-$bin/aegis -new_file $workchan/version -b -nl -v -lib $worklib -p foo
-if test $? -ne 0 ; then fail; fi
-$bin/aegis -new_file $workchan/config -nl -v -lib $worklib -p foo
-if test $? -ne 0 ; then fail; fi
+activity="new file 159"
+$bin/aegis -new_file $workchan/main.c -nl -v -lib $worklib -p foo > test.out 2>&1
+if test $? -ne 0 ; then cat test.out; no_result; fi
+$bin/aegis -new_file $workchan/fubar -nl -v -lib $worklib -p foo > test.out 2>&1
+if test $? -ne 0 ; then cat test.out; no_result; fi
+$bin/aegis -new_file $workchan/version -b -nl -v -lib $worklib -p foo > test.out 2>&1
+if test $? -ne 0 ; then cat test.out; fail; fi
+$bin/aegis -new_file $workchan/config -nl -v -lib $worklib -p foo > test.out 2>&1
+if test $? -ne 0 ; then cat test.out; no_result; fi
 
 #
 # put something in 'main.c'
@@ -176,8 +222,9 @@ end
 #
 # create a new test
 #
-$bin/aegis -nt -v -lib $worklib -p foo
-if test $? -ne 0 ; then fail; fi
+activity="new test 205"
+$bin/aegis -nt -v -lib $worklib -p foo > test.out 2>&1
+if test $? -ne 0 ; then cat test.out; no_result; fi
 
 #
 # put something in 'test/00/t0001a.sh'
@@ -189,6 +236,11 @@ cat > $workchan/test/00/t0001a.sh << 'end'
 # Change: 1
 #
 
+no_result()
+{
+	echo WHIMPER 1>&2
+	exit 2
+}
 fail()
 {
 	echo SHUZBUTT 1>&2
@@ -198,7 +250,7 @@ pass()
 {
 	exit 0
 }
-trap "fail" 1 2 3 15
+trap "no_result" 1 2 3 15
 
 ./foo
 q=$?
@@ -222,102 +274,117 @@ end
 #
 # build the change
 #
-$bin/aegis -build -nl -v -lib $worklib -p foo
-if test $? -ne 0 ; then fail; fi
+activity="development build 252"
+$bin/aegis -build -nl -v -lib $worklib -p foo > test.out 2>&1
+if test $? -ne 0 ; then cat test.out; fail; fi
 
 #
 # difference the change
 #
-$bin/aegis -diff -nl -v -lib $worklib -p foo
-if test $? -ne 0 ; then fail; fi
+activity="development diff 259"
+$bin/aegis -diff -nl -v -lib $worklib -p foo > test.out 2>&1
+if test $? -ne 0 ; then cat test.out; fail; fi
 
 #
 # test the change
 #
-$bin/aegis -test -nl -v -lib $worklib -p foo
-if test $? -ne 0 ; then fail; fi
+activity="development test 266"
+$bin/aegis -test -nl -v -lib $worklib -p foo > test.out 2>&1
+if test $? -ne 0 ; then cat test.out; no_result; fi
 
 #
 # finish development of the change
 #
-$bin/aegis -dev_end -v -lib $worklib -p foo
-if test $? -ne 0 ; then fail; fi
+activity="develop end 273"
+$bin/aegis -dev_end -v -lib $worklib -p foo > test.out 2>&1
+if test $? -ne 0 ; then cat test.out; fail; fi
 
 #
 # add a new reviewer
 #
-$bin/aegis -newrev $USER -p foo -v -lib $worklib
-if test $? -ne 0 ; then fail; fi
+activity="new reviewer 280"
+$bin/aegis -newrev $USER -p foo -v -lib $worklib > test.out 2>&1
+if test $? -ne 0 ; then cat test.out; no_result; fi
 
 #
 # pass the review
 #
-$bin/aegis -review_pass -chan 1 -proj foo -v -lib $worklib
-if test $? -ne 0 ; then fail; fi
+activity="review pass 287"
+$bin/aegis -review_pass -chan 1 -proj foo -v -lib $worklib > test.out 2>&1
+if test $? -ne 0 ; then cat test.out; no_result; fi
 
 #
 # add an integrator
 #
-$bin/aegis -newint $USER -p foo -v -lib $worklib
-if test $? -ne 0 ; then fail; fi
+activity="new inegrator 294"
+$bin/aegis -newint $USER -p foo -v -lib $worklib > test.out 2>&1
+if test $? -ne 0 ; then cat test.out; no_result; fi
 
 #
 # start integrating
 #
-$bin/aegis -intbeg 1 -p foo -v -lib $worklib
-if test $? -ne 0 ; then fail; fi
+activity="integrate begin 301"
+$bin/aegis -intbeg 1 -p foo -v -lib $worklib > test.out 2>&1
+if test $? -ne 0 ; then cat test.out; fail; fi
 
 #
 # integrate build
 #
-$bin/aegis -build -nl -v -lib $worklib -p foo
-if test $? -ne 0 ; then fail; fi
+activity="integration build 308"
+$bin/aegis -build -nl -v -lib $worklib -p foo > test.out 2>&1
+if test $? -ne 0 ; then cat test.out; fail; fi
 
 #
 # integrate test
 #
-$bin/aegis -test -nl -v -lib $worklib -p foo
-if test $? -ne 0 ; then fail; fi
+activity="integration test 315"
+$bin/aegis -test -nl -v -lib $worklib -p foo > test.out 2>&1
+if test $? -ne 0 ; then cat test.out; no_result; fi
 
 #
 # integration pass
 #
-$bin/aegis -intpass -nl -v -lib $worklib -p foo
-if test $? -ne 0 ; then fail; fi
+activity="integrate pass 322"
+$bin/aegis -intpass -nl -v -lib $worklib -p foo > test.out 2>&1
+if test $? -ne 0 ; then cat test.out; fail; fi
 
 #
 # create a new change
 #	make sure it creates the files it should
 #
+activity="new change 330"
 cat > $tmp << 'end'
-brief_description = "A seconf Change";
+brief_description = "A second Change";
 cause = internal_bug;
 end
-$bin/aegis -new_change -f $tmp -project foo -v -lib $worklib
-if test $? -ne 0 ; then fail; fi
+$bin/aegis -new_change 2 -f $tmp -project foo -v -lib $worklib > test.out 2>&1
+if test $? -ne 0 ; then cat test.out; no_result; fi
 
 #
 # begin development of a change
 #
-$bin/aegis -devbeg 2 -p foo -dir $workchan -v -lib $worklib
-if test $? -ne 0 ; then fail; fi
+activity="develop begin 341"
+$bin/aegis -devbeg 2 -p foo -dir $workchan -v -lib $worklib > test.out 2>&1
+if test $? -ne 0 ; then cat test.out; no_result; fi
 
 #
 # set change attributes
 #
+activity="change attributes 348"
 cat > $workchan/xx  << 'fubar'
 test_exempt = true;
 test_baseline_exempt = true;
 fubar
-if test $? -ne 0 ; then fail; fi
-$bin/aegis -ca -f $workchan/xx -p foo -v -lib $worklib
-if test $? -ne 0 ; then fail; fi
+if test $? -ne 0 ; then no_result; fi
+$bin/aegis -ca -f $workchan/xx -p foo -v -lib $worklib > test.out 2>&1
+if test $? -ne 0 ; then cat test.out; no_result; fi
 
 #
 # add a new files to the change
 #
-$bin/aegis -cp $workchan/main.c -nl -v -lib $worklib -p foo
-if test $? -ne 0 ; then fail; fi
+activity="copy file 360"
+$bin/aegis -cp $workchan/main.c -nl -v -lib $worklib -p foo > test.out 2>&1
+if test $? -ne 0 ; then cat test.out; no_result; fi
 
 #
 # make it re-compile
@@ -329,57 +396,65 @@ end
 #
 # build the change
 #
-$bin/aegis -build -nl -v -lib $worklib -p foo
-if test $? -ne 0 ; then fail; fi
+activity="development build 374"
+$bin/aegis -build -nl -v -lib $worklib -p foo > test.out 2>&1
+if test $? -ne 0 ; then cat test.out; no_result; fi
 
 #
 # difference the change
 #
-$bin/aegis -diff -nl -v -lib $worklib -p foo
-if test $? -ne 0 ; then fail; fi
+activity="development diff 381"
+$bin/aegis -diff -nl -v -lib $worklib -p foo > test.out 2>&1
+if test $? -ne 0 ; then cat test.out; no_result; fi
 
 #
 # finish development of the change
 #
-$bin/aegis -dev_end -v -lib $worklib -p foo
-if test $? -ne 0 ; then fail; fi
+activity="develop end 388"
+$bin/aegis -dev_end -v -lib $worklib -p foo > test.out 2>&1
+if test $? -ne 0 ; then cat test.out; no_result; fi
 
 #
 # pass the review
 #
-$bin/aegis -review_pass -chan 2 -proj foo -v -lib $worklib
-if test $? -ne 0 ; then fail; fi
+activity="review pass 395"
+$bin/aegis -review_pass -chan 2 -proj foo -v -lib $worklib > test.out 2>&1
+if test $? -ne 0 ; then cat test.out; no_result; fi
 
 #
 # start integrating
 #
-$bin/aegis -intbeg 2 -p foo -v -lib $worklib
-if test $? -ne 0 ; then fail; fi
+activity="integrate begin 402"
+$bin/aegis -intbeg 2 -p foo -v -lib $worklib > test.out 2>&1
+if test $? -ne 0 ; then cat test.out; fail; fi
 
 #
 # integrate build
 #
-$bin/aegis -build -nl -v -lib $worklib -p foo
-if test $? -ne 0 ; then fail; fi
+activity="integration build 409"
+$bin/aegis -build -nl -v -lib $worklib -p foo > test.out 2>&1
+if test $? -ne 0 ; then cat test.out; no_result; fi
 
 #
 # integration pass
 #
-$bin/aegis -intpass -nl -v -lib $worklib -p foo
-if test $? -ne 0 ; then fail; fi
+activity="integrate pass 416"
+$bin/aegis -intpass -nl -v -lib $worklib -p foo > test.out 2>&1
+if test $? -ne 0 ; then cat test.out; fail; fi
 
 #
 # the build file should now be a change file
 #	even though user did not put it there
 #
-$bin/aegis -l cf -c 2 -unf -lib $worklib -p foo > $work/test.out
-if test $? -ne 0 ; then fail; fi
-cat > $work/test.ok << 'fubar'
-source modify 1.2 main.c
-build modify 1.2 version
+activity="check change file state 424"
+$bin/aegis -l cf -c 2 -unf -lib $worklib -p foo > test.out 2>&1
+if test $? -ne 0 ; then cat test.out; fail; fi
+cat > test.ok << 'fubar'
+source modify 1.1 -> 1.2 main.c
+build modify 1.1 -> 1.2 version
 fubar
-if test $? -ne 0 ; then fail; fi
-diff $work/test.ok $work/test.out
+if test $? -ne 0 ; then no_result; fi
+diff test.ok test.out
 if test $? -ne 0 ; then fail; fi
 
 #

@@ -1,0 +1,165 @@
+.\"
+.\"	aegis - project change supervisor
+.\"	Copyright (C) 1993, 1994 Peter Miller.
+.\"	All rights reserved.
+.\"
+.\"	This program is free software; you can redistribute it and/or modify
+.\"	it under the terms of the GNU General Public License as published by
+.\"	the Free Software Foundation; either version 2 of the License, or
+.\"	(at your option) any later version.
+.\"
+.\"	This program is distributed in the hope that it will be useful,
+.\"	but WITHOUT ANY WARRANTY; without even the implied warranty of
+.\"	MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+.\"	GNU General Public License for more details.
+.\"
+.\"	You should have received a copy of the GNU General Public License
+.\"	along with this program; if not, write to the Free Software
+.\"	Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111, USA.
+.\"
+.\" MANIFEST: User Guide, Tips and Traps, Writing Tests
+.\"
+.bp
+.nh 2 "Writing Tests"
+.LP
+This section describes a number of things you can do to write better tests,
+and some pitfalls to be avoided.
+.LP
+There are a number of suggestions for portability of tests;
+this will definitely be important if you are writing software
+to publish on USENET or for FTP.
+Portability is often required
+.I within
+an organization, also.
+Examples include a change in company policy from one 386 
+.UX
+to another
+(e.g. company doesn't like Linux, now you must use AT&T's SVR4 offering),
+or the development team use
+.I gcc
+until the company finds out and forces you to use the prototype-less
+compiler supplied with the operating system.
+.nh 3 "Bourne Shell"
+.LP
+The aegis program mandates that all tests be Bourne shell scripts.
+This is because this shell is available on all flavours of the
+.UX
+operating system.
+The script files need not have execute permissions set,
+because the aegis program always invokes them as
+.E(
+sh \fIfilename\fP
+.E)
+so tests should not expect command line arguments.
+The test is not passed the name of the project nor the number of the change.
+.LP
+This means that if you can write in in a shell script,
+you can test it.
+This includes such things as client-server model interfaces,
+and multi-user synchronization testing.
+.LP
+Some indication that the test script is a Bourne shell script is
+a good idea.
+While many systems accept that a first line starting with a colon is a
+Bourne shell "magic number",
+a more widely understood "magic number" is
+.E(
+#! /bin/sh
+.E)
+as the first line of the script file.
+.nh 3 "Current Directory"
+.LP
+Tests are always run with the current directory set to either the
+development directory
+change under test when testing a change,
+or the integration directory when integrating a change,
+or the baseline when performing independent tests.
+.LP
+A test must not make assumptions about where it is being executed from,
+except to the extent that it is somewhere a build has been performed.
+A test must not assume that the current directory is writable,
+and must not try to write to it,
+as this could damage the source code of a change
+under development,
+potentially destroying weeks of work.
+.nh 3 "Check Exit Status"
+.LP
+A test script should check the exit status of every single command,
+even those which cannot fail.
+Do not rely on, or use, the
+.I "set -e"
+shell option (it provides no ability to clean up on error).
+.LP
+Checking the exit status involves testing the contents of the
+.B $?
+shell variable.
+Do not use an
+.I if
+statement wrapped around an execution of the program under test
+as this will miss core dumps and other terminations caused by signals.
+.LP
+Checking the exit status of every command in the script
+ensures that strange permission settings,
+or disk space problems,
+will cause the test to fail,
+rather than plow on and produce spurious results.
+.nh 3 "Trap Interrupts"
+.LP
+Use the
+.I trap
+statement to catch interrupts 1 2 3 and 15 an cause the test to fail.
+This should perform any cleanup the test requires
+(such as removing the temporary directory; see next item).
+.nh 3 "Temporary Directory"
+.LP
+Tests should create a temporary directory in
+.I /tmp
+and then
+.I cd
+into this directory.
+.LP
+This tends to isolate any vandalism that the program under test may indulge in,
+and serves as a place to write temporary files.
+At the end of the test, it is sufficient to
+.I cd
+out of the temporary directory and then
+.I "rm -rf"
+it,
+rather than track and remove all test files which may or may not be created.
+.nh 3 "PAGER"
+.LP
+If the program under test invokes pagers on its output,
+a la \fImore\fP(1) et al,
+it should be coded to use the PAGER
+environment variable.
+Tests of such programs should always set PAGER to
+.I cat
+so that tests always behave the same,
+irrespective of invocation method (either by aegis or from the command line).
+.nh 3 "[ test ]"
+.LP
+You should always use the
+.I test
+command,
+rather than the square bracket form,
+as many systems do not have the square bracket form,
+if you publish to USENET or for FTP.
+.nh 3 "Auxiliary Files"
+.LP
+If a test requires extra files as input or output to a command,
+it must construct them itself,
+using \fIhere\fP documents (see \fIsh\fP(1) for more information).
+.LP
+It is almost impossible to determine the location of an auxiliary file,
+if that auxiliary file is part of the project source.
+It could be in either the change under test or the baseline.
+.nh 3 "New Test Templates"
+.LP
+It is possible to specify most of the repetitious
+items above in a
+.I "file template"
+used every time a user creates a new test.
+See the \fIaent\fP(1) command for more information.
+.LP
+Having the machine do it for you
+means that you are more likely to do it.

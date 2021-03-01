@@ -1,6 +1,6 @@
 /*
  *	aegis - project change supervisor
- *	Copyright (C) 1991, 1992, 1993, 1994 Peter Miller.
+ *	Copyright (C) 1991, 1992, 1993, 1994, 1995, 1996, 1997, 1998 Peter Miller;
  *	All rights reserved.
  *
  *	This program is free software; you can redistribute it and/or modify
@@ -15,7 +15,7 @@
  *
  *	You should have received a copy of the GNU General Public License
  *	along with this program; if not, write to the Free Software
- *	Foundation, Inc., 675 Mass Ave, Cambridge, MA 02139, USA.
+ *	Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111, USA.
  *
  * MANIFEST: functions to implement develop end undo
  */
@@ -32,16 +32,17 @@
 #include <ael.h>
 #include <arglex2.h>
 #include <change.h>
+#include <change_file.h>
 #include <col.h>
 #include <commit.h>
 #include <common.h>
-#include <dir.h>
 #include <error.h>
 #include <help.h>
 #include <lock.h>
-#include <option.h>
+#include <progname.h>
 #include <os.h>
 #include <project.h>
+#include <project_file.h>
 #include <sub.h>
 #include <trace.h>
 #include <undo.h>
@@ -55,7 +56,7 @@ develop_end_undo_usage()
 {
 	char		*progname;
 
-	progname = option_progname_get();
+	progname = progname_get();
 	fprintf(stderr, "usage: %s -Undo_Develop_End [ <option>... ]\n", progname);
 	fprintf(stderr, "       %s -Undo_Develop_End -List [ <option>... ]\n", progname);
 	fprintf(stderr, "       %s -Undo_Develop_End -Help\n", progname);
@@ -68,12 +69,7 @@ static void develop_end_undo_help _((void));
 static void
 develop_end_undo_help()
 {
-	static char *text[] =
-	{
-#include <../man1/aedeu.h>
-	};
-
-	help(text, SIZEOF(text), develop_end_undo_usage);
+	help("aedeu", develop_end_undo_usage);
 }
 
 
@@ -97,12 +93,12 @@ develop_end_undo_list()
 
 		case arglex_token_project:
 			if (arglex() != arglex_token_string)
-				develop_end_undo_usage();
+				option_needs_name(arglex_token_project, develop_end_undo_usage);
 			/* fall through... */
 		
 		case arglex_token_string:
 			if (project_name)
-				fatal("duplicate -Project option");
+				duplicate_option_by_name(arglex_token_project, develop_end_undo_usage);
 			project_name = str_from_c(arglex_value.alv_string);
 			break;
 		}
@@ -121,85 +117,12 @@ develop_end_undo_list()
 }
 
 
-static void repair_diff_time _((change_ty *, string_ty *));
-
-static void
-repair_diff_time(cp, path)
-	change_ty	*cp;
-	string_ty	*path;
-{
-	string_ty	*s;
-	cstate_src	src_data;
-	string_ty	*s2;
-
-	s = os_below_dir(change_development_directory_get(cp, 1), path);
-	src_data = change_src_find(cp, s);
-	if (src_data)
-		src_data->diff_time = os_mtime(path);
-	else
-	{
-		if
-		(
-			s->str_length > 2
-		&&
-			!strcmp(s->str_text + s->str_length - 2, ",D")
-		)
-		{
-			s2 = str_n_from_c(s->str_text, s->str_length - 2);
-			src_data = change_src_find(cp, s2);
-			if (src_data)
-				src_data->diff_file_time = os_mtime(path);
-			str_free(s2);
-		}
-	}
-	str_free(s);
-}
-
-
-static void deu_func _((void *, dir_walk_message_ty, string_ty *, struct stat *));
-
-static void
-deu_func(arg, message, path, st)
-	void		*arg;
-	dir_walk_message_ty message;
-	string_ty	*path;
-	struct stat	*st;
-{
-	change_ty	*cp;
-	int		uid;
-
-	trace(("deu_func(message = %d, path = \"%s\", st = %08lX)\n{\n"/*}*/,
-		message, path->str_text, st));
-	cp = (change_ty *)arg;
-	switch (message)
-	{
-	case dir_walk_dir_before:
-	case dir_walk_file:
-		os_become_query(&uid, (int *)0, (int *)0);
-		if (st->st_uid == uid)
-		{
-			os_chmod(path, st->st_mode | 0200);
-			undo_chmod(path, st->st_mode);
-		}
-		repair_diff_time(cp, path);
-		break;
-
-	case dir_walk_special:
-	case dir_walk_symlink:
-	case dir_walk_dir_after:
-		break;
-	}
-	trace((/*{*/"}\n"));
-}
-
-
 static void develop_end_undo_main _((void));
 
 static void
 develop_end_undo_main()
 {
 	cstate		cstate_data;
-	pstate		pstate_data;
 	cstate_history	history_data;
 	int		j;
 	string_ty	*project_name;
@@ -207,7 +130,6 @@ develop_end_undo_main()
 	long		change_number;
 	change_ty	*cp;
 	user_ty		*up;
-	string_ty	*dd;
 
 	trace(("develop_end_undo_main()\n{\n"/*}*/));
 	project_name = 0;
@@ -222,26 +144,41 @@ develop_end_undo_main()
 
 		case arglex_token_change:
 			if (arglex() != arglex_token_number)
-				develop_end_undo_usage();
+				option_needs_number(arglex_token_change, develop_end_undo_usage);
 			/* fall through... */
 
 		case arglex_token_number:
 			if (change_number)
-				fatal("duplicate -Change option");
+				duplicate_option_by_name(arglex_token_change, develop_end_undo_usage);
 			change_number = arglex_value.alv_number;
-			if (change_number < 1)
-				fatal("change %ld out of range", change_number);
+			if (change_number == 0)
+				change_number = MAGIC_ZERO;
+			else if (change_number < 1)
+			{
+				sub_context_ty	*scp;
+
+				scp = sub_context_new();
+				sub_var_set(scp, "Number", "%ld", change_number);
+				fatal_intl(scp, i18n("change $number out of range"));
+				/* NOTREACHED */
+				sub_context_delete(scp);
+			}
 			break;
 
 		case arglex_token_project:
 			if (arglex() != arglex_token_string)
-				develop_end_undo_usage();
+				option_needs_name(arglex_token_project, develop_end_undo_usage);
 			/* fall through... */
 		
 		case arglex_token_string:
 			if (project_name)
-				fatal("duplicate -Project option");
+				duplicate_option_by_name(arglex_token_project, develop_end_undo_usage);
 			project_name = str_from_c(arglex_value.alv_string);
+			break;
+
+		case arglex_token_wait:
+		case arglex_token_wait_not:
+			user_lock_wait_argument(develop_end_undo_usage);
 			break;
 		}
 		arglex();
@@ -277,7 +214,6 @@ develop_end_undo_main()
 	user_ustate_lock_prepare(up);
 	lock_take();
 	cstate_data = change_cstate_get(cp);
-	pstate_data = project_pstate_get(pp);
 
 	/*
 	 * It is an error if the change is not in one of the 'being_reviewed'
@@ -290,25 +226,9 @@ develop_end_undo_main()
 	&&
 		cstate_data->state != cstate_state_awaiting_integration
 	)
-	{
-		change_fatal
-		(
-			cp,
-"this change is in the '%s' state, it must be in the 'being reviewed' \
-or 'awaiting development' state to undo develop end",
-			cstate_state_ename(cstate_data->state)
-		);
-	}
+		change_fatal(cp, 0, i18n("bad deu state"));
 	if (!str_equal(change_developer_name(cp), user_name(up)))
-	{
-		change_fatal
-		(
-			cp,
-     "user \"%S\" was not the developer, only user \"%S\" may undo develop end",
-			user_name(up),
-			change_developer_name(cp)
-		);
-	}
+		change_fatal(cp, 0, i18n("was not developer"));
 
 	/*
 	 * Change the state.
@@ -328,13 +248,15 @@ or 'awaiting development' state to undo develop end",
 	 * go through the files in the change and unlock them
 	 * in the baseline
 	 */
-	for (j = 0; j < cstate_data->src->length; ++j)
+	for (j = 0; ; ++j)
 	{
-		cstate_src	c_src_data;
-		pstate_src	p_src_data;
+		fstate_src	c_src_data;
+		fstate_src	p_src_data;
 
-		c_src_data = cstate_data->src->list[j];
-		p_src_data = project_src_find(pp, c_src_data->file_name);
+		c_src_data = change_file_nth(cp, j);
+		if (!c_src_data)
+			break;
+		p_src_data = project_file_find(pp, c_src_data->file_name);
 		if (!p_src_data)
 			/* this is really a corrupted file */
 			continue;
@@ -344,23 +266,24 @@ or 'awaiting development' state to undo develop end",
 		 * Remove the file if it is about_to_be_created
 		 * by the change we are rescinding.
 		 */
-		if (p_src_data->about_to_be_created_by)
+		if
+		(
+			p_src_data->about_to_be_created_by
+		||
+			p_src_data->about_to_be_copied_by
+		)
 		{
-			assert(p_src_data->about_to_be_created_by == change_number);
+			assert(!p_src_data->about_to_be_created_by || p_src_data->about_to_be_created_by == change_number);
+			assert(!p_src_data->about_to_be_copied_by || p_src_data->about_to_be_copied_by == change_number);
 			if (p_src_data->deleted_by)
+			{
+				assert(!p_src_data->about_to_be_copied_by);
 				p_src_data->about_to_be_created_by = 0;
+			}
 			else
-				project_src_remove(pp, c_src_data->file_name);
+				project_file_remove(pp, c_src_data->file_name);
 		}
 	}
-
-	/*
-	 * change the ownership back to the user
-	 */
-	dd = change_development_directory_get(cp, 1);
-	user_become(up);
-	dir_walk(dd, deu_func, cp);
-	user_become_undo();
 
 	/*
 	 * write out the data and release the locks
@@ -379,7 +302,7 @@ or 'awaiting development' state to undo develop end",
 	/*
 	 * verbose success message
 	 */
-	change_verbose(cp, "development resumed");
+	change_verbose(cp, 0, i18n("develop end undo complete"));
 	change_free(cp);
 	project_free(pp);
 	user_free(up);

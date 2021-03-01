@@ -1,0 +1,49 @@
+#
+#	aegis - project change supervisor
+#	Copyright (C) 1998 Peter Miller;
+#	All rights reserved.
+#
+#	This program is free software; you can redistribute it and/or modify
+#	it under the terms of the GNU General Public License as published by
+#	the Free Software Foundation; either version 2 of the License, or
+#	(at your option) any later version.
+#
+#	This program is distributed in the hope that it will be useful,
+#	but WITHOUT ANY WARRANTY; without even the implied warranty of
+#	MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+#	GNU General Public License for more details.
+#
+#	You should have received a copy of the GNU General Public License
+#	along with this program; if not, write to the Free Software
+#	Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111, USA.
+#
+# MANIFEST: error messges for the aerect command
+#
+# -----------------------------------------------------------------------------
+#
+# This error message is issued when the bevel size specified is negative,
+# or too big.
+#
+msgid	"bevel size $number out of range"
+msgstr	"bevel size $number out of range, it must be 0 to 10"
+
+#
+# This error message is issued when a color component is not in the
+# range 0..255.
+#
+msgid	"color component $number out of range"
+msgstr	"color component $number out of range, it must be 0 to 255"
+
+#
+# This error message is issued if no size was specified on the command
+# line.  Exactly two are required.
+#
+msgid	"no size specified"
+msgstr	"no size specified"
+
+#
+# This error message is issued too many sizes are specified on the
+# command line.  Exactly two are required.
+#
+msgid	"too many sizes specified"
+msgstr	"too many sizes specified"

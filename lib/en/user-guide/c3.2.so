@@ -1,0 +1,250 @@
+.\"
+.\"	aegis - project change supervisor
+.\"	Copyright (C) 1991, 1992, 1993, 1994, 1995, 1998 Peter Miller;
+.\"	All rights reserved.
+.\"
+.\"	This program is free software; you can redistribute it and/or modify
+.\"	it under the terms of the GNU General Public License as published by
+.\"	the Free Software Foundation; either version 2 of the License, or
+.\"	(at your option) any later version.
+.\"
+.\"	This program is distributed in the hope that it will be useful,
+.\"	but WITHOUT ANY WARRANTY; without even the implied warranty of
+.\"	MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+.\"	GNU General Public License for more details.
+.\"
+.\"	You should have received a copy of the GNU General Public License
+.\"	along with this program; if not, write to the Free Software
+.\"	Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111, USA.
+.\"
+.\" MANIFEST: User Guide,  The History Tool, Using RCS
+.\"
+.bp
+.nh 2 "Using RCS"
+.LP
+The entries for the commands are listed below.
+RCS uses a slightly different model than aegis wants,
+so some maneuvering is required.
+The command strings in this section assume that the RCS commands
+.I ci
+and
+.I co
+and
+.I rcs
+and
+.I rlog
+are in the command search PATH,
+but you may like to hard-wire the paths,
+or set PATH at the start of each.
+You should also note that the strings are always handed to
+the Bourne shell to be executed,
+and are set to exit with an error immediately a sub-command fails.
+.LP
+In these commands,
+the RCS file is kept unlocked,
+since only the owner will be checking changes in.
+The RCS functionality for coordinating shared access is not required.
+.LP
+One advantage of using RCS version 5.6 or later is that
+binary files are supported,
+should you want to have binary files in the baseline.
+.nh 3 "history_create_command"
+.LP
+This command is used to create a new file history.
+This command is always executed as the project owner.
+.LP
+The following substitutions are available:
+.IP ${Input}
+absolute path of the source file
+.IP ${History}
+absolute path of the history file
+.LP
+The entry in the
+.I "config"
+file looks like this:
+.E(
+history_create_command =
+  "ci -f -u -d -M -m$c -t/dev/null \e
+  $i $h,v; rcs -U $h,v";
+.E)
+.LP
+The "\f(CWci -f\fP" option is used to specify that
+a copy is to be checked-in even if there are no changes.
+The "\f(CWci -u\fP" option is used to specify that
+an unlocked copy will remain in the baseline.
+The "\f(CWci -d\fP" option is used to specify that 
+the file time rather than the current time is to be used for the new revision.
+The "\f(CWci -M\fP" option is used to specify that 
+the mode date on the original file is not to be altered.
+The "\f(CWci -t\fP" option is used to specify that 
+there is to be no description text for the new RCS file.
+The "\f(CWci -m\fP" option is used to specify that 
+the change number is to be stored in the file log
+if this is actually an update (typically from 
+.I aenf
+after
+.I aerm
+on the same file name).
+The "\f(CWrcs -U\fP" option is used to specify that
+the new RCS file is to have unstrict locking.
+.nh 3 "history_get_command"
+.LP
+This command is used to get a specific edit back from history.
+This command is always executed as the project owner.
+.LP
+The following substitutions are available:
+.IP ${History}
+absolute path of the history file
+.IP ${Edit}
+edit number, as given by history_\%query_\%command
+.IP ${Output}
+absolute path of the destination file
+.LP
+The entry in the
+.I "config"
+file looks like this:
+.E(
+history_get_command =
+  "co -r'$e' -p $h,v > $o";
+.E)
+.LP
+The "\f(CWco -r\fP option is used to specify
+the edit to be retrieved.
+The "\f(CWco -p\fP option is used to specify that
+the results be printed on the standard output;
+this is because the destination filename will
+.I never
+look anything like the history source filename.
+.nh 3 "history_put_command"
+.LP
+This command is used to add a new "top-most" entry to the
+history file.
+This command is always executed as the project owner.
+.LP
+The following substitutions are available:
+.IP ${Input}
+absolute path of source file
+.IP ${History}
+absolute path of history file
+.LP
+The entry in the
+.I "config"
+file looks like this:
+.E(
+history_put_command =
+  "ci -f -u -d -M -m$c $i $h,v"
+.E)
+.LP
+Uses ci to deposit a new revision, using -d and -M as described
+for history_create_command.  The -m flag stores the change number
+in the file log, which allows rlog to be used to find the Aegis
+change numbers to which each revision of the file corresponds.
+.E(
+history_put_command =
+  "ci -u -d -M -m$c $i $h,v";
+.E)
+.LP
+The "\f(CWci -f\fP" option is used to specify that
+a copy is to be checked-in even if there are no changes.
+The "\f(CWci -u\fP" option is used to specify that
+an unlocked copy will remain in the baseline.
+The "\f(CWci -d\fP" option is used to specify that 
+the file time rather than the current time is to be used for the new revision.
+The "\f(CWci -M\fP" option is used to specify that 
+the mode date on the original file is not to be altered.
+The "\f(CWci -m\fP" option is used to specify that 
+the change number is to be stored in the file log,
+which allows
+.I rlog
+to be used to find the change numbers to which
+each revision of the file corresponds.
+.LP
+It is possible for a
+a very cautious approach has been taken,
+in which case the
+.I history_put_command
+may be set to the same string specified above for the
+\fIhistory_create_command\fP.
+.nh 3 "history_query_command"
+.LP
+This command is used to query what the history mechanism calls the top-most
+edit of a history file.
+The result may be any arbitrary string,
+it need not be anything like a number,
+just so long as it uniquely identifies the edit
+for use by the
+.I history_get_command
+at a later date.
+The edit number is to be printed on the standard output.
+This command is always executed as the project owner.
+.LP
+The following substitutions are available:
+.IP ${History}
+absolute path of the history file
+.LP
+The entry in the
+.I "config"
+file looks like this:
+.E(
+history_query_command =
+  "rlog -r $h,v | \e
+   awk '/^head:/ {print $$2}'";
+.E)
+.nh 3 "merge_command"
+.LP
+RCS also provides a
+.I merge
+program,
+which can be used to provide a three-way merge.
+.LP
+All of the command substitutions described in
+.I aesub (5)
+are available.
+In addition, the following substitutions are also available:
+.IP ${ORiginal}
+The absolute path name of a file containing the version originally copied.
+Usually in a temporary file.
+.IP ${Most_Recent}
+The absolute path name of a file containing the most recent version.
+Usually in the baseline.
+.IP ${Input}
+The absolute path name of the edited version of the file.
+Usually in the development directory.
+Aegis usually moves the original source file aside,
+so that the output may have the source file's name.
+.IP ${Output}
+The absolute path name of the file in which to write the difference listing.
+Usually in the development directory,
+usually the name of a change source file.
+.LP
+The entry in the
+.I "config"
+file looks like this:
+.E(
+merge_command =
+  "set +e; \e
+  merge -p -L baseline -L C$c \e
+  $mr $orig $in > $out; \e
+  test $? -le 1";
+.E)
+.PP
+The "\f(CWmerge -L\fP" options are used to specify
+labels for the baseline and the development directory,
+respectively,
+when conflict lines are inserted into the result.
+The "\f(CWmerge -p\fP" options is used to specify that
+the results are to be printed on the standard output.
+.PP
+It is important that theis command does not move its inpout and output
+files around, otherwise the contradicts the warnings Aegis may issue to
+the user.  (In previous versions of Aegis, this was necessary, however
+this is no longer the case.)
+.nh 3 "Templates"
+.LP
+The
+.I lib/config.example/rcs
+file in the Aegis distribution
+contains all of the above commands,
+so that you may readily insert them into your project
+.I config
+file.

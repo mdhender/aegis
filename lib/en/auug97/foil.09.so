@@ -1,0 +1,73 @@
+.\"
+.\"	aegis - project change supervisor
+.\"	Copyright (C) 1998 Peter Miller;
+.\"	All rights reserved.
+.\"
+.\"	This program is free software; you can redistribute it and/or modify
+.\"	it under the terms of the GNU General Public License as published by
+.\"	the Free Software Foundation; either version 2 of the License, or
+.\"	(at your option) any later version.
+.\"
+.\"	This program is distributed in the hope that it will be useful,
+.\"	but WITHOUT ANY WARRANTY; without even the implied warranty of
+.\"	MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+.\"	GNU General Public License for more details.
+.\"
+.\"	You should have received a copy of the GNU General Public License
+.\"	along with this program; if not, write to the Free Software
+.\"	Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111, USA.
+.\"
+.\" MANIFEST: AUUGN Feb'98 Article
+.\"
+.nr PS 72
+.nr VS 75000
+.LP
+.ad c
+Questions
+.br
+.ad l
+.sp 0.3i
+.nr PS 36
+.nr VS 37
+.XP
+\(bu Are you saying make is broken?
+.XP
+\(bu How many \fIreal\fP projects have you tried this on?
+.XP
+\(bu But it doesn't really work, does it?
+.XP
+\(bu How do I convert my 42M LOC legacy system?
+.XP
+\(bu
+Are you calling me incompetent?
+.bp
+.nr PS 24
+.nr VS 25
+.XP
+\(bu Are you saying make is broken?
+Why don't you leave poor make alone?
+.br
+\fBNo\fP I don't think \fImake\fP is broken.  Just misused.
+.XP
+\(bu How many \fIreal\fP projects have you tried this on?
+It didn't work, did it?
+.br
+\fBEvery\fP one I can.  Inter net & work.
+Aegis uses a model which encourages; successes.
+.XP
+\(bu But it doesn't really work, does it?
+It's just academic stuff, isn't it?
+You rarely see these problems in practice, do you?
+.br
+\fBAll\fP the time.  Usually treated as ``one off''
+.XP
+\(bu How do I convert my 42M LOC legacy system to use it?
+.br
+\fBVery\fP carefully.
+.XP
+\(bu
+Are you calling me incompetent?
+If this is so hot, how come everyone isn't doing it?
+How can 42M UNIX professionals be wrong?
+.br
+\fBSome\fP folks are doing whole proj builds.  EMail.

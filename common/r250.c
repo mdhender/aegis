@@ -15,7 +15,7 @@
  *
  *	You should have received a copy of the GNU General Public License
  *	along with this program; if not, write to the Free Software
- *	Foundation, Inc., 675 Mass Ave, Cambridge, MA 02139, USA.
+ *	Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111, USA.
  *
  * MANIFEST: good fast random number generator
  *
@@ -29,7 +29,6 @@
 #include <ac/unistd.h>
 
 #include <r250.h>
-#include <trace.h>
 
 static	unsigned long	buf[250];
 static	unsigned long	*pos;
@@ -47,12 +46,7 @@ r250_init()
 	/*
 	 * initialize crummy linear congruential
 	 */
-	trace(("r250_init()\n{\n"/*}*/));
-#ifdef DEBUG
-	srand(1);
-#else
 	srand(time((time_t *)0) + getpid());
-#endif
 
 	/*
 	 * position to start of array
@@ -85,7 +79,6 @@ r250_init()
 			bp -= SIZEOF(buf);
 		*bp = (*bp & ~(bit - 1)) | bit;
 	}
-	trace((/*{*/"}\n"));
 }
 
 

@@ -1,6 +1,6 @@
 /*
  *	aegis - project change supervisor
- *	Copyright (C) 1991, 1992, 1993, 1994, 1995 Peter Miller;
+ *	Copyright (C) 1991, 1992, 1993, 1994, 1995, 1998 Peter Miller;
  *	All rights reserved.
  *
  *	This program is free software; you can redistribute it and/or modify
@@ -15,53 +15,26 @@
  *
  *	You should have received a copy of the GNU General Public License
  *	along with this program; if not, write to the Free Software
- *	Foundation, Inc., 675 Mass Ave, Cambridge, MA 02139, USA.
+ *	Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111, USA.
  *
  * MANIFEST: functions to report errors
  */
 
-#include <ctype.h>
+#include <ac/ctype.h>
 #include <errno.h>
 #include <ac/stddef.h>
 #include <stdio.h>
 #include <ac/stdlib.h>
 #include <ac/string.h>
+#include <ac/libintl.h>
 
-#include <grp.h>
-#include <pwd.h>
 #include <ac/unistd.h>
 #include <ac/stdarg.h>
 
 #include <arglex.h>
 #include <error.h>
 #include <mprintf.h>
-#include <option.h>
-
-
-static void error_get_id _((int *, int *));
-
-static void
-error_get_id(uid, gid)
-	int	*uid;
-	int	*gid;
-{
-	*uid = geteuid();
-	*gid = getegid();
-}
-
-
-static	error_id_ty errid = error_get_id;
-
-
-void
-error_set_id_func(f)
-	error_id_ty	f;
-{
-	if (f)
-		errid = f;
-	else
-		errid = error_get_id;
-}
+#include <progname.h>
 
 
 /*
@@ -88,15 +61,15 @@ wrap(s)
 	char	*progname;
 	static char escapes[] = "\rr\nn\ff\bb\tt";
 	int	page_width;
-	char	tmp[MAX_PAGE_WIDTH + 2];
+	char	tmp[200];
 	int	first_line;
 	char	*tp;
 
 	if (fflush(stdout) || ferror(stdout))
 		nfatal("(stdout)");
 	/* don't use last column, many terminals are dumb */
-	page_width = option_page_width_get() - 1;
-	progname = option_progname_get();
+	page_width = 79;
+	progname = progname_get();
 	first_line = 1;
 	while (*s)
 	{
@@ -131,15 +104,58 @@ wrap(s)
 		if (*ep && *ep != ' ')
 		{
 			char	*mp;
+			char	*bp_space;
+			char	*bp_slash;
 
+			bp_space = 0;
 			for (mp = ep; mp > s; --mp)
 			{
-				if (strchr(" /", mp[-1]))
+				if (mp[-1] == ' ')
 				{
-					ep = mp;
+					bp_space = mp;
 					break;
 				}
 			}
+
+			bp_slash = 0;
+			for (mp = ep; mp > s; --mp)
+			{
+				if (strchr("\\/", mp[-1]))
+				{
+					bp_slash = mp;
+					break;
+				}
+			}
+
+			/*
+			 * We could break it at the space, and only use
+			 * the slash if there are no spaces on the line.
+			 * This can lead to large amounts of wasted
+			 * space, particularly for link commands.  So, if
+			 * both breaks are possible, and the space break
+			 * is before the slash break, and the space
+			 * break is in the left half of the line, use
+			 * the slash break.
+			 */
+			if
+			(
+				bp_space
+			&&
+				bp_slash
+			&&
+				bp_space < bp_slash
+			&&
+				bp_space < s + 30
+			)
+				bp_space = 0;
+
+			/*
+			 * use the break if available
+			 */
+			if (bp_space)	
+				ep = bp_space;
+			else if (bp_slash)
+				ep = bp_slash;
 		}
 
 		/*
@@ -198,7 +214,18 @@ wrap(s)
 		first_line = 0;
 	}
 	if (fflush(stderr) || ferror(stderr))
-		nfatal("(stderr)");
+	{
+		static int disaster_count;
+
+		/*
+		 * If there is a problem with stderr, it is usually
+		 * because the tee command went away.  Try to cope, so
+		 * that we can finish cleaning up, but don't try too hard.
+		 */
+		if (disaster_count++ || !freopen("/dev/null", "w", stderr))
+			exit(1);
+		quit(1);
+	}
 }
 
 
@@ -241,37 +268,6 @@ copy_string(s)
 }
 
 
-static char *id _((void));
-
-static char *
-id()
-{
-	int		uid;
-	struct passwd	*pw;
-	char		uidn[20];
-	int		gid;
-	struct group	*gr;
-	char		gidn[20];
-	char		buffer[100];
-
-	errid(&uid, &gid);
-	pw = getpwuid(uid);
-	if (pw)
-		sprintf(uidn, "user \"%.8s\"", pw->pw_name);
-	else
-		sprintf(uidn, "uid %d", uid);
-
-	gr = getgrgid(gid);
-	if (gr)
-		sprintf(gidn, "group \"%.8s\"", gr->gr_name);
-	else
-		sprintf(gidn, "gid %d", gid);
-
-	sprintf(buffer, " [%s, %s]", uidn, gidn);
-	return copy_string(buffer);
-}
-
-
 /*
  *  NAME
  *	error - place a message on the error stream
@@ -291,9 +287,8 @@ id()
  *	contains a '%' character.
  */
 
-/*VARARGS1*/
 void
-error(fmt sva_last)
+error_raw(fmt sva_last)
 	char		*fmt;
 	sva_last_decl
 {
@@ -329,14 +324,12 @@ error(fmt sva_last)
  *	contains a '%' character.
  */
 
-/*VARARGS1*/
 void
 nerror(fmt sva_last)
 	char		*fmt;
 	sva_last_decl
 {
 	char		*s1;
-	char		*s2;
 	va_list		ap;
 	int		n;
 
@@ -347,13 +340,8 @@ nerror(fmt sva_last)
 	if (!s1)
 		double_jeopardy();
 	s1 = copy_string(s1);
-	if (n == EPERM || n == EACCES)
-		s2 = id();
-	else
-		s2 = copy_string("");
-	error("%s: %s%s", s1, strerror(n), s2);
+	error_raw("%s: %s", s1, strerror(n));
 	free(s1);
-	free(s2);
 }
 
 
@@ -386,7 +374,6 @@ nfatal(fmt sva_last)
 	sva_last_decl
 {
 	char		*s1;
-	char		*s2;
 	va_list		ap;
 	int		n;
 
@@ -398,12 +385,7 @@ nfatal(fmt sva_last)
 		double_jeopardy();
 	s1 = copy_string(s1);
 
-	if (n == EPERM || n == EACCES)
-		s2 = id();
-	else
-		s2 = "";
-
-	fatal("%s: %s%s", s1, strerror(n), s2);
+	fatal_raw("%s: %s", s1, strerror(n));
 }
 
 
@@ -428,9 +410,8 @@ nfatal(fmt sva_last)
  *	This function does NOT return.
  */
 
-/*VARARGS1*/
 void
-fatal(fmt sva_last)
+fatal_raw(fmt sva_last)
 	char		*fmt;
 	sva_last_decl
 {
@@ -474,188 +455,24 @@ assert_failed(s, file, line)
 	char	*file;
 	int	line;
 {
-	error("%s: %d: assertion \"%s\" failed (bug)", file, line, s);
+	error_raw("%s: %d: assertion \"%s\" failed (bug)", file, line, s);
 	abort();
 	exit(1); /* incase abort() comes back */
 	return 0; /* to silence lint */
 }
 
 
-/*
- *  NAME
- *	verbose - place a verbose message on the error stream
- *
- *  SYNOPSIS
- *	void verbose(char *fmt, ...);
- *
- *  DESCRIPTION
- *	The verbose function places a verbose message on the error stream.
- *	The first argument is a printf-like format string,
- *	optionally followed by other arguments.
- *	The message will be prefixed by the program name and a colon,
- *	and will be terminated with a newline, automatically.
- *
- *  CAVEAT
- *	Things like "verbose(filename)" blow up if the filename
- *	contains a '%' character.
- */
-
-/*VARARGS1*/
-void
-verbose(fmt sva_last)
-	char		*fmt;
-	sva_last_decl
-{
-	va_list		ap;
-	char		*buffer;
-
-	sva_init(ap, fmt);
-	buffer = vmprintf_errok(fmt, ap);
-	va_end(ap);
-	if (!buffer)
-		double_jeopardy();
-	if (option_verbose_get())
-		wrap(buffer);
-}
-
-
-/*
- *  NAME
- *      signal_name - find it
- *
- *  SYNOPSIS
- *      char *signal_name(int n);
- *
- *  DESCRIPTION
- *      The signal_name function is used to find the name of a signal from its
- *      number.
- *
- *  RETURNS
- *      char *: pointer to the signal name.
- *
- *  CAVEAT
- *      The signal name may not be written on.  Subsequent calls may alter the
- *      area pointed to.
- */
-
-char *
-signal_name(n)
-	int	n;
-{
-	static char buffer[16];
-
-	switch (n)
-	{
-#ifdef SIGHUP
-	case SIGHUP:
-		return "hang up [SIGHUP]";
-#endif /* SIGHUP */
-
-#ifdef SIGINT
-	case SIGINT:
-		return "user interrupt [SIGINT]";
-#endif /* SIGINT */
-
-#ifdef SIGQUIT
-	case SIGQUIT:
-		return "user quit [SIGQUIT]";
-#endif /* SIGQUIT */
-
-#ifdef SIGILL
-	case SIGILL:
-		return "illegal instruction [SIGILL]";
-#endif /* SIGILL */
-
-#ifdef SIGTRAP
-	case SIGTRAP:
-		return "trace trap [SIGTRAP]";
-#endif /* SIGTRAP */
-
-#ifdef SIGIOT
-	case SIGIOT:
-		return "abort [SIGIOT]";
-#endif /* SIGIOT */
-
-#ifdef SIGEMT
-	case SIGEMT:
-		return "EMT instruction [SIGEMT]";
-#endif /* SIGEMT */
-
-#ifdef SIGFPE
-	case SIGFPE:
-		return "floating point exception [SIGFPE]";
-#endif /* SIGFPE */
-
-#ifdef SIGKILL
-	case SIGKILL:
-		return "kill [SIGKILL]";
-#endif /* SIGKILL */
-
-#ifdef SIGBUS
-	case SIGBUS:
-		return "bus error [SIGBUS]";
-#endif /* SIGBUS */
-
-#ifdef SIGSEGV
-	case SIGSEGV:
-		return "segmentation violation [SIGSEGV]";
-#endif /* SIGSEGV */
-
-#ifdef SIGSYS
-	case SIGSYS:
-		return "bad argument to system call [SIGSYS]";
-#endif /* SIGSYS */
-
-#ifdef SIGPIPE
-	case SIGPIPE:
-		return "write on a pipe with no one to read it [SIGPIPE]";
-#endif /* SIGPIPE */
-
-#ifdef SIGALRM
-	case SIGALRM:
-		return "alarm clock [SIGALRM]";
-#endif /* SIGALRM */
-
-#ifdef SIGTERM
-	case SIGTERM:
-		return "software termination [SIGTERM]";
-#endif /* SIGTERM */
-
-#ifdef SIGUSR1
-	case SIGUSR1:
-		return "user defined signal one [SIGUSR1]";
-#endif /* SIGUSR1 */
-
-#ifdef SIGUSR2
-	case SIGUSR2:
-		return "user defined signal two [SIGUSR2]";
-#endif /* SIGUSR2 */
-
-#ifdef SIGCLD
-	case SIGCLD:
-		return "death of child [SIGCLD]";
-#endif /* SIGCLD */
-
-#ifdef SIGPWR
-	case SIGPWR:
-		return "power failure [SIGPWR]";
-#endif /* SIGPWR */
-
-	default:
-		sprintf(buffer, "signal %d", n);
-		return buffer;
-	}
-}
-
-
 static	quit_ty	quit_list[10];
 static	int	quit_list_len;
+static	int	quitting;
 
 
 void
 quit_register(func)
 	quit_ty	func;
 {
+	if (quitting)
+		return;
 	assert(quit_list_len < SIZEOF(quit_list));
 	assert(func);
 	quit_list[quit_list_len++] = func;
@@ -666,21 +483,18 @@ void
 quit(n)
 	int		n;
 {
-	int		j;
-	static int	quitting;
-
 	if (quitting > 4)
 	{
 		fprintf
 		(
 			stderr,
 			"%s: incorrectly handled error while quitting (bug)\n",
-			option_progname_get()
+			progname_get()
 		);
 		exit(1);
 	}
 	++quitting;
-	for (j = quit_list_len - 1; j >= 0; --j)
-		quit_list[j](n);
+	while (quit_list_len > 0)
+		quit_list[--quit_list_len](n);
 	exit(n);
 }

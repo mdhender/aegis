@@ -1,0 +1,300 @@
+'\" t
+.\"	aegis - project change supervisor
+.\"	Copyright (C) 1995, 1997 Peter Miller;
+.\"	All rights reserved.
+.\"
+.\"	This program is free software; you can redistribute it and/or modify
+.\"	it under the terms of the GNU General Public License as published by
+.\"	the Free Software Foundation; either version 2 of the License, or
+.\"	(at your option) any later version.
+.\"
+.\"	This program is distributed in the hope that it will be useful,
+.\"	but WITHOUT ANY WARRANTY; without even the implied warranty of
+.\"	MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+.\"	GNU General Public License for more details.
+.\"
+.\"	You should have received a copy of the GNU General Public License
+.\"	along with this program; if not, write to the Free Software
+.\"	Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111, USA.
+.\"
+.\" MANIFEST: How to release a version of Aegis
+.\"
+.so ../man1/z_name.so
+.TH Release "\*(N)" "\*(N)" "Release Notes"
+.if n .ftr CB B
+.if n .ftr CI I
+.if n .ftr CW R
+.if n .ftr C  R
+.if n .ad l
+.if n .hy 0
+.so version.so
+.de e(
+.br
+.ne 2i
+.RS
+.ft CW
+.nf
+.sp
+..
+.de e)
+.sp
+.fi
+.ft R
+.RE
+..
+.SH NAME
+How to release a version of \*(N)
+.SH CHECKLIST
+This document describes the steps involved in issuing a new release of \*(N).
+It is a simple procedure, but there is enough to do, and it happens
+sufficiently rarely, that it was worth writing down.
+.br
+.ne 2i
+.SH NEW BRANCH
+The version stamping is \fIpost\fP-numbered.
+You decide what major or minor version number you want
+as you are about to release,
+not when you start work.
+.PP
+Finish development of the branch in the normal way.
+For example, if you are working on project \fI\*(n).51.19\fP,
+then you would say
+.e(
+% \f[CB]aede -p \*(n).51 19\fP
+% \f[CB]aerpass -p \*(n).51 19\fP
+% \f[CB]aeib -p \*(n).51 19\fP
+% \f[CB]aed -p \*(n).51 19\fP
+% \f[CB]aeb -p \*(n).51 19\fP
+% \f[CB]aet -p \*(n).51 19\fP
+% \f[CB]aet -reg -p \*(n).51 -c 19\fP
+% \f[CB]aeipass -reg -p \*(n).51 -c 19\fP
+%
+.e)
+At this point, branch 19 if project \fI\*(n).51\fP is completed.
+Cut a new branch, as follows
+.e(
+% \f[CB]aenbr -p \*(n).51 20
+%
+.e)
+The branch number will default.  This is OK unless you ever skipped a
+number - in which case it will back fill which is usually undesirable.
+.PP
+At this point project \fI\*(n).51.20\fP is ready for use.  If you want
+a major version number increment, the process is similar, however you
+must also terminate the \fI\*(n).51\fP branch, and you may well want to
+create a branch on the branch, to get back to a two-number version scheme.
+.e(
+aede -p \*(n).51 19 \fIet al, to complete\fP
+aede -p \*(n) 51 \fIet al, to complete\fP
+aenbr -p \*(n) 52
+aenbr -p \*(n) 52 0
+.e)
+The purpose of a \fIpost\fP-numberd branching scheme is that, at any pint,
+you can cut a suitable bug-fix sub-branch.
+.br
+.ne 2i
+.SS Verify New Branch
+Create a new change on the branch you just created,
+and start development of it.
+.PP
+Update any version numbering files,
+or create any special release notes files, \fIetc\fP,
+as required.
+Much of this can be obtained from Aegis, but not all of it.
+.PP
+Create a new change for the previous branch
+to preserve the change file of the just-released version.
+Continuing the aboive example:
+.e(
+% \f[CB]aenf aux/CHANGES.51.19\fP
+% bl*/aux/CHANGES.sh \*(n).51.19 > aux/CHANGES.51.19\fP
+%
+.e)
+.SS Verify New Branch
+The first pass of verifying the release set is to use the
+.e(
+% \f[CB]aeb RPM\fP
+\fIlots of output\fP
+%
+.e)
+command.  This builds a RedHat package manager file.  It is a fairly
+vigorous test of the build and install, though highly Linux specific.
+Fix any problems encountered.
+.PP
+Take the \f(CWarchive/\*(n).\*(v).tar.gz\fP file  from the current
+baseline.
+Unpack it an verify that it configures and builds on one of the
+Solaris boxes.
+There are usually small niggling problems,
+so fix them and try again.
+.PP
+Then unpack it on some other computer which
+is in the architecture list in the project \fIconfig\fP file.
+Configure, build and test it on this machine.
+.PP
+Find yet another type of UNIX box and try again.
+AIX or Pyramid are always good torture tests,
+they are such bad UNIX implementations.
+.PP
+Once you have fixed all of the problems,
+develop end and integrate the change as normal.
+This creates the initial baseline for this branch;
+it will contain the appropriate version numbers for release.
+.br
+.ne 2i
+.SH ARCHIVES
+Once a viable release is ready, it is necessary to upload it to the archives.
+.SS Update Primary Archive
+Transfer a copy to \f(CWftp.canb.auug.org.au\fP by FTP.
+Login as \f(CWmillerp\fP and change to the \f[CW]WWW\fP directory
+(this corresponds to the \f[CW]/~millerp/\fP directory for WWW clients).
+Use the following commands
+.e(
+% \f(CBaecd -bl archive\fP
+% \f(CWftp ftp.canb.auug.org.au\fP
+user: \f(CBmillerp\fP
+ftp> \f(CBcd WWW\fP
+ftp> \f(CBbinary\fP
+ftp> \f(CBprompt\fP
+ftp> \f(CBmdel \*(n)*\fP
+ftp> \f(CBmput \*(n)*\fP
+ftp> \f(CBquit\fP
+%
+.e)
+.br
+.ne 2i
+.SS Update Linux Archive
+Transfer a copy to \f(CWsunsite.unc.edu\fP by FTP.
+Login as \f(CWanonymous\fP and change to the \f(CWincoming/Linux\fP directory.
+Use the following commands
+.e(
+% \f(CBaecd -bl archive\fP
+% \f(CWftp sunsite.unc.edu\fP
+user: \f(CBanonymous\fP
+ftp> \f(CBcd incoming/Linux\fP
+ftp> \f(CBbinary\fP
+ftp> \f(CBprompt\fP
+ftp> \f(CBmput \*(n)-*\fP
+ftp> \f(CBquit\fP
+%
+.e)
+.PP
+There is no need to send email to \fIewt@sunsite.unc.edu\fP,
+it will be archived automagically in a day or two (or fifteen).
+.br
+.ne 2i
+.SH NOTIFICATION
+Once the archives are ready, you can let folks know its there.
+.SS Notify Mailing List
+Send a notification to the \fI\*(n)-users@canb.auug.org.au\fP list.
+It should look like this:
+.e(
+To: \*(n)-users@canb.auug.org.au
+Reply-To: millerp@canb.auug.org.au
+Subject: \*(N) \*(v) \- a project change supervisor
+
+.fi
+I am pleased to announce that \*(N) \*(v) is now available.
+.sp
+Aegis is a transaction-based software configuration management system.
+It provides a framework within which a team of developers may work
+on many changes to a program independently, and Aegis coordinates
+integrating these changes back into the master source of the program,
+with as little disruption as possible.
+.sp
+You are invited to visit
+.ce 1
+http://www.canb.auug.org.au/~millerp/\*(n).html
+for a more complete description of what \*(N) is, and access to the
+download files.
+.sp
+For information about what new features are available in this 
+relase, please see the README file available at the above site.
+.sp
+\fIput your \f(CW.sig\fI file here
+.e)
+.PP
+Only send this notification \fIafter\fP the files are actually available
+at the archive site.
+.br
+.ne 2i
+.SS Update Mailing List Info
+Update the \*(n)-users list info, by sending email
+.e(
+To: majordomo@canb.auug.org.au
+
+newinfo \*(n)-users \fIpassword\fP
+
+attach the \fIREADME\fP file here
+.e)
+.br
+.ne 2i
+.SS Notify Newsgroups
+A variety of newsgroups are relevant to \*(N),
+so notify them that the release is available.
+.e(
+To: mail2news@replay.com
+Subject: \*(N) \*(v) \- a project change supervisor
+Reply-To: millerp@canb.auug.org.au
+Followup-To: millerp@canb.auug.org.au
+.fi
+Newsgroups:
+'in +4n
+alt.sources.d, comp.sources.d, comp.software-eng, comp.software.config-mgmt, gnu.announce
+.in -4n
+.sp
+I am pleased to announce that \*(N) \*(v) is now available.
+.sp
+Aegis is a transaction-based software configuration management system.
+It provides a framework within which a team of developers may work
+on many changes to a program independently, and Aegis coordinates
+integrating these changes back into the master source of the program,
+with as little disruption as possible.
+.sp
+You are invited to visit
+.ce 1
+http://www.canb.auug.org.au/~millerp/\*(n).html
+for a more complete description of what \*(N) is, and access to the
+download files.
+.sp
+For information about what new features are available in this 
+relase, please see the README file available at the above site.
+.sp
+insert \fI.sig\fP file here
+.e)
+Please note that the \f(CWNewsgroups:\fP line may not actually wrap,
+or have spaces around the commas.
+.br
+.ne 2i
+.SS Notify Linux Announce 
+Send a notification to the \fIcomp.os.linux.announce\fP list.
+It should look like this:
+.e(
+To: linux-announce@news.ornl.gov
+Reply-To: millerp@canb.auug.org.au
+Subject: \*(N) \*(v) \- a project change supervisor
+
+.fi
+I am pleased to announce that \*(N) \*(v) is now available.
+.sp
+Aegis is a transaction-based software configuration management system.
+It provides a framework within which a team of developers may work
+on many changes to a program independently, and Aegis coordinates
+integrating these changes back into the master source of the program,
+with as little disruption as possible.
+.sp
+You are invited to visit
+.ce 1
+http://www.canb.auug.org.au/~millerp/\*(n).html
+for a more complete description of what \*(N) is, and access to the
+download files.
+.sp
+For information about what new features are available in this 
+relase, please see the README file available at the above site.
+.sp
+\fIput your \f(CW.sig\fI file here
+.e)
+.PP
+Only send this notification \fIafter\fP the files are actually available
+at the archive site.
+.so ../man1/z_cr.so

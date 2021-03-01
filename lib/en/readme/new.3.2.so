@@ -1,0 +1,47 @@
+.\"
+.\"	aegis - project change supervisor
+.\"	Copyright (C) 1998 Peter Miller;
+.\"	All rights reserved.
+.\"
+.\"	This program is free software; you can redistribute it and/or modify
+.\"	it under the terms of the GNU General Public License as published by
+.\"	the Free Software Foundation; either version 2 of the License, or
+.\"	(at your option) any later version.
+.\"
+.\"	This program is distributed in the hope that it will be useful,
+.\"	but WITHOUT ANY WARRANTY; without even the implied warranty of
+.\"	MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+.\"	GNU General Public License for more details.
+.\"
+.\"	You should have received a copy of the GNU General Public License
+.\"	along with this program; if not, write to the Free Software
+.\"	Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111, USA.
+.\"
+.\" MANIFEST: document describing new 3.2 features
+.\"
+.PP     
+This release is a bug fix release,
+and mostly install and portability bug, at that.
+.PP
+.if n * 
+.if t \(bu
+The problem with \fIerrno\fP defines messing up \fIglue.c\fP has been fixed.
+.PP
+.if n * 
+.if t \(bu
+Numerous fixes to the wide character support, to cope with the vagueries
+of wide character support on many platforms.
+.PP
+.if n * 
+.if t \(bu
+The problem with the LINES and COLS environment variables messing up
+testing have been fixed.  Some tests gave false negatives because of this.
+.PP
+.if n * 
+.if t \(bu
+There is a new \fIaeb -minimum\fP option, for use with symbolic links,
+only, which has a minimal set of source file links, rather than everything
+in the baseline.
+.\" Place new text above this line.
+.\" ---------------------------------------------------------------------------
+.SS Version 3.2

@@ -1,0 +1,426 @@
+dnl
+dnl	aegis - a project change supervisor
+dnl	Copyright (C) 1994, 1995, 1997, 1998 Peter Miller;
+dnl	All rights reserved.
+dnl
+dnl	This program is free software; you can redistribute it and/or modify
+dnl	it under the terms of the GNU General Public License as published by
+dnl	the Free Software Foundation; either version 2 of the License, or
+dnl	(at your option) any later version.
+dnl
+dnl	This program is distributed in the hope that it will be useful,
+dnl	but WITHOUT ANY WARRANTY; without even the implied warranty of
+dnl	MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+dnl	GNU General Public License for more details.
+dnl
+dnl	You should have received a copy of the GNU General Public License
+dnl	along with this program; if not, write to the Free Software
+dnl	Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111, USA.
+dnl
+dnl MANIFEST: how to configure aegis, input to the GNU autoconf program
+dnl
+AC_INIT(common/patchlevel.h)
+AC_CONFIG_HEADER(common/config.h)
+AC_PROG_CC
+AC_PROG_CPP
+
+dnl
+dnl	Avoid the /usr/ucb/cc compiler, it screws up readdir,
+dnl	some systems seem to have the ucb one early in the path.
+dnl
+dnl	ranlib is unneccessary, but setting it to : will
+dnl	not work, so set it to echo.
+dnl
+dnl	This test must be before the stdarg test
+dnl	and before AC_C_CONST
+dnl
+if test -z "$GCC" ; then
+AC_MSG_CHECKING([for Pyramid])
+AC_EGREP_CPP(yes,[#ifdef __pyrsoft
+  yes
+#endif], CC="/usr/ccs/bin/cc"
+RANLIB="echo no need to ranlib"
+AC_MSG_RESULT([yes, thats unfortunate]),AC_MSG_RESULT([no, thats good]))
+fi
+
+AC_PROG_INSTALL
+AC_PROG_YACC
+AC_PROG_RANLIB
+AC_AIX
+AC_MINIX
+AC_ISC_POSIX
+AC_HAVE_LIBRARY(intl)
+AC_HAVE_LIBRARY(w)
+AC_HAVE_LIBRARY(socket)
+AC_HAVE_LIBRARY(m)
+AC_CHECK_PROGS(MSGFMT, gmsgfmt msgfmt)
+AC_CHECK_PROGS(GROFF, groff roff)
+AC_CHECK_PROGS(SOELIM, roffpp gsoelim soelim)
+
+dnl
+dnl	Test to see where TIOCGWINSZ is defined.
+dnl
+AC_MSG_CHECKING([for TIOCGWINSZ])
+AC_TRY_RUN([
+#include <sys/ioctl.h>
+int main(argc, argv)int argc; char **argv;{
+#ifdef TIOCGWINSZ
+struct winsize ws; ws.ws_col = 0; exit(ws.ws_col);
+#else
+exit(1);
+#endif
+}]
+, AC_DEFINE(HAVE_winsize_SYS_IOCTL_H)
+AC_MSG_RESULT([sys/ioctl.h]),
+AC_MSG_RESULT([not found]),
+AC_MSG_RESULT(cross))
+
+dnl
+dnl	Test to see where struct winsize is defined.
+dnl
+AC_MSG_CHECKING([for struct winsize])
+AC_TRY_RUN([
+#include <termios.h>
+int main(argc, argv)int argc; char **argv;{
+#ifdef TIOCGWINSZ
+struct winsize ws; ws.ws_col = 0; exit(ws.ws_col);
+#else
+exit(1);
+#endif
+}]
+, AC_DEFINE(HAVE_winsize_TERMIOS_H)
+AC_MSG_RESULT([termios.h]),
+AC_MSG_RESULT([not found]),
+AC_MSG_RESULT(cross))
+
+dnl
+dnl	Test to see if stdarg.h is available *and* works.
+dnl
+AC_MSG_CHECKING([for working stdarg.h])
+AC_TRY_RUN([
+#include <stdarg.h>
+char *foo = "test";
+#if defined(__STDC__) && __STDC__
+int test(char*,...);
+#endif
+int test(fmt)char*fmt;{va_list ap;char*a;int x;
+va_start(ap,fmt);a=va_arg(ap,char*);x=(a!=foo);va_end(ap);return x;}
+int main(argc,argv)int argc;char**argv;{
+exit(test("",foo));}]
+, AC_DEFINE(HAVE_STDARG_H)
+AC_MSG_RESULT(yes),
+AC_MSG_RESULT(no),
+AC_MSG_RESULT(cross))
+
+dnl
+dnl	Test to see if mblen is available *and* works.
+dnl
+AC_MSG_CHECKING([for working mblen])
+AC_TRY_RUN([
+#include <stdlib.h>
+int main(){mblen(0,0);
+exit(mblen("OK", 2) != 1);}],
+AC_DEFINE(HAVE_MBLEN)
+AC_MSG_RESULT(yes),
+AC_MSG_RESULT(no),
+AC_MSG_RESULT(cross))
+
+AC_CHECK_HEADERS(fcntl.h iso646.h libintl.h limits.h locale.h memory.h \
+	stddef.h stdlib.h string.h unistd.h wchar.h wctype.h widec.h)
+AC_HEADER_DIRENT
+AC_TYPE_SIGNAL
+AC_TYPE_SIZE_T
+AC_HEADER_TIME
+AC_C_CONST
+AC_SYS_LONG_FILE_NAMES
+AC_CHECK_FUNCS(getpgrp gettext iswctype pathconf seteuid setlocale \
+	setresuid setreuid strcasecmp strerror strftime strsignal \
+	tcgetpgrp wcslen)
+
+dnl
+dnl	Check to see if wint_t is defined.
+dnl
+AC_MSG_CHECKING([for wint_t])
+AC_TRY_COMPILE([
+#include <ctype.h>
+#ifdef HAVE_STDDEF_H
+#include <stddef.h>
+#endif
+#ifdef HAVE_WIDEC_H
+#include <widec.h>
+#endif
+#ifdef HAVE_WCTYPE_H
+#include <wctype.h>
+#endif
+#ifdef HAVE_WCHAR_H
+#include <wchar.h>
+#endif
+],
+[ wint_t x; ],
+AC_DEFINE(HAVE_WINT_T)
+AC_MSG_RESULT(yes),
+AC_MSG_RESULT(no))dnl
+
+dnl
+dnl	Test to see if iswprint is available *and* works.
+dnl
+AC_MSG_CHECKING([for working iswprint])
+AC_TRY_RUN([
+#include <ctype.h>
+#ifdef HAVE_WIDEC_H
+#include <widec.h>
+#endif
+#ifdef HAVE_WCTYPE_H
+#include <wctype.h>
+#endif
+int main(argc,argv)int argc;char**argv;{
+exit(iswprint('a') == 0);}]
+, AC_DEFINE(HAVE_ISWPRINT)
+AC_MSG_RESULT(yes),
+AC_MSG_RESULT(no),
+AC_MSG_RESULT(cross))dnl
+
+dnl
+dnl	Test to see if getpgrp() or getpgrp(0) should be used to
+dnl	discover the process group of the current process.
+dnl
+AC_MSG_CHECKING([for appropriate getpgrp argument])
+AC_TRY_RUN([
+int main(argc, argv) int argc; char **argv; {
+#ifdef HAVE_GETPGRP
+if (getpgrp(32767) == getpgrp(0)) exit(2);
+#endif
+exit(0); }]
+, AC_DEFINE(CONF_getpgrp_arg, 0)
+AC_MSG_RESULT(zero),
+AC_DEFINE(CONF_getpgrp_arg, [])
+AC_MSG_RESULT(empty),
+AC_MSG_RESULT(cross))
+
+dnl
+dnl	Test to see if the pw_comment field exists in
+dnl	the passwd struct defined in the <pwd.h> include file.
+dnl
+AC_MSG_CHECKING([for pw_comment in struct passwd])
+AC_TRY_COMPILE([#include <pwd.h>], [struct passwd *pw;
+pw = getpwnam("root"); printf("%s\n", pw->pw_comment);],
+AC_DEFINE(HAVE_pw_comment)
+AC_MSG_RESULT(yes),AC_MSG_RESULT(no))dnl
+
+dnl
+dnl	Test to see if the tm_zone field exists in
+dnl	the passwd tm defined in the <time.h> include file.
+dnl
+AC_MSG_CHECKING([for tm_zone in struct tm])
+AC_TRY_COMPILE([
+#ifdef TIME_WITH_SYS_TIME
+#include <sys/time.h>
+#include <time.h>
+#else
+#ifdef HAVE_SYS_TIME_H
+#include <sys/time.h>
+#else
+#include <time.h>
+#endif
+#endif], [struct tm *tm;
+printf("%s\n", tm->tm_zone);],
+AC_DEFINE(HAVE_tm_zone)
+AC_MSG_RESULT(yes),AC_MSG_RESULT(no))dnl
+
+dnl
+dnl	Test to find a Bourne shell which understands functions
+dnl
+AC_MSG_CHECKING([for a Bourne shell which understands functions])
+if test "z$SH" = "z"; then
+    if test -f /bin/sh5; then
+	SH=/bin/sh5
+    else
+	SH=/bin/sh
+    fi
+fi
+AC_SUBST(SH)
+AC_DEFINE_UNQUOTED(CONF_SHELL, ["$SH"])
+AC_MSG_RESULT($SH)
+
+dnl
+dnl Evaluate some of the variables, to remove ${prefix} references.
+dnl This way, they can be used in C programs and Roff input.
+dnl Make sure that aegis is mentioned in the libdir and datadir paths;
+dnl add it if it is not already there.
+dnl
+test "x$prefix" = xNONE && prefix="${ac_default_prefix-/usr/local}"
+test "x$exec_prefix" = xNONE && exec_prefix="$prefix"
+eval "bindir=$bindir"
+eval "datadir=$datadir"
+eval "libdir=$libdir"
+eval "mandir=$mandir"
+eval "sharedstatedir=$sharedstatedir"
+case "$datadir" in
+*/aegis/* | */aegis )
+	;;
+*)
+	datadir="${datadir}/aegis"
+	;;
+esac
+case "$libdir" in
+*/aegis/* | */aegis )
+	;;
+*)
+	libdir="${libdir}/aegis"
+	;;
+esac
+case "$sharedstatedir" in
+*/aegis/* | */aegis )
+	;;
+*)
+	sharedstatedir="${sharedstatedir}/aegis"
+	;;
+esac
+
+dnl
+dnl	See if there is already existing library files
+dnl	Use uid/gid if so, otherwise use 3/3
+dnl
+AC_MSG_CHECKING([for owner of aegis library files])
+AEGIS_UID=3
+AEGIS_GID=3
+if test -f ${sharedstatedir}/lockfile -o -f ${libdir}/lockfile ; then
+	cat > conftest.$ac_ext << 'EOF'
+#line __oline__ "configure"
+#include <sys/types.h>
+#include <sys/stat.h>
+main(ac,av)int ac; char **av;{struct stat st;
+if (stat(*(av+1),&st)!=0)exit(1);
+printf("%d\n", ac>2?st.st_gid:st.st_uid);exit(0);}
+EOF
+	if AC_TRY_EVAL(ac_link); then
+		if maybe=`./conftest ${sharedstatedir}/lockfile`; then
+			AEGIS_UID=$maybe
+		else
+			if maybe=`./conftest ${libdir}/lockfile`; then
+				AEGIS_UID=$maybe
+			fi
+		fi
+		if maybe=`./conftest ${sharedstatedir}/lockfile gid`; then
+			AEGIS_GID=$maybe
+		else
+			if maybe=`./conftest ${libdir}/lockfile gid`; then
+				AEGIS_GID=$maybe
+			fi
+		fi
+	fi
+	rm -rf conftest*
+fi
+AC_SUBST(AEGIS_UID)
+AC_SUBST(AEGIS_GID)
+AC_MSG_RESULT([$AEGIS_UID, $AEGIS_GID])
+
+dnl
+dnl	Test to see if enums are the same size as ints
+dnl
+AC_MSG_CHECKING([for enums of int size])
+AC_TRY_RUN([
+int main(argc, argv) int argc; char **argv; {
+enum foo { bar, baz } fubar;
+exit(sizeof(fubar) != sizeof(int));
+}], AC_DEFINE(CONF_enum_is_int)
+AC_MSG_RESULT(yes),
+AC_MSG_RESULT(no),
+AC_MSG_RESULT(cross))
+
+dnl
+dnl	Look for the httpd config files, so that we can find where to
+dnl	put the CGI script, and other HTML files.
+dnl
+AC_MSG_CHECKING([for httpd server config])
+web=no
+for ac_dir in /var/httpd /usr/httpd /etc/httpd /usr/local/httpd
+do
+	if test -f $ac_dir/conf/httpd.conf
+	then
+		web=yes
+		httpd=$ac_dir
+		break
+	fi
+done
+if test "$web" = "yes"
+then
+	AC_MSG_RESULT([$httpd])
+
+	AC_MSG_CHECKING([for httpd document root])
+	DocumentRoot=`awk '/^DocumentRoot/{print $2}' $httpd/conf/srm.conf`
+	if test "x$DocumentRoot" = "x"; then
+		DocumentRoot=no
+		web=no
+	fi
+	AC_MSG_RESULT([$DocumentRoot])
+
+	AC_MSG_CHECKING([for httpd script root])
+	ScriptRoot=`awk '/^ScriptAlias.*cgi-bin/{dir=$3; sub(/\/*$/, "", dir); print dir}' $httpd/conf/srm.conf`
+	if test "x$ScriptRoot" = "x"; then
+		ScriptRoot=no
+		web=no
+	fi
+	AC_MSG_RESULT([$ScriptRoot])
+else
+	AC_MSG_RESULT([no])
+	DocumentRoot=no
+	ScriptRoot=no
+fi
+AC_SUBST(web)
+AC_SUBST(DocumentRoot)
+AC_SUBST(ScriptRoot)
+
+dnl
+dnl	If the gettext function exists, assume the msgfmt program does
+dnl	also, and arrange for the Makefile to install the .mo files
+dnl	from the .po files.
+dnl
+if test "$ac_cv_func_gettext" = "yes"
+then
+  po_files=yes
+else
+  po_files=no
+  AC_MSG_RESULT([])
+  AC_MSG_RESULT([	Aegis will emit much more useful error messages if you install])
+  AC_MSG_RESULT([	GNU \`\`gettext'' and then re-run this ./configure script.])
+  AC_MSG_RESULT([	Remember to use \`\`rm config.cache'' before you do.])
+  AC_MSG_RESULT([])
+fi
+AC_SUBST(po_files)
+
+dnl
+dnl	If the soelim program exists, and understands the -I option,
+dnl	arrange for the Makefile to install the .ps files from the
+dnl	documentation source files.
+dnl
+if test -n "$SOELIM"
+then
+  if $SOELIM -I. /dev/null > /dev/null 2>&1
+  then
+    : nothing
+  else
+    AC_MSG_RESULT([])
+    AC_MSG_RESULT([	The $SOELIM program does not understand the -I])
+    AC_MSG_RESULT([	option.  There is a patch available for GNU Groff])
+    AC_MSG_RESULT([	which makes this work correctly.  See the BUILDING])
+    AC_MSG_RESULT([	file for details.])
+    GROFF=
+  fi
+fi
+if test -n "$GROFF"
+then
+  HAVE_GROFF=yes
+else
+  HAVE_GROFF=no
+  AC_MSG_RESULT([])
+  AC_MSG_RESULT([	The Aegis documentation set and manual pages will])
+  AC_MSG_RESULT([	be formatted and installed installed if you first])
+  AC_MSG_RESULT([	install GNU Groff and then re-run this ./configure])
+  AC_MSG_RESULT([	script.  Remember to use \`\`rm config.cache''])
+  AC_MSG_RESULT([	before you do.])
+  AC_MSG_RESULT([])
+fi
+AC_SUBST(HAVE_GROFF)
+
+AC_OUTPUT(Makefile lib/cshrc lib/profile etc/libdir.so lib/aegis.cgi common/libdir.c etc/compat.2.3)

@@ -1,0 +1,328 @@
+/*
+ *	aegis - project change supervisor
+ *	Copyright (C) 1991, 1992, 1993, 1994 Peter Miller;
+ *	All rights reserved.
+ *
+ *	This program is free software; you can redistribute it and/or modify
+ *	it under the terms of the GNU General Public License as published by
+ *	the Free Software Foundation; either version 2 of the License, or
+ *	(at your option) any later version.
+ *
+ *	This program is distributed in the hope that it will be useful,
+ *	but WITHOUT ANY WARRANTY; without even the implied warranty of
+ *	MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ *	GNU General Public License for more details.
+ *
+ *	You should have received a copy of the GNU General Public License
+ *	along with this program; if not, write to the Free Software
+ *	Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111, USA.
+ * 
+ * MANIFEST: project state file contents definition
+ *
+ * normally resides at "projdir"/info/state
+ *
+ * read and written by aegis, so it needs locking
+ *
+ * If you change this file, don't forget to change
+ *	man5/aepstate.5
+ */
+
+#include <common.def>
+
+/*
+ * Each test is numbered uniquely.  The name is of the form
+ * t[0-9][0-9][0-9][0-9][am].sh ('a' for automatic and 'm' for manual.)
+ * It would be possible to number each test within each change, (of the
+ * form C???T??[AM].sh) but this would not cover -New_ReLeaSe, where the
+ * test numbering can not start at 1 again, otherwise tests could not be
+ * retained across releases.  Hence, the next test number is not unique
+ * to any branch, but unique to the whole project.
+ */
+next_test_number = integer;
+
+/*
+ * ================== Obsolete Fields ==================
+ *
+ * The following fields are only present for old projects.  When aegis
+ * sees them, they will be moved into the "trunk" transaction.  A very
+ * few will persist until the next aenrls.
+ */
+
+/*
+ * File permission mode mask.  See umask(2) for more information.
+ * This value will always be OR'ed with 022, because aegis is paranoid.
+ */
+umask = integer;
+
+/*
+ * This field contains a description of the project.  Large amounts of
+ * prose are not required; a single line is sufficient.
+ */
+description = string;
+
+/*
+ * This field contains the name of the user to whom baseline files
+ * belong.
+ */
+owner_name = string;
+
+/*
+ * This field contains the name of the group to which baseline files
+ * belong.
+ */
+group_name = string;
+
+/*
+ * If this field is true, then a developer may review her own change.
+ * This is probably only a good idea for projects of less than 3 people.
+ * The idea is for as many people as possible to critically examine a
+ * change.
+ */
+developer_may_review = boolean;
+
+/*
+ * If this field is true, then a developer may integrate her own change.
+ * This is probably only a good idea for projects of less than 3 people.
+ * The idea is for as many people as possible to critically examine a
+ * change.
+ */
+developer_may_integrate = boolean;
+
+/*
+ * If this field is true, then a reviewer may integrate a change she
+ * reviewed.  This is probably only a good idea for projects of less
+ * than 3 people.  The idea is for as many people as possible to
+ * critically examine a change.
+ */
+reviewer_may_integrate = boolean;
+
+/*
+ * This field is true if developers may created changes, in addition to
+ * administrators.  This tends to be a very useful thing, since
+ * developers find most of the bugs.
+ */
+developers_may_create_changes = boolean;
+
+/*
+ * This command is used to notify a developer that a change requires
+ * developing; it is issued when a project administrator uses an 'aedb
+ * -User' command to force development of a change by a specific user.
+ * All of the substitutions described in aesub(5) are available.  This
+ * field is optional.
+ */
+forced_develop_begin_notify_command = string;
+
+/*
+ * Notify that a change requires reviewing.  All of the substitutions
+ * described in aesub(5) are available.  This field is optional.
+ *
+ * This command could also be used to notify other management systems,
+ * such as progress and defect tracking.
+ */
+develop_end_notify_command = string;
+
+/*
+ * Notify that a change has been withdrawn from review for further
+ * development.  All of the substitutions described in aesub(5) are
+ * available.  This field is optional.
+ *
+ * This command could also be used to notify other management systems,
+ * such as progress and defect tracking.
+ */
+develop_end_undo_notify_command = string;
+
+/*
+ * Notify that the review has passed.  All of the substitutions
+ * described in aesub(5) are available.  This field is optional.
+ *
+ * This command could also be used to notify other management systems,
+ * such as progress and defect tracking.
+ */
+review_pass_notify_command = string;
+
+/*
+ * Notify that a review pass has has been rescinded.  All of the
+ * substitutions described in aesub(5) are available.  This field is
+ * optional.
+ *
+ * This command could also be used to notify other management systems,
+ * such as progress and defect tracking.
+ */
+review_pass_undo_notify_command = string;
+
+/*
+ * Notify that the review has failed.  All of the substitutions
+ * described in aesub(5) are available.  This field is optional.
+ *
+ * This command could also be used to notify other management systems,
+ * such as progress and defect tracking.
+ */
+review_fail_notify_command = string;
+
+/*
+ * Notify that the integration has passed.  All of the substitutions
+ * described in aesub(5) are available.  This field is optional.
+ *
+ * This command could also be used to notify other management systems,
+ * such as progress and defect tracking.
+ */
+integrate_pass_notify_command = string;
+
+/*
+ * Notify that the integration has failed.  All of the substitutions
+ * described in aesub(5) are available.  This field is optional.
+ *
+ * This command could also be used to notify other management systems,
+ * such as progress and defect tracking.
+ */
+integrate_fail_notify_command = string;
+
+/*
+ * The pathname of where to place new development directories.  The
+ * pathname must be absolute.  Only consulted if the uconf field of the
+ * same name is not set.  Defaults to $HOME.
+ */
+default_development_directory = string;
+
+/*
+ * This field contains what to do when a change is created with
+ * no test exemption specified.
+ */
+default_test_exemption = boolean;
+
+/*
+ * This field contains a list of copyright years, for use in copyright
+ * notices, etc.  It is updated each integrate_begin, if necessary, to
+ * include the current year.  Available as the ${Copyright_Years}
+ * substitution, and included in the version listing.
+ */
+copyright_years = [ integer ];
+
+/*
+ * Changes are numbered sequentially from one.
+ * This field records the next unused change number.
+ */
+next_change_number = integer;
+
+/*
+ * Deltas are numbered sequentially from one.
+ * This field records the next unused delta number.
+ */
+next_delta_number = integer;
+
+/*
+ * This field is a list of the files in the project.
+ */
+src =
+[
+    {
+	/*
+	 * The name of the file, relative to the baseline.
+	 */
+	file_name = string;
+
+	/*
+	 * What the file is for.
+	 */
+	usage = file_usage;
+
+	/*
+	 * The edit number of the file.
+	 */
+	edit_number = string;
+
+	/*
+	 * The change which locked this file.
+	 *
+	 * Caveat: this field is redundant, you can figure it out by scanning
+	 * all of he change files.  Having it here is very convenient,
+	 * even though it means multiple updates.
+	 */
+	locked_by = integer;
+
+	/*
+	 * The change which is about to create this file
+	 * for the first time.
+	 * Same caveat as above.
+	 */
+	about_to_be_created_by = integer;
+
+	/*
+	 * The change which last deleted this file.
+	 * We never throw them away, becase 
+	 * (a) it may be created again, and more imortant
+	 * (b) we need it to recreate earlier deltas.
+	 */
+	deleted_by = integer;
+    }
+];
+
+/*
+ * This field contains a history of integrations for the project.
+ * Update by each successful 'aegis -Integrate_Pass' command.
+ */
+history =
+[
+	{
+		/*
+		 * The delta number of the integration.
+		 */
+		delta_number = integer;
+
+		/*
+		 * The number of the change which was integrated.
+		 */
+		change_number = integer;
+
+		/*
+		 * the names by which this delta is known
+		 */
+		name = [ string ];
+	}
+];
+
+/*
+ * The list of changes which have been created to date.
+ */
+change = [integer];
+
+/*
+ * The list of administrators of the project.
+ */
+administrator = [string];
+
+/*
+ * The list of developers of the project.
+ */
+developer = [string];
+
+/*
+ * The list of reviewers of the project.
+ */
+reviewer = [string];
+
+/*
+ * The list of integrators of the project.
+ */
+integrator = [string];
+
+/*
+ * The change currently being integrated.
+ * Only one change (within a project) may be integrated at a time.
+ * Only set when an integration is in progress.
+ */
+currently_integrating_change = integer;
+
+/*
+ * The version numbers for (this release of) the project.
+ *	(The major verion defaults to one if not given,
+ *	the minor version defaults to zero if not given.)
+ */
+version_major = integer;
+version_minor = integer;
+
+/*
+ * The version number this project was derived from.
+ * This is of most use when producing "patch" files.
+ */
+version_previous = string;

@@ -1,0 +1,77 @@
+/*
+ *	aegis - project change supervisor
+ *	Copyright (C) 1997 Peter Miller;
+ *	All rights reserved.
+ *
+ *	This program is free software; you can redistribute it and/or modify
+ *	it under the terms of the GNU General Public License as published by
+ *	the Free Software Foundation; either version 2 of the License, or
+ *	(at your option) any later version.
+ *
+ *	This program is distributed in the hope that it will be useful,
+ *	but WITHOUT ANY WARRANTY; without even the implied warranty of
+ *	MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ *	GNU General Public License for more details.
+ *
+ *	You should have received a copy of the GNU General Public License
+ *	along with this program; if not, write to the Free Software
+ *	Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111, USA.
+ *
+ * MANIFEST: report the history of a project
+ */
+
+auto script_name;
+script_name = getenv("SCRIPT_NAME");
+if (script_name == "")
+	script_name = "http://localhost/cgi-bin/aegis.cgi";
+
+columns({width = 1000;});
+print("Content-Type: text/html");
+print("");
+print("<html><head><title>");
+print("Project History Report");
+print("</title></head><body><h1><center>");
+print("Project ``" ## project_name() ## "'',");
+print("<br>History");
+print("</center></h1>");
+
+auto ps;
+ps = project[project_name()].state;
+
+/*
+ * scan all completed changes
+ * for any of the named files
+ */
+print("<center><table><tr><th>Delta</th><th>When</th>");
+print("<th>Change</th><th>Description</th></tr>");
+auto ph;
+for (ph in ps.branch.history)
+{
+	print("<tr><td valign=top align=right>");
+	print(ph.delta_number);
+	print("</td><td valign=top>");
+	auto cs;
+	cs = ps.branch.change[ph.change_number];
+	print(cs.history[count(cs.history) - 1].when);
+	print("</td><td valign=top align=right>");
+	auto href;
+	href = script_name ## "?file@chan_menu";
+	href ##= "+project@" ## project_name();
+	href ##= "+change@" ## ph.change_number;
+	print("<a href=\"" ## href ## "\">");
+	print(ph.change_number ## "</a>");
+	print("</td><td valign=top>");
+	auto part;
+	for (part in wrap_html(cs.brief_description, 80))
+		print(part);
+	print("</td></tr>");
+}
+print("</table></center>");
+print("Listed " ## count(ps.branch.history) ## " integrations.");
+print("<hr>");
+print("A similar report may be obtained from the command line, with one of");
+print("<blockquote><pre>ael proj_history -p " ## project_name());
+print("aer proj_history -p " ## project_name() ## "</pre></blockquote>");
+print("<hr>");
+print("This page was generated " ## now() ## ".");
+print("</body></html>");

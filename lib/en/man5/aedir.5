@@ -1,0 +1,147 @@
+'\" t
+.\"	aegis - project change supervisor
+.\"	Copyright (C) 1991, 1992, 1993, 1995 Peter Miller;
+.\"	All rights reserved.
+.\"
+.\"	This program is free software; you can redistribute it and/or modify
+.\"	it under the terms of the GNU General Public License as published by
+.\"	the Free Software Foundation; either version 2 of the License, or
+.\"	(at your option) any later version.
+.\"
+.\"	This program is distributed in the hope that it will be useful,
+.\"	but WITHOUT ANY WARRANTY; without even the implied warranty of
+.\"	MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+.\"	GNU General Public License for more details.
+.\"
+.\"	You should have received a copy of the GNU General Public License
+.\"	along with this program; if not, write to the Free Software
+.\"	Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111, USA.
+.\"
+.\" MANIFEST: description of aegis project directory structure
+.\"
+.so z_name.so
+.TH aedir 5 \*(N) "Reference Manual"
+.SH NAME
+aedir - \*(n) directory structures
+.XX "aedir(5)" "directory structures"
+.SH DESCRIPTION
+The project directory structure is dictated by 
+.I \*(n)
+at the top level,
+but is completely under the project's control
+from various points
+below the top level.
+.PP
+The project directory has the following contents
+.eB
+\fIproject\fP/
+	baseline/
+		config
+		\fI...project specific...\fP
+		test/
+			\fI[0-9][0-9]\fP/
+				t\fI[0-9][0-9][0-9][0-9]\fPa.sh
+				t\fI[0-9][0-9][0-9][0-9]\fPm.sh
+	history/
+		\fI...echo of baseline...\fP
+	delta.\fI[0-9][0-9][0-9]\fP/
+		\fI...echo of baseline...\fP
+	info/
+		state
+		change/
+			\fI[0-9]\fP/
+				\fI[0-9][0-9][0-9]\fP
+.eE
+.PP
+The directory is structured in this way so that it is possible
+to pick an entire project up off the disk,
+and be confident that you got it all.
+.PP
+The location of the root of this tree is configurable,
+and may even be changed during the life of a project.
+.PP
+The contents of the
+.I baseline
+subdirectory,
+other than those given,
+are defined by the project,
+and not dictated by \*(n).
+.PP
+The contents of the
+.I delta.NNN
+directory,
+when it exists,
+are an image of the
+.I baseline 
+directory.
+It is frequently linked with the baseline,
+rather than a copy of it;
+see the
+.I link_integration_directory
+field description in
+.IR aepconf (5)
+for more information.
+.PP
+The contents of the
+.I history
+contains the edit histories of the
+.I baseline
+directory,
+and is in all other ways an image of it.
+Note that 
+.I baseline
+always contains the latest source;
+the
+.I history
+directory is just history.
+The actual files in the history directory tree
+will not always have names the same as those in the baseline;
+compare the methods used by SCCS and RCS.
+.PP
+The contents of the
+.I baseline/test
+directory are the tests which are created by changes.
+Test histories are also stored in the
+.I history
+subdirectory.
+Tests are treated as project source.
+.PP
+The edit histories are separated out to simplify
+the task of taking a "snapshot" of the source of a project,
+without airing all the dirty laundry.
+.PP
+The
+.I baseline
+directory always contains the latest source,
+and so the
+.I history
+directory need not be readily accessible,
+because the build mechanism
+(something like
+.IR make (1),
+but preferably better)
+does not need to know anything about it.
+Similarly for tests.
+.PP
+The
+.I baseline/config
+file is used to tell \*(n) everything else it needs to know about a project.
+See
+.IR aepconf (5)
+for more information.
+This file  is a source file of the project,
+and is treated in the same way as all source files.
+.SH SEE ALSO
+.TP 8n
+.IR aenc (1)
+create a new change
+.TP 8n
+.IR aenpr (1)
+create a new project
+.TP 8n
+.IR aegis (5)
+\*(n) file format syntax
+.TP 8n
+.IR aepconf (5)
+project configuration file format
+.so ../man1/z_cr.so

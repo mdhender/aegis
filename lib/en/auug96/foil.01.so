@@ -1,0 +1,54 @@
+.\"
+.\"	aegis - project change supervisor
+.\"	Copyright (C) 1996, 1997 Peter Miller;
+.\"	All rights reserved.
+.\"
+.\"	This program is free software; you can redistribute it and/or modify
+.\"	it under the terms of the GNU General Public License as published by
+.\"	the Free Software Foundation; either version 2 of the License, or
+.\"	(at your option) any later version.
+.\"
+.\"	This program is distributed in the hope that it will be useful,
+.\"	but WITHOUT ANY WARRANTY; without even the implied warranty of
+.\"	MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+.\"	GNU General Public License for more details.
+.\"
+.\"	You should have received a copy of the GNU General Public License
+.\"	along with this program; if not, write to the Free Software
+.\"	Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111, USA.
+.\"
+.\" MANIFEST: document describing foil.01.so
+.\"
+.1C
+.bp
+.nr PS 8
+.nr VS 9
+.LP
+.ps 46
+.vs 48
+.hy 0
+.ad c
+Aegis is Only for Software,
+\s+2\fIIsn't It?\fP\s0
+.sp 2
+.ps 24
+.vs 25
+Peter Miller
+.br
+\f(CWmillerp@canb.auug.org.au\fP
+.br
+.sp 2
+.ad l
+.LP
+.nr PS 36
+.nr VS 38
+.IP "" 2n
+.IP \(bu 2n
+.hy 0
+Aegis at a Glance
+.IP \(bu 2n
+.hy 0
+Managing DNS with Aegis
+.IP \(bu 2n
+.hy 0
+Managing WWW with Aegis

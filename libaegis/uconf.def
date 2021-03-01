@@ -1,0 +1,151 @@
+/*
+ *	aegis - project change supervisor
+ *	Copyright (C) 1991, 1992, 1993, 1994, 1995, 1996, 1998 Peter Miller;
+ *	All rights reserved.
+ *
+ *	This program is free software; you can redistribute it and/or modify
+ *	it under the terms of the GNU General Public License as published by
+ *	the Free Software Foundation; either version 2 of the License, or
+ *	(at your option) any later version.
+ *
+ *	This program is distributed in the hope that it will be useful,
+ *	but WITHOUT ANY WARRANTY; without even the implied warranty of
+ *	MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ *	GNU General Public License for more details.
+ *
+ *	You should have received a copy of the GNU General Public License
+ *	along with this program; if not, write to the Free Software
+ *	Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111, USA.
+ * 
+ * MANIFEST: user config file contents definition
+ *
+ * this file resides at $HOME/.aegisrc
+ *
+ * it is only ever read by aegis, so there is no need for locking.
+ *
+ * If you change this file, don't forget to change
+ *	man5/aeuconf.5
+ */
+
+/*
+ * The name of a project.
+ */
+default_project_name = string;
+
+/*
+ * the number of a change
+ */
+default_change_number = integer;
+
+/*
+ * The pathname of where to place new development directories.
+ * The pathname may be relative,
+ * in which case it is relative to $HOME.
+ * The default is $HOME.
+ * The project attribute of the same name overrides this user attribute.
+ */
+default_development_directory = string;
+
+/*
+ * The pathname of where to place new project directories.
+ * This pathname may be relative, in which case it is relative to $HOME.
+ * The default is $HOME.
+ */
+default_project_directory = string;
+
+/*
+ * All of the commands which delete files will
+ * consult this field to determine if the file should be deleted.
+ * Defaults to ``no_keep'' if not set.
+ */
+delete_file_preference = (no_keep, interactive, keep);
+
+/*
+ * The aed command will consult this field to determine what to do:
+ *
+ *	"no_merge" means only diff the files, even if some have out of
+ *	date versions.
+ *
+ *	"only_merge" means merge those files with out of date versions,
+ *	and do not do anything else, even if they need to be diffed
+ *
+ *	"autmoatic_merge" means to do "only_merge" if any require
+ *	merging, otherwise do "no_merge".  It never combines merges
+ *	and differences in the same pass.
+ *
+ * The corresponding command line options to the aed command take precedence.
+ */
+diff_preference = (automatic_merge, no_merge, only_merge);
+
+/*
+ * This field is consulted whenever a pager is required, usually for
+ * a listing or for a help page.  Defaults to ``foreground'' if not set.
+ */
+pager_preference = (foreground, never);
+
+/*
+ * This field is consulted by the aet command, to determine if it should
+ * run all tests, or stop after the first failure.  Defaults to ``all''
+ * if not set.
+ */
+persevere_preference = (all, stop);
+
+/*
+ * This field is consulted by all commands which log their output to the
+ * log file.  Usually defaults to ``snuggle'' if not set, though some
+ * commands default to ``append''.
+ *
+ * The ``snuggle'' means append if the file was last changed less than
+ * 30 seconds ago, allowing runs of aegis commands to keep appending to
+ * the log file.
+ */
+log_file_preference = (snuggle, append, replace, never);
+
+/*
+ * This field is consulted by all commands which wait for locks.
+ *
+ *	The "always" setting says that all commands should always wait
+ *	for locks.  This is the default.
+ *
+ *	The "background" setting says that background commands should
+ *	always wait for locks, and foreground commands will not.
+ *
+ *	The "never" setting says that no command should ever wait
+ *	for locks.  If the command would wait, it will exit with status 1.
+ *
+ * This user preference can be over-ridden by the -wait and -nowait
+ * command line options.
+ */
+lock_wait_preference = (always, background, never);
+
+/*
+ * This field is consulted by aeb when the project config file specifies
+ * create_symbolic_links_before_build.  The verification of the links can
+ * be quite time consuming; if you are confident that they are already
+ * correct (say from a recent build run) you may wish to assume they
+ * are correct.
+ *
+ *	The "verify" setting says to always verify the symbolic links
+ *	to the baseline.  This is the default.
+ *
+ *	The "assume" setting says to always assume the links are correct.
+ *
+ * This user preference can be over-ridden by the --verify_symbolic_links
+ * (-vsl) and --assume_symbolic_links (-asl) command line options.
+ */
+symbolic_link_preference = (verify, assume);
+
+/*
+ * This field is consulted by most commands which accept filenames on the
+ * command line.  It controls wether relative filenames are relative to
+ * the current directory (this is the default), or relative to the base
+ * of the project source tree.
+ *
+ *	The "current" setting means relative to the current directory.
+ *
+ *	The "base" setting means relative to base of the project source tree.
+ *
+ * This user preference can be over-ridden by the -base-relative and
+ * -current-relative command line options.
+ */
+relative_filename_preference = (current, base);

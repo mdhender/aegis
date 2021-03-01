@@ -1,7 +1,7 @@
 #!/bin/sh
 #
 #	aegis - project change supervisor
-#	Copyright (C) 1991, 1992, 1993, 1994, 1995 Peter Miller;
+#	Copyright (C) 1991, 1992, 1993, 1994, 1995, 1996, 1997, 1998 Peter Miller;
 #	All rights reserved.
 #
 #	This program is free software; you can redistribute it and/or modify
@@ -16,7 +16,7 @@
 #
 #	You should have received a copy of the GNU General Public License
 #	along with this program; if not, write to the Free Software
-#	Foundation, Inc., 675 Mass Ave, Cambridge, MA 02139, USA.
+#	Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111, USA.
 #
 # MANIFEST: Test 'aegis -VERSion'
 #
@@ -25,43 +25,90 @@ unset AEGIS_PROJECT
 unset AEGIS_CHANGE
 unset AEGIS_PATH
 unset AEGIS
+unset LINES
+unset COLS
 umask 022
 
 USER=${USER:-${LOGNAME:-`whoami`}}
 
-if test "$1" != "" ; then bin="./$1/bin"; else bin="./bin"; fi
+work=/tmp/$$
+here=`pwd`
+if test $? -ne 0; then exit 2; fi
 
+if test "$1" != "" ; then bin="$here/$1/bin"; else bin="$here/bin"; fi
+
+pass()
+{
+	set +x
+	echo PASSED
+	cd $here
+	rm -rf $work
+	exit 0
+}
 fail()
 {
+	set +x
+	cd $here
+	rm -rf $work
 	echo "FAILED test of 'aegis -VERSion'" 1>&2
 	exit 1
 }
-pass()
+no_result()
 {
-	exit 0
+	set +x
+	cd $here
+	rm -rf $work
+	echo "NO RESULT for test of 'aegis -VERSion'" 1>&2
+	exit 2
 }
-trap "fail" 1 2 3 15
+trap "no_result" 1 2 3 15
+
+mkdir $work
+if test $? -ne 0; then exit 2; fi
+mkdir $work/lib
+if test $? -ne 0; then no_result; fi
+cd $work
+if test $? -ne 0; then no_result; fi
 
 PAGER=cat
 export PAGER
 
 AEGIS_FLAGS="delete_file_preference = no_keep; \
-	diff_preference = automatic_merge;"
+	lock_wait_preference = always; \
+	diff_preference = automatic_merge; \
+	pager_preference = never; \
+	persevere_preference = all; \
+	log_file_preference = never;"
 export AEGIS_FLAGS
 AEGIS_THROTTLE=2
 export AEGIS_THROTTLE
 
-$bin/aegis -vers -help > /dev/null
-if test $? -ne 0 ; then fail; fi
+#
+# Set the AEGIS_PATH environment variable
+# so that man can search there for the man pages.
+#
+AEGIS_PATH=$work/lib
+IFSold="$IFS"
+IFS=":$IFS"
+for d in ${AEGIS_PATH:-$here}
+do
+	AEGIS_PATH="${AEGIS_PATH}:$d/lib"
+done
+IFS="$IFSold"
+AEGIS_PATH="${AEGIS_PATH}:$work/lib"
+export AEGIS_PATH
 
-$bin/aegis -vers > /dev/null
-if test $? -ne 0 ; then fail; fi
+unset LANG
+unset LANGUAGE
 
-$bin/aegis -vers r | cat
-if test $? -ne 0 ; then fail; fi
+$bin/aegis -vers -help > test.out 2>&1
+if test $? -ne 0 ; then cat test.out; fail; fi
 
-$bin/aegis -vers w | cat
-if test $? -ne 0 ; then fail; fi
+$bin/aegis -vers > test.out 2>&1
+if test $? -ne 0 ; then cat test.out; fail; fi
+
+$bin/aegis -vers lic > test.out 2>&1
+if test $? -ne 0 ; then cat test.out; fail; fi
 
 #
 # the things tested by this test, worked

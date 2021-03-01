@@ -1,6 +1,6 @@
 /*
  *	aegis - project change supervisor
- *	Copyright (C) 1991, 1992, 1993, 1994, 1995 Peter Miller;
+ *	Copyright (C) 1991, 1992, 1993, 1994, 1995, 1997 Peter Miller;
  *	All rights reserved.
  *
  *	This program is free software; you can redistribute it and/or modify
@@ -15,7 +15,7 @@
  *
  *	You should have received a copy of the GNU General Public License
  *	along with this program; if not, write to the Free Software
- *	Foundation, Inc., 675 Mass Ave, Cambridge, MA 02139, USA.
+ *	Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111, USA.
  *
  * MANIFEST: functions for execution trace
  */
@@ -27,7 +27,7 @@
 
 #include <error.h>
 #include <mem.h>
-#include <option.h>
+#include <progname.h>
 #include <str.h>
 #include <trace.h>
 
@@ -129,7 +129,7 @@ static void
 trace_putchar(c)
 	int		c;
 {
-	static char	buffer[MAX_PAGE_WIDTH + 2];
+	static char	buffer[200];
 	static char	*cp;
 	static int	in_col;
 	static int	out_col;
@@ -137,7 +137,7 @@ trace_putchar(c)
 	if (!page_width)
 	{
 		/* don't use last column, many terminals are dumb */
-		page_width = option_page_width_get() - 1;
+		page_width = 79;
 		/* allow for progname, filename and line number (8 each) */
 		page_width -= 24;
 		if (page_width < 16)
@@ -145,7 +145,7 @@ trace_putchar(c)
 	}
 	if (!cp)
 	{
-		strcpy(buffer, option_progname_get());
+		strcpy(buffer, progname_get());
 		cp = buffer + strlen(buffer);
 		if (cp > buffer + 6)
 			cp = buffer + 6;
@@ -230,8 +230,8 @@ trace_printf(s sva_last)
 	char		*s;
 	sva_last_decl
 {
-	char		buffer[MAX_PAGE_WIDTH];
 	va_list		ap;
+	char		buffer[3000];
 
 	sva_init(ap, s);
 	vsprintf(buffer, s, ap);
@@ -268,6 +268,13 @@ trace_enable(file)
 	kp->flag = 3; /* enabled */
 	if (kp->flag_p)
 		*kp->flag_p = kp->flag;
+
+	/*
+	 * this silences a warning...
+	 */
+#ifdef DEBUG
+	trace_pretest_result = 1;
+#endif
 }
 
 

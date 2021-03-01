@@ -1,6 +1,6 @@
 /*
  *	aegis - project change supervisor
- *	Copyright (C) 1991, 1992, 1993, 1994, 1995 Peter Miller;
+ *	Copyright (C) 1991, 1992, 1993, 1994, 1995, 1996, 1997, 1998 Peter Miller;
  *	All rights reserved.
  *
  *	This program is free software; you can redistribute it and/or modify
@@ -15,12 +15,12 @@
  *
  *	You should have received a copy of the GNU General Public License
  *	along with this program; if not, write to the Free Software
- *	Foundation, Inc., 675 Mass Ave, Cambridge, MA 02139, USA.
+ *	Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111, USA.
  *
  * MANIFEST: functions to implement new release
  */
 
-#include <ctype.h>
+#include <ac/ctype.h>
 #include <stdio.h>
 #include <ac/string.h>
 
@@ -28,9 +28,11 @@
 #include <sys/stat.h>
 
 #include <ael.h>
+#include <aenbr.h>
 #include <aenrls.h>
 #include <arglex2.h>
-#include <change.h>
+#include <change_bran.h>
+#include <change_file.h>
 #include <commit.h>
 #include <dir.h>
 #include <error.h>
@@ -40,9 +42,11 @@
 #include <lock.h>
 #include <log.h>
 #include <mem.h>
-#include <option.h>
 #include <os.h>
+#include <progname.h>
 #include <project.h>
+#include <project_file.h>
+#include <project_hist.h>
 #include <sub.h>
 #include <trace.h>
 #include <undo.h>
@@ -59,7 +63,7 @@ new_release_usage()
 {
 	char	*progname;
 
-	progname = option_progname_get();
+	progname = progname_get();
 	fprintf
 	(
 		stderr,
@@ -82,12 +86,7 @@ static void new_release_help _((void));
 static void
 new_release_help()
 {
-	static char *text[] =
-	{
-#include <../man1/aenrls.h>
-	};
-
-	help(text, SIZEOF(text), new_release_usage);
+	help("aenrls", new_release_usage);
 }
 
 
@@ -100,68 +99,6 @@ new_release_list()
 	while (arglex_token != arglex_token_eoln)
 		generic_argument(new_release_usage);
 	list_projects(0, 0);
-}
-
-
-static void remove_suffix _((char *, char *, int *));
-
-static void
-remove_suffix(str, suf, punct)
-	char		*str;
-	char		*suf;
-	int		*punct;
-{
-	size_t		str_len;
-	size_t		suf_len;
-	char		*cp;
-
-	*punct = '.';
-	str_len = strlen(str);
-	suf_len = strlen(suf);
-	if (str_len <= suf_len + 1)
-		return;
-	cp = str + str_len - suf_len - 1;
-	if (ispunct(*cp) && !strcmp(cp + 1, suf))
-	{
-		*punct = (unsigned char)*cp;
-		*cp = 0;
-	}
-}
-
-
-static string_ty *build_new_name _((string_ty *, long, long, long, long));
-
-static string_ty *
-build_new_name(s, major_old, minor_old, major_new, minor_new)
-	string_ty	*s;
-	long		major_old;
-	long		minor_old;
-	long		major_new;
-	long		minor_new;
-{
-	char		*tmp;
-	char		suffix[20];
-	int		min_sep;
-	int		maj_sep;
-	string_ty	*result;
-
-	tmp = mem_copy_string(s->str_text);
-	sprintf(suffix, "%ld", minor_old);
-	remove_suffix(tmp, suffix, &min_sep);
-	sprintf(suffix, "%ld", major_old);
-	remove_suffix(tmp, suffix, &maj_sep);
-	result =
-		str_format
-		(
-			"%s%c%ld%c%ld",
-			tmp,
-			maj_sep,
-			major_new,
-			min_sep,
-			minor_new
-		);
-	mem_free(tmp);
-	return result;
 }
 
 
@@ -234,12 +171,11 @@ static void new_release_main _((void));
 static void
 new_release_main()
 {
+	sub_context_ty	*scp;
 	string_ty	*ip;
 	string_ty	*bl;
 	string_ty	*hp;
-	long		major_new;
-	long		minor_new;
-	size_t		j;
+	size_t		j, k;
 	pstate		pstate_data[2];
 	string_ty	*home;
 	string_ty	*s1;
@@ -247,21 +183,31 @@ new_release_main()
 	string_ty	*project_name[2];
 	int		project_name_count;
 	project_ty	*pp[2];
+	project_ty	*ppp;
 	change_ty	*cp;
 	cstate_history	chp;
-	pstate_history	php;
 	cstate		cstate_data;
 	copy_tree_arg_ty info;
-	int		nolog;
+	log_style_ty	log_style;
 	user_ty		*up;
 	user_ty		*pup;
+	user_ty		*pup1;
+	long		new_version_number[10];
+	int		new_version_number_length;
+	string_ty	*new_version_string;
+	project_ty	*version_pp[SIZEOF(new_version_number)];
+	long		old_version_number[SIZEOF(new_version_number)];
+	int		old_version_number_length;
+	long		change_number;
 
 	trace(("new_release_main()\n{\n"/*}*/));
-	nolog = 0;
+	log_style = log_style_create_default;
 	home = 0;
 	project_name_count = 0;
-	major_new = NOT_GIVEN;
-	minor_new = NOT_GIVEN;
+	new_version_number[0] = NOT_GIVEN;
+	new_version_number[1] = NOT_GIVEN;
+	new_version_number_length = 0;
+	new_version_string = 0;
 	while (arglex_token != arglex_token_eoln)
 	{
 		switch (arglex_token)
@@ -272,28 +218,21 @@ new_release_main()
 
 		case arglex_token_project:
 			if (arglex() != arglex_token_string)
-				new_release_usage();
+				option_needs_name(arglex_token_project, new_release_usage);
 			/* fall through... */
 
 		case arglex_token_string:
 			if (project_name_count >= 2)
-				fatal("too many project names given");
+				fatal_intl(0, i18n("too many proj name"));
 			project_name[project_name_count++] =
 				str_from_c(arglex_value.alv_string);
 			break;
 
 		case arglex_token_directory:
 			if (arglex() != arglex_token_string)
-		  		new_release_usage();
+				option_needs_dir(arglex_token_directory, new_release_usage);
 			if (home)
-			{
-				duplicate:
-				fatal
-				(
-					"duplicate %s option",
-					arglex_value.alv_string
-				);
-			}
+				duplicate_option_by_name(arglex_token_directory, new_release_usage);
 			s1 = str_from_c(arglex_value.alv_string);
 			os_become_orig();
 			home = os_pathname(s1, 1);
@@ -302,46 +241,84 @@ new_release_main()
 			break;
 
 		case arglex_token_major:
-			if (major_new != NOT_GIVEN)
-				goto duplicate;
+			if (new_version_number[0] != NOT_GIVEN)
+				duplicate_option(new_release_usage);
+			scp = sub_context_new();
+			sub_var_set(scp, "Name1", "%s", arglex_token_name(arglex_token_major));
+			sub_var_set(scp, "Name2", "%s", arglex_token_name(arglex_token_version));
+			error_intl(scp, "warning: $name1 obsolete, use $name2 option");
+			sub_context_delete(scp);
+			if (new_version_number_length < 1)
+				new_version_number_length = 1;
 			if (arglex() != arglex_token_number)
 			{
-				major_new = GIVEN;
+				new_version_number[0] = GIVEN;
 				continue;
 			}
-			major_new = arglex_value.alv_number;
-			if (major_new < 1)
-				fatal("major version number out of range");
+			if (arglex_value.alv_number < 0)
+				option_needs_number(arglex_token_major, new_release_usage);
+			new_version_number[0] = arglex_value.alv_number;
 			break;
 
 		case arglex_token_minor:
-			if (minor_new != NOT_GIVEN)
-				goto duplicate;
+			if (new_version_number[1] != NOT_GIVEN)
+				duplicate_option(new_release_usage);
+			scp = sub_context_new();
+			sub_var_set(scp, "Name1", "%s", arglex_token_name(arglex_token_minor));
+			sub_var_set(scp, "Name2", "%s", arglex_token_name(arglex_token_version));
+			error_intl(scp, i18n("warning: $name1 obsolete, use $name2 option"));
+			sub_context_delete(scp);
+			while (new_version_number_length < 2)
+				new_version_number[new_version_number_length++] = NOT_GIVEN;
 			if (arglex() != arglex_token_number)
 			{
-				minor_new = GIVEN;
+				new_version_number[1] = GIVEN;
 				continue;
 			}
-			minor_new = arglex_value.alv_number;
-			if (minor_new < 0)
-				fatal("minor version number out of range");
+			if (arglex_value.alv_number <= 0)
+				option_needs_number(arglex_token_minor, new_release_usage);
+			new_version_number[1] = arglex_value.alv_number;
+			break;
+
+		case arglex_token_version:
+			if (new_version_string)
+				duplicate_option(new_release_usage);
+			switch (arglex())
+			{
+			default:
+				option_needs_string(arglex_token_version, new_release_usage);
+
+			case arglex_token_number:
+			case arglex_token_string:
+				break;
+			}
+			new_version_string = str_from_c(arglex_value.alv_string);
 			break;
 
 		case arglex_token_nolog:
-			if (nolog)
-				goto duplicate;
-			nolog = 1;
+			if (log_style == log_style_none)
+				duplicate_option(new_release_usage);
+			log_style = log_style_none;
+			break;
+
+		case arglex_token_wait:
+		case arglex_token_wait_not:
+			user_lock_wait_argument(new_release_usage);
 			break;
 		}
 		arglex();
 	}
 	if (!project_name_count)
+		fatal_intl(0, i18n("no project name"));
+	if (new_version_number_length > 0)
 	{
-		fatal
-		(
-"You must name the project to be used as the basis for the new release.  \
-You may optionally specify a second name as the name of the new project."
-		);
+		if (new_version_string)
+		{
+			error_intl(0, i18n("don't mix old and new version options"));
+			new_release_usage();
+		}
+		while (new_version_number_length < 2)
+			new_version_number[new_version_number_length++] = 0;
 	}
 
 	/*
@@ -349,7 +326,21 @@ You may optionally specify a second name as the name of the new project."
 	 */
 	pp[0] = project_alloc(project_name[0]);
 	project_bind_existing(pp[0]);
+	if (pp[0]->parent)
+		goto too_modern;
 	pstate_data[0] = project_pstate_get(pp[0]);
+
+	/*
+	 * You may only use this command for old-style (pre branching)
+	 * projects.  Only old-style projects (pre-3.0) define the
+	 * version_major and version_minor fields in the project state
+	 * data.
+	 */
+	if (!pstate_data[0]->version_major && !pstate_data[0]->version_minor)
+	{
+		too_modern:
+		project_fatal(pp[0], 0, i18n("bad nrls, too modern"));
+	}
 
 	/*
 	 * locate user data
@@ -361,228 +352,181 @@ You may optionally specify a second name as the name of the new project."
 	 * of the old project.
 	 */
 	if (!project_administrator_query(pp[0], user_name(up)))
+		project_fatal(pp[0], 0, i18n("not an administrator"));
+
+	/*
+	 * figure out the old version number
+	 *
+	 * Because we know that the old project is in the pre-3.0
+	 * format, at this point we know definitely that the version
+	 * fields are set.
+	 */
+	old_version_number_length = 2;
+	old_version_number[0] = pstate_data[0]->version_major;
+	old_version_number[1] = pstate_data[0]->version_minor;
+
+	if (project_name_count < 2)
 	{
-		project_fatal
+		long	junk[10];
+		int	junk_length;
+
+		/*
+		 * Default the new project name from the old, when the
+		 * new name was not given.
+		 */
+		project_name[1] = str_copy(project_name[0]);
+		project_name_count = 2;
+
+		/*
+		 * Throw away any version information which may be
+		 * contained in the project name.  It is usually
+		 * redundant, when it is present at all.
+		 */
+		extract_version_from_project_name
 		(
-			pp[0],
-			"user \"%S\" is not an administrator",
-			user_name(up)
+			&project_name[1],
+			junk,
+			(int)SIZEOF(junk),
+			&junk_length
+		);
+	}
+	else
+	{
+		/*
+		 * Extract the version number information from the new
+		 * project name.
+		 */
+		extract_version_from_project_name
+		(
+			&project_name[1],
+			new_version_number,
+			(int)SIZEOF(new_version_number),
+			&new_version_number_length
 		);
 	}
 
 	/*
-	 * figure the new version number
+	 * Make sure the project name is acceptable.
 	 */
-	switch (major_new)
+	if (!project_name_ok(project_name[1]))
 	{
-	case NOT_GIVEN:
-		major_new = pstate_data[0]->version_major;
-		major_not_given:
-		switch (minor_new)
-		{
-		case NOT_GIVEN:
-		case GIVEN:
-			minor_new = pstate_data[0]->version_minor + 1;
-			break;
-
-		default:
-			if (minor_new <= pstate_data[0]->version_minor)
-			{
-				fatal
-				(
-	      "minor version number too small (you gave %d, the default is %d)",
-					minor_new,
-					pstate_data[0]->version_minor + 1
-				);
-			}
-			break;
-		}
-		break;
-
-	case GIVEN:
-		major_new = pstate_data[0]->version_major + 1;
-		switch (minor_new)
-		{
-		case NOT_GIVEN:
-		case GIVEN:
-			minor_new = 0;
-			break;
-
-		default:
-			break;
-		}
-		break;
-
-	default:
-		if (major_new == pstate_data[0]->version_major)
-			goto major_not_given;
-		if (major_new <= pstate_data[0]->version_major)
-		{
-			fatal
-			(
-	      "major version number too small (you gave %d, the default is %d)",
-				major_new,
-				pstate_data[0]->version_major + 1
-			);
-		}
-		switch (minor_new)
-		{
-		case NOT_GIVEN:
-		case GIVEN:
-			minor_new = 0;
-			break;
-
-		default:
-			break;
-		}
-		break;
+		scp = sub_context_new();
+		sub_var_set(scp, "Name", "%S", project_name);
+		fatal_intl(scp, i18n("bad project $name"));
+		/* NOTREACHED */
+		sub_context_delete(scp);
 	}
 
 	/*
-	 * build new project name if none given
+	 * Default to a minor release incriment.
+	 *
+	 * Only do this if there is no version number implicit in the
+	 * project name AND no version string was given.
+	 *
+	 * This test is done BEFORE the version string break up, because
+	 * if the version string is the empty string, it means to use NO
+	 * version numbers.
 	 */
-	if (project_name_count < 2)
+	if (!new_version_number_length && !new_version_string)
 	{
-		project_name[project_name_count++] =
-			build_new_name
+		new_version_number_length = 2;
+		new_version_number[0] = NOT_GIVEN;
+		new_version_number[1] = GIVEN;
+	}
+
+	/*
+	 * If the user specified a version string on the command line,
+	 * break it up into its component parts.  If there was version
+	 * numbers in the NEW project name, the version numbers
+	 * determined here will be appended to them.
+	 */
+	if (new_version_string && new_version_string->str_length)
+	{
+		int	err;
+
+		err =
+			break_up_version_string
 			(
-				project_name[0],
-				pstate_data[0]->version_major,
-				pstate_data[0]->version_minor,
-				major_new,
-				minor_new
+				new_version_string->str_text,
+				new_version_number,
+				(int)SIZEOF(new_version_number),
+				&new_version_number_length,
+				0
 			);
+		if (err)
+		{
+			scp = sub_context_new();
+			sub_var_set(scp, "Number", "%S", new_version_string);
+			fatal_intl(scp, i18n("bad version $number"));
+			/* NOTREACHED */
+			sub_context_delete(scp);
+		}
+	}
+
+	/*
+	 * Figure the new version number.  This code only ever operates
+	 * for the -major and -minor options, when they are not given
+	 * explicit numbers.
+	 */
+	for (j = 0; j < new_version_number_length; ++j)
+	{
+		switch (new_version_number[j])
+		{
+		case NOT_GIVEN:
+			/*
+			 * Use the old version number if available.
+			 * Otherwise, the major version defaults to 1,
+			 * and all others default to 0.
+			 */
+			if (j < old_version_number_length)
+				new_version_number[j] = old_version_number[j];
+			else
+				new_version_number[j] = !j;
+			break;
+	
+		case GIVEN:
+			/*
+			 * Use the old version number if available.
+			 * Otherwise, the major version defaults to 1,
+			 * and all others default to 0.
+			 */
+			if (j < old_version_number_length)
+				new_version_number[j] = old_version_number[j];
+			else
+				new_version_number[j] = !j;
+
+			/*
+			 * Incriment the version number by one.
+			 */
+			new_version_number[j]++;
+
+			/*
+			 * Set all of the remaining components to zero.
+			 * (Usually these are the minor components,
+			 * after using the -major option.)
+			 */
+			for (k = j + 1; k < new_version_number_length; ++k)
+			{
+				if (new_version_number[k] == NOT_GIVEN)
+					new_version_number[k] = 0;
+			}
+			break;
+
+		default:
+			break;
+		}
 	}
 
 	/*
 	 * locate NEW project data
+	 *
+	 * It is a fatal error if the project name already exists.
 	 */
 	pp[1] = project_alloc(project_name[1]);
 	project_bind_new(pp[1]);
+	pp[1]->uid = pp[0]->uid;
+	pp[1]->gid = pp[0]->gid;
 	pup = project_user(pp[0]);
-
-	/*
-	 * read in the table
-	 */
-	project_pstate_lock_prepare(pp[1]);
-	project_build_read_lock_prepare(pp[0]);
-	gonzo_gstate_lock_prepare_new();
-	lock_take();
-	pstate_data[0] = project_pstate_get(pp[0]);
-	pstate_data[1] = project_pstate_get(pp[1]);
-
-	/*
-	 * create a new release state file
-	 */
-	pstate_data[1] = project_pstate_get(pp[1]);
-	pstate_data[1]->description = str_copy(pstate_data[0]->description);
-	pstate_data[1]->next_change_number = 2;
-	pstate_data[1]->next_delta_number = 2;
-	pstate_data[1]->next_test_number = pstate_data[0]->next_test_number;
-	pstate_data[1]->version_major = major_new;
-	pstate_data[1]->version_minor = minor_new;
-	pstate_data[1]->owner_name = str_copy(project_owner(pp[0]));
-	pstate_data[1]->group_name = str_copy(project_group(pp[0]));
-	pstate_data[1]->version_previous = project_version_get(pp[0]);
-	pstate_data[1]->umask = pstate_data[0]->umask;
-	pstate_data[1]->default_test_exemption =
-		pstate_data[0]->default_test_exemption;
-
-	if (pstate_data[0]->copyright_years)
-	{
-		pstate_data[1]->copyright_years =
-			pstate_copyright_years_list_type.alloc();
-		for (j = 0; j < pstate_data[0]->copyright_years->length; ++j)
-		{
-			long		*year_p;
-			type_ty		*type_p;
-
-			year_p =
-				pstate_copyright_years_list_type.list_parse
-				(
-					pstate_data[1]->copyright_years,
-					&type_p
-				);
-			assert(type_p == &integer_type);
-			*year_p = pstate_data[0]->copyright_years->list[j];
-		}
-	}
-
-	/* administrators */
-	for (j = 0; j < pstate_data[0]->administrator->length; ++j)
-	{
-		project_administrator_add
-		(
-			pp[1],
-			pstate_data[0]->administrator->list[j]
-		);
-	}
-	/* developers */
-	for (j = 0; j < pstate_data[0]->developer->length; ++j)
-	{
-		project_developer_add
-		(
-			pp[1],
-			pstate_data[0]->developer->list[j]
-		);
-	}
-	/* reviewers */
-	for (j = 0; j < pstate_data[0]->reviewer->length; ++j)
-	{
-		project_reviewer_add
-		(
-			pp[1],
-			pstate_data[0]->reviewer->list[j]
-		);
-	}
-	/* integrators */
-	for (j = 0; j < pstate_data[0]->integrator->length; ++j)
-	{
-		project_integrator_add
-		(
-			pp[1],
-			pstate_data[0]->integrator->list[j]
-		);
-	}
-	pstate_data[1]->developer_may_review =
-		pstate_data[0]->developer_may_review;
-	pstate_data[1]->developer_may_integrate =
-		pstate_data[0]->developer_may_integrate;
-	pstate_data[1]->reviewer_may_integrate =
-		pstate_data[0]->reviewer_may_integrate;
-	pstate_data[1]->developers_may_create_changes =
-		pstate_data[0]->developers_may_create_changes;
-
-	if (pstate_data[0]->develop_end_notify_command)
-		pstate_data[1]->develop_end_notify_command =
-			str_copy(pstate_data[0]->develop_end_notify_command);
-	if (pstate_data[0]->develop_end_undo_notify_command)
-		pstate_data[1]->develop_end_undo_notify_command =
-			str_copy
-			(
-				pstate_data[0]->develop_end_undo_notify_command
-			);
-	if (pstate_data[0]->review_pass_notify_command)
-		pstate_data[1]->review_pass_notify_command =
-			str_copy(pstate_data[0]->review_pass_notify_command);
-	if (pstate_data[0]->review_pass_undo_notify_command)
-		pstate_data[1]->review_pass_undo_notify_command =
-			str_copy
-			(
-				pstate_data[0]->review_pass_undo_notify_command
-			);
-	if (pstate_data[0]->review_fail_notify_command)
-		pstate_data[1]->review_fail_notify_command =
-			str_copy(pstate_data[0]->review_fail_notify_command);
-	if (pstate_data[0]->integrate_pass_notify_command)
-		pstate_data[1]->integrate_pass_notify_command =
-			str_copy(pstate_data[0]->integrate_pass_notify_command);
-	if (pstate_data[0]->integrate_fail_notify_command)
-		pstate_data[1]->integrate_fail_notify_command =
-			str_copy(pstate_data[0]->integrate_fail_notify_command);
-	if (pstate_data[0]->default_development_directory)
-		pstate_data[1]->default_development_directory =
-			str_copy(pstate_data[0]->default_development_directory);
 
 	/*
 	 * if no project directory was specified
@@ -590,7 +534,7 @@ You may optionally specify a second name as the name of the new project."
 	 */
 	if (!home)
 	{
-		int	max;
+		int     max;
 
 		s2 = user_default_project_directory(pup);
 		assert(s2);
@@ -599,59 +543,219 @@ You may optionally specify a second name as the name of the new project."
 		os_become_undo();
 		if (project_name[1]->str_length > max)
 		{
-			fatal
-			(
-				"project name \"%S\" too long (by %ld)",
-				project_name[1],
-				project_name[1]->str_length - max
-			);
+			scp = sub_context_new();
+			sub_var_set(scp, "Name", "%S", project_name[1]);
+			sub_var_set(scp, "Number", "%d", (int)(project_name[1]->str_length - max));
+			sub_var_optional(scp, "Number");
+			fatal_intl(scp, i18n("project \"$name\" too long"));
+			/* NOTREACHED */
+			sub_context_delete(scp);
 		}
 		home = str_format("%S/%S", s2, project_name[1]);
 		str_free(s2);
-		project_verbose(pp[1], "project directory \"%S\"", home);
+
+		scp = sub_context_new();
+		sub_var_set(scp, "File_Name", "%S", home);
+		project_verbose(pp[1], scp, i18n("proj dir $filename"));
+		sub_context_delete(scp);
 	}
 	project_home_path_set(pp[1], home);
 	str_free(home);
 
 	/*
-	 * create the diectory and subdirectories.
-	 * It is an error if the directories can't be created.
-	 *
-	 * Don't use the project_baseline_path_get function,
-	 * because it resolves any symlinks.
+	 * take the relevant locks
 	 */
-	s1 = project_home_path_get(pp[1]);
+	project_pstate_lock_prepare(pp[1]);
+	project_baseline_read_lock_prepare(pp[0]);
+	gonzo_gstate_lock_prepare_new();
+	lock_take();
+	pstate_data[0] = project_pstate_get(pp[0]);
+	pstate_data[1] = project_pstate_get(pp[1]);
+
+	/*
+	 * Create the directory and subdirectories.
+	 * It is an error if the directories can't be created.
+	 */
+	home = project_home_path_get(pp[1]);
 	bl = project_baseline_path_get(pp[1], 0);
 	hp = project_history_path_get(pp[1]);
 	ip = project_info_path_get(pp[1]);
 	project_become(pp[1]);
-	os_mkdir(s1, 02755);
-	undo_rmdir_errok(s1);
+	os_mkdir(home, 02755);
+	undo_rmdir_errok(home);
 	os_mkdir(bl, 02755);
 	undo_rmdir_errok(bl);
 	os_mkdir(hp, 02755);
 	undo_rmdir_errok(hp);
 	os_mkdir(ip, 02755);
 	undo_rmdir_errok(ip);
-	os_become_undo();
+	project_become_undo();
 
 	/*
-	 * add a row to the table
+	 * create a new release state file
+	 */
+	pstate_data[1]->next_test_number = pstate_data[0]->next_test_number;
+	project_version_previous_set(pp[1], project_version_get(pp[0]));
+
+	/* administrators */
+	for (j = 0; ; ++j)
+	{
+		s1 = project_administrator_nth(pp[0], j);
+		if (!s1)
+			break;
+		project_administrator_add(pp[1], s1);
+	}
+
+	/* developers */
+	for (j = 0; ; ++j)
+	{
+		s1 = project_developer_nth(pp[0], j);
+		if (!s1)
+			break;
+		project_developer_add(pp[1], s1);
+	}
+
+	/* reviewers */
+	for (j = 0; ; ++j)
+	{
+		s1 = project_reviewer_nth(pp[0], j);
+		if (!s1)
+			break;
+		project_reviewer_add(pp[1], s1);
+	}
+
+	/* integrators */
+	for (j = 0; ; ++j)
+	{
+		s1 = project_integrator_nth(pp[0], j);
+		if (!s1)
+			break;
+		project_integrator_add(pp[1], s1);
+	}
+
+	/*
+	 * Copy the project attributes across.
+	 *
+	 * Please keep this in the same order as aegis/pattr.def
+	 * to make sure none are missed.
+	 *
+	 * DO NOT copy the major and minor version numbers across,
+	 * because we are creating a new-style project.
+	 */
+	project_description_set(pp[1], project_description_get(pp[0]));
+	project_developer_may_review_set
+	(
+		pp[1],
+		project_developer_may_review_get(pp[0])
+	);
+	project_developer_may_integrate_set
+	(
+		pp[1],
+		project_developer_may_integrate_get(pp[0])
+	);
+	project_reviewer_may_integrate_set
+	(
+		pp[1],
+		project_reviewer_may_integrate_get(pp[0])
+	);
+	project_developers_may_create_changes_set
+	(
+		pp[1],
+		project_developers_may_create_changes_get(pp[0])
+	);
+
+	project_forced_develop_begin_notify_command_set
+	(
+		pp[1],
+		project_forced_develop_begin_notify_command_get(pp[0])
+	);
+	project_develop_end_notify_command_set
+	(
+		pp[1],
+		project_develop_end_notify_command_get(pp[0])
+	);
+	project_develop_end_undo_notify_command_set
+	(
+		pp[1],
+		project_develop_end_undo_notify_command_get(pp[0])
+	);
+	project_review_pass_notify_command_set
+	(
+		pp[1],
+		project_review_pass_notify_command_get(pp[0])
+	);
+	project_review_pass_undo_notify_command_set
+	(
+		pp[1],
+		project_review_pass_undo_notify_command_get(pp[0])
+	);
+	project_review_fail_notify_command_set
+	(
+		pp[1],
+		project_review_fail_notify_command_get(pp[0])
+	);
+	project_integrate_pass_notify_command_set
+	(
+		pp[1],
+		project_integrate_pass_notify_command_get(pp[0])
+	);
+	project_integrate_fail_notify_command_set
+	(
+		pp[1],
+		project_integrate_fail_notify_command_get(pp[0])
+	);
+	project_default_development_directory_set
+	(
+		pp[1],
+		project_default_development_directory_get(pp[0])
+	);
+	project_umask_set(pp[1], project_umask_get(pp[0]));
+	project_default_test_exemption_set
+	(
+		pp[1],
+		project_default_test_exemption_get(pp[0])
+	);
+	project_minimum_change_number_set
+	(
+		pp[1],
+		project_minimum_change_number_get(pp[0])
+	);
+
+	/*
+	 * add a row to the project table
 	 */
 	gonzo_project_add(pp[1]);
 
 	/*
-	 * the first change adds all of the files
+	 * create each of the branches
+	 * (attributes are inherited)
 	 */
-	cp = change_alloc(pp[1], 1);
+	ppp = pp[1];
+	for (j = 0; j < new_version_number_length; ++j)
+	{
+		trace(("ppp = %8.8lX\n", (long)ppp));
+		change_number = magic_zero_encode(new_version_number[j]);
+		trace(("change_number = %ld;\n", change_number));
+		ppp = new_branch_internals(up, ppp, change_number, (string_ty *)0);
+		version_pp[j] = ppp;
+	}
+
+	/*
+	 * Add all of the files to the final branch.
+	 */
+	change_number = project_next_change_number(ppp, 1);
+	cp = change_alloc(ppp, change_number);
 	change_bind_new(cp);
 	cstate_data = change_cstate_get(cp);
+	scp = sub_context_new();
+	sub_var_set(scp, "Name", "%S", project_name[0]);
 	cstate_data->brief_description =
-		str_format("New release derived from %S.", project_name[0]);
+		subst_intl(scp, i18n("New release derived from $name."));
+	sub_context_delete(scp);
 	cstate_data->cause = change_cause_internal_enhancement;
 	cstate_data->test_exempt = 1;
 	cstate_data->test_baseline_exempt = 1;
-	project_change_append(pp[1], 1);
+	project_change_append(ppp, change_number, 0);
 
 	/*
 	 * lots of fake history so we don't confuse
@@ -662,81 +766,215 @@ You may optionally specify a second name as the name of the new project."
 	chp = change_history_new(cp, up);
 	chp->what = cstate_history_what_develop_begin;
 	chp = change_history_new(cp, up);
+	cstate_data->development_directory = os_edit_filename(0);
 	chp->what = cstate_history_what_develop_end;
 	chp = change_history_new(cp, up);
 	chp->what = cstate_history_what_review_pass;
 	chp = change_history_new(cp, up);
 	chp->what = cstate_history_what_integrate_begin;
 	cstate_data->state = cstate_state_being_integrated;
+	bl = project_baseline_path_get(ppp, 0);
 	cstate_data->integration_directory = str_copy(bl);
+
+	/*
+	 * update the copyright years of the change
+	 */
+	change_copyright_years_now(cp);
+
+	/*
+	 * update the copyright years of the branch
+	 * (a) from the original project
+	 * (b) from the fake change that created the files
+	 */
+	project_copyright_years_merge(ppp, project_change_get(pp[0]));
+	project_copyright_years_merge(ppp, cp);
 
 	/*
 	 * add all of the files to the change
 	 */
-	for (j = 0; j < pstate_data[0]->src->length; ++j)
+	for (j = 0; ; ++j)
 	{
-		pstate_src	p_src_data;
-		pstate_src	p1_src_data;
-		cstate_src	c_src_data;
+		fstate_src	p_src_data;
+		fstate_src	p1_src_data;
+		fstate_src	c_src_data;
 
-		p_src_data = pstate_data[0]->src->list[j];
+		p_src_data = project_file_nth(pp[0], j);
+		if (!p_src_data)
+			break;
 		if (p_src_data->deleted_by)
 			continue;
 		if (p_src_data->about_to_be_created_by)
 			continue;
+		if (p_src_data->about_to_be_copied_by)
+			continue;
 
-		p1_src_data = project_src_new(pp[1], p_src_data->file_name);
+		p1_src_data = project_file_new(ppp, p_src_data->file_name);
+		p1_src_data->action = file_action_create;
 		p1_src_data->usage = p_src_data->usage;
 
-		c_src_data = change_src_new(cp);
-		c_src_data->file_name = str_copy(p_src_data->file_name);
+		c_src_data = change_file_new(cp, p_src_data->file_name);
 		c_src_data->action = file_action_create;
 		c_src_data->usage = p_src_data->usage;
+
+		/*
+		 * copy testing correlations
+		 */
+		if (p_src_data->test && p_src_data->test->length)
+		{
+			size_t		m;
+
+			p1_src_data->test = fstate_src_test_list_type.alloc();
+			for (m = 0; m < p_src_data->test->length; ++m)
+			{
+				string_ty	**addr_p;
+				type_ty		*type_p;
+
+				addr_p =
+					fstate_src_test_list_type.list_parse
+					(
+						p1_src_data->test,
+						&type_p
+					);
+				assert(type_p == &string_type);
+				*addr_p = str_copy(p_src_data->test->list[m]);
+			}
+		}
 	}
+
+	/*
+	 * Open the log file
+	 */
+	pup1 = project_user(pp[1]);
+	s1 = str_format("%S/%s.log", bl, progname_get());
+	log_open(s1, pup1, log_style);
+	str_free(s1);
 
 	/*
 	 * copy files from old baseline to new baseline
 	 */
 	info.from = project_baseline_path_get(pp[0], 1);
 	info.to = bl;
-	project_verbose(pp[1], "copy baseline");
-	project_become(pp[1]);
+	project_verbose(ppp, 0, i18n("copy baseline"));
+	project_become(ppp);
 	dir_walk(info.from, copy_tree_callback, &info);
-	os_become_undo();
+	project_become_undo();
+
+	/*
+	 * Build all of the difference files,
+	 * and record the fingerprints.
+	 */
+	for (j = 0; ; ++j)
+	{
+		fstate_src	src_data;
+		string_ty	*original;
+		string_ty	*path;
+		string_ty	*path_d;
+
+		/*
+		 * find the relevant change src data
+		 */
+		src_data = project_file_nth(ppp, j);
+		if (!src_data)
+			break;
+
+		/*
+		 * generated files are not fingerprinted or differenced
+		 */
+		if (src_data->usage == file_usage_build)
+			continue;
+
+		/*
+		 * build the path to the source file
+		 */
+		path = str_format("%S/%S", bl, src_data->file_name);
+		assert(path);
+		trace_string(path->str_text);
+
+		/*
+		 * Record the source file's fingerprint.
+		 */
+		if (!src_data->file_fp)
+			src_data->file_fp = fingerprint_type.alloc();
+		project_become(ppp);
+		change_fingerprint_same(src_data->file_fp, path);
+		project_become_undo();
+
+		/*
+		 * Don't bother differencing the file for the project
+		 * trunk.
+		 */
+		if (!ppp->parent)
+		{
+			str_free(path);
+			continue;
+		}
+
+		/*
+		 * build the path to the difference file
+		 */
+		path_d = str_format("%S,D", path);
+		trace_string(path_d->str_text);
+
+		/*
+		 * Run the difference command.  All newly create
+		 * files are differenced against /dev/null, and
+		 * every file in this change is a new file.
+		 */
+		original = str_from_c("/dev/null");
+		change_run_diff_command(cp, pup1, original, path, path_d);
+		str_free(original);
+
+		/*
+		 * Record the fingerprint of the difference file.
+		 */
+		if (!src_data->diff_file_fp)
+			src_data->diff_file_fp = fingerprint_type.alloc();
+		user_become(pup1);
+		change_fingerprint_same(src_data->diff_file_fp, path_d);
+		user_become_undo();
+
+		str_free(path);
+		str_free(path_d);
+	}
+	user_free(pup1);
 
 	/*
 	 * build history files
 	 */
-	if (!nolog)
+	for (j = 0; ; ++j)
 	{
-		user_ty	*pup1;
+		fstate_src	c_src_data;
+		fstate_src	p_src_data;
 
-		s1 = str_format("%S/%s.log", bl, option_progname_get());
-		pup1 = project_user(pp[1]);
-		log_open(s1, pup1, log_style_create);
-		user_free(pup1);
-		str_free(s1);
-	}
-	for (j = 0; j < cstate_data->src->length; ++j)
-	{
-		cstate_src	c_src_data;
-		pstate_src	p_src_data;
-
-		c_src_data = cstate_data->src->list[j];
-		p_src_data = project_src_find(pp[1], c_src_data->file_name);
+		c_src_data = change_file_nth(cp, j);
+		if (!c_src_data)
+			break;
+		p_src_data = project_file_find(ppp, c_src_data->file_name);
 		assert(p_src_data);
 
 		/*
 		 * create a new history file
 		 */
 		change_run_history_create_command(cp, c_src_data->file_name);
+
+		/*
+		 * Extract the version number from the history file.
+		 * Record it in the project and in the change.
+		 */
 		p_src_data->edit_number =
 			change_run_history_query_command
 			(
 				cp,
 				c_src_data->file_name
 			);
-		c_src_data->edit_number = str_copy(p_src_data->edit_number);
+		p_src_data->edit_number_origin =
+			str_copy(p_src_data->edit_number);
+		c_src_data->edit_number =
+			str_copy(p_src_data->edit_number);
+		/*
+		 * Don't set edit number origin in change file state
+		 * for created files.
+		 */
 	}
 
 	/*
@@ -744,28 +982,40 @@ You may optionally specify a second name as the name of the new project."
 	 */
 	str_free(cstate_data->integration_directory);
 	cstate_data->integration_directory = 0;
+	str_free(cstate_data->development_directory);
+	cstate_data->development_directory = 0;
 	chp = change_history_new(cp, up);
 	chp->what = cstate_history_what_integrate_pass;
-	php = project_history_new(pp[1]);
-	php->delta_number = 1;
-	php->change_number = 1;
-	cstate_data->state = cstate_state_completed;
 	cstate_data->delta_number = 1;
+	project_history_new(ppp, cstate_data->delta_number, change_number);
+	cstate_data->state = cstate_state_completed;
 
 	/*
-	 * write the project pointer back out
+	 * write the project state
+	 *	(the trunk change state is implicitly written)
+	 *
+	 * Write each of the branch states.  You must write each one
+	 * AFTER the next branch down has been created, because
+	 * creating a branch alters the pstate of the one above.
+	 */
+	project_pstate_write(pp[1]);
+	for (j = 0; j < new_version_number_length; ++j)
+		project_pstate_write(version_pp[j]);
+	change_cstate_write(cp);
+	gonzo_gstate_write();
+
+	/*
 	 * release locks
 	 */
-	change_cstate_write(cp);
-	project_pstate_write(pp[1]);
-	gonzo_gstate_write();
 	commit();
 	lock_release();
 
 	/*
 	 * verbose success message
 	 */
-	project_verbose(pp[1], "created");
+	project_verbose(pp[1], 0, i18n("new release complete"));
+	for (j = 0; j < new_version_number_length; ++j)
+		project_verbose(version_pp[j], 0, i18n("new release complete"));
 	str_free(project_name[0]);
 	project_free(pp[0]);
 	str_free(project_name[1]);

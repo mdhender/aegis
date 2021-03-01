@@ -1,6 +1,6 @@
 /*
  *	aegis - a project change supervisor
- *	Copyright (C) 1994 Peter Miller.
+ *	Copyright (C) 1994, 1996, 1997 Peter Miller;
  *	All rights reserved.
  *
  *	This program is free software; you can redistribute it and/or modify
@@ -15,15 +15,39 @@
  *
  *	You should have received a copy of the GNU General Public License
  *	along with this program; if not, write to the Free Software
- *	Foundation, Inc., 675 Mass Ave, Cambridge, MA 02139, USA.
+ *	Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111, USA.
  *
- * MANIFEST: isolate string.h/strings.h differences
+ * MANIFEST: insulate against <string.h> vs <strings.h> differences
  */
 
 #ifndef COMMON_AC_STRING_H
 #define COMMON_AC_STRING_H
 
 #include <config.h>
+
+/*
+ * We could have used __USE_BSD, but that defines prototypes for the
+ * index, rindex, bcmp, bzero and bcopy functions, and we don't want
+ * them.  This prototype does not conflict, however.
+ */
+#if !defined(HAVE_STRCASECMP) || defined(__linux__)
+# if __STDC__ >= 1
+#  ifdef __USE_BSD
+#   undef __USE_BSD
+#  endif
+   int strcasecmp(const char *, const char *);
+# endif
+#endif
+
+/*
+ * We could have used __USE_GNU, but that defines prototypes for
+ * too many other things.  This prototype does not conflict, however.
+ */
+#if !defined(HAVE_STRSIGNAL) || defined(__linux__)
+# if __STDC__ >= 1
+   char *strsignal(int);
+# endif
+#endif
 
 #if STDC_HEADERS || HAVE_STRING_H
 #  include <string.h>
@@ -34,12 +58,6 @@
 #else
    /* memory.h and strings.h conflict on some systems.  */
 #  include <strings.h>
-#endif
-
-#ifndef HAVE_STRCASECMP
-#if __STDC__ >= 1
-int strcasecmp(const char *, const char *);
-#endif
 #endif
 
 #endif /* COMMON_AC_STRING_H */

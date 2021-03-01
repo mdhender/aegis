@@ -1,6 +1,6 @@
 /*
  *	aegis - project change supervisor
- *	Copyright (C) 1994, 1995 Peter Miller;
+ *	Copyright (C) 1994, 1995, 1996, 1997, 1998 Peter Miller;
  *	All rights reserved.
  *
  *	This program is free software; you can redistribute it and/or modify
@@ -15,28 +15,33 @@
  *
  *	You should have received a copy of the GNU General Public License
  *	along with this program; if not, write to the Free Software
- *	Foundation, Inc., 675 Mass Ave, Cambridge, MA 02139, USA.
+ *	Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111, USA.
  *
  * MANIFEST: functions to implement the 'aegis -Change_Owner' command
  */
 
 #include <stdio.h>
 #include <ac/string.h>
+#include <ac/libintl.h>
 
 #include <aechown.h>
 #include <ael.h>
 #include <arglex2.h>
 #include <error.h>
 #include <change.h>
+#include <change_bran.h>
+#include <change_file.h>
 #include <commit.h>
 #include <cstate.h>
 #include <file.h>
 #include <help.h>
 #include <lock.h>
-#include <option.h>
 #include <os.h>
+#include <progname.h>
 #include <project.h>
+#include <project_hist.h>
 #include <pstate.h>
+#include <sub.h>
 #include <trace.h>
 #include <undo.h>
 #include <user.h>
@@ -49,7 +54,7 @@ change_owner_usage()
 {
 	char	*progname;
 
-	progname = option_progname_get();
+	progname = progname_get();
 	fprintf
 	(
 		stderr,
@@ -72,12 +77,7 @@ static void change_owner_help _((void));
 static void
 change_owner_help()
 {
-	static char *text[] =
-	{
-#include <../man1/aechown.h>
-	};
-
-	help(text, SIZEOF(text), change_owner_usage);
+	help("aechown", change_owner_usage);
 }
 
 
@@ -101,9 +101,9 @@ change_owner_list()
 
 		case arglex_token_project:
 			if (arglex() != arglex_token_string)
-				change_owner_usage();
+				option_needs_name(arglex_token_project, change_owner_usage);
 			if (project_name)
-				fatal("duplicate -Project option");
+				duplicate_option_by_name(arglex_token_project, change_owner_usage);
 			project_name = str_from_c(arglex_value.alv_string);
 			break;
 		}
@@ -121,6 +121,7 @@ static void change_owner_main _((void));
 static void
 change_owner_main()
 {
+	sub_context_ty	*scp;
 	string_ty	*project_name;
 	long		change_number;
 	project_ty	*pp;
@@ -128,7 +129,6 @@ change_owner_main()
 	user_ty		*up1;
 	user_ty		*up2;
 	change_ty	*cp;
-	pstate		pstate_data;
 	cstate		cstate_data;
 	cstate_history	history_data;
 	string_ty	*usr;
@@ -153,55 +153,68 @@ change_owner_main()
 		case arglex_token_keep:
 		case arglex_token_interactive:
 		case arglex_token_no_keep:
-			user_delete_file_argument();
+			user_delete_file_argument(change_owner_usage);
 			break;
 
 		case arglex_token_change:
 			if (arglex() != arglex_token_number)
-				change_owner_usage();
+				option_needs_number(arglex_token_change, change_owner_usage);
 			/* fall through... */
 
 		case arglex_token_number:
 			if (change_number)
-				fatal("duplicate -Change option");
+				duplicate_option_by_name(arglex_token_change, change_owner_usage);
 			change_number = arglex_value.alv_number;
-			if (change_number < 1)
-				fatal("change %ld out of range", change_number);
+			if (change_number == 0)
+				change_number = MAGIC_ZERO;
+			else if (change_number < 1)
+			{
+				scp = sub_context_new();
+				sub_var_set(scp, "Number", "%ld", change_number);
+				fatal_intl(scp, i18n("change $number out of range"));
+				/* NOTREACHED */
+				sub_context_delete(scp);
+			}
 			break;
 
 		case arglex_token_project:
 			if (project_name)
-				fatal("duplicate -Project option");
+				duplicate_option(change_owner_usage);
 			if (arglex() != arglex_token_string)
-				change_owner_usage();
+				option_needs_name(arglex_token_project, change_owner_usage);
 			project_name = str_from_c(arglex_value.alv_string);
 			break;
 
 		case arglex_token_directory:
 			if (devdir)
-				fatal("duplicate -Directory option");
+				duplicate_option(change_owner_usage);
 			if (arglex() != arglex_token_string)
-				change_owner_usage();
+				option_needs_dir(arglex_token_directory, change_owner_usage);
 			devdir = str_from_c(arglex_value.alv_string);
 			break;
 
 		case arglex_token_user:
 			if (arglex() != arglex_token_string)
-				change_owner_usage();
+				option_needs_name(arglex_token_user, change_owner_usage);
 			/* fall through... */
 
 		case arglex_token_string:
 			if (usr)
-				fatal("duplicate -User option");
+				duplicate_option_by_name(arglex_token_user, change_owner_usage);
 			usr = str_from_c(arglex_value.alv_string);
+			break;
+
+		case arglex_token_wait:
+		case arglex_token_wait_not:
+			user_lock_wait_argument(change_owner_usage);
 			break;
 		}
 		arglex();
 	}
 	if (!change_number)
-		fatal("no change number given");
+		fatal_intl(0, i18n("no change number"));
 	if (!usr)
-		fatal("no user name given");
+		fatal_intl(0, i18n("no user name"));
 
 	/*
 	 * locate project data
@@ -216,7 +229,13 @@ change_owner_main()
 	 * it is an error if the named user is not a developer
 	 */
 	if (!project_developer_query(pp, usr))
-		project_fatal(pp, "user \"%S\" is not a developer", usr);
+	{
+		scp = sub_context_new();
+		sub_var_set(scp, "Target", "%S", usr);
+		project_fatal(pp, scp, i18n("$target not developer"));
+		/* NOTREACHED */
+		sub_context_delete(scp);
+	}
 
 	/*
 	 * locate user data
@@ -227,14 +246,7 @@ change_owner_main()
 	 * It is an error if the executing user is not a project administrator
 	 */
 	if (!project_administrator_query(pp, user_name(up)))
-	{
-		project_fatal
-		(
-			pp,
-			"user \"%S\" is not an administrator",
-			user_name(up)
-		);
-	}
+		project_fatal(pp, 0, i18n("not an administrator"));
 
 	/*
 	 * locate change data
@@ -246,29 +258,11 @@ change_owner_main()
 	/*
 	 * It is an error if the change is not in the 'being developed' state
 	 */
-	trace(("mark\n"));
 	cstate_data = change_cstate_get(cp);
 	if (cstate_data->state != cstate_state_being_developed)
-	{
-		change_fatal
-		(
-			cp,
-"this change is in the '%s' state, \
-it must be in the 'being developed' state to change its owner",
-			cstate_state_ename(cstate_data->state)
-		);
-	}
+		change_fatal(cp, 0, i18n("bad chown state"));
 	if (str_equal(change_developer_name(cp), usr))
-	{
-		change_verbose
-		(
-			cp,
-"warning: no need to change owner, \
-already being developed by user \"%S\", \
-a new development directory will be constructed",
-			usr
-		);
-	}
+		change_verbose(cp, 0, i18n("warning: no chown"));
 	up1 = user_symbolic(pp, change_developer_name(cp));
 	trace(("up1 = %08lx\n", up1));
 	up2 = user_symbolic(pp, usr);
@@ -279,14 +273,12 @@ a new development directory will be constructed",
 	 * table.  Take an advisory write lock on the appropriate row of the
 	 * user table.  Block until can get both simultaneously.
 	 */
-	trace(("mark\n"));
 	project_pstate_lock_prepare(pp);
 	change_cstate_lock_prepare(cp);
 	user_ustate_lock_prepare(up1);
 	user_ustate_lock_prepare(up2);
 	lock_take();
 	cstate_data = change_cstate_get(cp);
-	pstate_data = project_pstate_get(pp);
 
 	/*
 	 * These could have changed, check again:
@@ -295,22 +287,15 @@ a new development directory will be constructed",
 	 * named user.
 	 */
 	if (cstate_data->state != cstate_state_being_developed)
-	{
-		change_fatal
-		(
-			cp,
-"this change is in the '%s' state, \
-it must be in the 'being developed' state to change its owner",
-			cstate_state_ename(cstate_data->state)
-		);
-	}
+		change_fatal(cp, 0, i18n("bad chown state"));
 	if (!str_equal(change_developer_name(cp), user_name(up1)))
-		change_fatal(cp, "sync error, try again");
+		change_fatal(cp, 0, i18n("sync error, try again"));
+	if (change_is_a_branch(cp))
+		change_fatal(cp, 0, i18n("no branch chown"));
 
 	/*
 	 * add to history for state change
 	 */
-	trace(("mark\n"));
 	history_data = change_history_new(cp, up1);
 	history_data->what = cstate_history_what_develop_begin_undo;
 	history_data->why =
@@ -332,75 +317,20 @@ it must be in the 'being developed' state to change its owner",
 	 * Remove the change from the list of assigned changes in the user
 	 * change table (in the user row).
 	 */
-	trace(("mark\n"));
 	user_own_remove(up1, project_name_get(pp), change_number);
 	user_own_add(up2, project_name_get(pp), change_number);
 
 	/*
 	 * Create the change directory.
 	 */
-	trace(("mark\n"));
 	if (!devdir)
 	{
-		unsigned long	k;
-		int		max;
-		string_ty	*pn;
-		string_ty	*s2;
-
-		/*
-		 * If the user did not give the directory to use,
-		 * we must construct one.
-		 * The length is limited by the available filename
-		 * length limit, trim the project name if necessary.
-		 */
-		pn = project_name_get(pp);
-		s2 = user_default_development_directory(up2);
-		assert(s2);
-		user_become(up2);
-		max = os_pathconf_name_max(s2);
-		user_become_undo();
-		for (k = 0;; ++k)
-		{
-			char		suffix[30];
-			char		*tp;
-			unsigned long	n;
-			int		len;
-			int		exists;
-
-			tp = suffix;
-			*tp++ = '.';
-			n = k;
-			for (;;)
-			{
-				*tp++ = (n & 15) + 'C';
-				n >>= 4;
-				if (!n)
-					break;
-			}
-			sprintf(tp, "%3.3ld", change_number);
-
-			len = strlen(suffix);
-			if (len > max)
-			{
-				/* unlikely in the extreme */
-				len = max - 1;
-				suffix[len] = 0;
-			}
-			len = max - len;
-			if (len > pn->str_length)
-				len = pn->str_length;
-			devdir = str_format("%S/%.*S%s", s2, len, pn, suffix);
-			os_become_orig();
-			exists = os_exists(devdir);
-			os_become_undo();
-			if (!exists)
-				break;
-			str_free(devdir);
-		}
-		str_free(s2);
-		change_verbose(cp, "development directory \"%S\"", devdir);
+		scp = sub_context_new();
+		devdir = change_development_directory_template(cp, up2);
+		sub_var_set(scp, "File_Name", "%S", devdir);
+		change_verbose(cp, scp, i18n("development directory \"$filename\""));
+		sub_context_delete(scp);
 	}
-	trace(("mark\n"));
 	assert(cstate_data->development_directory);
 	old_dd = cstate_data->development_directory;
 	cstate_data->development_directory = devdir;
@@ -408,28 +338,34 @@ it must be in the 'being developed' state to change its owner",
 	/*
 	 * Create the development directory.
 	 */
-	trace(("mark\n"));
 	user_become(up2);
 	os_mkdir(devdir, 02755);
 	undo_rmdir_errok(devdir);
 	user_become_undo();
 
 	/*
+	 * Make sure fstate read in so that it does not do so during
+	 * the loop (otherwise multiple user permissions set).
+	 */
+	change_file_nth(cp, 0);
+
+	/*
 	 * copy change files across
 	 *	(even the removed files)
 	 */
-	change_verbose(cp, "copy change source files");
-	trace(("mark\n"));
+	change_verbose(cp, 0, i18n("copy change source files"));
 	user_become(up2);
-	for (j = 0; j < cstate_data->src->length; ++j)
+	for (j = 0; ; ++j)
 	{
 		string_ty	*s1;
-		cstate_src	src_data;
+		fstate_src	src_data;
 
 		/*
 		 * copy the file across
 		 */
-		src_data = cstate_data->src->list[j];
+		src_data = change_file_nth(cp, j);
+		if (!src_data)
+			break;
 		s1 = str_format("%S/%S", old_dd, src_data->file_name);
 		if (os_exists(s1))
 		{
@@ -443,20 +379,35 @@ it must be in the 'being developed' state to change its owner",
 		str_free(s1);
 
 		/*
-		 * clear the diff time
+		 * clear the file time stamps
 		 */
-		src_data->diff_time = 0;
-		src_data->diff_file_time = 0;
+		if (src_data->file_fp)
+		{
+			fingerprint_type.free(src_data->file_fp);
+			src_data->file_fp = 0;
+		}
+		if (src_data->diff_file_fp)
+		{
+			fingerprint_type.free(src_data->diff_file_fp);
+			src_data->diff_file_fp = 0;
+		}
+		if (src_data->architecture_times)
+		{
+			fstate_src_architecture_times_list_type.free
+			(
+				src_data->architecture_times
+			);
+			src_data->architecture_times = 0;
+		}
 	}
 	user_become_undo();
 
 	/*
 	 * remove the old development directory
 	 */
-	trace(("mark\n"));
 	if (user_delete_file_query(up, old_dd, 1))
 	{
-		change_verbose(cp, "remove old development directory");
+		change_verbose(cp, 0, i18n("remove old development directory"));
 		user_become(up1);
 		commit_rmdir_tree_errok(old_dd);
 		user_become_undo();
@@ -468,7 +419,6 @@ it must be in the 'being developed' state to change its owner",
 	 * Write the user table rows.
 	 * Release advisory locks.
 	 */
-	trace(("mark\n"));
 	change_cstate_write(cp);
 	project_pstate_write(pp);
 	user_ustate_write(up1);
@@ -479,7 +429,6 @@ it must be in the 'being developed' state to change its owner",
 	/*
 	 * run the develop begin command
 	 */
-	trace(("mark\n"));
 	change_run_develop_begin_command(cp, up2);
 	change_run_forced_develop_begin_notify_command(cp, up);
 
@@ -489,7 +438,6 @@ it must be in the 'being developed' state to change its owner",
 	 * create them now, rather than waiting for the first build.
 	 * This will present a more uniform interface to the developer.
 	 */
-	trace(("mark\n"));
 	pconf_data = change_pconf_get(cp, 0);
 	if
 	(
@@ -497,19 +445,18 @@ it must be in the 'being developed' state to change its owner",
 	&&
 		!pconf_data->remove_symlinks_after_build
 	)
-		change_create_symlinks_to_baseline(cp, up2);
+		change_create_symlinks_to_baseline(cp, pp, up2, 0);
 
 	/*
 	 * verbose success message
 	 */
-	trace(("mark\n"));
-	change_verbose
-	(
-		cp,
-		"ownership changed from user \"%S\" to user \"%S\"",
-		user_name(up1),
-		user_name(up2)
-	);
+	scp = sub_context_new();
+	sub_var_set(scp, "ORiginal", "%S", user_name(up1));
+	sub_var_optional(scp, "ORiginal");
+	sub_var_set(scp, "Target", "%S", user_name(up2));
+	sub_var_optional(scp, "Target");
+	change_verbose(cp, scp, i18n("chown complete"));
+	sub_context_delete(scp);
 
 	/*
 	 * clean up and go home

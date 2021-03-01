@@ -1,6 +1,6 @@
 /*
  *	aegis - project change supervisor
- *	Copyright (C) 1991, 1992, 1993, 1994, 1995 Peter Miller;
+ *	Copyright (C) 1991, 1992, 1993, 1994, 1995, 1998 Peter Miller;
  *	All rights reserved.
  *
  *	This program is free software; you can redistribute it and/or modify
@@ -15,7 +15,7 @@
  *
  *	You should have received a copy of the GNU General Public License
  *	along with this program; if not, write to the Free Software
- *	Foundation, Inc., 675 Mass Ave, Cambridge, MA 02139, USA.
+ *	Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111, USA.
  *
  *
  * MANIFEST: string manipulation functions
@@ -28,12 +28,12 @@
  * a pointer test, and thus very fast.
  */
 
+#include <ac/ctype.h>
+#include <ac/stdarg.h>
 #include <ac/stddef.h>
-#include <stdio.h>
+#include <ac/stdio.h>
 #include <ac/stdlib.h>
 #include <ac/string.h>
-#include <ac/stdarg.h>
-#include <ctype.h>
 
 #include <error.h>
 #include <mem.h>
@@ -258,6 +258,10 @@ str_n_from_c(s, length)
 
 	hash = hash_generate(s, length);
 
+#ifdef DEBUG
+	if (!hash_table)
+		fatal_raw("you have not called str_initialize from main");
+#endif
 	index = hash & hash_cutover_mask;
 	if (index < hash_split)
 		index = hash & hash_cutover_split_mask;
@@ -377,7 +381,7 @@ str_free(s)
 	/*
 	 * should never reach here!
 	 */
-	fatal("attempted to free non-existent string (bug)");
+	fatal_raw("attempted to free non-existent string (bug)");
 }
 
 
@@ -569,11 +573,11 @@ str_upcase(s)
 	}
 	for (cp1 = s->str_text, cp2 = tmp; *cp1; ++cp1, ++cp2)
 	{
-		int c;
+		int	c;
 
-		c = *cp1;
-		if (c >= 'a' && c <= 'z')
-			c += 'A' - 'a';
+		c = (unsigned char)*cp1;
+		if (islower(c))
+			c = toupper(c);
 		*cp2 = c;
 	}
 	retval = str_n_from_c(tmp, s->str_length);
@@ -627,11 +631,11 @@ str_downcase(s)
 	}
 	for (cp1 = s->str_text, cp2 = tmp; *cp1; ++cp1, ++cp2)
 	{
-		int c;
+		int	c;
 
-		c = *cp1;
-		if (c >= 'A' && c <= 'Z')
-			c += 'a' - 'A';
+		c = (unsigned char)*cp1;
+		if (isupper(c))
+			c = tolower(c);
 		*cp2 = c;
 	}
 	retval = str_n_from_c(tmp, s->str_length);
@@ -665,7 +669,7 @@ str_bool(s)
 	cp = s->str_text;
 	while (*cp)
 	{
-		if (!isspace(*cp) && *cp != '0')
+		if (!isspace((unsigned char)*cp) && *cp != '0')
 			return 1;
 		++cp;
 	}

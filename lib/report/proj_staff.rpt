@@ -1,6 +1,6 @@
 /*
  *	aegis - project change supervisor
- *	Copyright (C) 1994 Peter Miller.
+ *	Copyright (C) 1994, 1995, 1997 Peter Miller;
  *	All rights reserved.
  *
  *	This program is free software; you can redistribute it and/or modify
@@ -15,7 +15,7 @@
  *
  *	You should have received a copy of the GNU General Public License
  *	along with this program; if not, write to the Free Software
- *	Foundation, Inc., 675 Mass Ave, Cambridge, MA 02139, USA.
+ *	Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111, USA.
  *
  * MANIFEST: report the staff currently assigned to a project
  */
@@ -25,14 +25,14 @@ p = project[project_name()];
 title("The Project Staff Report", sprintf("Project \"%s\"", p.name));
 columns
 (
-	{ name = "Login\n--------"; width = 8; },
-	{ name = "Full Name\n-----------"; width = 20; padding = 2; },
-	{ name = "Role\n------"; width = 9; },
-	{ name = ""; width = 8; },
-	{ name = ""; width = 10; },
-	{ name = ""; width = 13; }
+	{ name = "Login\n--------"; width = 8; padding = 2; },
+	{ name = "Full Name\n-----------"; width = 20; },
+	{ name = "Developer\n----------"; width = 10; },
+	{ name = "Reviewer\n----------"; width = 10; },
+	{ name = "Integrator\n----------"; width = 10; },
+	{ name = "Administrator\n-------------"; width = 13; }
 );
-ps = p.state;
+ps = p.state.branch;
 for (name in ps.developer)
 	staff[name].developer = true;
 for (name in ps.reviewer)
@@ -41,15 +41,103 @@ for (name in ps.integrator)
 	staff[name].integrator = true;
 for (name in ps.administrator)
 	staff[name].administrator = true;
+
+auto cn, cs, h;
+for (cn in keys(ps.change))
+{
+        cs = ps.change[cn];
+        for (h in cs.history)
+        {
+        	if (h.what == new_change)
+        		staff[h.who].administrator_count++;
+        	else if (h.what == develop_begin)
+        	{
+        		staff[h.who].developer_count++;
+        		if (h.forced != "")
+        			staff[h.forced].administrator_count++;
+        	}
+        	else if (h.what == review_pass || h.what == review_fail)
+        		staff[h.who].reviewer_count++;
+        	else if (h.what == integrate_begin)
+        		staff[h.who].integrator_count++;
+        }
+}
+
 for (name in sort(keys(staff)))
 {
+	auto s;
+	s = staff[name];
+	if (s.developer && !s.developer_count)
+		s.developer_count = 0;
+	if (s.reviewer && !s.reviewer_count)
+		s.reviewer_count = 0;
+	if (s.integrator && !s.integrator_count)
+		s.integrator_count = 0;
+	if (s.administrator && !s.administrator_count)
+		s.administrator_count = 0;
 	print
 	(
 		name,
 		passwd[name].pw_comment,
-		(staff[name].developer ? "developer" : ""),
-		(staff[name].reviewer ? "reviewer" : ""),
-		(staff[name].integrator ? "integrator" : ""),
-		(staff[name].administrator ? "administrator" : "")
+		sprintf
+		(
+			"%7s",
+			(
+				(
+					!s.developer && !s.developer_count
+				?
+					""
+				:
+					(s.developer_count + 0)
+				)
+			##
+				(!s.developer && s.developer_count ? "-" : " ")
+			)
+		),
+		sprintf
+		(
+			"%7s",
+			(
+				(
+					!s.reviewer && !s.reviewer_count
+				?
+					""
+				:
+					(s.reviewer_count + 0)
+				)
+			##
+				(!s.reviewer && s.reviewer_count ? "-" : " ")
+			)
+		),
+		sprintf
+		(
+			"%7s",
+			(
+				(
+					!s.integrator && !s.integrator_count
+				?
+					""
+				:
+					(s.integrator_count + 0)
+				)
+			##
+				(!s.integrator && s.integrator_count ? "-" : " ")
+			)
+		),
+		sprintf
+		(
+			"%7s",
+			(
+				(
+					!s.administrator && !s.administrator_count
+				?
+					""
+				:
+					(s.administrator_count + 0)
+				)
+			##
+				(!s.administrator && s.administrator_count ? "-" : " ")
+			)
+		)
 	);
 }

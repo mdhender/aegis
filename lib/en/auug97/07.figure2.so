@@ -1,0 +1,50 @@
+.\"
+.\"	aegis - project change supervisor
+.\"	Copyright (C) 1997 Peter Miller;
+.\"	All rights reserved.
+.\"
+.\"	This program is free software; you can redistribute it and/or modify
+.\"	it under the terms of the GNU General Public License as published by
+.\"	the Free Software Foundation; either version 2 of the License, or
+.\"	(at your option) any later version.
+.\"
+.\"	This program is distributed in the hope that it will be useful,
+.\"	but WITHOUT ANY WARRANTY; without even the implied warranty of
+.\"	MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+.\"	GNU General Public License for more details.
+.\"
+.\"	You should have received a copy of the GNU General Public License
+.\"	along with this program; if not, write to the Free Software
+.\"	Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111, USA.
+.\"
+.\" MANIFEST: AUUGN Feb'98 Article
+.\"
+.PS
+.ft CW
+ellipseht = 0.3
+ellipsewid = 0.75
+down
+A1: ellipse "prog"
+move 3*ellipseht
+C2: ellipse "parse.h"
+C1: ellipse "main.c" with .e at C2.w-(0.2,0)
+C3: ellipse "parse.c" with .w at C2.e+(0.2,0)
+D1: ellipse "main.d" with .c at 0.5<A1.s,C1.n>+(0.19,-0.15)
+D2: ellipse "parse.d" with .c at 0.5<A1.s,C3.n>+(0.19,-0.15)
+arrow from C1.n to D1.sw
+arrow from C2.n to D1.se
+arrow from C2.n to D2.sw
+arrow from C3.n to D2.se
+B1: ellipse "main.o" with .c at 0.5<A1.s,C1.n> fill 0
+B2: ellipse "parse.o" with .c at 0.5<A1.s,C3.n> fill 0
+arrow from B1.n to A1.sw
+arrow from B2.n to A1.se
+arrow from C1.n to B1.sw
+arrow from C2.n to B1.se
+arrow from C2.n to B2.sw
+arrow from C3.n to B2.se
+D1: ellipse "parse.y" with .n at 0.5<C2.s,C3.s>-(0,ellipseht)
+arrow from D1.n to C2.se
+arrow from D1.n to C3.sw
+.ft P
+.PE

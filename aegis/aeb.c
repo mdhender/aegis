@@ -1,6 +1,6 @@
 /*
  *	aegis - project change supervisor
- *	Copyright (C) 1991, 1992, 1993, 1994, 1995 Peter Miller;
+ *	Copyright (C) 1991, 1992, 1993, 1994, 1995, 1996, 1997, 1998 Peter Miller;
  *	All rights reserved.
  *
  *	This program is free software; you can redistribute it and/or modify
@@ -15,15 +15,17 @@
  *
  *	You should have received a copy of the GNU General Public License
  *	along with this program; if not, write to the Free Software
- *	Foundation, Inc., 675 Mass Ave, Cambridge, MA 02139, USA.
+ *	Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111, USA.
  *
  * MANIFEST: functions to perform development and integration builds
  */
 
-#include <stdio.h>
-#include <ac/stdlib.h>
-#include <ac/time.h>
 #include <errno.h>
+#include <ac/libintl.h>
+#include <ac/stdio.h>
+#include <ac/stdlib.h>
+#include <ac/string.h>
+#include <ac/time.h>
 
 #include <aeb.h>
 #include <ael.h>
@@ -31,18 +33,19 @@
 #include <col.h>
 #include <commit.h>
 #include <change.h>
-#include <error.h>
+#include <change_bran.h>
+#include <change_file.h>
 #include <error.h>
 #include <help.h>
 #include <lock.h>
 #include <log.h>
-#include <option.h>
 #include <os.h>
+#include <progname.h>
 #include <project.h>
 #include <sub.h>
 #include <trace.h>
 #include <user.h>
-#include <word.h>
+#include <str_list.h>
 
 
 /*
@@ -64,7 +67,7 @@ build_usage()
 {
 	char		*progname;
 
-	progname = option_progname_get();
+	progname = progname_get();
 	fprintf(stderr, "usage: %s -Build [ <option>... ]\n", progname);
 	fprintf(stderr, "       %s -Build -List [ <option>... ]\n", progname);
 	fprintf(stderr, "       %s -Build -Help\n", progname);
@@ -89,12 +92,7 @@ static void build_help _((void));
 static void
 build_help()
 {
-	static char *text[] =
-	{
-#include <../man1/aeb.h>
-	};
-
-	help(text, SIZEOF(text), build_usage);
+	help("aeb", build_usage);
 }
 
 
@@ -130,9 +128,9 @@ build_list()
 
 		case arglex_token_project:
 			if (arglex() != arglex_token_string)
-				build_usage();
+				option_needs_name(arglex_token_project, build_usage);
 			if (project_name)
-				fatal("duplicate -Project option");
+				duplicate_option_by_name(arglex_token_project, build_usage);
 			project_name = str_from_c(arglex_value.alv_string);
 			break;
 		}
@@ -172,23 +170,26 @@ static void
 build_main()
 {
 	cstate		cstate_data;
-	pstate		pstate_data;
 	pconf		pconf_data;
 	string_ty	*project_name;
 	project_ty	*pp;
 	long		change_number;
 	change_ty	*cp;
-	int		nolog;
+	log_style_ty	log_style;
 	user_ty		*up;
-	wlist		partial;
+	string_list_ty	partial;
 	string_ty	*s1;
 	string_ty	*s2;
+	int		minimum;
+	int		based;
+	string_ty	*base;
 
 	trace(("build_main()\n{\n"/*}*/));
-	nolog = 0;
+	log_style = log_style_snuggle_default;
 	project_name = 0;
 	change_number = 0;
-	wl_zero(&partial);
+	minimum = 0;
+	string_list_constructor(&partial);
 	while (arglex_token != arglex_token_eoln)
 	{
 		switch (arglex_token)
@@ -199,58 +200,71 @@ build_main()
 
 		case arglex_token_change:
 			if (arglex() != arglex_token_number)
-				build_usage();
+				option_needs_number(arglex_token_change, build_usage);
 			/* fall through... */
 
 		case arglex_token_number:
 			if (change_number)
-				fatal("duplicate -Change option");
+				duplicate_option_by_name(arglex_token_change, build_usage);
 			change_number = arglex_value.alv_number;
-			if (change_number < 1)
-				fatal("change %ld out of range", change_number);
+			if (change_number == 0)
+				change_number = MAGIC_ZERO;
+			else if (change_number < 1)
+			{
+				sub_context_ty	*scp;
+
+				scp = sub_context_new();
+				sub_var_set(scp, "Number", "%ld", change_number);
+				fatal_intl(scp, i18n("change $number out of range"));
+				/* NOTREACHED */
+				sub_context_delete(scp);
+			}
 			break;
 
 		case arglex_token_project:
 			if (arglex() != arglex_token_string)
-				build_usage();
+				option_needs_name(arglex_token_project, build_usage);
 			if (project_name)
-				fatal("duplicate -Project option");
+				duplicate_option_by_name(arglex_token_project, build_usage);
 			project_name = str_from_c(arglex_value.alv_string);
 			break;
 
 		case arglex_token_file:
 			if (arglex() != arglex_token_string)
-			{
-				error
-				(
-		   "The -File option must be followed by one or more file names"
-				);
-				build_usage();
-			}
+				option_needs_files(arglex_token_file, build_usage);
 			/* fall through... */
 
 		case arglex_token_string:
-			s1 = str_from_c(arglex_value.alv_string);
-			os_become_orig();
-			s2 = os_pathname(s1, 1);
-			os_become_undo();
-			if (wl_member(&partial, s2))
-				fatal("file \"%S\" named more than once", s1);
-			wl_append(&partial, s2);
-			str_free(s1);
+			s2 = str_from_c(arglex_value.alv_string);
+			string_list_append(&partial, s2);
 			str_free(s2);
 			break;
 
 		case arglex_token_nolog:
-			if (nolog)
-			{
-				fatal
-				(
-					"duplicate %s option",
-					arglex_value.alv_string
-				);
-			}
-			nolog = 1;
+			if (log_style == log_style_none)
+				duplicate_option(build_usage);
+			log_style = log_style_none;
+			break;
+
+		case arglex_token_minimum:
+			if (minimum)
+				duplicate_option(build_usage);
+			minimum = 1;
+			break;
+
+		case arglex_token_wait:
+		case arglex_token_wait_not:
+			user_lock_wait_argument(build_usage);
+			break;
+
+		case arglex_token_symbolic_links:
+		case arglex_token_symbolic_links_not:
+			user_symlink_pref_argument(build_usage);
+			break;
+
+		case arglex_token_base_relative:
+		case arglex_token_current_relative:
+			user_relative_filename_preference_argument(build_usage);
 			break;
 		}
 		arglex();
@@ -281,22 +295,52 @@ build_main()
 	/*
 	 * Take an advisory write lock on this row of the change table.
 	 * Block if necessary.
+	 *
+	 * Also take a read lock on the baseline, to ensure that it does
+	 * not change (aeip) for the duration of the build.
 	 */
-	trace(("mark\n"));
-	if (!partial.wl_nwords)
-	{
+	if (!partial.nstrings)
 		change_cstate_lock_prepare(cp);
-		project_build_read_lock_prepare(pp);
-		lock_take();
-	}
+	project_baseline_read_lock_prepare(pp);
+	lock_take();
 	cstate_data = change_cstate_get(cp);
-	pstate_data = project_pstate_get(pp);
 
-	if (partial.wl_nwords)
+	if (partial.nstrings)
 	{
-		string_ty	*dd;
-		string_ty	*bl;
-		size_t		j;
+		string_list_ty	search_path;
+		string_list_ty	wl2;
+		size_t		j, k;
+
+		/*
+		 * Search path for resolving file names.
+		 */
+		change_search_path_get(cp, &search_path, 1);
+
+		/*
+		 * Find the base for relative filenames.
+		 */
+		based =
+			(
+				search_path.nstrings >= 1
+			&&
+				(
+					user_relative_filename_preference
+					(
+						up,
+						uconf_relative_filename_preference_base
+					)
+				==
+					uconf_relative_filename_preference_base
+				)
+			);
+		if (based)
+			base = str_copy(search_path.string[0]);
+		else
+		{
+			os_become_orig();
+			base = os_curdir();
+			os_become_undo();
+		}
 
 		/*
 		 * resolve the path of each file
@@ -305,20 +349,68 @@ build_main()
 		 * 3.	if the file is inside the baseline, ok
 		 * 4.	if neither, error
 		 */
-		dd = change_development_directory_get(cp, 1);
-		bl = project_baseline_path_get(pp, 1);
-		for (j = 0; j < partial.wl_nwords; ++j)
+		string_list_constructor(&wl2);
+		for (j = 0; j < partial.nstrings; ++j)
 		{
-			s1 = partial.wl_word[j];
-			assert(s1->str_text[0] == '/');
-			s2 = os_below_dir(dd, s1);
-			if (!s2)
-				s2 = os_below_dir(bl, s1);
-			if (!s2)
-				change_fatal(cp, "path \"%S\" unrelated", s1);
+			/*
+			 * leave variable assignments alone
+			 */
+			s1 = partial.string[j];
+			if (strchr(s1->str_text, '='))
+			{
+				string_list_append(&wl2, s1);
+				continue;
+			}
+
+			/*
+			 * resolve relative paths
+			 */
+			if (s1->str_text[0] == '/')
+				s2 = str_copy(s1);
+			else
+				s2 = str_format("%S/%S", base, s1);
+			user_become(up);
+			s1 = os_pathname(s2, 1);
+			user_become_undo();
+			str_free(s2);
+			s2 = 0;
+			for (k = 0; k < search_path.nstrings; ++k)
+			{
+				s2 = os_below_dir(search_path.string[k], s1);
+				if (s2)
+					break;
+			}
 			str_free(s1);
-			partial.wl_word[j] = s2;
+			if (!s2)
+			{
+				sub_context_ty	*scp;
+
+				scp = sub_context_new();
+				sub_var_set(scp, "File_Name", "%S", partial.string[j]);
+				change_fatal(cp, scp, i18n("$filename unrelated"));
+				/* NOTREACHED */
+				sub_context_delete(scp);
+			}
+
+			/*
+			 * make sure it's unique
+			 */
+			if (string_list_member(&wl2, s2))
+			{
+				sub_context_ty	*scp;
+
+				scp = sub_context_new();
+				sub_var_set(scp, "File_Name", "%S", s2);
+				change_fatal(cp, scp, i18n("too many $filename"));
+				/* NOTREACHED */
+				sub_context_delete(scp);
+			}
+			else
+				string_list_append(&wl2, s2);
+			str_free(s2);
 		}
+		string_list_destructor(&partial);
+		partial = wl2;
 	}
 
 	/*
@@ -327,69 +419,40 @@ build_main()
 	 * It is an error if the change is not assigned to the current user.
 	 * It is an error if the change has no files assigned.
 	 */
-	trace(("mark\n"));
 	switch (cstate_data->state)
 	{
 	default:
-		change_fatal
-		(
-			cp,
-"this change is in the '%s' state, \
-it must be in the 'being developed' state to do a build",
-			cstate_state_ename(cstate_data->state)
-		);
+		change_fatal(cp, 0, i18n("bad build state"));
 		break;
 
 	case cstate_state_being_developed:
+		if (change_is_a_branch(cp))
+			change_fatal(cp, 0, i18n("bad branch build"));
 		if (!str_equal(change_developer_name(cp), user_name(up)))
-		{
-			change_fatal
-			(
-				cp,
-	    "user \"%S\" is not the developer, only user \"%S\" may do a build",
-				user_name(up),
-				change_developer_name(cp)
-			);
-		}
-		assert(cstate_data->src);
-		if (!cstate_data->src->length)
-		{
-			change_fatal
-			(
-				cp,
-   "this change has no files, you must add some files before you may do a build"
-			);
-		}
+			change_fatal(cp, 0, i18n("not developer"));
+		if (!change_file_nth(cp, (size_t)0))
+			change_fatal(cp, 0, i18n("no files"));
 		break;
 
 	case cstate_state_being_integrated:
 		if (!str_equal(change_integrator_name(cp), user_name(up)))
-		{
-			change_fatal
-			(
-				cp,
-	   "user \"%S\" is not the integrator, only user \"%S\" may do a build",
-				user_name(up),
-				change_integrator_name(cp)
-			);
-		}
-		if (partial.wl_nwords)
-		{
-			change_fatal
-			(
-				cp,
-	      "you may not do a partial build in the \"being integrated\" state"
-			);
-		}
+			change_fatal(cp, 0, i18n("not integrator"));
+		if (partial.nstrings)
+			change_fatal(cp, 0, i18n("bad build, partial"));
 		break;
 	}
+
+	/*
+	 * It is an error if the change attributes include architectures
+	 * not in the project.
+	 */
+	change_check_architectures(cp);
 
 	/*
 	 * Update the time the build was done.
 	 * This will not be written out if the build fails.
 	 */
 	os_throttle();
-	trace(("mark\n"));
 	change_build_time_set(cp);
 
 	/*
@@ -398,8 +461,20 @@ it must be in the 'being developed' state to do a build",
 	 *  2. if the baseline contains config, use that
 	 *  3. error if can't find one (DON'T look for file existence)
 	 */
-	trace(("mark\n"));
 	pconf_data = change_pconf_get(cp, 1);
+
+	/*
+	 * make sure the -MINIMum option means something
+	 */
+	if (minimum && !pconf_data->create_symlinks_before_build)
+	{
+		sub_context_ty	*scp;
+
+		scp = sub_context_new();
+		sub_var_set(scp, "Name", arglex_token_name(arglex_token_minimum));
+		change_fatal(cp, scp, i18n("$name option not meaningful"));
+		sub_context_delete(scp);
+	}
 
 	/*
 	 * the program has changed, so it needs testing again,
@@ -415,50 +490,64 @@ it must be in the 'being developed' state to do a build",
 	trace(("do the build\n"));
 	if (cstate_data->state == cstate_state_being_integrated)
 	{
-		if (!nolog)
-		{
-			user_ty		*pup;
+		user_ty		*pup;
 
-			pup = project_user(pp);
-			log_open
-			(
-				change_logfile_get(cp),
-				pup,
-				log_style_snuggle
-			);
-			user_free(pup);
-		}
-		change_verbose(cp, "integration build started");
+		pup = project_user(pp);
+		log_open(change_logfile_get(cp), pup, log_style);
+
+		if (pp->parent && pconf_data->create_symlinks_before_build)
+			change_create_symlinks_to_baseline(cp, pp->parent, pup, minimum);
+
+		change_verbose(cp, 0, i18n("integration build started"));
 		change_run_build_command(cp);
-		change_verbose(cp, "integration build complete");
+		change_verbose(cp, 0, i18n("integration build complete"));
+
+		if (pp->parent && pconf_data->create_symlinks_before_build)
+		{
+			/*
+			 * Integration builds always remove the symlinks
+			 * again, even if they are kept around in the
+			 * development directories.  This stops them
+			 * becoming stale if there are deeper baseline
+			 * integrations.
+			 */
+			change_remove_symlinks_to_baseline(cp, pp->parent, pup);
+		}
+		user_free(pup);
 	}
 	else
 	{
-		if (!nolog)
-			log_open(change_logfile_get(cp), up, log_style_snuggle);
+		log_open(change_logfile_get(cp), up, log_style);
 		if (pconf_data->create_symlinks_before_build)
-			change_create_symlinks_to_baseline(cp, up);
-		change_verbose
-		(
-			cp,
-			"%s build started",
-			(partial.wl_nwords ? "partial" : "development")
-		);
-		change_run_project_file_command(cp);
+		{
+			int	verify_dflt;
+
+			verify_dflt =
+				(
+					pconf_data->remove_symlinks_after_build
+				||
+				      change_run_project_file_command_needed(cp)
+				);
+			if (user_symlink_pref(up, verify_dflt))
+				change_create_symlinks_to_baseline(cp, pp, up, minimum);
+		}
+		if (partial.nstrings)
+			change_verbose(cp, 0, i18n("partial build started"));
+		else
+			change_verbose(cp, 0, i18n("development build started"));
+		change_run_project_file_command(cp, up);
 		change_run_development_build_command(cp, up, &partial);
-		change_verbose
-		(
-			cp,
-			"%s build complete",
-			(partial.wl_nwords ? "partial" : "development")
-		);
+		if (partial.nstrings)
+			change_verbose(cp, 0, i18n("partial build complete"));
+		else
+			change_verbose(cp, 0, i18n("development build complete"));
 		if
 		(
 			pconf_data->create_symlinks_before_build
 		&&
 			pconf_data->remove_symlinks_after_build
 		)
-			change_remove_symlinks_to_baseline(cp, up);
+			change_remove_symlinks_to_baseline(cp, pp, up);
 	}
 
 	/*
@@ -466,13 +555,12 @@ it must be in the 'being developed' state to do a build",
 	 * (This will be used when validating developer sign off.)
 	 * Release advisory write lock on row of change table.
 	 */
-	trace(("mark\n"));
-	if (!partial.wl_nwords)
+	if (!partial.nstrings)
 	{
 		change_cstate_write(cp);
 		commit();
-		lock_release();
 	}
+	lock_release();
 	project_free(pp);
 	change_free(cp);
 	user_free(up);

@@ -1,0 +1,260 @@
+/*
+ *	aegis - project change supervisor
+ *	Copyright (C) 1997, 1998 Peter Miller;
+ *	All rights reserved.
+ *
+ *	This program is free software; you can redistribute it and/or modify
+ *	it under the terms of the GNU General Public License as published by
+ *	the Free Software Foundation; either version 2 of the License, or
+ *	(at your option) any later version.
+ *
+ *	This program is distributed in the hope that it will be useful,
+ *	but WITHOUT ANY WARRANTY; without even the implied warranty of
+ *	MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ *	GNU General Public License for more details.
+ *
+ *	You should have received a copy of the GNU General Public License
+ *	along with this program; if not, write to the Free Software
+ *	Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111, USA.
+ *
+ * MANIFEST: instructions to cook(1), how to build archive directory
+ */
+
+integration-build-targets:
+	/* archive/Part.01.gz */
+	archive/[project_minus].tar.gz
+	/* archive/[project_minus].patch.gz */
+	archive/[project_minus].ug.ps.gz
+	archive/[project_minus].rm.ps.gz
+	archive/[project_minus].faq
+	archive/[project_minus].lsm
+	archive/[project_minus].README
+	archive/[project_minus].spec
+	archive/[project_short].html
+	archive/[project_short].gif
+	;
+
+etc/[project_short].html.d: etc/[project_short].html
+	etc/version.so
+{
+	c_incl -nc -ns -eia -r
+		[prepost "-I" /[arch]/etc [search_list]]
+		[prepost "-I" "/etc" [search_list]]
+		-prefix "'"[target]" archive/"[project_short]".html: etc/"[project_short]".html'"
+		-suffix "'set nodefault;'" [resolve etc/aegis.html]
+		[prepost "-rlp=" "" [search_list]] /* remove leading path */
+		-slp [arch] "'[arch]'" /* substitute leading path */
+		-o [target];
+}
+#include-cooked-nowarn etc/aegis.html.d
+
+archive/[project_short].html: etc/[project_short].html etc/ssp.awk
+	set shallow
+{
+	roffpp
+		[prepost "-I" /[arch]/etc [search_list]]
+		[prepost "-I" "/etc" [search_list]]
+		[resolve etc/[project_short].html]
+	| groff -Tascii -t -P-hub -man
+	| [awk] -f [resolve etc/ssp.awk]
+	> [target];
+}
+
+archive/[project_minus].ug.ps.gz: lib/en/user-guide/user-guide.ps.gz
+	set shallow
+{
+	cp [resolve [need]] [target];
+}
+
+archive/[project_minus].rm.ps.gz: lib/en/refman/refman.ps.gz
+	set shallow
+{
+	cp [resolve [need]] [target];
+}
+
+archive/[project_minus].faq: lib/en/faq/faq.txt
+	set shallow
+{
+	cp [resolve [need]] [target];
+}
+
+archive/[project_minus].lsm: lib/en/lsm/lsm.txt
+	set shallow
+{
+	cp [resolve [need]] [target];
+}
+
+archive/[project_minus].README: lib/en/readme/readme.txt
+	set shallow
+{
+	cp [resolve [need]] [target];
+}
+
+
+source_file_order =
+	README
+	[project_short].spec /* to RPM can build without separate spec file */
+	[sort
+		[stringset
+			[source_files]
+			install-sh
+			Makefile.in
+			BUILDING
+			LICENSE
+			MANIFEST
+			README
+			etc/version.so
+			common/config.h.in
+			common/patchlevel.h
+			configure
+			etc/CHANGES.[version_short]
+			[fromto 
+				lib/%1/faq/main.%2 lib/%1/faq/toc.so
+				[match_mask lib/%1/faq/main.%2 [source_files]]
+			]
+			[fromto
+				lib/%/refman/main.%2 lib/%/refman/index.so
+				[match_mask lib/%/refman/main.%2 [source_files]]
+			]
+			[fromto
+				lib/%/refman/main.%2 lib/%/refman/parts.so
+				[match_mask lib/%/refman/main.%2 [source_files]]
+			]
+			[fromto
+				lib/icon/%.uue lib/icon/%
+				[match_mask lib/icon/%.uue [source_files]]
+			]
+		-
+			README
+		]
+	]
+	;
+
+MANIFEST: etc/MANIFEST.sh [vs_file]
+{
+	sh [resolve etc/MANIFEST.sh [source_file_order]] > [target];
+}
+
+archive/Part.01.gz: [source_file_order]
+	set shallow
+{
+	parts = [glob "archive/Part*"];
+	if [parts] then
+		rm [parts]
+			set clearstat;
+	/* assumes shar.3.49 available */
+	shar -n[project_short] -a -c -oarchive/Part -L200
+		-s "'Peter Miller <millerp@canb.auug.org.au>'"
+		[resolve [source_file_order]];
+	gzip -9 -v archive/Part*;
+}
+
+archive/[project_minus].tar.gz: [source_file_order]
+	set shallow
+{
+	if [exists archive/[project_minus].tar] then
+		rm archive/[project_minus].tar
+			set clearstat;
+	tar --create --file - --dereference [resolve [source_file_order]]
+		| tardy -unu 0 -gnu 0 -una Peter -gna Miller
+			-p [project_minus] -ms 0644 -mc 07022 -now
+			[prepost "-rp=" "" [search_list]]
+		> archive/[project_minus].tar;
+	gzip -9 -v archive/[project_minus].tar;
+}
+
+patch_files = [fromto %0% %0%,P [source_files] etc/CHANGES.[version_short]];
+patch_files = [vs_file],P [stringset [patch_files] - [vs_file],P];
+
+archive/[project_minus].patch.gz: [patch_files]
+	set shallow
+{
+	if [exists archive/[project_short].patch] then
+		rm archive/[project_short].patch
+			set clearstat;
+	sh [resolve etc/patches.sh] [resolve [patch_files]]
+		> archive/[project_short].patch;
+	gzip -9 -v archive/[project_short].patch;
+}
+
+[project_short].spec: etc/spec.sh [source_files]
+{
+	version\=[version_short]
+	sh [resolve etc/spec.sh] [source_files] > [target];
+}
+
+archive/[project_minus].spec: [project_short].spec
+	set shallow
+{
+	cp [resolve [need]] [target];
+}
+
+[vs_file],P: [vs_file]
+{
+	echo "Index:" [vs_file] > [target];
+	prev =
+		[collect
+			aegis -list version -p [project] -c [change]
+			| [awk] -F"'\"'" "'/previous/{print $2}'"
+		];
+	echo "'Prereq: \""[prev]"\"'" >> [target];
+	echo "'#define PATCHLEVEL \""[prev]"\"'" |
+	diff -c - [vs_file] | sed '1,2d' >> [target];
+}
+
+%0%,P: %0%
+	if [exists [resolve %0%]]
+{
+	aegis -cp %0% -delta 1 -output patch.orig -p [project] -c [change]
+		|| cp /dev/null patch.orig;
+	sh [resolve etc/patch.fil.sh] patch.orig [resolve %0%] %0% > [target];
+	rm patch.orig;
+}
+
+lib/icon/%: lib/icon/%.uue
+{
+	uudecode -o [target] [resolve [need]];
+}
+
+archive/[project_short].gif: lib/icon/[project_short].gif
+	set shallow
+{
+	cp [resolve [need]] [target];
+}
+
+archive/[project_minus].spec: etc/spec.sh [source_files]
+	set shallow
+{
+	version\=[version_short]
+	sh [resolve etc/spec.sh] [source_files] > [target];
+}
+
+
+/*
+ * This is not in the integration-build-targets because it takes far
+ * too long to do.
+ */
+
+RPM: archive/[project_minus]-1.i386.rpm;
+
+archive/[project_minus]-1.i386.rpm archive/[project_minus]-1.src.rpm:
+		archive/[project_minus].tar.gz etc/rpm-build.sh
+	set shallow
+{
+	sh [resolve etc/rpm-build.sh]
+		RPM-temporary
+		[resolve archive/[project_minus].tar.gz]
+		;
+	mv RPM-temporary/RPMS/i386/[project_minus]-1.i386.rpm
+		archive/[project_minus]-1.i386.rpm
+		;
+	mv RPM-temporary/SRPMS/[project_minus]-1.src.rpm
+		archive/[project_minus]-1.src.rpm
+		;
+	rm -r RPM-temporary;
+}
+
+LICENSE: lib/en/cat1/aelic.1
+{
+	cat [resolve [need]] > [target];
+}

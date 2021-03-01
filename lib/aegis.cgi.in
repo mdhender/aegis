@@ -1,0 +1,140 @@
+#!/bin/sh
+#
+#	aegis - project change supervisor
+#	Copyright (C) 1997, 1998 Peter Miller;
+#	All rights reserved.
+#
+#	This program is free software; you can redistribute it and/or modify
+#	it under the terms of the GNU General Public License as published by
+#	the Free Software Foundation; either version 2 of the License, or
+#	(at your option) any later version.
+#
+#	This program is distributed in the hope that it will be useful,
+#	but WITHOUT ANY WARRANTY; without even the implied warranty of
+#	MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+#	GNU General Public License for more details.
+#
+#	You should have received a copy of the GNU General Public License
+#	along with this program; if not, write to the Free Software
+#	Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111, USA.
+#
+# MANIFEST: aegis.cgi.in
+#
+# @configure_input@
+#
+prefix=@prefix@
+exec_prefix=@exec_prefix@
+bindir=@bindir@
+libdir=@libdir@
+datadir=@datadir@
+
+extra=
+lang=en
+file=proj_list
+for arg in $*
+do
+	case "$arg" in
+	*\;* | -* | *=* | *@-* | *\ * )
+		;;
+	*@*)
+		arg=`echo "$arg" | sed -e 's|@|=|'`
+		eval "$arg"
+		;;
+	-*)
+		;;
+	*)
+		extra="$extra $arg"
+		;;
+	esac
+done
+
+Project="$project"
+Change="$change"
+test ! -z "$project" && project="--project=$project"
+test ! -z "$change" && change="--change=$change"
+
+if test "$file" = "rect"
+then
+	exec $bindir/aerect $extra
+fi
+
+if test "$file" = "pre"
+then
+	test -z "$project" && exit 1
+	test -z "$change" && change="--baseline"
+	test -z "$extra" && exit 1
+
+	File="$extra"
+	$bindir/aefind -resolve -baserel $project $change $extra -print \
+		> /tmp/aegis.$$ 2>&1
+	status=$?
+	if test $status -ne 0
+	then
+		echo 'Content-Type: text/html'
+		echo ''
+		echo '<html><head><title>Error</title></head><body><h1>'
+		echo 'Error</h1>The command'
+		echo '<blockquote><tt>'
+		echo $bindir/aefind -baserel -resolve $project $change $extra -print
+		echo '</tt></blockquote>'
+		echo "terminated with exit status $status."
+		echo 'The following text was produced <blockquote><pre>'
+		sed 's|<|\&lt;|g' < /tmp/aegis.$$
+		echo '</pre></blockquote>'
+		echo '<hr>'
+		echo 'This page was generated'
+		date
+		echo '</body></html>'
+		rm /tmp/aegis.$$
+		exit 1
+	fi
+
+	echo 'Content-Type: text/html'
+	echo ''
+	echo '<html><head><title>'
+		echo "Project \"$Project\","
+		test ! -z "$Change" && echo "Change $Change,"
+		echo File $File
+	echo '</title></head><body><h1>'
+		echo "Project \"$Project\","
+		test ! -z "$Change" && echo "Change $Change,"
+		echo File $File
+	echo '</h1>'
+	echo '<pre>'
+	sed 's|<|\&lt;|g' `cat /tmp/aegis.$$` < /dev/null
+	echo '</pre>'
+	echo '<hr>'
+	echo 'This page was generated'
+	date
+	echo '</body></html>'
+	rm /tmp/aegis.$$
+	exit 0
+fi
+
+$bindir/aereport --file $datadir/$lang/html/$file.rpt \
+	$project $change $extra --page-width=1000 --unformatted \
+	> /tmp/aegis.$$ 2>&1
+
+status=$?
+if test $status -ne 0
+then
+	echo 'Content-Type: text/html'
+	echo ''
+	echo '<html><head><title>Error</title></head><body><h1>'
+	echo 'Error</h1>The command'
+	echo '<blockquote><tt>'
+	echo $bindir/aereport --file $datadir/$lang/html/$file.rpt $project $change $extra --page-width=1000 --unformatted
+	echo '</tt></blockquote>'
+	echo "terminated with exit status $status."
+	echo 'The following text was produced <blockquote><pre>'
+	sed 's|<|\&lt;|g' < /tmp/aegis.$$
+	echo '</pre></blockquote>'
+	echo '<hr>'
+	echo 'This page was generated'
+	date
+	echo '</body></html>'
+else
+	cat /tmp/aegis.$$
+fi
+rm /tmp/aegis.$$
+exit 0

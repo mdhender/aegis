@@ -1,0 +1,63 @@
+.\"
+.\"	aegis - project change supervisor
+.\"	Copyright (C) 1998 Peter Miller;
+.\"	All rights reserved.
+.\"
+.\"	This program is free software; you can redistribute it and/or modify
+.\"	it under the terms of the GNU General Public License as published by
+.\"	the Free Software Foundation; either version 2 of the License, or
+.\"	(at your option) any later version.
+.\"
+.\"	This program is distributed in the hope that it will be useful,
+.\"	but WITHOUT ANY WARRANTY; without even the implied warranty of
+.\"	MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+.\"	GNU General Public License for more details.
+.\"
+.\"	You should have received a copy of the GNU General Public License
+.\"	along with this program; if not, write to the Free Software
+.\"	Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111, USA.
+.\"
+.\" MANIFEST: document describing new.3.1.so
+.\"
+.PP
+.if n *
+.if t \(bu
+There are some additional reports available via the web interface.
+They are mainly to extract error causes and trends from the project
+history statistics.
+.PP
+.if n *
+.if t \(bu
+There have been a number of minor bug fixes concerning the handling of
+old 2.3 projects.  This should ease transition for users with existing
+2.3 projects.
+.PP
+.if n *
+.if t \(bu
+A bug in aecp -delta has been fixed, where Aegis was trying to find
+change state files one branch level too high.
+.PP
+.if n *
+.if t \(bu
+There is now a re-try performed when a stale NFS file handle error is
+detected.  This should make it easier for some sites which are heavily
+networked.
+.PP
+.if n *
+.if t \(bu
+There have been some improvements to the way Control-C is handled.
+It should be more responsive when waiting for locks.
+.PP
+.if n *
+.if t \(bu
+Project administrators may now end development of a branch.  Since
+branches can endure for months or years, the orginal branch creator may
+have moved on.  This copes with this situation.
+.\" Place new text above this line.
+.\" ---------------------------------------------------------------------------
+.SS Version 3.1
+Version 3.0 was not used by many sites.
+It was available as beta software for about a year,
+in numerous incarnations.
+Version 3.1 is the first completely stable version
+since adding full branching support.

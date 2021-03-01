@@ -1,6 +1,6 @@
 /*
  *	aegis - project change supervisor
- *	Copyright (C) 1991, 1992, 1993, 1994, 1995 Peter Miller;
+ *	Copyright (C) 1991, 1992, 1993, 1994, 1995, 1996, 1997, 1998 Peter Miller;
  *	All rights reserved.
  *
  *	This program is free software; you can redistribute it and/or modify
@@ -15,7 +15,7 @@
  *
  *	You should have received a copy of the GNU General Public License
  *	along with this program; if not, write to the Free Software
- *	Foundation, Inc., 675 Mass Ave, Cambridge, MA 02139, USA.
+ *	Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111, USA.
  *
  * MANIFEST: functions to implement new change
  */
@@ -30,18 +30,22 @@
 #include <arglex2.h>
 #include <cattr.h>
 #include <change.h>
+#include <change_bran.h>
 #include <col.h>
 #include <commit.h>
 #include <common.h>
 #include <error.h>
 #include <help.h>
+#include <io.h>
 #include <lock.h>
-#include <option.h>
 #include <os.h>
+#include <progname.h>
 #include <project.h>
+#include <project_hist.h>
+#include <sub.h>
 #include <trace.h>
 #include <user.h>
-#include <word.h>
+#include <str_list.h>
 
 
 static void new_change_usage _((void));
@@ -51,7 +55,7 @@ new_change_usage()
 {
 	char	*progname;
 
-	progname = option_progname_get();
+	progname = progname_get();
 	fprintf
 	(
 		stderr,
@@ -81,12 +85,7 @@ static void new_change_help _((void));
 static void
 new_change_help()
 {
-	static char *text[] =
-	{
-#include <../man1/aenc.h>
-	};
-
-	help(text, SIZEOF(text), new_change_usage);
+	help("aenc", new_change_usage);
 }
 
 
@@ -110,9 +109,9 @@ new_change_list()
 
 		case arglex_token_project:
 			if (arglex() != arglex_token_string)
-				new_change_usage();
+				option_needs_name(arglex_token_project, new_change_usage);
 			if (project_name)
-				fatal("duplicate -Project option");
+				duplicate_option_by_name(arglex_token_project, new_change_usage);
 			project_name = str_from_c(arglex_value.alv_string);
 			break;
 		}
@@ -125,16 +124,16 @@ new_change_list()
 }
 
 
-static void cattr_defaults _((cattr, pstate, pconf));
+static void cattr_defaults _((cattr, project_ty *, pconf));
 
 static void
-cattr_defaults(a, ps, pc)
+cattr_defaults(a, pp, pc)
 	cattr		a;
-	pstate		ps;
+	project_ty	*pp;
 	pconf		pc;
 {
-	trace(("cattr_defaults(a = %08lX, ps = %08lX, pc = %08lX)\n{\n"/*}*/,
-		(long)a, (long)ps, (long)pc));
+	trace(("cattr_defaults(a = %08lX, pp = %08lX, pc = %08lX)\n{\n"/*}*/,
+		(long)a, (long)pp, (long)pc));
 	if
 	(
 		a->cause == change_cause_internal_improvement
@@ -168,12 +167,13 @@ cattr_defaults(a, ps, pc)
 	}
 	if (!(a->mask & cattr_test_exempt_mask))
 	{
-		a->test_exempt = ps->default_test_exemption;
+		a->test_exempt = project_default_test_exemption_get(pp);
 		a->mask |= cattr_test_exempt_mask;
 	}
 	if (!(a->mask & cattr_test_baseline_exempt_mask))
 	{
-		a->test_baseline_exempt = ps->default_test_exemption;
+		a->test_baseline_exempt =
+			project_default_test_exemption_get(pp);
 		a->mask |= cattr_test_baseline_exempt_mask;
 	}
 
@@ -208,17 +208,11 @@ cattr_defaults(a, ps, pc)
 }
 
 
-static void check_permissions _((project_ty *, user_ty *));
-
-static void
-check_permissions(pp, up)
+void
+new_change_check_permission(pp, up)
 	project_ty	*pp;
 	user_ty		*up;
 {
-	pstate		pstate_data;
-
-	pstate_data = project_pstate_get(pp);
-
 	/*
 	 * it is an error if
 	 * the user is not an administrator for the project.
@@ -228,18 +222,13 @@ check_permissions(pp, up)
 		!project_administrator_query(pp, user_name(up))
 	&&
 		(
-			!pstate_data->developers_may_create_changes
+			!project_developers_may_create_changes_get(pp)
 		||
 			!project_developer_query(pp, user_name(up))
 		)
 	)
 	{
-		project_fatal
-		(
-			pp,
-			"user \"%S\" is not an administrator",
-			user_name(up)
-		);
+		project_fatal(pp, 0, i18n("not an administrator"));
 	}
 }
 
@@ -249,7 +238,7 @@ static void new_change_main _((void));
 static void
 new_change_main()
 {
-	pstate		pstate_data;
+	sub_context_ty	*scp;
 	cstate		cstate_data;
 	cstate_history	history_data;
 	cattr		cattr_data;
@@ -258,17 +247,18 @@ new_change_main()
 	long		change_number;
 	change_ty	*cp;
 	user_ty		*up;
-	int		edit;
+	edit_ty		edit;
 	long		j;
 	pconf		pconf_data;
-	wlist		carch;
-	wlist		darch;
-	wlist		parch;
+	string_list_ty		carch;
+	string_list_ty		darch;
+	string_list_ty		parch;
 
 	trace(("new_change_main()\n{\n"/*}*/));
 	cattr_data = 0;
 	project_name = 0;
-	edit = 0;
+	edit = edit_not_set;
+	change_number = 0;
 	while (arglex_token != arglex_token_eoln)
 	{
 		switch (arglex_token)
@@ -277,27 +267,41 @@ new_change_main()
 			generic_argument(new_change_usage);
 			continue;
 
+		case arglex_token_change:
+			if (arglex() != arglex_token_number)
+				option_needs_number(arglex_token_change, new_change_usage);
+			/* fall through... */
+
+		case arglex_token_number:
+			if (change_number)
+				duplicate_option_by_name(arglex_token_change, new_change_usage);
+			change_number = arglex_value.alv_number;
+			if (change_number == 0)
+				change_number = MAGIC_ZERO;
+			else if (change_number < 1)
+			{
+				scp = sub_context_new();
+				sub_var_set(scp, "Number", "%ls", change_number);
+				fatal_intl(scp, i18n("change $number out of range"));
+				/* NOTREACHED */
+				sub_context_delete(scp);
+			}
+			break;
+
 		case arglex_token_string:
-			error
-			(
-"warning: please use the -File option when specifying an attributes file, \
-the unadorned form is now obsolescent"
-			);
+			scp = sub_context_new();
+			sub_var_set(scp, "Name", "%s", arglex_token_name(arglex_token_file));
+			error_intl(scp, i18n("warning: use $name option"));
+			sub_context_delete(scp);
 			if (cattr_data)
-				fatal("too many files named");
+				fatal_intl(0, i18n("too many files"));
 			goto read_input_file;
 
 		case arglex_token_file:
 			if (cattr_data)
-				goto duplicate;
+				duplicate_option(new_change_usage);
 			if (arglex() != arglex_token_string)
-			{
-				error
-				(
-				 "the -File option requires a filename argument"
-				);
-				new_change_usage();
-			}
+				option_needs_file(arglex_token_file, new_change_usage);
 			read_input_file:
 			os_become_orig();
 			cattr_data = cattr_read_file(arglex_value.alv_string);
@@ -307,41 +311,82 @@ the unadorned form is now obsolescent"
 
 		case arglex_token_project:
 			if (project_name)
-				goto duplicate;
+				duplicate_option(new_change_usage);
 			if (arglex() != arglex_token_string)
-				new_change_usage();
+				option_needs_name(arglex_token_project, new_change_usage);
 			project_name = str_from_c(arglex_value.alv_string);
 			break;
 
 		case arglex_token_edit:
-			if (edit)
+			if (edit == edit_foreground)
+				duplicate_option(new_change_usage);
+			if (edit != edit_not_set)
 			{
-				duplicate:
-				fatal
+				too_many_edits:
+				mutually_exclusive_options
 				(
-					"duplicate \"%s\" option",
-					arglex_value.alv_string
+					arglex_token_edit,
+					arglex_token_edit_bg,
+					new_change_usage
 				);
 			}
-			edit++;
+			edit = edit_foreground;
+			break;
+
+		case arglex_token_edit_bg:
+			if (edit == edit_background)
+				duplicate_option(new_change_usage);
+			if (edit != edit_not_set)
+				goto too_many_edits;
+			edit = edit_background;
+			break;
+
+		case arglex_token_wait:
+		case arglex_token_wait_not:
+			user_lock_wait_argument(new_change_usage);
 			break;
 		}
 		arglex();
 	}
-	if (!edit && !cattr_data)
+	if (edit != edit_not_set && cattr_data)
 	{
-		error("warning: no -File specified, assuming -Edit desired");
-		++edit;
+		mutually_exclusive_options
+		(
+			(
+				edit == edit_foreground
+			?
+				arglex_token_edit
+			:
+				arglex_token_edit_bg
+			),
+			arglex_token_file,
+			new_change_usage
+		);
+	}
+	if (edit == edit_not_set && !cattr_data)
+	{
+		scp = sub_context_new();
+		sub_var_set(scp, "Name1", "%s", arglex_token_name(arglex_token_file));
+		sub_var_set(scp, "Name2", "%s", arglex_token_name(arglex_token_edit));
+		error_intl(scp, i18n("warning: no $name1, assuming $name2"));
+		sub_context_delete(scp);
+		edit = edit_foreground;
 	}
 
 	/*
 	 * locate project data
 	 */
 	if (!project_name)
-		fatal("project name must be stated explicitly");
+		fatal_intl(0, i18n("no project name"));
 	pp = project_alloc(project_name);
 	str_free(project_name);
 	project_bind_existing(pp);
+
+	/*
+	 * make sure this branch of the project is still active
+	 */
+	if (!change_is_a_branch(project_change_get(pp)))
+		project_fatal(pp, 0, i18n("branch completed"));
 
 	/*
 	 * locate user data
@@ -351,14 +396,13 @@ the unadorned form is now obsolescent"
 	/*
 	 * see if must invoke editor
 	 */
-	if (edit)
+	if (edit != edit_not_set)
 	{
-
 		/*
 		 * make sure they are allowed to,
 		 * to avoid a wasted edit
 		 */
-		check_permissions(pp, up);
+		new_change_check_permission(pp, up);
 
 		/*
 		 * build template cattr
@@ -377,57 +421,69 @@ the unadorned form is now obsolescent"
 		 * default a few things
 		 *	(create a fake change to extract the pconf)
 		 */
-		trace(("mark\n"));
-		pstate_data = project_pstate_get(pp);
-		cp = change_alloc(pp, pstate_data->next_change_number);
+		cp = change_alloc(pp, TRUNK_CHANGE_NUMBER - 1);
 		change_bind_new(cp);
 		cstate_data = change_cstate_get(cp);
 		cstate_data->state = cstate_state_awaiting_development;
 		pconf_data = change_pconf_get(cp, 0);
-		cattr_defaults(cattr_data, pstate_data, pconf_data);
+		cattr_defaults(cattr_data, pp, pconf_data);
 		change_free(cp);
 
 		/*
 		 * edit the attributes
 		 */
-		cattr_edit(&cattr_data);
+		scp = sub_context_new();
+		sub_var_set(scp, "Name", "%S", project_name_get(pp));
+		io_comment_append(scp, i18n("Project $name"));
+		io_comment_append(scp, i18n("nc dflt hint"));
+		sub_context_delete(scp);
+		cattr_edit(&cattr_data, edit);
 	}
 
 	/*
 	 * Lock the project state file.
 	 * Block if necessary.
 	 */
-	trace(("mark\n"));
 	project_pstate_lock_prepare(pp);
 	lock_take();
-	pstate_data = project_pstate_get(pp);
 
 	/*
 	 * make sure they are allowed to
 	 * (even if edited, may have changed while editing)
 	 */
-	check_permissions(pp, up);
+	new_change_check_permission(pp, up);
 
 	/*
 	 * Add another row to the change table.
 	 */
-	trace(("mark\n"));
-	assert(pstate_data->next_change_number >= 1);
-	change_number = pstate_data->next_change_number++;
+	if (!change_number)
+		change_number = project_next_change_number(pp, 1);
+	else
+	{
+		if (project_change_number_in_use(pp, change_number))
+		{
+			scp = sub_context_new();
+			sub_var_set(scp, "Number", "%ld", magic_zero_decode(change_number));
+			project_fatal(pp, scp, i18n("change $number used"));
+			/* NOTREACHED */
+			sub_context_delete(scp);
+		}
+	}
 	cp = change_alloc(pp, change_number);
 	change_bind_new(cp);
 	cstate_data = change_cstate_get(cp);
 	cstate_data->state = cstate_state_awaiting_development;
 	pconf_data = change_pconf_get(cp, 0);
-	if (change_number == 1)
+	if (project_change_nth(pp, 0L, &j) == 0)
 	{
+		/* this is the first change */
 		cattr_data->cause = change_cause_internal_enhancement;
 		cattr_data->test_baseline_exempt = 1;
 		cattr_data->mask |= cattr_test_baseline_exempt_mask;
 		cattr_data->regression_test_exempt = 1;
 		cattr_data->mask |= cattr_regression_test_exempt_mask;
 	}
-	cattr_defaults(cattr_data, pstate_data, pconf_data);
+	cattr_defaults(cattr_data, pp, pconf_data);
 
 	/*
 	 * when developers create changes,
@@ -435,7 +491,6 @@ the unadorned form is now obsolescent"
 	 * or a architecture exemption,
 	 * only administrators may do that.
 	 */
-	trace(("mark\n"));
 	if (!project_administrator_query(pp, user_name(up)))
 	{
 		/*
@@ -444,7 +499,7 @@ the unadorned form is now obsolescent"
 		 */
 		cattr dflt = cattr_type.alloc();
 		dflt->cause = cattr_data->cause;
-		cattr_defaults(dflt, pstate_data, pconf_data);
+		cattr_defaults(dflt, pp, pconf_data);
 
 		if
 		(
@@ -488,27 +543,22 @@ the unadorned form is now obsolescent"
 				)
 			)
 		)
-			fatal("developers may not grant testing exemptions");
+			fatal_intl(0, i18n("bad ca, no test exempt"));
 		assert(cattr_data->architecture);
 		assert(cattr_data->architecture->length);
 		assert(dflt->architecture);
 		assert(dflt->architecture->length);
 
-		wl_zero(&carch);
-		for (j = 0; j < cstate_data->architecture->length; ++j)
-			wl_append(&carch, cstate_data->architecture->list[j]);
-		wl_zero(&darch);
+		string_list_constructor(&carch);
+		for (j = 0; j < cattr_data->architecture->length; ++j)
+			string_list_append(&carch, cattr_data->architecture->list[j]);
+		string_list_constructor(&darch);
 		for (j = 0; j < dflt->architecture->length; ++j)
-			wl_append(&darch, dflt->architecture->list[j]);
-		if (!wl_equal(&carch, &darch))
-		{
-			fatal
-			(
-			      "developers may not grant architecture exemptions"
-			);
-		}
-		wl_free(&carch);
-		wl_free(&darch);
+			string_list_append(&darch, dflt->architecture->list[j]);
+		if (!string_list_equal(&carch, &darch))
+			fatal_intl(0, i18n("bad ca, no arch exempt"));
+		string_list_destructor(&carch);
+		string_list_destructor(&darch);
 		cattr_type.free(dflt);
 	}
 
@@ -517,23 +567,22 @@ the unadorned form is now obsolescent"
 	 * variations in the project's architecture list
 	 */
 	assert(cattr_data->architecture);
-	wl_zero(&carch);
+	string_list_constructor(&carch);
 	for (j = 0; j < cattr_data->architecture->length; ++j)
-		wl_append(&carch, cattr_data->architecture->list[j]);
+		string_list_append(&carch, cattr_data->architecture->list[j]);
 	assert(pconf_data->architecture);
-	wl_zero(&parch);
+	string_list_constructor(&parch);
 	for (j = 0; j < pconf_data->architecture->length; ++j)
-		wl_append(&parch, pconf_data->architecture->list[j]->name);
-	if (!wl_subset(&carch, &parch))
-		fatal("architecture includes variations not in project");
-	wl_free(&carch);
-	wl_free(&parch);
+		string_list_append(&parch, pconf_data->architecture->list[j]->name);
+	if (!string_list_subset(&carch, &parch))
+		fatal_intl(0, i18n("bad ca, unknown architecture"));
+	string_list_destructor(&carch);
+	string_list_destructor(&parch);
 
 	/*
 	 * set change state from the attributes
 	 * Create the change history.
 	 */
-	trace(("mark\n"));
 	history_data = change_history_new(cp, up);
 	history_data->what = cstate_history_what_new_change;
 	if (cattr_data->description)
@@ -551,22 +600,9 @@ the unadorned form is now obsolescent"
 	assert(cattr_data->mask & cattr_regression_test_exempt_mask);
 	cstate_data->regression_test_exempt =
 		cattr_data->regression_test_exempt;
-	cstate_data->architecture =
-		(cstate_architecture_list)cstate_architecture_list_type.alloc();
+	change_architecture_clear(cp);
 	for (j = 0; j < cattr_data->architecture->length; ++j)
-	{
-		type_ty		*type_p;
-		string_ty	**str_p;
-
-		str_p =
-			cstate_architecture_list_type.list_parse
-			(
-				cstate_data->architecture,
-				&type_p
-			);
-		assert(type_p == &string_type);
-		*str_p = str_copy(cattr_data->architecture->list[j]);
-	}
+		change_architecture_add(cp, cattr_data->architecture->list[j]);
 	cattr_type.free(cattr_data);
 
 	/*
@@ -575,21 +611,18 @@ the unadorned form is now obsolescent"
 	 * as it does not exist yet;
 	 * the project state file, with the number in it, is locked.
 	 */
-	trace(("mark\n"));
 	change_cstate_write(cp);
 
 	/*
 	 * Add the change to the list of existing changes.
-	 * Incriment the next_change_number.
+	 * Increment the next_change_number.
 	 * and write pstate back out.
 	 */
-	trace(("mark\n"));
-	project_change_append(pp, change_number);
+	project_change_append(pp, change_number, 0);
 
 	/*
 	 * Unlock the pstate file.
 	 */
-	trace(("mark\n"));
 	project_pstate_write(pp);
 	commit();
 	lock_release();
@@ -597,8 +630,7 @@ the unadorned form is now obsolescent"
 	/*
 	 * verbose success message
 	 */
-	trace(("mark\n"));
-	change_verbose(cp, "created");
+	change_verbose(cp, 0, i18n("new change complete"));
 	project_free(pp);
 	change_free(cp);
 	user_free(up);

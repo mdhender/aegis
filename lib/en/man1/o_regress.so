@@ -1,0 +1,34 @@
+.\"
+.\"	aegis - project change supervisor
+.\"	Copyright (C) 1991, 1992, 1993, 1994, 1996 Peter Miller;
+.\"	All rights reserved.
+.\"
+.\"	This program is free software; you can redistribute it and/or modify
+.\"	it under the terms of the GNU General Public License as published by
+.\"	the Free Software Foundation; either version 2 of the License, or
+.\"	(at your option) any later version.
+.\"
+.\"	This program is distributed in the hope that it will be useful,
+.\"	but WITHOUT ANY WARRANTY; without even the implied warranty of
+.\"	MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+.\"	GNU General Public License for more details.
+.\"
+.\"	You should have received a copy of the GNU General Public License
+.\"	along with this program; if not, write to the Free Software
+.\"	Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111, USA.
+.\"
+.\" MANIFEST: description of -REGression command line option
+.\"
+.TP 8n
+.B -REGression
+This option is used to specify that the
+regression test suite is to be run.
+The regression test suite consists of all
+tests in the baseline which do not appear in the change.
+It is an error if there are no regression tests.
+You may not name tests on the command line
+when using the -REGression option.
+You may name individual tests to be run on the command line,
+without using the -REGression option;
+if they are not part of the change,
+the tests of the same name in the baseline will be run.

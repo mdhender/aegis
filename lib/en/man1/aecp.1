@@ -1,0 +1,215 @@
+'\" t
+.\"	aegis - project change supervisor
+.\"	Copyright (C) 1991, 1992, 1993, 1994, 1996, 1997, 1998 Peter Miller;
+.\"	All rights reserved.
+.\"
+.\"	This program is free software; you can redistribute it and/or modify
+.\"	it under the terms of the GNU General Public License as published by
+.\"	the Free Software Foundation; either version 2 of the License, or
+.\"	(at your option) any later version.
+.\"
+.\"	This program is distributed in the hope that it will be useful,
+.\"	but WITHOUT ANY WARRANTY; without even the implied warranty of
+.\"	MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+.\"	GNU General Public License for more details.
+.\"
+.\"	You should have received a copy of the GNU General Public License
+.\"	along with this program; if not, write to the Free Software
+.\"	Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111, USA.
+.\"
+.\" MANIFEST: manual entry for 'aegis -CoPy_file' command
+.\"
+.so z_name.so
+.TH "\*(n) -CoPy_file" 1 \*(N) "Reference Manual"
+.SH NAME
+\*(n) -CoPy_file \- copy a file into a change
+.XX "aecp(1)" "copy a file into a change"
+.SH SYNOPSIS
+.B \*(n)
+.B -CoPy_file
+[
+.IR option ...
+]
+.IR filename ...
+.br
+.B \*(n)
+.B -CoPy_file
+.B -INDependent
+[
+.IR option ...
+]
+.IR filename ...
+.br
+.B \*(n)
+.B -CoPy_file
+.B -List
+[
+.IR option ...
+]
+.br
+.B \*(n)
+.B -CoPy_file
+.B -Help
+.SH DESCRIPTION
+The
+.I \*(n)
+.I -CoPy_file
+command is used to
+copy a file into a change.
+The named files will be copied from the baseline into
+the development directory,
+and added to the list of files in the change.
+The version of files copied from the baseline is remembered.
+.PP
+This command may be used to copy tests into a change,
+not just source files.
+Tests are treated just like any other source file,
+and are subject to the same process.
+.PP
+Warning:
+If there are files in the development directory of the same name
+they will be overwritten by this command.
+.PP
+You may also name directories.
+All of the source files in the directories named,
+and all directories below them,
+will be copied from the baseline into the development directory,
+and added to the list of files in the change.
+.PP
+When copying files explicitly,
+it is an error if the file is already part of the change.
+When you name a directory,
+all of the source files in the project below that directory are copied,
+except any which are already in the change.
+It is an error if none of the files implicitly named
+by the directory can be used.
+.so z_intuit.so
+.SS Process Side Effects
+This command will cancel any build or test registrations,
+because adding another file logically invalidates them.
+If the project
+.I config
+file was added,
+any diff registration will also be cancelled.
+.PP
+When the change files are listed
+(\fI\*(n) -List Change_Files -TERse\fP)
+the copied files will appear in the listing.
+When the project files are listed with an explicit change number
+(\fI\*(n) -List Project_Files -TERse -Change\fP \f(CWN\fP)
+none of the change's files,
+including the copied files,
+will appear in the terse listing.
+These two features are very helpful when calling \*(n) from within
+a DMT to generate the list of source files.
+.so z_bl_lock.so
+.so z_test_corr.so
+.SH OPTIONS
+The following options are understood:
+.so o_baserel.so
+.so o_branch.so
+.so o_change.so
+.TP 8n
+\fB-DELta\fP \fInumber\fP
+.br
+This option may be used to specify a particular
+delta in the project's history to copy the file from,
+rather than the most current version.
+If the delta has been given a name
+(see
+.IR aedn (1)
+for how)
+you may use a delta name instead of a delta number.
+It is an error if the delta specified does not exist.
+Delta numbers start from 1 and increase;
+delta 0 is a special case meaning ``when the branch started''.
+.TP 8n
+\fB-DElta_Date\fP \fIstring\fP
+.br
+This option may be used to specify a particular date and time in the
+project's history to copy the file from, rather than the most current
+version.  It is an error if the string specified cannot be interpreted
+as a valid date and time.  Quote the string if you need to use spaces.
+.so o_help.so
+.TP 8n
+.B -INDependent
+This option is used to specify that the copy is to be run independent
+of any particular change.
+The files will be copied relative to the current directory.
+.so o_list.so
+.so o_nolog.so
+.TP 8n
+\fB-Output\fP \fIfilename\fP
+.br
+This option may be used to specify an output file
+of a file being copied from the baseline.
+Only one baseline file may be named when this option is used.
+The file name "-" is understood to mean the standard output.
+This option does not add the file to the set of change files.
+.I "No locks"
+are taken when this option is used,
+not even the baseline read lock.
+.so o_overw.so
+.so o_project.so
+.TP 8n
+.B \-Read_Only
+This option may be used to specify that the file is to be used to
+insulate the change from the baseline.  The user does not intend to edit
+the file.  These files must be uncopied before development may end.
+.so o_terse.so
+.so o_trunk.so
+.so o_verbose.so
+.so o_wait.so
+.so o__rules.so
+.SH RECOMMENDED ALIAS
+The recommended alias for this command is
+.nf
+.ta 8n 16n
+csh%	alias aecp '\*(n) -cp \e!* -v'
+sh$	aecp(){\*(n) -cp $* -v}
+.fi
+.SH ERRORS
+It is an error if
+the change is not in the
+.I "being developed"
+state.
+.br
+It is an error if
+the change is not assigned to the current user.
+.br
+It is an error if
+the file is already in the change and the
+.B -OverWrite
+option is not specified.
+.so z_exit.so
+.br
+.ne 1i
+.SH SEE ALSO
+.TP 8n
+.IR aeb (1)
+build also takes a baseline read lock (non-exclusive)
+.TP 8n
+.IR aecpu (1)
+reverse action of aecp
+.TP 8n
+.IR aedb (1)
+begin development of a change
+.TP 8n
+.IR aedn (1)
+assign a name to a delta
+.TP 8n
+.IR aeip (1)
+integrate pass takes a baseline write lock (exclusive)
+.TP 8n
+.IR aemv (1)
+rename a file as part of a change
+.TP 8n
+.IR aenf (1)
+add a new file to a change
+.TP 8n
+.IR aerm (1)
+add files to be deleted to a change
+.TP 8n
+.IR aeuconf (1)
+user configuration file format
+.so z_cr.so

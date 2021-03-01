@@ -1,0 +1,1300 @@
+/*
+ *	aegis - project change supervisor
+ *	Copyright (C) 1991, 1992, 1993, 1994, 1995, 1996, 1997, 1998 Peter Miller;
+ *	All rights reserved.
+ *
+ *	This program is free software; you can redistribute it and/or modify
+ *	it under the terms of the GNU General Public License as published by
+ *	the Free Software Foundation; either version 2 of the License, or
+ *	(at your option) any later version.
+ *
+ *	This program is distributed in the hope that it will be useful,
+ *	but WITHOUT ANY WARRANTY; without even the implied warranty of
+ *	MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ *	GNU General Public License for more details.
+ *
+ *	You should have received a copy of the GNU General Public License
+ *	along with this program; if not, write to the Free Software
+ *	Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111, USA.
+ *
+ * MANIFEST: instructions to cook(1), how to build project
+ */
+
+/*
+ * Turn on updating to ensure mod-time
+ * consistency on fast machines.
+ */
+set time-adjust;
+
+/*
+ * make sure targets are removed before the recipe body is run,
+ * and make sure that directories are created then too.
+ */
+set unlink mkdir;
+
+/*
+ * You may want to change some of these options.
+ * ([debug] must be defined, even if empty, use comments.)
+ *
+ * Change ``main.h'' to add the DEBUG define.
+ * All files reference this file, so this will cause recompilation
+ * of all files, both in the change and in the baseline.
+ */
+debug = -g ;
+
+/*
+ * Make sure the [project], [change], [version] and [arch] variables are set.
+ */
+#ifndef project
+echo "The [project] variable was not set from the command line." set silent;
+echo "If you want to do a build which is not a development build" set silent;
+echo "or an integration build, use the make command, not cook." set silent;
+fail;
+#endif
+#ifndef change
+echo "The [change] variable was not set from the command line." set silent;
+echo "If you want to do a build which is not a development build" set silent;
+echo "or an integration build, use the make command, not cook." set silent;
+fail;
+#endif
+#ifndef version
+echo "The [version] variable was not set from the command line." set silent;
+echo "If you want to do a build which is not a development build" set silent;
+echo "or an integration build, use the make command, not cook." set silent;
+fail;
+#endif
+#ifndef arch
+echo "The [arch] variable was not set from the command line." set silent;
+echo "If you want to do a build which is not a development build" set silent;
+echo "or an integration build, use the make command, not cook." set silent;
+fail;
+#endif
+#ifndef search_path
+echo "The [search_path] variable was not set from the command line." set silent;
+echo "If you want to do a build which is not a development build" set silent;
+echo "or an integration build, use the make command, not cook." set silent;
+fail;
+#endif
+
+/*
+ * The first item in search list should be the absolute path of the
+ * current directory.  Assume that it is.
+ */
+search_list = .;
+search_tmp = [tail [split ':' [search_path]]];
+
+/*
+ * Try to shorten the search path in command lines, too.
+ *
+ * This takes a little getting used to....
+ * 1. For development builds, the search path is dev dir, then branch bl,
+ *    then ... project bl.  Thus, bl in a dev dir winds up pointing to
+ *    the branch reporitory.
+ * 2. For integration builds, aegis deliberately omits the branch
+ *    baseline from the path, but include's the branch's parents and
+ *    ancestors.  Thus, bl in an int dir winds up pointing to the
+ *    branch's parent's reporitory.
+ * The idea is that integration builds in a branch are like a
+ * development build of the branch's dev dir.
+ */
+search_name = bl;
+loop
+{
+	search_dir = [head [search_tmp]];
+	if [not [search_dir]] then
+		loopstop;
+	search_tmp = [tail [search_tmp]];
+
+	if [not [exists [search_name]]] then
+		ln -s [search_dir] [search_name]
+			set clearstat;
+	search_list = [search_list] [search_name];
+	search_name = [search_name]bl;
+}
+
+/*
+ * If this is a development build, the version will be x.y.Czzz,
+ * so look to see if there is a C in the version string.
+ */
+if [match_mask %1C%2 [version]] then
+{
+	/*
+	 * The develop_begin_command in the config file
+	 * always creates the "bl" symbolic link.
+	 */
+	baseline = bl;
+
+	/*
+	 * Supplement file modification times with fingerprints.
+	 * Only do this for development builds.
+	 */
+	set fingerprint;
+}
+
+if [not [defined baseline]] then
+{
+	/*
+	 * Turn on aggressive updating to ensure the smallest possible
+	 * range of mod times at aeipass.  This also ensures mod time
+	 * consistency on fast machines.
+	 */
+	set time-adjust-back;
+}
+
+/*
+ * determine the short version:
+ * no change or delta number
+ */
+version_short = [fromto %1.C%2 %1 [subst D C [version]]];
+
+version_shorter = [split "." [version_short]] _ _;
+version_shorter = [unsplit "." [word 1 [version_shorter]]
+	[word 2 [version_shorter]]];
+project_short = [fromto %.[version_short] % [project]];
+project_minus = [project_short]-[version_short];
+
+/*
+ * use GNU awk
+ */
+awk = gawk;
+
+/*
+ * This file is generated by autoconf.
+ * It is architecture specific.
+ * If it is not found (not cooked yet) the following
+ * symbols will be undefined.
+ *
+ *	Must be included *after* the search_list is defined.
+ */
+#include-cooked-nowarn [arch]/etc/Howto.conf
+if [not [defined prefix]] then
+	prefix = /usr/local;
+if [not [defined exec_prefix]] then
+	exec_prefix = [prefix];
+if [not [defined yacc]] then
+	yacc = yacc;
+if [not [defined libs]] then
+	libs = ;
+if [not [defined cc]] then
+	cc = ['if' [find_command gcc] 'then' gcc 'else' cc];
+
+/*
+ * The default recipe
+ */
+all =
+	configured_files
+	internationalization
+	doc.targets
+	;
+
+/*
+ * Integration builds also make the shar files for distribution.
+ */
+if [defined change] then
+if [not [defined baseline]] then
+	all = [all] integration-build-targets ;
+
+all: [all]
+	set default
+{
+	if [not [defined baseline]] then
+	{
+		set silent;
+		echo "Integrator: please do the following:";
+echo "\"  su1 sh -c 'chown root "[arch]"/bin/aegis && chmod u+s "[arch]"/bin/aegis'\"";
+	}
+}
+
+/*
+ * The source files.
+ * This is given to us by aegis.
+ */
+vs_file = common/patchlevel.h;
+change_files =
+	[collect aegis -l chafil -ter -p [project] -c [change]]
+	;
+project_files =
+	[collect aegis -l profil -ter -p [project] -c [change]]
+	;
+source_files =
+	[sort [stringset [project_files] [change_files]]]
+	;
+
+
+version_obj = [arch]/common/version_stmp.o;
+common_obj = [arch]/common/common.a [version_obj];
+common_lib =
+	[stringset
+		[fromto
+			common/%0%.y
+			[arch]/common/%0%.gen.o
+			[match_mask common/%0%.y [source_files]]
+		]
+		[fromto
+			common/%0%.c
+			[arch]/common/%0%.o
+			[match_mask common/%0%.c [source_files]]
+		]
+		[fromto
+			common/%0%.c.in
+			[arch]/common/%0%.o
+			[match_mask common/%0%.c.in [source_files]]
+		]
+	-
+		[version_obj]
+	];
+
+libaegis_obj = [arch]/libaegis/libaegis.a [version_obj];
+libaegis_lib =
+	[fromto
+		libaegis/%0%.y
+		[arch]/libaegis/%0%.gen.o
+		[match_mask libaegis/%0%.y [source_files]]
+	]
+	[fromto
+		libaegis/%0%.c
+		[arch]/libaegis/%0%.o
+		[match_mask libaegis/%0%.c [source_files]]
+	]
+	[fromto
+		libaegis/%0%.def
+		[arch]/libaegis/%0%.o
+		[match_mask libaegis/%0%.def [source_files]]
+	]
+	[common_lib]
+	;
+
+/*
+ * determine the list of commands
+ */
+
+commands =
+	[stringset
+		[fromto %1/%0%2 %1 [match_mask %/main.c [source_files]]]
+	-
+		fmtgen
+		find_sizes
+		aefp
+	];
+
+/*
+ * Add the commands to the list of top-level targets.
+ */
+all = [all]
+	[arch]/bin/aefp
+	[addprefix [arch]/bin/ [commands]]
+	[arch]/bin/xaegis
+	;
+
+/*
+ * determine the object files for each command
+ */
+cmd_list = [commands];
+loop
+{
+	cmd = [head [cmd_list]];
+	if [not [cmd]] then
+		loopstop;
+	cmd_list = [tail [cmd_list]];
+
+	[cmd]_obj = 
+		[fromto [cmd]/%0%.y [arch]/[cmd]/%0%.gen.o
+			[match_mask [cmd]/%0%.y [source_files]]
+		]
+		[fromto [cmd]/%0%.def [arch]/[cmd]/%0%.o
+			[match_mask [cmd]/%0%.def [source_files]]
+		]
+		[fromto [cmd]/%0%.c [arch]/[cmd]/%0%.o
+			[match_mask [cmd]/%0%.c [source_files]]
+		]
+		[libaegis_obj]
+		;
+	[cmd],I = 
+		[fromto [cmd]/%0%.y [cmd]/%0%.gen.c,I
+			[match_mask [cmd]/%0%.y [source_files]]
+		]
+		[fromto [cmd]/%0%.def [arch]/[cmd]/%0%.c,I
+			[match_mask [cmd]/%0%.def [source_files]]
+		]
+		[fromto [cmd]/%0%.c [cmd]/%0%.c,I
+			[match_mask [cmd]/%0%.c [source_files]]
+		]
+		;
+}
+
+aefp_obj =
+	[arch]/aefp/main.o
+	[common_obj]
+	;
+
+fmtgen_obj =
+	[fromto
+		fmtgen/%0%.y
+		[arch]/fmtgen/%0%.gen.o
+		[match_mask fmtgen/%0%.y [source_files]]
+	]
+	[fromto
+		fmtgen/%0%.c
+		[arch]/fmtgen/%0%.o
+		[match_mask fmtgen/%0%.c [source_files]]
+	]
+	[arch]/common/ac/string.o
+	[arch]/common/arglex.o
+	[arch]/common/error.o
+	[arch]/common/fstrcmp.o
+	[arch]/common/mem.o
+	[arch]/common/mprintf.o
+	[arch]/common/progname.o
+	[arch]/common/str.o
+	[arch]/common/symtab.o
+	[arch]/common/trace.o
+	[arch]/common/str_list.o
+	;
+
+find_sizes_obj =
+	[fromto
+		find_sizes/%.c
+		[arch]/find_sizes/%.o
+		[match_mask find_sizes/%.c [source_files]]
+	]
+	[arch]/common/ac/string.o
+	[arch]/common/arglex.o
+	[arch]/common/error.o
+	[arch]/common/mem.o
+	[arch]/common/mprintf.o
+	[arch]/common/progname.o
+	[arch]/common/str.o
+	[arch]/common/trace.o
+	;
+
+source_files_build =
+	[collect ( aegis -l pf -p [project] -c [change] -unf ';'
+		aegis -l cf -p [project] -c [change] -unf )
+		| [awk] "'/^build/{print $NF}'" ]
+	;
+source_files_non_build =
+	[stringset [source_files] - [source_files_build]];
+
+
+/*
+ * The configured files are generated using the config.status script
+ * output by the configure script.  Not all of them are essential to a
+ * build, or are already taken care of, and some are not meaningful.
+ */
+configured_files =
+	[fromto %0%.in [arch]/%0% [match_mask %0%.in [source_files]]];
+configured_files =
+	[stringset
+		[configured_files]
+	-
+		[arch]/Makefile /* only for integration builds */
+		[arch]/etc/Howto.conf /* make cook trigger this itself */
+		[arch]/etc/config.h
+		[arch]/etc/configure
+	];
+configured_files: [configured_files];
+
+
+/*
+ * how to compile C sources
+ */
+if [not [defined cc_flags]] then
+	cc_flags = -O [debug];
+cc_include_flags = ;
+
+/*
+ * this next section is for gcc
+ *	comment it out if you don't have gcc
+ *
+ * The gcc include files MUST be first.
+ */
+if [in [cc] gcc] then
+cc_flags = [cc_flags] -ansi -Wall -Wstrict-prototypes -Wmissing-prototypes
+	-Wshadow -Wmissing-declarations -Wpointer-arith;
+
+/*
+ * For development builds, on the primary architecture, all warnings are
+ * to be treated as errors; this ensures the cleanest possible code.
+ */
+if [defined baseline] then
+if [in [arch] linux-i486] then
+	cc_flags = [cc_flags] -Werror;
+
+/*
+ * include files from common
+ */
+cc_include_flags =
+	[cc_include_flags]
+	[prepost "-I" "/"[arch]"/common" [search_list]]
+	[prepost "-I" "/common" [search_list]]
+	[prepost "-I" "/"[arch]"/libaegis" [search_list]]
+	[prepost "-I" "/libaegis" [search_list]]
+	;
+
+/*
+ * Build %1/%2.o from %1/%2.c
+ */
+
+[arch]/%1/%0%2.o: %1/%0%2.c
+{
+	extra = [cc_flags];
+	if [defined %2_flags] then
+		extra = [extra] [%2_flags];
+
+	if [match %%.gen %2] then
+	{
+		/*
+		 * Generated files may have warnings, because we have no
+		 * control over the quality of generated code (usually
+		 * warnings about missing prototypes or unreferenced
+		 * labels).
+		 */
+		extra = [stringset [extra] - -Werror];
+	}
+
+	[cc] [extra]
+		[stringset
+			[prepost "-I" "/%1" [search_list]]
+			[cc_include_flags]
+		]
+		-c [resolve %1/%0%2.c]
+		['if' [in gcc [cc]] 'then' -o [target]];
+	if [not [in gcc [cc]]] then
+		mv %2.o [target];
+}
+
+[arch]/%1/%0%2.o: [arch]/%1/%0%2.c
+{
+	extra = [cc_flags];
+	if [defined %2_flags] then
+		extra = [extra] [%2_flags];
+
+	if [match %%.gen %2] then
+	{
+		/*
+		 * Generated files may have warnings, because we have no
+		 * control over the quality of generated code (usually
+		 * warnings about missing prototypes or unreferenced
+		 * labels).
+		 */
+		extra = [stringset [extra] - -Werror];
+	}
+
+	[cc] [extra]
+		[stringset
+			[prepost "-I" "/%1" [search_list]]
+			[cc_include_flags]
+		]
+		-c [resolve [arch]/%1/%0%2.c]
+		['if' [in gcc [cc]] 'then' -o [target]];
+	if [not [in gcc [cc]]] then
+		mv %2.o [target];
+}
+
+%1/%0%2.d: %1/%0%2.c
+{
+	c_incl -nc -ns -eia
+	    [stringset
+		[prepost "-I" "/%1" [search_list]]
+		[cc_include_flags]
+	    ]
+	    -prefix "'[arch]/%1/%0%2.o %1/%0%2.c,M %1/%0%2.d: %1/%0%2.c'"
+	    -suffix "'set nodefault;'" [resolve %1/%0%2.c]
+	    [addprefix -rlp\= [search_list]]
+	    -slp [arch] "'[arch]'"
+	    -nsri
+	    -o [target];
+}
+
+%1/%0%2.d: [arch]/%1/%0%2.c
+{
+	c_incl -nc -ns -eia
+	    [stringset
+		[prepost "-I" "/%1" [search_list]]
+		[cc_include_flags]
+	    ]
+	    -prefix "'[arch]/%1/%0%2.o %1/%0%2.c,M %1/%0%2.d: [arch]/%1/%0%2.c'"
+	    -suffix "'set nodefault;'" [resolve [arch]/%1/%0%2.c]
+	    [addprefix -rlp\= [search_list]]
+	    -slp [arch] "'[arch]'"
+	    -nsri
+	    -o [target];
+}
+
+c-dep-files =
+	[fromto %1/%0%2.c %1/%0%2.d [match_mask %1/%0%2.c [source_files]]]
+	[fromto %1/%0%2.y %1/%0%2.gen.d [match_mask %1/%0%2.y [source_files]]]
+	[fromto %1/%0%2.def %1/%0%2.d [match_mask %1/%0%2.def [source_files]]]
+	;
+
+[c-dep-files]: [arch]/common/config.h;
+
+#include-cooked-nowarn [c-dep-files]
+
+/*
+ * Catch 22: you need the include files to be there, to work out that
+ * you need to construct them.  This is the minimum set of dependencies
+ * to bootstrap the dependency process.  Sigh.
+ */
+aefind/cmdline.gen.d: libaegis/cstate.h libaegis/fstate.h libaegis/gstate.h
+	libaegis/pattr.h libaegis/pconf.h libaegis/pstate.h libaegis/uconf.h
+	libaegis/ustate.h;
+aefind/lex.d: aefind/cmdline.gen.h;
+aegis/aeb.d: libaegis/cstate.h libaegis/pconf.h libaegis/pstate.h
+	libaegis/pattr.h libaegis/ustate.h libaegis/uconf.h libaegis/fstate.h;
+aegis/aeca.d: libaegis/cattr.h libaegis/cstate.h libaegis/pconf.h
+	libaegis/pstate.h libaegis/pattr.h libaegis/ustate.h libaegis/uconf.h
+	libaegis/fstate.h;
+aegis/aecd.d: libaegis/cstate.h libaegis/pconf.h libaegis/pstate.h
+	libaegis/pattr.h libaegis/ustate.h libaegis/uconf.h libaegis/fstate.h;
+aegis/aechown.d: libaegis/cstate.h libaegis/pconf.h libaegis/pstate.h
+	libaegis/pattr.h libaegis/ustate.h libaegis/uconf.h libaegis/fstate.h;
+aegis/aeclean.d: libaegis/cstate.h libaegis/fstate.h libaegis/pconf.h
+	libaegis/pstate.h libaegis/pattr.h libaegis/ustate.h libaegis/uconf.h;
+aegis/aeclone.d: libaegis/cstate.h libaegis/fstate.h libaegis/pattr.h
+	libaegis/pconf.h libaegis/pstate.h libaegis/uconf.h libaegis/ustate.h;
+aegis/aecp.d: libaegis/cstate.h libaegis/pconf.h libaegis/pstate.h
+	libaegis/pattr.h libaegis/ustate.h libaegis/uconf.h libaegis/fstate.h;
+aegis/aecpu.d: libaegis/cstate.h libaegis/pconf.h libaegis/pstate.h
+	libaegis/pattr.h libaegis/ustate.h libaegis/uconf.h libaegis/fstate.h;
+aegis/aed.d: libaegis/cstate.h libaegis/pconf.h libaegis/pstate.h
+	libaegis/pattr.h libaegis/ustate.h libaegis/uconf.h libaegis/fstate.h;
+aegis/aedb.d: libaegis/cstate.h libaegis/pconf.h libaegis/common.h
+	libaegis/pstate.h libaegis/pattr.h libaegis/ustate.h libaegis/uconf.h
+	libaegis/fstate.h;
+aegis/aedbu.d: libaegis/cstate.h libaegis/pconf.h libaegis/common.h
+	libaegis/pstate.h libaegis/pattr.h libaegis/ustate.h libaegis/uconf.h
+	libaegis/fstate.h;
+aegis/aede.d: libaegis/cstate.h libaegis/pconf.h libaegis/common.h
+	libaegis/pstate.h libaegis/pattr.h libaegis/ustate.h libaegis/uconf.h
+	libaegis/fstate.h;
+aegis/aedeu.d: libaegis/cstate.h libaegis/pconf.h libaegis/common.h
+	libaegis/pstate.h libaegis/pattr.h libaegis/ustate.h libaegis/uconf.h
+	libaegis/fstate.h;
+aegis/aedn.d: libaegis/pattr.h libaegis/pstate.h libaegis/uconf.h
+	libaegis/ustate.h;
+aegis/aeib.d: libaegis/cstate.h libaegis/pconf.h libaegis/pstate.h
+	libaegis/pattr.h libaegis/ustate.h libaegis/uconf.h libaegis/fstate.h;
+aegis/aeibu.d: libaegis/cstate.h libaegis/pconf.h libaegis/pstate.h
+	libaegis/pattr.h libaegis/ustate.h libaegis/uconf.h libaegis/fstate.h;
+aegis/aeif.d: libaegis/cstate.h libaegis/pconf.h libaegis/pstate.h
+	libaegis/pattr.h libaegis/ustate.h libaegis/uconf.h libaegis/fstate.h;
+aegis/aeip.d: libaegis/cstate.h libaegis/pconf.h libaegis/pstate.h
+	libaegis/pattr.h libaegis/ustate.h libaegis/uconf.h libaegis/fstate.h;
+aegis/ael.d: libaegis/cstate.h libaegis/pconf.h libaegis/gstate.h
+	libaegis/pstate.h libaegis/pattr.h libaegis/ustate.h libaegis/uconf.h
+	libaegis/fstate.h;
+aegis/aemv.d: libaegis/cstate.h libaegis/pconf.h libaegis/pstate.h
+	libaegis/pattr.h libaegis/ustate.h libaegis/uconf.h libaegis/fstate.h;
+aegis/aena.d: libaegis/pstate.h libaegis/pattr.h libaegis/ustate.h
+	libaegis/uconf.h;
+aegis/aenbr.d: libaegis/cstate.h libaegis/fstate.h libaegis/pattr.h
+	libaegis/pconf.h libaegis/pstate.h libaegis/uconf.h libaegis/ustate.h;
+aegis/aenc.d: libaegis/cattr.h libaegis/cstate.h libaegis/pconf.h
+	libaegis/common.h libaegis/pstate.h libaegis/pattr.h libaegis/ustate.h
+	libaegis/uconf.h libaegis/fstate.h;
+aegis/aencu.d: libaegis/cattr.h libaegis/cstate.h libaegis/pconf.h
+	libaegis/common.h libaegis/pstate.h libaegis/pattr.h libaegis/ustate.h
+	libaegis/uconf.h libaegis/fstate.h;
+aegis/aend.d: libaegis/pstate.h libaegis/pattr.h libaegis/ustate.h
+	libaegis/uconf.h;
+aegis/aenf.d: libaegis/cstate.h libaegis/pconf.h libaegis/pstate.h
+	libaegis/pattr.h libaegis/ustate.h libaegis/uconf.h libaegis/fstate.h;
+aegis/aenfu.d: libaegis/cstate.h libaegis/pconf.h libaegis/pstate.h
+	libaegis/pattr.h libaegis/ustate.h libaegis/uconf.h libaegis/fstate.h;
+aegis/aeni.d: libaegis/pstate.h libaegis/pattr.h libaegis/ustate.h
+	libaegis/uconf.h;
+aegis/aenpr.d: libaegis/cstate.h libaegis/fstate.h libaegis/gstate.h
+	libaegis/pstate.h libaegis/pattr.h libaegis/ustate.h libaegis/uconf.h
+	libaegis/pconf.h;
+aegis/aenrls.d: libaegis/cstate.h libaegis/pconf.h libaegis/gstate.h
+	libaegis/pstate.h libaegis/pattr.h libaegis/ustate.h libaegis/uconf.h
+	libaegis/fstate.h;
+aegis/aenrv.d: libaegis/pstate.h libaegis/pattr.h libaegis/ustate.h
+	libaegis/uconf.h;
+aegis/aent.d: libaegis/cstate.h libaegis/pconf.h libaegis/pstate.h
+	libaegis/pattr.h libaegis/ustate.h libaegis/uconf.h libaegis/fstate.h;
+aegis/aentu.d: libaegis/cstate.h libaegis/pconf.h libaegis/pstate.h
+	libaegis/pattr.h libaegis/ustate.h libaegis/uconf.h libaegis/fstate.h;
+aegis/aepa.d: libaegis/pattr.h libaegis/pstate.h libaegis/ustate.h
+	libaegis/uconf.h;
+libaegis/aer/expr/name.d: libaegis/cattr.h libaegis/common.h libaegis/cstate.h
+	libaegis/gstate.h libaegis/pattr.h libaegis/pconf.h libaegis/pstate.h
+	libaegis/uconf.h libaegis/ustate.h;
+libaegis/aer/func/change.d: libaegis/pattr.h libaegis/pstate.h
+	libaegis/uconf.h libaegis/ustate.h;
+libaegis/aer/func/project.d: libaegis/uconf.h libaegis/ustate.h;
+libaegis/aer/lex.d: libaegis/aer/report.gen.h;
+libaegis/aer/list.d: libaegis/gstate.h libaegis/rptidx.h;
+libaegis/aer/parse.d: libaegis/gstate.h libaegis/rptidx.h;
+libaegis/aer/value/cstate.d: libaegis/cstate.h libaegis/fstate.h
+	libaegis/pattr.h libaegis/pconf.h libaegis/pstate.h;
+libaegis/aer/value/fstate.d: libaegis/cstate.h libaegis/fstate.h
+	libaegis/pconf.h;
+libaegis/aer/value/gstate.d: libaegis/cstate.h libaegis/fstate.h
+	libaegis/pattr.h libaegis/pconf.h libaegis/pstate.h;
+libaegis/aer/value/pstate.d: libaegis/cstate.h libaegis/fstate.h
+	libaegis/gstate.h libaegis/pattr.h libaegis/pconf.h libaegis/pstate.h;
+aegis/aera.d: libaegis/pstate.h libaegis/pattr.h libaegis/ustate.h
+	libaegis/uconf.h;
+aegis/aerd.d: libaegis/pstate.h libaegis/pattr.h libaegis/ustate.h
+	libaegis/uconf.h;
+aegis/aerf.d: libaegis/cstate.h libaegis/pconf.h libaegis/pstate.h
+	libaegis/pattr.h libaegis/ustate.h libaegis/uconf.h libaegis/fstate.h;
+aegis/aeri.d: libaegis/pstate.h libaegis/pattr.h libaegis/ustate.h
+	libaegis/uconf.h;
+aegis/aerm.d: libaegis/cstate.h libaegis/pconf.h libaegis/pstate.h
+	libaegis/pattr.h libaegis/ustate.h libaegis/uconf.h libaegis/fstate.h;
+aegis/aermpr.d: libaegis/cstate.h libaegis/pconf.h libaegis/gstate.h
+	libaegis/pstate.h libaegis/pattr.h libaegis/ustate.h libaegis/uconf.h
+	libaegis/fstate.h;
+aegis/aermu.d: libaegis/cstate.h libaegis/pconf.h libaegis/pstate.h
+	libaegis/pattr.h libaegis/ustate.h libaegis/uconf.h libaegis/fstate.h;
+aegis/aerp.d: libaegis/cstate.h libaegis/pconf.h libaegis/pstate.h
+	libaegis/pattr.h libaegis/ustate.h libaegis/uconf.h libaegis/fstate.h;
+aegis/aerpu.d: libaegis/cstate.h libaegis/pconf.h libaegis/pstate.h
+	libaegis/pattr.h libaegis/ustate.h libaegis/uconf.h libaegis/fstate.h;
+aegis/aerrv.d: libaegis/pstate.h libaegis/pattr.h libaegis/ustate.h
+	libaegis/uconf.h;
+aegis/aet.d: libaegis/cstate.h libaegis/pconf.h libaegis/pstate.h
+	libaegis/pattr.h libaegis/ustate.h libaegis/uconf.h libaegis/fstate.h;
+libaegis/cattr.d: libaegis/cattr.h;
+libaegis/change.d: libaegis/cstate.h libaegis/pconf.h libaegis/pstate.h
+	libaegis/pattr.h libaegis/ustate.h libaegis/uconf.h libaegis/fstate.h;
+libaegis/change_bran.d: libaegis/cstate.h libaegis/fstate.h libaegis/pattr.h
+	libaegis/pconf.h libaegis/pstate.h;
+libaegis/change_file.d: libaegis/cstate.h libaegis/fstate.h libaegis/pattr.h
+	libaegis/pconf.h libaegis/pstate.h;
+libaegis/common.d: libaegis/common.h;
+libaegis/cstate.d: libaegis/cstate.h;
+libaegis/fstate.d: libaegis/fstate.h;
+libaegis/gonzo.d: libaegis/gstate.h libaegis/pstate.h libaegis/pattr.h
+	libaegis/ustate.h libaegis/uconf.h;
+libaegis/gstate.d: libaegis/gstate.h;
+libaegis/help.d: libaegis/gstate.h;
+libaegis/lex.d: libaegis/gram.gen.h;
+libaegis/lock.d: libaegis/gstate.h;
+libaegis/lock.d: libaegis/ustate.h;
+libaegis/lock.d: libaegis/uconf.h;
+libaegis/log.d: libaegis/ustate.h libaegis/uconf.h;
+aegis/main.d: libaegis/cattr.h;
+libaegis/pager.d: libaegis/uconf.h;
+libaegis/pager.d: libaegis/ustate.h;
+libaegis/pattr.d: libaegis/pattr.h;
+libaegis/pconf.d: libaegis/pconf.h;
+libaegis/project.d: libaegis/cstate.h libaegis/pconf.h libaegis/gstate.h
+	libaegis/pstate.h libaegis/pattr.h libaegis/ustate.h libaegis/uconf.h
+	libaegis/fstate.h;
+libaegis/project_file.d: libaegis/cstate.h libaegis/fstate.h libaegis/pattr.h
+	libaegis/pconf.h libaegis/pstate.h;
+libaegis/project_hist.d: libaegis/cstate.h libaegis/fstate.h libaegis/pattr.h
+	libaegis/pconf.h libaegis/pstate.h;
+libaegis/pstate.d: libaegis/pstate.h;
+libaegis/rptidx.d: libaegis/rptidx.h;
+libaegis/sub.d: libaegis/cstate.h libaegis/pconf.h libaegis/gstate.h
+	libaegis/pstate.h libaegis/pattr.h libaegis/fstate.h libaegis/uconf.h
+	libaegis/ustate.h;
+libaegis/sub/expr_lex.d: libaegis/sub/expr_gram.gen.h;
+libaegis/uconf.d: libaegis/uconf.h;
+libaegis/user.d: libaegis/gstate.h libaegis/pstate.h libaegis/pattr.h
+	libaegis/ustate.h libaegis/uconf.h;
+libaegis/ustate.d: libaegis/ustate.h;
+common/fp/md5.d: [arch]/common/find_sizes.h;
+common/fp/snefru.d: [arch]/common/find_sizes.h;
+fmtgen/lex.d: fmtgen/parse.gen.h;
+
+lib/en/man1/aenpr.d lib/en/man1/aenrls.d lib/en/man1/aer.d
+lib/en/man5/aegstate.d lib/en/man5/aer.d lib/en/man5/aerptidx.d
+lib/en/man5/aeustate.d lib/en/refman/main.d lib/en/user-guide/main.d:
+	[arch]/etc/libdir.so;
+common/version_stmp.d: common/patchlevel.h;
+
+/*
+ * These are necessary to get fmtgen going, so that we can generate some
+ * other include files.
+ */
+[arch]/common/ac/string.o [arch]/common/arglex.o [arch]/common/error.o
+[arch]/common/fstrcmp.o [arch]/common/mem.o [arch]/common/mprintf.o
+[arch]/common/progname.o [arch]/common/str.o [arch]/common/symtab.o
+[arch]/common/trace.o [arch]/common/str_list.o [arch]/find_sizes/main.o
+[arch]/fmtgen/indent.o [arch]/fmtgen/lex.o [arch]/fmtgen/lex.o
+[arch]/fmtgen/main.o [arch]/fmtgen/parse.gen.o [arch]/fmtgen/type.o
+[arch]/fmtgen/type/enumeration.o [arch]/fmtgen/type/integer.o
+[arch]/fmtgen/type/list.o [arch]/fmtgen/type/string.o
+[arch]/fmtgen/type/structure.o [arch]/fmtgen/type/time.o:
+	[arch]/common/config.h;
+[arch]/fmtgen/lex.o: fmtgen/parse.gen.h;
+
+/*
+ * How to use yacc sources.
+ */
+
+yacc_flags = -v;
+
+%1/%0%2.gen.c %1/%0%2.gen.h: %1/%0%2.y
+	single-thread y.tab.c y.tab.h
+{
+	rm -f %1/%0%2.list y.output
+		set silent;
+	[yacc] -d [yacc_flags] [resolve %1/%0%2.y];
+	yy = [collect echo %0%2 | sed "'s|[^a-zA-Z0-9]|_|g'"];
+	sed "'s/[yY][yY]/"[yy]"_/g'" < y.tab.c > %1/%0%2.gen.c;
+	rm y.tab.c;
+	sed "'s/[yY][yY]/"[yy]"_/g'" < y.tab.h > %1/%0%2.gen.h;
+	rm y.tab.h;
+	if [exists y.output] then
+		mv y.output %1/%0%2.list
+			set clearstat;
+}
+
+[arch]/bin/%: script/%.tcl
+{
+	cp [resolve [need]] [target];
+	chmod 755 [target];
+}
+
+ranlib = [find_command ranlib];
+
+[arch]/%/%.a: [%_lib]
+{
+	ar qc [target] [resolve [%_lib]];
+	if [ranlib] then
+		[ranlib] [target];
+}
+
+
+/*
+ * build the programs from their objects
+ */
+
+[arch]/bin/%: [%_obj]
+{
+	[cc] -o [target] [resolve [%_obj]] [libs];
+
+	chmod 755 [target];
+
+	/*
+	 * aegis itself must be set-uid-root
+	 */
+	if [defined baseline] then
+	if [in [target] [arch]/bin/aegis] then
+	{
+		su1 sh -c "'chown root "[target]" && chmod u+s "[target]"'"
+			set errok;
+	}
+}
+
+
+/*
+ * building things which require fmtgen to build
+ *
+ * Build %.c and %.h from %.def
+ *
+ * A host binding here can help a great deal; oterwise you need to
+ * construct exactly the same files for each architecture.
+ */
+
+%1/%0%2.c %1/%0%2.h: %1/%0%2.def: [arch]/bin/fmtgen
+	/* host-binding [[generate-arch]-hosts] */
+{
+	[resolve [arch]/bin/fmtgen] [prepost "-I" "/%1" [search_list]]
+		[resolve %1/%0%2.def] %1/%0%2.c %1/%0%2.h;
+}
+
+%1/%0%2.dd: %1/%0%2.def
+{
+	c_incl -nc -ns -eia
+	    [stringset [cc_include_flags] [prepost "-I" "/%1" [search_list]]]
+	    -prefix "'%1/%0%2.c %1/%0%2.h %1/%0%2.def,M %1/%0%2.dd:'"
+	    -suffix "'set nodefault;'" [resolve %1/%0%2.def]
+	    [addprefix -rlp\= [search_list]]
+	    -slp [arch] "'[arch]'"
+	    -nsri
+	    -o [target];
+}
+
+def-dep-files =
+	[fromto %1/%0%2.def %1/%0%2.dd [match_mask %1/%0%2.def [source_files]]]
+	;
+
+#include-cooked-nowarn [def-dep-files]
+
+/*
+ * The version stamp is to be updated for every
+ * integration and development build.
+ */
+
+copyright_years =
+	[collect
+		aegis -list version -p [project] -c [change]
+		| [awk] "-F'[[\\\\]]'" "'/^copyright_years/{print $2}'"
+	];
+
+[vs_file]:
+	set shallow
+{
+	echo "'#define PATCHLEVEL \""[version]"\"'" > [target];
+	echo "'#define COPYRIGHT_YEARS \""[copyright_years]"\"'" >> [target];
+}
+
+
+etc/version.so:
+	set ['if' [or [not [defined baseline] ] [not [exists bl/etc/version.so
+		] ] ] 'then' shallow]
+{
+	echo \".ds V) [version]\" > [target];
+	echo \".ds v) [version_short]\" >> [target];
+	echo [version]
+		| [awk] -F. "'{print \".ds u) \"$1\".\"$2}'"
+		>> [target];
+	aegis -list version -p [project] -c [change]
+		| [awk] -F'\'"\'' "'/previous/{print $2}'"
+		| [awk] -F. "'{print \".ds w) \"$1\".\"$2}'"
+		>> [target];
+	echo \".ds Y) [copyright_years]\" >> [target];
+}
+
+
+/*
+ * These recipes build a Makefile for a user.  They do not build a
+ * Makefile useful for a development build, because no arch
+ * information is included in the Makefile.
+ */
+
+makefile-per-file =
+	[prepost "" ",M" [stringset [source_files] - [source_files_build]]];
+
+Makefile.in: etc/Makefile.head etc/Makefile.sh etc/Makefile.awk [vs_file]
+	[makefile-per-file]
+{
+	if [exists [target]] then
+		rm [target]
+			set clearstat;
+	cat [resolve etc/Makefile.head [makefile-per-file]] > [target];
+	sh [resolve etc/Makefile.sh] [source_files]
+		| [awk] -f [resolve etc/Makefile.awk]
+		>> [target];
+}
+
+%0%,M: %0% etc/Makefi.file.sh etc/Makefile.awk
+{
+	sh [resolve etc/Makefi.file.sh] %0% [resolve %0%]
+		| [awk] -f [resolve etc/Makefile.awk]
+		> [target];
+}
+
+/*
+ * formatting documents and manual entries
+ */
+doc.targets: cat txt special;
+
+/*
+ * manual entries
+ */
+cat =
+	[fromto lib/%3/man%1/%2.%1 lib/%3/cat%1/%2.%1
+		[match_mask lib/%3/man%1/%2.%1 [source_files]]
+	];
+cat: [cat];
+
+lib/%3/cat%1/%2.%1: lib/%3/man%1/%2.%1
+{
+	roffpp
+		[prepost "-I" "/lib/%3/man%1" [search_list]]
+		[prepost -I /[arch]/etc [search_list]]
+		[prepost "-I" "/etc" [search_list]]
+		[resolve lib/%3/man%1/%2.%1]
+	| groff -Tascii -P-h -t -man
+	> [target];
+}
+
+lib/%3/man%1/%2.d: lib/%3/man%1/%2.%1
+{
+	c_incl -nc -ns -eia -r
+		[stringset
+			[cc_include_flags]
+			[prepost "-I" "/lib/%3/man%1" [search_list]]
+			[prepost "-I" /[arch]/etc [search_list]]
+			[prepost "-I" "/etc" [search_list]]
+		]
+		-prefix "'lib/%3/cat%1/%2.%1 lib/%3/man%1/%2.%1,M lib/%3/man%1/%2.d: lib/%3/man%1/%2.%1'"
+		-suffix "'set nodefault;'" [resolve lib/%3/man%1/%2.%1]
+	    [addprefix -rlp\= [search_list]]
+	    -slp [arch] "'[arch]'"
+	    -nsri
+	    -o [target];
+}
+
+man-dep-files =
+	[fromto lib/%3/man%1/%2.%1 lib/%3/man%1/%2.d
+		[match_mask lib/%3/man%1/%2.%1 [source_files]]]
+	;
+[man-dep-files]: etc/version.so;
+
+#include-cooked-nowarn [man-dep-files]
+
+
+/*
+ * user manuals
+ */
+
+source_files =
+	[source_files]
+	[fromto lib/%/readme/main.man lib/%/readme/new.so
+		[match_mask lib/%/readme/main.man [source_files]]
+	];
+
+lib/%/readme/main.d: lib/%/readme/new.so;
+lib/%/refman/main.d: lib/%/readme/new.so;
+
+lib/%/readme/new.so: [match_mask lib/%/readme/new.%%.so [source_files]]
+	etc/so.sh
+{
+	sh [resolve etc/so.sh]
+		-r
+		/* DO NOT resolve these next arguments... */
+		[entryname [match_mask lib/%/readme/new.%%.so [source_files]]]
+	> [target];
+}
+
+txt =
+	[fromto lib/%1/%2/main.ms lib/%1/%2/%2.ps.gz
+		[match_mask lib/%1/%2/main.ms [source_files]]]
+	[fromto lib/%1/%2/main.mm lib/%1/%2/%2.ps.gz
+		[match_mask lib/%1/%2/main.mm [source_files]]]
+	[fromto lib/%1/%2/main.roff lib/%1/%2/%2.txt
+		[match_mask lib/%1/%2/main.roff [source_files]]]
+	[fromto lib/%1/%2/main.man lib/%1/%2/%2.txt
+		[match_mask lib/%1/%2/main.man [source_files]]]
+	[fromto lib/%1/%2/main.man lib/%1/%2/%2.ps.gz
+		[match_mask lib/%1/%2/main.man [source_files]]]
+	;
+txt =
+	[stringset
+		[txt]
+	-
+		[fromto lib/%1/refman/main.man lib/%1/refman/refman.txt
+                	[match_mask lib/%1/refman/main.man [source_files]]
+		]
+	];
+txt: [txt];
+
+lib/%1/%2/%2.ps.gz: lib/%1/%2/main.ms
+{
+	roffpp
+		[prepost "-I" "/lib/%1/%2" [search_list]]
+		[prepost "-I" /[arch]/etc [search_list]]
+		[prepost "-I" "/etc" [search_list]]
+		[resolve lib/%1/%2/main.ms]
+	| groff -R -p -t -mgs | gzip -9 > [target]
+		set meter;
+}
+
+lib/%1/%2/%2.ps.gz: lib/%1/%2/main.mm
+{
+	roffpp
+		[prepost "-I" "/lib/%1/%2" [search_list]]
+		[prepost "-I" /[arch]/etc [search_list]]
+		[prepost "-I" "/etc" [search_list]]
+		[resolve lib/%1/%2/main.mm]
+	| groff -p -t -mgm | gzip -9 > [target]
+		set meter;
+}
+
+lib/%1/%2/%2.ps.gz: lib/%1/%2/main.man
+{
+	roffpp
+		[prepost "-I" "/lib/%1/%2" [search_list]]
+		[prepost "-I" "/lib/%1/man1" [search_list]] /* for refman */
+		[prepost "-I" "/lib/%1/man5" [search_list]] /* for refman */
+		[prepost "-I" "/lib/%1/readme" [search_list]] /* for refman */
+		[prepost "-I" /[arch]/etc [search_list]]
+		[prepost "-I" "/etc" [search_list]]
+		[resolve lib/%1/%2/main.man]
+	| groff -p -t -man | gzip -9 > [target]
+		set meter;
+}
+
+lib/%1/%2/%2.txt: lib/%1/%2/main.roff: etc/ssp.awk
+{
+	roffpp
+		[prepost "-I" "/lib/%1/%2" [search_list]]
+		[prepost "-I" "/lib/%1/man1" [search_list]] /* for refman */
+		[prepost "-I" "/lib/%1/man5" [search_list]] /* for refman */
+		[prepost "-I" "/lib/%1/readme" [search_list]] /* for refman */
+		[prepost "-I" /[arch]/etc [search_list]]
+		[prepost "-I" "/etc" [search_list]]
+		[resolve lib/%1/%2/main.roff]
+	| groff -Tascii -t -P-hub
+	| [awk] -f [resolve etc/ssp.awk]
+	> [target];
+}
+
+lib/%1/%2/%2.txt: lib/%1/%2/main.man: etc/ssp.awk
+{
+	roffpp
+		[prepost "-I" "/lib/%1/%2" [search_list]]
+		[prepost "-I" /[arch]/etc [search_list]]
+		[prepost "-I" "/etc" [search_list]]
+		[resolve lib/%1/%2/main.man]
+	| groff -Tascii -t -P-hub -man
+	| [awk] -f [resolve etc/ssp.awk]
+	> [target];
+}
+
+
+/* Sigh.  Must be before the next recipe, and before the generic .d's. */
+lib/%/refman/main.d:: lib/%/refman/index.so lib/%/refman/parts.so;
+
+lib/%/refman/index.so: [match_mask lib/%/man%%1/%%2.%%1 [source_files]]
+	etc/ptx1.awk etc/ptx.ignore etc/ptx2.awk
+{
+	[awk] -f [resolve etc/ptx1.awk]
+		[resolve [match_mask lib/%/man%%1/%%2.%%1 [source_files]]]
+	| ptx -O -r -w1000 -i[resolve etc/ptx.ignore]
+	| sort -t'\'"\'' -f -d +5 -6 +3 -4
+	| [awk] -F'\'"\'' -f [resolve etc/ptx2.awk]
+	> [target];
+}
+
+lib/%/refman/parts.so: [match_mask lib/%/man%%1/%%2.%%1 [source_files]]
+	etc/ptx.sh
+{
+	sh -f [resolve etc/ptx.sh]
+		[match_mask lib/%/man%%1/%%2.%%1 [source_files]]
+	> [target];
+}
+
+
+lib/%1/%2/main.d: lib/%1/%2/main.ms
+{
+	c_incl -nc -ns -eia -r
+		[prepost "-I" "/lib/%1/%2" [search_list]]
+		[prepost "-I" /[arch]/etc [search_list]]
+		[prepost "-I" "/etc" [search_list]]
+		-prefix "'lib/%1/%2/%2.ps.gz lib/%1/%2/main.ms,M lib/%1/%2/main.d: lib/%1/%2/main.ms'"
+		-suffix "'set nodefault;'" [resolve lib/%1/%2/main.ms]
+	    [addprefix -rlp\= [search_list]]
+	    -slp [arch] "'[arch]'"
+	    -nsri
+	    -o [target];
+}
+
+lib/%1/%2/main.d: lib/%1/%2/main.mm
+{
+	c_incl -nc -ns -eia -r
+		[prepost "-I" "/lib/%1/%2" [search_list]]
+		[prepost "-I" /[arch]/etc [search_list]]
+		[prepost "-I" "/etc" [search_list]]
+		-prefix "'lib/%1/%2/%2.ps.gz lib/%1/%2/main.mm,M lib/%1/%2/main.d: lib/%1/%2/main.mm'"
+		-suffix "'set nodefault;'" [resolve lib/%1/%2/main.mm]
+	    [addprefix -rlp\= [search_list]]
+	    -slp [arch] "'[arch]'"
+	    -nsri
+	    -o [target];
+}
+
+/* Sigh.  Must be before the next recipe. */
+lib/%/faq/main.d:: lib/%/faq/toc.so;
+    
+lib/%1/%2/main.d: lib/%1/%2/main.roff
+{
+	c_incl -nc -ns -eia -r
+		[prepost "-I" "/lib/%1/%2" [search_list]]
+		[prepost "-I" /[arch]/etc [search_list]]
+		[prepost "-I" "/etc" [search_list]]
+		-prefix "'lib/%1/%2/%2.txt lib/%1/%2/%2.ps.gz lib/%1/%2/main.roff,M lib/%1/%2/main.d: lib/%1/%2/main.roff'"
+		-suffix "'set nodefault;'" [resolve lib/%1/%2/main.roff]
+	    [addprefix -rlp\= [search_list]]
+	    -slp [arch] "'[arch]'"
+	    -nsri
+	    -o [target];
+}
+
+lib/%1/%2/main.d: lib/%1/%2/main.man
+{
+	c_incl -nc -ns -eia -r
+		[prepost "-I" "/lib/%1/%2" [search_list]]
+		[prepost "-I" "/lib/%1/man1" [search_list]] /* for refman */
+		[prepost "-I" "/lib/%1/man5" [search_list]] /* for refman */
+		[prepost "-I" "/lib/%1/readme" [search_list]] /* for refman */
+		[prepost "-I" /[arch]/etc [search_list]]
+		[prepost "-I" "/etc" [search_list]]
+		-prefix "'lib/%1/%2/%2.txt lib/%1/%2/%2.ps.gz lib/%1/%2/main.man,M lib/%1/%2/main.d: lib/%1/%2/main.man'"
+		-suffix "'set nodefault;'" [resolve lib/%1/%2/main.man]
+	    [addprefix -rlp\= [search_list]]
+	    -slp [arch] "'[arch]'"
+	    -nsri
+	    -o [target];
+}
+
+doc-dep-files =
+	[fromto lib/%1/%2/main.ms lib/%1/%2/main.d
+		[match_mask lib/%1/%2/main.ms [source_files]]]
+	[fromto lib/%1/%2/main.mm lib/%1/%2/main.d
+		[match_mask lib/%1/%2/main.mm [source_files]]]
+	[fromto lib/%1/%2/main.roff lib/%1/%2/main.d
+		[match_mask lib/%1/%2/main.roff [source_files]]]
+	[fromto lib/%1/%2/main.man lib/%1/%2/main.d
+		[match_mask lib/%1/%2/main.man [source_files]]]
+	;
+[doc-dep-files]: etc/version.so;
+
+#include-cooked-nowarn [doc-dep-files]
+
+
+/*
+ * specials
+ */
+
+special:
+	README
+	BUILDING
+	;
+
+README: lib/en/readme/readme.txt
+{
+	cp [resolve [need]] [target];
+}
+
+BUILDING: lib/en/building/building.txt
+{
+	cp [resolve [need]] [target];
+}
+
+etc/CHANGES.[version_short]: etc/CHANGES.sh [vs_file]
+{
+	sh [resolve etc/CHANGES.sh] [project] > [target];
+}
+
+
+configure: etc/configure.in install-sh
+{
+	/*
+	 * unfortunately,
+	 * install-sh must be in the current directory
+	 */
+	if [not [exists install-sh]] then
+		ln -s [resolve install-sh] install-sh
+			set clearstat;
+	autoconf - < [resolve etc/configure.in] > [target];
+	chmod 755 [target];
+}
+
+install-sh: /usr/lib/autoconf/install-sh
+{
+	cp [need] [target];
+	chmod 755 [target];
+}
+
+[arch]/config.status: configure install-sh
+{
+	if [not [exists install-sh]] then
+		ln -s [resolve install-sh] install-sh
+			set clearstat;
+	./[resolve configure] --cache-file\=/dev/null --verbose --no-create;
+	mv config.status [arch]/config.status;
+	rm -f config.log;
+}
+
+common/config.h.in: etc/configure.in etc/config.h.in
+	etc/config.h.in1 etc/config.h.in2
+{
+	if [exists acconfig.h] then
+		rm acconfig.h
+			set clearstat;
+	cat [resolve etc/config.h.in1] > [target];
+	ln -s [resolve etc/config.h.in] acconfig.h;
+	autoheader [resolve etc/configure.in] >> [target];
+	rm acconfig.h;
+	cat [resolve etc/config.h.in2] >> [target];
+}
+
+
+[arch]/%0%.h: %0%.h.in [arch]/config.status
+	single-thread conftest.subs
+{
+	if [not [exists [dirname %0%.h]]] then
+		mkdir [dirname %0%.h]
+			set clearstat;
+	if [not [exists %0%.h.in]] then
+	{
+		/*
+		 * The %0%.h.in file needs to be available relative
+		 * to the current directory.  If cook says it is up-to-date,
+		 * then it must be in the baseline.  Bring it into the
+		 * development directory.
+		 */
+		cp [resolve %0%.h.in] %0%.h.in
+			set clearstat;
+	}
+	/* these 2 env vars control what is generated */
+	CONFIG_FILES\= CONFIG_HEADERS\=%0%.h
+		[resolve [arch]/config.status];
+	mv %0%.h [target];
+}
+
+[arch]/%0%: %0%.in [arch]/config.status
+	set ['if' [not [defined baseline]] 'then' shallow]
+	single-thread conftest.subs
+{
+	if [not [exists [dirname %0%]]] then
+		mkdir [dirname %0%]
+			set clearstat;
+	if [not [exists %0%.in]] then
+	{
+		/*
+		 * The %0%.in file needs to be available relative
+		 * to the current directory.  If cook says it is up-to-date,
+		 * then it must be in the baseline.  Bring it into the
+		 * development directory.
+		 */
+		cp [resolve %0%.in] %0%.in
+			set clearstat;
+	}
+	/* these 2 env vars control what is generated */
+	CONFIG_FILES\=%0% CONFIG_HEADERS\=
+		[resolve [arch]/config.status];
+	mv %0% [target];
+
+	/*
+	 * Make shell scripts and CGI scripts executable.
+	 */
+	if [or [matches %%.cgi %] [matches %%.sh %]] then
+		chmod a+rx [target];
+}
+
+
+/*
+ * Make sure this directory is here,
+ * otherwise the "../man1/?????.h" include files will
+ * be found in the baseline.
+ */
+#ifdef baseline
+if [not [exists [arch]/common]] then
+	mkdir -p [arch]/common
+		set clearstat;
+#endif
+
+
+lib/%/faq/toc.so: lib/%/faq/main.roff: etc/faq.toc.awk
+{
+	[awk] -f [resolve etc/faq.toc.awk lib/%/faq/main.roff] > [target];
+}
+
+
+[arch]/common/find_sizes.h: [arch]/bin/find_sizes
+{
+	[resolve [arch]/bin/find_sizes] > [target];
+}
+
+
+/*
+ * Internationalization recipes
+ */
+#include-cooked etc/i18n.cook
+
+/*
+ * Archive directory for integration builds
+ */
+#include-cooked etc/archive.cook

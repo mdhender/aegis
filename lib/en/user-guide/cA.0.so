@@ -1,0 +1,382 @@
+.\"
+.\"	aegis - project change supervisor
+.\"	Copyright (C) 1991, 1992, 1993 Peter Miller.
+.\"	All rights reserved.
+.\"
+.\"	This program is free software; you can redistribute it and/or modify
+.\"	it under the terms of the GNU General Public License as published by
+.\"	the Free Software Foundation; either version 2 of the License, or
+.\"	(at your option) any later version.
+.\"
+.\"	This program is distributed in the hope that it will be useful,
+.\"	but WITHOUT ANY WARRANTY; without even the implied warranty of
+.\"	MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+.\"	GNU General Public License for more details.
+.\"
+.\"	You should have received a copy of the GNU General Public License
+.\"	along with this program; if not, write to the Free Software
+.\"	Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111, USA.
+.\"
+.\" MANIFEST: User Guide, Appendix A: New Project Quick Reference
+.\"
+.bp
+.2C
+.nh 1 "Appendix A: New Project Quick Reference"
+.LP
+For those of you too impatient to read a whole great big document
+about how to use the aegis program,
+this appendix gives a quick look at how
+to place a project under aegis.
+.LP
+The style here is an itemized list.
+It does not try to be exhaustive.
+For exact details on how to use the various aegis commands,
+you should see the manual pages,
+ditto for the formats and contents of some files.
+.LP
+Probably the quickest start of all is to copy
+an already existing project.
+The project used in chapter 2 is complete,
+assuming you use the author's "cook" dependency maintenance tool.
+The entirety of this example may be found,
+if slightly obfuscated,
+in the aegis source file
+.I "test/00/t0011a.sh"
+distributed with aegis.
+.nh 2 "Create the Project"
+.LP
+The
+.I aenpr
+command is used to create a project.
+You must supply the name on the command line.
+The name should be ten characters or less,
+six characters or less if you want version numbers included.
+.LP
+The user who creates the project is the owner of the project,
+and is set as the administrator.
+The default group of the user who created the project
+is used as the project's group.
+.LP
+You may want to have a user account which owns the project.
+You must create the project as this user,
+and then use the
+.I aena
+and
+.I aera
+commands to add an appropriate administrator,
+and remove the owning user as an administrator.
+After this, the password for the owning user may be disabled,
+because the aegis program will,
+at appropriate times,
+set file ownership to reflect project ownership
+or execute commands on behalf of the project owner \fIas\fP the project owner.
+.nh 3 "Add the Staff"
+.LP
+The
+.I aend
+command is used to add developers.
+The
+.I aenrv
+command is used to add reviewers.
+The
+.I aeni
+command is used to add integrators.
+These commands may only be performed by a project administrator.
+.LP
+You will still have to do this,
+even if the person who created the project will be among these people,
+or even be all of these people.
+.nh 3 "Project Attributes"
+.LP
+The
+.I aepa
+command is used to change project attributes.
+These attributes include the description of the project,
+and booleans controlling whether, for example,
+developers may review their own work.
+.LP
+The project attributes file is described in
+the \fIaepattr\fP(5)
+manual entry.
+.nh 2 "Create Change One"
+.LP
+The
+.I aenc
+command is used to create a new change.
+You will need to construct a change attributes file
+with your favorite text editor before running this command.
+.LP
+The change attributes file is described in
+the \fIaecattr\fP(5)
+manual entry.
+.nh 2 "Develop Change One"
+.LP
+This is the most grueling step.
+Indeed, the integration step will probably reveal things you missed,
+and you may return to the
+.I "being developed"
+ state several times.
+.LP
+One of the people you nominated as a developer
+will have to use the
+.I aedb
+command to commence development of change 1.
+The
+.I aecd
+command can be used to change directory into the
+just-created development directory.
+.LP
+Add files to the change.
+The
+.I aenf
+command is used to create new files.
+If you don't use
+.I aenf
+then the aegis program has no way of knowing
+whether that file lying there in the development directory is significant
+to the project,
+or just a shopping list of the groceries you forgot to buy yesterday.
+.LP
+One particular
+new file which \fImust\fP be created by this change is the
+.I "config"
+file.
+This tells the aegis program what history mechanism you wish to use,
+what dependency maintenance command to use,
+what file difference tools to use,
+and much more.
+The \fIaepconf\fP(5) manual entry describes this file.
+.LP
+If you are going to use the "cook" dependency maintenance tool,
+another new file
+you will need to create in this change is the "Howto.cook" file.
+Some other tool will want some other rules file.
+.LP
+You probably have a prototype or some other "seed" you have sort-of
+working.  Create new files for each source file
+and \fIthen\fP copy the files from wherever they are now
+into the development directory.
+.LP
+Use the
+.I aeb
+command to build the change.
+It will need to build cleanly before it can advance to the next step.
+.LP
+Use the
+.I aed
+command to difference the change.
+It will need to difference cleanly before it can advance to the next step.
+.LP
+Use the
+.I aent
+command to add new tests to the command.
+It will need to have tests before it can advance to the next step.
+.LP
+Most existing projects don't have formal tests.
+These tests will form a regression test-bed,
+used to make sure that future changes never compromise
+existing functionality.
+.LP
+Use the
+.I aet
+command to test the change.
+It will need to test cleanly before it can advance to the next step.
+.LP
+Once the change builds, differences and tests cleanly,
+use the
+.I aede
+command to end development.
+At this point,
+the mode of the files will be changed to read only,
+preventing accidental modification of the files.
+.nh 2 "Review The Change"
+.LP
+One of the people nominated as reviewers will have to run the
+.I aerpass
+command to say that the change passed review.
+.LP
+The aegis program does not mandate any particular review mechanism:
+you could use a single peer to do the review,
+you could use a panel,
+you could set the project so that developers may review their own work
+and effectively eliminating the review step.
+In projects with as few as two people,
+it is always beneficial for someone other than the developer to review changes.
+.LP
+Should a reviewer actually want to \fIsee\fP the change,
+the
+.I aecd
+command may be used to change directory to the development directory of
+the change.
+The difference files all end with a "comma D" suffix, so the
+.E(
+.fi
+more `find . -name "*,D" -print | sort`
+.E)
+command may be used to search them out and see them.
+This is probably fairly useless for the first change,
+but is vital for all subsequent changes.
+There is a supplied alias for this command,
+it is
+.I aedmore
+and there is a similar
+.I aedless
+alias if you prefer the
+.I less (1)
+command.
+.LP
+There are some facts that a reviewer \fIknows\fP because otherwise
+the change would not be in the "being reviewed" state:
+\(bu the change compiles cleanly,
+\(bu the change passes all of its tests.
+Other information about the change may be obtained
+using the "change_details" variation of the
+.I ael
+command.
+.LP
+The
+.I aerfail
+command may also be used by reviewers to fail reviews
+and return a change to the developer for further work;
+the reviewer must supply a reason for the change history to record for all time.
+Similarly,
+the
+.I aedeu
+command may be used by the developer to resume development
+of a change at any time before it is integrated;
+no stated reason is required.
+.nh 2 "Integrate the Change"
+.LP
+A person nominated as an project integrator
+then integrates the change.
+This involves making a copy of the integration directory,
+applying the modifications described by the change to this
+integration directory,
+then building and testing all over again.
+.LP
+This re-build and re-test is to ensure that no
+special aspect of the developers environment influenced the
+success up to this point,
+such as a unique environment variable setting.
+The re-build also ensures that all of the files in the baseline,
+remembering that this includes source files and all other intermediate files
+required by the build process,
+ensures that all of these files are consistent with each other,
+that the baseline is self-consistent.
+The definition of the baseline is that it passes its own tests,
+so the tests are run on the baseline.
+.LP
+Use the
+.I aeib
+command to begin integration.
+.LP
+The
+.I aeb
+command is used to build the integration copy of the change.
+.LP
+The
+.I aet
+command is used to test the integration copy of the change.
+.LP
+On later changes,
+the integration may also require the
+.I "aet -bl"
+command to test the change against the baseline.
+This tests ensures that the test
+.I fails
+against the baseline.
+This failure is to ensure that bug fixes are accompanied
+by tests which reproduce the bug initially,
+and that the change has fixed it.
+New functionality, naturally,
+will not be present in the old baseline,
+and so tests of new functionality will also fail against the old baseline.
+.LP
+Later changes may also have the regression tests run,
+using the
+.I "aet -reg"
+command.
+This can be a very time-consuming step
+for projects with a long history,
+and thus a large collection of tests.
+The
+.I aet
+command can also be used to run "representative" sets of existing tests,
+but a full regression test run is recommended before a major release,
+or, say, weekly if it will complete over the weekend.
+This command is also available to developers,
+so that they have fewer surprises from irate integrators.
+.LP
+The integrator may use the
+.I aeifail
+command to return a change to its developer for further work;
+a reason must be supplied, and should include relevant excerpts from the build
+log in the case of a build failure (not the \fIwhole\fP log!),
+or a list of the tests which failed for test failures.
+.LP
+The 
+.I aeipass
+command may be used to pass an integration.
+When the change passes,
+the file histories are updated.
+In the case of the first change,
+the history is created,
+and problems with the
+.I "config"
+file's history commands will
+be revealed at this point.
+The integration won't pass,
+and should be failed,
+so that the developer may effect repairs.
+There are rarely problems at this point for subsequent changes,
+except for disk space problems.
+.LP
+Once the history is successfully updated,
+aegis renames the integration directory  as the baseline,
+and throws the old baseline away.
+The development directory is deleted at this time, too.
+.nh 2 "What to do Next"
+.LP
+There,
+the first change is completed.
+The whole cycle may now be repeated,
+starting at "Create Change,"
+for all subsequent changes,
+with very few differences.
+.LP
+It is recommended that you read the
+.I "Change Development Cycle"
+ chapter
+for a full worked
+example of the first four changes of an example project,
+including some of the twists which occur in real-world use of aegis.
+.LP
+Remember, too, the definition:
+.DS
+\fBaegis\fP (ee.j.iz) \fIn.\fP a protection, a defence.
+.DE
+It is not always the case that aegis exists to make life "easier" for
+the software engineers.
+The goal is to have a baseline which always "works",
+where "works" is defined as passing all of its own tests.
+Wherever possible,
+the aegis program attempts to be as helpful and as unintrusive as possible,
+but when the "working" definition is threatened,
+the aegis program intrudes as necessary.
+(Example: you can't do an integrate pass without the integration copy
+building successfully.)
+.LP
+All of the "extra work" of writing tests is a long-term win,
+where old problems never again reappear.
+All of the "extra work" of reviewing changes means that another pair of eyes
+sights the code and finds potential problems before they manifest
+themselves in shipped product.
+All of the "extra work" of integration ensures that the baseline always works,
+and is always self-consistent.
+All of the "extra work" of having a baseline and separate
+development directories allows multiple parallel development,
+with no inter-developer interference;
+and the baseline always works, it is never in an "in-between" state.
+In each case,
+not doing this "extra work" is a false economy.
+.1C

@@ -1,0 +1,160 @@
+/*
+ *	aegis - project change supervisor
+ *	Copyright (C) 1997, 1998 Peter Miller;
+ *	All rights reserved.
+ *
+ *	This program is free software; you can redistribute it and/or modify
+ *	it under the terms of the GNU General Public License as published by
+ *	the Free Software Foundation; either version 2 of the License, or
+ *	(at your option) any later version.
+ *
+ *	This program is distributed in the hope that it will be useful,
+ *	but WITHOUT ANY WARRANTY; without even the implied warranty of
+ *	MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ *	GNU General Public License for more details.
+ *
+ *	You should have received a copy of the GNU General Public License
+ *	along with this program; if not, write to the Free Software
+ *	Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111, USA.
+ *
+ * MANIFEST: project information menu
+ */
+
+columns({width = 1000;});
+print("Content-Type: text/html");
+print("");
+
+auto pn, p;
+pn = project_name();
+p = project[pn];
+
+auto script_name;
+script_name = getenv("SCRIPT_NAME");
+if (script_name == "")
+	script_name = "http://localhost/cgi-bin/aegis.cgi";
+
+print("<html><head><title>");
+print("Project " ## pn);
+print("</title></head><body><h1><center>");
+print("Project ``" ## pn ## "''");
+print("</center></h1>");
+
+print("<h2>Brief Description</h2>");
+auto part;
+for (part in wrap_html(p.state.brief_description, 80))
+	print(part);
+
+print("<h2>Description</h2>");
+for (part in wrap_html(p.state.description, 80))
+	print(part);
+
+print("<h2>Information Available</h2>");
+print("<dl>");
+auto href;
+
+href = script_name ## "?file@chan_list+project@" ## pn;
+print("<dt><a href=\"" ## href ## "\">");
+print("Changes");
+print("</a><dd>");
+print("This item will provide you with a list of changes to this");
+print("project, including those which have not yet commenced, those in");
+print("progress, and those which have been completed.");
+print("<p>");
+print("Change lists are also available broken down by change state:");
+print("<ul>");
+href = script_name ## "?file@chan_awdev+project@" ## pn;
+print("<li><a href=\"" ## href ## "\">awaiting development</a>");
+href = script_name ## "?file@chan_bedev+project@" ## pn;
+print("<li><a href=\"" ## href ## "\">being developed</a>");
+href = script_name ## "?file@chan_berev+project@" ## pn;
+print("<li><a href=\"" ## href ## "\">being reviewed</a>");
+href = script_name ## "?file@chan_awint+project@" ## pn;
+print("<li><a href=\"" ## href ## "\">awaiting integration</a>");
+href = script_name ## "?file@chan_beint+project@" ## pn;
+print("<li><a href=\"" ## href ## "\">being integrated</a>");
+href = script_name ## "?file@proj_hstry+project@" ## pn;
+print("<li><a href=\"" ## href ## "\">completed</a>");
+print("</ul>");
+
+href = script_name ## "?file@proj_staff+project@" ## pn;
+print("<dt><a href=\"" ## href ## "\">");
+print("Staff");
+print("</a><dd>");
+print("This item will provide you with a list of staff involved in");
+print("the project, both past and present.  The list includes some");
+print("statistics about the activities performed by the staff.");
+
+href = script_name ## "?file@proj_stats+project@" ## pn;
+print("<dt><a href=\"" ## href ## "\">");
+print("Statistics");
+print("</a><dd>");
+print("This item will provide you with some statistics about changes");
+print("within the project.  The statistics include change causes,");
+print("file activity and file types.");
+
+href = script_name ## "?file@proj_files+project@" ## pn;
+print("<dt><a href=\"" ## href ## "\">");
+print("Files");
+print("</a><dd>");
+print("This item will provide you with a listing of the files which");
+print("are the project master source.	Links are provided to individual");
+print("file information.");
+
+href = script_name ## "?file@file_activ+project@" ## pn;
+print("<dt><a href=\"" ## href ## "\">");
+print("File Activity");
+print("</a><dd>");
+print("This item will provide you with a listing of files which are");
+print("actively being modified.  The list includes who is working on");
+print("the changes, and a brief description of each change.  Where a");
+print("file is common to more than one change, all changes are listed");
+print("against the file.");
+
+print("<dt>");
+href = script_name ## "?file@file_cflct";
+href ##= "+project@" ## pn;
+print("<a href=\"" ## href ## "\">File Conflict</a>");
+print("<dd>");
+print("This item will provide you with a listing of changes which are");
+print("actively modifying files <b>if</b> more than <i>one</i> change");
+print("is modifying the file at the same time.");
+
+href = script_name ## "?file@file_hstry+project@" ## pn;
+print("<dt><a href=\"" ## href ## "\">");
+print("File History");
+print("</a><dd>");
+print("This item will provide you with a listing of files and the order");
+print("in which all completed changes affected them.");
+print("This report can take a long time to generate.");
+
+href = script_name ## "?file@proj_hstry+project@" ## pn;
+print("<dt><a href=\"" ## href ## "\">");
+print("History");
+print("</a><dd>");
+print("This item will provide you with a listing of completed changes");
+print("in the order in which they were completed.");
+
+href = script_name ## "?file@proj_hstgm+project@" ## pn;
+print("<dt><a href=\"" ## href ## "\">");
+print("Integration Histogram");
+print("</a><dd>");
+print("This item will provide you with a histogram of changes completed");
+print("over time.");
+
+href = script_name ## "?file@proj_cch1+project@" ## pn;
+print("<dt><a href=\"" ## href ## "\">");
+print("Change Cause Histogram");
+print("</a><dd>");
+print("This item will provide you with a histogram of change causes");
+print("over time.  Only completed changes are shown.");
+
+href = script_name ## "?file@file_densi+project@" ## pn;
+print("<dt><a href=\"" ## href ## "\">");
+print("Change Cause by File");
+print("</a><dd>");
+print("This item will provide you with a histogram of change causes");
+print("against the files changed.  Only completed changes are shown.");
+
+print("</dl><hr>");
+print("This page was generated " ## now() ## ".");
+print("</body></html>");

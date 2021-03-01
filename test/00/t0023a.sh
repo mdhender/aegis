@@ -1,7 +1,7 @@
 #!/bin/sh
 #
 #	aegis - project change supervisor
-#	Copyright (C) 1994, 1995 Peter Miller;
+#	Copyright (C) 1994, 1995, 1996, 1997, 1998 Peter Miller;
 #	All rights reserved.
 #
 #	This program is free software; you can redistribute it and/or modify
@@ -16,7 +16,7 @@
 #
 #	You should have received a copy of the GNU General Public License
 #	along with this program; if not, write to the Free Software
-#	Foundation, Inc., 675 Mass Ave, Cambridge, MA 02139, USA.
+#	Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111, USA.
 #
 # MANIFEST: Test the report generator functionality
 #
@@ -34,7 +34,11 @@ PAGER=cat
 export PAGER
 
 AEGIS_FLAGS="delete_file_preference = no_keep; \
-	diff_preference = automatic_merge;"
+	lock_wait_preference = always; \
+	diff_preference = automatic_merge; \
+	pager_preference = never; \
+	persevere_preference = all; \
+	log_file_preference = never;"
 export AEGIS_FLAGS
 AEGIS_THROTTLE=2
 export AEGIS_THROTTLE
@@ -45,10 +49,19 @@ COLS=80
 export COLS
 
 here=`pwd`
-if test $? -ne 0 ; then exit 1; fi
+if test $? -ne 0 ; then exit 2; fi
 
 if test "$1" != "" ; then bin="$here/$1/bin"; else bin="$here/bin"; fi
 
+no_result()
+{
+	set +x
+	echo 'NO RESULT for test of the report generator functionality' 1>&2
+	cd $here
+	find $work -type d -user $USER -exec chmod u+w {} \;
+	rm -rf $work
+	exit 2
+}
 fail()
 {
 	set +x
@@ -61,17 +74,18 @@ fail()
 pass()
 {
 	set +x
+	echo PASSED
 	cd $here
 	find $work -type d -user $USER -exec chmod u+w {} \;
 	rm -rf $work
 	exit 0
 }
-trap \"fail\" 1 2 3 15
+trap \"no_result\" 1 2 3 15
 
 mkdir $work $work/lib $work/lib/report
-if test $? -ne 0 ; then fail; fi
+if test $? -ne 0 ; then no_result; fi
 cd $work
-if test $? -ne 0 ; then fail; fi
+if test $? -ne 0 ; then no_result; fi
 
 AEGIS_PATH=$work/lib
 export AEGIS_PATH
@@ -98,7 +112,7 @@ do
 while
 	(j > 0);
 fubar
-if test $? -ne 0 ; then fail; fi
+if test $? -ne 0 ; then no_result; fi
 cat > test.ok << 'fubar'
 1
 2
@@ -142,7 +156,7 @@ cat > test.ok << 'fubar'
 2
 1
 fubar
-if test $? -ne 0 ; then fail; fi
+if test $? -ne 0 ; then no_result; fi
 $bin/aegis -rpt -f test.in -unf -o test.out
 if test $? -ne 0 ; then fail; fi
 diff test.ok test.out
@@ -159,7 +173,7 @@ for (a = -3; a <= 3; ++a)
 	for (b = -3; b <= 3; ++b)
 		print(a, b, ~a, a&b, a^b, a|b, !a, a&&b, a||b);
 fubar
-if test $? -ne 0 ; then fail; fi
+if test $? -ne 0 ; then no_result; fi
 cat > test.ok << 'fubar'
 -3 -3 2 -3 0 -3 false true true
 -3 -2 2 -4 3 -1 false true true
@@ -211,7 +225,7 @@ cat > test.ok << 'fubar'
 3 2 -4 2 1 3 false true true
 3 3 -4 3 0 3 false true true
 fubar
-if test $? -ne 0 ; then fail; fi
+if test $? -ne 0 ; then no_result; fi
 $bin/aegis -rpt -f test.in -o test.out -unf
 if test $? -ne 0 ; then fail; fi
 diff test.ok test.out
@@ -239,7 +253,7 @@ for (a = 0; a < 32; ++a)
 	);
 }
 fubar
-if test $? -ne 0 ; then fail; fi
+if test $? -ne 0 ; then no_result; fi
 cat > test.ok << 'fubar'
 0 1 80000000
 1 2 40000000
@@ -274,7 +288,7 @@ cat > test.ok << 'fubar'
 30 40000000 2
 31 80000000 1
 fubar
-if test $? -ne 0 ; then fail; fi
+if test $? -ne 0 ; then no_result; fi
 $bin/aegis -rpt -f test.in -o test.out -unf
 if test $? -ne 0 ; then fail; fi
 diff test.ok test.out
@@ -306,7 +320,7 @@ for (a in ["a", 42, 1.3, [1, 2, "3"]])
 	}
 }
 fubar
-if test $? -ne 0 ; then fail; fi
+if test $? -ne 0 ; then no_result; fi
 cat > test.ok << 'fubar'
 a a aa
 a 42 a42
@@ -325,7 +339,7 @@ list 42 list
 list 1.3 list
 list list list
 fubar
-if test $? -ne 0 ; then fail; fi
+if test $? -ne 0 ; then no_result; fi
 $bin/aegis -rpt -f test.in -o test.out -unf
 if test $? -ne 0 ; then fail; fi
 diff test.ok test.out
@@ -352,7 +366,7 @@ a >>= 1;	print(a);
 a **= 2.1;	print(a);
 a ##= "boo!";	print(a);
 fubar
-if test $? -ne 0 ; then fail; fi
+if test $? -ne 0 ; then no_result; fi
 cat > test.ok << 'fubar'
 0
 2
@@ -368,7 +382,7 @@ cat > test.ok << 'fubar'
 2313.8
 2313.8boo!
 fubar
-if test $? -ne 0 ; then fail; fi
+if test $? -ne 0 ; then no_result; fi
 $bin/aegis -rpt -f test.in -o test.out -unf
 if test $? -ne 0 ; then fail; fi
 diff test.ok test.out
@@ -387,7 +401,7 @@ where =
 	}
 ];
 fubar
-if test $? -ne 0 ; then fail; fi
+if test $? -ne 0 ; then no_result; fi
 cat > $work/lib/test.rpt << 'fubar'
 title("report searching", "delete this line");
 columns("x", "sqrt(x)", "sqr(x)");
@@ -395,7 +409,7 @@ auto a;
 for (a = 0; a < 10; ++a)
 	print(a, a ** 0.5, a ** 2);
 fubar
-if test $? -ne 0 ; then fail; fi
+if test $? -ne 0 ; then no_result; fi
 cat > test.ok << 'fubar'
 0 0 0
 1 1 1
@@ -408,7 +422,7 @@ cat > test.ok << 'fubar'
 8 2.82843 64
 9 3 81
 fubar
-if test $? -ne 0 ; then fail; fi
+if test $? -ne 0 ; then no_result; fi
 $bin/aegis -rpt t -o test.out -unf
 if test $? -ne 0 ; then fail; fi
 diff test.ok test.out
@@ -420,13 +434,13 @@ if test $? -ne 0 ; then fail; fi
 cat > test.ok << fubar
 Test look for this line
 fubar
-if test $? -ne 0 ; then fail; fi
+if test $? -ne 0 ; then no_result; fi
 $bin/aegis -rpt -list -unf > test.out
 if test $? -ne 0 ; then fail; fi
 grep 'look for this line' test.out > test.out2
-if test $? -ne 0 ; then fail; fi
+if test $? -ne 0 ; then no_result; fi
 sed -e 's| /.*||' < test.out2 > test.out3
-if test $? -ne 0 ; then fail; fi
+if test $? -ne 0 ; then no_result; fi
 diff test.ok test.out3
 if test $? -ne 0 ; then fail; fi
 

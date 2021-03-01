@@ -1,6 +1,6 @@
 /*
  *	aegis - project change supervisor
- *	Copyright (C) 1991, 1992, 1993, 1994, 1995 Peter Miller;
+ *	Copyright (C) 1991, 1992, 1993, 1994, 1995, 1996, 1997, 1998 Peter Miller;
  *	All rights reserved.
  *
  *	This program is free software; you can redistribute it and/or modify
@@ -15,19 +15,22 @@
  *
  *	You should have received a copy of the GNU General Public License
  *	along with this program; if not, write to the Free Software
- *	Foundation, Inc., 675 Mass Ave, Cambridge, MA 02139, USA.
+ *	Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111, USA.
  *
  * MANIFEST: functions to implement new file
  */
 
-#include <stdio.h>
+#include <ac/stdio.h>
 #include <ac/stdlib.h>
+
+#include <ac/fcntl.h>
 #include <ac/unistd.h>
 
 #include <ael.h>
 #include <aenf.h>
 #include <arglex2.h>
-#include <change.h>
+#include <change_bran.h>
+#include <change_file.h>
 #include <col.h>
 #include <commit.h>
 #include <error.h>
@@ -35,12 +38,14 @@
 #include <help.h>
 #include <lock.h>
 #include <log.h>
-#include <option.h>
 #include <os.h>
+#include <progname.h>
 #include <project.h>
+#include <project_file.h>
+#include <sub.h>
 #include <trace.h>
 #include <user.h>
-#include <word.h>
+#include <str_list.h>
 
 
 static void new_file_usage _((void));
@@ -50,7 +55,7 @@ new_file_usage()
 {
 	char		*progname;
 
-	progname = option_progname_get();
+	progname = progname_get();
 	fprintf
 	(
 		stderr,
@@ -73,12 +78,7 @@ static void new_file_help _((void));
 static void
 new_file_help()
 {
-	static char *text[] =
-	{
-#include <../man1/aenf.h>
-	};
-
-	help(text, SIZEOF(text), new_file_usage);
+	help("aenf", new_file_usage);
 }
 
 
@@ -104,22 +104,32 @@ new_file_list()
 
 		case arglex_token_change:
 			if (arglex() != arglex_token_number)
-				new_file_usage();
+				option_needs_number(arglex_token_change, new_file_usage);
 			/* fall through... */
 
 		case arglex_token_number:
 			if (change_number)
-				fatal("duplicate -Change option");
+				duplicate_option_by_name(arglex_token_change, new_file_usage);
 			change_number = arglex_value.alv_number;
-			if (change_number < 1)
-				fatal("change %ld out of range", change_number);
+			if (change_number == 0)
+				change_number = MAGIC_ZERO;
+			else if (change_number < 1)
+			{
+				sub_context_ty	*scp;
+
+				scp = sub_context_new();
+				sub_var_set(scp, "Number", "%ld", change_number);
+				fatal_intl(scp, i18n("change $number out of range"));
+				/* NOTREACHED */
+				sub_context_delete(scp);
+			}
 			break;
 
 		case arglex_token_project:
 			if (arglex() != arglex_token_string)
-				new_file_usage();
+				option_needs_name(arglex_token_project, new_file_usage);
 			if (project_name)
-				fatal("duplicate -Project option");
+				duplicate_option_by_name(arglex_token_project, new_file_usage);
 			project_name = str_from_c(arglex_value.alv_string);
 			break;
 		}
@@ -137,29 +147,32 @@ static void new_file_main _((void));
 static void
 new_file_main()
 {
-	string_ty	*bl;
 	string_ty	*dd;
-	wlist		wl;
+	string_list_ty	wl;
 	cstate		cstate_data;
-	pstate		pstate_data;
-	int		j;
+	size_t		j, k;
 	string_ty	*s1;
 	string_ty	*s2;
 	string_ty	*project_name;
 	project_ty	*pp;
 	long		change_number;
 	change_ty	*cp;
-	int		nolog;
+	log_style_ty	log_style;
 	user_ty		*up;
 	int		generated;
 	int		nerrs;
+	string_list_ty	search_path;
+	string_ty	*config_name;
+	string_list_ty	wl2;
+	int		based;
+	string_ty	*base;
 
 	trace(("new_file_main()\n{\n"/*}*/));
 	project_name = 0;
 	change_number = 0;
 	generated = 0;
-	wl_zero(&wl);
-	nolog = 0;
+	string_list_constructor(&wl);
+	log_style = log_style_append_default;
 	nerrs = 0;
 	while (arglex_token != arglex_token_eoln)
 	{
@@ -169,81 +182,88 @@ new_file_main()
 			generic_argument(new_file_usage);
 			continue;
 
+		case arglex_token_file:
+			if (arglex() != arglex_token_string)
+				new_file_usage();
+			/* fall through... */
+
 		case arglex_token_string:
-			s1 = str_from_c(arglex_value.alv_string);
-			os_become_orig();
-			s2 = os_pathname(s1, 1);
-			str_free(s1);
-			if (wl_member(&wl, s2))
-			{
-				error
-				(
-					"file \"%s\" named more than once",
-					arglex_value.alv_string
-				);
-				++nerrs;
-				os_become_undo();
-				str_free(s2);
-				break;
-			}
-			os_become_undo();
-			wl_append(&wl, s2);
+			s2 = str_from_c(arglex_value.alv_string);
+			string_list_append(&wl, s2);
 			str_free(s2);
 			break;
 
 		case arglex_token_change:
 			if (arglex() != arglex_token_number)
-				new_file_usage();
+				option_needs_number(arglex_token_change, new_file_usage);
 			/* fall through... */
 
 		case arglex_token_number:
 			if (change_number)
-				fatal("duplicate -Change option");
+				duplicate_option_by_name(arglex_token_change, new_file_usage);
 			change_number = arglex_value.alv_number;
-			if (change_number < 1)
-				fatal("change %ld out of range", change_number);
+			if (change_number == 0)
+				change_number = MAGIC_ZERO;
+			else if (change_number < 1)
+			{
+				sub_context_ty	*scp;
+
+				scp = sub_context_new();
+				sub_var_set(scp, "Number", "%ld", change_number);
+				fatal_intl(scp, i18n("change $number out of range"));
+				/* NOTREACHED */
+				sub_context_delete(scp);
+			}
 			break;
 
 		case arglex_token_project:
 			if (arglex() != arglex_token_string)
-				new_file_usage();
+				option_needs_name(arglex_token_project, new_file_usage);
 			if (project_name)
-				fatal("duplicate -Project option");
+				duplicate_option_by_name(arglex_token_project, new_file_usage);
 			project_name = str_from_c(arglex_value.alv_string);
 			break;
 
 		case arglex_token_nolog:
-			if (nolog)
-			{
-				duplicate:
-				fatal
-				(
-					"duplicate %s option",
-					arglex_value.alv_string
-				);
-			}
-			nolog = 1;
+			if (log_style == log_style_none)
+				duplicate_option(new_file_usage);
+			log_style = log_style_none;
 			break;
 
 		case arglex_token_build:
 			if (generated)
-				goto duplicate;
+				duplicate_option(new_file_usage);
 			generated = 1;
+			break;
+
+		case arglex_token_wait:
+		case arglex_token_wait_not:
+			user_lock_wait_argument(new_file_usage);
+			break;
+
+		case arglex_token_base_relative:
+		case arglex_token_current_relative:
+			user_relative_filename_preference_argument(new_file_usage);
 			break;
 		}
 		arglex();
 	}
 	if (nerrs)
 	{
-		fatal
-		(
-			"found %d error%s, no new files added",
-			nerrs,
-			(nerrs == 1 ? "" : "s")
-		);
+		sub_context_ty	*scp;
+
+		scp = sub_context_new();
+		sub_var_set(scp, "Number", "%d", nerrs);
+		sub_var_optional(scp, "Number");
+		fatal_intl(scp, i18n("no new files"));
+		/* NOTREACHED */
+		sub_context_delete(scp);
 	}
-	if (!wl.wl_nwords)
-		fatal("no files named");
+	if (!wl.nstrings)
+	{
+		error_intl(0, i18n("no file names"));
+		new_file_usage();
+	}
 
 	/*
 	 * locate project data
@@ -273,31 +293,49 @@ new_file_main()
 	change_cstate_lock_prepare(cp);
 	lock_take();
 	cstate_data = change_cstate_get(cp);
-	pstate_data = project_pstate_get(pp);
+
+	log_open(change_logfile_get(cp), up, log_style);
 
 	/*
 	 * It is an error if the change is not in the being_developed state.
 	 * It is an error if the change is not assigned to the current user.
 	 */
 	if (cstate_data->state != cstate_state_being_developed)
-	{
-		change_fatal
-		(
-			cp,
-"this change is in the '%s' state, \
-it must be in the 'being developed' state to create new files with it",
-			cstate_state_ename(cstate_data->state)
-		);
-	}
+		change_fatal(cp, 0, i18n("bad nf state"));
+	if (change_is_a_branch(cp))
+		change_fatal(cp, 0, i18n("bad nf branch"));
 	if (!str_equal(change_developer_name(cp), user_name(up)))
-	{
-		change_fatal
+		change_fatal(cp, 0, i18n("not developer"));
+
+	/*
+	 * Search list for resolving filenames.
+	 */
+	change_search_path_get(cp, &search_path, 1);
+
+	/*
+	 * Find the base for relative filenames.
+	 */
+	based =
 		(
-			cp,
-"user \"%S\" is not the developer, only user \"%S\" may add a new file",
-			user_name(up),
-			change_developer_name(cp)
+			search_path.nstrings >= 1
+		&&
+			(
+				user_relative_filename_preference
+				(
+					up,
+				      uconf_relative_filename_preference_current
+				)
+			==
+				uconf_relative_filename_preference_base
+			)
 		);
+	if (based)
+		base = search_path.string[0];
+	else
+	{
+		os_become_orig();
+		base = os_curdir();
+		os_become_undo();
 	}
 
 	/*
@@ -307,52 +345,98 @@ it must be in the 'being developed' state to create new files with it",
 	 * 3.	if the file is inside the baseline, ok
 	 * 4.	if neither, error
 	 */
-	dd = change_development_directory_get(cp, 1);
-	bl = project_baseline_path_get(pp, 1);
-	for (j = 0; j < wl.wl_nwords; ++j)
+	string_list_constructor(&wl2);
+	for (j = 0; j < wl.nstrings; ++j)
 	{
-		s1 = wl.wl_word[j];
-		assert(s1->str_text[0] == '/');
-		s2 = os_below_dir(dd, s1);
-		if (!s2)
-			s2 = os_below_dir(bl, s1);
-		if (!s2)
-			change_fatal(cp, "path \"%S\" unrelated", s1);
+		s1 = wl.string[j];
+		if (s1->str_text[0] == '/')
+			s2 = str_copy(s1);
+		else
+			s2 = str_format("%S/%S", base, s1);
+		user_become(up);
+		s1 = os_pathname(s2, 1);
+		user_become_undo();
+		str_free(s2);
+		s2 = 0;
+		for (k = 0; k < search_path.nstrings; ++k)
+		{
+			s2 = os_below_dir(search_path.string[k], s1);
+			if (s2)
+				break;
+		}
 		str_free(s1);
-		wl.wl_word[j] = s2;
+		if (!s2)
+		{
+			sub_context_ty	*scp;
+
+			scp = sub_context_new();
+			sub_var_set(scp, "File_Name", "%S", wl.string[j]);
+			change_error(cp, scp, i18n("$filename unrelated"));
+			sub_context_delete(scp);
+			++nerrs;
+			continue;
+		}
+		if (string_list_member(&wl2, s2))
+		{
+			sub_context_ty	*scp;
+
+			scp = sub_context_new();
+			sub_var_set(scp, "File_Name", "%S", s2);
+			change_error(cp, scp, i18n("too many $filename"));
+			sub_context_delete(scp);
+			++nerrs;
+		}
+		else
+			string_list_append(&wl2, s2);
+		str_free(s2);
 	}
+	string_list_destructor(&search_path);
+	string_list_destructor(&wl);
+	wl = wl2;
 
 	/*
 	 * ensure that each file
 	 * 1. is not already part of the change
 	 * 2. is not already part of the baseline
 	 */
-	for (j = 0; j < wl.wl_nwords; ++j)
+	for (j = 0; j < wl.nstrings; ++j)
 	{
-		pstate_src	src_data;
+		fstate_src	src_data;
 
-		s1 = wl.wl_word[j];
-		if (change_src_find(cp, s1))
+		s1 = wl.string[j];
+		if (change_file_find(cp, s1))
 		{
-			change_error
-			(
-				cp,
-				"file \"%S\" is already part of this change",
-				s1
-			);
+			sub_context_ty	*scp;
+
+			scp = sub_context_new();
+			sub_var_set(scp, "File_Name", "%S", s1);
+			change_error(cp, scp, i18n("file $filename dup"));
+			sub_context_delete(scp);
 			++nerrs;
 		}
 		else
 		{
-			src_data = project_src_find(pp, s1);
-			if (src_data && !src_data->deleted_by)
+			src_data = project_file_find(pp, s1);
+			if
+			(
+				src_data
+			&&
+				!src_data->deleted_by
+			&&
+				!src_data->about_to_be_created_by
+			)
 			{
+				sub_context_ty	*scp;
+
+				scp = sub_context_new();
+				sub_var_set(scp, "File_Name", "%S", s1);
 				project_error
 				(
 					pp,
-					"file \"%S\" already exists",
-					s1
+					scp,
+					i18n("$filename in baseline")
 				);
+				sub_context_delete(scp);
 				++nerrs;
 			}
 		}
@@ -361,27 +445,49 @@ it must be in the 'being developed' state to create new files with it",
 	/*
 	 * check that each filename is OK
 	 */
-	for (j = 0; j < wl.wl_nwords; ++j)
+	config_name = str_from_c(THE_CONFIG_FILE);
+	for (j = 0; j < wl.nstrings; ++j)
 	{
 		string_ty	*e;
 
-		e = change_filename_check(cp, wl.wl_word[j], 1);
+		if (generated && str_equal(wl.string[j], config_name))
+		{
+			sub_context_ty	*scp;
+
+			scp = sub_context_new();
+			sub_var_set(scp, "File_Name", "%S", wl.string[j]);
+			change_error(cp, scp, i18n("may not build $filename"));
+			sub_context_delete(scp);
+			++nerrs;
+		}
+		e = change_filename_check(cp, wl.string[j], 1);
 		if (e)
 		{
-			change_error(cp, "%S", e);
+			sub_context_ty	*scp;
+
+			/*
+			 * no internationalization if the error string
+			 * required, this is done inside the
+			 * change_filename_check function.
+			 */
+			scp = sub_context_new();
+			sub_var_set(scp, "Message", "%S", e);
+			change_error(cp, scp, i18n("$message"));
+			sub_context_delete(scp);
 			++nerrs;
 			str_free(e);
 		}
 	}
+	str_free(config_name);
 	if (nerrs)
 	{
-		change_fatal
-		(
-			cp,
-			"found %d error%s, no new files added",
-			nerrs,
-			(nerrs == 1 ? "" : "s")
-		);
+		sub_context_ty	*scp;
+
+		scp = sub_context_new();
+		sub_var_set(scp, "Number", "%d", nerrs);
+		sub_var_optional(scp, "Number");
+		change_fatal(cp, scp, i18n("no new files"));
+		sub_context_delete(scp);
 	}
 
 	/*
@@ -389,10 +495,12 @@ it must be in the 'being developed' state to create new files with it",
 	 * if it does not already exist.
 	 * Create any necessary directories along the way.
 	 */
+	dd = change_development_directory_get(cp, 0);
 	user_become(up);
-	for (j = 0; j < wl.wl_nwords; ++j)
+	for (j = 0; j < wl.nstrings; ++j)
 	{
-		s1 = wl.wl_word[j];
+		s1 = wl.string[j];
+		trace(("does %s exist?\n", s1->str_text));
 		os_mkdir_between(dd, s1, 02755);
 		s2 = str_format("%S/%S", dd, s1);
 		if (os_symlink_query(s2))
@@ -402,12 +510,22 @@ it must be in the 'being developed' state to create new files with it",
 			int		fd;
 			string_ty	*template;
 
+			trace(("create %s\n", s2->str_text));
 			user_become_undo();
 			template = change_file_template(cp, s1);
 			user_become(up);
 			fd = glue_creat(s2->str_text, 0666);
 			if (fd < 0)
-				nfatal("create(\"%s\")", s2->str_text);
+			{
+				sub_context_ty	*scp;
+
+				scp = sub_context_new();
+				sub_errno_set(scp);
+				sub_var_set(scp, "File_Name", "%S", s2);
+				fatal_intl(scp, i18n("create $filename: $errno"));
+				/* NOTREACHED */
+				sub_context_delete(scp);
+			}
 			if (template)
 			{
 				glue_write
@@ -443,12 +561,11 @@ it must be in the 'being developed' state to create new files with it",
 	 * Add each file to the change file,
 	 * and write it back out.
 	 */
-	for (j = 0; j < wl.wl_nwords; ++j)
+	for (j = 0; j < wl.nstrings; ++j)
 	{
-		cstate_src	src_data;
+		fstate_src	src_data;
 
-		src_data = change_src_new(cp);
-		src_data->file_name = str_copy(wl.wl_word[j]);
+		src_data = change_file_new(cp, wl.string[j]);
 		src_data->action = file_action_create;
 		if (generated)
 			src_data->usage = file_usage_build;
@@ -463,6 +580,18 @@ it must be in the 'being developed' state to create new files with it",
 	change_build_times_clear(cp);
 
 	/*
+	 * update the copyright years
+	 */
+	change_copyright_years_now(cp);
+
+	/*
+	 * run the change file command
+	 * and the project file command if necessary
+	 */
+	change_run_change_file_command(cp, &wl, up);
+	change_run_project_file_command(cp, up);
+
+	/*
 	 * release the locks
 	 */
 	change_cstate_write(cp);
@@ -470,18 +599,18 @@ it must be in the 'being developed' state to create new files with it",
 	lock_release();
 
 	/*
-	 * run the change file command
-	 */
-	if (!nolog)
-		log_open(change_logfile_get(cp), up, log_style_append);
-	change_run_change_file_command(cp, &wl, up);
-
-	/*
 	 * verbose success message
 	 */
-	for (j = 0; j < wl.wl_nwords; ++j)
-		change_verbose(cp, "file \"%S\" added", wl.wl_word[j]);
-	wl_free(&wl);
+	for (j = 0; j < wl.nstrings; ++j)
+	{
+		sub_context_ty	*scp;
+
+		scp = sub_context_new();
+		sub_var_set(scp, "File_Name", "%S", wl.string[j]);
+		change_verbose(cp, scp, i18n("new file $filename completed"));
+		sub_context_delete(scp);
+	}
+	string_list_destructor(&wl);
 	change_free(cp);
 	project_free(pp);
 	user_free(up);

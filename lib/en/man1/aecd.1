@@ -1,0 +1,103 @@
+'\" t
+.\"	aegis - project change supervisor
+.\"	Copyright (C) 1991, 1992, 1993, 1996 Peter Miller;
+.\"	All rights reserved.
+.\"
+.\"	This program is free software; you can redistribute it and/or modify
+.\"	it under the terms of the GNU General Public License as published by
+.\"	the Free Software Foundation; either version 2 of the License, or
+.\"	(at your option) any later version.
+.\"
+.\"	This program is distributed in the hope that it will be useful,
+.\"	but WITHOUT ANY WARRANTY; without even the implied warranty of
+.\"	MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+.\"	GNU General Public License for more details.
+.\"
+.\"	You should have received a copy of the GNU General Public License
+.\"	along with this program; if not, write to the Free Software
+.\"	Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111, USA.
+.\"
+.\" MANIFEST: manual entry for 'aegis -Change_Directory' command
+.\"
+.so z_name.so
+.TH "\*(n) -Change_Directory" 1 \*(N) "Reference Manual"
+.SH NAME
+\*(n) -Change_Directory \- change directory
+.XX "aecd(1)" "change directory"
+.SH SYNOPSIS
+.B \*(n)
+.B -Change_Directory
+[
+.IR option ...
+][
+.I relative-path
+]
+.br
+.B \*(n)
+.B -Change_Directory
+.B -List
+[
+.IR option ...
+]
+.br
+.B \*(n)
+.B -Change_Directory
+.B -Help
+.SH DESCRIPTION
+The
+.I \*(n)
+.I -Change_Directory
+command is used to
+obtain a path to change directory to.
+If the 
+.I relative-path
+is supplied, this will be added to the output.
+.PP
+This command is usually used to calculate an argument for
+.IR cd (1),
+however it can also be used to obtain an absolute path
+for change and project files.
+.SH OPTIONS
+The following options are understood:
+.so o_baselin.so
+.so o_branch.so
+.so o_change.so
+.so o_devdir.so
+.so o_help.so
+.so o_list.so
+.so o_project.so
+.so o_terse.so
+.so o_trunk.so
+.so o_verbose.so
+.so o__rules.so
+.SH RECOMMENDED ALIAS
+The recommended alias for this command is
+.nf
+.ta 8n 16n
+csh%	alias aecd 'cd `\*(n) -cd \e!* -v`'
+sh$	aecd(){cd `\*(n) -cd $* -v`}
+.fi
+.SH ERRORS
+It is an error if
+the specified change is not in a state where it has a directory to
+change to.
+.so z_exit.so
+.br
+.ne 1i
+.SH SEE ALSO
+.TP 8n
+.IR aedb (1)
+begin development of a change
+.TP 8n
+.IR aeib (1)
+begin integration of a change
+.TP 8n
+.IR aerp (1)
+pass review of a change
+.TP 8n
+.IR aerf (1)
+fail review of a change
+.TP 8n
+.IR aeuconf (5)
+user configuration file format
+.so z_cr.so

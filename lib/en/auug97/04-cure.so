@@ -1,0 +1,271 @@
+.\"
+.\"	aegis - project change supervisor
+.\"	Copyright (C) 1997 Peter Miller;
+.\"	All rights reserved.
+.\"
+.\"	This program is free software; you can redistribute it and/or modify
+.\"	it under the terms of the GNU General Public License as published by
+.\"	the Free Software Foundation; either version 2 of the License, or
+.\"	(at your option) any later version.
+.\"
+.\"	This program is distributed in the hope that it will be useful,
+.\"	but WITHOUT ANY WARRANTY; without even the implied warranty of
+.\"	MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+.\"	GNU General Public License for more details.
+.\"
+.\"	You should have received a copy of the GNU General Public License
+.\"	along with this program; if not, write to the Free Software
+.\"	Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111, USA.
+.\"
+.\" MANIFEST: AUUGN Feb'98 Article
+.\"
+.nh 1 "Prevention"
+The above analysis is based one one simple
+action: the DAG was artificially separated into incomplete pieces.
+This separation resulted in all of the problems familiar to recursive
+.I make
+builds.
+.LP
+Did
+.I make
+get it wrong?
+No.
+This is a case of the ancient GIGO principle:
+.I "Garbage In, Garbage Out."
+Incomplete \f(CWMakefile\fPs are
+.I wrong
+\f(CWMakefile\fPs.
+.LP
+To avoid these problems, don't break the DAG into pieces;  instead,
+use one \f(CWMakefile\fP for the entire project.  It is
+not the recursion itself which is harmful, it is the crippled
+\f(CWMakefile\fPs which are used in the recursion which
+are \fIwrong\fP.
+It is not a deficiency of
+.I make
+itself that recursive \fImake\fP is broken,
+it does the best it can with the flawed input it is given.
+.QP
+``\fIBut, but, but...  You can't do that!\fP'' I hear you cry.
+``\fIA single\fP \f(CWMakefile\fP \fIis too big,
+it's unmaintainable,
+it's too hard to write the rules,
+you'll run out of memory,
+I only want to build my little bit,
+the build will take too long.
+It's just not practical.\fP''
+.LP
+These are valid concerns, and they frequently lead \fImake\fP users to
+the conclusion that re-working their build process does not have any
+short- or long-term benefits.  This conclusion is based on ancient,
+enduring, false assumptions.
+.LP
+The following sections will address each of these concerns in turn.
+.nh 2 "A Single \f(CWMakefile\fP Is Too Big"
+If the entire project build description were placed into a single
+\f(CWMakefile\fP this would certainly be true,
+however modern
+.I make
+implementations have
+.I include
+statements.
+By including a relevant fragment from each module,
+the total size of the \f(CWMakefile\fP and its include files
+need be no larger than the total size of the \f(CWMakefile\fPs
+in the recursive case.
+.nh 2 "A Single \f(CWMakefile\fP Is Unmaintainable"
+The complexity of using a single top-level \f(CWMakefile\fP
+which includes a fragment from each module
+is no more complex than in the recursive case.
+Because the DAG is not segmented,
+this form of \f(CWMakefile\fP becomes less complex,
+and thus \fImore\fP maintainable,
+simply because fewer ``tweaks'' are required to keep it working.
+.LP
+Recursive \f(CWMakefiles\fP have a great deal of repetition.
+Many projects solve this by using include files.
+By using a single \f(CWMakefile\fP for the project,
+the need for the ``common'' include files disappears \- the single
+\f(CWMakefile\fP is the common part.
+.nh 2 "It's Too Hard To Write The Rules"
+The only change required is to include the directory part in filenames
+in a number of places.
+This is because the \fImake\fP is performed from the top-level directory;
+the current directory is not the one in which the file appears.
+Where the output file is explicitly stated in a rule,
+this is not a problem.
+.LP
+GCC allows a \f(CW-o\fP option in conjunction with the \f(CW-c\fP
+option, and GNU Make knows this.  This results in the implicit
+compilation rule placing the output in the correct place.  Older and
+dumber C compilers, however, may not allow the \f(CW-o\fP option with
+the \f(CW-c\fP option, and will leave the object file in the
+top-level directory (\fIi.e.\fP the wrong directory).
+There are three ways for you to fix this:
+get GNU Make and GCC,
+override the built-in rule with one which does the right thing,
+or complain to your vendor.
+.LP
+Also, K&R C compilers will start the double-quote include path
+(\f(CW#include "\fP\fIfilename.h\fP\f(CW"\fP) from the current
+directory.  This will not do what you want.  ANSI C compliant C compilers,
+however, start the double-quote include path from the directory in which
+the source file appears; thus, no source changes are required.  If you
+don't have an ANSI C compliant C compiler, you should consider
+installing GCC on your system as soon as possible.
+.nh 2 "I Only Want To Build My Little Bit"
+Most of the time, developers are deep within the project tree
+and they edit one or two files and then run \fImake\fP
+to compile their changes and try them out.
+They may do this dozens or hundreds of times a day.
+Being forced to do a full project build every time would be absurd.
+.LP
+Developers always have the option of giving \fImake\fP a specific
+target.  This is always the case, it's just that we usually rely on the
+default target in the \f(CWMakefile\fP in the current directory to
+shorten the command line for us.
+Building ``my little bit'' can still be done with a whole project
+\f(CWMakefile\fP, simply by using a specific target, and an alias if the
+command line is too long.
+.LP
+Is doing a full project build every time so absurd?
+If a change made in a module has repercussions in other modules,
+because there is a dependency the developer is unaware of (but the
+\f(CWMakefile\fP is aware of),
+isn't it better that the developer find out as early as possible?
+Dependencies like this \fIwill\fP be found, because the DAG is more complete
+than in the recursive case.
+.LP
+The developer is rarely a seasoned old salt who knows every one
+of the million lines of code in the product.  More likely the developer
+is a short-term contractor or a junior.  You don't want implications
+like these to blow up after the changes are integrated with the master
+source, you want them to blow up on the developer in some nice safe
+sand-box far away from the master source.
+.LP
+If you want to make ``just your little'' bit because you are concerned
+that performing a full project build will corrupt the project master
+source, due to the directory structure used in your project, see the
+``Projects \fIversus\fP Sand-Boxes'' section below.
+.nh 2 "The Build Will Take Too Long"
+This statement can be made from one of two perspectives.  First, that a
+whole project \fImake\fP, even when everything is up-to-date, inevitably
+takes a long time to perform.  Secondly, that these inevitable delays are
+unacceptable when a developer wants to quickly compile and link the one
+file that they have changed.
+.nh 3 "Project Builds"
+Consider a hypothetical project with 1000 source (\f(CW.c\fP) files,
+each of which has its calling interface defined in a corresponding include
+(\f(CW.h\fP) file with defines, type declarations and function prototypes.
+These 1000 source files include their own interface definition, plus the
+interface definitions of any other module they may call.  These 1000
+source files are compiled into 1000 object files which are then linked
+into an executable program.  This system has some 3000 files which
+\fImake\fP must be told about, and be told about the include dependencies, and
+also explore the possibility that implicit rules (\f(CW\&.y\fP \(->
+\f(CW\&.c\fP for example) may be necessary.
+.LP
+In order to build the DAG, \fImake\fP must ``stat'' 3000 files, plus an
+additional 2000 files or so, depending on which implicit rules your \fImake\fP
+knows about and your \f(CWMakefile\fP has left enabled.
+On the author's humble 66MHz i486 this takes about 10 seconds;
+on native disk on faster platforms it goes even faster.
+With NFS over 10MB Ethernet it takes about 10 seconds,
+no matter what the platform.
+.LP
+This is an astonishing statistic!  Imagine being able to do a single file
+compile, out of 1000 source files, in only 10 seconds, plus the time for
+the compilation itself.
+.LP
+Breaking the set of files up into 100 modules, and running it as a recursive
+\fImake\fP takes about 25 seconds.
+The repeated process creation for the subordinate
+\fImake\fP invocations take quite a long time.
+.LP
+Hang on a minute!  On real-world projects with less than 1000 files, it
+takes an awful lot longer than 25 seconds for \fImake\fP to work out
+that it has nothing to do.  For some projects, doing it in only 25
+minutes would be an improvement!  The above result tells us that it is
+not the number of files which is slowing us down (that only takes 10
+seconds), and it is not the repeated process creation for the
+subordinate \fImake\fP invocations (that only takes another 15 seconds).
+So just what \fIis\fP taking so long?
+.LP
+The traditional solutions to the problems introduced by recursive
+\fImake\fP often increase the number of subordinate \fImake\fP
+invocations beyond the minimum described here; \fIe.g.\fP to perform
+multiple repetitions (3.3.2), or to overkill cross-module dependencies
+(3.3.3).  These can take a long time, particularly when combined, but do
+not account for some of the more spectacular build times; what else is
+taking so long?
+.LP
+Complexity of the \f(CWMakefile\fP is what is taking so long.
+This is covered, below, in the \fIEfficient Makefiles\fP section.
+.nh 3 "Development Builds"
+If, as in the 1000 file example, it only takes 10 seconds to figure out
+which one of the files needs to be recompiled, there is no serious threat to
+the productivity of developers if they do a whole-project \fImake\fP as
+opposed to a module-specific \fImake\fP.  The advantage for the project
+is that the module-centric developer is reminded at
+relevant times (and only relevant times) that their work has wider
+ramifications.
+.LP
+By consistently using C include files which contain accurate interface
+definitions (including function prototypes), this will produce
+compilation errors in many of the cases which would result in a
+defective product.  By doing whole-project builds, developers discover
+such errors very early in the development process, and can fix the
+problems when they are least expensive.
+.nh 2 "You'll Run Out Of Memory"
+This is the most interesting response.
+Once long ago, on a CPU far, far away, it may even have been true.
+When Feldman
+.[
+feld78
+.]
+first wrote \fImake\fP it was 1978 and he was using a PDP11.
+Unix processes were limited to 64KB of data.
+.LP
+On such a computer, the above project with its 3000 files
+detailed in the whole-project \f(CWMakefile\fP, would probably
+.I not
+allow the DAG and rule actions to fit in memory.
+.LP
+But we are not using PDP11s any more.  The
+physical memory of modern computers exceeds 10MB for \fIsmall\fP
+computers, and virtual memory often exceeds 100MB.  It is going to take a
+project with hundreds of thousands of source files to exhaust virtual
+memory on a \fIsmall\fP modern computer.  As the 1000 source file
+example takes less than 100KB of memory (try it, I did) it is unlikely
+that any project manageable in a single directory tree on a single disk
+will exhaust your computer's memory.
+.nh 2 "Why Not Fix The DAG In The Modules?"
+It was shown in the above discussion that the problem with recursive
+.I make
+is that the DAGs are incomplete.
+It follows that by adding the missing portions,
+the problems would be resolved without abandoning the existing
+recursive \fImake\fP investment.
+.IP \(bu 2n
+The developer needs to remember to do this.  The problems will not
+affect the developer of the module, it will affect the developers of
+\fIother\fP modules.  There is no trigger to remind the developer to do
+this, other than the ire of fellow developers.
+.IP \(bu 2n
+It is difficult to work out where the changes need to be made.
+Potentially every \f(CWMakefile\fP in the entire project needs to be
+examined for possible modifications.  Of course, you can wait for your
+fellow developers to find them for you.
+.IP \(bu 2n
+The include dependencies will be recomputed unnecessarily, or will be
+interpreted incorrectly.  This is because \fImake\fP is string based,
+and thus ``.'' and ``../ant'' are two different places, even when you
+are in the \f(CWant\fP directory.  This is of concern when include
+dependencies are automatically generated \- as they are for all large
+projects.
+.LP
+By making sure that each \f(CWMakefile\fP is complete, you arrive at the
+point where the \f(CWMakefile\fP for at least one module contains the
+equivalent of a whole-project \f(CWMakefile\fP (recall that these
+modules form a single project and are thus inter-connected), and there
+is no need for the recursion any more.

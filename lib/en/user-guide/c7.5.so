@@ -1,0 +1,79 @@
+.\"
+.\"	aegis - project change supervisor
+.\"	Copyright (C) 1992, 1993 Peter Miller.
+.\"	All rights reserved.
+.\"
+.\"	This program is free software; you can redistribute it and/or modify
+.\"	it under the terms of the GNU General Public License as published by
+.\"	the Free Software Foundation; either version 2 of the License, or
+.\"	(at your option) any later version.
+.\"
+.\"	This program is distributed in the hope that it will be useful,
+.\"	but WITHOUT ANY WARRANTY; without even the implied warranty of
+.\"	MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+.\"	GNU General Public License for more details.
+.\"
+.\"	You should have received a copy of the GNU General Public License
+.\"	along with this program; if not, write to the Free Software
+.\"	Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111, USA.
+.\"
+.\" MANIFEST: User Guide, How Aegis Works, Security
+.\"
+.bp
+.nh 2 "Security"
+.LP
+Access to project data is controlled by the
+.UX
+group mechanism.
+The group may be selected as suitable for your project,
+as may the umask.
+.LP
+All work done by developers (build, difference, etc)
+is all with a default group of the project's group,
+irrespective of the user's default group.
+Directories (when BSD semantics are available) are all created
+so that their contents default to the correct group.
+This ensures that reviewers and integrators are able to examine the change.
+.LP
+Other
+.UX
+users not in the project's group
+may be excluded, or not, by the appropriate setting of the project umask.
+This umask is used by all aegis actions,
+assuring appropriate default behaviour.
+.LP
+A second aspect of security is to ensure that developers are unable to deliberately deceive aegis.
+At develop end,
+all files in the development directory are marked read only,
+aegis notes the time stamps on the files.
+Should the files be tampered with at any later date,
+aegis will notice.
+If a change is returned to the
+.I "being developed"
+state,
+the files are marked writable again.
+.nh 2 "Scalability"
+.LP
+How big can a project get before aegis chokes?
+There are a huge number of variables in this question.
+.LP
+The most obvious bottleneck is the integrator.
+An artificial "big project" example:
+Assume that the average integration takes an hour to build and test.
+A full-time integrator could be expected to get 7 or 8 of these done per day
+(this was the observed average on one project the author was involved in).
+Assume that the average time for a developer to develop a change is two weeks;
+a figure recommended by many text books
+as
+"\fIthe most you can afford to throw away\fP".
+These two assumptions mean that for this "big project"
+aegis can cope with 70 to 80 developers,
+before integrations become a bottleneck.
+.LP
+The more serious bottle neck is the dependency maintenance tool.
+Seventy developers can churn out a staggering volume of code.
+It takes a very long time to wade through the file times and the rules,
+just to find the one or two files which changed.
+This can easily push the integrate build time
+past the one hour mark.
+Developers also become very vocal when build times are this long.

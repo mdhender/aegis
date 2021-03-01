@@ -1,0 +1,76 @@
+.\"
+.\"	aegis - project change supervisor
+.\"	Copyright (C) 1998 Peter Miller;
+.\"	All rights reserved.
+.\"
+.\"	This program is free software; you can redistribute it and/or modify
+.\"	it under the terms of the GNU General Public License as published by
+.\"	the Free Software Foundation; either version 2 of the License, or
+.\"	(at your option) any later version.
+.\"
+.\"	This program is distributed in the hope that it will be useful,
+.\"	but WITHOUT ANY WARRANTY; without even the implied warranty of
+.\"	MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+.\"	GNU General Public License for more details.
+.\"
+.\"	You should have received a copy of the GNU General Public License
+.\"	along with this program; if not, write to the Free Software
+.\"	Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111, USA.
+.\"
+.\" MANIFEST: AUUGN Feb'98 Article
+.\"
+.nr PS 72
+.nr VS 73000
+.LP
+.ad c
+Motivation
+.br
+.ad l
+.sp 0.3i
+.nr PS 36
+.nr VS 37
+.XP
+\(bu
+Common problems include
+.br
+\(sq constant adjustment
+.br
+\(sq multiple pass builds
+.br
+\(sq unreliable results
+.br
+\(sq very long build times
+.XP
+\(bu
+You don't need to have these problems.
+.bp
+.nr PS 24
+.nr VS 25
+.XP
+\(bu
+I wrote the paper as a result of E-Mail conversations with members of
+some of the Internet projects teams I contribute to.  This revealed that
+the concept was difficult to express succinctly.
+.XP
+\(bu
+Common build problems include
+.br
+\(sq constant adjustment of the build scripts to make them work
+.br
+\(sq you need multiple pass builds before it builds successfully
+.br
+\(sq you get unreliable results from your builds
+.br
+\(sq You have very long build times, just to work out that little or
+nothing needs to be done.
+.XP
+\(bu
+If you can't build your product, you don't \fIhave\fP a product.
+.XP
+\(bu
+Not all software teams have all of these problems,
+but most have some of them.
+.XP
+\(bu
+You don't need to have these problems: they have a common cause, and
+there \fIis\fP a solution.

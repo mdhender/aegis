@@ -1,0 +1,77 @@
+.\"
+.\"	aegis - project change supervisor
+.\"	Copyright (C) 1996 Peter Miller;
+.\"	All rights reserved.
+.\"
+.\"	This program is free software; you can redistribute it and/or modify
+.\"	it under the terms of the GNU General Public License as published by
+.\"	the Free Software Foundation; either version 2 of the License, or
+.\"	(at your option) any later version.
+.\"
+.\"	This program is distributed in the hope that it will be useful,
+.\"	but WITHOUT ANY WARRANTY; without even the implied warranty of
+.\"	MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+.\"	GNU General Public License for more details.
+.\"
+.\"	You should have received a copy of the GNU General Public License
+.\"	along with this program; if not, write to the Free Software
+.\"	Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111, USA.
+.\"
+.\" MANIFEST: document describing foil.07.so
+.\"
+.bp
+.nr PS 8
+.nr VS 9
+.LP
+.ps 48
+.vs 50
+.hy 0
+.ad c
+The DNS Integration Step
+.sp
+.ad l
+.2C
+.nr PS 36
+.nr VS 38
+.LP
+.ps 14
+.vs 15
+.PS
+boxwid = 1.1
+boxht = 0.75
+down
+B1: box "baseline"
+move left 0.8 down
+B2: box "development" "directory"
+move right 0.8 down
+E1: ellipse wid boxwid ht boxht "integrator"
+arrow "integrate " rjust "begin " rjust
+B3: box "integration" "directory"
+S1: spline -> from B3.s then down then right 1.75 then up then to B1.n right 1.75 then to B1.n up right 1.75 then to B1.n up then to B1.n
+"integrate " rjust "pass " rjust at S1.c+(1.7,-0.75)
+arrow from B2.s to E1.nw
+arrow from 1/3<B1.sw,B1.se> to B2.n
+
+move to B1.s
+move right 0.8 down
+B4: box "development" "directory"
+arrow from 1/3<B1.se,B1.sw> to B4.n
+arrow from B4.s to E1.ne
+.PE
+.br
+.ne 4i
+.IP "" 2n
+.IP \(bu 2n
+.hy 0
+Conflicts detected and managed
+.IP \(bu 2n
+.hy 0
+This is when history is updated
+.IP \(bu 2n
+.hy 0
+No
+.I root
+access required for
+.I named
+notification
+.1C

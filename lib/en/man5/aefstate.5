@@ -1,0 +1,213 @@
+'\" t
+.\"	aegis - project change supervisor
+.\"	Copyright (C) 1991, 1992, 1993, 1994, 1995, 1996, 1997 Peter Miller;
+.\"	All rights reserved.
+.\"
+.\"	This program is free software; you can redistribute it and/or modify
+.\"	it under the terms of the GNU General Public License as published by
+.\"	the Free Software Foundation; either version 2 of the License, or
+.\"	(at your option) any later version.
+.\"
+.\"	This program is distributed in the hope that it will be useful,
+.\"	but WITHOUT ANY WARRANTY; without even the implied warranty of
+.\"	MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+.\"	GNU General Public License for more details.
+.\"
+.\"	You should have received a copy of the GNU General Public License
+.\"	along with this program; if not, write to the Free Software
+.\"	Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111, USA.
+.\"
+.\" MANIFEST: description of aegis change state file format
+.\"
+.so z_name.so
+.TH aefstate 5 \*(N) "Reference Manual"
+.SH NAME
+aefstate \- \*(n) file state file
+.XX "aefstate(5)" "file state file format"
+.SH SYNOPSIS
+\fIproject\fP\f(CW/info/change/\fP\fI[0-9]\fP\f(CW/\fP\fI[0-9][0-9][0-9]\fP.fs
+.SH DESCRIPTION
+A file state file is used to store information about
+the files in a transaction.
+These files are created and maintained by \*(n).
+These files should not be edited by humans.
+These files is owned by the project owner and group.
+.SH CONTENTS
+.TP 8n
+src = [ { ... }, ... ];
+.br
+This field is a list of all the files in the change.
+The records have the form
+.RS 8n
+.TP 8n
+file_name = string;
+.br
+This file names the file.
+The name is relative to the root of the baseline directory tree.
+.TP 8n
+action = (create, modify, remove);
+.br
+This field describes what is being done with the file.
+.TP 8n
+edit_number = string;
+.br
+For a project or an active branch, this field records the
+head revision of the file.
+For a completed change or branch, this field records
+the revision number after integrate pass.
+.TP 8n
+edit_number_origin = string;
+.br
+This field records the edit number of the file
+when it was added to the change or branch.
+In changes, this field is not present for new files.
+(A change file is out of date if it's edit number_origin field does not equal
+the edit_number field in the project.)
+.TP 8n
+edit_number_origin_new = string;
+.br
+This field records the edit number of the file
+to replace the edit_number_ofigin field in the branch at integrate pass time.
+This is used to perform cross branch merging.
+This field cleared at integrate pass time.
+.TP 8n
+usage = (source, test, manual_test);
+.br
+This field describes what function the file serves.
+.TP 8n
+file_time = fingerprint;
+.RS
+This field records the last time modified of the source file.
+It is only present between the
+.I being_developed
+and
+.I being_integrated
+states,
+inclusive (for both changes and branches).
+It is not present for files which are being deleted.
+This field is used to determine if a difference has been done,
+or a test has been done if the source file is a test,
+and if the file has been tampered with before state transitions.
+.PP
+The fingerprint consists of the following fields:
+.TP 8n
+youngest = time;
+.br
+The youngest time see for this file with this fingerprint.
+.TP 8n
+oldest = time;
+.br
+The oldest time see for this file with this fingerprint.
+.TP 8n
+crypto = string;
+.br
+This field records a cryptographically strong fingerprint for the file.
+There is no known method of constructing a file to match a given
+fingerprint, and there is less than 1 in 2**200 chance that two files
+will have the same fingerprint.  Thus if the fingerprint is the same,
+the file can reliably assumed to be the same.
+.RE
+.TP 8n
+diff_file_fp = fingerprint;
+.br
+This field records the last time modified of the difference file
+when the last
+.I "\*(n) -DIFFerence"
+command was run.
+It is only present between the
+.I being_developed
+and
+.I being_integrated
+states,
+inclusive (for both changes and branches).
+This field is used to determine if a difference has been done,
+and if the difference file has been tampered with before state transitions.
+.TP 8n
+idiff_file_fp = fingerprint;
+.br
+This field records the last time modified of the integration difference file
+when the last
+.I "\*(n) -DIFFerence"
+command was run.
+It is only present in the
+.I being_integrated
+state.
+This field is used to determine if a difference has been done.
+.TP 8n
+architecture_times = [{ ... }];
+.RS
+This field records the time of various operations
+for each variant named in the
+.I architecture
+field.
+It is only present in the
+.I being_developed
+and
+.I being_integrated
+states.
+This field is used to determine if a test has been done,
+and thus optimize test runs.
+.TP 8n
+variant = string;
+.br
+This field is one of the patterns named in the
+.I architecture
+field.
+.TP 8n
+test_time = time;
+.br
+This field records the last time the last successful
+.I "\*(n) -Test"
+command was run for this specific pattern instance.
+.TP 8n
+test_baseline_time = time;
+.br
+This field records the last time the last successful
+.I "\*(n) -Test -BaseLine"
+command was run for this specific pattern instance.
+.RE
+.TP 8n
+move = string;
+.br
+To change the name of a file,
+a combination of deleting the old name and creating the new name is used.
+With deleted files, this field is used to say where it went.
+With new files, this field is used to say where it came from.
+.TP 8n
+locked_by = integer;
+The change which locked this file.
+.br
+Caveat: this field is redundant,
+you can figure it out by scanning all of he change files.
+Having it here is very convenient,
+even though it means multiple updates.
+.TP 8n
+about_to_be_created_by = integer;
+The change which is about to create this file for the first time.
+Same caveat as above.
+.TP 8n
+about_to_be_copied_by = integer;
+For each change file that is acting on a project file from a deeper baseline
+than the immediate parent project's baseline,
+the file needs to be added to the immediate parent project.
+Note that this field says that this file record is a placemarker,
+so that it can be deleted again should the change not be integrated
+for some reason.
+.TP 8n
+deleted_by = integer;
+The change which last deleted this file.
+We never throw them away, because 
+(a) it may be created again, and more important
+(b) we need it to recreate earlier deltas.
+.RE
+.TP 8n
+test = [ string ];
+This field is used to remember test correlations for source files.
+This is used by
+.IR aet (1)
+to suggest suitable tests.
+.SH SEE ALSO
+.TP 8n
+.IR aegis (5)
+\*(n) file format syntax
+.so ../man1/z_cr.so

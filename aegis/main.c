@@ -1,6 +1,6 @@
 /*
  *	aegis - project change supervisor
- *	Copyright (C) 1991, 1992, 1993, 1994, 1995 Peter Miller;
+ *	Copyright (C) 1991, 1992, 1993, 1994, 1995, 1996, 1997, 1998 Peter Miller;
  *	All rights reserved.
  *
  *	This program is free software; you can redistribute it and/or modify
@@ -15,7 +15,7 @@
  *
  *	You should have received a copy of the GNU General Public License
  *	along with this program; if not, write to the Free Software
- *	Foundation, Inc., 675 Mass Ave, Cambridge, MA 02139, USA.
+ *	Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111, USA.
  *
  * MANIFEST: the operating system start-up point
  */
@@ -28,6 +28,8 @@
 #include <aeca.h>
 #include <aecd.h>
 #include <aechown.h>
+#include <aeclean.h>
+#include <aeclone.h>
 #include <aecp.h>
 #include <aecpu.h>
 #include <aed.h>
@@ -43,6 +45,8 @@
 #include <ael.h>
 #include <aemv.h>
 #include <aena.h>
+#include <aenbr.h>
+#include <aenbru.h>
 #include <aenc.h>
 #include <aencu.h>
 #include <aend.h>
@@ -72,360 +76,14 @@
 #include <env.h>
 #include <error.h>
 #include <help.h>
+#include <language.h>
 #include <log.h>
-#include <option.h>
 #include <os.h>
+#include <progname.h>
 #include <r250.h>
 #include <str.h>
 #include <trace.h>
 #include <undo.h>
-
-static arglex_table_ty argtab[] =
-{
-	{
-		"-ANticipate",
-		(arglex_token_ty)arglex_token_anticipate,
-	},
-	{
-		"-ASk",
-		(arglex_token_ty)arglex_token_interactive,
-	},
-	{
-		"-AUTOmatic",
-		(arglex_token_ty)arglex_token_automatic,
-	},
-	{
-		"-Automatic_Merge",
-		(arglex_token_ty)arglex_token_merge_automatic,
-	},
-	{
-		"-BaseLine",
-		(arglex_token_ty)arglex_token_baseline,
-	},
-	{
-		"-Build",
-		(arglex_token_ty)arglex_token_build,
-	},
-	{
-		"-Change",
-		(arglex_token_ty)arglex_token_change,
-	},
-	{
-		"-Change_Attributes",
-		(arglex_token_ty)arglex_token_change_attributes,
-	},
-	{
-		"-Change_Directory",
-		(arglex_token_ty)arglex_token_change_directory,
-	},
-	{
-		"-Change_Owner",
-		(arglex_token_ty)arglex_token_change_owner,
-	},
-	{
-		"-CoPy_file",
-		(arglex_token_ty)arglex_token_copy_file,
-	},
-	{
-		"-CoPy_file_Undo",
-		(arglex_token_ty)arglex_token_copy_file_undo,
-	},
-	{
-		"-DIFference",
-		(arglex_token_ty)arglex_token_difference,
-	},
-	{
-		"-DIRectory",
-		(arglex_token_ty)arglex_token_directory,
-	},
-	{
-		"-DELta",
-		(arglex_token_ty)arglex_token_delta,
-	},
-	{
-		"-Delta_Name",
-		(arglex_token_ty)arglex_token_delta,
-	},
-	{
-		"-Delta_Number",
-		(arglex_token_ty)arglex_token_delta,
-	},
-	{
-		"-Develop_Begin",
-		(arglex_token_ty)arglex_token_develop_begin,
-	},
-	{
-		"-Develop_Begin_Undo",
-		(arglex_token_ty)arglex_token_develop_begin_undo,
-	},
-	{
-		"-Develop_End",
-		(arglex_token_ty)arglex_token_develop_end,
-	},
-	{
-		"-Develop_End_Undo",
-		(arglex_token_ty)arglex_token_develop_end_undo,
-	},
-	{
-		"-Development_Directory",
-		(arglex_token_ty)arglex_token_development_directory,
-	},
-	{
-		"-Edit",
-		(arglex_token_ty)arglex_token_edit,
-	},
-	{
-		"-File",
-		(arglex_token_ty)arglex_token_file,
-	},
-	{
-		"-FOrce",
-		(arglex_token_ty)arglex_token_force,
-	},
-	{
-		"-INDependent",
-		(arglex_token_ty)arglex_token_independent,
-	},
-	{
-		"-Integrate_Begin",
-		(arglex_token_ty)arglex_token_integrate_begin,
-	},
-	{
-		"-Integrate_Begin_Undo",
-		(arglex_token_ty)arglex_token_integrate_begin_undo,
-	},
-	{
-		"-Integrate_FAIL",
-		(arglex_token_ty)arglex_token_integrate_fail,
-	},
-	{
-		"-Integrate_PASS",
-		(arglex_token_ty)arglex_token_integrate_pass,
-	},
-	{
-		"-Interactive",
-		(arglex_token_ty)arglex_token_interactive,
-	},
-	{
-		"-Keep",
-		(arglex_token_ty)arglex_token_keep,
-	},
-	{
-		"-LIBrary",
-		(arglex_token_ty)arglex_token_library,
-	},
-	{
-		"-LOg",
-		(arglex_token_ty)arglex_token_log,
-	},
-	{
-		"-List",
-		(arglex_token_ty)arglex_token_list,
-	},
-	{
-		"-MAJor",
-		(arglex_token_ty)arglex_token_major,
-	},
-	{
-		"-MANual",
-		(arglex_token_ty)arglex_token_manual,
-	},
-	{
-		"-Merge_Automatic",
-		(arglex_token_ty)arglex_token_merge_automatic,
-	},
-	{
-		"-Merge_Not",
-		(arglex_token_ty)arglex_token_merge_not,
-	},
-	{
-		"-Merge_Only",
-		(arglex_token_ty)arglex_token_merge_only,
-	},
-	{
-		"-MINImum",
-		(arglex_token_ty)arglex_token_minimum,
-	},
-	{
-		"-MINOr",
-		(arglex_token_ty)arglex_token_minor,
-	},
-	{
-		"-MoVe_file",
-		(arglex_token_ty)arglex_token_move_file,
-	},
-	{
-		"-New_Administrator",
-		(arglex_token_ty)arglex_token_new_administrator,
-	},
-	{
-		"-New_Change",
-		(arglex_token_ty)arglex_token_new_change,
-	},
-	{
-		"-New_Change_Undo",
-		(arglex_token_ty)arglex_token_new_change_undo,
-	},
-	{
-		"-New_Developer",
-		(arglex_token_ty)arglex_token_new_developer,
-	},
-	{
-		"-New_File",
-		(arglex_token_ty)arglex_token_new_file,
-	},
-	{
-		"-New_File_Undo",
-		(arglex_token_ty)arglex_token_new_file_undo,
-	},
-	{
-		"-New_Integrator",
-		(arglex_token_ty)arglex_token_new_integrator,
-	},
-	{
-		"-New_Project",
-		(arglex_token_ty)arglex_token_new_project,
-	},
-	{
-		"-New_ReLeaSe",
-		(arglex_token_ty)arglex_token_new_release,
-	},
-	{
-		"-New_ReViewer",
-		(arglex_token_ty)arglex_token_new_reviewer,
-	},
-	{
-		"-New_Test",
-		(arglex_token_ty)arglex_token_new_test,
-	},
-	{
-		"-New_Test_Undo",
-		(arglex_token_ty)arglex_token_new_test_undo,
-	},
-	{
-		"-Not_Keep",
-		(arglex_token_ty)arglex_token_no_keep,
-	},
-	{
-		"-Not_Logging",
-		(arglex_token_ty)arglex_token_nolog,
-	},
-	{
-		"-Not_Merge",
-		(arglex_token_ty)arglex_token_merge_not,
-	},
-	{
-		"-Only_Merge",
-		(arglex_token_ty)arglex_token_merge_only,
-	},
-	{
-		"-Output",
-		(arglex_token_ty)arglex_token_output,
-	},
-	{
-		"-OverWriting",
-		(arglex_token_ty)arglex_token_overwriting,
-	},
-	{
-		"-Page_Length",
-		(arglex_token_ty)arglex_token_page_length,
-	},
-	{
-		"-Page_Width",
-		(arglex_token_ty)arglex_token_page_width,
-	},
-	{
-		"-Project",
-		(arglex_token_ty)arglex_token_project,
-	},
-	{
-		"-Project_Attributes",
-		(arglex_token_ty)arglex_token_project_attributes,
-	},
-	{
-		"-Query",
-		(arglex_token_ty)arglex_token_report,
-	},
-	{
-		"-REGression",
-		(arglex_token_ty)arglex_token_regression,
-	},
-	{
-		"-ReMove_file",
-		(arglex_token_ty)arglex_token_remove_file,
-	},
-	{
-		"-ReMove_file_Undo",
-		(arglex_token_ty)arglex_token_remove_file_undo,
-	},
-	{
-		"-Remove_Administrator",
-		(arglex_token_ty)arglex_token_remove_administrator,
-	},
-	{
-		"-Remove_Developer",
-		(arglex_token_ty)arglex_token_remove_developer,
-	},
-	{
-		"-Remove_Integrator",
-		(arglex_token_ty)arglex_token_remove_integrator,
-	},
-	{
-		"-ReMove_PRoject",
-		(arglex_token_ty)arglex_token_remove_project,
-	},
-	{
-		"-Remove_ReViewer",
-		(arglex_token_ty)arglex_token_remove_reviewer,
-	},
-	{
-		"-RePorT",
-		(arglex_token_ty)arglex_token_report,
-	},
-	{
-		"-Review_FAIL",
-		(arglex_token_ty)arglex_token_review_fail,
-	},
-	{
-		"-Review_PASS",
-		(arglex_token_ty)arglex_token_review_pass,
-	},
-	{
-		"-Review_Pass_Undo",
-		(arglex_token_ty)arglex_token_review_pass_undo,
-	},
-	{
-		"-Tab_Width",
-		(arglex_token_ty)arglex_token_tab_width,
-	},
-	{
-		"-TERse",
-		(arglex_token_ty)arglex_token_terse,
-	},
-	{
-		"-Test",
-		(arglex_token_ty)arglex_token_test,
-	},
-	{
-		"-UNChanged",
-		(arglex_token_ty)arglex_token_unchanged,
-	},
-	{
-		"-UNFormatted",
-		(arglex_token_ty)arglex_token_unformatted,
-	},
-	{
-		"-User",
-		(arglex_token_ty)arglex_token_user,
-	},
-	{
-		"-Verbose",
-		(arglex_token_ty)arglex_token_verbose,
-	},
-
-	/* end marker */
-	{ 0, (arglex_token_ty)0, },
-};
 
 
 static void usage _((void));
@@ -435,7 +93,7 @@ usage()
 {
 	char	*progname;
 
-	progname = option_progname_get();
+	progname = progname_get();
 	fprintf(stderr, "usage: %s <function> [ <option>... ]\n", progname);
 	fprintf(stderr, "       %s -Help\n", progname);
 	quit(1);
@@ -447,13 +105,8 @@ static void main_help _((void));
 static void
 main_help()
 {
-	static char *text[] =
-	{
-#include <../man1/aegis.h>
-	};
-
 	trace(("main_help()\n{\n"/*}*/));
-	help(text, SIZEOF(text), usage);
+	help((char *)0, usage);
 	trace((/*{*/"}\n"));
 }
 
@@ -467,11 +120,13 @@ main(argc, argv)
 {
 	r250_init();
 	os_become_init();
-	arglex_init(argc, argv, argtab);
+	arglex2_init(argc, argv);
 	str_initialize();
 	env_initialize();
+	language_init();
 	quit_register(log_quitter);
 	quit_register(undo_quitter);
+	os_interrupt_register();
 	arglex();
 	for (;;)
 	{
@@ -495,6 +150,14 @@ main(argc, argv)
 
 		case arglex_token_change_owner:
 			change_owner();
+			break;
+
+		case arglex_token_clean:
+			clean();
+			break;
+
+		case arglex_token_clone:
+			clone();
 			break;
 
 		case arglex_token_copy_file:
@@ -559,6 +222,14 @@ main(argc, argv)
 
 		case arglex_token_new_administrator:
 			new_administrator();
+			break;
+
+		case arglex_token_new_branch:
+			new_branch();
+			break;
+
+		case arglex_token_new_branch_undo:
+			new_branch_undo();
 			break;
 
 		case arglex_token_new_change:

@@ -1,0 +1,131 @@
+.\"
+.\"	aegis - project change supervisor
+.\"	Copyright (C) 1997 Peter Miller;
+.\"	All rights reserved.
+.\"
+.\"	This program is free software; you can redistribute it and/or modify
+.\"	it under the terms of the GNU General Public License as published by
+.\"	the Free Software Foundation; either version 2 of the License, or
+.\"	(at your option) any later version.
+.\"
+.\"	This program is distributed in the hope that it will be useful,
+.\"	but WITHOUT ANY WARRANTY; without even the implied warranty of
+.\"	MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+.\"	GNU General Public License for more details.
+.\"
+.\"	You should have received a copy of the GNU General Public License
+.\"	along with this program; if not, write to the Free Software
+.\"	Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111, USA.
+.\"
+.\" MANIFEST: AUUGN Feb'98 Article
+.\"
+.nh 1 "Summary"
+This paper presents a number of related problems,
+and demonstrates that they are not
+inherent limitations of \fImake\fP, as is commonly believed,
+but are the result of presenting incorrect information to \fImake\fP.
+This is the ancient
+.I "Garbage In, Garbage Out"
+principle at work.
+Because \fImake\fP can only operate correctly with a complete DAG,
+the error is in segmenting the \f(CWMakefile\fP into incomplete pieces.
+.LP
+This requires a shift in thinking: directory \fItrees\fP are simply a
+place to hold files, \f(CWMakefile\fPs are a place to remember
+relationships between files.  Do not confuse the two
+because
+it is as important
+to accurately represent the relationships between files in different
+directories
+as it is to represent the relationships between files in
+the same directory.  This has the implication that there should be exactly one
+\f(CWMakefile\fP for a project, but the magnitude of the description can
+be managed by using a \fImake\fP include file in each directory to
+describe the subset of the project files in that directory.
+This is just as modular as having a \f[CW]Makefile\fP in each directory.
+.LP
+This paper has shown how a project build and a development build can be
+equally brief for a whole-project \fImake\fP.  Given this parity of
+time, the gains provided by accurate dependencies mean that this process
+will, in fact, be faster than the recursive \fImake\fP case, and more
+accurate.
+.nh 2 "Inter-dependent Projects"
+In organizations with a strong culture of re-use,
+implementing whole-project \fImake\fP can present challenges.
+Rising to these challenges, however, may require looking at the bigger picture.
+.IP \(bu 2n
+A module may be shared between two programs because the programs are
+closely related.  Clearly, the two programs plus the shared module
+belong to the same project (the module may be self-contained, but the
+programs are not).  The dependencies must be explicitly stated, and
+changes to the module must result in both programs being recompiled and
+re-linked as appropriate.  Combining them all into a single project means
+that whole-project \fImake\fP can accomplish this.
+.IP \(bu 2n
+A module may be shared between two projects because they must
+inter-operate.  Possibly your project is bigger than your current
+directory structure implies.  The dependencies must be explicitly stated,
+and changes to the module must result in both projects being recompiled
+and re-linked as appropriate.  Combining them all into a single project
+means that whole-project \fImake\fP can accomplish this.
+.IP \(bu 2n
+It is the normal case to omit the edges between your project and the
+operating system or other installed third party tools.  So normal that
+they are ignored in the \f(CWMakefile\fPs in this paper, and they are
+ignored in the built-in rules of \fImake\fP programs.
+.sp 0.5
+Modules shared between your projects may fall into a similar category:
+if they change, you will deliberately re-build to include their changes,
+or quietly include their changes whenever the next build may happen. 
+In either case, you do not explicitly state the dependencies,
+and whole-project \fImake\fP does not apply.
+.IP \(bu 2n
+Re-use may be better served if the module were used as a template, and
+divergence between two projects is seen as normal.  Duplicating the
+module in each project allows the dependencies to be explicitly stated,
+but requires additional effort if maintenance is required to the common portion.
+.LP
+How to structure dependencies in a strong re-use environment thus
+becomes an exercise in \fIrisk management\fP.  What is the danger that
+omitting chunks of the DAG will harm your projects?
+How vital is it to rebuild if a module changes?
+What are the consequences of \fInot\fP rebuilding automatically?
+How can you tell when a rebuild is necessary if the dependencies are not
+explicitly stated?
+What are the consequences of forgetting to rebuild?
+.nh 2 "Return On Investment"
+Some of the techniques presented in this paper will improve the speed of
+your builds, even if you continue to use recursive \fImake\fP.  These
+are not the focus of this paper, merely a useful detour.
+.LP
+The focus of this paper is that you will get more accurate builds of
+your project if you use whole-project \fImake\fP rather than recursive
+\fImake\fP.
+.IP \(bu 2n
+The time for \fImake\fP to work out that nothing needs to be done
+will not be more, and will often be less.
+.IP \(bu 2n
+The size and complexity of the total \f(CWMakefile\fP input
+will not be more, and will often be less.
+.IP \(bu 2n
+The total \f[CW]Makefile\fP input is no less modular than
+in the resursive case.
+.IP \(bu 2n
+The difficulty of maintaining the total \f(CWMakefile\fP input
+will not be more, and will often be less.
+.LP
+The disadvantages of using whole-project \fImake\fP over recursive \fImake\fP
+are often un-measured.
+How much time is spent figuring out why \fImake\fP did something unexpected?
+How much time is spent figuring out that \fImake\fP \fBdid\fP something unexpected?
+How much time is spent tinkering with the build process?
+These activities are often thought of as ``normal'' development overheads.
+.LP
+Building your project is a fundamental activity.
+If it is performing poorly, so are development, debugging and testing.
+Building your project
+needs to be so simple the newest recruit can do it immediately
+with only a single page of instructions.
+Building your project needs to be so simple that it rarely needs any
+development effort at all.
+Is your build process this simple?

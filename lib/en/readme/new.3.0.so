@@ -1,0 +1,325 @@
+.\"
+.\"	aegis - project change supervisor
+.\"	Copyright (C) 1995, 1996, 1997 Peter Miller;
+.\"	All rights reserved.
+.\"
+.\"	This program is free software; you can redistribute it and/or modify
+.\"	it under the terms of the GNU General Public License as published by
+.\"	the Free Software Foundation; either version 2 of the License, or
+.\"	(at your option) any later version.
+.\"
+.\"	This program is distributed in the hope that it will be useful,
+.\"	but WITHOUT ANY WARRANTY; without even the implied warranty of
+.\"	MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+.\"	GNU General Public License for more details.
+.\"
+.\"	You should have received a copy of the GNU General Public License
+.\"	along with this program; if not, write to the Free Software
+.\"	Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111, USA.
+.\"
+.\" MANIFEST: document describing new 3.0 features
+.\"
+.SS Version 3.0
+.PP
+Version 3.0 is fully backwards compatible with earlier versions,
+however once a project has been used under 3.0,
+it will not be possible to revert, e.g. to version 2.3,
+without restoring the project's ``info'' directory from backup.
+While this was generally true of previous releases,
+any additional state information was usually undo-able
+with
+.IR vi (1).
+This time the process is much more involved because
+the project state files and the change state files
+have been combined as a necessary step in implementing branches.
+.SS Version 3.0 Major New Features
+.if n *
+.if t \(bu
+Aegis now has a feature known in the literature as long transactions,
+also known as branches.  This allows appropriately created changes to be
+treated as if they were projects, and thus to have changes made to them.
+This allows a hierachy of changes within changes, to any desired depth.
+See the 
+.I Branching
+chapter of the
+.I "Aegis User Guide"
+for more information.
+.PP
+.if n *
+.if t \(bu
+The project state files have been merged with the change state files.
+This is part of the implementation of branching.
+If you have written your own reports, you may need to alter them
+slightly.
+For example, in version 2.3 and earlier, reports accessed the
+project state file using
+.RS
+.ft CW
+.nf
+auto p, ps;
+p = project[project_name()];
+ps = p.state;
+.fi
+.ft R
+.RE
+Because the project state has been moved into a change state,
+the \fIstate\fP field above now points at a change state description,
+and most of the old project information is contained in the \fIbranch\fP
+field within it.
+Reports access this information as
+.RS
+.ft CW
+.nf
+auto p, ps;
+p = project[project_name()];
+ps = p.state.branch;
+.fi
+.ft R
+.RE
+Except for files, which were already present in the \fIcstate\fP,
+so access to the project file list need not change.
+See the new
+.IR aecstate (5)
+for more information.
+.PP
+.if n *
+.if t \(bu
+The new project command now creates branches to
+match the version number specified.
+See
+.IR aenpr (1)
+for more information.
+.PP
+.if n *
+.if t \(bu
+The error messages of Aegis have been internationalized.
+This affects how you build Aegis, and the environment Aegis runs in.
+See the \fIBUILDING\fP file for more information.
+The \fIcshrc\fP and \fIprofile\fP shipped with this release
+set the LANG environment variable to ``en'' (for English)
+if you have not set it;
+otherwise ther error messages would be terse and uninformative.
+.PP
+.if n *
+.if t \(bu
+The
+.I aet (1)
+command can now suggest tests to be run.  This is done by correlating
+the source files and test files from each change.  See
+.IR aet (1)
+for more information. 
+.PP
+.if n *
+.if t \(bu
+There is now an \fIaereport\fP(1) command.
+The separates out the report functionality from the main body of the Aegis code,
+allowing the report generator to be used in places where more trust is required.
+.PP
+.if n *
+.if t \(bu
+There is an intranet Web interface, which is installed automaticly when the install script discovers a web server.
+This interface allows browsing of much of the Aegis meta-data,
+of all publicly accessible projects.
+.PP
+.if n *
+.if t \(bu
+There is now an \fIaefind\fP(1) command.  This is very similar to the UNIX
+\fIfind\fP(1) command, except that it finds in the unified directory stack
+of a change and its project.  The introduction of full branch support
+can sometimes mean that finding a file may require looking in more than
+two directories; the \fIaefind\fP(1) command makes this simple again.
+.SS Version 3.0 Minor New Features
+.PP
+.if n *
+.if t \(bu
+There is now a -No_Pager option,
+to prevent listings and help from being redirected to a pager.
+There is also a user preference to more thoroughly disable paging,
+and a -PAGer option to override it.
+See
+.IR aegis (1)
+and
+.IR aeuconf (5)
+for more information.
+.PP
+.if n *
+.if t \(bu
+There is now a -No_PErsevere option to
+.IR aet (1),
+allowing you to request that
+.IR aet (1)
+stop after the first test failure. 
+There is also a user preference to set this permanently if desired,
+and a -PErsever option to override it.
+See
+.IR aet (1)
+and
+.IR aeuconf (5)
+for more information.
+.PP
+.if n *
+.if t \(bu
+The copyright years attribute has been moved from
+being a project attribute to a change attribute.
+This is consistent with a number of other fields which have transparently
+moved from the project state files into the change state files,
+as a result of branching support.
+See
+.IR aeca (1)
+and
+.IR aecattr (5)
+for more information.
+.PP
+.if n *
+.if t \(bu
+There is a new \fISearch_Path\fP substitution,
+to support builds on branches.
+See \fIaesub\fP(5) for more information.
+As a side effect,
+you can also use it in the \fItest_command\fP field
+of the project \fIconfig\fP file,
+and thus have a search path to look down for data files for your tests.
+.PP
+.if n *
+.if t \(bu
+Test times are now remembered,
+so that tests are only run if they need to be.
+This allows you to keep working on a test, and Aegis only runs
+those that have not yet passed.
+.PP
+.if n *
+.if t \(bu
+Aegis now uses ``fingerprints'' to tell if files have changed,
+rather than simply relying on file modification time stamps.
+While this makes Aegis more robust,
+there is one caveat:
+it is recommended that 3.0 be
+installed when there are no changes in
+the 'being reviewed'
+or 'awaiting integration' states,
+in any project.
+.PP
+.if n *
+.if t \(bu
+There is now a log file prefernces control,
+allowing users to set their preferred logging behaviour.
+See
+.IR aeuconf (5)
+for more information.
+.PP
+.if n *
+.if t \(bu
+It is now possible to specify the filename for new tests on the command line.
+See
+.IR aent (1)
+for more information.
+.PP
+.if n *
+.if t \(bu
+It is not possible to specify a pattern for test filesnames.
+See
+.IR aepconf (5)
+for more information.
+.PP
+.if n *
+.if t \(bu
+There is now a \fB\-MAXimum\fP option to the \fIaeib\fP command,
+allowing you to keep obsolete derived files at integrate begin.
+This can avoid long integration build times for large projects.
+.SS Version 3.0 Bug Fixes
+.if n *
+.if t \(bu
+Architecture names are now checked a `develop end' time,
+to ensure there are no unknown variants.
+This fixes the mysterious ``you must build again'' problem.
+.PP
+.if n *
+.if t \(bu
+The
+.IR aecp (1)
+and
+.IR aed (1)
+commands now take a baseline read lock,
+to be more symetric with the
+.IR aeb (1)
+command which has always done so.
+The
+.IR aeip (1)
+command takes the complementary baseline write lock,
+ensuring the the baseline remains constant for the duration
+of builds, file copies, differences and merges.
+The manual entries for these commands have all been improved
+to document this behaviour.
+See
+.IR aeb (1),
+.IR aecp (1),
+.IR aed (1)
+and
+.IR aeip (1)
+for more information.
+.PP
+.if n *
+.if t \(bu
+There are now some reminder scripts in
+the library, which can be run from
+.IR crontab (1).
+These are installed into the
+.I \*(D)/remind
+directory.
+These scripts can be used to remind users of changes in various states,
+such as those being developed or being reviewed.
+.PP
+.if n *
+.if t \(bu
+All of the commands which accept the
+.I -Edit
+option now also accept a
+.I -Edit_BackGround
+option,
+allowing edit commands to be piped in from the standard input.
+.PP
+.if n *
+.if t \(bu
+The
+.IR aecp (1)
+command now accepts a
+.I -INDependent
+option, allowing files to be copied independent of any change
+(similar to the
+.I -INDependent
+option of the
+.IE aet (1)
+command.)
+See
+.IR aecp (1)
+for more information.
+.PP
+.if n *
+.if t \(bu
+The
+.IR aecp (1)
+command now accepts a
+.I -Read_Only
+option, allowing files to be copied into a change
+specifically to insulate it from baseline changes.
+Such files must be uncopied before development may end.
+See
+.IR aecp (1)
+for more information.
+.PP
+.if n *
+.if t \(bu
+The
+.IR aenrls (1)
+command is now used
+.I only
+to convert pre-3.0 projects into post-3.0 projects.
+This is because the full branching support in 3.0 makes it
+more useful to create a new release of a project by
+ending development on the branch of the previous release and starting
+development of a new branch numbered for the new release.
+See the
+.I "Branching"
+chapter of the
+.I "User Guide"
+for more information.

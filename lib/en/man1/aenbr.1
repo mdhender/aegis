@@ -1,0 +1,97 @@
+'\" t
+.\"	aegis - project change supervisor
+.\"	Copyright (C) 1995, 1998 Peter Miller;
+.\"	All rights reserved.
+.\"
+.\"	This program is free software; you can redistribute it and/or modify
+.\"	it under the terms of the GNU General Public License as published by
+.\"	the Free Software Foundation; either version 2 of the License, or
+.\"	(at your option) any later version.
+.\"
+.\"	This program is distributed in the hope that it will be useful,
+.\"	but WITHOUT ANY WARRANTY; without even the implied warranty of
+.\"	MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+.\"	GNU General Public License for more details.
+.\"
+.\"	You should have received a copy of the GNU General Public License
+.\"	along with this program; if not, write to the Free Software
+.\"	Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111, USA.
+.\"
+.\" MANIFEST: manual page describing the aenbr command.
+.\"
+.so z_name.so
+.TH "\*(n) -New_BRanch" 1 \*(N) "Reference Manual"
+.SH NAME
+\*(n) -New_BRanch \- create a new branch
+.XX "aenbr(1)" "create a new branch"
+.SH SYNOPSIS
+.B \*(n)
+.B -New_BRanch
+[
+.I number
+][
+.IR option \&...
+]
+.br
+.B \*(n)
+.B -New_BRanch
+.B -Help
+.SH DESCRIPTION
+The
+.I "\*(n) -New_BRanch"
+command is used to
+create a new branch.
+A branch is very similar to a
+.IR change ,
+except that a branch may have changes (or branches) of its own,
+and a change may not.
+.PP
+You may choose your own branch number, if you want.
+Zero and positives are legal, but negatives are not.
+It is an error if that number has already been used for
+a change or another branch.
+If you do not specify a change number,
+the lowest available positive number (1 or more) will be used.
+.PP
+The new branch will be a special sort of change.
+It will be in the '\fIbeing developed\fP' state,
+but the usual commands in that stat (build, diff, etc) will not woek.
+Instead, you must create changes on the branch,
+and when those changes are intgrated into the branch,
+this is the equivalent of build, diff, etc, on the branch.
+Once the branch is completed,
+the
+.IR aede (1)
+command may be used to advance it to the
+.I "being reviewed"
+state,
+and from then on it becomes a normal change.
+Should it be returned to the
+.I "being developed"
+state for any reason,
+it will once again require sub-changes to alter anything.
+.SH OPTIONS
+The following options are understood:
+.so o_dir.so
+.so o_help.so
+.so o_wait.so
+.so o__rules.so
+.so z_exit.so
+.SH RECOMMENDED ALIAS
+The recommended alias for this command is
+.nf
+.ta 8n 16n
+csh%    alias aenbr '\*(n) -nbr \e!* -v'
+sh$     aenbr(){\*(n) -nbr $* -v}
+.fi
+.SH SEE ALSO
+.TP 8n
+.IR aenbru (1)
+remove a branch
+.TP 8n
+.IR aenc (1)
+create a new change
+.TP 8n
+.IR aede (1)
+develop end
+.so z_cr.so

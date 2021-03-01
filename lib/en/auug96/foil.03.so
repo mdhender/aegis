@@ -1,0 +1,78 @@
+.\"
+.\"	aegis - project change supervisor
+.\"	Copyright (C) 1996 Peter Miller;
+.\"	All rights reserved.
+.\"
+.\"	This program is free software; you can redistribute it and/or modify
+.\"	it under the terms of the GNU General Public License as published by
+.\"	the Free Software Foundation; either version 2 of the License, or
+.\"	(at your option) any later version.
+.\"
+.\"	This program is distributed in the hope that it will be useful,
+.\"	but WITHOUT ANY WARRANTY; without even the implied warranty of
+.\"	MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+.\"	GNU General Public License for more details.
+.\"
+.\"	You should have received a copy of the GNU General Public License
+.\"	along with this program; if not, write to the Free Software
+.\"	Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111, USA.
+.\"
+.\" MANIFEST: document describing foil.03.so
+.\"
+.bp
+.nr PS 8
+.nr VS 9
+.LP
+.ps 46
+.vs 48
+.hy 0
+.ad c
+The Process in Too Much Detail
+.br
+.ad l
+.LP
+.ps 9
+.vs 10
+.PS
+boxwid = 1
+boxht = 0.5
+down
+S0: arrow " new" ljust " change" ljust
+S1: box "awaiting" "development"
+arrow " develop" ljust " begin" ljust
+S2: box ht 1 "being" "developed"
+arrow " develop" ljust " end" ljust
+S3: box "being" "reviewed"
+arrow " review" ljust " pass" ljust
+S4: box "awaiting" "integration"
+arrow " integrate" ljust " begin" ljust
+S5: box "being" "integrated"
+arrow " integrate" ljust " pass" ljust
+S6: box "completed"
+spline -> from 1/3<S1.nw,S1.sw> then left 0.75 then up 2/3 "new" "change" "undo"
+T1: spline -> from 1/2<S2.nw,S2.w> then left 0.75 then up 11/12 \
+	then to 1/3<S1.sw,S1.nw>
+" develop" ljust " begin" ljust " undo" ljust at T1.c - (0.75,0)
+T2: spline -> from S3.w then left 0.5 then up 1 \
+	then to 1/2<S2.sw,S2.w>
+" develop" ljust " end" ljust " undo" ljust at T2.c - (0.5,0)
+T3: spline -> from 1/3<S4.nw,S4.sw> then left 1 then up 2.25-1/12 \
+	then to S2.w
+"" "" " develop" ljust " end" ljust " undo" ljust at T3.c - (1,0)
+T4: spline -> from S5.w then left 0.75 then up 11/12 then to 1/3<S4.sw,S4.nw>
+" integrate" ljust " begin" ljust " undo" ljust at T4.c - (0.75,0)
+T5: spline -> from 1/3<S3.ne,S3.se> then right 0.5 then up 1 then to 1/3<S2.se,S2.ne>
+"review " rjust "fail " rjust at T5.c + (0.5,0)
+T6: spline -> from S4.e then right 0.5 then up 11/12 then to 1/3<S3.se,S3.ne>
+"review " rjust "pass " rjust "undo " rjust at T6.c + (0.5,0)
+T7: spline -> from S5.e then right 1 then up 3.5-1/12 then to 1/3<S2.ne,S2.se>
+"integrate " rjust "fail " rjust "" "" at T7.c + (1,0)
+
+.ps 36
+.vs 38
+B1: box "Author" wid 2 with .nw at S2.ne + (2,0.35) ht 1
+B2: box "Reviewer" wid 2 with .nw at S3.ne + (2,0.35)
+B3: box "Editor" wid 2 with .nw at S5.ne + (2,0.35)
+arrow from B1.s to B2.n
+arrow from B2.s to B3.n
+.PE

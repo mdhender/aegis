@@ -1,0 +1,51 @@
+'\" t
+.\"	aegis - project change supervisor
+.\"	Copyright (C) ${date %Y} Peter Miller;
+.\"	All rights reserved.
+.\"
+.\"	This program is free software; you can redistribute it and/or modify
+.\"	it under the terms of the GNU General Public License as published by
+.\"	the Free Software Foundation; either version 2 of the License, or
+.\"	(at your option) any later version.
+.\"
+.\"	This program is distributed in the hope that it will be useful,
+.\"	but WITHOUT ANY WARRANTY; without even the implied warranty of
+.\"	MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+.\"	GNU General Public License for more details.
+.\"
+.\"	You should have received a copy of the GNU General Public License
+.\"	along with this program; if not, write to the Free Software
+.\"	Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111, USA.
+.\"
+.\" MANIFEST: manual page describing the ${basename $fn .1} command.
+.\"
+.so z_name.so
+.TH "\*(n) -Glup" 1 \*(N) "Reference Manual" ""
+.SH NAME
+\*(n) -Glup \- glup a change
+.SH SYNOPSIS
+.B \*(n)
+.B \-Glup
+[
+.IR option \&...
+]
+.IR filename \&...
+.br
+.B \*(n)
+.B -Help
+.br
+.B \*(n)
+.B -VERSion
+.SH DESCRIPTION
+The
+.I "\*(n) -Glup"
+command is used to
+.SH OPTIONS
+The following options are understood:
+.TP 8n
+.B \-Glup
+This option may be used to
+.so o_help.so
+.so o__rules.so
+.so z_exit.so
+.so z_cr.so

@@ -1,0 +1,69 @@
+.\"
+.\"	aegis - project change supervisor
+.\"	Copyright (C) 1991, 1992, 1993, 1994 Peter Miller.
+.\"	All rights reserved.
+.\"
+.\"	This program is free software; you can redistribute it and/or modify
+.\"	it under the terms of the GNU General Public License as published by
+.\"	the Free Software Foundation; either version 2 of the License, or
+.\"	(at your option) any later version.
+.\"
+.\"	This program is distributed in the hope that it will be useful,
+.\"	but WITHOUT ANY WARRANTY; without even the implied warranty of
+.\"	MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+.\"	GNU General Public License for more details.
+.\"
+.\"	You should have received a copy of the GNU General Public License
+.\"	along with this program; if not, write to the Free Software
+.\"	Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111, USA.
+.\"
+.\" MANIFEST: User Guide, The Change Development Cycle
+.\"
+.bp
+.2C
+.nh 1 "The Change Development Cycle"
+.LP
+As a change to a project is developed using aegis,
+it passes through several states.
+Each state is characterised by different quality requirements,
+different sets of applicable aegis commands, and
+different responsibilities for the people involved.
+.LP
+These people may be divided into four categories:
+developers, reviewers, integrators and administrators.
+Each has different responsibilities, duties and permissions;
+although one person may belong to more than one category,
+depending on how a project is administered.
+.LP
+This chapter looks at each of these categories,
+by way of an example project undergoing its first four changes.
+This example will be examined from the perspective of each category
+of people
+in the following sections.
+.LP
+There are six hypothetical users in the example:
+the developers are Pat, Jan and Sam;
+the reviewers are Robyn and Jan;
+the integrator is Isa; and
+the administrator is Alex\**.
+.FS
+The names are deliberately gender-neutral.
+Finding such a name starting with "I" is not easy!
+.FE
+There need not have been this many people involved,
+but it keeps things slightly cleaner for this example.
+.LP
+The project is called "example".
+It implements a very simple calculator.
+Many features important to a quality product are missing,
+checking for divide-by-zero for example.
+These have been omitted for brevity.
+.bp
+.1C
+.so c2.1.so
+.so c2.2.so
+.so c2.3.so
+.so c2.4.so
+.bp
+.2C
+.so c2.5.so

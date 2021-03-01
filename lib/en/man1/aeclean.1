@@ -1,0 +1,103 @@
+'\" t
+.\"	aegis - project change supervisor
+.\"	Copyright (C) 1998 Peter Miller;
+.\"	All rights reserved.
+.\"
+.\"	This program is free software; you can redistribute it and/or modify
+.\"	it under the terms of the GNU General Public License as published by
+.\"	the Free Software Foundation; either version 2 of the License, or
+.\"	(at your option) any later version.
+.\"
+.\"	This program is distributed in the hope that it will be useful,
+.\"	but WITHOUT ANY WARRANTY; without even the implied warranty of
+.\"	MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+.\"	GNU General Public License for more details.
+.\"
+.\"	You should have received a copy of the GNU General Public License
+.\"	along with this program; if not, write to the Free Software
+.\"	Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111, USA.
+.\"
+.\" MANIFEST: manual page describing the aeclean command.
+.\"
+.so z_name.so
+.TH "\*(n) -CLEan" 1 \*(N) "Reference Manual" ""
+.SH NAME
+\*(n) -CLEan \- clean files from development directory
+.SH SYNOPSIS
+.B \*(n)
+.B \-CLEan
+[
+.IR option \&...
+]
+.br
+.B \*(n)
+.B -Help
+.br
+.B \*(n)
+.B -VERSion
+.SH DESCRIPTION
+The
+.I "\*(n) -CLEan"
+command is used to remove all files which are not change source files
+from a development directory.  This can be used to obtain a ``clean''
+development directory before a final build, to ensure that a change is
+ready to end development.
+A new build will be required.
+.PP
+All symbolic links will be removed from the development directory,
+even if \fIremove_\%symlinks_\%after_\%build = false\fP in the
+project \fIconfig\fP file.  The symbolic links will be re-installed,
+if \fIcreate_\%symlinks_\%before_\%build = true\fP.  This is to ensure
+that the symlinks are accurate, and that unnecassary ones are removed.
+.PP
+All special device files, pipes and sockets will be removed.  These files
+cannot be source files, and it is expected that the following build will
+restore them.
+.PP
+All derived files created by previous builds of the change will be
+removed.  It is expected that the following build will recreate them.
+Any temporary files you may have created in the development directory
+will also be removed.
+.PP
+The
+.I develop_begin_command
+in the project config file
+(see
+.IR aepconf (5)
+for more information) will be run, if there is one.
+The
+.I change_file_command
+will be run, if there is one.
+The
+.I project_file_command
+will be run, if there is one.
+.PP
+You will be warned if any of the files are out-of-date and need to be merged.
+You will be warned if any files need to be differenced.
+.so o_symlnk.so
+.SH OPTIONS
+The following options are understood:
+.so o_change.so
+.so o_help.so
+.so o_list.so
+.so o_nolog.so
+.TP 8n
+.B \-MINIMum
+.RS
+This option may be used to request a minimum set of symbolic links,
+when the \fIcreate_symlinks_to_baseline\fP functions are being used.
+This is useful if you want to simulate something like \fIaeib -minimum\fP
+in the development directory.  This option is not meaningful if symbolic
+links are not being used.
+.PP
+This option also says not to remove normals files which occlude project
+source files.  This is a common technique used to temporarily over-ride
+a project source files.  The ``\fIaecp -read-only'' command would have
+been more appropriate.
+.RE
+.so o_project.so
+.so o_verbose.so
+.so o_wait.so
+.so o__rules.so
+.so z_exit.so
+.so z_cr.so

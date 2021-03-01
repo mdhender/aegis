@@ -1,0 +1,88 @@
+.\"
+.\"	aegis - project change supervisor
+.\"	Copyright (C) 1998 Peter Miller;
+.\"	All rights reserved.
+.\"
+.\"	This program is free software; you can redistribute it and/or modify
+.\"	it under the terms of the GNU General Public License as published by
+.\"	the Free Software Foundation; either version 2 of the License, or
+.\"	(at your option) any later version.
+.\"
+.\"	This program is distributed in the hope that it will be useful,
+.\"	but WITHOUT ANY WARRANTY; without even the implied warranty of
+.\"	MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+.\"	GNU General Public License for more details.
+.\"
+.\"	You should have received a copy of the GNU General Public License
+.\"	along with this program; if not, write to the Free Software
+.\"	Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111, USA.
+.\"
+.\" MANIFESTAUUGN Feb'98 Article
+.\"
+.nr PS 72
+.nr VS 73000
+.LP
+.ad c
+.hy 0
+Recursive Make Considered Harmful
+.br
+.ad l
+.sp
+.nr PS 36
+.nr VS 37
+.LP
+.ft I
+.hy 0
+``I returned this otherwise good typing paper to you because someone
+has printed gibberish all over it and put your name at the top.''
+.br
+.ft R
+.ps -4
+.ad r
+- sanitized reviewer comment
+.br
+.ad l
+.ps +4
+.bp
+.nr PS 24
+.nr VS 25
+.XP
+\(bu
+Many potential reviewers rejected the paper on the title alone
+.br
+\(sq but you didn't or you would not be here
+.XP
+\(bu
+We use \fImake\fP every day
+.br
+\(sq We \fIab\fPuse it every day (didn't do way I want, again!)
+.br
+\(sq few know how \fImake\fP works
+.br
+\(sq fewer could write it
+.XP
+\(bu
+This talk is about how \fImake\fP works
+.br
+\(sq how humans screw it up (air conditioning)
+.br
+\(sq make is not broken
+.br
+\(sq this isn't about small projects,
+it is about \fBlarge\fP projects
+.XP
+\(bu
+This talk does not cover everything in the paper
+.br
+\(sq no makefile optimizations
+.br
+\(sq no VPATH
+.br
+\(sq no include dependencies
+.XP
+\(bu
+Assumed Knowledge
+.br
+\(sq that you use \fImake\fP
+.br
+\(sq on \fBlarge\fP(ish) projects

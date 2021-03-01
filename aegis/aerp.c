@@ -1,6 +1,6 @@
 /*
  *	aegis - project change supervisor
- *	Copyright (C) 1991, 1992, 1993, 1994 Peter Miller.
+ *	Copyright (C) 1991, 1992, 1993, 1994, 1995, 1996, 1997, 1998 Peter Miller;
  *	All rights reserved.
  *
  *	This program is free software; you can redistribute it and/or modify
@@ -15,7 +15,7 @@
  *
  *	You should have received a copy of the GNU General Public License
  *	along with this program; if not, write to the Free Software
- *	Foundation, Inc., 675 Mass Ave, Cambridge, MA 02139, USA.
+ *	Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111, USA.
  *
  * MANIFEST: functions to implement review pass
  */
@@ -30,6 +30,7 @@
 #include <aerp.h>
 #include <arglex2.h>
 #include <change.h>
+#include <change_file.h>
 #include <commit.h>
 #include <dir.h>
 #include <error.h>
@@ -37,9 +38,11 @@
 #include <help.h>
 #include <lock.h>
 #include <mem.h>
-#include <option.h>
 #include <os.h>
+#include <progname.h>
 #include <project.h>
+#include <project_file.h>
+#include <project_hist.h>
 #include <sub.h>
 #include <trace.h>
 #include <undo.h>
@@ -53,7 +56,7 @@ review_pass_usage()
 {
 	char		*progname;
 
-	progname = option_progname_get();
+	progname = progname_get();
 	fprintf(stderr, "usage: %s -Review_PASS <change_number> [ <option>... ]\n", progname);
 	fprintf(stderr, "       %s -Review_PASS -List [ <option>... ]\n", progname);
 	fprintf(stderr, "       %s -Review_PASS -Help\n", progname);
@@ -66,12 +69,7 @@ static void review_pass_help _((void));
 static void
 review_pass_help()
 {
-	static char *text[] =
-	{
-#include <../man1/aerp.h>
-	};
-
-	help(text, SIZEOF(text), review_pass_usage);
+	help("aerp", review_pass_usage);
 }
 
 
@@ -96,12 +94,12 @@ review_pass_list(usage)
 
 		case arglex_token_project:
 			if (arglex() != arglex_token_string)
-				usage();
+				option_needs_name(arglex_token_project, usage);
 			/* fall through... */
 
 		case arglex_token_string:
 			if (project_name)
-				fatal("duplicate -Project option");
+				duplicate_option_by_name(arglex_token_project, usage);
 			project_name = str_from_c(arglex_value.alv_string);
 			break;
 		}
@@ -124,13 +122,13 @@ static void
 review_pass_main()
 {
 	cstate		cstate_data;
-	pstate		pstate_data;
 	cstate_history	history_data;
 	string_ty	*project_name;
 	project_ty	*pp;
 	long		change_number;
 	change_ty	*cp;
 	user_ty		*up;
+	long		j;
 
 	trace(("review_pass_main()\n{\n"/*}*/));
 	project_name = 0;
@@ -145,26 +143,41 @@ review_pass_main()
 
 		case arglex_token_change:
 			if (arglex() != arglex_token_number)
-				review_pass_usage();
+				option_needs_number(arglex_token_change, review_pass_usage);
 			/* fall through... */
 
 		case arglex_token_number:
 			if (change_number)
-				fatal("duplicate -Change option");
+				duplicate_option_by_name(arglex_token_change, review_pass_usage);
 			change_number = arglex_value.alv_number;
-			if (change_number < 1)
-				fatal("change %ld out of range", change_number);
+			if (change_number == 0)
+				change_number = MAGIC_ZERO;
+			else if (change_number < 1)
+			{
+				sub_context_ty	*scp;
+
+				scp = sub_context_new();
+				sub_var_set(scp, "Number", "%ld", change_number);
+				fatal_intl(scp, i18n("change $number out of range"));
+				/* NOTREACHED */
+				sub_context_delete(scp);
+			}
 			break;
 
 		case arglex_token_project:
 			if (arglex() != arglex_token_string)
-				review_pass_usage();
-			/* fall through... */
+				option_needs_name(arglex_token_project, review_pass_usage);
+						/* fall through... */
 
 		case arglex_token_string:
 			if (project_name)
-				fatal("duplicate -Project option");
+				duplicate_option_by_name(arglex_token_project, review_pass_usage);
 			project_name = str_from_c(arglex_value.alv_string);
+			break;
+
+		case arglex_token_wait:
+		case arglex_token_wait_not:
+			user_lock_wait_argument(review_pass_usage);
 			break;
 		}
 		arglex();
@@ -198,43 +211,21 @@ review_pass_main()
 	change_cstate_lock_prepare(cp);
 	lock_take();
 	cstate_data = change_cstate_get(cp);
-	pstate_data = project_pstate_get(pp);
 
 	/*
 	 * it is an error if the change is not in the 'being_reviewed' state.
 	 */
 	if (cstate_data->state != cstate_state_being_reviewed)
-	{
-		change_fatal
-		(
-			cp,
-"this change is in the '%s' state, \
-it must be in the 'being reviewed' state to pass review",
-			cstate_state_ename(cstate_data->state)
-		);
-	}
+		change_fatal(cp, 0, i18n("bad rp state"));
 	if (!project_reviewer_query(pp, user_name(up)))
-	{
-		project_fatal
-		(
-			pp,
-			"user \"%S\" is not a reviewer",
-			user_name(up)
-		);
-	}
+		project_fatal(pp, 0, i18n("not a reviewer"));
 	if
 	(
-		!pstate_data->developer_may_review
+		!project_developer_may_review_get(pp)
 	&&
 		str_equal(change_developer_name(cp), user_name(up))
 	)
-	{
-		change_fatal
-		(
-			cp,
-			"the developer of a change may not also review it"
-		);
-	}
+		change_fatal(cp, 0, i18n("developer may not review"));
 
 	/*
 	 * change the state
@@ -244,6 +235,85 @@ it must be in the 'being reviewed' state to pass review",
 	cstate_data->state = cstate_state_awaiting_integration;
 	history_data = change_history_new(cp, up);
 	history_data->what = cstate_history_what_review_pass;
+
+	/*
+	 * It is an error if any of the change files have been tampered
+	 * with, or any of the difference files.
+	 */
+	for (j = 0; ; ++j)
+	{
+		fstate_src	src_data;
+		string_ty	*path;
+		string_ty	*path_d;
+		int		same;
+		int		file_required;
+		int		diff_file_required;
+
+		src_data = change_file_nth(cp, j);
+		if (!src_data)
+			break;
+
+		file_required = 1;
+		diff_file_required = 1;
+		if (src_data->usage == file_usage_build)
+		{
+			file_required = 0;
+			diff_file_required = 0;
+		}
+		if (src_data->action == file_action_remove)
+		{
+			file_required = 0;
+
+			/*
+			 * the removed half of a move is not differenced
+			 */
+			if
+			(
+				src_data->move
+			&&
+				change_file_find(cp, src_data->move)
+			)
+				diff_file_required = 0;
+		}
+
+		path = change_file_path(cp, src_data->file_name);
+		if (file_required)
+		{
+			user_become(up);
+			same = change_fingerprint_same(src_data->file_fp, path);
+			user_become_undo();
+			if (!same)
+			{
+				sub_context_ty	*scp;
+
+				scp = sub_context_new();
+				sub_var_set(scp, "File_Name", "%S", src_data->file_name);
+				change_fatal(cp, scp, i18n("$filename altered"));
+				/* NOTREACHED */
+				sub_context_delete(scp);
+			}
+		}
+
+		path_d = str_format("%S,D", path);
+		if (diff_file_required)
+		{
+			user_become(up);
+			same = change_fingerprint_same(src_data->diff_file_fp, path_d);
+			user_become_undo();
+			if (!same)
+			{
+				sub_context_ty	*scp;
+
+				scp = sub_context_new();
+				sub_var_set(scp, "File_Name", "%S,D", src_data->file_name);
+				change_fatal(cp, scp, i18n("$filename altered"));
+				/* NOTREACHED */
+				sub_context_delete(scp);
+			}
+		}
+		str_free(path);
+		str_free(path_d);
+	}
 
 	/*
 	 * write out the data and release the locks
@@ -260,7 +330,7 @@ it must be in the 'being reviewed' state to pass review",
 	/*
 	 * verbose success message
 	 */
-	change_verbose(cp, "passed review");
+	change_verbose(cp, 0, i18n("review pass complete"));
 	change_free(cp);
 	project_free(pp);
 	user_free(up);

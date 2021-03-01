@@ -1,6 +1,6 @@
 /*
  *	aegis - project change supervisor
- *	Copyright (C) 1994 Peter Miller.
+ *	Copyright (C) 1994, 1996, 1997 Peter Miller;
  *	All rights reserved.
  *
  *	This program is free software; you can redistribute it and/or modify
@@ -15,7 +15,7 @@
  *
  *	You should have received a copy of the GNU General Public License
  *	along with this program; if not, write to the Free Software
- *	Foundation, Inc., 675 Mass Ave, Cambridge, MA 02139, USA.
+ *	Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111, USA.
  *
  * MANIFEST: report the files in a change
  */
@@ -25,15 +25,143 @@ title
 	"The Change File Report",
 	sprintf("Project \"%s\", Change %d", project_name(), change_number())
 );
-columns
-(
-	{ name = "Type\n------"; },
-	{ name = "Action\n------"; },
-	{ name = "Edit\n------"; },
-	{ name = "File Name\n------"; right = 0; }
-);
+auto ps;
+ps = project[project_name()].state;
 auto cs;
-cs = project[project_name()].state.change[change_number()];
+cs = ps.branch.change[change_number()];
 auto src;
-for (src in cs.src)
-	print(src.usage, src.action, src.edit_number, src.file_name);
+if (terse())
+{
+	columns({ name = "File Name\n----------"; right = 0; });
+	for (src in cs.src)
+	{
+		if
+		(
+			!src.deleted_by
+		&&
+			!src.about_to_be_created_by
+		)
+			print(src.file_name);
+	}
+}
+else
+{
+	columns
+	(
+		{ name = "Type\n------"; width = 7; },
+		{ name = "Action\n------"; width = 8; },
+		{ name = "Edit\n------"; width = 12; },
+		{ name = "File Name\n------"; right = 0; },
+		{ left = 30; right = 0; },
+		{ left = 30; right = 0; },
+		{ left = 30; right = 0; },
+		{ left = 30; right = 0; },
+		{ left = 30; right = 0; }
+	);
+	for (src in cs.src)
+	{
+		auto en;
+
+		if (src.edit_number_origin != "" && src.edit_number != "")
+		{
+			if (src.edit_number_origin == src.edit_number)
+				en = sprintf("%4s", src.edit_number);
+			else
+			{
+				en =
+					sprintf
+					(
+						"%4s -> %s",
+						src.edit_number_origin,
+						src.edit_number
+					);
+			}
+		}
+		else if (src.edit_number_origin != "")
+			en = sprintf("%4s", src.edit_number_origin);
+		else if (src.edit_number != "")
+			en = sprintf("%4s", src.edit_number);
+		/* if (verbose() */
+		{
+			auto psrc, tmp;
+
+			psrc = {};
+			for (tmp in ps.src)
+			{
+				if (tmp.file_name == src.file_name);
+				{
+					psrc = tmp;
+					break;
+				}
+			}
+			tmp = psrc.edit_number;
+			if (tmp != "" && tmp != src.edit_number_origin)
+				en ##= " (" ## tmp ## ")";
+			tmp = psrc.edit_number_origin;
+			if
+			(
+				src.edit_number_origin_new != ""
+			&&
+				src.edit_number_origin_new != tmp
+			)
+				en ##= "\n{cross " ## src.edit_number_origin_new
+					## "}";
+		}
+
+		print
+		(
+			src.usage,
+			src.action,
+			en,
+			src.file_name,
+			(
+				src.deleted_by
+			?
+				sprintf("Deleted by change %d.", src.deleted_by)
+			:
+				""
+			),
+			(
+				src.about_to_be_created_by
+			?
+				sprintf
+				(
+					"About to be created by change %d.",
+					src.about_to_be_created_by
+				)
+			:
+				""
+			),
+			(
+				src.locked_by
+			?
+				sprintf("Locked by change %d.", src.locked_by)
+			:
+				""
+			),
+			(
+				src.about_to_be_copied_by
+			?
+				sprintf
+				(
+					"About to be copied by change %d.",
+					src.about_to_be_copied_by
+				)
+			:
+				""
+			),
+			(
+				src.move != ""
+			?
+				sprintf
+				(
+					"Moved %s %s",
+					(src.action == create ? "from" : "to"),
+					src.move
+				)
+			:
+				""
+			)
+		);
+	}
+}

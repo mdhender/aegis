@@ -1,0 +1,126 @@
+.\"
+.\"	aegis - project change supervisor
+.\"	Copyright (C) 1997 Peter Miller;
+.\"	All rights reserved.
+.\"
+.\"	This program is free software; you can redistribute it and/or modify
+.\"	it under the terms of the GNU General Public License as published by
+.\"	the Free Software Foundation; either version 2 of the License, or
+.\"	(at your option) any later version.
+.\"
+.\"	This program is distributed in the hope that it will be useful,
+.\"	but WITHOUT ANY WARRANTY; without even the implied warranty of
+.\"	MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+.\"	GNU General Public License for more details.
+.\"
+.\"	You should have received a copy of the GNU General Public License
+.\"	along with this program; if not, write to the Free Software
+.\"	Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111, USA.
+.\"
+.\" MANIFEST: AUUGN Feb'98 Article
+.\"
+.nh 1 "Literature Survey"
+How can it be possible that we have been misusing \fImake\fP for 20 years?
+How can it be possible that behavior previously ascribed to \fImake\fP's
+limitations is in fact a result of misusing it?
+.LP
+The author only started thinking
+about the ideas presented in this paper
+when faced with a number of ugly build problems on
+utterly different projects,
+but with common symptoms.
+By stepping back from the individual projects,
+and closely examining the thing they had in common, \fImake\fP,
+it became possible to see the larger pattern.
+Most of us are too caught up in the minutiae of just getting the rotten
+build to work that we don't have time to spare for the big picture.
+Especially when the item in question ``obviously'' works,
+and has done so continuously for the last 20 years.
+.LP
+It is interesting that the problems of recursive \fImake\fP are rarely
+mentioned in the very books Unix programmers rely on for accurate,
+practical advice.
+.nh 2 "The Original Paper"
+The original
+.I make
+paper
+.[
+feld78
+.]
+contains no reference to recursive
+.I make,
+let alone any discussion as to the relative merits of whole project
+.I make
+over recursive
+.I make.
+.LP
+It is hardly surprising that the original paper did not discuss recursive
+\fImake\fP, Unix projects at the time usually \fIdid\fP fit into a single
+directory.
+.LP
+It may be this which set the ``one \f(CWMakefile\fP in every directory''
+concept so firmly in the collective Unix development mind-set.
+.nh 2 "GNU Make"
+The GNU Make manual
+.[
+stal93
+.]
+contains several pages of material concerning
+recursive
+.I make,
+however its discussion of the merits or otherwise
+of the technique are limited to the brief statement that
+.QP
+``This technique is useful when you want to separate
+makefiles for various subsystems that compose a larger system.''
+.LP
+No mention is made of the problems you may encounter.
+.nh 2 "Managing Projects with Make"
+The Nutshell Make book
+.[
+talb91
+.]
+specifically promotes recursive
+.I make
+over whole project
+.I make
+because
+.QP
+``The cleanest way to build is to put a separate description file in
+each directory, and tie them together through a master description file
+that invokes \fImake\fP recursively.  While cumbersome, the technique is
+easier to maintain than a single, enormous file that covers multiple
+directories.'' (p. 65)
+.LP
+This is despite the book's advice only two paragraphs earlier that
+.QP
+``\fImake\fP is happiest when you keep all your files in a single
+directory.'' (p. 64)
+.LP
+Yet the book fails to discuss the contradiction in these two statements,
+and goes on to describe one of the traditional ways of treating the
+symptoms of incomplete DAGs caused by recursive \fImake\fP.
+.LP
+The book may give us a clue as to why recursive \fImake\fP has been used
+in this way for so many years.  Notice how the above quotes confuse the
+concept of a directory with the concept of a \f(CWMakefile\fP.
+.LP
+This paper suggests a simple change to the mind-set:
+directory trees, however deep, are places to store files;
+\f(CWMakefile\fPs are places to describe the relationships
+between those files, however many.
+.nh 2 "BSD Make"
+The tutorial for BSD Make
+.[
+debo88
+.]
+says nothing at all about recursive \fImake\fP,
+but it is one of the few which actually described,
+however briefly,
+the relationship between a \f(CWMakefile\fP and a DAG (p. 30).
+There is also a wonderful quote
+.QP
+``If \fImake\fP doesn't do what you expect it to,
+it's a good chance the \f(CWmakefile\fP is wrong.'' (p. 10)
+.LP
+Which is a pithy summary of the thesis of this paper.

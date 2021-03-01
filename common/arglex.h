@@ -1,6 +1,6 @@
 /*
  *	aegis - project change supervisor
- *	Copyright (C) 1991, 1992, 1993 Peter Miller.
+ *	Copyright (C) 1991, 1992, 1993, 1995 Peter Miller;
  *	All rights reserved.
  *
  *	This program is free software; you can redistribute it and/or modify
@@ -15,7 +15,7 @@
  *
  *	You should have received a copy of the GNU General Public License
  *	along with this program; if not, write to the Free Software
- *	Foundation, Inc., 675 Mass Ave, Cambridge, MA 02139, USA.
+ *	Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111, USA.
  *
  * MANIFEST: interface definition for common/arglex.c
  */
@@ -24,6 +24,8 @@
 #define ARGLEX_H
 
 #include <main.h>
+
+#define ARGLEX_END_MARKER { (char *)0, (arglex_token_ty)0, }
 
 enum arglex_token_ty
 {
@@ -58,5 +60,9 @@ extern arglex_value_ty arglex_value;
 void arglex_init _((int, char **, arglex_table_ty *));
 arglex_token_ty arglex _((void));
 int arglex_compare _((char *formal, char *actual));
+char *arglex_token_name _((arglex_token_ty));
+
+arglex_table_ty *arglex_table_catenate _((arglex_table_ty *,
+	arglex_table_ty *));
 
 #endif /* ARGLEX_H */

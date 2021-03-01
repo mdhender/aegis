@@ -1,0 +1,118 @@
+/*
+ *	aegis - project change supervisor
+ *	Copyright (C) 1997 Peter Miller;
+ *	All rights reserved.
+ *
+ *	This program is free software; you can redistribute it and/or modify
+ *	it under the terms of the GNU General Public License as published by
+ *	the Free Software Foundation; either version 2 of the License, or
+ *	(at your option) any later version.
+ *
+ *	This program is distributed in the hope that it will be useful,
+ *	but WITHOUT ANY WARRANTY; without even the implied warranty of
+ *	MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ *	GNU General Public License for more details.
+ *
+ *	You should have received a copy of the GNU General Public License
+ *	along with this program; if not, write to the Free Software
+ *	Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111, USA.
+ *
+ * MANIFEST: report the files in a change
+ */
+
+auto script_name;
+script_name = getenv("SCRIPT_NAME");
+if (script_name == "")
+	script_name = "http://localhost/cgi-bin/aegis.cgi";
+
+columns({width = 1000;});
+print("Content-Type: text/html");
+print("");
+print("<html><head><title>");
+print("Change Files");
+print("</title></head><body><h1><center>");
+auto pn, cn;
+pn = project_name();
+cn = change_number();
+print("Project ``" ## pn ## "'', Change " ## cn ## ",");
+print("<br>List of Files");
+print("</center></h1>");
+auto ps;
+ps = project[pn].state.branch;
+auto cs;
+cs = ps.change[cn];
+auto src;
+auto viz;
+viz = (cs.state >= being_developed && cs.state <= being_integrated);
+print("<center><table>");
+print("<tr><th>Type</th><th>Action</th><th>Edit</th><th>File Name</th></tr>");
+for (src in cs.src)
+{
+	print("<tr><td valign=top>");
+	print(src.usage);
+	print("</td><td valign=top>");
+	print(src.action);
+	print("</td><td valign=top align=right>");
+
+	if (src.edit_number_origin != "" && src.edit_number != "")
+	{
+		if (src.edit_number_origin == src.edit_number)
+			print(src.edit_number);
+		else
+			print(src.edit_number_origin ## " -> "
+				## src.edit_number);
+	}
+	else if (src.edit_number_origin != "")
+		print(src.edit_number_origin);
+	else if (src.edit_number != "")
+		print(src.edit_number);
+	if (src.edit_number_origin_new != "")
+		print("<br>{cross " ## src.edit_number_origin_new ## "}");
+
+	print("</td><td valign=top>");
+	auto href;
+	if (viz)
+	{
+		href = script_name ## "?file@pre+" ## src.file_name;
+		href = href ## "+project@" ## pn;
+		href = href ## "+change@" ## cn;
+		print("<a href=\"" ## href ## "\">");
+	}
+	print("<tt>" ## src.file_name ## "</tt>");
+	if (viz)
+		print("</a>");
+	if (src.deleted_by)
+		print("<br>Deleted by change " ## src.deleted_by ## ".");
+	if (src.about_to_be_created_by)
+		print("<br>About to be created by change " ##
+			src.about_to_be_created_by ## ".");
+	if (src.locked_by)
+		print("<br>Locked by change " ## src.locked_by ## ".");
+	if (src.about_to_be_copied_by)
+		print("<br>About to be copied by change " ##
+			src.about_to_be_copied_by ## ".");
+	if (src.move != "")
+	{
+		print("<br>Moved " ## (src.action == create ? "from" : "to"));
+		href = script_name ## "?file@file_menu+" ## src.move;
+		href = href ## "+project@" ## pn;
+		print("<a href=\"" ## href ## "\">");
+		print("<tt>" ## src.move ## "</tt></a>");
+	}
+	print("</td><td valign=top>");
+	href = script_name ## "?file@file_menu+" ## src.file_name;
+	href = href ## "+project@" ## pn;
+	href = href ## "+change@" ## cn;
+	print("<a href=\"" ## href ## "\">");
+	print("<i>fm</i></a>");
+	print("</td></tr>");
+}
+print("</table></center>");
+print("Listed " ## count(keys(cs.src)) ## " files.");
+print("<hr>");
+print("A similar report may be obtained from the command line, with one of");
+print("<blockquote><pre>ael cf -p " ## pn ## " -c " ## cn);
+print("aer cf -p " ## pn ## " -c " ## cn ## "</pre></blockquote>");
+print("<hr>");
+print("This page was generated " ## now() ## ".");
+print("</body></html>");

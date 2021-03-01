@@ -1,6 +1,6 @@
 /*
  *	aegis - project change supervisor
- *	This file is in the Public Domain, 1995, Peter Miller.
+ *	This file is in the Public Domain, 1995, 1998 Peter Miller.
  *
  * MANIFEST: example architecture definitions for the project config file
  *
@@ -27,6 +27,18 @@ architecture =
 	{
 		name = "convex";
 		pattern = "ConvexOS-*-10.*-*";
+	},
+	{
+		name = "linux-alpha";
+		pattern = "Linux*alpha*";
+	},
+	{
+		name = "linux-intel";
+		pattern = "Linux*i[3-9]86*";
+	},
+	{
+		name = "linux-sparc";
+		pattern = "Linux*sparc*";
 	},
 	{
 		name = "sun4";

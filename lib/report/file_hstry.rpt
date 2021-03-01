@@ -1,6 +1,6 @@
 /*
  *	aegis - project change supervisor
- *	Copyright (C) 1994 Peter Miller.
+ *	Copyright (C) 1994, 1996, 1997 Peter Miller;
  *	All rights reserved.
  *
  *	This program is free software; you can redistribute it and/or modify
@@ -15,7 +15,7 @@
  *
  *	You should have received a copy of the GNU General Public License
  *	along with this program; if not, write to the Free Software
- *	Foundation, Inc., 675 Mass Ave, Cambridge, MA 02139, USA.
+ *	Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111, USA.
  *
  * MANIFEST: report the history of files
  */
@@ -29,6 +29,7 @@ columns
 	{ name = "Delta\n-----"; width = 5; },
 	{ name = "Time and Date\n-------------"; width = 13; },
 	{ name = "Change\n------"; width = 6; },
+	{ name = "Edit\n------"; width = 6; },
 	{ name = "Description\n-------------"; right = 0; }
 );
 auto ps;
@@ -57,9 +58,9 @@ for (file in arg)
  * for any of the named files
  */
 auto ph, cs, cf;
-for (ph in ps.history)
+for (ph in ps.branch.history)
 {
-	cs = ps.change[ph.change_number];
+	cs = ps.branch.change[ph.change_number];
 	for (cf in cs.src)
 	{
 		if (cf.file_name in arg)
@@ -70,6 +71,7 @@ for (ph in ps.history)
 				{
 					usage = cf.usage;
 					action = cf.action;
+					edit = cf.edit_number;
 					delta = ph.delta_number;
 					when = cs.history[count(cs.history) - 1].when;
 					change = ph.change_number;
@@ -82,22 +84,27 @@ for (ph in ps.history)
 /*
  * print the accumulated history
  */
-auto fh;
+auto fh, actions, usages;
 for (file in sort(keys(hist)))
 {
 	need(4);
 	print(file);
+	actions = "BS";
+	usages = "BS";
 	for (fh in hist[file])
 	{
 		print
 		(
 			"",
-			(fh.action == create ? fh.usage : ""),
-			fh.action,
+			(fh.usage == usages ? "" : fh.usage),
+			(fh.action == actions ? "" : fh.action),
 			sprintf("%4d", fh.delta),
 			fh.when,
 			sprintf("%4d", fh.change),
+			sprintf("%4s", fh.edit),
 			fh.description
 		);
+		actions = fh.action;
+		usages = fh.usage;
 	}
 }

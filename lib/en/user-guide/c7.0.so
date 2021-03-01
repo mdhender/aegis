@@ -1,0 +1,45 @@
+.\"
+.\"	aegis - project change supervisor
+.\"	Copyright (C) 1991, 1992, 1993, 1994 Peter Miller.
+.\"	All rights reserved.
+.\"
+.\"	This program is free software; you can redistribute it and/or modify
+.\"	it under the terms of the GNU General Public License as published by
+.\"	the Free Software Foundation; either version 2 of the License, or
+.\"	(at your option) any later version.
+.\"
+.\"	This program is distributed in the hope that it will be useful,
+.\"	but WITHOUT ANY WARRANTY; without even the implied warranty of
+.\"	MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+.\"	GNU General Public License for more details.
+.\"
+.\"	You should have received a copy of the GNU General Public License
+.\"	along with this program; if not, write to the Free Software
+.\"	Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111, USA.
+.\"
+.\" MANIFEST: User Guide, How Aegis Works
+.\"
+.bp
+.2C
+.nh 1 "How Aegis Works"
+.LP
+Before you will be able to exploit aegis fully,
+you will need to know what aegis does and why.
+.LP
+The aegis program provides a change control mechanism and a repository,
+a subset of the functionality
+which CASE vendors call Software Configuration Management (SCM).
+In order to fit into a software engineering environment,
+or any place software  is written,
+aegis needs a clearly defined place is the scheme of things.
+.LP
+This chapter describes the model of the software development process
+embodied in the aegis program,
+some of the deliberate design decisions made for aegis,
+some of the things aegis will and wont do for you,
+and the situations where aegis is most and least useful.
+.so c7.1.so
+.so c7.2.so
+.so c7.5.so
+.so c1.3.so
+.so c7.4.so

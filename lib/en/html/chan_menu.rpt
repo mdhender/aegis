@@ -1,0 +1,124 @@
+/*
+ *	aegis - project change supervisor
+ *	Copyright (C) 1997 Peter Miller;
+ *	All rights reserved.
+ *
+ *	This program is free software; you can redistribute it and/or modify
+ *	it under the terms of the GNU General Public License as published by
+ *	the Free Software Foundation; either version 2 of the License, or
+ *	(at your option) any later version.
+ *
+ *	This program is distributed in the hope that it will be useful,
+ *	but WITHOUT ANY WARRANTY; without even the implied warranty of
+ *	MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ *	GNU General Public License for more details.
+ *
+ *	You should have received a copy of the GNU General Public License
+ *	along with this program; if not, write to the Free Software
+ *	Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111, USA.
+ *
+ * MANIFEST: menu of change information
+ */
+
+columns({width = 1000;});
+print("Content-Type: text/html");
+print("");
+
+auto pn, p, cn, c;
+pn = project_name();
+p = project[pn].state.branch;
+cn = change_number();
+c = p.change[cn];
+
+auto script_name;
+script_name = getenv("SCRIPT_NAME");
+if (script_name == "")
+	script_name = "http://localhost/cgi-bin/aegis.cgi";
+
+print("<html><head><title>");
+print("Project " ## pn ## ", Change " ## cn);
+print("</title></head><body><h1><center>");
+print("Project ``" ## pn ## "'', Change " ## cn);
+print("</center></h1>");
+
+print("<h2>Brief Description</h2>");
+auto part;
+for (part in wrap_html(c.brief_description, 80))
+	print(part);
+
+print("<h2>Description</h2>");
+for (part in wrap_html(c.description, 80))
+	print(part);
+
+print("<h2>Information Available</h2>");
+print("<dl>");
+auto href;
+
+auto ok;
+try { ok = count(keys(c.branch)); }
+catch(ok) { ok = 0; }
+
+if (ok)
+{
+	href = script_name ## "?file@proj_menu+project@" ## pn ## "." ## cn;
+	print("<dt><a href=\"" ## href ## "\">");
+	print("Branch");
+	print("</a><dd>");
+	print("This change is a branch of the ``" ## pn ## "'' project.");
+	print("This item takes you to a project menu for the");
+	print("``" ## pn ## "." ## cn ## " branch.");
+}
+
+if (c.state >= being_developed)
+{
+href = script_name ## "?file@chan_files+project@" ## pn ## "+change@" ## cn;
+print("<dt><a href=\"" ## href ## "\">");
+print("Files");
+print("</a><dd>");
+print("This item will provide you with a listing of files which are");
+print("being created, modified or deleted by this change.");
+}
+
+if (c.state >= being_developed && c.state <= being_integrated)
+{
+href = script_name ## "?file@file_activ+project@" ## pn ## "+change@" ## cn;
+print("<dt><a href=\"" ## href ## "\">");
+print("File Activity");
+print("</a><dd>");
+print("This item will provide you with a listing of files which are");
+print("being modified in this change <i>and also</i> in other changes.");
+print("The list includes who is working on the changes, and a brief");
+print("description of each change.");
+
+print("<dt>");
+href = script_name ## "?file@file_cflct";
+href ##= "+project@" ## pn;
+href ##= "+change@" ## cn;
+print("<a href=\"" ## href ## "\">File Conflict</a>");
+print("<dd>");
+print("This item will provide you with a list of changes which are");
+print("actively modifying files in common with this change <b>if</b> more");
+print("than <i>one</i> change is modifying the file at the same time.");
+}
+
+if (c.state >= being_developed)
+{
+href = script_name ## "?file@file_hstry+project@" ## pn ## "+change@" ## cn;
+print("<dt><a href=\"" ## href ## "\">");
+print("File History");
+print("</a><dd>");
+print("This item will provide you with a listing of all completed");
+print("changes which affected the files in this change.  This report");
+print("can take a long time to generate.");
+}
+
+href = script_name ## "?file@chan_hstry+project@" ## pn ## "+change@" ## cn;
+print("<dt><a href=\"" ## href ## "\">");
+print("History");
+print("</a><dd>");
+print("This item will provide you with a listing of the state transitions");
+print("of this change, when they were performed, and who performed them.");
+
+print("</dl><hr>");
+print("This page was generated " ## now() ## ".");
+print("</body></html>");

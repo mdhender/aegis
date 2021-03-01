@@ -1,0 +1,60 @@
+.\"
+.\"	aegis - project change supervisor
+.\"	Copyright (C) 1996 Peter Miller;
+.\"	All rights reserved.
+.\"
+.\"	This program is free software; you can redistribute it and/or modify
+.\"	it under the terms of the GNU General Public License as published by
+.\"	the Free Software Foundation; either version 2 of the License, or
+.\"	(at your option) any later version.
+.\"
+.\"	This program is distributed in the hope that it will be useful,
+.\"	but WITHOUT ANY WARRANTY; without even the implied warranty of
+.\"	MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+.\"	GNU General Public License for more details.
+.\"
+.\"	You should have received a copy of the GNU General Public License
+.\"	along with this program; if not, write to the Free Software
+.\"	Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111, USA.
+.\"
+.\" MANIFEST: document describing foil.10.so
+.\"
+.bp
+.nr PS 8
+.nr VS 9
+.LP
+.ps 46
+.vs 48
+.hy 0
+.ad c
+Directory Stacking
+.sp
+.ad l
+.nr PS 36
+.nr VS 38
+.LP
+.ps 24
+.vs 25
+.PS
+golden = (1+sqrt(5))/2
+boxht = 1.5
+boxwid = boxht * golden
+B1: box "\fIBaseline\fP" "\f(CWTOC.html\fP" "\f(CWch1.html\fP" "" fill 0.05
+B2: box "\fIDevelopment Dir.\fP" "\f(CWTOC.html\fP" "" "\f(CWch2.html\fP" fill 0 with .nw at B1.nw-(0.5,boxht*0.8)
+B3: box "\fICombined View\fP" "\f(CWTOC.html\fP" "\f(CWch1.html\fP" "\f(CWch2.html\fP" with .w at 1/2<B1.e,B2.e>+(1,0)
+arrow from B1.e to 1/3<B3.nw,B3.sw>
+arrow from B2.e to 2/3<B3.nw,B3.sw>
+line dashed from B1.ne to B2.ne
+line dashed from B1.nw to B2.nw
+line dashed from B1.se to B2.se
+.PE
+.IP "" 2n
+.IP \(bu 2n
+.hy 0
+Only files being edited or created are in development directory.
+.IP \(bu 2n
+.hy 0
+Build tool must be able to cope with directory stack.
+.IP \(bu 2n
+.hy 0
+``Test Server'' must be able to stack, too, so can preview.

@@ -1,0 +1,133 @@
+/*
+ *	aegis - project change supervisor
+ *	Copyright (C) 1997 Peter Miller;
+ *	All rights reserved.
+ *
+ *	This program is free software; you can redistribute it and/or modify
+ *	it under the terms of the GNU General Public License as published by
+ *	the Free Software Foundation; either version 2 of the License, or
+ *	(at your option) any later version.
+ *
+ *	This program is distributed in the hope that it will be useful,
+ *	but WITHOUT ANY WARRANTY; without even the implied warranty of
+ *	MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ *	GNU General Public License for more details.
+ *
+ *	You should have received a copy of the GNU General Public License
+ *	along with this program; if not, write to the Free Software
+ *	Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111, USA.
+ *
+ * MANIFEST: report the files in a project
+ */
+
+auto script_name;
+script_name = getenv("SCRIPT_NAME");
+if (script_name == "")
+	script_name = "http://localhost/cgi-bin/aegis.cgi";
+
+columns({width = 1000;});
+print("Content-Type: text/html");
+print("");
+
+auto pn;
+pn = project_name();
+
+print("<html><head><title>");
+print("Project " ## pn ## " Files");
+print("</title></head><body><h1><center>");
+print("Project ``" ## pn ## "''<br>");
+print("List of Files");
+print("</center></h1>");
+
+auto p, ps, j;
+p = project[pn];
+ps = p.state.src;
+
+print("<center><table>");
+print("<tr><th>Type</th><th>Action></th><th>Edit</th><th>File Name</th></tr>");
+
+for (j in ps)
+{
+	print("<tr><td valign=top>");
+	print(j.usage);
+	print("</td><td valign=top>");
+	print(j.action);
+	print("</td><td valign=top align=right>");
+
+	if (j.edit_number_origin != "" && j.edit_number != "")
+	{
+		if (j.edit_number_origin == j.edit_number)
+			print(j.edit_number);
+		else
+			print(j.edit_number_origin ## " -> "
+				## j.edit_number);
+	}
+	else if (j.edit_number_origin != "")
+		print(j.edit_number_origin);
+	else if (j.edit_number != "")
+		print(j.edit_number);
+
+	print("</td><td valign=top>");
+	auto href;
+	href = script_name ## "?file@pre+" ## j.file_name;
+	href ##= "+project@" ## pn;
+	print("<a href=\"" ## href ## "\">");
+	print("<tt>" ## j.file_name ## "</tt></a>");
+	if (j.deleted_by)
+	{
+		href = script_name ## "?file@chan_menu+" ## j.file_name;
+		href ##= "+project@" ## pn;
+		href ##= "+change@" ## j.deleted_by;
+		print("<br>Deleted by change");
+		print("<a href=\"" ## href ## "\">" ## j.deleted_by ## "</a>.");
+	}
+	if (j.about_to_be_created_by)
+	{
+		href = script_name ## "?file@chan_menu+" ## j.file_name;
+		href ##= "+project@" ## pn;
+		href ##= "+change@" ## j.about_to_be_created_by;
+		print("<br>About to be created by change");
+		print("<a href=\"" ## href ## "\">" ## j.about_to_be_created_by
+			## "</a>.");
+	}
+	if (j.locked_by)
+	{
+		href = script_name ## "?file@chan_menu+" ## j.file_name;
+		href ##= "+project@" ## pn;
+		href ##= "+change@" ## j.locked_by;
+		print("<br>Locked by change");
+		print("<a href=\"" ## href ## "\">" ## j.locked_by ## "</a>.");
+	}
+	if (j.about_to_be_copied_by)
+	{
+		href = script_name ## "?file@chan_menu+" ## j.file_name;
+		href ##= "+project@" ## pn;
+		href ##= "+change@" ## j.about_to_be_copied_by;
+		print("<br>About to be copied by change");
+		print("<a href=\"" ## href ## "\">" ## j.about_to_be_copied_by
+			## "</a>.");
+	}
+	if (j.move != "")
+	{
+		href = script_name ## "?file@file_menu+" ## j.move;
+		href ##= "+project@" ## pn;
+		print("<br>Moved " ## (j.action == create ? "from" : "to"));
+		print("<a href=\"" ## href ## "\">");
+		print("<tt>" ## j.move ## "</tt></a>");
+	}
+	print("</td><td valign=top>");
+	href = script_name ## "?file@file_menu+" ## j.file_name;
+	href ##= "+project@" ## pn;
+	print("<a href=\"" ## href ## "\">");
+	print("<i>fm</i></a>");
+	print("</td></tr>");
+}
+print("</table></center>");
+print("Listed " ## count(keys(ps)) ## " files.");
+print("<hr>");
+print("A similar report may be obtained from the command line, with one of");
+print("<blockquote><pre>ael pf -p " ## pn);
+print("aer proj_files -p " ## pn ## "</pre></blockquote>");
+print("<hr>");
+print("This page was generated " ## now() ## ".");
+print("</body></html>");

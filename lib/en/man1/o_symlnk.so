@@ -1,0 +1,123 @@
+.\"
+.\"	aegis - project change supervisor
+.\"	Copyright (C) 1994, 1996, 1998 Peter Miller;
+.\"	All rights reserved.
+.\"
+.\"	This program is free software; you can redistribute it and/or modify
+.\"	it under the terms of the GNU General Public License as published by
+.\"	the Free Software Foundation; either version 2 of the License, or
+.\"	(at your option) any later version.
+.\"
+.\"	This program is distributed in the hope that it will be useful,
+.\"	but WITHOUT ANY WARRANTY; without even the implied warranty of
+.\"	MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+.\"	GNU General Public License for more details.
+.\"
+.\"	You should have received a copy of the GNU General Public License
+.\"	along with this program; if not, write to the Free Software
+.\"	Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111, USA.
+.\"
+.\" MANIFEST: document describing symlink farms
+.\"
+.SH SYMBOLIC LINKS
+Many dependency maintenance tools,
+and indeed some compilers,
+have little or no support for include file search paths,
+and thus for the concept of the two-level directory hierarchy employed by
+.IR \*(n) .
+(It becomes multi-level when \*(n)' branching functionality is used.)
+To allow these tools to be used,
+.I \*(n)
+provides the ability to maintain a set of symbolic links between the
+development directory of a change and the baseline of a project,
+so it appears to these tools that all of the project's files are present
+in the development directory.
+.SS Project Configuration
+Two boolean fields of the project
+.I config
+file control the behaviour of this feature.
+They are the
+.I create_\%symlinks_\%before_\%build
+and
+.I remove_\%symlinks_\%after_\%build
+fields.
+See
+.IR aepconf (5)
+for more information.
+.PP
+If both fields are set to
+.IR true ,
+the user never sees the symbolic links,
+because they are added purely for the benefit of
+the dependency maintenance tool
+during the execution of the
+.IR aeb (1)
+command.
+.PP
+If only the
+.I create_\%symlinks_\%before_\%build
+field is set to
+.I true
+(the other will default to false)
+the symbolic links will be created at develop begin time (see
+.IR aedb (1)
+for more information)
+and also maintained by each
+.IR aeb (1)
+invocation.
+Note that the symbolic links are only maintained at these times,
+so project integrations during the course of development
+may leave the symbolic links in an inconsistent state
+until the next build.
+.PP
+When files are copied from the baseline into a change,
+using the
+.IR aecp (1)
+command,
+the symbolic link pointing into the baseline,
+if any,
+will be removed before the file is copied.
+.PP
+.B Note:
+Using this functionality in either form
+has implications for how the rules file of the
+dependency maintenance tool is written.
+Rules must
+.I remove
+their targets before creating them.
+(Usually with an
+.I "rm -f"
+command.)
+This is to avoid attempting to write the result on the symbolic link,
+which will point at a read-only file in the project baseline.
+This is similar to the same requirement for using the
+.I link_\%integration_\%directory
+field of the project
+.I config
+file.
+.SS User Configuration
+There is a \fIsymbolic_\%link_\%preference\fP field in the user
+configuration file (see \fIaeuconf\fP(5) for more information).  This
+controls whether \fIaeb\fP(1) will verify the symbolic links before
+the build (default) or whether it will assume they are up-to-date.
+(This field is only relevant if \fIcreate_\%symlinks_\%before_\%build\fP
+is true.)
+.PP
+For medium-to-large projects, verifying the symbolic links can take
+as long as the build itself.  Assuming the symbolic links are up-to-date
+can be a large time-saving for these projects.
+It may be advisable to review your choice of DMT in such a situation.
+.PP
+The \fIaedb\fP(1) command \fBdoes not\fP consult this preference.
+Thus, in most situations, the symbolic links will be up-to-date when
+the build is performed.  The only Aegis function which may result in the
+symbolic links becoming out-of-date is the integration of another change,
+as this may alter the presence or absence of files in the baseline.
+In this situation, the default \fIaeb\fP(1) action is to ignore the user
+preference and the verify symbolic links.
+.PP
+There are two command line options which modify \fIaeb\fP(1) behaviour
+further: the \fB--Verify_\%Symbolic_\%Links\fP option says to verify the
+symbolic links; and the \fB--Assume_\%Symbolic_\%Links\fP option says
+to assume the symbolic links are up-to-date.
+In each case the option over-rides the default and the user preference.

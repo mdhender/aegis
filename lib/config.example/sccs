@@ -1,6 +1,6 @@
 /*
  *	aegis - project change supervisor
- *	This file is in the Public Domain, 1995, Peter Miller.
+ *	This file is in the Public Domain, 1995, 1998 Peter Miller.
  *
  * MANIFEST: example of using sccs in the project config file
  *
@@ -11,6 +11,11 @@
  * paths, or set PATH at the start of each.  You should also note that the
  * strings are always handed to the Bourne shell to be executed, and are set to
  * exit with an error immediately a sub-command fails.
+ *
+ * The ${quote ...} construct is used to quote filenames which contain
+ * shell special characters.  A minimum of quoting is performed, so if
+ * the filenames do not contain shell special characters, no quotes will
+ * be used.
  */
 
 /*
@@ -28,9 +33,10 @@
  * remove the file.
  */
 history_create_command =
-	"admin -n -i$i -y ${d $h}/s.${b $h}; \
-	admin -di ${d $h}/s.${b $h}; \
-	get -e -t -p -s ${d $h}/s.${b $h} > /dev/null";
+	"admin -n -i${quote $input} -y \
+${quote ${dirname $history}/s.${basename $history}}; admin -di \
+${quote ${dirname $history}/s.${basename $history}}; get -e -t -p -s \
+${quote ${dirname $history}/s.${basename $history}} > /dev/null";
 
 /*
  * This command is used to get a specific edit back from history.
@@ -45,7 +51,8 @@ history_create_command =
  *	absolute path of the destination file
  */
 history_get_command =
-	"get -r'$e' -s -p -k ${d $h}/s.${b $h} > $o";
+	"get -r${quote $e} -s -p -k \
+${quote ${dirname $history}/s.${basename $history}} > ${quote $o}";
 
 /*
  * This command is used to add a new "top-most" entry to the history file.
@@ -61,9 +68,9 @@ history_get_command =
  * is left in the baseline.
  */
 history_put_command =
-	"cd ${d $i}; \
-	delta -s -y ${d $h}/s.${b $h}; \
-	get -e -t -p -s ${d $h}/s.${b $h} > $i";
+	"cd ${quote ${dirname $i}}; delta -s -y \
+${quote ${dirname $history}/s.${basename $history}}; get -e -t -p -s \
+${quote ${dirname $history}/s.${basename $history}} > $i";
 
 /*
  * This command is used to query what the history mechanism calls the top-most
@@ -79,4 +86,4 @@ history_put_command =
  * Note that "get" reports the edit number on stderr.
  */
 history_query_command =
-	"get -t -g ${d $h}/s.${b $h} 2>&1";
+	"get -t -g ${quote ${dirname $history}/s.${basename $history}} 2>&1";

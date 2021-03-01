@@ -1,7 +1,7 @@
 #!/bin/sh
 #
 #	aegis - project change supervisor
-#	Copyright (C) 1995 Peter Miller;
+#	Copyright (C) 1995, 1998 Peter Miller;
 #	All rights reserved.
 #
 #	This program is free software; you can redistribute it and/or modify
@@ -16,7 +16,7 @@
 #
 #	You should have received a copy of the GNU General Public License
 #	along with this program; if not, write to the Free Software
-#	Foundation, Inc., 675 Mass Ave, Cambridge, MA 02139, USA.
+#	Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111, USA.
 #
 # MANIFEST: shell script to automatically process the integration queue
 #
@@ -108,6 +108,19 @@ do
 	#
 	developer=`$aegis -report -p $project -c $change -file $tmp.dev -ter`
 	if test $? -ne 0 ; then exit 1; fi
+
+	#
+	# difference the change
+	#
+	echo "$ aegis -diff -p $project -c $change -v"
+	$aegis -diff -p $project -c $change -v -nolog
+	if test $? -ne 0 ; then
+		mail $developer < $tmp
+		tail -10 $tmp > $tmp.2
+		$aegis -ifail -f $tmp.2
+		rm $tmp.2
+		exit 1
+	fi
 
 	#
 	# build the change

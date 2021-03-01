@@ -1,0 +1,146 @@
+'\" t
+.\"	aegis - project change supervisor
+.\"	Copyright (C) 1991, 1992, 1993, 1996, 1998 Peter Miller;
+.\"	All rights reserved.
+.\"
+.\"	This program is free software; you can redistribute it and/or modify
+.\"	it under the terms of the GNU General Public License as published by
+.\"	the Free Software Foundation; either version 2 of the License, or
+.\"	(at your option) any later version.
+.\"
+.\"	This program is distributed in the hope that it will be useful,
+.\"	but WITHOUT ANY WARRANTY; without even the implied warranty of
+.\"	MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+.\"	GNU General Public License for more details.
+.\"
+.\"	You should have received a copy of the GNU General Public License
+.\"	along with this program; if not, write to the Free Software
+.\"	Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111, USA.
+.\"
+.\" MANIFEST: manual entry for 'aegis -New_File' command
+.\"
+.so z_name.so
+.TH "\*(n) -New_File" 1 \*(N) "Reference Manual"
+.SH NAME
+\*(n) -New_File \- add new files to be created by a change
+.XX "aenf(1)" "add new files to be created by a change"
+.SH SYNOPSIS
+.B \*(n)
+.B -New_File
+.IR file-name ...
+[
+.IR option ...
+]
+.br
+.B \*(n)
+.B -New_File
+.B -List
+[
+.IR option ...
+]
+.br
+.B \*(n)
+.B -New_File
+.B -Help
+.SH DESCRIPTION
+The
+.I \*(n)
+.I -New_File
+command is used to
+add new files to a change.
+The named files will be
+added to the list of files in the change.
+.PP
+For each file named,
+a new file is created in the development directory,
+if it does not exist already.
+If the file already exists,
+it will not be altered.
+.PP
+When a new file is created in the development directory
+the project
+.I config
+file is searched for a template for the new file.
+If a template is found,
+the new file will be initialized to the template,
+otherwise it will be created empty.
+See
+.IR aepconf (5)
+for more information.
+.so z_filesize.so
+.so z_intuit.so
+.so z_test_corr.so
+.SH OPTIONS
+The following options are understood
+.TP 8n
+.B -Build
+.br
+This option may be used to specify that the file is constructed
+during a build (often only an integrate build),
+so that history of it may be kept.
+This is useful for generating patch files,
+where a history of generated files is important.
+Files created in this way may not be copied into a change,
+though they may be deleted.
+Avoid using files of this type,
+if at all possible.
+.so o_baserel.so
+.so o_change.so
+.so o_help.so
+.so o_list.so
+.so o_nolog.so
+.so o_project.so
+.so o_terse.so
+.so o_verbose.so
+.so o_wait.so
+.so o__rules.so
+.SH RECOMMENDED ALIAS
+The recommended alias for this command is
+.nf
+.ta 8n 16n
+csh%	alias aenf '\*(n) -nf \e!* -v'
+sh$	aenf(){\*(n) -nf $* -v}
+.fi
+.SH ERRORS
+It is an error if
+the change is not in the
+.I "being developed"
+state.
+.br
+It is an error if
+the change is not assigned to the current user.
+.br
+It is an error if
+the file is already part of the change.
+.br
+It is an error if
+the file is already part of the baseline.
+.so z_exit.so
+.br
+.ne 1i
+.SH SEE ALSO
+.TP 8n
+.IR aecp (1)
+copy files into a change
+.TP 8n
+.IR aedb (1)
+begin development of a change
+.TP 8n
+.IR aemv (1)
+rename a file as part of a change
+.TP 8n
+.IR aenfu (1)
+remove new files from a change
+.TP 8n
+.IR aent (1)
+add new tests to a change
+.TP 8n
+.IR aerm (1)
+add files to be deleted by a change
+.TP 8n
+.IR aepconf (5)
+project configuration file format
+.TP 8n
+.IR aeuconf (5)
+user configuration file format
+.so z_cr.so

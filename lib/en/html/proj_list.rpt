@@ -1,0 +1,86 @@
+/*
+ *	aegis - project change supervisor
+ *	Copyright (C) 1997 Peter Miller;
+ *	All rights reserved.
+ *
+ *	This program is free software; you can redistribute it and/or modify
+ *	it under the terms of the GNU General Public License as published by
+ *	the Free Software Foundation; either version 2 of the License, or
+ *	(at your option) any later version.
+ *
+ *	This program is distributed in the hope that it will be useful,
+ *	but WITHOUT ANY WARRANTY; without even the implied warranty of
+ *	MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ *	GNU General Public License for more details.
+ *
+ *	You should have received a copy of the GNU General Public License
+ *	along with this program; if not, write to the Free Software
+ *	Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111, USA.
+ *
+ * MANIFEST: report the names of projects
+ */
+
+columns({width=1000;});
+print("Content-Type: text/html");
+print("");
+print("<html><head><title>");
+print("Project List");
+print("</title></head><body><h1><center>");
+print("Project List");
+print("</center></h1><center><table>");
+
+print("<tr><th>Project</th><th>Descripion</th></tr>");
+
+auto script_name;
+script_name = getenv("SCRIPT_NAME");
+if (script_name == "")
+	script_name = "http://localhost/cgi-bin/aegis.cgi";
+
+auto name, p;
+for (name in sort(keys(project)))
+{
+	p = project[name];
+
+	/*
+	 * Reading the p.state value (it is deferred) may result
+	 * in ``permision denied'' so we need to catch the
+	 * exception as it goes past.  Use the error as the
+	 * description.
+	 */
+	auto description, ok;
+	ok = true;
+	try
+		description = p.state.description;
+	catch (description)
+	{
+		description = "<i>" ## description ## "</i>";
+		ok = false;
+	}
+	print("<tr><td valign=top>");
+	if (ok)
+	{
+		auto href;
+
+		href = script_name ## "?file@proj_menu+project@" ## name;
+		print("<a href=\"" ## href ## "\">");
+	}
+	print(name);
+	if (ok)
+		print("</a>");
+	print("</td><td valign=top>");
+	auto part;
+	for (part in wrap_html(description, 80))
+		print(part);
+	print("</br><i>");
+	for (part in wrap(p.directory, 15))
+		print(part);
+	print("</i></td></tr>");
+}
+
+print("</table></center>");
+print("Listed " ## count(keys(project)) ## " projects.");
+print("<hr>A similar report may be obtained from the command line, with");
+print("<blockquote><tt>ael p</tt></blockquote>");
+print("<hr>");
+print("This page was generated " ## now() ## ".");
+print("<body></html>");

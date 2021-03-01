@@ -1,0 +1,109 @@
+.\"
+.\"	aegis - project change supervisor
+.\"	Copyright (C) 1997 Peter Miller;
+.\"	All rights reserved.
+.\"
+.\"	This program is free software; you can redistribute it and/or modify
+.\"	it under the terms of the GNU General Public License as published by
+.\"	the Free Software Foundation; either version 2 of the License, or
+.\"	(at your option) any later version.
+.\"
+.\"	This program is distributed in the hope that it will be useful,
+.\"	but WITHOUT ANY WARRANTY; without even the implied warranty of
+.\"	MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+.\"	GNU General Public License for more details.
+.\"
+.\"	You should have received a copy of the GNU General Public License
+.\"	along with this program; if not, write to the Free Software
+.\"	Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111, USA.
+.\"
+.\" MANIFEST: AUUGN Feb'98 Article
+.\"
+.nh 1 "The Big Picture"
+This section brings together all of the preceding discussion, and
+presents the example project with its separate modules, but with a
+whole-project \f(CWMakefile\fP.  The directory structure is changed
+little from the recursive case, except that the deeper \f(CWMakefiles\fP
+are replaced by module specific include files:
+.so 07.figure1.so
+.LP
+The \f(CWMakefile\fP looks like this:
+.TS H
+center,box;
+lw(2.5i)f(CW).
+.TH
+MODULES := ant bee
+.sp 0.2
+# look for include files in
+#   each of the modules
+CFLAGS += $(patsubst %,-I%,\e
+  $(MODULES))
+.sp 0.2
+# extra libraries if required
+LIBS :=
+.sp 0.2
+# each module will add to this
+SRC :=
+.sp 0.2
+# include the description for
+#   each module
+include $(patsubst %,\e
+    %/module.mk,$(MODULES))
+.sp 0.2
+# determine the object files
+OBJ :=                    \e
+  $(patsubst %.c,%.o,     \e
+    $(filter %.c,$(SRC))) \e
+  $(patsubst %.y,%.o,     \e
+    $(filter %.y,$(SRC)))
+.sp 0.2
+# link the program
+prog: $(OBJ)
+  $(CC) -o $@ $(OBJ) $(LIBS)
+.sp 0.2
+# include the C include
+#   dependencies
+include $(OBJ:.o=.d)
+.sp 0.2
+# calculate C include
+#   dependencies
+%.d: %.c
+  depend.sh $(CFLAGS) $< > $@
+.TE
+This looks absurdly large, but it has all of the common elements in the
+one place, so that each of the modules' \fImake\fP includes may be small.
+.LP
+The \f(CWant/module.mk\fP file looks like:
+.TS
+center,box;
+lw(2.5i)f(CW).
+SRC += ant/main.c
+.TE
+The \f(CWbee/module.mk\fP file looks like:
+.TS
+center,box;
+lw(2.5i)f(CW).
+SRC += bee/parse.y
+LIBS += -ly
+.sp 0.2
+%.c %.h: %.y
+  $(YACC) -d $*.y
+  mv y.tab.c $*.c
+  mv y.tab.h $*.h
+.TE
+.LP
+Notice that the built-in rules are used for the C files,
+but we need special yacc processing to get the generated \f(CW.h\fP file.
+.LP
+The savings in this example look irrelevant, because the top-level
+\f[CW]Makefile\fP is so large.  But consider if there were 100 modules,
+each with only a few non-comment lines, and those specifically relevant
+to the module.  The savings soon add up to a total size often \fIless
+than\fP the recursive case, without loss of modularity.
+.LP
+The equivalent DAG of the \f(CWMakefile\fP after all of the includes
+looks like this:
+.so 07.figure2.so
+.LP
+The vertexes and edges for the include file dependency files are also
+present as these are important for \fImake\fP to function correctly.

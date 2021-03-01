@@ -1,6 +1,6 @@
 /*
  *	aegis - project change supervisor
- *	Copyright (C) 1991, 1992, 1993, 1994, 1995 Peter Miller;
+ *	Copyright (C) 1991, 1992, 1993, 1994, 1995, 1996, 1997, 1998 Peter Miller;
  *	All rights reserved.
  *
  *	This program is free software; you can redistribute it and/or modify
@@ -15,13 +15,14 @@
  *
  *	You should have received a copy of the GNU General Public License
  *	along with this program; if not, write to the Free Software
- *	Foundation, Inc., 675 Mass Ave, Cambridge, MA 02139, USA.
+ *	Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111, USA.
  *
  * MANIFEST: functions to list and modify change attributes
  */
 
 #include <stdio.h>
 #include <ac/stdlib.h>
+#include <ac/libintl.h>
 
 #include <aeca.h>
 #include <arglex2.h>
@@ -30,14 +31,17 @@
 #include <change.h>
 #include <error.h>
 #include <help.h>
+#include <io.h>
 #include <lock.h>
+#include <progname.h>
 #include <project.h>
-#include <option.h>
+#include <project_hist.h>
 #include <os.h>
+#include <sub.h>
 #include <trace.h>
 #include <undo.h>
 #include <user.h>
-#include <word.h>
+#include <str_list.h>
 
 
 static void change_attributes_usage _((void));
@@ -47,7 +51,7 @@ change_attributes_usage()
 {
 	char		*progname;
 
-	progname = option_progname_get();
+	progname = progname_get();
 	fprintf
 	(
 		stderr,
@@ -76,12 +80,7 @@ static void change_attributes_help _((void));
 static void
 change_attributes_help()
 {
-	static char *text[] =
-	{
-#include <../man1/aeca.h>
-	};
-
-	help(text, SIZEOF(text), change_attributes_usage);
+	help("aeca", change_attributes_usage);
 }
 
 
@@ -92,6 +91,7 @@ cattr_copy(a, s)
 	cattr	a;
 	cstate	s;
 {
+	trace(("cattr_copy()\n{\n"/*}*/));
 	if (!a->description && s->description)
 	{
 		a->description = str_copy(s->description);
@@ -122,6 +122,7 @@ cattr_copy(a, s)
 		a->test_baseline_exempt = s->test_baseline_exempt;
 		a->mask |= cattr_test_baseline_exempt_mask;
 	}
+
 	if (!a->architecture)
 		a->architecture =
 			(cattr_architecture_list)
@@ -145,6 +146,39 @@ cattr_copy(a, s)
 			*str_p = str_copy(s->architecture->list[j]);
 		}
 	}
+
+	if (s->copyright_years)
+	{
+		if (!a->copyright_years)
+			a->copyright_years =
+				(cattr_copyright_years_list)
+				cattr_copyright_years_list_type.alloc();
+		if (!a->copyright_years->length)
+		{
+			long		j;
+
+			for (j = 0; j < s->copyright_years->length; ++j)
+			{
+				type_ty		*type_p;
+				long		*int_p;
+
+				int_p =
+					cattr_copyright_years_list_type.list_parse
+					(
+						a->copyright_years,
+						&type_p
+					);
+				assert(type_p == &integer_type);
+				*int_p = s->copyright_years->list[j];
+			}
+		}
+	}
+	if (!a->version_previous && s->version_previous)
+	{
+		a->version_previous = str_copy(s->version_previous);
+		a->mask |= cattr_version_previous_mask;
+	}
+	trace((/*{*/"}\n"));
 }
 
 
@@ -175,22 +209,32 @@ change_attributes_list()
 
 		case arglex_token_change:
 			if (arglex() != arglex_token_number)
-				change_attributes_usage();
+				option_needs_number(arglex_token_change, change_attributes_usage);
 			/* fall through... */
 
 		case arglex_token_number:
 			if (change_number)
-				fatal("duplicate -Change option");
+				duplicate_option_by_name(arglex_token_change, change_attributes_usage);
 			change_number = arglex_value.alv_number;
-			if (change_number < 1)
-				fatal("change %ld out of range", change_number);
+			if (change_number == 0)
+				change_number = MAGIC_ZERO;
+			else if (change_number < 1)
+			{
+				sub_context_ty	*scp;
+
+				scp = sub_context_new();
+				sub_var_set(scp, "Number", "%ld", change_number);
+				fatal_intl(scp, i18n("change $number out of range"));
+				/* NOTREACHED */
+				sub_context_delete(scp);
+			}
 			break;
 
 		case arglex_token_project:
 			if (project_name)
-				fatal("duplicate -Project option");
+				duplicate_option(change_attributes_usage);
 			if (arglex() != arglex_token_string)
-				change_attributes_usage();
+				option_needs_name(arglex_token_project, change_attributes_usage);
 			project_name = str_from_c(arglex_value.alv_string);
 			break;
 		}
@@ -244,20 +288,40 @@ cattr_verify(fn, d)
 	cattr		d;
 {
 	if (!d->brief_description)
-		fatal("%s: contains no \"brief_description\" field", fn);
+	{
+		sub_context_ty	*scp;
+
+		scp = sub_context_new();
+		sub_var_set(scp, "File_Name", "%s", fn);
+		sub_var_set(scp, "FieLD_Name", "brief_description");
+		fatal_intl(scp, i18n("$filename: contains no \"$field_name\" field"));
+		/* NOTREACHED */
+		sub_context_delete(scp);
+	}
 	if (!(d->mask & cattr_cause_mask))
-		fatal("%s: contains no \"cause\" field", fn);
+	{
+		sub_context_ty	*scp;
+
+		scp = sub_context_new();
+		sub_var_set(scp, "File_Name", "%s", fn);
+		sub_var_set(scp, "FieLD_Name", "cause");
+		fatal_intl(scp, i18n("$filename: contains no \"$field_name\" field"));
+		/* NOTREACHED */
+		sub_context_delete(scp);
+	}
 }
 
 
 void
-cattr_edit(dp)
+cattr_edit(dp, et)
 	cattr		*dp;
+	int		et;
 {
+	sub_context_ty	*scp;
 	cattr		d;
 	string_ty	*filename;
 	string_ty	*msg;
-	
+
 	/*
 	 * write attributes to temporary file
 	 */
@@ -271,14 +335,17 @@ cattr_edit(dp)
 	/*
 	 * an error message to issue if anything goes wrong
 	 */
-	msg = str_format("attributes text left in the \"%S\" file", filename);
+	scp = sub_context_new();
+	sub_var_set(scp, "File_Name", "%S", filename);
+	msg = subst_intl(scp, i18n("attributes in $filename"));
+	sub_context_delete(scp);
 	undo_message(msg);
 	str_free(msg);
 
 	/*
 	 * edit the file
 	 */
-	os_edit(filename);
+	os_edit(filename, et);
 
 	/*
 	 * read it in again
@@ -316,12 +383,7 @@ check_permissions(cp, up)
 		)
 	)
 	{
-		change_fatal
-		(
-			cp,
-"attributes may only be changed by a project administrator, \
-or by the developer during development"
-		);
+		change_fatal(cp, 0, i18n("bad ca, not auth"));
 	}
 }
 
@@ -331,6 +393,7 @@ static void change_attributes_main _((void));
 static void
 change_attributes_main()
 {
+	sub_context_ty	*scp;
 	string_ty	*project_name;
 	project_ty	*pp;
 	cattr		cattr_data = 0;
@@ -339,12 +402,12 @@ change_attributes_main()
 	long		change_number;
 	change_ty	*cp;
 	user_ty		*up;
-	int		edit;
+	edit_ty		edit;
 
 	trace(("change_attributes_main()\n{\n"/*}*/));
 	project_name = 0;
 	change_number = 0;
-	edit = 0;
+	edit = edit_not_set;
 	while (arglex_token != arglex_token_eoln)
 	{
 		switch (arglex_token)
@@ -354,26 +417,19 @@ change_attributes_main()
 			continue;
 
 		case arglex_token_string:
-			error
-			(
-"warning: please use the -File option when specifying an attributes file, \
-the unadorned form is now obsolescent"
-			);
+			scp = sub_context_new();
+			sub_var_set(scp, "Name", "%s", arglex_token_name(arglex_token_file));
+			error_intl(scp, i18n("warning: use $name option"));
+			sub_context_delete(scp);
 			if (cattr_data)
-				fatal("too many files named");
+				fatal_intl(0, i18n("too many files"));
 			goto read_attr_file;
 
 		case arglex_token_file:
 			if (cattr_data)
-				goto duplicate;
+				duplicate_option(change_attributes_usage);
 			if (arglex() != arglex_token_string)
-			{
-				error
-				(
-				 "the -File option requires a filename argument"
-				);
-				change_attributes_usage();
-			}
+				option_needs_file(arglex_token_file, change_attributes_usage);
 			read_attr_file:
 			os_become_orig();
 			cattr_data = cattr_read_file(arglex_value.alv_string);
@@ -383,46 +439,74 @@ the unadorned form is now obsolescent"
 
 		case arglex_token_change:
 			if (arglex() != arglex_token_number)
-				change_attributes_usage();
+				option_needs_number(arglex_token_change, change_attributes_usage);
 			/* fall through... */
 
 		case arglex_token_number:
 			if (change_number)
-				fatal("duplicate -Change option");
+				duplicate_option_by_name(arglex_token_change, change_attributes_usage);
 			change_number = arglex_value.alv_number;
-			if (change_number < 1)
-				fatal("change %ld out of range", change_number);
+			if (change_number == 0)
+				change_number = MAGIC_ZERO;
+			else if (change_number < 1)
+			{
+				scp = sub_context_new();
+				sub_var_set(scp, "Number", "%ld", change_number);
+				fatal_intl(scp, i18n("change $number out of range"));
+				/* NOTREACHED */
+				sub_context_delete(scp);
+			}
 			break;
 
 		case arglex_token_project:
 			if (project_name)
-				goto duplicate;
+				duplicate_option(change_attributes_usage);
 			if (arglex() != arglex_token_string)
-				change_attributes_usage();
+				option_needs_name(arglex_token_project, change_attributes_usage);
 			project_name = str_from_c(arglex_value.alv_string);
 			break;
 
 		case arglex_token_edit:
-			if (edit)
+			if (edit == edit_foreground)
+				duplicate_option(change_attributes_usage);
+			if (edit != edit_not_set)
 			{
-				duplicate:
-				fatal
+				too_many_edits:
+				mutually_exclusive_options
 				(
-					"duplicate \"%s\" option",
-					arglex_value.alv_string
+					arglex_token_edit,
+					arglex_token_edit_bg,
+					change_attributes_usage
 				);
 			}
-			edit++;
+			edit = edit_foreground;
+			break;
+
+		case arglex_token_edit_bg:
+			if (edit == edit_background)
+				duplicate_option(change_attributes_usage);
+			if (edit != edit_not_set)
+				goto too_many_edits;
+			edit = edit_background;
+			break;
+
+		case arglex_token_wait:
+		case arglex_token_wait_not:
+			user_lock_wait_argument(change_attributes_usage);
 			break;
 		}
 		arglex();
 	}
-	if (!cattr_data && !edit)
+	if (!cattr_data && edit == edit_not_set)
 	{
-		error("warning: no -File specified, assuming -Edit desired");
-		++edit;
+		scp = sub_context_new();
+		sub_var_set(scp, "Name1", "%s", arglex_token_name(arglex_token_file));
+		sub_var_set(scp, "Name2", "%s", arglex_token_name(arglex_token_edit));
+		error_intl(scp, i18n("warning: no $name1, assuming $name2"));
+		sub_context_delete(scp);
+		edit = edit_foreground;
 	}
-	if (edit && !cattr_data)
+	if (edit != edit_not_set && !cattr_data)
 		cattr_data = (cattr)cattr_type.alloc();
 
 	/*
@@ -450,7 +534,7 @@ the unadorned form is now obsolescent"
 	/*
 	 * edit the attributes
 	 */
-	if (edit)
+	if (edit != edit_not_set)
 	{
 		/*
 		 * make sure they are allowed to,
@@ -467,7 +551,12 @@ the unadorned form is now obsolescent"
 		/*
 		 * edit the attributes
 		 */
-		cattr_edit(&cattr_data);
+		scp = sub_context_new();
+		sub_var_set(scp, "Name", "%S", project_name_get(pp));
+		sub_var_set(scp, "Number", "%ld", magic_zero_decode(change_number));
+		io_comment_append(scp, i18n("Project $name, Change $number"));
+		sub_context_delete(scp);
+		cattr_edit(&cattr_data, edit);
 	}
 
 	/*
@@ -487,7 +576,6 @@ the unadorned form is now obsolescent"
 	/*
 	 * copy the attributes across
 	 */
-	trace(("mark\n"));
 	if (cattr_data->description)
 	{
 		if (cstate_data->description)
@@ -537,11 +625,7 @@ the unadorned form is now obsolescent"
 			)
 		)
 		{
-			change_fatal
-			(
-				cp,
-		   "only project administrators may exempt changes from testing"
-			);
+			change_fatal(cp, 0, i18n("bad ca, no test exempt"));
 		}
 		else
 		{
@@ -585,70 +669,57 @@ the unadorned form is now obsolescent"
 	 */
 	if (cattr_data->architecture && cattr_data->architecture->length)
 	{
-		wlist		caarch;
-		wlist		pcarch;
+		string_list_ty		caarch;
+		string_list_ty		pcarch;
 		long		j;
 
 		/*
 		 * make sure they did not name architectures
 		 * we have never heard of
 		 */
-		trace(("mark\n"));
-		wl_zero(&caarch);
+		string_list_constructor(&caarch);
 		for (j = 0; j < cattr_data->architecture->length; ++j)
-			wl_append(&caarch, cattr_data->architecture->list[j]);
+			string_list_append(&caarch, cattr_data->architecture->list[j]);
 
-		wl_zero(&pcarch);
+		string_list_constructor(&pcarch);
 		assert(pconf_data->architecture);
 		assert(pconf_data->architecture->length);
 		for (j = 0; j < pconf_data->architecture->length; ++j)
 		{
-			wl_append
+			string_list_append
 			(
 				&pcarch,
 				pconf_data->architecture->list[j]->name
 			);
 		}
 
-		if (!wl_subset(&caarch, &pcarch))
-		{
-			fatal
-			(
-			      "architecture contains variations not in project"
-			);
-		}
-		wl_free(&pcarch);
+		if (!string_list_subset(&caarch, &pcarch))
+			fatal_intl(0, i18n("bad ca, unknown architecture"));
+		string_list_destructor(&pcarch);
 
 		/*
 		 * developers may remove architecture exemptions
 		 * but may not grant them
 		 */
-		trace(("mark\n"));
 		if (!project_administrator_query(pp, user_name(up)))
 		{
-			wlist		csarch;
+			string_list_ty		csarch;
 
-			wl_zero(&csarch);
+			string_list_constructor(&csarch);
 			for (j = 0; j < cstate_data->architecture->length; ++j)
 			{
-				wl_append
+				string_list_append
 				(
 					&csarch,
 					cstate_data->architecture->list[j]
 				);
 			}
 
-			if (!wl_subset(&csarch, &caarch))
-			{
-				fatal
-				(
-			      "developers may not grant architecture exemptions"
-				);
-			}
-			wl_free(&csarch);
+			if (!string_list_subset(&csarch, &caarch))
+				fatal_intl(0, i18n("bad ca, no arch exempt"));
+			string_list_destructor(&csarch);
 		}
-		trace(("mark\n"));
-		wl_free(&caarch);
+		string_list_destructor(&caarch);
 
 		/*
 		 * copy the architecture names across
@@ -664,11 +735,49 @@ the unadorned form is now obsolescent"
 		}
 	}
 
+	/*
+	 * copy the copyright years list across
+	 */
+	if (cattr_data->copyright_years && cattr_data->copyright_years->length)
+	{
+		long	j;
+
+		if (cstate_data->copyright_years)
+			cstate_copyright_years_list_type.free(cstate_data->copyright_years);
+		cstate_data->copyright_years =
+			cstate_copyright_years_list_type.alloc();
+		for (j = 0; j < cattr_data->copyright_years->length; ++j)
+		{
+			type_ty		*type_p;
+			long		*int_p;
+
+			int_p =
+				cstate_copyright_years_list_type.list_parse
+				(
+					cstate_data->copyright_years,
+					&type_p
+				);
+			assert(type_p == &integer_type);
+			*int_p = cattr_data->copyright_years->list[j];
+		}
+	}
+
+	/*
+	 * copy the previous version across
+	 */
+	if (cattr_data->version_previous)
+	{
+		if (cstate_data->version_previous)
+			str_free(cstate_data->version_previous);
+		cstate_data->version_previous =
+			str_copy(cattr_data->version_previous);
+	}
+
 	cattr_type.free(cattr_data);
 	change_cstate_write(cp);
 	commit();
 	lock_release();
-	change_verbose(cp, "attributes changed");
+	change_verbose(cp, 0, i18n("attributes changed"));
 	project_free(pp);
 	change_free(cp);
 	user_free(up);

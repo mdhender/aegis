@@ -1,6 +1,6 @@
 /*
  *	aegis - project change supervisor
- *	Copyright (C) 1991, 1992, 1993, 1994 Peter Miller.
+ *	Copyright (C) 1991, 1992, 1993, 1994, 1995, 1997, 1998 Peter Miller;
  *	All rights reserved.
  *
  *	This program is free software; you can redistribute it and/or modify
@@ -15,7 +15,7 @@
  *
  *	You should have received a copy of the GNU General Public License
  *	along with this program; if not, write to the Free Software
- *	Foundation, Inc., 675 Mass Ave, Cambridge, MA 02139, USA.
+ *	Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111, USA.
  *
  * MANIFEST: functions to implement new administrator
  */
@@ -30,12 +30,14 @@
 #include <error.h>
 #include <help.h>
 #include <lock.h>
-#include <option.h>
 #include <os.h>
+#include <progname.h>
 #include <project.h>
+#include <project_hist.h>
+#include <sub.h>
 #include <trace.h>
 #include <user.h>
-#include <word.h>
+#include <str_list.h>
 
 
 static void new_administrator_usage _((void));
@@ -45,7 +47,7 @@ new_administrator_usage()
 {
 	char		*progname;
 
-	progname = option_progname_get();
+	progname = progname_get();
 	fprintf(stderr, "usage: %s -New_Administrator [ <option>... ] <username>...\n", progname);
 	fprintf(stderr, "       %s -New_Administrator -List [ <option>... ]\n", progname);
 	fprintf(stderr, "       %s -New_Administrator -Help\n", progname);
@@ -58,12 +60,7 @@ static void new_administrator_help _((void));
 static void
 new_administrator_help()
 {
-	static char *text[] =
-	{
-#include <../man1/aena.h>
-	};
-
-	help(text, SIZEOF(text), new_administrator_usage);
+	help("aena", new_administrator_usage);
 }
 
 
@@ -87,9 +84,9 @@ new_administrator_list()
 
 		case arglex_token_project:
 			if (arglex() != arglex_token_string)
-				new_administrator_usage();
+				option_needs_name(arglex_token_project, new_administrator_usage);
 			if (project_name)
-				fatal("duplicate -Project option");
+				duplicate_option_by_name(arglex_token_project, new_administrator_usage);
 			project_name = str_from_c(arglex_value.alv_string);
 			break;
 		}
@@ -107,16 +104,15 @@ static void new_administrator_main _((void));
 static void
 new_administrator_main()
 {
-	wlist		wl;
+	string_list_ty	wl;
 	string_ty	*s1;
-	pstate		pstate_data;
 	int		j;
 	string_ty	*project_name;
 	project_ty	*pp;
 	user_ty		*up;
 
 	trace(("new_administrator_main()\n{\n"/*}*/));
-	wl_zero(&wl);
+	string_list_constructor(&wl);
 	project_name = 0;
 	while (arglex_token != arglex_token_eoln)
 	{
@@ -126,26 +122,47 @@ new_administrator_main()
 			generic_argument(new_administrator_usage);
 			continue;
 
+		case arglex_token_user:
+			if (arglex() != arglex_token_string)
+				option_needs_name(arglex_token_user, new_administrator_usage);
+			/* fall through... */
+
 		case arglex_token_string:
 			s1 = str_from_c(arglex_value.alv_string);
-			if (wl_member(&wl, s1))
-				fatal("user \"%s\" named more than once", s1->str_text);
-			wl_append(&wl, s1);
+			if (string_list_member(&wl, s1))
+			{
+				sub_context_ty	*scp;
+
+				scp = sub_context_new();
+				sub_var_set(scp, "Name", "%S", s1);
+				error_intl(scp, i18n("too many user $name"));
+				sub_context_delete(scp);
+				new_administrator_usage();
+			}
+			string_list_append(&wl, s1);
 			str_free(s1);
 			break;
 
 		case arglex_token_project:
 			if (arglex() != arglex_token_string)
-				new_administrator_usage();
+				option_needs_name(arglex_token_project, new_administrator_usage);
 			if (project_name)
-				fatal("duplicate -Project option");
+				duplicate_option_by_name(arglex_token_project, new_administrator_usage);
 			project_name = str_from_c(arglex_value.alv_string);
+			break;
+
+		case arglex_token_wait:
+		case arglex_token_wait_not:
+			user_lock_wait_argument(new_administrator_usage);
 			break;
 		}
 		arglex();
 	}
-	if (!wl.wl_nwords)
-		fatal("no users named");
+	if (!wl.nstrings)
+	{
+		error_intl(0, i18n("no user names"));
+		new_administrator_usage();
+	}
 
 	/*
 	 * locate project data
@@ -166,40 +183,33 @@ new_administrator_main()
 	 */
 	project_pstate_lock_prepare(pp);
 	lock_take();
-	pstate_data = project_pstate_get(pp);
 
 	/*
 	 * check they are allowed to do this
 	 */
 	if (!project_administrator_query(pp, user_name(up)))
-	{
-		project_fatal
-		(
-			pp,
-			"user \"%S\" is not an administrator",
-			user_name(up)
-		);
-	}
+		project_fatal(pp, 0, i18n("not an administrator"));
 
 	/*
 	 * check they they are OK users
 	 */
-	for (j = 0; j < wl.wl_nwords; ++j)
+	for (j = 0; j < wl.nstrings; ++j)
 	{
 		user_ty		*candidate;
 
 		/*
 		 * make sure the user isn't already there
 		 */
-		candidate = user_symbolic(pp, wl.wl_word[j]);
+		candidate = user_symbolic(pp, wl.string[j]);
 		if (project_administrator_query(pp, user_name(candidate)))
 		{
-			project_fatal
-			(
-				pp,
-				"user \"%S\" is already an administrator",
-				user_name(candidate)
-			);
+			sub_context_ty	*scp;
+
+			scp = sub_context_new();
+			sub_var_set(scp, "Name", "%S", user_name(candidate));
+			project_fatal(pp, scp, i18n("$name already administrator"));
+			/* NOTREACHED */
+			sub_context_delete(scp);
 		}
 
 		/*
@@ -209,11 +219,13 @@ new_administrator_main()
 		 */
 		if (!user_uid_check(user_name(candidate)))
 		{
-			fatal
-			(
-				"user \"%s\" is too privileged",
-				user_name(candidate)->str_text
-			);
+			sub_context_ty	*scp;
+
+			scp = sub_context_new();
+			sub_var_set(scp,"Name", "%S", user_name(candidate));
+			fatal_intl(scp, i18n("user \"$name\" is too privileged"));
+			/* NOTREACHED */
+			sub_context_delete(scp);
 		}
 
 		/*
@@ -233,14 +245,14 @@ new_administrator_main()
 	/*
 	 * verbose success message
 	 */
-	for (j = 0; j < wl.wl_nwords; ++j)
+	for (j = 0; j < wl.nstrings; ++j)
 	{
-		project_verbose
-		(
-			pp,
-			"user \"%S\" is now an administrator",
-			wl.wl_word[j]
-		);
+		sub_context_ty	*scp;
+
+		scp = sub_context_new();
+		sub_var_set(scp, "Name", "%S", wl.string[j]);
+		project_verbose(pp, scp, i18n("new administrator $name complete"));
+		sub_context_delete(scp);
 	}
 	project_free(pp);
 	user_free(up);

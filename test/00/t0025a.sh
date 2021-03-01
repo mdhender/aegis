@@ -1,7 +1,7 @@
 #!/bin/sh
 #
 #	aegis - project change supervisor
-#	Copyright (C) 1994, 1995 Peter Miller;
+#	Copyright (C) 1994, 1995, 1996, 1997, 1998 Peter Miller;
 #	All rights reserved.
 #
 #	This program is free software; you can redistribute it and/or modify
@@ -16,7 +16,7 @@
 #
 #	You should have received a copy of the GNU General Public License
 #	along with this program; if not, write to the Free Software
-#	Foundation, Inc., 675 Mass Ave, Cambridge, MA 02139, USA.
+#	Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111, USA.
 #
 # MANIFEST: Test the aechown functionality
 #
@@ -25,6 +25,8 @@ unset AEGIS_PROJECT
 unset AEGIS_CHANGE
 unset AEGIS_PATH
 unset AEGIS
+unset LINES
+unset COLS
 umask 022
 
 USER=${USER:-${LOGNAME:-`whoami`}}
@@ -33,22 +35,35 @@ work=${AEGIS_TMP:-/tmp}/$$
 PAGER=cat
 export PAGER
 AEGIS_FLAGS="default_development_directory = \"$work\"; \
-	default_project_directory = \"$work\"; \
-	delete_file_preference = no_keep; \
-	diff_preference = automatic_merge;"
+	lock_wait_preference = always; \
+        default_project_directory = \"$work\"; \
+        delete_file_preference = no_keep; \
+	diff_preference = automatic_merge; \
+	pager_preference = never; \
+	persevere_preference = all; \
+	log_file_preference = never;"
 export AEGIS_FLAGS
 AEGIS_THROTTLE=2
 export AEGIS_THROTTLE
 
 here=`pwd`
-if test $? -ne 0 ; then exit 1; fi
+if test $? -ne 0 ; then exit 2; fi
 
 if test "$1" != "" ; then bin="$here/$1/bin"; else bin="$here/bin"; fi
 
+no_result()
+{
+	set +x
+	echo "NO RESULT for test of the aechown functionality ($activity)" 1>&2
+	cd $here
+	find $work -type d -user $USER -exec chmod u+w {} \;
+	rm -rf $work
+	exit 2
+}
 fail()
 {
 	set +x
-	echo 'FAILED test of the aechown functionality' 1>&2
+	echo "FAILED test of the aechown functionality ($activity)" 1>&2
 	cd $here
 	find $work -type d -user $USER -exec chmod u+w {} \;
 	rm -rf $work
@@ -63,49 +78,62 @@ pass()
 	rm -rf $work
 	exit 0
 }
-trap \"fail\" 1 2 3 15
+trap \"no_result\" 1 2 3 15
 
-mkdir $work
-if test $? -ne 0 ; then fail; fi
-mkdir $work/lib
-if test $? -ne 0 ; then fail; fi
+activity="working directory 71"
+mkdir $work $work/lib
+if test $? -ne 0 ; then no_result; fi
 chmod 0777 $work/lib
-if test $? -ne 0 ; then fail; fi
+if test $? -ne 0 ; then no_result; fi
+
+#
+# use the built-in error messages
+#
+AEGIS_MESSAGE_LIBRARY=$work/no-such-dir
+export AEGIS_MESSAGE_LIBRARY
+unset LANG
+unset LANGUAGE
 
 AEGIS_PATH=$work/lib
 export AEGIS_PATH
-if test $? -ne 0 ; then fail; fi
+if test $? -ne 0 ; then no_result; fi
 cd $work
-if test $? -ne 0 ; then fail; fi
+if test $? -ne 0 ; then no_result; fi
 
 #
 # test the aechown functionality
 #
-$bin/aegis -npr foo
-if test $? -ne 0 ; then fail; fi
+activity="new project 108"
+$bin/aegis -npr foo -vers "" > log 2>&1
+if test $? -ne 0 ; then cat log; no_result; fi
 
 AEGIS_PROJECT=foo
 export AEGIS_PROJECT
 
-$bin/aegis -nd $USER
-if test $? -ne 0 ; then fail; fi
+activity="new developer 115"
+$bin/aegis -nd $USER > log 2>&1
+if test $? -ne 0 ; then cat log; no_result; fi
 
+activity="new change 119"
 cat > eric << 'fubar'
 brief_description = "the change";
 cause = internal_enhancement;
 fubar
-if test $? -ne 0 ; then fail; fi
-$bin/aegis -nc -f eric -p foo
-if test $? -ne 0 ; then fail; fi
+if test $? -ne 0 ; then no_result; fi
+$bin/aegis -nc 1 -f eric -p foo > log 2>&1
+if test $? -ne 0 ; then cat log; no_result; fi
 
-$bin/aegis -db 1
-if test $? -ne 0 ; then fail; fi
+activity="develop begin 128"
+$bin/aegis -db 1 > log 2>&1
+if test $? -ne 0 ; then cat log; no_result; fi
 
-$bin/aegis -nf foo.C001/xyzzy
-if test $? -ne 0 ; then fail; fi
+activity="new file 132"
+$bin/aegis -nf foo.C001/xyzzy > log 2>&1
+if test $? -ne 0 ; then cat log; no_result; fi
 
-$bin/aegis -chown -c 1 -u $USER
-if test $? -ne 0 ; then fail; fi
+activity="chown 136"
+$bin/aegis -chown -c 1 -u $USER > log 2>&1
+if test $? -ne 0 ; then cat log; fail; fi
 
 if test ! -f foo.D001/xyzzy ; then fail; fi
 

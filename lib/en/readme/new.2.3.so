@@ -1,0 +1,115 @@
+.\"
+.\"	aegis - project change supervisor
+.\"	Copyright (C) 1994, 1995 Peter Miller;
+.\"	All rights reserved.
+.\"
+.\"	This program is free software; you can redistribute it and/or modify
+.\"	it under the terms of the GNU General Public License as published by
+.\"	the Free Software Foundation; either version 2 of the License, or
+.\"	(at your option) any later version.
+.\"
+.\"	This program is distributed in the hope that it will be useful,
+.\"	but WITHOUT ANY WARRANTY; without even the implied warranty of
+.\"	MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+.\"	GNU General Public License for more details.
+.\"
+.\"	You should have received a copy of the GNU General Public License
+.\"	along with this program; if not, write to the Free Software
+.\"	Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111, USA.
+.\"
+.\" MANIFEST: document describing version 2.3 features
+.\"
+.SS Version 2.3
+.PP
+.if t \(bu
+.if n *
+The merging behaviour of the
+.IR aed (1)
+command has changed.
+If any files require merging, it only merges.
+In this way, merged files are not lost in the rest of the output.
+Also,
+there are now command line options and user preferences
+so that you can select to only merge or only difference.
+See
+.IR aed (1)
+and
+.IR aeuconf (5)
+for more nformation.
+.PP
+.if t \(bu
+.if n *
+It is now possible to assign symbolic names to project deltas.
+This means that you may now recreate earlier project baselines by name.
+.PP
+.if t \(bu
+.if n *
+All commands which accept a
+.B -Edit
+option now check for most errors before commencing the edit.
+This avoids wasted edits in many error cases.
+.PP
+.if t \(bu
+.if n *
+Fuzzy file name matches are now used to improve the error
+messages from aecp, aerm, etc.
+.PP
+.if t \(bu
+.if n *
+Version number separators in project names are preserved across
+new releases.
+Particularly, you can use a minus ('-') between the name and the
+major version number.
+.PP
+.if t \(bu
+.if n *
+A new ``copyright_years'' project attribute has been added.
+This is a list of years maintained at integrate begin time,
+to automate the insertion of list of copyright years into
+copyright messages and documentation.
+There is a new ${Copyright_Years} substitution
+and the copyright years are also listed in the ``aegis -list version'' listing.
+See
+.IR aesub (5)
+and
+.IR ael (1)
+for more information.
+.PP
+.if t \(bu
+.if n *
+It is now possible to specify patterns for
+acceptable and unacceptable
+filenames in the project
+.I config
+file.
+See
+.IR aepconf (5)
+for more information.
+.PP
+.if t \(bu
+.if n *
+Four more functions have been added to the report language:
+.IR length ,
+.IR split ,
+.I substr
+and
+.IR wrap .
+See
+.IR aer (5)
+for more information.
+.PP
+.if t \(bu
+.if n *
+The tests distributed with \*(n) are now more stable
+on very fast hosts.
+See the environment variables section of
+.IR aeb (1)
+for more information.
+.PP
+.if t \(bu
+.if n *
+The \fIlib/config.example\fP directory of the distribution
+now contains files with example portions of the project \fIconfig\fP file.
+May thanks to David R Shue <shue@ll.mit.edu> for this suggestion.
+.PP
+Changes made in the previous release included:

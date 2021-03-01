@@ -1,0 +1,51 @@
+.\"
+.\"	aegis - project change supervisor
+.\"	Copyright (C) 1993, 1994 Peter Miller.
+.\"	All rights reserved.
+.\"
+.\"	This program is free software; you can redistribute it and/or modify
+.\"	it under the terms of the GNU General Public License as published by
+.\"	the Free Software Foundation; either version 2 of the License, or
+.\"	(at your option) any later version.
+.\"
+.\"	This program is distributed in the hope that it will be useful,
+.\"	but WITHOUT ANY WARRANTY; without even the implied warranty of
+.\"	MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+.\"	GNU General Public License for more details.
+.\"
+.\"	You should have received a copy of the GNU General Public License
+.\"	along with this program; if not, write to the Free Software
+.\"	Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111, USA.
+.\"
+.\" MANIFEST: User Guide, The Change Development Cycle, What to do Next
+.\"
+.nh 2 "What to do Next"
+.LP
+This chapter has given an overview of what using aegis feels like.
+As a next step in getting to know aegis,
+it would be a good idea if you created a project and
+went through this same exercise;
+you could use this exact example,
+or you could use a similar small project.
+This idea simply to run through many of the same steps as in the example.
+Typos and other natural events will ensure that you come across
+a number of situations not directly covered by this chapter.
+.LP
+If you have not already done do,
+a printed copy of the section 1 and 5 manual entries will be invaluable.
+If you don't want to use that many trees,
+they will be available on-line,
+by using the "-Help" option of the appropriate command variant.
+Try:
+.E(
+% \f(CBaedb -help\fP
+\fI\&...manual entry...\fP
+%
+.E)
+.LP
+Note that this example has not demonstrated all of the available functionality.
+One item of particular interest is that tests,
+like any other source file,
+may be copied into a change and modified,
+or even deleted,
+just like any other source file.

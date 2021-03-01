@@ -1,6 +1,6 @@
 /*
  *	aegis - project change supervisor
- *	Copyright (C) 1993, 1994 Peter Miller.
+ *	Copyright (C) 1993, 1994, 1995, 1996, 1997, 1998 Peter Miller;
  *	All rights reserved.
  *
  *	This program is free software; you can redistribute it and/or modify
@@ -15,7 +15,7 @@
  *
  *	You should have received a copy of the GNU General Public License
  *	along with this program; if not, write to the Free Software
- *	Foundation, Inc., 675 Mass Ave, Cambridge, MA 02139, USA.
+ *	Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111, USA.
  *
  * MANIFEST: functions to implement remove project
  */
@@ -31,10 +31,11 @@
 #include <gonzo.h>
 #include <help.h>
 #include <lock.h>
-#include <option.h>
 #include <os.h>
+#include <progname.h>
 #include <project.h>
-#include <str.h>
+#include <project_hist.h>
+#include <sub.h>
 #include <trace.h>
 #include <user.h>
 
@@ -46,7 +47,7 @@ remove_project_usage()
 {
 	char	*progname;
 
-	progname = option_progname_get();
+	progname = progname_get();
 	fprintf
 	(
 		stderr,
@@ -69,12 +70,7 @@ static void remove_project_help _((void));
 static void
 remove_project_help()
 {
-	static char *text[] =
-	{
-#include <../man1/aermpr.h>
-	};
-
-	help(text, SIZEOF(text), remove_project_usage);
+	help("aermpr", remove_project_usage);
 }
 
 
@@ -97,7 +93,6 @@ remove_project_main()
 {
 	long		nerr;
 	int		j;
-	pstate		pstate_data;
 	string_ty	*project_name;
 	project_ty	*pp;
 	change_ty	*cp;
@@ -118,18 +113,23 @@ remove_project_main()
 		case arglex_token_keep:
 		case arglex_token_interactive:
 		case arglex_token_no_keep:
-			user_delete_file_argument();
+			user_delete_file_argument(remove_project_usage);
 			break;
 
 		case arglex_token_project:
 			if (arglex() != arglex_token_string)
-				remove_project_usage();
+				option_needs_name(arglex_token_project, remove_project_usage);
 			/* fall through... */
 
 		case arglex_token_string:
 			if (project_name)
-				fatal("duplicate -Project option");
+				duplicate_option_by_name(arglex_token_project, remove_project_usage);
 			project_name = str_from_c(arglex_value.alv_string);
+			break;
+
+		case arglex_token_wait:
+		case arglex_token_wait_not:
+			user_lock_wait_argument(remove_project_usage);
 			break;
 		}
 		arglex();
@@ -139,7 +139,10 @@ remove_project_main()
 	 * locate project data
 	 */
 	if (!project_name)
-		fatal("project must be named explicitly");
+	{
+		error_intl(0, i18n("no project name"));
+		remove_project_usage();
+	}
 	pp = project_alloc(project_name);
 	str_free(project_name);
 	project_bind_existing(pp);
@@ -173,13 +176,13 @@ remove_project_main()
 	/*
 	 * it is an error if any of the changes are active
 	 */
-	pstate_data = project_pstate_get(pp);
 	nerr = 0;
-	for (j = 0; j < pstate_data->change->length; ++j)
+	for (j = 0; ; ++j)
 	{
 		long	change_number;
 
-		change_number = pstate_data->change->list[j];
+		if (!project_change_nth(pp, j, &change_number))
+			break;
 		cp = change_alloc(pp, change_number);
 		change_bind_existing(cp);
 		cstate_data = change_cstate_get(cp);
@@ -190,7 +193,7 @@ remove_project_main()
 			cstate_data->state <= cstate_state_being_integrated
 		)
 		{
-			change_error(cp, "still active");
+			change_error(cp, 0, i18n("still active"));
 			++nerr;
 		}
 		change_free(cp);
@@ -201,12 +204,7 @@ remove_project_main()
 	 */
 	if (!project_administrator_query(pp, user_name(up)))
 	{
-		project_error
-		(
-			pp,
-			"user \"%S\" is not an administrator",
-			user_name(up)
-		);
+		project_error(pp, 0, i18n("not an administrator"));
 		nerr++;
 	}
 	if (nerr)
@@ -217,7 +215,7 @@ remove_project_main()
 	 */
 	if (user_delete_file_query(up, project_home_path_get(pp), 1))
 	{
-		project_verbose(pp, "remove project directory");
+		project_verbose(pp, 0, i18n("remove project directory"));
 		project_become(pp);
 		commit_rmdir_tree_errok(project_home_path_get(pp));
 		project_become_undo();
@@ -239,7 +237,7 @@ remove_project_main()
 	/*
 	 * verbose success message
 	 */
-	project_verbose(pp, "removed");
+	project_verbose(pp, 0, i18n("remove project complete"));
 
 	/*
 	 * clean up and go home

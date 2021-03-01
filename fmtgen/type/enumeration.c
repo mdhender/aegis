@@ -1,6 +1,6 @@
 /*
  *	aegis - project change supervisor
- *	Copyright (C) 1991, 1992, 1993, 1994 Peter Miller.
+ *	Copyright (C) 1991, 1992, 1993, 1994, 1997 Peter Miller;
  *	All rights reserved.
  *
  *	This program is free software; you can redistribute it and/or modify
@@ -15,7 +15,7 @@
  *
  *	You should have received a copy of the GNU General Public License
  *	along with this program; if not, write to the Free Software
- *	Foundation, Inc., 675 Mass Ave, Cambridge, MA 02139, USA.
+ *	Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111, USA.
  *
  * MANIFEST: enumerated types functions generation
  */
@@ -179,11 +179,11 @@ gen_code(type)
 	indent_less();
 	indent_printf("{\n"/*}*/);
 	indent_printf("static char\1buffer[20];\n\n");
-	indent_printf("if (this >= 0 && this < %d)\n", this->nelements);
+	indent_printf("if ((int)this >= 0 && (int)this < %d)\n", this->nelements);
 	indent_more();
 	indent_printf("return %s_s[this];\n", this->name->str_text);
 	indent_less();
-	indent_printf("sprintf(buffer, \"%%d\", this);\n");
+	indent_printf("sprintf(buffer, \"%%d\", (int)this);\n");
 	indent_printf("return buffer;\n");
 	indent_printf(/*{*/"}\n");
 
@@ -196,9 +196,13 @@ gen_code(type)
 	indent_less();
 	indent_printf("{\n"/*}*/);
 	indent_printf("if (name)\n");
+	indent_printf("{\n"/*}*/);
+	indent_printf("if (this == 0 && type_enum_option_query())\n");
 	indent_more();
-	indent_printf("indent_printf(\"%%s = \", name);\n");
+	indent_printf("return;\n");
 	indent_less();
+	indent_printf("indent_printf(\"%%s = \", name);\n");
+	indent_printf(/*{*/"}\n");
 	indent_printf
 	(
 		"indent_printf(\"%%s\", %s_s[this]);\n",

@@ -1,0 +1,74 @@
+'\" t
+.\"	aegis - project change supervisor
+.\"	Copyright (C) 1996 Peter Miller;
+.\"	All rights reserved.
+.\"
+.\"	This program is free software; you can redistribute it and/or modify
+.\"	it under the terms of the GNU General Public License as published by
+.\"	the Free Software Foundation; either version 2 of the License, or
+.\"	(at your option) any later version.
+.\"
+.\"	This program is distributed in the hope that it will be useful,
+.\"	but WITHOUT ANY WARRANTY; without even the implied warranty of
+.\"	MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+.\"	GNU General Public License for more details.
+.\"
+.\"	You should have received a copy of the GNU General Public License
+.\"	along with this program; if not, write to the Free Software
+.\"	Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111, USA.
+.\"
+.\" MANIFEST: description of localization files
+.\"
+.TH Localization Aegis
+.SH NAME
+The Localizations Directories
+.SH DESCRIPTION
+This directory contains
+specifical localizations of the Aegis message catalogue,
+manual entries and documentation.
+.PP
+It is organised as one directory for each localization.
+.PP
+Each localization name,
+each directory names,
+may be anything that GNU Gettext's ``finddomain''
+function understands.
+Here is a brief overview:
+.RS
+$LANG now possibly contains a colon separated list of
+locales.  Each single locale can consist of up to four
+recognized parts for the XPG syntax:
+.RS
+language[_territory[.codeset]][@modifier]
+.RE
+or six parts for the CEN syntax:
+.RS
+language[_territory][+audience][+special][,sponsor][_revision]
+.RE
+The XPG format is much preferred,
+because it nominates a codeset set name.
+.RE
+.SS Language Name
+The language name must be one of the 2-letter names
+from the ISO 639 standard.
+.PP
+See
+.I http://www.ics.uci.edu/pub/ietf/http/related/iso639.txt
+for a list of these codes.
+The is also a list in the
+.I doc
+directory of the GNU Gettext distribution.
+.PP
+Please do
+.I not
+use the proposed 3-letter ISO 639/2 codes until it is ratified.
+.SS Territory Name
+The language identifier is mandatory, all other parts are
+optional.  Usually ``territory'' means country, so please the
+the ISO 3166 2-letter country code.  (e.g. en_us :-)
+.PP
+You can find the list at
+ftp://rs.internic.net/netinfo/iso3166-countrycodes
+.SS Codeset Name
+It is important to nominate the codeset name, so that the GNU Recode
+program can be used to move translations to a different codeset.
