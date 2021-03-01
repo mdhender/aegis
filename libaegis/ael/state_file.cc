@@ -1,6 +1,6 @@
 //
 //	aegis - project change supervisor
-//	Copyright (C) 1999, 2003, 2004 Peter Miller;
+//	Copyright (C) 1999, 2003-2006 Peter Miller;
 //	All rights reserved.
 //
 //	This program is free software; you can redistribute it and/or modify
@@ -20,13 +20,13 @@
 // MANIFEST: functions to list state file names
 //
 
-#include <ac/stdio.h>
+#include <common/ac/stdio.h>
 
-#include <ael/state_file.h>
-#include <change.h>
-#include <project.h>
-#include <str_list.h>
-#include <user.h>
+#include <libaegis/ael/state_file.h>
+#include <libaegis/change.h>
+#include <libaegis/project.h>
+#include <common/str_list.h>
+#include <libaegis/user.h>
 
 
 void
@@ -46,13 +46,13 @@ list_state_file_name(string_ty *project_name,
 		project_name = str_copy(project_name);
 	pp = project_alloc(project_name);
 	str_free(project_name);
-	project_bind_existing(pp);
+	pp->bind_existing();
 
 	//
 	// locate change data
 	//
 	if (!change_number)
-		cp = project_change_get(pp);
+		cp = pp->change_get();
 	else
 	{
 		cp = change_alloc(pp, change_number);

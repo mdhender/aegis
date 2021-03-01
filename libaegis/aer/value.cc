@@ -1,6 +1,6 @@
 //
 //	aegis - project change supervisor
-//	Copyright (C) 1994-1996, 1999, 2002-2004 Peter Miller;
+//	Copyright (C) 1994-1996, 1999, 2002-2005 Peter Miller;
 //	All rights reserved.
 //
 //	This program is free software; you can redistribute it and/or modify
@@ -20,13 +20,13 @@
 // MANIFEST: functions to manipulate values
 //
 
-#include <aer/expr.h>
-#include <aer/value.h>
-#include <aer/value/error.h>
-#include <error.h>
-#include <mem.h>
-#include <sub.h>
-#include <trace.h>
+#include <libaegis/aer/expr.h>
+#include <libaegis/aer/value.h>
+#include <libaegis/aer/value/error.h>
+#include <common/error.h>
+#include <common/mem.h>
+#include <libaegis/sub.h>
+#include <common/trace.h>
 
 
 rpt_value_ty *

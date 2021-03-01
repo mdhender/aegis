@@ -1,6 +1,6 @@
 //
 //	aegis - project change supervisor
-//	Copyright (C) 1999, 2001-2005 Peter Miller;
+//	Copyright (C) 1999, 2001-2006 Peter Miller;
 //	All rights reserved.
 //
 //	This program is free software; you can redistribute it and/or modify
@@ -20,19 +20,19 @@
 // MANIFEST: functions to manipulate users
 //
 
-#include <ael/change/inappropriat.h>
-#include <ael/change/user.h>
-#include <ael/column_width.h>
-#include <ael/project/inappropriat.h>
-#include <change.h>
-#include <col.h>
-#include <error.h>
-#include <output.h>
-#include <project.h>
-#include <str_list.h>
-#include <sub.h>
-#include <trace.h>
-#include <user.h>
+#include <libaegis/ael/change/inappropriat.h>
+#include <libaegis/ael/change/user.h>
+#include <libaegis/ael/column_width.h>
+#include <libaegis/ael/project/inappropriat.h>
+#include <libaegis/change.h>
+#include <libaegis/col.h>
+#include <common/error.h>
+#include <libaegis/output.h>
+#include <libaegis/project.h>
+#include <common/str_list.h>
+#include <libaegis/sub.h>
+#include <common/trace.h>
+#include <libaegis/user.h>
 
 
 void
@@ -123,7 +123,7 @@ list_user_changes(struct string_ty *project_name, long change_number,
 	// and make sure we are allowed to look at it
 	//
 	pp = project_alloc(name.string[j]);
-	project_bind_existing(pp);
+	pp->bind_existing();
 	err = project_is_readable(pp);
 	if (err)
 	{

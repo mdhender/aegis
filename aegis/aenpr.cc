@@ -1,6 +1,6 @@
 //
 //	aegis - project change supervisor
-//	Copyright (C) 1991-1999, 2001-2005 Peter Miller;
+//	Copyright (C) 1991-1999, 2001-2006 Peter Miller;
 //	All rights reserved.
 //
 //	This program is free software; you can redistribute it and/or modify
@@ -20,36 +20,36 @@
 // MANIFEST: functions to implement new project
 //
 
-#include <ac/ctype.h>
-#include <ac/stdio.h>
-#include <ac/stdlib.h>
-#include <ac/string.h>
+#include <common/ac/ctype.h>
+#include <common/ac/stdio.h>
+#include <common/ac/stdlib.h>
+#include <common/ac/string.h>
 
-#include <ael/project/projects.h>
-#include <aenpr.h>
-#include <arglex2.h>
-#include <arglex/project.h>
-#include <change.h>
-#include <change/branch.h>
-#include <commit.h>
-#include <error.h>
-#include <gonzo.h>
-#include <help.h>
-#include <io.h>
-#include <lock.h>
-#include <os.h>
-#include <progname.h>
-#include <project.h>
-#include <project/pattr/edit.h>
-#include <project/pattr/get.h>
-#include <project/pattr/set.h>
-#include <project/verbose.h>
-#include <project/history.h>
-#include <quit.h>
-#include <sub.h>
-#include <trace.h>
-#include <undo.h>
-#include <user.h>
+#include <libaegis/ael/project/projects.h>
+#include <aegis/aenpr.h>
+#include <libaegis/arglex2.h>
+#include <libaegis/arglex/project.h>
+#include <libaegis/change.h>
+#include <libaegis/change/branch.h>
+#include <libaegis/commit.h>
+#include <common/error.h>
+#include <libaegis/gonzo.h>
+#include <libaegis/help.h>
+#include <libaegis/io.h>
+#include <libaegis/lock.h>
+#include <libaegis/os.h>
+#include <common/progname.h>
+#include <libaegis/project.h>
+#include <libaegis/project/pattr/edit.h>
+#include <libaegis/project/pattr/get.h>
+#include <libaegis/project/pattr/set.h>
+#include <libaegis/project/verbose.h>
+#include <libaegis/project/history.h>
+#include <common/quit.h>
+#include <libaegis/sub.h>
+#include <common/trace.h>
+#include <libaegis/undo.h>
+#include <libaegis/user.h>
 
 
 static void
@@ -510,10 +510,10 @@ new_project_main(void)
 	    new_project_usage();
 	    // NOTREACHED
 	}
-	project_home_path_set(pp, home);
+	pp->home_path_set(os_canonify_dirname(home));
     }
     else
-	project_bind_new(pp);
+	pp->bind_new();
 
     //
     // the user who ran the command is the project administrator.
@@ -542,17 +542,17 @@ new_project_main(void)
 	project_verbose_directory(pp, home);
     }
     if (!keep)
-	project_home_path_set(pp, home);
+	pp->home_path_set(home);
     str_free(home);
 
     //
     // create the directory and subdirectories.
     // It is an error if the directories can't be created.
     //
-    home = project_home_path_get(pp);
-    bl = project_baseline_path_get(pp, 0);
-    hp = project_history_path_get(pp);
-    ip = project_info_path_get(pp);
+    home = pp->home_path_get();
+    bl = pp->baseline_path_get();
+    hp = pp->history_path_get();
+    ip = pp->info_path_get();
     if (!keep)
     {
 	project_become(pp);
@@ -600,9 +600,9 @@ new_project_main(void)
     // next branch down is created, because creating a branch alters
     // pstate.
     //
-    project_pstate_write(pp);
+    pp->pstate_write();
     for (j = 0; j < version_number_length; ++j)
-	project_pstate_write(version_pp[j]);
+	version_pp[j]->pstate_write();
     gonzo_gstate_write();
 
     //

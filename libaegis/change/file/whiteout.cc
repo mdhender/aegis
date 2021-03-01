@@ -1,6 +1,6 @@
 //
 //	aegis - project change supervisor
-//	Copyright (C) 1999, 2001-2004 Peter Miller;
+//	Copyright (C) 1999, 2001-2005 Peter Miller;
 //	All rights reserved.
 //
 //	This program is free software; you can redistribute it and/or modify
@@ -20,14 +20,14 @@
 // MANIFEST: functions to generate whiteout files
 //
 
-#include <ac/string.h>
+#include <common/ac/string.h>
 
-#include <change.h>
-#include <error.h> // for assert
-#include <gmatch.h>
-#include <r250.h>
-#include <sub.h>
-#include <trace.h>
+#include <libaegis/change.h>
+#include <common/error.h> // for assert
+#include <common/gmatch.h>
+#include <common/r250.h>
+#include <libaegis/sub.h>
+#include <common/trace.h>
 
 
 static string_ty *

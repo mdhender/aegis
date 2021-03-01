@@ -23,9 +23,7 @@
 #ifndef LIBAEGIS_RFC822_FUNCTOR_H
 #define LIBAEGIS_RFC822_FUNCTOR_H
 
-#pragma interface "rfc822_functor"
-
-#include <rfc822.h>
+#include <libaegis/rfc822.h>
 
 /**
   * The rfc822_functor class is used to represent an abstract object

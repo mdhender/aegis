@@ -20,25 +20,25 @@
 // MANIFEST: implementation of the diff class
 //
 
-#include <ac/stdio.h>
-#include <ac/stdlib.h>
+#include <common/ac/stdio.h>
+#include <common/ac/stdlib.h>
 
-#include <arglex3.h>
-#include <arglex/project.h>
-#include <change/identifi_sub.h>
-#include <change/functor.h>
-#include <diff.h>
-#include <file_revision.h>
-#include <help.h>
-#include <nstring/list.h>
-#include <option.h>
-#include <os.h>
-#include <progname.h>
-#include <project/identifi_sub/plain.h>
-#include <project/identifi_sub/branch.h>
-#include <sub.h>
-#include <trace.h>
-#include <user.h>
+#include <aediff/arglex3.h>
+#include <libaegis/arglex/project.h>
+#include <libaegis/change/identifi_sub.h>
+#include <libaegis/change/functor.h>
+#include <aediff/diff.h>
+#include <libaegis/file_revision.h>
+#include <libaegis/help.h>
+#include <common/nstring/list.h>
+#include <libaegis/option.h>
+#include <libaegis/os.h>
+#include <common/progname.h>
+#include <libaegis/project/identifi_sub/plain.h>
+#include <libaegis/project/identifi_sub/branch.h>
+#include <libaegis/sub.h>
+#include <common/trace.h>
+#include <libaegis/user.h>
 
 
 void

@@ -1,6 +1,6 @@
 //
 //	aegis - project change supervisor
-//	Copyright (C) 2004 Peter Miller;
+//	Copyright (C) 2004, 2005 Peter Miller;
 //	All rights reserved.
 //
 //	This program is free software; you can redistribute it and/or modify
@@ -20,10 +20,8 @@
 // MANIFEST: implementation of the sub_diversion_stack class
 //
 
-#pragma implementation "sub_diversion_stack"
-
-#include <error.h> // for assert
-#include <sub/diversion/stack.h>
+#include <common/error.h> // for assert
+#include <libaegis/sub/diversion/stack.h>
 
 
 sub_diversion_stack::~sub_diversion_stack()

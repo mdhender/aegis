@@ -20,13 +20,11 @@
 // MANIFEST: implementation of the xml_node_dump class
 //
 
-#pragma implementation "xml_node_dump"
+#include <common/ac/ctype.h>
 
-#include <ac/ctype.h>
-
-#include <nstring.h>
-#include <output.h>
-#include <xml_node/dump.h>
+#include <common/nstring.h>
+#include <libaegis/output.h>
+#include <test_xml/xml_node/dump.h>
 
 
 xml_node_dump::~xml_node_dump()

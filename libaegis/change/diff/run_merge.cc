@@ -1,6 +1,6 @@
 //
 //	aegis - project change supervisor
-//	Copyright (C) 1999, 2003, 2004 Peter Miller;
+//	Copyright (C) 1999, 2003-2005 Peter Miller;
 //	All rights reserved.
 //
 //	This program is free software; you can redistribute it and/or modify
@@ -20,13 +20,13 @@
 // MANIFEST: functions to manipulate run_merges
 //
 
-#include <change.h>
-#include <change/env_set.h>
-#include <error.h> // for assert
-#include <os.h>
-#include <sub.h>
-#include <trace.h>
-#include <user.h>
+#include <libaegis/change.h>
+#include <libaegis/change/env_set.h>
+#include <common/error.h> // for assert
+#include <libaegis/os.h>
+#include <libaegis/sub.h>
+#include <common/trace.h>
+#include <libaegis/user.h>
 
 
 void

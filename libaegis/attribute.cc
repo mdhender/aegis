@@ -1,6 +1,6 @@
 //
 //	aegis - project change supervisor
-//	Copyright (C) 2004, 2005 Peter Miller;
+//	Copyright (C) 2004-2006 Peter Miller;
 //	All rights reserved.
 //
 //	This program is free software; you can redistribute it and/or modify
@@ -20,10 +20,11 @@
 // MANIFEST: implementation of the attribute class
 //
 
-#include <ac/string.h>
+#include <common/ac/string.h>
 
-#include <attribute.h>
-#include <error.h>
+#include <libaegis/attribute.h>
+#include <libaegis/boolean.h>
+#include <common/error.h>
 
 
 attributes_ty *
@@ -41,6 +42,17 @@ attributes_list_find(attributes_list_ty *alp, const char *name)
 	    return ap;
     }
     return 0;
+}
+
+
+bool
+attributes_list_find_boolean(attributes_list_ty *alp, const char *name,
+    bool default_value)
+{
+    attributes_ty *ap = attributes_list_find(alp, name);
+    if (!ap || !ap->value)
+	return default_value;
+    return string_to_bool(nstring(ap->value), default_value);
 }
 
 

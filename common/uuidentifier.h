@@ -1,29 +1,30 @@
-/*
- *	aegis - project change supervisor
- *	Copyright (C) 2004 Walter Franzini;
- *	All rights reserved.
- *
- *	This program is free software; you can redistribute it and/or modify
- *	it under the terms of the GNU General Public License as published by
- *	the Free Software Foundation; either version 2 of the License, or
- *	(at your option) any later version.
- *
- *	This program is distributed in the hope that it will be useful,
- *	but WITHOUT ANY WARRANTY; without even the implied warranty of
- *	MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
- *	GNU General Public License for more details.
- *
- *	You should have received a copy of the GNU General Public License
- *	along with this program; if not, write to the Free Software
- *	Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111, USA.
- *
- * MANIFEST: interface definition for common/uuidentifier.c
- */
+//
+//	aegis - project change supervisor
+//	Copyright (C) 2005, 2006 Peter Miller
+//	Copyright (C) 2004 Walter Franzini;
+//	All rights reserved.
+//
+//	This program is free software; you can redistribute it and/or modify
+//	it under the terms of the GNU General Public License as published by
+//	the Free Software Foundation; either version 2 of the License, or
+//	(at your option) any later version.
+//
+//	This program is distributed in the hope that it will be useful,
+//	but WITHOUT ANY WARRANTY; without even the implied warranty of
+//	MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+//	GNU General Public License for more details.
+//
+//	You should have received a copy of the GNU General Public License
+//	along with this program; if not, write to the Free Software
+//	Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111, USA.
+//
+// MANIFEST: interface definition for common/uuidentifier.c
+//
 
 #ifndef COMMON_UUIDENTIFIER_H
 #define COMMON_UUIDENTIFIER_H
 
-#include <nstring.h>
+#include <common/nstring.h>
 
 /** \addtogroup UUID
   * \brief UUID wrapper
@@ -36,6 +37,13 @@
 
 /**
   * \brief Returns a string containing a new UUID.
+  *
+  * The universal_unique_identifier function is used to generate a
+  * universally unique identifier (UUID).
+  *
+  * @returns
+  *     a string containing a valid UUID, it is guaranteed to be in
+  *     lower case.
   */
 string_ty *universal_unique_identifier(void);
 
@@ -62,4 +70,4 @@ bool universal_unique_identifier_valid_partial(string_ty *);
 bool universal_unique_identifier_valid_partial(const nstring &arg);
 
 /** @} */
-#endif /* COMMON_UUIDENTIFIER_H */
+#endif // COMMON_UUIDENTIFIER_H

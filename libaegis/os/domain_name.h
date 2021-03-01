@@ -1,6 +1,6 @@
 //
 //	aegis - project change supervisor
-//	Copyright (C) 2004 Peter Miller;
+//	Copyright (C) 2004, 2005 Peter Miller;
 //	All rights reserved.
 //
 //	This program is free software; you can redistribute it and/or modify
@@ -23,7 +23,7 @@
 #ifndef LIBAEGIS_OS_DOMAIN_NAME_H
 #define LIBAEGIS_OS_DOMAIN_NAME_H
 
-#include <nstring.h>
+#include <common/nstring.h>
 
 nstring os_domain_name(void);
 

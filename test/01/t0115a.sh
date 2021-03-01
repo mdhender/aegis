@@ -1,7 +1,7 @@
 #!/bin/sh
 #
 #	aegis - project change supervisor
-#	Copyright (C) 1999 Peter Miller;
+#	Copyright (C) 1999, 2005 Peter Miller;
 #	All rights reserved.
 #
 #	This program is free software; you can redistribute it and/or modify
@@ -118,7 +118,7 @@ if test $? -ne 0 ; then no_result; fi
 $bin/aereport -unf -f test.in -o test.out > LOG 2>&1
 if test $? -ne 0 ; then cat LOG; fail; fi
 
-diff test.ok test.out
+diff -b test.ok test.out
 if test $? -ne 0 ; then fail; fi
 
 #

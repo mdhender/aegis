@@ -1,6 +1,6 @@
 //
 //	aegis - project change supervisor
-//	Copyright (C) 1999, 2002-2004 Peter Miller;
+//	Copyright (C) 1999, 2002-2006 Peter Miller;
 //	All rights reserved.
 //
 //	This program is free software; you can redistribute it and/or modify
@@ -20,12 +20,12 @@
 // MANIFEST: functions to manipulate baselines
 //
 
-#include <project.h>
-#include <sub.h>
-#include <sub/project/baseline.h>
-#include <trace.h>
-#include <wstr.h>
-#include <wstr/list.h>
+#include <libaegis/project.h>
+#include <libaegis/sub.h>
+#include <libaegis/sub/project/baseline.h>
+#include <common/trace.h>
+#include <common/wstr.h>
+#include <common/wstr/list.h>
 
 
 //
@@ -69,7 +69,7 @@ sub_baseline(sub_context_ty *scp, wstring_list_ty *arg)
 	goto done;
     }
 
-    result = str_to_wstr(project_baseline_path_get(pp, 0));
+    result = str_to_wstr(pp->baseline_path_get());
 
     done:
     trace(("return %8.8lX;\n", (long)result));

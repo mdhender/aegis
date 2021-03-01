@@ -1,6 +1,6 @@
 //
 //	aegis - project change supervisor
-//	Copyright (C) 2003, 2004 Peter Miller;
+//	Copyright (C) 2003-2006 Peter Miller;
 //	All rights reserved.
 //
 //	This program is free software; you can redistribute it and/or modify
@@ -20,12 +20,12 @@
 // MANIFEST: functions to manipulate states
 //
 
-#include <ael/change/inappropriat.h>
-#include <output.h>
-#include <project.h>
-#include <trace.h>
-#include <user.h>
-#include <xml/project/state.h>
+#include <libaegis/ael/change/inappropriat.h>
+#include <libaegis/output.h>
+#include <libaegis/project.h>
+#include <common/trace.h>
+#include <libaegis/user.h>
+#include <aexml/xml/project/state.h>
 
 
 void
@@ -48,13 +48,11 @@ xml_project_pstate(string_ty *project_name, long change_number, output_ty *op)
 	project_name = str_copy(project_name);
     pp = project_alloc(project_name);
     str_free(project_name);
-    project_bind_existing(pp);
+    pp->bind_existing();
 
-    ppp = pp;
-    while (ppp->parent)
-	ppp = ppp->parent;
+    ppp = pp->trunk_get();
 
-    pstate_data = project_pstate_get(ppp);
+    pstate_data = ppp->pstate_get();
     pstate_write_xml(op, pstate_data);
     project_free(pp);
     trace(("}\n"));

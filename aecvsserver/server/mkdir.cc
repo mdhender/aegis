@@ -1,6 +1,6 @@
 //
 //	aegis - project change supervisor
-//	Copyright (C) 2004 Peter Miller;
+//	Copyright (C) 2004-2006 Peter Miller;
 //	All rights reserved.
 //
 //	This program is free software; you can redistribute it and/or modify
@@ -20,10 +20,10 @@
 // MANIFEST: functions to manipulate mkdirs
 //
 
-#include <os.h>
-#include <response/clear_sticky.h>
-#include <response/clearstatdir.h>
-#include <server.h>
+#include <libaegis/os.h>
+#include <aecvsserver/response/clear_sticky.h>
+#include <aecvsserver/response/clearstatdir.h>
+#include <aecvsserver/server.h>
 
 
 void
@@ -46,12 +46,12 @@ server_mkdir(server_ty *sp, string_ty *client_side, string_ty *server_side)
     server_response_queue
     (
 	sp,
-	response_clear_sticky_new(client_side, server_side)
+	new response_clear_sticky(client_side, server_side)
     );
     server_response_queue
     (
 	sp,
-	response_clear_static_directory(client_side, server_side)
+	new response_clear_static_directory(client_side, server_side)
     );
 
     //

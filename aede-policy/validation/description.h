@@ -1,0 +1,63 @@
+//
+//	aegis - project change supervisor
+//	Copyright (C) 2005, 2006 Peter Miller;
+//	All rights reserved.
+//
+//	This program is free software; you can redistribute it and/or modify
+//	it under the terms of the GNU General Public License as published by
+//	the Free Software Foundation; either version 2 of the License, or
+//	(at your option) any later version.
+//
+//	This program is distributed in the hope that it will be useful,
+//	but WITHOUT ANY WARRANTY; without even the implied warranty of
+//	MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+//	GNU General Public License for more details.
+//
+//	You should have received a copy of the GNU General Public License
+//	along with this program; if not, write to the Free Software
+//	Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111, USA.
+//
+// MANIFEST: interface of the validation_description class
+//
+
+#ifndef AEDE_POLICY_VALIDATION_DESCRIPTION_H
+#define AEDE_POLICY_VALIDATION_DESCRIPTION_H
+
+#include <aede-policy/validation.h>
+
+/**
+  * The validation_description class is used to represent the tests
+  * need to ensure that the developer has changed the change set brief
+  * description and long description to something other than the
+  * defaults.
+  */
+class validation_description:
+    public validation
+{
+public:
+    /**
+      * The destructor.
+      */
+    virtual ~validation_description();
+
+    /**
+      * The default constructor.
+      */
+    validation_description();
+
+    // See base class for documentation.
+    bool run(change_ty *cp);
+
+private:
+    /**
+      * The copy constructor.  Do not use.
+      */
+    validation_description(const validation_description &);
+
+    /**
+      * The assignment operator.  Do not use.
+      */
+    validation_description &operator=(const validation_description &);
+};
+
+#endif // AEDE_POLICY_VALIDATION_DESCRIPTION_H

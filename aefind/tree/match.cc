@@ -20,14 +20,14 @@
 // MANIFEST: functions to manipulate match tree nodes
 //
 
-#include <aer/value/boolean.h>
-#include <aer/value/error.h>
-#include <aer/value/string.h>
-#include <gmatch.h>
-#include <str.h>
-#include <sub.h>
-#include <tree/match.h>
-#include <tree/diadic.h>
+#include <libaegis/aer/value/boolean.h>
+#include <libaegis/aer/value/error.h>
+#include <libaegis/aer/value/string.h>
+#include <common/gmatch.h>
+#include <common/str.h>
+#include <libaegis/sub.h>
+#include <aefind/tree/match.h>
+#include <aefind/tree/diadic.h>
 
 
 static rpt_value_ty *

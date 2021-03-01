@@ -20,16 +20,16 @@
 // MANIFEST: operating system start-up point
 //
 
-#include <ac/stdio.h>
-#include <ac/stdlib.h>
+#include <common/ac/stdio.h>
+#include <common/ac/stdlib.h>
 
-#include <arglex.h>
-#include <error.h>
-#include <lex.h>
-#include <parse.h>
-#include <quit.h>
-#include <progname.h>
-#include <trace.h>
+#include <common/arglex.h>
+#include <common/error.h>
+#include <common/progname.h>
+#include <common/quit.h>
+#include <common/trace.h>
+#include <fmtgen/lex.h>
+#include <fmtgen/parse.h>
 
 
 static void
@@ -41,7 +41,7 @@ usage(void)
     fprintf
     (
 	stderr,
-	"usage: %s [ <option>... ] <file.def> <file.c> <file.h>\n",
+	"usage: %s [ <option>... ] <file.def> <file.c> <libaegis/file.h>\n",
 	progname
     );
     fprintf(stderr, "       %s -Help\n", progname);

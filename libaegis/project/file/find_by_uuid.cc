@@ -1,6 +1,6 @@
 //
 //	aegis - project change supervisor
-//	Copyright (C) 2004 Peter Miller;
+//	Copyright (C) 2004-2006 Peter Miller;
 //	All rights reserved.
 //
 //	This program is free software; you can redistribute it and/or modify
@@ -20,37 +20,36 @@
 // MANIFEST: functions to manipulate find_by_uuids
 //
 
-#include <error.h> // for assert
-#include <project/file.h>
-#include <symtab.h>
-#include <trace.h>
+#include <common/error.h> // for assert
+#include <libaegis/project/file.h>
+#include <common/symtab.h>
+#include <common/trace.h>
 
 
 fstate_src_ty *
-project_file_find_by_uuid(project_ty *pp, string_ty *uuid,
-    view_path_ty as_view_path)
+project_ty::file_find_by_uuid(string_ty *uuid, view_path_ty as_view_path)
 {
     //
     // Invert the list of sources on the UUID field.
     // This makes it an O(1) search instead of an O(n) search.
     //
-    trace(("project_file_find_by_uuid(pp = %8.8lX, uuid = \"%s\")\n{\n",
-	(long)pp, uuid->str_text));
+    trace(("project_ty::file_find_by_uuid(this = %8.8lX, uuid = \"%s\")\n{\n",
+	(long)this, uuid->str_text));
 
     //
     // Deep down in the call stack via project_file_nth, Aegis may
     // sometimes need to invalidate the file_by_uuid cache, so we have
     // to call it first, or we will segfault when it gets deleted out
     // from under us.  The simpest method of doing this is via the
-    // project_change_get function.
+    // project_ty::change_get method.
     //
     // An alternative would be to expose the libaegis/project.cc::
     // lock_sync() function for calling.  Maybe one day in the distant
     // future, when project_ty is a class and not a struct.
     //
-    project_change_get(pp);
+    change_get();
 
-    symtab_ty *stp = pp->file_by_uuid[as_view_path];
+    symtab_ty *stp = file_by_uuid[as_view_path];
     if (!stp)
     {
 	//
@@ -64,11 +63,11 @@ project_file_find_by_uuid(project_ty *pp, string_ty *uuid,
 	assert(file_action_modify < file_action_remove);
 
 	stp = new symtab_ty(5);
-	pp->file_by_uuid[as_view_path] = stp;
+	file_by_uuid[as_view_path] = stp;
 	for (size_t j = 0; ; ++j)
 	{
 	    trace(("j = %d\n", (int)j));
-	    fstate_src_ty *src = project_file_nth(pp, j, as_view_path);
+	    fstate_src_ty *src = file_nth(j, as_view_path);
 	    if (!src)
 		break;
 	    if (!src->uuid)
@@ -83,10 +82,15 @@ project_file_find_by_uuid(project_ty *pp, string_ty *uuid,
     // Look for the UUID in the symbol table.
     //
     fstate_src_ty *result = (fstate_src_ty *)stp->query(uuid);
-    trace(("%s %s \"%s\" %s %s\n", file_usage_ename(result->usage),
-	file_action_ename(result->action), result->file_name->str_text,
-	(result->edit_origin ? result->edit_origin->revision->str_text : ""),
-	(result->edit ? result->edit->revision->str_text : "")));
+    if (result)
+    {
+	trace(("%s %s \"%s\" %s %s\n", file_usage_ename(result->usage),
+	    file_action_ename(result->action), result->file_name->str_text,
+	    (result->edit_origin && result->edit_origin->revision
+	       	? result->edit_origin->revision->str_text : ""),
+	    (result->edit && result->edit->revision
+		? result->edit->revision->str_text : "")));
+    }
     trace(("return %08lX;\n", (long)result));
     trace(("}\n"));
     return result;

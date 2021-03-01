@@ -1,6 +1,6 @@
 //
 //	cook - file construction tool
-//	Copyright (C) 1994, 1999, 2003, 2004 Peter Miller;
+//	Copyright (C) 1994, 1999, 2003-2005 Peter Miller;
 //	All rights reserved.
 //
 //	This program is free software; you can redistribute it and/or modify
@@ -20,9 +20,9 @@
 // MANIFEST: functions to manipulate length fingerprints
 //
 
-#include <ac/stdio.h>
+#include <common/ac/stdio.h>
 
-#include <fp/len.h>
+#include <common/fp/len.h>
 
 
 struct len_ty

@@ -1,6 +1,6 @@
 //
 //      aegis - project change supervisor
-//      Copyright (C) 1999-2004 Peter Miller;
+//      Copyright (C) 1999-2005 Peter Miller;
 //      All rights reserved.
 //
 //      This program is free software; you can redistribute it and/or modify
@@ -22,20 +22,20 @@
 // This class is used to add page headers to the output.
 //
 
-#include <ac/stdio.h> // for sprintf
-#include <ac/wchar.h>
-#include <ac/wctype.h>
+#include <common/ac/stdio.h> // for sprintf
+#include <common/ac/wchar.h>
+#include <common/ac/wctype.h>
 
-#include <language.h>
-#include <mem.h>
-#include <now.h>
-#include <page.h> // for DEFAULT_PRINTER_LENGTH
-#include <str.h>
-#include <trace.h>
-#include <wide_output.h>
-#include <wide_output/header.h>
-#include <wide_output/private.h>
-#include <wstr.h>
+#include <common/language.h>
+#include <common/mem.h>
+#include <common/now.h>
+#include <common/page.h> // for DEFAULT_PRINTER_LENGTH
+#include <common/str.h>
+#include <common/trace.h>
+#include <libaegis/wide_output.h>
+#include <libaegis/wide_output/header.h>
+#include <libaegis/wide_output/private.h>
+#include <common/wstr.h>
 
 //
 // This is how you figure out whether you are talking to a printer,

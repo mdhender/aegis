@@ -1,6 +1,6 @@
 //
 //	aegis - project change supervisor
-//	Copyright (C) 2002-2004 Peter Miller;
+//	Copyright (C) 2002-2005 Peter Miller;
 //	All rights reserved.
 //
 //	This program is free software; you can redistribute it and/or modify
@@ -20,11 +20,11 @@
 // MANIFEST: functions to manipulate integrators
 //
 
-#include <complete/private.h>
-#include <complete/project/integrator.h>
-#include <project.h>
-#include <project/history.h>
-#include <shell.h>
+#include <aecomplete/complete/private.h>
+#include <aecomplete/complete/project/integrator.h>
+#include <libaegis/project.h>
+#include <libaegis/project/history.h>
+#include <aecomplete/shell.h>
 
 
 struct complete_project_integrator_ty

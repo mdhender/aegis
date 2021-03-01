@@ -1,6 +1,6 @@
 //
 //	aegis - project change supervisor
-//	Copyright (C) 2004, 2005 Peter Miller;
+//	Copyright (C) 2004-2006 Peter Miller;
 //	All rights reserved.
 //
 //	This program is free software; you can redistribute it and/or modify
@@ -20,16 +20,16 @@
 // MANIFEST: implementation of the ael_project_file_invento class
 //
 
-#include <ael/column_width.h>
-#include <ael/project/file_invento.h>
-#include <change.h>
-#include <change/file.h>
-#include <col.h>
-#include <project.h>
-#include <project/file.h>
-#include <trace.h>
-#include <user.h>
-#include <zero.h>
+#include <libaegis/ael/column_width.h>
+#include <libaegis/ael/project/file_invento.h>
+#include <libaegis/change.h>
+#include <libaegis/change/file.h>
+#include <libaegis/col.h>
+#include <libaegis/project.h>
+#include <libaegis/project/file.h>
+#include <common/trace.h>
+#include <libaegis/user.h>
+#include <libaegis/zero.h>
 
 
 void
@@ -46,7 +46,7 @@ list_project_file_inventory(string_ty *project_name, long change_number,
 	project_name = str_copy(project_name);
     project_ty *pp = project_alloc(project_name);
     str_free(project_name);
-    project_bind_existing(pp);
+    pp->bind_existing();
 
     //
     // locate user data
@@ -96,7 +96,7 @@ list_project_file_inventory(string_ty *project_name, long change_number,
     //
     for (size_t j = 0;; ++j)
     {
-	fstate_src_ty *src_data = project_file_nth(pp, j, view_path_extreme);
+	fstate_src_ty *src_data = pp->file_nth(j, view_path_extreme);
 	if (!src_data)
 	    break;
 	if (cp && change_file_find(cp, src_data->file_name, view_path_first))

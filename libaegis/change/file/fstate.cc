@@ -20,11 +20,11 @@
 // MANIFEST: functions to manipulate fstates
 //
 
-#include <change/file.h>
-#include <error.h> // for assert
-#include <sub.h>
-#include <symtab.h>
-#include <trace.h>
+#include <libaegis/change/file.h>
+#include <common/error.h> // for assert
+#include <libaegis/sub.h>
+#include <common/symtab.h>
+#include <common/trace.h>
 
 
 static void
@@ -209,18 +209,19 @@ change_fstate_get(change_ty *cp)
     }
 
     //
-    // Create an O(1) index.
+    // Create a couple of O(1) indexes.
     // This speeds up just about everything.
     //
     if (!cp->fstate_stp)
     {
 	cp->fstate_stp = symtab_alloc(cp->fstate_data->src->length);
+	cp->fstate_uuid_stp = symtab_alloc(cp->fstate_data->src->length);
 	for (j = 0; j < cp->fstate_data->src->length; ++j)
 	{
-	    fstate_src_ty   *p;
-
-	    p = cp->fstate_data->src->list[j];
+	    fstate_src_ty *p = cp->fstate_data->src->list[j];
 	    symtab_assign(cp->fstate_stp, p->file_name, p);
+	    if (p->uuid && (!p->move || p->action != file_action_remove))
+		symtab_assign(cp->fstate_uuid_stp, p->uuid, p);
 	}
     }
     trace(("return %08lX;\n", (long)cp->fstate_data));

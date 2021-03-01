@@ -1,6 +1,6 @@
 //
 //	aegis - project change supervisor
-//	Copyright (C) 2001-2004 Peter Miller;
+//	Copyright (C) 2001-2005 Peter Miller;
 //	All rights reserved.
 //
 //	This program is free software; you can redistribute it and/or modify
@@ -20,12 +20,12 @@
 // MANIFEST: functions to manipulate getpw_caches
 //
 
-#include <ac/string.h>
+#include <common/ac/string.h>
 
-#include <getpw_cache.h>
-#include <itab.h>
-#include <mem.h>
-#include <symtab.h>
+#include <libaegis/getpw_cache.h>
+#include <common/itab.h>
+#include <common/mem.h>
+#include <common/symtab.h>
 
 static symtab_ty *login_table;
 static itab_ty *uid_table;

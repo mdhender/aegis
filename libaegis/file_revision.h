@@ -1,6 +1,6 @@
 //
 //	aegis - project change supervisor
-//	Copyright (C) 2004 Peter Miller;
+//	Copyright (C) 2004, 2005 Peter Miller;
 //	All rights reserved.
 //
 //	This program is free software; you can redistribute it and/or modify
@@ -23,9 +23,7 @@
 #ifndef LIBAEGIS_FILE_REVISION_H
 #define LIBAEGIS_FILE_REVISION_H
 
-#pragma interface "file_revision"
-
-#include <nstring.h>
+#include <common/nstring.h>
 
 /**
   * The file_revision class is used to represent the path to a file

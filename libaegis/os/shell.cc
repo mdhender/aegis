@@ -1,6 +1,6 @@
 //
 //	aegis - project change supervisor
-//	Copyright (C) 1991-2004 Peter Miller;
+//	Copyright (C) 1991-2005 Peter Miller;
 //	All rights reserved.
 //
 //	This program is free software; you can redistribute it and/or modify
@@ -20,8 +20,8 @@
 // MANIFEST: wrappers around operating system functions
 //
 
-#include <error.h> // for assert
-#include <os.h>
+#include <common/error.h> // for assert
+#include <libaegis/os.h>
 
 
 const char *

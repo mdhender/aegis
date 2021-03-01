@@ -1,6 +1,6 @@
 //
 //	aegis - project change supervisor
-//	Copyright (C) 1992-1999, 2001-2005 Peter Miller;
+//	Copyright (C) 1992-1999, 2001-2006 Peter Miller;
 //	All rights reserved.
 //
 //	This program is free software; you can redistribute it and/or modify
@@ -23,57 +23,655 @@
 #ifndef PROJECT_H
 #define PROJECT_H
 
-#include <ac/time.h>
+#include <common/ac/time.h>
 
-#include <pstate.h>
-#include <pattr.h>
-#include <view_path.h>
+#include <libaegis/pattr.h>
+#include <libaegis/pstate.h>
+#include <libaegis/view_path.h>
 
 struct string_list_ty; // existence
 struct change_ty; // existence
 struct sub_context_ty; // existence
 struct fstate_src_ty; // existence
 
-struct project_ty
+/**
+  * The project_ty class is used to remember the state of a project.
+  *
+  * Eventually, it will be discouraged to use this class directly.  The
+  * preferred method will be to access it via a project class (see
+  * below) smart pointer.  This will be able to guarantee the reference
+  * counting semantics.
+  *
+  * This class is presently in transition from being a C struct.  One by
+  * one the access functions will be turned into access methids, and the
+  * instance variables will become private.
+  */
+class project_ty
 {
+public:
+    /**
+      * The destructor.
+      *
+      * It is not virtual; thou shalt not derive fron this class.
+      *
+      * @note
+      *     Eventually this method will be private, to ensure the
+      *     reference counting always works.  The correct method is to
+      *     call the project_free function.
+      */
+    ~project_ty();
+
+    /**
+      * The constructor.
+      *
+      * @param name
+      *     The name of the project.
+      */
+    project_ty(string_ty *name);
+
+    /**
+      * The name_get method is used to get the name of the project.
+      *
+      * @returns
+      *     a string; the name of the project.
+      *     DO NOT str_free it.
+      */
+    string_ty *name_get() const;
+
+    /**
+      * The bind_existing method is used to bind a newly created project
+      * object to an existing project.
+      *
+      * @note
+      *     This method does not return if there is an error.  A fatal
+      *     error message will be produced in this case.
+      */
+    void bind_existing();
+
+    /**
+      * The bind_existing_errok method is used to bind a newly created
+      * project object to an existing project.
+      *
+      * @returns
+      *     bool; true if bound successfully, false if not
+      */
+    bool bind_existing_errok();
+
+    /**
+      * The bind_branch method is used to bind a branch of this project
+      * into a new project object.
+      *
+      * @param bp
+      *     The change corresponding to the project of interest.
+      */
+    project_ty *bind_branch(change_ty *bp);
+
+    /**
+      * The bind_new method is used to bind a new project object to a
+      * new name.  This will create all of the necessary data structures
+      * and (eventually) files, once the project directory has been set.
+      */
+    void bind_new();
+
+    /**
+      * The list_inner method is used to append the branch names to the
+      * result list.  This is one step of building a complete list of
+      * projects.
+      *
+      * @param result
+      *     Append all project branch names to this list.
+      */
+    void list_inner(string_list_ty &result);
+
+    /**
+      * The home_path_get method is used to get the "home" directory
+      * of a project; the directory which contains trunk's delta
+      * directories and the baseline, and the "info" meta-data
+      * directory.
+      *
+      * @returns
+      *     a string containing the absolute path.
+      *     DO NOT str_free or delete it.
+      *
+      * @note
+      *     It is a bug to call this method for anything other than a
+      *     trunk project.  Calling if for a branch will result in an
+      *     assert failure.
+      */
+    string_ty *home_path_get();
+
+    /**
+      * The home_path_set method is used when creating a new project to
+      * remeber the directory the project beaselines and meta-data are
+      * stored within.
+      *
+      * @param dir
+      *     The absolute path of the directory in which to keep the
+      *     project.  To cope with automounters, directories are stored
+      *     as given, or are derived from the home directory in the
+      *     passwd file.  Within Aegis, pathnames have their symbolic
+      *     links resolved, and any comparison of paths is done on this
+      *     "system idea" of the pathname.
+      */
+    void home_path_set(string_ty *dir);
+
+    /**
+      * The change_get method is used to obtain a pointer to the change
+      * object representing this project branch.
+      *
+      * @returns
+      *     pointer to change object;
+      *     DO NOT change_free() or delete it.
+      */
+    change_ty *change_get();
+
+    /**
+      * The pstate_write method is used to write out the project state
+      * data into the meta-data directory tree.
+      */
+    void pstate_write();
+
+    /**
+      * The baseline_path_get method is used to obtain the absolure path
+      * of the project's (branch's) baseline.
+      *
+      * @param resolve
+      *     Whether or not to resolve all of the symlinks in the path.
+      */
+    string_ty *baseline_path_get(bool resolve = false);
+
+    /**
+      * The pstate_lock_prepare method is used to prepare to take a
+      * project pstate lock for this project, prior to lock_take() being
+      * called.
+      */
+    void pstate_lock_prepare();
+
+    /**
+      * The trunk_get method is used to find the trunk project of this
+      * project, then top-level branch of this project.
+      */
+    project_ty *trunk_get();
+
+    /**
+      * The is_a_trunk method is used to determine whether a project
+      * is a trunk branch (is the deepest ancestor) or a normal nested
+      * branch (has at least one ancestor branch).
+      *
+      * @returns
+      *     bool; true if is a trunk, false if is a branch
+      */
+    bool is_a_trunk() const { return (parent == 0); }
+
+    /**
+      * The parent_get method is used to obtain the parent brach of this
+      * project.
+      *
+      * @returns
+      *     pointer to project; do not delete or project_free
+      */
+    project_ty *parent_get() { return (parent ? parent : this); }
+
+    /**
+      * The find_branch method is used to locate the branch with the
+      * given number in this project.
+      *
+      * @param number
+      *     The branch number to locate.
+      * @returns
+      *     Pointer to valid project object.
+      */
+    project_ty *find_branch(const char *number);
+
+    /**
+      * The lock_prepare_everything method is used to take a resd-only
+      * lock of everything in the project: pstate, baseline, changes,
+      * and recurse into all active branches.
+      */
+    void lock_prepare_everything();
+
+    /**
+      * The history_path_get method is used to determine the top-level
+      * directory of the tree which is used to hold the project's
+      * history files.
+      *
+      * @returns
+      *     a pointer to a string.  Do NOT free this string when you are
+      *     done with it, because it is cached.
+      */
+    string_ty *history_path_get();
+
+    /**
+      * The info_path_get method is used to obtain the absolute path of
+      * the meta-data file for this project (branch).
+      *
+      * @returns
+      *     a string; do not str_free or delete it, because it is cached.
+      * @note
+      *     it is a bug to call this for anything but a top-level
+      *     (trunk) project.
+      */
+    string_ty *info_path_get();
+
+    /**
+      * The pstate_path_get method is used to obtain the absolute path
+      * of the pstate (project state) file.
+      *
+      * @returns
+      *     a string; do not str_free or delete it, because it is cached.
+      * @note
+      *     it is a bug to call this for anything but a top-level
+      *     (trunk) project.
+      */
+    string_ty *pstate_path_get();
+
+    /**
+      * The changes_path_get method is used to obtain the absolute path
+      * of the directory containing change set meta-data.
+      *
+      * @returns
+      *     a string; do not str_free or delete it, because it is cached.
+      */
+    string_ty *changes_path_get();
+
+    /**
+      * The change_path_get method is used to obtain the absolute path
+      * of the meta-data of a specific change set.
+      *
+      * @param change_number
+      *     The number of the change for which the path is desired.
+      * @returns
+      *     a string; use str_free when you are done with.
+      */
+    string_ty *change_path_get(long change_number);
+
+    /**
+      * The pstate_get method is used to obtain the project state data.
+      *
+      * @returns
+      *     pointer to pstate_ty data; do not delete, it is cached.
+      * @note
+      *     it is a bug to call this for anything but a top-level
+      *     (trunk) project.
+      */
+    pstate_ty *pstate_get();
+
+    /**
+      * The uid_get method is used to obtain the Unix user id of the
+      * project owner.
+      */
+    int uid_get();
+
+    /**
+      * The gid_get method is used to obtain the Unix group id of the
+      * project owner.
+      */
+    int gid_get();
+
+    /**
+      * The copy_the_owner method is used to copy the owner from another
+      * project.  It is only ever used by aenrls, which sort-of clones
+      * another project.  Don't use this method.
+      *
+      * Note: this is only a transient requirement for new projects.
+      * Existing projects take their uid and gid from the Unix uid and
+      * gid of the project directory.
+      */
+    void copy_the_owner(project_ty *pp);
+
+    /**
+      * the copyright_years_slurp method is used to determine the range
+      * of copyright years covered by this project and all its ancrestor
+      * projects back to the trunk.
+      *
+      * @param a
+      *     The array to store the results in
+      * @param amax
+      *     The maximum number of distinct years which can be stored in
+      *     the array (see SIZEOF macro).
+      * @alen_p
+      *     This is a pointer to the array length used to date.
+      */
+    void copyright_years_slurp(int *a, int amax, int *alen_p);
+
+    /**
+      * The parent_branch_number_get method is used to get the branch
+      * (change) number of this branch in the parent branch.
+      *
+      * @note
+      *     This method is not meaningful for trunk projects (branches).
+      */
+    long parent_branch_number_get() const { return parent_bn; }
+
+    /**
+      * The project_file_find_fuzzy function is used to find the state
+      * information for a project file when the project_file_find
+      * function fails.  It uses fuzzy string matching, which is
+      * significantly slower than exact searching, but can provide very
+      * useful error messages for users.
+      *
+      * \param pp
+      *     The project to search.
+      * \param filename
+      *     The base-relative name of the file to search for.
+      * \param as_view_path
+      *     If this is true, apply viewpath rules to the file (i.e. if
+      *     it is removed, return a null pointer) if false return first
+      *     instance found.
+      */
+    fstate_src_ty *file_find_fuzzy(string_ty *filename,
+	view_path_ty as_view_path);
+
+    /**
+      * The file_nth method is used to get the 'n'th file from the list
+      * of project files.
+      *
+      * \param n
+      *     The file number to obtain (zero based).
+      * \param as_view_path
+      *     The style of view path to use when calculating the list.
+      * \returns
+      *     pointer to file mete-data, or NULL if beyond end of list
+      */
+    fstate_src_ty *file_nth(size_t n, view_path_ty as_view_path);
+
+    /**
+      * The file_list_invalidate method is used to clear the cahced
+      * project file information when it becomes stale.
+      */
+    void file_list_invalidate();
+
+    /**
+      * The file_find_by_uuid method is used to find the state
+      * information of a file within the project, given the file's UUID.
+      * It will search the immediate branch, and then any ancestor
+      * branches until the file is found.
+      *
+      * \param uuid
+      *     The UUID of the file to search for.
+      * \param vp
+      *     If this is true, apply viewpath rules to the file (i.e. if
+      *     it is removed, return a null pointer) if false return first
+      *     instance found.
+      */
+    fstate_src_ty *file_find_by_uuid(string_ty *uuid, view_path_ty vp);
+
+public: // during transition
     long            reference_count;
     string_ty       *name;
-    string_ty       *home_path;
-    string_ty       *baseline_path_unresolved;
-    string_ty       *baseline_path;
-    string_ty       *history_path;
-    string_ty       *info_path;
-    string_ty       *pstate_path;
-    string_ty       *changes_path;
-    pstate_ty       *pstate_data;
-    int             is_a_new_file;
-    long            lock_magic;
-    struct change_ty *pcp;
-    int             uid, gid;
-    project_ty      *parent;
-    long            parent_bn;
+
+private:
+    /**
+      * The home_path instance variable is used to remember the "home"
+      * directory of a project; the directory which contains trunk's
+      * delta directories and the baseline, and the "info" meta-data
+      * directory.
+      *
+      * @note
+      *     Never access this instance variable directly, always go via
+      *     home_path_get() in case it hasn't been calculated yet.
+      */
+    string_ty *home_path;
+
+    /**
+      * The baseline_path_unresolved instance variable is used to
+      * remember the absolute path of this project's (branch's) baseline
+      * directory.  It has not had is symbolic links resolved.  All
+      * access is via the baseline_path_get method, which takes care of
+      * calculating it on demand.
+      */
+    string_ty *baseline_path_unresolved;
+
+    /**
+      * The baseline_path_unresolved instance variable is used to
+      * remember the absolute path of this project's (branch's) baseline
+      * directory.  It has not had is symbolic links resolved.  All
+      * access is via the baseline_path_get method, which takes care of
+      * calculating it on demand.
+      */
+    string_ty *baseline_path;
+
+    /**
+      * The history_path is used to remember the absolute path of the
+      * distory directory.  The calculation is deferred until needed.
+      * Always use the history_path_get method, never access this
+      * instance variable directly.
+      */
+    string_ty *history_path;
+
+    /**
+      * The info_path instance variable is used to remember the location
+      * of the meta-data file for this project (branch).  Never access
+      * the info_path variable directly, always go via the info_path_get
+      * method.
+      */
+    string_ty *info_path;
+
+    /**
+      * The pstate_path instance variable is used to remember the
+      * absolute path of the pstate (project state) file.  It is
+      * calculated as needed.  Never access this instance variable
+      * directly, always go via the pstate_path_get method.
+      */
+    string_ty *pstate_path;
+
+    /**
+      * The changes_path instance variable is used to remember the
+      * absolute path of the directory containing change set meta-data.
+      * It is calculated as needed.  Never access this instance variable
+      * directly, always go via the changes_path_get method.
+      */
+    string_ty *changes_path;
+
+    /**
+      * The pstate_data instance variable is used to remember the
+      * project state data.  It is calculated as needed.  Never
+      * access this instance variable directly, always go via the
+      * pstate_get method.
+      */
+    pstate_ty *pstate_data;
+
+    /**
+      * The is_a_new_file instance variable is used to remember whether
+      * the pstate file is a new file which has to be created.
+      */
+    bool is_a_new_file;
+
+    /**
+      * The lock_magic instance variable is used to remember the last
+      * time the lock was taken.  If the lock_sync function returns
+      * different, it means we have to invalidate all our project data
+      * and read it in again, because something could have changed.
+      * Only every accessed by the lock_sync ethod.
+      */
+    long lock_magic;
+
+    /**
+      * The pcp instance variable is used to remember the change object
+      * representing this branch's state.
+      *
+      * @note
+      *     Never access this instance variable directly, event from a
+      *     project_ty method, always go via the change_get() method in
+      *     case it has not been calculated yet.
+      */
+    change_ty *pcp;
+
+    /**
+      * The uid instance variable is used to remember the Unix user id
+      * for the project owner.  This is set by the get_the_owner method.
+      */
+    int uid;
+
+    /**
+      * The gid instance variable is used to remember the Unix group id
+      * for the project owner.  This is set by the get_the_owner method.
+      */
+    int gid;
+
+    /**
+      * The parent instance variable is used to remember the project
+      * which this project is a branch of.  If it is NULL, then this is
+      * a trunk project.
+      */
+    project_ty *parent;
+
+    /**
+      * The parent_bn instance variable is used to remember the change
+      * (branch) number of this project relative to the parent branch.
+      * If it is TRUNK_BRANCH_NUMER, then this is a trunk project.
+      */
+    long parent_bn;
+
+    /**
+      * The file_list instance variable is used to remember the list
+      * of files in the project, one list for each style of view path.
+      * Never access this instance variable directly, always go via the
+      * file_list_get method, they are calculated on demand.
+      */
     struct string_list_ty *file_list[view_path_MAX];
+
+    /**
+      * The file_list_get method is used to obtain a list of file names.
+      * The lists are calculated on demand and cached.
+      *
+      * \param as_view_path
+      *     The view path style to use when calculating the list of
+      *     project files.
+      * \returns
+      *     Pointer to a string list, do not delete it, it is cached.
+      */
+    struct string_list_ty *file_list_get(view_path_ty as_view_path);
+
+    /**
+      * The file_by_uuid instance variable is used to remember a symbol
+      * table of files indexed by UUID (or by file name if your project
+      * has any files without a UUID for backwards compatibility).
+      *
+      * This instance variable shall always be accessed via the
+      * find_file_by_uuid method.  The tables are calculated on demand
+      * and cached.
+      */
     struct symtab_ty *file_by_uuid[view_path_MAX];
+
     //
-    // if you add anything to this structure,
-    // make sure you fix project_free in project.c
-    // and zero-out the item in project_alloc
+    // If you add an instance variable to this class, make sure you
+    // dispose of it in the destructor and initialize in in the
+    // constructor.  Both may be found in libaegis/project.cc
     //
+
+public: // during transition
+    /**
+      * The convert_to_new_format method is used to convert Aegis 2.3
+      * project meta-data into Aegis 3.0 (and later) project meta-data.
+      */
+    void convert_to_new_format();
+
+private:
+    /**
+      * The lock_sync method is used to invalidate the project state
+      * data if the lock has been released and taken again.
+      *
+      * @note
+      *     it is a bug to call this for anything but a top-level
+      *     (trunk) project.
+      */
+    void lock_sync();
+
+    /**
+      * The get_the_owner method is used to determine the Unix pid and
+      * gid for the project.
+      */
+    void get_the_owner();
+
+    /**
+      * The default constructor.
+      *
+      * Do not use this method.  It is not defined.  Projects will
+      * always have a name, it it shall always be supplied to the
+      * constructor.
+      */
+    project_ty();
+
+    /**
+      * The copy constructor.  Do not use.
+      *
+      * The prefereed mechanism is to use the reference counting
+      * provided the the project class (see below) smart pointer.
+      */
+    project_ty(const project_ty &);
+
+    /**
+      * The assignment operator.  Do not use.
+      *
+      * The prefereed mechanism is to use the reference counting
+      * provided the the project class (see below) smart pointer.
+      */
+    project_ty &operator=(const project_ty &);
 };
 
 project_ty *project_alloc(string_ty *name);
-void project_bind_existing(project_ty *);
-int project_bind_existing_errok(project_ty *);
-project_ty *project_bind_branch(project_ty *ppp, struct change_ty *bp);
-void project_bind_new(project_ty *);
+
+DEPRECATED inline void
+project_bind_existing(project_ty *pp)
+{
+    pp->bind_existing();
+}
+
+DEPRECATED inline bool
+project_bind_existing_errok(project_ty *pp)
+{
+    return pp->bind_existing_errok();
+}
+
+DEPRECATED inline project_ty *
+project_bind_branch(project_ty *ppp, struct change_ty *bp)
+{
+    return ppp->bind_branch(bp);
+}
+
+DEPRECATED inline void
+project_bind_new(project_ty *pp)
+{
+    pp->bind_new();
+}
+
 void project_list_get(struct string_list_ty *);
-void project_list_inner(struct string_list_ty *, project_ty *);
-project_ty *project_find_branch(project_ty *, const char *);
+
+DEPRECATED inline void
+project_list_inner(struct string_list_ty *result, project_ty *pp)
+{
+    pp->list_inner(*result);
+}
+
+DEPRECATED inline project_ty *
+project_find_branch(project_ty *pp, const char *number)
+{
+    return pp->find_branch(number);
+}
+
 void project_free(project_ty *);
-string_ty *project_name_get(project_ty *);
+
+inline string_ty *
+project_name_get(project_ty *pp)
+{
+    return pp->name_get();
+}
+
 project_ty *project_copy(project_ty *);
-struct change_ty *project_change_get(project_ty *);
-string_ty *project_home_path_get(project_ty *);
+
+DEPRECATED inline change_ty *
+project_change_get(project_ty *pp)
+{
+    return pp->change_get();
+}
+
+DEPRECATED inline string_ty *
+project_home_path_get(project_ty *pp)
+{
+    return pp->home_path_get();
+}
+
 string_ty *project_Home_path_get(project_ty *);
 string_ty *project_top_path_get(project_ty *, int);
 
@@ -90,19 +688,23 @@ string_ty *project_top_path_get(project_ty *, int);
   */
 nstring project_rss_path_get(project_ty *pp, bool resolve = false);
 
-void project_home_path_set(project_ty *, string_ty *);
-string_ty *project_baseline_path_get(project_ty *, int);
+DEPRECATED inline void
+project_home_path_set(project_ty *pp, string_ty *dir)
+{
+    pp->home_path_set(dir);
+}
 
-/**
-  * The project_history_path_get function is used to determine the
-  * top-level directory of the tree which is used to hold the project's
-  * history files.
-  *
-  * @returns
-  *     a pointer to a string.  Do NOT free this string when you are
-  *     done with it, because it is cahced.
-  */
-string_ty *project_history_path_get(project_ty *);
+DEPRECATED inline string_ty *
+project_baseline_path_get(project_ty *pp, bool resolve = false)
+{
+    return pp->baseline_path_get(resolve);
+}
+
+DEPRECATED inline string_ty *
+project_history_path_get(project_ty *pp)
+{
+    return pp->history_path_get();
+}
 
 /**
   * The project_history_filename_get function is used to determine the
@@ -114,14 +716,47 @@ string_ty *project_history_path_get(project_ty *);
   */
 string_ty *project_history_filename_get(project_ty *, struct fstate_src_ty *);
 
-string_ty *project_info_path_get(project_ty *);
-string_ty *project_changes_path_get(project_ty *);
+DEPRECATED inline string_ty *
+project_info_path_get(project_ty *pp)
+{
+    return pp->info_path_get();
+}
+
+DEPRECATED inline string_ty *
+project_changes_path_get(project_ty *pp)
+{
+    return pp->changes_path_get();
+}
+
+DEPRECATED
 string_ty *project_change_path_get(project_ty *, long);
-string_ty *project_pstate_path_get(project_ty *);
-pstate_ty *project_pstate_get(project_ty *);
-void project_pstate_write(project_ty *);
+
+DEPRECATED inline string_ty *
+project_pstate_path_get(project_ty *pp)
+{
+    return pp->pstate_path_get();
+}
+
+DEPRECATED inline pstate_ty *
+project_pstate_get(project_ty *pp)
+{
+    return pp->pstate_get();
+}
+
+DEPRECATED inline void
+project_pstate_write(project_ty *pp)
+{
+    pp->pstate_write();
+}
+
 void project_pstate_write_top(project_ty *);
-void project_pstate_lock_prepare(project_ty *);
+
+DEPRECATED inline void
+project_pstate_lock_prepare(project_ty *pp)
+{
+    pp->pstate_lock_prepare();
+}
+
 void project_pstate_lock_prepare_top(project_ty *);
 void project_baseline_read_lock_prepare(project_ty *);
 void project_baseline_write_lock_prepare(project_ty *);
@@ -135,8 +770,19 @@ void project_change_delete(project_ty *, long);
 int project_change_number_in_use(project_ty *, long);
 string_ty *project_version_short_get(project_ty *);
 string_ty *project_version_get(project_ty *);
-int project_uid_get(project_ty *);
-int project_gid_get(project_ty *);
+
+DEPRECATED inline int
+project_uid_get(project_ty *pp)
+{
+    return pp->uid_get();
+}
+
+DEPRECATED inline int
+project_gid_get(project_ty *pp)
+{
+    return pp->gid_get();
+}
+
 struct user_ty *project_user(project_ty *);
 void project_become(project_ty *);
 void project_become_undo(void);
@@ -187,7 +833,12 @@ struct pconf_ty *project_pconf_get(project_ty *);
 project_ty *project_new_branch(project_ty *pp, struct user_ty *up,
     long change_number, string_ty *topdir = 0, string_ty *reason = 0);
 
-void project_file_list_invalidate(project_ty *);
+DEPRECATED inline void
+project_file_list_invalidate(project_ty *pp)
+{
+    pp->file_list_invalidate();
+}
+
 string_ty *project_brief_description_get(project_ty *);
 
 /**
@@ -203,5 +854,66 @@ string_ty *project_brief_description_get(project_ty *);
   *     has the given UUID.
   */
 struct change_ty *project_uuid_find(project_ty *pp, string_ty *uuid);
+
+
+/**
+  * The project clas sis used to represent a "smart pointer" (wich is
+  * neither smart nor a pointer) to a project_ty object.
+  */
+class project
+{
+public:
+    /**
+      * The destructor.  It is not vurtual.
+      * Thou shalt not derive from this class.
+      */
+    ~project();
+
+    /**
+      * The copy constructor.
+      */
+    project(const project &arg);
+
+    /**
+      * The assignment operator.
+      */
+    project &operator=(const project &arg);
+
+    /**
+      * The constructor.
+      *
+      * @param name
+      *     The name of the project.
+      */
+    project(string_ty *name);
+
+    /**
+      * The constructor.
+      *
+      * @param name
+      *     The name of the project.
+      */
+    project(const nstring &name);
+
+    /**
+      * The member dereference operator is used to obtain the actual
+      * object to dereference.
+      */
+    project_ty *operator->() const { return ref; }
+
+private:
+    /**
+      * The ref instance variable is used to remember the project_ty
+      * object being referenced.  Reference counting is used to ensure
+      * it isn't deleted too early.
+      */
+    project_ty *ref;
+
+    /**
+      * The default constructor.  Do not use.  (You always need a
+      * project name.)
+      */
+    project();
+};
 
 #endif // PROJECT_H

@@ -1,6 +1,6 @@
 //
 //	aegis - project change supervisor
-//	Copyright (C) 2001, 2002, 2004 Peter Miller;
+//	Copyright (C) 2001, 2002, 2004-2006 Peter Miller;
 //	All rights reserved.
 //
 //	This program is free software; you can redistribute it and/or modify
@@ -20,14 +20,14 @@
 // MANIFEST: functions to manipulate compdatasets
 //
 
-#include <change.h>
-#include <change/branch.h>
-#include <project.h>
+#include <libaegis/change.h>
+#include <libaegis/change/branch.h>
+#include <libaegis/project.h>
 
 
 void
 project_compress_database_set(project_ty *pp, bool n)
 {
-    change_ty *cp = project_change_get(pp);
+    change_ty *cp = pp->change_get();
     change_branch_compress_database_set(cp, n);
 }

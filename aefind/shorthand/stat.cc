@@ -1,6 +1,6 @@
 //
 //	aegis - project change supervisor
-//	Copyright (C) 1997, 1999, 2002-2004 Peter Miller;
+//	Copyright (C) 1997, 1999, 2002-2005 Peter Miller;
 //	All rights reserved.
 //
 //	This program is free software; you can redistribute it and/or modify
@@ -20,20 +20,20 @@
 // MANIFEST: functions to implement stat-based shorthands
 //
 
-#include <aer/value/integer.h>
-#include <aer/value/string.h>
-#include <arglex.h>
-#include <function/stat.h>
-#include <shorthand/stat.h>
-#include <str.h>
-#include <sub.h>
-#include <tree.h>
-#include <tree/arithmetic.h>
-#include <tree/constant.h>
-#include <tree/list.h>
-#include <tree/now.h>
-#include <tree/relative.h>
-#include <tree/this.h>
+#include <libaegis/aer/value/integer.h>
+#include <libaegis/aer/value/string.h>
+#include <common/arglex.h>
+#include <aefind/function/stat.h>
+#include <aefind/shorthand/stat.h>
+#include <common/str.h>
+#include <libaegis/sub.h>
+#include <aefind/tree.h>
+#include <aefind/tree/arithmetic.h>
+#include <aefind/tree/constant.h>
+#include <aefind/tree/list.h>
+#include <aefind/tree/now.h>
+#include <aefind/tree/relative.h>
+#include <aefind/tree/this.h>
 
 
 tree_ty *

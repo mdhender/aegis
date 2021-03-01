@@ -39,7 +39,7 @@
  * You will also have to fix a whole bunch of tests.
  */
 
-#include <common.def>
+#include <libaegis/common.def>
 
 /*
  * This field contains

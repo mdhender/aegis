@@ -1,6 +1,6 @@
 //
 //	aegis - project change supervisor
-//	Copyright (C) 2004 Peter Miller;
+//	Copyright (C) 2004-2006 Peter Miller;
 //	All rights reserved.
 //
 //	This program is free software; you can redistribute it and/or modify
@@ -20,18 +20,18 @@
 // MANIFEST: functions to manipulate existings
 //
 
-#include <ac/ctype.h>
-#include <ac/stdlib.h>
+#include <common/ac/ctype.h>
+#include <common/ac/stdlib.h>
 
-#include <change/branch.h>
-#include <error.h> // for assert
-#include <fstrcmp.h>
-#include <gonzo.h>
-#include <project.h>
-#include <str_list.h>
-#include <sub.h>
-#include <trace.h>
-#include <zero.h>
+#include <libaegis/change/branch.h>
+#include <common/error.h> // for assert
+#include <common/fstrcmp.h>
+#include <libaegis/gonzo.h>
+#include <libaegis/project.h>
+#include <common/str_list.h>
+#include <libaegis/sub.h>
+#include <common/trace.h>
+#include <libaegis/zero.h>
 
 
 static int
@@ -54,7 +54,7 @@ name_has_numeric_suffix(string_ty *name, string_ty **left, long *right)
 
 
 void
-project_bind_existing(project_ty *pp)
+project_ty::bind_existing()
 {
     string_ty	    *s;
     string_ty	    *parent_name;
@@ -63,44 +63,58 @@ project_bind_existing(project_ty *pp)
     //
     // make sure project exists
     //
-    trace(("project_bind_existing(pp = %08lX)\n{\n", (long)pp));
-    assert(!pp->home_path);
+    trace(("project_ty::bind_existing(this = %08lX)\n{\n", (long)this));
+    assert(!home_path);
     alias_retry_count = 0;
     alias_retry:
-    s = gonzo_project_home_path_from_name(pp->name);
+    s = gonzo_project_home_path_from_name(name);
+
+    //
+    // Look to see if there is an alias.
+    //
+    if (!s)
+    {
+	s = gonzo_alias_to_actual(name);
+	if (s)
+	{
+	    str_free(name);
+	    name = str_copy(s);
+	    s = gonzo_project_home_path_from_name(name);
+	}
+    }
 
     //
     // If the named project was not found, and it has a numeric suffix,
     // then assume that it is a project.branch combination,
     // and try to find the deeper project.
     //
-    if (!s && name_has_numeric_suffix(pp->name, &parent_name, &pp->parent_bn))
+    if (!s && name_has_numeric_suffix(name, &parent_name, &parent_bn))
     {
-	pp->parent = project_alloc(parent_name);
-	project_bind_existing(pp->parent);
-	pp->pcp = change_alloc(pp->parent, pp->parent_bn);
-	change_bind_existing(pp->pcp);
-	if (!change_was_a_branch(pp->pcp))
-	    change_fatal(pp->pcp, 0, i18n("not a branch"));
+	parent = project_alloc(parent_name);
+	parent->bind_existing();
+	pcp = change_alloc(parent, parent_bn);
+	change_bind_existing(pcp);
+	if (!change_was_a_branch(pcp))
+	    change_fatal(pcp, 0, i18n("not a branch"));
 
 	//
 	// rebuild the project name
 	//	...eventually, use the remembered punctuation
 	//
-	str_free(pp->name);
-	pp->name =
+	str_free(name);
+	name =
 	    str_format
 	    (
 		"%s.%ld",
-		project_name_get(pp->parent)->str_text,
-		magic_zero_decode(pp->parent_bn)
+		project_name_get(parent)->str_text,
+		magic_zero_decode(parent_bn)
 	    );
 
-	pp->changes_path =
+	changes_path =
 	    str_format
 	    (
 		"%s.branch",
-		project_change_path_get(pp->parent, pp->parent_bn)->str_text
+		parent->change_path_get(parent_bn)->str_text
 	    );
 	return;
     }
@@ -113,15 +127,15 @@ project_bind_existing(project_ty *pp)
     {
 	string_ty	*other;
 
-	other = gonzo_alias_to_actual(pp->name);
+	other = gonzo_alias_to_actual(name);
 	if (other)
 	{
 	    if (++alias_retry_count > 5)
 	    {
-		project_fatal(pp, 0, i18n("alias loop detected"));
+		project_fatal(this, 0, i18n("alias loop detected"));
 	    }
-	    str_free(pp->name);
-	    pp->name = str_copy(other);
+	    str_free(name);
+	    name = str_copy(other);
 	    goto alias_retry;
 	}
     }
@@ -145,7 +159,7 @@ project_bind_existing(project_ty *pp)
 	    double	    w;
 
 	    s = wl.string[j];
-	    w = fstrcmp(pp->name->str_text, s->str_text);
+	    w = fstrcmp(name->str_text, s->str_text);
 	    if (w > best_weight)
 	    {
 		best = s;
@@ -157,7 +171,7 @@ project_bind_existing(project_ty *pp)
 	    sub_context_ty  *scp;
 
 	    scp = sub_context_new();
-	    sub_var_set_string(scp, "Name", pp->name);
+	    sub_var_set_string(scp, "Name", name);
 	    sub_var_set_string(scp, "Guess", best);
 	    fatal_intl(scp, i18n("no $name project, closest is $guess"));
 	}
@@ -166,7 +180,7 @@ project_bind_existing(project_ty *pp)
 	    sub_context_ty  *scp;
 
 	    scp = sub_context_new();
-	    sub_var_set_string(scp, "Name", pp->name);
+	    sub_var_set_string(scp, "Name", name);
 	    fatal_intl(scp, i18n("no $name project"));
 	    // NOTREACHED
 	    sub_context_delete(scp);
@@ -180,13 +194,13 @@ project_bind_existing(project_ty *pp)
     // and any comparison of paths is done on this "system idea"
     // of the pathname.
     //
-    pp->home_path = str_copy(s);
+    home_path = str_copy(s);
     trace(("}\n"));
 }
 
 
-int
-project_bind_existing_errok(project_ty *pp)
+bool
+project_ty::bind_existing_errok()
 {
     string_ty	    *s;
     string_ty	    *parent_name;
@@ -195,62 +209,62 @@ project_bind_existing_errok(project_ty *pp)
     //
     // make sure project exists
     //
-    trace(("project_bind_existing_errok(pp = %08lX)\n{\n", (long)pp));
-    assert(!pp->home_path);
+    trace(("project_ty::bind_existing_errok(this = %08lX)\n{\n", (long)this));
+    assert(!home_path);
     alias_retry_count = 0;
     alias_retry:
-    s = gonzo_project_home_path_from_name(pp->name);
+    s = gonzo_project_home_path_from_name(name);
 
     //
     // If the named project was not found, and it has a numeric suffix,
     // then assume that it is a project.branch combination,
     // and try to find the deeper project.
     //
-    if (!s && name_has_numeric_suffix(pp->name, &parent_name, &pp->parent_bn))
+    if (!s && name_has_numeric_suffix(name, &parent_name, &parent_bn))
     {
-	pp->parent = project_alloc(parent_name);
-	if (!project_bind_existing_errok(pp->parent))
+	parent = project_alloc(parent_name);
+	if (!parent->bind_existing_errok())
 	{
-	    trace(("return 0;\n"));
+	    trace(("return false;\n"));
 	    trace(("}\n"));
-	    return 0;
+	    return false;
 	}
-	pp->pcp = change_alloc(pp->parent, pp->parent_bn);
-	if (!change_bind_existing_errok(pp->pcp))
+	pcp = change_alloc(parent, parent_bn);
+	if (!change_bind_existing_errok(pcp))
 	{
-	    trace(("return 0;\n"));
+	    trace(("return false;\n"));
 	    trace(("}\n"));
-	    return 0;
+	    return false;
 	}
-	if (!change_was_a_branch(pp->pcp))
+	if (!change_was_a_branch(pcp))
 	{
-	    trace(("return 0;\n"));
+	    trace(("return false;\n"));
 	    trace(("}\n"));
-	    return 0;
+	    return false;
 	}
 
 	//
 	// rebuild the project name
 	//	...eventually, use the remembered punctuation
 	//
-	str_free(pp->name);
-	pp->name =
+	str_free(name);
+	name =
 	    str_format
 	    (
 		"%s.%ld",
-		project_name_get(pp->parent)->str_text,
-		magic_zero_decode(pp->parent_bn)
+		project_name_get(parent)->str_text,
+		magic_zero_decode(parent_bn)
 	    );
 
-	pp->changes_path =
+	changes_path =
 	    str_format
 	    (
 		"%s.branch",
-		project_change_path_get(pp->parent, pp->parent_bn)->str_text
+		parent->change_path_get(parent_bn)->str_text
 	    );
-	trace(("return 1;\n"));
+	trace(("return true;\n"));
 	trace(("}\n"));
-	return 1;
+	return true;
     }
 
     //
@@ -261,17 +275,17 @@ project_bind_existing_errok(project_ty *pp)
     {
 	string_ty	*other;
 
-	other = gonzo_alias_to_actual(pp->name);
+	other = gonzo_alias_to_actual(name);
 	if (other)
 	{
 	    if (++alias_retry_count > 5)
 	    {
-		trace(("return 0;\n"));
+		trace(("return false;\n"));
 		trace(("}\n"));
-		return 0;
+		return false;
 	    }
-	    str_free(pp->name);
-	    pp->name = str_copy(other);
+	    str_free(name);
+	    name = str_copy(other);
 	    goto alias_retry;
 	}
     }
@@ -282,9 +296,9 @@ project_bind_existing_errok(project_ty *pp)
     //
     if (!s)
     {
-	trace(("return 0;\n"));
+	trace(("return false;\n"));
 	trace(("}\n"));
-	return 0;
+	return false;
     }
 
     //
@@ -294,8 +308,8 @@ project_bind_existing_errok(project_ty *pp)
     // and any comparison of paths is done on this "system idea"
     // of the pathname.
     //
-    pp->home_path = str_copy(s);
-    trace(("return 1\n"));
+    home_path = str_copy(s);
+    trace(("return true\n"));
     trace(("}\n"));
-    return 1;
+    return true;
 }

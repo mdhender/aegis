@@ -1,6 +1,6 @@
 //
 //	aegis - project change supervisor
-//	Copyright (C) 2004 Peter Miller;
+//	Copyright (C) 2004-2006 Peter Miller;
 //	All rights reserved.
 //
 //	This program is free software; you can redistribute it and/or modify
@@ -20,22 +20,23 @@
 // MANIFEST: implementation of the get_project_change_cause class
 //
 
-#include <ac/stdio.h>
-#include <ac/string.h>
-#include <ac/stdlib.h>
+#include <common/ac/stdio.h>
+#include <common/ac/string.h>
+#include <common/ac/stdlib.h>
 
-#include <change.h>
-#include <change/branch.h>
-#include <cstate.h>
-#include <error.h> // for assert
-#include <get/project/change_cause.h>
-#include <emit/project.h>
-#include <http.h>
-#include <project.h>
-#include <project/history.h>
-#include <str_list.h>
-#include <symtab/template.h>
-#include <yyyymmdd_wk.h>
+#include <common/error.h> // for assert
+#include <common/str_list.h>
+#include <common/symtab/template.h>
+#include <common/yyyymmdd_wk.h>
+#include <libaegis/change/branch.h>
+#include <libaegis/change.h>
+#include <libaegis/cstate.h>
+#include <libaegis/project.h>
+#include <libaegis/project/history.h>
+
+#include <aeget/emit/project.h>
+#include <aeget/get/project/change_cause.h>
+#include <aeget/http.h>
 
 
 static const char *const month_name[] =
@@ -171,7 +172,7 @@ get_project_change_cause(project_ty *pp, string_ty *filename,
     for (int nn = 0; nn < change_cause_max; ++nn)
 	legend_needed[nn] = 0;
     symtab<long> sum_by_when;
-    change_ty *pcp = project_change_get(pp);
+    change_ty *pcp = pp->change_get();
     cstate_ty *proj_cstate_data = change_cstate_get(pcp);
     for (size_t k = 0; k < proj_cstate_data->branch->history->length; ++k)
     {

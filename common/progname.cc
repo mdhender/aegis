@@ -1,6 +1,6 @@
 //
 //	aegis - project change supervisor
-//	Copyright (C) 1995, 1999, 2003, 2004 Peter Miller;
+//	Copyright (C) 1995, 1999, 2003-2005 Peter Miller;
 //	All rights reserved.
 //
 //	This program is free software; you can redistribute it and/or modify
@@ -20,10 +20,10 @@
 // MANIFEST: functions to manipulate the program name
 //
 
-#include <ac/string.h>
+#include <common/ac/string.h>
 
-#include <exeext.h>
-#include <progname.h>
+#include <common/exeext.h>
+#include <common/progname.h>
 
 
 static const char *progname;

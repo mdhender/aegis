@@ -1,6 +1,6 @@
 //
 //	aegis - project change supervisor
-//	Copyright (C) 2004 Peter Miller;
+//	Copyright (C) 2004-2006 Peter Miller;
 //	All rights reserved.
 //
 //	This program is free software; you can redistribute it and/or modify
@@ -28,12 +28,23 @@
 // Root required: yes.
 //
 
-#include <request/argumentx.h>
-#include <server.h>
+#include <aecvsserver/request/argumentx.h>
+#include <aecvsserver/server.h>
 
 
-static void
-run(server_ty *sp, string_ty *arg)
+request_argumentx::~request_argumentx()
+{
+}
+
+
+request_argumentx::request_argumentx()
+{
+}
+
+
+void
+request_argumentx::run_inner(server_ty *sp, string_ty *arg)
+    const
 {
     if (server_root_required(sp, "Argumentx"))
 	return;
@@ -41,9 +52,17 @@ run(server_ty *sp, string_ty *arg)
 }
 
 
-const request_ty request_argumentx =
+const char *
+request_argumentx::name()
+    const
 {
-    "Argumentx",
-    run,
-    0, // no reset
-};
+    return "Argumentx";
+}
+
+
+bool
+request_argumentx::reset()
+    const
+{
+    return false;
+}

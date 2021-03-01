@@ -1,6 +1,6 @@
 //
 //	aegis - project change supervisor
-//	Copyright (C) 1999, 2001-2005 Peter Miller;
+//	Copyright (C) 1999, 2001-2006 Peter Miller;
 //	All rights reserved.
 //
 //	This program is free software; you can redistribute it and/or modify
@@ -20,21 +20,17 @@
 // MANIFEST: functions to manipulate base64s
 //
 
-#include <input/base64.h>
-#include <stracc.h>
+#include <libaegis/input/base64.h>
+#include <common/stracc.h>
 
 
 input_base64::~input_base64()
 {
-    if (close_on_close)
-	delete deeper;
-    deeper = 0;
 }
 
 
-input_base64::input_base64(input_ty *arg1, bool arg2) :
-    deeper(arg1),
-    close_on_close(arg2),
+input_base64::input_base64(input &arg) :
+    deeper(arg),
     pos(0),
     residual_bits(0),
     residual_value(0),
@@ -54,7 +50,7 @@ input_base64::read_inner(void *data, size_t len)
     {
 	while (residual_bits < 8)
 	{
-	    int c = deeper->getc();
+	    int c = deeper->getch();
 	    switch (c)
 	    {
 	    case ' ':
@@ -219,7 +215,7 @@ input_base64::keepalive()
 
 
 bool
-input_base64::recognise(input_ty *ifp)
+input_base64::recognise(input &ifp)
 {
     //
     // There are only a few characters which are acceptable to
@@ -230,7 +226,7 @@ input_base64::recognise(input_ty *ifp)
     stracc_t buffer;
     while (buffer.size() < 8000)
     {
-	int c = ifp->getc();
+	int c = ifp->getch();
 	if (c < 0)
 	    break;
 	buffer.push_back(c);

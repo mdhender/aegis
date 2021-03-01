@@ -23,8 +23,8 @@
 #ifndef OUTPUT_PAGER_H
 #define OUTPUT_PAGER_H
 
-#include <nstring.h>
-#include <output.h>
+#include <common/nstring.h>
+#include <libaegis/output.h>
 
 /**
   * The output_pager_ty class is used to represent an output stream

@@ -1,6 +1,6 @@
 //
 //	aegis - project change supervisor
-//	Copyright (C) 1991-1997, 1999-2004 Peter Miller;
+//	Copyright (C) 1991-1997, 1999-2005 Peter Miller;
 //	All rights reserved.
 //
 //	This program is free software; you can redistribute it and/or modify
@@ -20,27 +20,27 @@
 // MANIFEST: functions to change directory or determine paths
 //
 
-#include <ac/stdio.h>
-#include <ac/stdlib.h>
-#include <ac/libintl.h>
+#include <common/ac/stdio.h>
+#include <common/ac/stdlib.h>
+#include <common/ac/libintl.h>
 
-#include <aecd.h>
-#include <ael/change/by_state.h>
-#include <arglex2.h>
-#include <arglex/change.h>
-#include <arglex/project.h>
-#include <change.h>
-#include <change/branch.h>
-#include <change/identifier.h>
-#include <error.h> // for assert
-#include <help.h>
-#include <os.h>
-#include <progname.h>
-#include <project.h>
-#include <quit.h>
-#include <sub.h>
-#include <trace.h>
-#include <user.h>
+#include <aegis/aecd.h>
+#include <libaegis/ael/change/by_state.h>
+#include <libaegis/arglex2.h>
+#include <libaegis/arglex/change.h>
+#include <libaegis/arglex/project.h>
+#include <libaegis/change.h>
+#include <libaegis/change/branch.h>
+#include <libaegis/change/identifier.h>
+#include <common/error.h> // for assert
+#include <libaegis/help.h>
+#include <libaegis/os.h>
+#include <common/progname.h>
+#include <libaegis/project.h>
+#include <common/quit.h>
+#include <libaegis/sub.h>
+#include <common/trace.h>
+#include <libaegis/user.h>
 
 
 static void

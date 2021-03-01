@@ -1,6 +1,6 @@
 //
 //	aegis - project change supervisor
-//	Copyright (C) 2001-2005 Peter Miller;
+//	Copyright (C) 2001-2006 Peter Miller;
 //	All rights reserved.
 //
 //	This program is free software; you can redistribute it and/or modify
@@ -20,13 +20,13 @@
 // MANIFEST: functions to manipulate uudecodes
 //
 
-#include <ac/string.h>
-#include <ac/limits.h>
+#include <common/ac/string.h>
+#include <common/ac/limits.h>
 
-#include <error.h>
-#include <input/uudecode.h>
-#include <nstring/accumulator.h>
-#include <trace.h>
+#include <common/error.h>
+#include <libaegis/input/uudecode.h>
+#include <common/nstring/accumulator.h>
+#include <common/trace.h>
 
 //
 // The NOT_DECODABLE value is placed into the itab array to annotate
@@ -40,15 +40,11 @@ static char default_encoding_table[] =
 
 input_uudecode::~input_uudecode()
 {
-    if (close_on_close)
-	delete deeper;
-    deeper = 0;
 }
 
 
-input_uudecode::input_uudecode(input_ty *arg1, bool arg2) :
-    deeper(arg1),
-    close_on_close(arg2),
+input_uudecode::input_uudecode(input &arg) :
+    deeper(arg),
     pos(0),
     state(0),
     checksum(-1),
@@ -86,7 +82,7 @@ input_uudecode::read_inner(void *data, size_t len)
 	bp = buf;
 	for (;;)
 	{
-	    int c = deeper->getc();
+	    int c = deeper->getch();
 	    if (c < 0)
 	    {
 		if (bp == buf && state == 0)
@@ -421,16 +417,16 @@ input_uudecode::keepalive()
 
 
 bool
-input_uudecode::candidate(input_ty *ifp)
+input_uudecode::candidate(input &ifp)
 {
-    trace(("input_uudecode_recognise(ifp = %08lX)\n{\n", (long)ifp));
+    trace(("input_uudecode_recognise()\n{\n"));
     static char magic[] = "begin ";
     bool result = 0;
     nstring_accumulator buffer;
     int state = 0;
     while (buffer.size() < 8000)
     {
-	int c = ifp->getc();
+	int c = ifp->getch();
 	if (c < 0)
 	    break;
 	buffer.push_back(c);

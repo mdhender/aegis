@@ -1,6 +1,6 @@
 //
 //	aegis - project change supervisor
-//	Copyright (C) 2002, 2004 Peter Miller;
+//	Copyright (C) 2002, 2004, 2005 Peter Miller;
 //	All rights reserved.
 //
 //	This program is free software; you can redistribute it and/or modify
@@ -20,12 +20,12 @@
 // MANIFEST: functions to manipulate backgrounds
 //
 
-#include <ac/unistd.h>
-#include <ac/sys/ioctl.h>
-#include <ac/termios.h>
-#include <ac/signal.h>
+#include <common/ac/unistd.h>
+#include <common/ac/sys/ioctl.h>
+#include <common/ac/termios.h>
+#include <common/ac/signal.h>
 
-#include <os.h>
+#include <libaegis/os.h>
 
 
 #ifdef SIGSTOP

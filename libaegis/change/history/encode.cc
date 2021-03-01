@@ -1,6 +1,6 @@
 //
 //	aegis - project change supervisor
-//	Copyright (C) 2001-2005 Peter Miller;
+//	Copyright (C) 2001-2006 Peter Miller;
 //	All rights reserved.
 //
 //	This program is free software; you can redistribute it and/or modify
@@ -20,23 +20,23 @@
 // MANIFEST: functions to manipulate encodes
 //
 
-#include <ac/ctype.h>
-#include <ac/string.h>
+#include <common/ac/ctype.h>
+#include <common/ac/string.h>
 
-#include <change.h>
-#include <change/file.h>
-#include <change/history/encode.h>
-#include <commit.h>
-#include <error.h> // for assert
-#include <input/file.h>
-#include <os.h>
-#include <output/base64.h>
-#include <output/file.h>
-#include <output/quoted_print.h>
-#include <output/tee.h>
-#include <project/history/uuid_trans.h>
-#include <trace.h>
-#include <undo.h>
+#include <libaegis/change.h>
+#include <libaegis/change/file.h>
+#include <libaegis/change/history/encode.h>
+#include <libaegis/commit.h>
+#include <common/error.h> // for assert
+#include <libaegis/input/file.h>
+#include <libaegis/os.h>
+#include <libaegis/output/base64.h>
+#include <libaegis/output/file.h>
+#include <libaegis/output/quoted_print.h>
+#include <libaegis/output/tee.h>
+#include <libaegis/project/history/uuid_trans.h>
+#include <common/trace.h>
+#include <libaegis/undo.h>
 
 
 static string_ty *
@@ -59,7 +59,6 @@ change_history_encode(change_ty *cp, fstate_src_ty *src, int *unlink_p)
     pconf_ty        *pconf_data;
     int             min_qp_enc;
     string_ty       *ofn1;
-    input_ty        *ip;
     output_ty       *op1;
     output_ty       *op1x;
     string_ty       *ofn2;
@@ -195,7 +194,7 @@ change_history_encode(change_ty *cp, fstate_src_ty *src, int *unlink_p)
 	os_symlink_or_copy(filename, ofn3);
     }
 
-    ip = input_file_open(filename);
+    input ip = input_file_open(filename);
     str_free(filename);
 
     op1 = output_file_text_open(ofn1);
@@ -255,8 +254,7 @@ change_history_encode(change_ty *cp, fstate_src_ty *src, int *unlink_p)
 	ascii_yuck = 1;
 	intl_yuck = 1;
     }
-    delete ip;
-    ip = 0;
+    ip.close();
     delete op;
     op = 0;
     change_become_undo();

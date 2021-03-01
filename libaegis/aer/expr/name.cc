@@ -1,6 +1,6 @@
 //
 //	aegis - project change supervisor
-//	Copyright (C) 1994-1997, 1999, 2000, 2002, 2004 Peter Miller;
+//	Copyright (C) 1994-1997, 1999, 2000, 2002, 2004, 2005 Peter Miller;
 //	All rights reserved.
 //
 //	This program is free software; you can redistribute it and/or modify
@@ -20,32 +20,32 @@
 // MANIFEST: functions to manipulate name expressions
 //
 
-#include <aer/expr/constant.h>
-#include <aer/expr/name.h>
-#include <aer/func.h>
-#include <aer/lex.h>
-#include <aer/parse.h>
-#include <aer/value/boolean.h>
-#include <aer/value/error.h>
-#include <aer/value/group.h>
-#include <aer/value/gstate.h>
-#include <aer/value/null.h>
-#include <aer/value/passwd.h>
-#include <aer/value/ref.h>
-#include <aer/value/uconf.h>
-#include <cattr.h>
-#include <common.h>
-#include <cstate.h>
-#include <error.h>
-#include <fstate.h>
-#include <gonzo.h>
-#include <pattr.h>
-#include <pconf.h>
-#include <pstate.h>
-#include <sub.h>
-#include <symtab.h>
-#include <uconf.h>
-#include <ustate.h>
+#include <common/error.h>
+#include <common/symtab.h>
+#include <libaegis/aer/expr/constant.h>
+#include <libaegis/aer/expr/name.h>
+#include <libaegis/aer/func.h>
+#include <libaegis/aer/lex.h>
+#include <libaegis/aer/parse.h>
+#include <libaegis/aer/value/boolean.h>
+#include <libaegis/aer/value/error.h>
+#include <libaegis/aer/value/group.h>
+#include <libaegis/aer/value/gstate.h>
+#include <libaegis/aer/value/null.h>
+#include <libaegis/aer/value/passwd.h>
+#include <libaegis/aer/value/ref.h>
+#include <libaegis/aer/value/uconf.h>
+#include <libaegis/cattr.h>
+#include <libaegis/common.h>
+#include <libaegis/cstate.h>
+#include <libaegis/fstate.h>
+#include <libaegis/gonzo.h>
+#include <libaegis/pattr.h>
+#include <libaegis/pconf.h>
+#include <libaegis/pstate.h>
+#include <libaegis/sub.h>
+#include <libaegis/uconf.h>
+#include <libaegis/ustate.h>
 
 
 static symtab_ty *stp;
@@ -118,7 +118,7 @@ init(void)
     str_free(name);
 
     //
-    // the ``arg'' variable, containing the
+    // the "arg" variable, containing the
     // strings specified on the command line.
     //
     report_parse__init_arg();

@@ -1,6 +1,6 @@
 //
 //	aegis - project change supervisor
-//	Copyright (C) 1999, 2000, 2002-2004 Peter Miller;
+//	Copyright (C) 1999, 2000, 2002-2005 Peter Miller;
 //	All rights reserved.
 //
 //	This program is free software; you can redistribute it and/or modify
@@ -20,13 +20,13 @@
 // MANIFEST: functions to manipulate paths
 //
 
-#include <change/file.h>
-#include <error.h> // for assert
-#include <os.h>
-#include <project/file.h>
-#include <str_list.h>
-#include <symtab.h>
-#include <trace.h>
+#include <libaegis/change/file.h>
+#include <common/error.h> // for assert
+#include <libaegis/os.h>
+#include <libaegis/project/file.h>
+#include <common/str_list.h>
+#include <common/symtab.h>
+#include <common/trace.h>
 
 
 string_ty *
@@ -61,7 +61,6 @@ change_file_path(change_ty *cp, string_ty *file_name)
     //
     switch (src_data->usage)
     {
-
     case file_usage_source:
     case file_usage_config:
     case file_usage_test:
@@ -78,7 +77,8 @@ change_file_path(change_ty *cp, string_ty *file_name)
 	    size_t j;
 	    for (j = 0; j < search_path.nstrings; ++j)
 	    {
-		result = os_path_cat(search_path.string[j], file_name);
+		result =
+		    os_path_cat(search_path.string[j], src_data->file_name);
 		if (os_exists(result))
 		    break;
 		str_free(result);
@@ -86,7 +86,10 @@ change_file_path(change_ty *cp, string_ty *file_name)
 	    }
 	    os_become_undo();
 	    if (j >= search_path.nstrings)
-		result = os_path_cat(search_path.string[0], file_name);
+	    {
+		result =
+		    os_path_cat(search_path.string[0], src_data->file_name);
+	    }
 	    assert(result);
 	    trace(("return \"%s\";\n", result->str_text));
 	    trace(("}\n"));
@@ -102,7 +105,7 @@ change_file_path(change_ty *cp, string_ty *file_name)
 #ifndef DEBUG
     default:
 #endif
-	result = project_file_path(cp->pp, file_name);
+	result = project_file_path(cp->pp, src_data);
 	break;
 
     case cstate_state_being_developed:
@@ -110,12 +113,20 @@ change_file_path(change_ty *cp, string_ty *file_name)
     case cstate_state_being_reviewed:
     case cstate_state_awaiting_integration:
 	result =
-    	    os_path_cat(change_development_directory_get(cp, 0), file_name);
+    	    os_path_cat
+	    (
+		change_development_directory_get(cp, 0),
+		src_data->file_name
+	    );
 	break;
 
     case cstate_state_being_integrated:
 	result =
-    	    os_path_cat(change_integration_directory_get(cp, 0), file_name);
+    	    os_path_cat
+	    (
+		change_integration_directory_get(cp, 0),
+		src_data->file_name
+	    );
 	break;
     }
 

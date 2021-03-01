@@ -20,7 +20,7 @@
 // MANIFEST: implementation of the nstring::quote_shell method
 //
 
-#include <nstring.h>
+#include <common/nstring.h>
 
 
 nstring

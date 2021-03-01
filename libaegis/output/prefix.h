@@ -23,8 +23,8 @@
 #ifndef LIBAEGIS_OUTPUT_PREFIX_H
 #define LIBAEGIS_OUTPUT_PREFIX_H
 
-#include <nstring.h>
-#include <output.h>
+#include <common/nstring.h>
+#include <libaegis/output.h>
 
 
 /**

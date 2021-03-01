@@ -1,6 +1,6 @@
 '\"p
 .\"	aegis - project change supervisor
-.\"	Copyright (C) 2002 Peter Miller;
+.\"	Copyright (C) 2002, 2005 Peter Miller;
 .\"	All rights reserved.
 .\"
 .\"	This program is free software; you can redistribute it and/or modify
@@ -66,8 +66,8 @@ by this model.  Some examples of automated testing will be given.
 .P
 The core thesis of this paper is the idea\*F
 .FS
-There is a growing body of knowledge called ``Transaction Based testing''
-or sometimes ``Transaction Based Verification''.
+There is a growing body of knowledge called "Transaction Based testing"
+or sometimes "Transaction Based Verification".
 .FE
 that a test
 consists of three things: a system in a defined state, a defined
@@ -81,7 +81,7 @@ ellipse "destination" "state"
 .PE
 .P
 This is an overly simplistic statement, but remains remarkable useful.
-The ``system'' under test could be a simple object, a collection of
+The "system" under test could be a simple object, a collection of
 interrelated objects, a whole application, or a distributed multi-layer
 client-server system.
 Equally, the transaction could be a single byte of input, a single edge

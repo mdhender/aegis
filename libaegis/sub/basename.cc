@@ -1,6 +1,6 @@
 //
 //	aegis - project change supervisor
-//	Copyright (C) 1997, 2001-2004 Peter Miller;
+//	Copyright (C) 1997, 2001-2005 Peter Miller;
 //	All rights reserved.
 //
 //	This program is free software; you can redistribute it and/or modify
@@ -20,14 +20,14 @@
 // MANIFEST: functions to impliment the basename substitution
 //
 
-#include <ac/string.h>
+#include <common/ac/string.h>
 
-#include <str.h>
-#include <sub.h>
-#include <sub/basename.h>
-#include <os.h>
-#include <trace.h>
-#include <wstr/list.h>
+#include <common/str.h>
+#include <libaegis/sub.h>
+#include <libaegis/sub/basename.h>
+#include <libaegis/os.h>
+#include <common/trace.h>
+#include <common/wstr/list.h>
 
 
 //

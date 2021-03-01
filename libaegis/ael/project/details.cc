@@ -1,6 +1,6 @@
 //
 //	aegis - project change supervisor
-//	Copyright (C) 2004 Peter Miller;
+//	Copyright (C) 2004-2006 Peter Miller;
 //	All rights reserved.
 //
 //	This program is free software; you can redistribute it and/or modify
@@ -20,12 +20,12 @@
 // MANIFEST: implementation of the ael_project_details class
 //
 
-#include <ael/change/details.h>
-#include <ael/change/inappropriat.h>
-#include <ael/project/details.h>
-#include <project.h>
-#include <trace.h>
-#include <user.h>
+#include <libaegis/ael/change/details.h>
+#include <libaegis/ael/change/inappropriat.h>
+#include <libaegis/ael/project/details.h>
+#include <libaegis/project.h>
+#include <common/trace.h>
+#include <libaegis/user.h>
 
 
 void
@@ -44,13 +44,13 @@ list_project_details(string_ty *project_name, long change_number,
 	project_name = str_copy(project_name);
     project_ty *pp = project_alloc(project_name);
     str_free(project_name);
-    project_bind_existing(pp);
+    pp->bind_existing();
 
     //
     // List the project details.
     //
     list_change_details_columns process;
-    process.list(project_change_get(pp), true);
+    process.list(pp->change_get(), true);
 
     //
     // Done.

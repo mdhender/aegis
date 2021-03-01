@@ -1,6 +1,6 @@
 //
 //	aegis - project change supervisor
-//	Copyright (C) 2005 Peter Miller;
+//	Copyright (C) 2005, 2006 Peter Miller;
 //	All rights reserved.
 //
 //	This program is free software; you can redistribute it and/or modify
@@ -20,22 +20,17 @@
 // MANIFEST: implementation of the arglex3 class
 //
 
-#include <arglex3.h>
+#include <aerevml/arglex3.h>
 
 
 static arglex_table_ty argtab[] =
 {
-    { "-COMPATibility", arglex_token_compatibility, },
-    { "-COmpress", arglex_token_compress, },
-    { "-Not_COmpress", arglex_token_compress_not, },
     { "-Content_Transfer_Encoding", arglex_token_content_transfer_encoding},
     { "-Description_Header", arglex_token_description_header, },
     { "-Not_Description_Header", arglex_token_description_header_not, },
     { "-Entire_Source", arglex_token_entire_source, },
     { "-Not_Entire_Source", arglex_token_entire_source_not, },
     { "-Partial_Source", arglex_token_entire_source_not, },
-    { "-Mime_Header", arglex_token_mime_header, },
-    { "-Not_Mime_Header", arglex_token_mime_header_not, },
     { "-Receive", arglex_token_receive, },
     { "-Send", arglex_token_send, },
     { "-Trojan", arglex_token_trojan, },

@@ -20,22 +20,22 @@
 // MANIFEST: functions to implement stat-based functions
 //
 
-#include <config.h> // sets features, so stat.h tells us everything
-#include <ac/sys/types.h>
+#include <common/config.h> // sets features, so stat.h tells us everything
+#include <common/ac/sys/types.h>
 #include <sys/stat.h>
 
-#include <aer/value/error.h>
-#include <aer/value/integer.h>
-#include <aer/value/string.h>
-#include <aer/value/time.h>
-#include <cmdline.h>
-#include <descend.h>
-#include <function/needs.h>
-#include <function/stat.h>
-#include <str.h>
-#include <sub.h>
-#include <tree/list.h>
-#include <tree/monadic.h>
+#include <libaegis/aer/value/error.h>
+#include <libaegis/aer/value/integer.h>
+#include <libaegis/aer/value/string.h>
+#include <libaegis/aer/value/time.h>
+#include <aefind/cmdline.h>
+#include <aefind/descend.h>
+#include <aefind/function/needs.h>
+#include <aefind/function/stat.h>
+#include <common/str.h>
+#include <libaegis/sub.h>
+#include <aefind/tree/list.h>
+#include <aefind/tree/monadic.h>
 
 
 static rpt_value_ty *

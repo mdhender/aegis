@@ -20,19 +20,19 @@
 // MANIFEST: functions to manipulate mains
 //
 
-#include <ac/stdio.h>
-#include <ac/signal.h>
+#include <common/ac/stdio.h>
+#include <common/ac/signal.h>
 
-#include <arglex3.h>
-#include <diff.h>
-#include <env.h>
-#include <help.h>
-#include <language.h>
-#include <os.h>
-#include <quit.h>
-#include <rsrc_limits.h>
-#include <str.h>
-#include <version.h>
+#include <aediff/arglex3.h>
+#include <aediff/diff.h>
+#include <common/env.h>
+#include <libaegis/help.h>
+#include <common/language.h>
+#include <libaegis/os.h>
+#include <common/quit.h>
+#include <common/rsrc_limits.h>
+#include <common/str.h>
+#include <libaegis/version.h>
 
 
 static void

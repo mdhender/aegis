@@ -1,6 +1,6 @@
 //
 //	aegis - project change supervisor
-//	Copyright (C) 1999, 2003, 2004 Peter Miller;
+//	Copyright (C) 1999, 2003-2005 Peter Miller;
 //	All rights reserved.
 //
 //	This program is free software; you can redistribute it and/or modify
@@ -20,11 +20,11 @@
 // MANIFEST: functions to manipulate nths
 //
 
-#include <change/file.h>
-#include <change/file/list_get.h>
-#include <error.h> // for assert
-#include <str_list.h>
-#include <trace.h>
+#include <libaegis/change/file.h>
+#include <libaegis/change/file/list_get.h>
+#include <common/error.h> // for assert
+#include <common/str_list.h>
+#include <common/trace.h>
 
 
 fstate_src_ty *

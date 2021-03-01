@@ -1,6 +1,6 @@
 //
 //	aegis - project change supervisor
-//	Copyright (C) 1999, 2002-2004 Peter Miller;
+//	Copyright (C) 1999, 2002-2005 Peter Miller;
 //	All rights reserved.
 //
 //	This program is free software; you can redistribute it and/or modify
@@ -20,18 +20,18 @@
 // MANIFEST: functions to manipulate name_checks
 //
 
-#include <ac/ctype.h>
-#include <ac/string.h>
+#include <common/ac/ctype.h>
+#include <common/ac/string.h>
 
-#include <abbreviate.h>
-#include <change.h>
-#include <error.h>	// for assert
-#include <gmatch.h>
-#include <project/file.h>
-#include <str.h>
-#include <str_list.h>
-#include <sub.h>
-#include <trace.h>
+#include <common/abbreviate.h>
+#include <libaegis/change.h>
+#include <common/error.h>	// for assert
+#include <common/gmatch.h>
+#include <libaegis/project/file.h>
+#include <common/str.h>
+#include <common/str_list.h>
+#include <libaegis/sub.h>
+#include <common/trace.h>
 
 
 static int
@@ -336,8 +336,8 @@ change_filename_shell_safe(change_ty *cp, string_ty *fn)
 	return 1;
 
     //
-    // Some shells also treat a leading tilde (~) as meaning ``home
-    // directory of''
+    // Some shells also treat a leading tilde (~) as meaning "home
+    // directory of"
     //
     if (fn->str_text[0] == '~')
 	return 0;

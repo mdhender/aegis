@@ -1,6 +1,6 @@
 //
 //	aegis - project change supervisor
-//	Copyright (C) 1991-1993, 1995, 2002, 2004 Peter Miller;
+//	Copyright (C) 1991-1993, 1995, 2002, 2004, 2005 Peter Miller;
 //	All rights reserved.
 //
 //	This program is free software; you can redistribute it and/or modify
@@ -23,9 +23,9 @@
 #ifndef AEGIS_INTERVAL_H
 #define AEGIS_INTERVAL_H
 
-#include <ac/stddef.h>
+#include <common/ac/stddef.h>
 
-#include <main.h>
+#include <common/main.h>
 
 typedef long interval_data_ty;
 

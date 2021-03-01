@@ -1,6 +1,6 @@
 //
 //      aegis - project change supervisor
-//      Copyright (C) 1991-2005 Peter Miller;
+//      Copyright (C) 1991-2006 Peter Miller;
 //      All rights reserved.
 //
 //      This program is free software; you can redistribute it and/or modify
@@ -20,42 +20,42 @@
 // MANIFEST: functions for implementing integrate begin
 //
 
-#include <ac/stdio.h>
-#include <ac/stdlib.h>
-#include <ac/string.h>
-#include <ac/time.h>
-#include <ac/unistd.h>
-#include <ac/sys/types.h>
+#include <common/ac/stdio.h>
+#include <common/ac/stdlib.h>
+#include <common/ac/string.h>
+#include <common/ac/time.h>
+#include <common/ac/unistd.h>
+#include <common/ac/sys/types.h>
 #include <sys/stat.h>
 
-#include <aeib.h>
-#include <ael/change/by_state.h>
-#include <arglex2.h>
-#include <arglex/change.h>
-#include <arglex/project.h>
-#include <commit.h>
-#include <change.h>
-#include <change/branch.h>
-#include <change/file.h>
-#include <dir.h>
-#include <error.h>
-#include <file.h>
-#include <gmatch.h>
-#include <help.h>
-#include <lock.h>
-#include <log.h>
-#include <progname.h>
-#include <os.h>
-#include <project.h>
-#include <project/file.h>
-#include <project/history.h>
-#include <quit.h>
-#include <rss.h>
-#include <sub.h>
-#include <trace.h>
-#include <undo.h>
-#include <user.h>
-#include <uuidentifier.h>
+#include <aegis/aeib.h>
+#include <libaegis/ael/change/by_state.h>
+#include <libaegis/arglex2.h>
+#include <libaegis/arglex/change.h>
+#include <libaegis/arglex/project.h>
+#include <libaegis/commit.h>
+#include <libaegis/change.h>
+#include <libaegis/change/branch.h>
+#include <libaegis/change/file.h>
+#include <libaegis/dir.h>
+#include <common/error.h>
+#include <libaegis/file.h>
+#include <common/gmatch.h>
+#include <libaegis/help.h>
+#include <libaegis/lock.h>
+#include <libaegis/log.h>
+#include <common/progname.h>
+#include <libaegis/os.h>
+#include <libaegis/project.h>
+#include <libaegis/project/file.h>
+#include <libaegis/project/history.h>
+#include <common/quit.h>
+#include <libaegis/rss.h>
+#include <libaegis/sub.h>
+#include <common/trace.h>
+#include <libaegis/undo.h>
+#include <libaegis/user.h>
+#include <common/uuidentifier.h>
 
 
 static void
@@ -206,7 +206,7 @@ link_tree_callback_minimum(void *arg, dir_walk_message_ty message,
     cp = (change_ty *)arg;
     assert(cp);
     trace_string(path->str_text);
-    s1 = os_below_dir(project_baseline_path_get(cp->pp, 1), path);
+    s1 = os_below_dir(cp->pp->baseline_path_get(true), path);
     assert(s1);
     trace_string(s1->str_text);
     if (!s1->str_length)
@@ -240,7 +240,7 @@ link_tree_callback_minimum(void *arg, dir_walk_message_ty message,
 
         //
         // Remove the ,D suffix, if present, and use the
-        // shortened from to test for project and change
+        // shortened form to test for project and change
         // membership.  This ensures that diff files are also
         // copied across.  Note that deleted files *have*
         // difference files.
@@ -356,7 +356,7 @@ link_tree_callback(void *arg, dir_walk_message_ty message, string_ty *path,
     cp = (change_ty *)arg;
     assert(cp);
     trace_string(path->str_text);
-    s1 = os_below_dir(project_baseline_path_get(cp->pp, 1), path);
+    s1 = os_below_dir(cp->pp->baseline_path_get(true), path);
     assert(s1);
     trace_string(s1->str_text);
     if (!s1->str_length)
@@ -474,7 +474,7 @@ copy_tree_callback_minimum(void *arg, dir_walk_message_ty message,
     cp = (change_ty *)arg;
     assert(cp);
     trace_string(path->str_text);
-    s1 = os_below_dir(project_baseline_path_get(cp->pp, 1), path);
+    s1 = os_below_dir(cp->pp->baseline_path_get(true), path);
     assert(s1);
     trace_string(s1->str_text);
     if (!s1->str_length)
@@ -510,7 +510,7 @@ copy_tree_callback_minimum(void *arg, dir_walk_message_ty message,
 
         //
         // Remove the ,D suffix, if present, and use the
-        // shortened from to test for project and change
+        // shortened form to test for project and change
         // membership.  This ensures that diff files are also
         // copied across.  Note that deleted files *have*
         // difference files.
@@ -621,7 +621,7 @@ copy_tree_callback(void *arg, dir_walk_message_ty message, string_ty *path,
     cp = (change_ty *)arg;
     assert(cp);
     trace_string(path->str_text);
-    s1 = os_below_dir(project_baseline_path_get(cp->pp, 1), path);
+    s1 = os_below_dir(cp->pp->baseline_path_get(true), path);
     assert(s1);
     trace_string(s1->str_text);
     if (!s1->str_length)
@@ -654,7 +654,7 @@ copy_tree_callback(void *arg, dir_walk_message_ty message, string_ty *path,
 
         //
         // Remove the ,D suffix, if present, and use the
-        // shortened from to test for project and change
+        // shortened form to test for project and change
         // membership.  This ensures that diff files are also
         // copied across.  Note that deleted files *have*
         // difference files.
@@ -839,7 +839,7 @@ integrate_begin_main(void)
         project_name = user_default_project();
     pp = project_alloc(project_name);
     str_free(project_name);
-    project_bind_existing(pp);
+    pp->bind_existing();
 
     //
     // locate user data
@@ -858,7 +858,7 @@ integrate_begin_main(void)
     //
     // lock the project, the change and the user
     //
-    project_pstate_lock_prepare(pp);
+    pp->pstate_lock_prepare();
     change_cstate_lock_prepare(cp);
     user_ustate_lock_prepare(up);
     lock_take();
@@ -1007,7 +1007,7 @@ integrate_begin_main(void)
     //
     dd = change_development_directory_get(cp, 1);
     id = change_integration_directory_get(cp, 1);
-    bl = project_baseline_path_get(pp, 1);
+    bl = pp->baseline_path_get(true);
     errs = 0;
     for (j = 0;; ++j)
     {
@@ -1063,33 +1063,41 @@ integrate_begin_main(void)
             sub_context_delete(scp);
             errs++;
         }
-        assert(src_data->file_fp->youngest>0);
-        assert(src_data->file_fp->oldest>0);
+        assert(src_data->file_fp->youngest > 0);
+        assert(src_data->file_fp->oldest > 0);
 
-        s2 = str_format("%s,D", s1->str_text);
-        project_become(pp);
-        ok = change_fingerprint_same(src_data->diff_file_fp, s2, 0);
-        project_become_undo();
-        if (!ok)
-        {
-            sub_context_ty  *scp;
+	if (change_diff_required(cp))
+	{
+	    //
+            // Why doesn't this code follow the same logic about
+            // diff_file_required as used by aede, aerb and aerpass?
+	    //
+	    assert(src_data->diff_file_fp);
+	    s2 = str_format("%s,D", s1->str_text);
+	    project_become(pp);
+	    ok = change_fingerprint_same(src_data->diff_file_fp, s2, 0);
+	    project_become_undo();
+	    if (!ok)
+	    {
+		sub_context_ty  *scp;
 
-            scp = sub_context_new();
-            sub_var_set_format
-            (
-                scp,
-                "File_Name",
-                "%s,D",
-                src_data->file_name->str_text
-            );
-            change_error(cp, scp, i18n("$filename altered"));
-            sub_context_delete(scp);
-            errs++;
-        }
-        assert(src_data->diff_file_fp->youngest>0);
-        assert(src_data->diff_file_fp->oldest>0);
+		scp = sub_context_new();
+		sub_var_set_format
+		(
+		    scp,
+		    "File_Name",
+		    "%s,D",
+		    src_data->file_name->str_text
+		);
+		change_error(cp, scp, i18n("$filename altered"));
+		sub_context_delete(scp);
+		errs++;
+	    }
+	    str_free(s2);
+	    assert(src_data->diff_file_fp->youngest > 0);
+	    assert(src_data->diff_file_fp->oldest > 0);
+	}
         str_free(s1);
-        str_free(s2);
     }
     if (errs)
         quit(1);
@@ -1266,7 +1274,7 @@ integrate_begin_main(void)
     // write the data out
     // and release the locks
     //
-    project_pstate_write(pp);
+    pp->pstate_write();
     change_cstate_write(cp);
     user_ustate_write(up);
     commit();

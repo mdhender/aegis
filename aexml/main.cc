@@ -1,6 +1,6 @@
 //
 //	aegis - project change supervisor
-//	Copyright (C) 2003-2005 Peter Miller;
+//	Copyright (C) 2003-2006 Peter Miller;
 //	All rights reserved.
 //
 //	This program is free software; you can redistribute it and/or modify
@@ -20,38 +20,38 @@
 // MANIFEST: functions to manipulate mains
 //
 
-#include <ac/stdio.h>
-#include <ac/stdlib.h>
-#include <ac/string.h>
+#include <common/ac/stdio.h>
+#include <common/ac/stdlib.h>
+#include <common/ac/string.h>
 
-#include <arglex2.h>
-#include <arglex/change.h>
-#include <arglex/project.h>
-#include <col.h>
-#include <env.h>
-#include <help.h>
-#include <language.h>
-#include <option.h>
-#include <os.h>
-#include <output/file.h>
-#include <output/gzip.h>
-#include <progname.h>
-#include <quit.h>
-#include <r250.h>
-#include <rsrc_limits.h>
-#include <str_list.h>
-#include <sub.h>
-#include <trace.h>
-#include <version.h>
-#include <xml/change/cstate.h>
-#include <xml/change/fstate.h>
-#include <xml/change/pconf.h>
-#include <xml/project/cstate.h>
-#include <xml/project/fstate.h>
-#include <xml/project/list.h>
-#include <xml/project/state.h>
-#include <xml/user/uconf.h>
-#include <zero.h>
+#include <libaegis/arglex2.h>
+#include <libaegis/arglex/change.h>
+#include <libaegis/arglex/project.h>
+#include <libaegis/col.h>
+#include <common/env.h>
+#include <libaegis/help.h>
+#include <common/language.h>
+#include <libaegis/option.h>
+#include <libaegis/os.h>
+#include <libaegis/output/bzip2.h>
+#include <libaegis/output/file.h>
+#include <libaegis/output/gzip.h>
+#include <common/progname.h>
+#include <common/quit.h>
+#include <common/rsrc_limits.h>
+#include <common/str_list.h>
+#include <libaegis/sub.h>
+#include <common/trace.h>
+#include <libaegis/version.h>
+#include <aexml/xml/change/cstate.h>
+#include <aexml/xml/change/fstate.h>
+#include <aexml/xml/change/pconf.h>
+#include <aexml/xml/project/cstate.h>
+#include <aexml/xml/project/fstate.h>
+#include <aexml/xml/project/list.h>
+#include <aexml/xml/project/state.h>
+#include <aexml/xml/user/uconf.h>
+#include <libaegis/zero.h>
 
 
 struct table_ty
@@ -165,6 +165,16 @@ via_table(const char *listname, string_ty *project_name, long change_number,
 	{
 	    op = output_file_binary_open(outfile);
 	    op = new output_gzip(op, true);
+	}
+	else if
+	(
+	    outfile
+	&&
+	    (ends_with(outfile, ".bz") || ends_with(outfile, ".bz2"))
+	)
+	{
+	    op = output_file_binary_open(outfile);
+	    op = new output_bzip2(op, true);
 	}
 	else
 	    op = output_file_text_open(outfile);
@@ -335,7 +345,6 @@ int
 main(int argc, char **argv)
 {
     resource_limits_init();
-    r250_init();
     os_become_init_mortal();
     arglex2_init(argc, argv);
     env_initialize();

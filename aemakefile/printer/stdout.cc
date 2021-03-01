@@ -1,6 +1,6 @@
 //
 //	aegis - project change supervisor
-//	Copyright (C) 2004 Peter Miller;
+//	Copyright (C) 2004, 2005 Peter Miller;
 //	All rights reserved.
 //
 //	This program is free software; you can redistribute it and/or modify
@@ -20,11 +20,9 @@
 // MANIFEST: implementation of the printer_stdout class
 //
 
-#pragma implementation "printer_stdout"
-
-#include <ac/stdio.h>
-#include <error.h>
-#include <printer/stdout.h>
+#include <common/ac/stdio.h>
+#include <common/error.h>
+#include <aemakefile/printer/stdout.h>
 
 
 printer_stdout::~printer_stdout()

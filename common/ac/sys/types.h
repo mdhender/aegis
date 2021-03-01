@@ -23,7 +23,7 @@
 #ifndef COMMON_AC_SYS_TYPES_H
 #define COMMON_AC_SYS_TYPES_H
 
-#include <config.h>
+#include <common/config.h>
 
 #ifdef HAVE_SYS_TYPES_H
 #include <sys/types.h>

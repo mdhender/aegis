@@ -1,6 +1,6 @@
 //
 //	aegis - project change supervisor
-//	Copyright (C) 2004 Peter Miller;
+//	Copyright (C) 2004, 2005 Peter Miller;
 //	All rights reserved.
 //
 //	This program is free software; you can redistribute it and/or modify
@@ -25,14 +25,14 @@
 
 // Sometimes crypt() is declared in <unistd.h>
 // this pull sin config.h as well, for the following ifdef
-#include <ac/unistd.h>
+#include <common/ac/unistd.h>
 
 // Sometimes crypt() is declared in <crypt.h>
 #if HAVE_CRYPT_H
 #include <crypt.h>
 #endif
 
-#include <throws_not.h>
+#include <common/throws_not.h>
 
 #if HAVE_CRYPT
 #if !HAVE_DECL_CRYPT

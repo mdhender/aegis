@@ -1,6 +1,6 @@
 //
 //	aegis - project change supervisor
-//	Copyright (C) 1999, 2001-2005 Peter Miller;
+//	Copyright (C) 1999, 2001-2006 Peter Miller;
 //	All rights reserved.
 //
 //	This program is free software; you can redistribute it and/or modify
@@ -20,20 +20,20 @@
 // MANIFEST: functions to manipulate historys
 //
 
-#include <ael/change/inappropriat.h>
-#include <ael/column_width.h>
-#include <ael/project/history.h>
-#include <change.h>
-#include <col.h>
-#include <cstate.h>
-#include <error.h> // for assert
-#include <option.h>
-#include <output.h>
-#include <project.h>
-#include <project/history.h>
-#include <str_list.h>
-#include <trace.h>
-#include <user.h>
+#include <common/error.h> // for assert
+#include <common/str_list.h>
+#include <common/trace.h>
+#include <libaegis/ael/change/inappropriat.h>
+#include <libaegis/ael/column_width.h>
+#include <libaegis/ael/project/history.h>
+#include <libaegis/change.h>
+#include <libaegis/col.h>
+#include <libaegis/cstate.h>
+#include <libaegis/option.h>
+#include <libaegis/output.h>
+#include <libaegis/project.h>
+#include <libaegis/project/history.h>
+#include <libaegis/user.h>
 
 
 void
@@ -64,7 +64,7 @@ list_project_history(string_ty *project_name, long change_number,
 	project_name = str_copy(project_name);
     pp = project_alloc(project_name);
     str_free(project_name);
-    project_bind_existing(pp);
+    pp->bind_existing();
 
     //
     // create the columns
@@ -147,7 +147,7 @@ list_project_history(string_ty *project_name, long change_number,
 			cstate_data->history->length - 1
 		]->when;
 	    date_col->fputs(ctime(&t));
-	    change_col->fprintf("%4ld", cn);
+	    change_col->fprintf("%4ld", magic_zero_decode(cn));
 	    assert(cstate_data->brief_description);
 	    description_col->fputs(cstate_data->brief_description);
 	    change_free(cp);

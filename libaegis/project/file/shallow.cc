@@ -1,6 +1,6 @@
 //
 //	aegis - project change supervisor
-//	Copyright (C) 1999, 2001-2004 Peter Miller;
+//	Copyright (C) 1999, 2001-2006 Peter Miller;
 //	All rights reserved.
 //
 //	This program is free software; you can redistribute it and/or modify
@@ -20,10 +20,10 @@
 // MANIFEST: functions to manipulate shallows
 //
 
-#include <change/file.h>
-#include <error.h> // for assert
-#include <project/file.h>
-#include <trace.h>
+#include <libaegis/change/file.h>
+#include <common/error.h> // for assert
+#include <libaegis/project/file.h>
+#include <common/trace.h>
 
 
 //
@@ -49,7 +49,7 @@ project_file_shallow(project_ty *pp, string_ty *file_name, long cn)
     // If there is no parent project,
     // nothing more needs to be done.
     //
-    if (!pp->parent)
+    if (pp->is_a_trunk())
     {
 	trace(("shallowing \"%s\" no grandparent\n", file_name->str_text));
 	trace(("}\n"));
@@ -60,7 +60,7 @@ project_file_shallow(project_ty *pp, string_ty *file_name, long cn)
     // Look for the file in the project.
     // If it is there, nothing more needs to be done.
     //
-    pcp = project_change_get(pp);
+    pcp = pp->change_get();
     src1_data = change_file_find(pcp, file_name, view_path_first);
     if (src1_data)
     {
@@ -85,8 +85,8 @@ project_file_shallow(project_ty *pp, string_ty *file_name, long cn)
     }
 
     //
-    // Create a new file in the project, and mark it ``about to be
-    // copied''.  That way we can throw it away again, if the
+    // Create a new file in the project, and mark it "about to be
+    // copied".  That way we can throw it away again, if the
     // review fails or the integration fails.
     //
     trace(("shallowing \"%s\"\n", file_name->str_text));

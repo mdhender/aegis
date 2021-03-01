@@ -20,18 +20,18 @@
 // MANIFEST: functions to manipulate rmdirs
 //
 
-#include <ac/stddef.h>
-#include <ac/sys/types.h>
+#include <common/ac/stddef.h>
+#include <common/ac/sys/types.h>
 #include <sys/stat.h>
-#include <ac/stdlib.h>
+#include <common/ac/stdlib.h>
 
-#include <dir.h>
-#include <dir/functor/rmdir_bg.h>
-#include <error.h>
-#include <glue.h>
-#include <lock.h>
-#include <os.h>
-#include <undo.h>
+#include <libaegis/dir.h>
+#include <libaegis/dir/functor/rmdir_bg.h>
+#include <common/error.h>
+#include <libaegis/glue.h>
+#include <libaegis/lock.h>
+#include <libaegis/os.h>
+#include <libaegis/undo.h>
 
 
 int

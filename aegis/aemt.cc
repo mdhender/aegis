@@ -1,6 +1,6 @@
 //
 //	aegis - project change supervisor
-//	Copyright (C) 2002-2004 Peter Miller;
+//	Copyright (C) 2002-2006 Peter Miller;
 //	All rights reserved.
 //
 //	This program is free software; you can redistribute it and/or modify
@@ -20,31 +20,31 @@
 // MANIFEST: functions to manipulate aemts
 //
 
-#include <ac/stdio.h>
+#include <common/ac/stdio.h>
 
-#include <ael/project/files.h>
-#include <aemt.h>
-#include <arglex2.h>
-#include <arglex/change.h>
-#include <arglex/project.h>
-#include <change.h>
-#include <change/branch.h>
-#include <change/file.h>
-#include <commit.h>
-#include <error.h>
-#include <file.h>
-#include <help.h>
-#include <lock.h>
-#include <log.h>
-#include <os.h>
-#include <progname.h>
-#include <project.h>
-#include <project/file.h>
-#include <quit.h>
-#include <str_list.h>
-#include <sub.h>
-#include <trace.h>
-#include <user.h>
+#include <libaegis/ael/project/files.h>
+#include <aegis/aemt.h>
+#include <libaegis/arglex2.h>
+#include <libaegis/arglex/change.h>
+#include <libaegis/arglex/project.h>
+#include <libaegis/change.h>
+#include <libaegis/change/branch.h>
+#include <libaegis/change/file.h>
+#include <libaegis/commit.h>
+#include <common/error.h>
+#include <libaegis/file.h>
+#include <libaegis/help.h>
+#include <libaegis/lock.h>
+#include <libaegis/log.h>
+#include <libaegis/os.h>
+#include <common/progname.h>
+#include <libaegis/project.h>
+#include <libaegis/project/file.h>
+#include <common/quit.h>
+#include <common/str_list.h>
+#include <libaegis/sub.h>
+#include <common/trace.h>
+#include <libaegis/user.h>
 
 
 //
@@ -289,7 +289,7 @@ make_transparent_main(void)
 	project_name = user_default_project();
     pp = project_alloc(project_name);
     str_free(project_name);
-    project_bind_existing(pp);
+    pp->bind_existing();
 
     //
     // locate user data
@@ -369,7 +369,7 @@ make_transparent_main(void)
     // 3.   if the file is inside the baseline, ok
     // 4.   if neither, error
     //
-    bcp = project_change_get(pp);
+    bcp = pp->change_get();
     number_of_errors = 0;
     string_list_ty wl2;
     for (j = 0; j < wl.nstrings; ++j)
@@ -508,14 +508,14 @@ make_transparent_main(void)
 		sub_var_set_string(scp, "File_Name", s1);
 		if
 		(
-		    pp->parent
+		    !pp->is_a_trunk()
 		&&
-		    project_file_find(pp->parent, s1, view_path_simple)
+		    project_file_find(pp->parent_get(), s1, view_path_simple)
 		)
 		{
 		    project_error
 		    (
-			pp->parent,
+			pp->parent_get(),
 			scp,
 			i18n("make $filename transparent, fail, too deep")
 		    );
@@ -537,7 +537,7 @@ make_transparent_main(void)
 	case file_action_create:
 	case file_action_modify:
 	case file_action_remove:
-	    if (!pp->parent)
+	    if (pp->is_a_trunk())
 	    {
 		if (unchanged)
 		{
@@ -563,7 +563,7 @@ make_transparent_main(void)
 	    }
 
 	    pp_src_data =
-		project_file_find(pp->parent, s1, view_path_simple);
+		project_file_find(pp->parent_get(), s1, view_path_simple);
 	    if (!pp_src_data)
 	    {
 		if (unchanged)
@@ -575,7 +575,7 @@ make_transparent_main(void)
 		sub_var_set_string(scp, "File_Name", s1);
 		project_error
 		(
-		    pp->parent,
+		    pp->parent_get(),
 		    scp,
 		    i18n("make $filename transparent, fail, too shallow")
 		);
@@ -611,7 +611,12 @@ make_transparent_main(void)
 	    trace(("mark\n"));
 	    f1_path = project_file_version_path(pp, b_src_data, &f1_unlink);
 	    f2_path =
-		project_file_version_path(pp->parent, pp_src_data, &f2_unlink);
+		project_file_version_path
+		(
+		    pp->parent_get(),
+		    pp_src_data,
+		    &f2_unlink
+		);
 	    user_become(up);
 	    different = files_are_different(f1_path, f2_path);
 	    if (f1_unlink)
@@ -675,11 +680,11 @@ make_transparent_main(void)
 	c_src_data = change_file_nth(cp, j, view_path_first);
 	if (!c_src_data)
 	    break;
-	assert(pp->parent);
+	assert(pp->parent_get());
 	pp_src_data =
 	    project_file_find
 	    (
-		pp->parent,
+		pp->parent_get(),
 		c_src_data->file_name,
 		view_path_extreme
 	    );
@@ -689,7 +694,7 @@ make_transparent_main(void)
 	    string_ty       *to;
 	    int             mode;
 
-	    from = project_file_path(pp->parent, c_src_data->file_name);
+	    from = project_file_path(pp->parent_get(), c_src_data->file_name);
 	    assert(from);
 	    to = os_path_join(dd, c_src_data->file_name);
 

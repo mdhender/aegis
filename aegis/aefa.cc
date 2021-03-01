@@ -1,6 +1,6 @@
 //
 //	aegis - project change supervisor
-//	Copyright (C) 2004, 2005 Peter Miller;
+//	Copyright (C) 2004-2006 Peter Miller;
 //	All rights reserved.
 //
 //	This program is free software; you can redistribute it and/or modify
@@ -20,38 +20,40 @@
 // MANIFEST: functions to list and modify file attributes
 //
 
-#include <ac/libintl.h>
-#include <ac/stdio.h>
-#include <ac/stdlib.h>
-#include <ac/string.h>
+#include <common/ac/libintl.h>
+#include <common/ac/stdio.h>
+#include <common/ac/stdlib.h>
+#include <common/ac/string.h>
 
-#include <aefa.h>
-#include <arglex2.h>
-#include <arglex/change.h>
-#include <arglex/project.h>
-#include <attribute.h>
-#include <attrlistveri.h>
-#include <change.h>
-#include <change/file.h>
-#include <change/identifier.h>
-#include <commit.h>
-#include <error.h>
-#include <fattr.h>
-#include <help.h>
-#include <io.h>
-#include <language.h>
-#include <lock.h>
-#include <nstring.h>
-#include <os.h>
-#include <progname.h>
-#include <project.h>
-#include <quit.h>
-#include <sub.h>
-#include <str_list.h>
-#include <trace.h>
-#include <undo.h>
-#include <user.h>
-#include <uuidentifier.h>
+#include <common/error.h>
+#include <common/language.h>
+#include <common/nstring.h>
+#include <common/nstring/list.h>
+#include <common/progname.h>
+#include <common/quit.h>
+#include <common/str_list.h>
+#include <common/trace.h>
+#include <common/uuidentifier.h>
+#include <libaegis/arglex2.h>
+#include <libaegis/arglex/change.h>
+#include <libaegis/arglex/project.h>
+#include <libaegis/attribute.h>
+#include <libaegis/attrlistveri.h>
+#include <libaegis/change/file.h>
+#include <libaegis/change.h>
+#include <libaegis/change/identifier.h>
+#include <libaegis/commit.h>
+#include <libaegis/fattr.h>
+#include <libaegis/help.h>
+#include <libaegis/io.h>
+#include <libaegis/lock.h>
+#include <libaegis/os.h>
+#include <libaegis/project.h>
+#include <libaegis/sub.h>
+#include <libaegis/undo.h>
+#include <libaegis/user.h>
+
+#include <aegis/aefa.h>
 
 
 static void
@@ -69,6 +71,12 @@ file_attributes_usage(void)
     (
 	stderr,
 	"       %s -File_ATtributes -Edit [ <option>... ] <filename>\n",
+	progname
+    );
+    fprintf
+    (
+	stderr,
+	"       %s -File_ATtributes name=value <filename>\n",
 	progname
     );
     fprintf
@@ -217,7 +225,7 @@ file_attributes_list(void)
 	project_name = user_default_project();
     pp = project_alloc(project_name);
     str_free(project_name);
-    project_bind_existing(pp);
+    pp->bind_existing();
 
     //
     // locate user data
@@ -372,6 +380,7 @@ file_attributes_main(void)
     fattr_data = 0;
     input = 0;
     filename = 0;
+    nstring_list name_value_pairs;
     while (arglex_token != arglex_token_eoln)
     {
 	switch (arglex_token)
@@ -386,6 +395,11 @@ file_attributes_main(void)
 	    break;
 
 	case arglex_token_string:
+	    if (strchr(arglex_value.alv_string, '='))
+	    {
+		name_value_pairs.push_back(arglex_value.alv_string);
+		break;
+	    }
             if (filename)
 		fatal_too_many_files();
 	    filename = str_from_c(arglex_value.alv_string);
@@ -471,24 +485,32 @@ file_attributes_main(void)
 	os_become_undo();
 	assert(fattr_data);
     }
-    if (!fattr_data && edit == edit_not_set)
+    if (name_value_pairs.empty())
     {
-	scp = sub_context_new();
-	sub_var_set_charstar
-	(
-	    scp,
-	    "Name1",
-	    arglex_token_name(arglex_token_file)
-	);
-	sub_var_set_charstar
-	(
-	    scp,
-	    "Name2",
-	    arglex_token_name(arglex_token_edit)
-	);
-	error_intl(scp, i18n("warning: no $name1, assuming $name2"));
-	sub_context_delete(scp);
-	edit = edit_foreground;
+	if (!fattr_data && edit == edit_not_set)
+	{
+	    scp = sub_context_new();
+	    sub_var_set_charstar
+	    (
+		scp,
+		"Name1",
+		arglex_token_name(arglex_token_file)
+	    );
+	    sub_var_set_charstar
+	    (
+		scp,
+		"Name2",
+		arglex_token_name(arglex_token_edit)
+	    );
+	    error_intl(scp, i18n("warning: no $name1, assuming $name2"));
+	    sub_context_delete(scp);
+	    edit = edit_foreground;
+	}
+    }
+    else
+    {
+	if (fattr_data || edit != edit_not_set)
+	    file_attributes_usage();
     }
     if (edit != edit_not_set && !fattr_data)
     {
@@ -504,7 +526,7 @@ file_attributes_main(void)
 	project_name = user_default_project();
     pp = project_alloc(project_name);
     str_free(project_name);
-    project_bind_existing(pp);
+    pp->bind_existing();
 
     //
     // locate user data
@@ -595,34 +617,67 @@ file_attributes_main(void)
     src = change_file_find(cp, filename, view_path_first);
     if (!src)
 	change_fatal_unknown_file(cp, filename);
-    if (src->attribute)
+    if (name_value_pairs.empty())
     {
-	attributes_list_type.free(src->attribute);
-	src->attribute = 0;
-    }
-    if (fattr_data->attribute)
-    {
-	//
-	// We need to extract the "usage" pseudo-attribute,
-	// and assign it to the file's usage if it is legal.
-	//
-	attributes_ty *ap = fattr_extract(fattr_data, "usage");
-	if (ap)
+	if (src->attribute)
 	{
-	    if (ap->value)
-	    {
-		file_usage_type.enum_parse(ap->value, &src->usage);
-	    }
-	    attributes_type.free(ap);
+	    attributes_list_type.free(src->attribute);
+	    src->attribute = 0;
 	}
+	if (fattr_data->attribute)
+	{
+	    //
+	    // We need to extract the "usage" pseudo-attribute,
+	    // and assign it to the file's usage if it is legal.
+	    //
+	    attributes_ty *ap = fattr_extract(fattr_data, "usage");
+	    if (ap)
+	    {
+		if (ap->value)
+		{
+		    file_usage_type.enum_parse(ap->value, &src->usage);
+		}
+		attributes_type.free(ap);
+	    }
 
-	//
-	// Copy the rest in the normal way.
-	//
-	if (fattr_data->attribute->length)
-	    src->attribute = attributes_list_copy(fattr_data->attribute);
+	    //
+	    // Copy the rest in the normal way.
+	    //
+	    if (fattr_data->attribute->length)
+		src->attribute = attributes_list_copy(fattr_data->attribute);
+	}
+	fattr_type.free(fattr_data);
     }
-    fattr_type.free(fattr_data);
+    else
+    {
+	if (!src->attribute)
+	    src->attribute = (attributes_list_ty *)attributes_list_type.alloc();
+	for (size_t j = 0; j < name_value_pairs.size(); ++j)
+	{
+	    nstring pair = name_value_pairs[j];
+	    const char *eqp = strchr(pair.c_str(), '=');
+	    assert(eqp);
+	    if (eqp)
+	    {
+		nstring name(pair.c_str(), eqp - pair.c_str());
+		nstring value(eqp + 1);
+
+		//
+                // Note that this will replace the first attribute with
+                // that name.  If there is more than one of that name,
+                // the second and subsequent attributes are unchanged.
+                // If there is no attribute of that name, it will be
+                // appended.
+		//
+		attributes_list_insert
+		(
+		    src->attribute,
+		    name.c_str(),
+		    value.c_str()
+		);
+	    }
+	}
+    }
 
     //
     // Write it all out again.

@@ -1,7 +1,7 @@
 #!/bin/sh
 #
 #	aegis - project change supervisor
-#	Copyright (C) 1999 Peter Miller;
+#	Copyright (C) 1999, 2005 Peter Miller;
 #	All rights reserved.
 #
 #	This program is free software; you can redistribute it and/or modify
@@ -115,7 +115,7 @@ if test $? -ne 0 ; then fail; fi
 $bin/test_base64 -o test.in test.out
 if test $? -ne 0 ; then fail; fi
 
-diff test.ok test.out
+diff -b test.ok test.out
 if test $? -ne 0 ; then fail; fi
 
 #
@@ -161,7 +161,7 @@ if test $? -ne 0 ; then fail; fi
 $bin/test_base64 --output test.in test.out
 if test $? -ne 0 ; then fail; fi
 
-diff test.ok test.out
+diff -b test.ok test.out
 if test $? -ne 0 ; then fail; fi
 
 #

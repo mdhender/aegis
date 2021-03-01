@@ -20,8 +20,8 @@
 // MANIFEST: functions to manipulate bit_buckets
 //
 
-#include <page.h>
-#include <output/bit_bucket.h>
+#include <common/page.h>
+#include <libaegis/output/bit_bucket.h>
 
 
 output_bit_bucket::~output_bit_bucket()

@@ -1,6 +1,6 @@
 //
 //	aegis - project change supervisor
-//	Copyright (C) 1991-1994, 1998, 2002-2004 Peter Miller;
+//	Copyright (C) 1991-1994, 1998, 2002-2005 Peter Miller;
 //	All rights reserved.
 //
 //	This program is free software; you can redistribute it and/or modify
@@ -23,10 +23,8 @@
 #ifndef TYPE_H
 #define TYPE_H
 
-#pragma interface "type_ty"
-
-#include <lex.h>
-#include <nstring.h>
+#include <fmtgen/lex.h>
+#include <common/nstring.h>
 
 #define ATTRIBUTE_REDEFINITION_OK 1
 #define ATTRIBUTE_SHOW_IF_DEFAULT 2

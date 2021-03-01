@@ -1,6 +1,6 @@
 .\"
 .\"	aegis - project change supervisor
-.\"	Copyright (C) 1999, 2003 Peter Miller;
+.\"	Copyright (C) 1999, 2003, 2005 Peter Miller;
 .\"	All rights reserved.
 .\"
 .\"	This program is free software; you can redistribute it and/or modify
@@ -27,7 +27,7 @@ release a code name.  You would do this by saying
 aenpa example.4.2 sydney
 .ft R
 .RE
-This would make ``sydney'' an alias for the ``example.4.2'' branch.
+This would make \[lq]sydney\[rq] an alias for the \[lq]example.4.2\[rq] branch.
 .PP
 Another use for aliases is to have a fixed alias for your active branch,
 so that your developer team does not need to change their default project,
@@ -37,7 +37,8 @@ even though the branch number moves on for each release.  You could say
 aenpa example.4.2 example.cur
 .ft R
 .RE
-This would make ``example.cur'' an alias for the ``example.4.2'' branch.
+This would make \[lq]example.cur\[rq] an alias for the
+\[lq]example.4.2\[rq] branch.
 When this was finished, and 4.3 started, a project administrator could say
 .RS
 .ft CW
@@ -46,6 +47,7 @@ aerpa example.cur
 aenpa example.4.3 example.cur
 .ft R
 .RE
-Now ``example.cur'' is an alias for the ``example.4.3'' branch, but the
-developers need only reference ``example.cur'' to always work on the
+Now \[lq]example.cur\[rq] is an alias for the \[lq]example.4.3\[rq]
+branch, but the
+developers need only reference \[lq]example.cur\[rq] to always work on the
 right branch.

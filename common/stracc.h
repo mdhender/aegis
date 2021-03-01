@@ -1,6 +1,6 @@
 //
 //	aegis - project change supervisor
-//	Copyright (C) 1998, 2001, 2004 Peter Miller;
+//	Copyright (C) 1998, 2001, 2004, 2005 Peter Miller;
 //	All rights reserved.
 //
 //	This program is free software; you can redistribute it and/or modify
@@ -23,7 +23,7 @@
 #ifndef COMMON_STRACC_H
 #define COMMON_STRACC_H
 
-#include <str.h>
+#include <common/str.h>
 
 /** \addtogroup String_Accumulator
   * \brief String Accumulation functions

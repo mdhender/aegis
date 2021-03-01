@@ -23,11 +23,9 @@
 #ifndef COMMON_SYMTAB_TEMPLATE_H
 #define COMMON_SYMTAB_TEMPLATE_H
 
-#pragma interface "symtab"
-
-#include <nstring.h>
-#include <nstring/list.h>
-#include <symtab.h>
+#include <common/nstring.h>
+#include <common/nstring/list.h>
+#include <common/symtab.h>
 
 /** \addtogroup Symtab
   * \brief Symbols table interface

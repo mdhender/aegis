@@ -1,6 +1,6 @@
 //
 //	aegis - project change supervisor
-//	Copyright (C) 2005 Peter Miller;
+//	Copyright (C) 2005, 2006 Peter Miller;
 //	All rights reserved.
 //
 //	This program is free software; you can redistribute it and/or modify
@@ -20,13 +20,11 @@
 // MANIFEST: implementation of the xml_text_reader class
 //
 
-#pragma implementation "xml_text_reader"
-
-#include <error.h> // for assert
-#include <input.h>
-#include <sub.h>
-#include <trace.h>
-#include <xmltextread.h>
+#include <common/error.h> // for assert
+#include <libaegis/input.h>
+#include <libaegis/sub.h>
+#include <common/trace.h>
+#include <libaegis/xmltextread.h>
 
 
 int xml_text_reader::number_of_parsers;
@@ -50,16 +48,11 @@ xml_text_reader::~xml_text_reader()
     // there have been any errors during the parse.
     //
     close();
-
-    //
-    // Close the deeper input stream, if necessary.
-    //
-    delete deeper;
-    deeper = 0;
+    deeper.close();
 }
 
 
-xml_text_reader::xml_text_reader(input_ty *arg1, bool arg2) :
+xml_text_reader::xml_text_reader(input &arg1, bool arg2) :
     deeper(arg1),
     reader(0),
     number_of_errors(0),
@@ -94,7 +87,7 @@ xml_text_reader::read_callback(void *context, char *buffer, int len)
 int
 xml_text_reader::read_deeper(char *buffer, int len)
 {
-    if (!deeper)
+    if (!deeper.is_open())
 	return 0;
     return deeper->read(buffer, len);
 }
@@ -114,7 +107,7 @@ xml_text_reader::close()
 {
     if (number_of_errors)
     {
-	assert(deeper);
+	assert(deeper.is_open());
 	sub_context_ty sc;
 	sc.var_set_string("File_Name", deeper->name());
 	sc.var_set_long("Number", number_of_errors);
@@ -138,7 +131,7 @@ void
 xml_text_reader::error(const char *msg, xmlParserSeverities severity,
     xmlTextReaderLocatorPtr locator)
 {
-    assert(deeper);
+    assert(deeper.is_open());
     sub_context_ty sc;
     switch (severity)
     {
@@ -202,7 +195,7 @@ xml_text_reader::read()
     {
 	if (number_of_errors)
 	{
-	    assert(deeper);
+	    assert(deeper.is_open());
 	    sub_context_ty sc;
 	    sc.var_set_string("File_Name", deeper->name());
 	    sc.var_set_long("Number", number_of_errors);
@@ -212,7 +205,7 @@ xml_text_reader::read()
 	}
 	sub_context_ty sc;
 	string_ty *message = sc.subst_intl(i18n("syntax error"));
-	if (!deeper)
+	if (!deeper.is_open())
 	    sc.var_set_charstar("File_Name", "no file name available");
 	else
 	    sc.var_set_string("File_Name", deeper->name());

@@ -1,6 +1,6 @@
 //
 //      aegis - project change supervisor
-//      Copyright (C) 2001, 2002, 2004 Peter Miller;
+//      Copyright (C) 2001, 2002, 2004, 2005 Peter Miller;
 //      All rights reserved.
 //
 //      This program is free software; you can redistribute it and/or modify
@@ -20,10 +20,10 @@
 // MANIFEST: functions to manipulate version_lists
 //
 
-#include <ac/stdlib.h>
+#include <common/ac/stdlib.h>
 
-#include <format/version_list.h>
-#include <mem.h>
+#include <aeimport/format/version_list.h>
+#include <common/mem.h>
 
 
 format_version_list_ty *
@@ -47,7 +47,7 @@ format_version_list_delete(format_version_list_ty *fvlp, int delmore)
     if (delmore)
     {
         for (j = 0; j < fvlp->length; ++j)
-            format_version_delete(fvlp->item[j]);
+            delete(fvlp->item[j]);
     }
     if (fvlp->item)
         mem_free(fvlp->item);
@@ -66,7 +66,7 @@ format_version_list_validate(format_version_list_ty *fvlp)
     size_t          j;
 
     for (j = 0; j < fvlp->length; ++j)
-        format_version_validate(fvlp->item[j]);
+        fvlp->item[j]->validate();
 }
 
 #endif

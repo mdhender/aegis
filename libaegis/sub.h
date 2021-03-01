@@ -23,12 +23,10 @@
 #ifndef SUB_H
 #define SUB_H
 
-#pragma interface "sub_context_ty"
-
-#include <ac/stdarg.h>
-#include <ac/time.h>
-#include <str.h>
-#include <sub/diversion/stack.h>
+#include <common/ac/stdarg.h>
+#include <common/ac/time.h>
+#include <common/str.h>
+#include <libaegis/sub/diversion/stack.h>
 
 struct change_ty; // forward
 struct project_ty; // forward

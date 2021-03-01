@@ -1,6 +1,6 @@
 //
 //	aegis - project change supervisor
-//	Copyright (C) 1999, 2001-2005 Peter Miller;
+//	Copyright (C) 1999, 2001-2006 Peter Miller;
 //	All rights reserved.
 //
 //	This program is free software; you can redistribute it and/or modify
@@ -20,91 +20,74 @@
 // MANIFEST: functions to manipulate opens
 //
 
-#include <rfc822header.h>
-#include <input/base64.h>
-#include <input/cpio.h>
-#include <input/file.h>
-#include <input/gunzip.h>
-#include <input/uudecode.h>
-#include <open.h>
-#include <os.h>
-#include <str.h>
-#include <sub.h>
+#include <common/str.h>
+#include <libaegis/input/bunzip2.h>
+#include <libaegis/input/base64.h>
+#include <libaegis/input/cpio.h>
+#include <libaegis/input/file.h>
+#include <libaegis/input/gunzip.h>
+#include <libaegis/input/uudecode.h>
+#include <libaegis/os.h>
+#include <libaegis/rfc822.h>
+#include <libaegis/sub.h>
+
+#include <aedist/open.h>
 
 
 input_cpio *
-aedist_open(string_ty *ifn, string_ty **subject_p)
+aedist_open(const nstring &ifr, nstring *subject_p)
 {
-    input_ty	*ifp;
-    rfc822_header_ty *hp;
-    string_ty	*s;
-
     //
     // Open the input file and verify the format.
     //
     os_become_orig();
-    ifp = input_file_open(ifn);
-    hp = rfc822_header_read(ifp);
-    s = rfc822_header_query(hp, "mime-version");
-    if (s)
+    input ifp = input_file_open(ifr);
+    rfc822 hdr;
+    hdr.load(ifp, true);
+    nstring s = hdr.get("mime-version");
+    if (!s.empty())
     {
-	    string_ty	*content_type;
-
-	    s = rfc822_header_query(hp, "content-type");
-	    content_type = str_from_c("application/aegis-change-set");
-	    if (!s || !str_equal(s, content_type))
-		    ifp->fatal_error("wrong content type");
-	    str_free(content_type);
+	s = hdr.get("content-type");
+	if (s != "application/aegis-change-set")
+	    ifp->fatal_error("wrong content type");
     }
 
     //
     // Deal with the content encoding.
     //
-    s = rfc822_header_query(hp, "content-transfer-encoding");
-    if (s)
+    s = hdr.get("content-transfer-encoding");
+    if (!s.empty())
     {
-	    static string_ty *base64;
-	    static string_ty *uuencode;
+	static nstring base64("base64");
+	static nstring uuencode("uuencode");
 
+	//
+	// We could cope with other encodings here,
+	// if we ever need to.
+	//
+	if (s == base64)
+	{
 	    //
-	    // We could cope with other encodings here,
-	    // if we ever need to.
+	    // The rest of the input is in base64 encoding.
 	    //
-	    if (!base64)
-		    base64 = str_from_c("base64");
-	    if (!uuencode)
-		    uuencode = str_from_c("uuencode");
-	    if (str_equal(s, base64))
-	    {
-		    //
-		    // The rest of the input is in base64 encoding.
-		    //
-		    ifp = new input_base64(ifp, true);
-	    }
-	    else if (str_equal(s, uuencode))
-	    {
-		    //
-		    // The rest of the input is uuencoded.
-		    //
-		    ifp = new input_uudecode(ifp, true);
-	    }
-	    else
-	    {
-		    sub_context_ty	*scp;
-		    string_ty	*tmp;
-
-		    scp = sub_context_new();
-		    sub_var_set_string(scp, "Name", s);
-		    tmp =
-			    subst_intl
-			    (
-				    scp,
-			     i18n("content transfer encoding $name unknown")
-			    );
-		    ifp->fatal_error(tmp->str_text);
-		    str_free(tmp);
-		    sub_context_delete(scp);
-	    }
+	    ifp = new input_base64(ifp);
+	}
+	else if (s == uuencode)
+	{
+	    //
+	    // The rest of the input is uuencoded.
+	    //
+	    ifp = new input_uudecode(ifp);
+	}
+	else
+	{
+	    sub_context_ty sc;
+	    sc.var_set_string("Name", s);
+	    string_ty *tmp =
+		sc.subst_intl(i18n("content transfer encoding $name unknown"));
+	    ifp->fatal_error(tmp->str_text);
+	    str_free(tmp);
+	}
     }
 
     //
@@ -112,6 +95,7 @@ aedist_open(string_ty *ifn, string_ty **subject_p)
     // a gzipped cpio archive.
     //
     ifp = input_gunzip_open(ifp);
+    ifp = input_bunzip2_open(ifp);
     input_cpio *cpio_p = new input_cpio(ifp);
     os_become_undo();
 
@@ -120,16 +104,15 @@ aedist_open(string_ty *ifn, string_ty **subject_p)
     //
     if (subject_p)
     {
-	    s = rfc822_header_query(hp, "subject");
-	    if (s && s->str_length)
-		    *subject_p = str_copy(s);
-	    else
-		    *subject_p = str_from_c("No Subject");
+	s = hdr.get("subject");
+	if (!s.empty())
+	    *subject_p = s;
+	else
+	    *subject_p = "No Subject";
     }
 
     //
     // clean up and go home
     //
-    rfc822_header_delete(hp);
     return cpio_p;
 }

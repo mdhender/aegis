@@ -1,6 +1,6 @@
 //
 //	aegis - project change supervisor
-//	Copyright (C) 2004, 2005 Peter Miller;
+//	Copyright (C) 2004-2006 Peter Miller;
 //	All rights reserved.
 //
 //	This program is free software; you can redistribute it and/or modify
@@ -20,40 +20,35 @@
 // MANIFEST: functions to manipulate file_contents
 //
 
-#include <ac/stdlib.h>
+#include <common/ac/stdlib.h>
+#include <libaegis/input/gunzip.h>
+#include <libaegis/input/null.h>
 
-#include <input/gunzip.h>
-#include <server.h>
-#include <net.h>
+#include <aecvsserver/server.h>
+#include <aecvsserver/net.h>
 
 
-input_ty *
+input
 server_file_contents_get(server_ty *sp)
 {
-    long            length;
-    int             gunzip;
-    const char      *cp;
-    char            *end;
-    input_ty        *ip;
-
-    gunzip = 0;
     nstring s;
     if (!server_getline(sp, s))
-	goto yuck;
-    cp = s.c_str();
+	return new input_null();
+    const char *cp = s.c_str();
+    bool gunzip = false;
     if (*cp == 'z')
     {
-	gunzip = 1;
+	gunzip = true;
 	++cp;
     }
-    length = strtol(cp, &end, 10);
+    char *end = 0;
+    long length = strtol(cp, &end, 10);
     if (end == cp || *end || length < 0)
     {
-	yuck:
 	server_error(sp, "file length \"%s\" invalid", s.c_str());
-	length = 0;
+	return new input_null();
     }
-    ip = sp->np->in_crop(length);
+    input ip = sp->np->in_crop(length);
     if (gunzip)
 	ip = new input_gunzip(ip);
     return ip;

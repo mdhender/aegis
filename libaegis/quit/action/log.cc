@@ -1,6 +1,6 @@
 //
 //	aegis - project change supervisor
-//	Copyright (C) 2004 Peter Miller;
+//	Copyright (C) 2004, 2005 Peter Miller;
 //	All rights reserved.
 //
 //	This program is free software; you can redistribute it and/or modify
@@ -20,11 +20,9 @@
 // MANIFEST: implementation of the quit_action_log class
 //
 
-#pragma implementation "quit_action_log"
-
-#include <log.h>
-#include <os.h>
-#include <quit/action/log.h>
+#include <libaegis/log.h>
+#include <libaegis/os.h>
+#include <libaegis/quit/action/log.h>
 
 
 quit_action_log::~quit_action_log()

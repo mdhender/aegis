@@ -1,6 +1,6 @@
 //
 //	aegis - project change supervisor
-//	Copyright (C) 2004 Peter Miller;
+//	Copyright (C) 2004, 2005 Peter Miller;
 //	All rights reserved.
 //
 //	This program is free software; you can redistribute it and/or modify
@@ -23,9 +23,7 @@
 #ifndef AEMAKEFILE_PRINTER_STDOUT_H
 #define AEMAKEFILE_PRINTER_STDOUT_H
 
-#pragma interface "printer_stdout"
-
-#include <printer.h>
+#include <aemakefile/printer.h>
 
 /**
   * The printer_stdout class is used to represent

@@ -110,16 +110,16 @@ unset LANG
 unset LANGUAGE
 
 #
-# If the C++ compiler is called something other than ``c++'', as
+# If the C++ compiler is called something other than "c++", as
 # discovered by the configure script, create a shell script called
-# ``c++'' which invokes the correct C++ compiler.  Make sure the current
+# "c++" which invokes the correct C++ compiler.  Make sure the current
 # directory is in the path, so that it will be invoked.
 #
-if test "$CXX" != "" -a "$CXX" != "c++"
+if test "$CXX" != "c++"
 then
 	cat >> $work/c++ << fubar
 #!/bin/sh
-exec $CXX \$*
+exec ${CXX-g++} \$*
 fubar
 	if test $? -ne 0 ; then no_result; fi
 	chmod a+rx $work/c++
@@ -164,7 +164,7 @@ if test $? -ne 0; then no_result; fi
 cd $work
 
 $bin/test_cpio -create -f dante.cpio -cd $work/in \
-    dante/c1.{01,02,03} > log 2>&1
+    dante/c1.01 dante/c1.02 dante/c1.03 > log 2>&1
 if test $? -ne 0; then cat log; fail; fi
 
 $bin/test_cpio -list -f dante.cpio > $work/list
@@ -177,7 +177,7 @@ mkdir out
 $bin/test_cpio -extract -cd $work/out -f $work/dante.cpio > log 2>&1
 if test $? -ne 0; then cat log; fail; fi
 
-cmp $work/in/dante/c1.01 $work/out/dante/c1.01 > log 2>&1
+diff -b $work/in/dante/c1.01 $work/out/dante/c1.01 > log 2>&1
 if test $? -ne 0; then cat log; fail; fi
 
 cmp $work/in/dante/c1.02 $work/out/dante/c1.02 > log 2>&1

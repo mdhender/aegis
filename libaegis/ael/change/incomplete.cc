@@ -1,6 +1,6 @@
 //
 //	aegis - project change supervisor
-//	Copyright (C) 2003, 2004 Peter Miller;
+//	Copyright (C) 2003-2005 Peter Miller;
 //	All rights reserved.
 //
 //	This program is free software; you can redistribute it and/or modify
@@ -20,13 +20,13 @@
 // MANIFEST: functions to manipulate incompletes
 //
 
-#include <ael/change/by_state.h>
-#include <ael/change/inappropriat.h>
-#include <ael/change/incomplete.h>
-#include <cstate.h>
-#include <str.h>
-#include <str_list.h>
-#include <trace.h>
+#include <common/str.h>
+#include <common/str_list.h>
+#include <common/trace.h>
+#include <libaegis/ael/change/by_state.h>
+#include <libaegis/ael/change/inappropriat.h>
+#include <libaegis/ael/change/incomplete.h>
+#include <libaegis/cstate.h>
 
 
 void

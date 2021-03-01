@@ -1,6 +1,6 @@
 /*
  *	aegis - project change supervisor
- *	Copyright (C) 2002-2004 Peter Miller;
+ *	Copyright (C) 2002-2005 Peter Miller;
  *	All rights reserved.
  *
  *	This program is free software; you can redistribute it and/or modify
@@ -22,15 +22,15 @@
 
 %{
 
-#include <ac/stdarg.h>
-#include <ac/stdio.h>
-#include <ac/stdlib.h>
+#include <common/ac/stdarg.h>
+#include <common/ac/stdio.h>
+#include <common/ac/stdlib.h>
 
-#include <str.h>
-#include <sub.h>
-#include <sub/plural_gram.h>
-#include <sub/plural_lex.h>
-#include <trace.h>
+#include <common/str.h>
+#include <libaegis/sub.h>
+#include <libaegis/sub/plural_gram.h>
+#include <libaegis/sub/plural_lex.h>
+#include <common/trace.h>
 
 #ifdef DEBUG
 #define YYDEBUG 1
@@ -147,7 +147,7 @@ yyerror(const char *s)
  * jiggery-pokery for bison
  *
  *	Replace all calls to fprintf with a call to yydebugger.  Ignore
- *	the first argument, it will be ``stderr''.  The trace_where_ is
+ *	the first argument, it will be "stderr".  The trace_where_ is
  *	needed to set the location, and is safe, because bison only
  *	invokes the printf with an if (be careful, the fprintf is not in
  *	a compound statement).

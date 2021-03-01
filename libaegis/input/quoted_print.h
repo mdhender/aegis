@@ -1,6 +1,6 @@
 //
 //	aegis - project change supervisor
-//	Copyright (C) 2001, 2002, 2005 Peter Miller;
+//	Copyright (C) 2001, 2002, 2005, 2006 Peter Miller;
 //	All rights reserved.
 //
 //	This program is free software; you can redistribute it and/or modify
@@ -23,7 +23,7 @@
 #ifndef LIBAEGIS_INPUT_QUOTED_PRINT_H
 #define LIBAEGIS_INPUT_QUOTED_PRINT_H
 
-#include <input.h>
+#include <libaegis/input.h>
 
 class input_quoted_printable:
     public input_ty
@@ -36,8 +36,11 @@ public:
 
     /**
       * The constructor.
+      *
+      * @param deeper
+      *     the source of data for this filter.
       */
-    input_quoted_printable(input_ty *deeper, bool close_on_close);
+    input_quoted_printable(input &deeper);
 
     // See base class for documentation.
     nstring name();
@@ -58,8 +61,12 @@ public:
     bool is_remote() const;
 
 private:
-    input_ty *deeper;
-    bool close_on_close;
+    /**
+      * The deeper instance variable is used to remember the source of
+      * data for this filter.
+      */
+    input deeper;
+
     bool eof;
     long pos;
 

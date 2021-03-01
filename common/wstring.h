@@ -1,6 +1,6 @@
 //
 //	aegis - project change supervisor
-//	Copyright (C) 2004 Peter Miller;
+//	Copyright (C) 2004, 2005 Peter Miller;
 //	All rights reserved.
 //
 //	This program is free software; you can redistribute it and/or modify
@@ -23,15 +23,13 @@
 #ifndef COMMON_WSTRING_H
 #define COMMON_WSTRING_H
 
-#pragma interface "wstring"
-
 /** \addtogroup WString
   * \brief Wide char strings
   * \ingroup String
   * @{
   */
 
-#include <wstr.h>
+#include <common/wstr.h>
 
 /**
   * The wstring class is used to represent a reference counted wide string

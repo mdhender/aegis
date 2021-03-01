@@ -1,6 +1,6 @@
 //
 //	aegis - project change supervisor
-//	Copyright (C) 1991-1997, 1999, 2002-2004 Peter Miller;
+//	Copyright (C) 1991-1997, 1999, 2002-2005 Peter Miller;
 //	All rights reserved.
 //
 //	This program is free software; you can redistribute it and/or modify
@@ -20,27 +20,27 @@
 // MANIFEST: functions to open and close log files
 //
 
-#include <ac/stddef.h>
-#include <ac/stdio.h>
-#include <ac/string.h>
-#include <ac/signal.h>
+#include <common/ac/stddef.h>
+#include <common/ac/stdio.h>
+#include <common/ac/string.h>
+#include <common/ac/signal.h>
 
-#include <ac/sys/types.h>
+#include <common/ac/sys/types.h>
 #include <sys/stat.h>	// for umask prototype!
-#include <ac/unistd.h>
-#include <ac/fcntl.h>
+#include <common/ac/unistd.h>
+#include <common/ac/fcntl.h>
 
-#include <env.h>
-#include <error.h>
-#include <lock.h>	// for lock_release_child
-#include <log.h>
-#include <now.h>
-#include <os.h>
-#include <quit/action/log.h>
-#include <sub.h>
-#include <trace.h>
-#include <undo.h>
-#include <user.h>
+#include <common/env.h>
+#include <common/error.h>
+#include <libaegis/lock.h>	// for lock_release_child
+#include <libaegis/log.h>
+#include <common/now.h>
+#include <libaegis/os.h>
+#include <libaegis/quit/action/log.h>
+#include <libaegis/sub.h>
+#include <common/trace.h>
+#include <libaegis/undo.h>
+#include <libaegis/user.h>
 
 
 quit_action_log log_quitter;

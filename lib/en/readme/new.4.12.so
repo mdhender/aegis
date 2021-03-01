@@ -1,6 +1,6 @@
 .\"
 .\"	aegis - project change supervisor
-.\"	Copyright (C) 2003 Peter Miller;
+.\"	Copyright (C) 2003, 2005 Peter Miller;
 .\"	All rights reserved.
 .\"
 .\"	This program is free software; you can redistribute it and/or modify
@@ -23,7 +23,7 @@
 .if n *
 .if t \(bu
 .\" change 38
-A bug has been fixed in ``ael cf''.  It used to fail an
+A bug has been fixed in \[lq]ael cf\[rq].  It used to fail an
 assertion when there were no files in the change.
 .PP
 .if n *

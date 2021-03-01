@@ -20,27 +20,29 @@
 // MANIFEST: functions to manipulate lists
 //
 
-#include <ac/errno.h>
-#include <ac/stddef.h>
-#include <ac/sys/types.h>
+#include <common/ac/errno.h>
+#include <common/ac/stddef.h>
+#include <common/ac/sys/types.h>
 #include <sys/stat.h>
 
-#include <change/file.h>
-#include <change.h>
-#include <col.h>
-#include <error.h>
-#include <fstate.h>
-#include <getgr_cache.h>
-#include <getpw_cache.h>
-#include <glue.h>
-#include <list.h>
-#include <now.h>
-#include <os.h>
-#include <output.h>
-#include <project/file.h>
-#include <project.h>
-#include <stack.h>
-#include <sub.h>
+#include <common/error.h>
+#include <common/now.h>
+#include <libaegis/change/file.h>
+#include <libaegis/change.h>
+#include <libaegis/col.h>
+#include <libaegis/fstate.h>
+#include <libaegis/getgr_cache.h>
+#include <libaegis/getpw_cache.h>
+#include <libaegis/glue.h>
+#include <libaegis/os.h>
+#include <libaegis/output.h>
+#include <libaegis/project/file.h>
+#include <libaegis/project.h>
+#include <libaegis/sub.h>
+
+#include <aels/list.h>
+#include <aels/stack.h>
+
 
 int		show_removed_files = -1;
 int		show_dot_files = -1;

@@ -1,6 +1,6 @@
 //
 //	aegis - project change supervisor
-//	Copyright (C) 1991-1997, 1999, 2002-2004 Peter Miller;
+//	Copyright (C) 1991-1997, 1999, 2002-2005 Peter Miller;
 //	All rights reserved.
 //
 //	This program is free software; you can redistribute it and/or modify
@@ -20,22 +20,22 @@
 // MANIFEST: functions to provide consistent treatment of -Help options
 //
 
-#include <ac/stdlib.h>
-#include <ac/unistd.h>
+#include <common/ac/stdlib.h>
+#include <common/ac/unistd.h>
 
-#include <arglex2.h>
-#include <env.h>
-#include <gonzo.h>
-#include <help.h>
-#include <libdir.h>
-#include <option.h>
-#include <os.h>
-#include <output/pager.h>
-#include <progname.h>
-#include <quit.h>
-#include <sub.h>
-#include <trace.h>
-#include <str_list.h>
+#include <libaegis/arglex2.h>
+#include <common/env.h>
+#include <libaegis/gonzo.h>
+#include <libaegis/help.h>
+#include <common/libdir.h>
+#include <libaegis/option.h>
+#include <libaegis/os.h>
+#include <libaegis/output/pager.h>
+#include <common/progname.h>
+#include <common/quit.h>
+#include <libaegis/sub.h>
+#include <common/trace.h>
+#include <common/str_list.h>
 
 
 static void
@@ -160,7 +160,7 @@ help(const char *progname, void (*usage)(void))
     os_become_orig();
 
     //
-    // Invoke the appropriate ``man'' command.  This will find the
+    // Invoke the appropriate "man" command.  This will find the
     // right language on the search path, and it already knows how
     // to translate the *roff into text.
     //

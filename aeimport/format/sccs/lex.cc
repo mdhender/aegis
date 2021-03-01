@@ -1,6 +1,6 @@
 //
 //	aegis - project change supervisor
-//	Copyright (C) 2001, 2002, 2004, 2005 Peter Miller;
+//	Copyright (C) 2001, 2002, 2004-2006 Peter Miller;
 //	All rights reserved.
 //
 //	This program is free software; you can redistribute it and/or modify
@@ -20,21 +20,22 @@
 // MANIFEST: functions to manipulate lexs
 //
 
-#include <ac/ctype.h>
-#include <ac/stdio.h>
+#include <common/ac/ctype.h>
+#include <common/ac/stdio.h>
 
-#include <error.h> // for assert
-#include <fopen_nfs.h>
-#include <format/sccs/lex.h>
-#include <input/file_text.h>
-#include <quit.h>
-#include <str.h>
-#include <stracc.h>
-#include <sub.h>
-#include <symtab.h>
-#include <format/sccs/gram.gen.h> // needs to be after <str.h>
+#include <common/error.h> // for assert
+#include <common/quit.h>
+#include <common/stracc.h>
+#include <common/str.h>
+#include <common/symtab.h>
+#include <libaegis/fopen_nfs.h>
+#include <libaegis/input/file_text.h>
+#include <libaegis/sub.h>
 
-static input_ty *ip;
+#include <aeimport/format/sccs/lex.h>
+#include <aeimport/format/sccs/gram.gen.h> // needs to be after <common/str.h>
+
+static input ip;
 static int	error_count;
 static int	start_of_line;
 static stracc_t	getch_line_buffer;
@@ -54,8 +55,7 @@ sccs_lex_close(void)
 {
     if (error_count)
 	quit(1);
-    delete ip;
-    ip = 0;
+    ip.close();
 }
 
 
@@ -103,7 +103,7 @@ getch(void)
 	getch_line_pos = 0;
 	for (;;)
 	{
-	    c = ip->getc();
+	    c = ip->getch();
 	    if (c < 0)
 	    {
 		if (getch_line_buffer.empty())

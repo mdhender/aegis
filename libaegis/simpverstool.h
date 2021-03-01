@@ -1,6 +1,6 @@
 //
 //	aegis - project change supervisor
-//	Copyright (C) 2005 Peter Miller;
+//	Copyright (C) 2005, 2006 Peter Miller;
 //	All rights reserved.
 //
 //	This program is free software; you can redistribute it and/or modify
@@ -23,9 +23,8 @@
 #ifndef LIBAEGIS_SIMPVERSTOOL_H
 #define LIBAEGIS_SIMPVERSTOOL_H
 
-#pragma interface "simple_version_tool"
-
-#include <nstring.h>
+#include <common/nstring.h>
+#include <libaegis/compres_algo.h>
 
 class rfc822; // forward
 class rfc822_functor; // forward
@@ -71,8 +70,12 @@ public:
       *
       * @param &history_file_name
       *     The name of the file being used to store the version history.
+      * @param comp_alg
+      *     The compression algorithm to use.  Defaults to the best
+      *     available (may be slow, may use much memory).
       */
-    simple_version_tool(const nstring &history_file_name);
+    simple_version_tool(const nstring &history_file_name,
+       	compression_algorithm_t comp_alg = compression_algorithm_not_set);
 
     /**
       * The checkin method is used to add another version to the file
@@ -143,6 +146,11 @@ private:
       * name of the file being used to store the version history.
       */
     nstring history_file_name;
+
+    /**
+      * The compression algorithm
+      */
+    compression_algorithm_t compression_algorithm;
 
     /**
       * The default constructor.  Do not use.

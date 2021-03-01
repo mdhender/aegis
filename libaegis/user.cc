@@ -1,6 +1,6 @@
 //
 //	aegis - project change supervisor
-//	Copyright (C) 1991-2005 Peter Miller;
+//	Copyright (C) 1991-2006 Peter Miller;
 //	All rights reserved.
 //
 //	This program is free software; you can redistribute it and/or modify
@@ -20,37 +20,37 @@
 // MANIFEST: functions to manage information about users
 //
 
-#include <ac/ctype.h>
-#include <ac/stdio.h>
-#include <ac/stdlib.h>
-#include <ac/string.h>
-#include <ac/unistd.h>
+#include <common/ac/ctype.h>
+#include <common/ac/stdio.h>
+#include <common/ac/stdlib.h>
+#include <common/ac/string.h>
+#include <common/ac/unistd.h>
 
-#include <arglex2.h>
-#include <attribute.h>
-#include <commit.h>
-#include <error.h>
-#include <file.h>
-#include <fstrcmp.h>
-#include <getgr_cache.h>
-#include <getpw_cache.h>
-#include <gonzo.h>
-#include <help.h>
-#include <lock.h>
-#include <libdir.h>
-#include <mem.h>
-#include <os.h>
-#include <os/domain_name.h>
-#include <project.h>
-#include <project/history.h>
-#include <stracc.h>
-#include <sub.h>
-#include <trace.h>
-#include <user.h>
-#include <undo.h>
-#include <str_list.h>
-#include <zero.h>
-#include <change.h>
+#include <libaegis/arglex2.h>
+#include <libaegis/attribute.h>
+#include <libaegis/commit.h>
+#include <common/error.h>
+#include <libaegis/file.h>
+#include <common/fstrcmp.h>
+#include <libaegis/getgr_cache.h>
+#include <libaegis/getpw_cache.h>
+#include <libaegis/gonzo.h>
+#include <libaegis/help.h>
+#include <libaegis/lock.h>
+#include <common/libdir.h>
+#include <common/mem.h>
+#include <libaegis/os.h>
+#include <libaegis/os/domain_name.h>
+#include <libaegis/project.h>
+#include <libaegis/project/history.h>
+#include <common/stracc.h>
+#include <libaegis/sub.h>
+#include <common/trace.h>
+#include <libaegis/user.h>
+#include <libaegis/undo.h>
+#include <common/str_list.h>
+#include <libaegis/zero.h>
+#include <libaegis/change.h>
 
 
 static size_t	nusers;
@@ -93,7 +93,7 @@ user_set_project(user_ty *up, project_ty *pp)
     // set the group from the project
     //	    (cannonical name is first in /etc/group file)
     //
-    up->gid = project_gid_get(pp);
+    up->gid = pp->gid_get();
     gr = getgrgid_cached(up->gid);
     if (!gr)
     {
@@ -755,7 +755,7 @@ lock_sync(user_ty *up)
 //
 // DESCRIPTION
 //	The user_ustate_get function is used to
-//	fetch the ``ustate'' file for this user,
+//	fetch the "ustate" file for this user,
 //	caching for future reference.
 //
 // ARGUMENTS
@@ -772,10 +772,7 @@ user_ustate_get(user_ty *up)
     lock_sync(up);
     if (!up->ustate_path)
     {
-	project_ty	*ppp;
-
-	for (ppp = up->pp; ppp->parent; ppp = ppp->parent)
-	    ;
+	project_ty *ppp = up->pp->trunk_get();
 	up->ustate_path = gonzo_ustate_path(project_name_get(ppp), up->name);
     }
     if (!up->ustate_data)
@@ -1002,7 +999,7 @@ read_and_merge(uconf_ty *data, string_ty *filename)
 //
 // DESCRIPTION
 //	The user_uconf_get function is used to
-//	fetch the ``uconf'' file for this user,
+//	fetch the "uconf" file for this user,
 //	caching for future reference.
 //
 // ARGUMENTS
@@ -1414,7 +1411,7 @@ user_own_remove(user_ty *up, string_ty *project_name, long change_number)
     assert(ustate_data->own);
 
     //
-    // Search for the project in the ``own'' list.
+    // Search for the project in the "own" list.
     //
     for (j = 0;; ++j)
     {
@@ -1426,14 +1423,14 @@ user_own_remove(user_ty *up, string_ty *project_name, long change_number)
     }
 
     //
-    // Create the ``changes'' list for the project, if necessary.
+    // Create the "changes" list for the project, if necessary.
     //
     if (!own_data->changes)
 	own_data->changes =
 	    (ustate_own_changes_list_ty *)ustate_own_changes_list_type.alloc();
 
     //
-    // Search for the change in the ``changes'' list.
+    // Search for the change in the "changes" list.
     //
     for (k = 0; k < own_data->changes->length; ++k)
     {
@@ -1454,7 +1451,7 @@ user_own_remove(user_ty *up, string_ty *project_name, long change_number)
 
     //
     // If the changes list for the project is now empty,
-    // remove the project from the ``own'' list.
+    // remove the project from the "own" list.
     //
     if (!own_data->changes->length)
     {
@@ -1952,12 +1949,12 @@ user_default_project_by_user(user_ty *up)
 	    for (j = 0; j < name.nstrings; ++j)
 	    {
 		pp = project_alloc(name.string[j]);
-		project_bind_existing(pp);
+		pp->bind_existing();
 
 		//
 		// first check if it is in baseline
 		//
-		d = project_baseline_path_get(pp, 0);
+		d = pp->baseline_path_get();
 		if (is_below(d, cwd))
 		{
 		    result = str_copy(name.string[j]);
@@ -2347,7 +2344,7 @@ ask(string_ty *filename, int isdir)
 
     //
     // The order of items in the table needs to be considered
-    // carefully.  The ``unset'' items must come before the ``set''
+    // carefully.  The "unset" items must come before the "set"
     // items; particularly those with similar names.  Do not sort
     // this table alphabetically.
     //

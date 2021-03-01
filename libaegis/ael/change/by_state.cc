@@ -1,6 +1,6 @@
 //
 //	aegis - project change supervisor
-//	Copyright (C) 1999, 2001-2005 Peter Miller;
+//	Copyright (C) 1999, 2001-2006 Peter Miller;
 //	All rights reserved.
 //
 //	This program is free software; you can redistribute it and/or modify
@@ -20,19 +20,19 @@
 // MANIFEST: functions to manipulate by_states
 //
 
-#include <ael/attribu_list.h>
-#include <ael/build_header.h>
-#include <ael/change/by_state.h>
-#include <ael/column_width.h>
-#include <change.h>
-#include <col.h>
-#include <option.h>
-#include <output.h>
-#include <project.h>
-#include <project/history.h>
-#include <symtab.h>
-#include <trace.h>
-#include <user.h>
+#include <libaegis/ael/attribu_list.h>
+#include <libaegis/ael/build_header.h>
+#include <libaegis/ael/change/by_state.h>
+#include <libaegis/ael/column_width.h>
+#include <libaegis/change.h>
+#include <libaegis/col.h>
+#include <libaegis/option.h>
+#include <libaegis/output.h>
+#include <libaegis/project.h>
+#include <libaegis/project/history.h>
+#include <common/symtab.h>
+#include <common/trace.h>
+#include <libaegis/user.h>
 
 
 static int
@@ -114,7 +114,7 @@ list_changes_in_state_mask_by_user(string_ty *project_name, int state_mask,
 	project_name = str_copy(project_name);
     pp = project_alloc(project_name);
     str_free(project_name);
-    project_bind_existing(pp);
+    pp->bind_existing();
 
     //
     // create the columns

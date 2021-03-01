@@ -1,6 +1,6 @@
 //
 //	aegis - project change supervisor
-//	Copyright (C) 1999, 2001-2005 Peter Miller;
+//	Copyright (C) 1999, 2001-2006 Peter Miller;
 //	All rights reserved.
 //
 //	This program is free software; you can redistribute it and/or modify
@@ -20,24 +20,24 @@
 // MANIFEST: functions to manipulate filess
 //
 
-#include <ael/attribu_list.h>
-#include <ael/build_header.h>
-#include <ael/column_width.h>
-#include <ael/formeditnum.h>
-#include <ael/project/files.h>
-#include <change.h>
-#include <change/branch.h>
-#include <change/file.h>
-#include <col.h>
-#include <error.h> // for assert
-#include <option.h>
-#include <output.h>
-#include <project.h>
-#include <project/file.h>
-#include <str_list.h>
-#include <symtab.h>
-#include <trace.h>
-#include <user.h>
+#include <libaegis/ael/attribu_list.h>
+#include <libaegis/ael/build_header.h>
+#include <libaegis/ael/column_width.h>
+#include <libaegis/ael/formeditnum.h>
+#include <libaegis/ael/project/files.h>
+#include <libaegis/change.h>
+#include <libaegis/change/branch.h>
+#include <libaegis/change/file.h>
+#include <libaegis/col.h>
+#include <common/error.h> // for assert
+#include <libaegis/option.h>
+#include <libaegis/output.h>
+#include <libaegis/project.h>
+#include <libaegis/project/file.h>
+#include <common/str_list.h>
+#include <common/symtab.h>
+#include <common/trace.h>
+#include <libaegis/user.h>
 
 
 void
@@ -66,7 +66,7 @@ list_project_files(string_ty *project_name, long change_number,
 	project_name = str_copy(project_name);
     pp = project_alloc(project_name);
     str_free(project_name);
-    project_bind_existing(pp);
+    pp->bind_existing();
 
     //
     // locate user data
@@ -115,7 +115,7 @@ list_project_files(string_ty *project_name, long change_number,
 	    fstate_src_ty   *src_data;
 	    size_t          k;
 
-	    src_data = project_file_nth(pp, j, view_path_simple);
+	    src_data = pp->file_nth(j, view_path_simple);
 	    if (!src_data)
 		break;
 	    if (!src_data->attribute)
@@ -171,7 +171,7 @@ list_project_files(string_ty *project_name, long change_number,
     {
 	fstate_src_ty	*src_data;
 
-	src_data = project_file_nth(pp, j, view_path_simple);
+	src_data = pp->file_nth(j, view_path_simple);
 	if (!src_data)
 	    break;
 	if (src_data->deleted_by && !option_verbose_get())
@@ -189,11 +189,11 @@ list_project_files(string_ty *project_name, long change_number,
 	    list_format_edit_number(edit_col, src_data);
 	    if
 	    (
-		pp->parent
+		!pp->is_a_trunk()
 	    &&
-		change_is_a_branch(project_change_get(pp))
+		change_is_a_branch(pp->change_get())
 	    &&
-		!change_file_up_to_date(pp->parent, src_data)
+		!change_file_up_to_date(pp->parent_get(), src_data)
 	    )
 	    {
 		fstate_src_ty	*psrc_data;
@@ -201,7 +201,7 @@ list_project_files(string_ty *project_name, long change_number,
 		psrc_data =
 		    project_file_find
 		    (
-			pp->parent,
+			pp->parent_get(),
 			src_data->file_name,
 			view_path_extreme
 		    );

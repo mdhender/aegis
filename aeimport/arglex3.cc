@@ -1,6 +1,6 @@
 //
 //	aegis - project change supervisor
-//	Copyright (C) 2001-2004 Peter Miller;
+//	Copyright (C) 2001-2005 Peter Miller;
 //	All rights reserved.
 //
 //	This program is free software; you can redistribute it and/or modify
@@ -20,7 +20,7 @@
 // MANIFEST: functions to manipulate arglex3s
 //
 
-#include <arglex3.h>
+#include <aeimport/arglex3.h>
 
 
 static arglex_table_ty argtab[] =

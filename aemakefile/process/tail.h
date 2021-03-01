@@ -1,6 +1,6 @@
 //
 //	aegis - project change supervisor
-//	Copyright (C) 2004 Peter Miller;
+//	Copyright (C) 2004, 2005 Peter Miller;
 //	All rights reserved.
 //
 //	This program is free software; you can redistribute it and/or modify
@@ -23,10 +23,8 @@
 #ifndef AEMAKEFILE_PROCESS_TAIL_H
 #define AEMAKEFILE_PROCESS_TAIL_H
 
-#pragma interface "process_tail"
-
-#include <process.h>
-#include <symtab/template.h>
+#include <aemakefile/process.h>
+#include <common/symtab/template.h>
 
 /**
   * The process_tail class is used to represent the processing required

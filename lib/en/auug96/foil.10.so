@@ -1,6 +1,6 @@
 .\"
 .\"	aegis - project change supervisor
-.\"	Copyright (C) 1996, 2002 Peter Miller;
+.\"	Copyright (C) 1996, 2002, 2005 Peter Miller;
 .\"	All rights reserved.
 .\"
 .\"	This program is free software; you can redistribute it and/or modify
@@ -59,4 +59,4 @@ Only files being edited or created are in development directory.
 Build tool must be able to cope with directory stack.
 .IP \(bu 2n
 .hy 0
-``Test Server'' must be able to stack, too, so can preview.
+"Test Server" must be able to stack, too, so can preview.

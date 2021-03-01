@@ -20,8 +20,8 @@
 // MANIFEST: functions to manipulate rpcs
 //
 
-#include <ac/dce/rpc.h>
-#include <ac/stdlib.h>
+#include <common/ac/dce/rpc.h>
+#include <common/ac/stdlib.h>
 
 #ifndef HAVE_RPC_STRING_FREE
 

@@ -1,6 +1,6 @@
 //
 //	aegis - project change supervisor
-//	Copyright (C) 2004 Peter Miller;
+//	Copyright (C) 2004-2006 Peter Miller;
 //	All rights reserved.
 //
 //	This program is free software; you can redistribute it and/or modify
@@ -20,19 +20,19 @@
 // MANIFEST: functions to manipulate staffs
 //
 
-#include <ac/stdio.h>
+#include <common/ac/stdio.h>
 
-#include <change.h>
-#include <error.h> // for assert
-#include <get/project/staff.h>
-#include <emit/project.h>
-#include <http.h>
-#include <mem.h>
-#include <project.h>
-#include <project/history.h>
-#include <str_list.h>
-#include <symtab.h>
-#include <user.h>
+#include <libaegis/change.h>
+#include <common/error.h> // for assert
+#include <aeget/get/project/staff.h>
+#include <aeget/emit/project.h>
+#include <aeget/http.h>
+#include <common/mem.h>
+#include <libaegis/project.h>
+#include <libaegis/project/history.h>
+#include <common/str_list.h>
+#include <common/symtab.h>
+#include <libaegis/user.h>
 
 
 #define BAR_WIDTH 50
@@ -193,7 +193,7 @@ get_project_staff(project_ty *pp, string_ty *fn, string_list_ty *modifier)
     //
     staff_member_constructor(&total);
     staff_member_constructor(&max);
-    cp = project_change_get(pp);
+    cp = pp->change_get();
     cstate_data = change_cstate_get(cp);
     bp = cstate_data->branch;
     assert(bp);

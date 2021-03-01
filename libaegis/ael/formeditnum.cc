@@ -20,9 +20,9 @@
 // MANIFEST: functions to manipulate formeditnums
 //
 
-#include <ael/formeditnum.h>
-#include <error.h> // for assert
-#include <output.h>
+#include <libaegis/ael/formeditnum.h>
+#include <common/error.h> // for assert
+#include <libaegis/output.h>
 
 
 void
@@ -33,7 +33,7 @@ list_format_edit_number(output_ty *edit_col, fstate_src_ty *src_data)
 	//
 	// We have both the original version copied, and the
 	// current head revision.  Print them both, with a
-	// notation implying ``from the old one to the new one''
+	// notation implying "from the old one to the new one"
 	// if they differ.  Only print one if thay are the same.
 	//
 	assert(src_data->edit->revision);

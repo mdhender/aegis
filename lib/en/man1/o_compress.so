@@ -1,0 +1,45 @@
+.\"
+.\"	aegis - project change supervisor
+.\"	Copyright (C) 2006 Peter Miller;
+.\"	All rights reserved.
+.\"
+.\"	This program is free software; you can redistribute it and/or modify
+.\"	it under the terms of the GNU General Public License as published by
+.\"	the Free Software Foundation; either version 2 of the License, or
+.\"	(at your option) any later version.
+.\"
+.\"	This program is distributed in the hope that it will be useful,
+.\"	but WITHOUT ANY WARRANTY; without even the implied warranty of
+.\"	MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+.\"	GNU General Public License for more details.
+.\"
+.\"	You should have received a copy of the GNU General Public License
+.\"	along with this program; if not, write to the Free Software
+.\"	Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111, USA.
+.\"
+.\" MANIFEST: document describing lib/en/man1/o_compresss
+.\"
+.TP 8n
+\fB\-compression-algorithm\fP \fIname\fP
+.RS
+This option may be used to specify the compression to be used.
+They are listed on order of compression effeciency.
+.TP 8n
+none
+Use no compression (not always meaningful for all commands).
+.TP 8n
+gzip
+Use the compression used by the \fIgzip\fP(1) program.
+.TP 8n
+bzip2
+Use the compression used by the \fIbzip2\fP(1) program.
+.PP
+More compression algorithms may be added in the future.
+.RE
+.TP 8n
+\fB\-COMPress\fP
+This option is deprecated in favour of the \fB\-comp-alg=gzip\fP or
+\fB\-comp-alg=bzip2\fP options.
+.TP 8n
+\fB\-No_COMPress\fP
+This options is deprecated in favour of the \fB\-comp-alg=none\fP option.

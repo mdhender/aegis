@@ -1,6 +1,6 @@
 //
 //	aegis - project change supervisor
-//	Copyright (C) 1994, 2002 Peter Miller.
+//	Copyright (C) 1994, 2002, 2005 Peter Miller.
 //	All rights reserved.
 //
 //	This program is free software; you can redistribute it and/or modify
@@ -23,9 +23,7 @@
 #ifndef FMTGEN_TYPE_STRUCTURE_H
 #define FMTGEN_TYPE_STRUCTURE_H
 
-#pragma interface "type_structure_ty"
-
-#include <type.h>
+#include <fmtgen/type.h>
 
 /**
   * The type_structure_ty class is used to represent the type of a field

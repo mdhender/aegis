@@ -20,18 +20,19 @@
 // MANIFEST: functions to manipulate menus
 //
 
-#include <ac/stdio.h>
+#include <common/ac/stdio.h>
 
-#include <change.h>
-#include <change/file.h>
-#include <error.h>
-#include <get/file/menu.h>
-#include <fstate.h>
-#include <http.h>
-#include <nstring.h>
-#include <project.h>
-#include <project/file.h>
-#include <str_list.h>
+#include <common/error.h>
+#include <common/nstring.h>
+#include <common/str_list.h>
+#include <libaegis/change/file.h>
+#include <libaegis/change.h>
+#include <libaegis/fstate.h>
+#include <libaegis/project/file.h>
+#include <libaegis/project.h>
+
+#include <aeget/get/file/menu.h>
+#include <aeget/http.h>
 
 
 void

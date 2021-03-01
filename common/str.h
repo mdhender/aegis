@@ -28,9 +28,9 @@
   * \ingroup Common
   * @{
   */
-#include <ac/stddef.h>
-#include <ac/stdarg.h>
-#include <main.h>
+#include <common/ac/stddef.h>
+#include <common/ac/stdarg.h>
+#include <common/main.h>
 
 typedef unsigned long str_hash_ty;
 

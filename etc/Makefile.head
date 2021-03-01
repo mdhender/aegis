@@ -1,6 +1,6 @@
 #
 #	aegis - a project change supervisor
-#	Copyright (C) 1990-1999, 2001, 2002, 2004 Peter Miller;
+#	Copyright (C) 1990-1999, 2001, 2002, 2004, 2005 Peter Miller;
 #	All rights reserved.
 #
 #	This program is free software; you can redistribute it and/or modify
@@ -231,7 +231,7 @@ LIBEXT = a
 #
 # For some installations of Groff, -mm is installed as -mm, but some
 # of them install them as -mgm.  I have no idea why.
-# Ditto for ``-ms'' vs ``-mgs''
+# Ditto for "-ms" vs "-mgs"
 #
 MM = -m@GROFF_MM_MACROS@
 MS = -m@GROFF_MS_MACROS@

@@ -1,6 +1,6 @@
 //
 //	aegis - project change supervisor
-//	Copyright (C) 2001, 2002, 2004 Peter Miller;
+//	Copyright (C) 2001, 2002, 2004, 2005 Peter Miller;
 //	All rights reserved.
 //
 //	This program is free software; you can redistribute it and/or modify
@@ -23,7 +23,7 @@
 #ifndef AEIMPORT_CHANGE_SET_LIST_H
 #define AEIMPORT_CHANGE_SET_LIST_H
 
-#include <change_set.h>
+#include <aeimport/change_set.h>
 
 struct change_set_list_ty
 {

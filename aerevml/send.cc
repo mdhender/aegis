@@ -1,6 +1,6 @@
 //
 //	aegis - project change supervisor
-//	Copyright (C) 2005 Peter Miller;
+//	Copyright (C) 2005, 2006 Peter Miller;
 //	All rights reserved.
 //
 //	This program is free software; you can redistribute it and/or modify
@@ -20,39 +20,42 @@
 // MANIFEST: implementation of the send class
 //
 
-#include <ac/ctype.h>
-#include <ac/stdlib.h>
-#include <ac/string.h>
+#include <common/ac/ctype.h>
+#include <common/ac/stdlib.h>
+#include <common/ac/string.h>
 
-#include <arglex3.h>
-#include <attribute.h>
-#include <change/file.h>
-#include <change/branch.h>
-#include <change/functor/attribu_list.h>
-#include <change/identifier.h>
-#include <change/signedoffby.h>
-#include <cstate.h>
-#include <error.h> // for assert
-#include <fstate.h>
-#include <help.h>
-#include <input/file.h>
-#include <option.h>
-#include <os.h>
-#include <output/conten_encod.h>
-#include <output/file.h>
-#include <output/gzip.h>
-#include <output/revml_encode.h>
-#include <project/file.h>
-#include <project/file/roll_forward.h>
-#include <project/history.h>
-#include <project/invento_walk.h>
-#include <sub.h>
-#include <trace.h>
-#include <undo.h>
-#include <usage.h>
-#include <user.h>
-#include <version_stmp.h>
-#include <zero.h>
+#include <common/error.h> // for assert
+#include <common/trace.h>
+#include <common/version_stmp.h>
+#include <libaegis/attribute.h>
+#include <libaegis/change/branch.h>
+#include <libaegis/change/file.h>
+#include <libaegis/change/functor/attribu_list.h>
+#include <libaegis/change/identifier.h>
+#include <libaegis/change/signedoffby.h>
+#include <libaegis/compres_algo.h>
+#include <libaegis/cstate.h>
+#include <libaegis/fstate.h>
+#include <libaegis/help.h>
+#include <libaegis/input/file.h>
+#include <libaegis/option.h>
+#include <libaegis/os.h>
+#include <libaegis/output/bzip2.h>
+#include <libaegis/output/conten_encod.h>
+#include <libaegis/output/file.h>
+#include <libaegis/output/gzip.h>
+#include <libaegis/project/file.h>
+#include <libaegis/project/file/roll_forward.h>
+#include <libaegis/project/history.h>
+#include <libaegis/project/invento_walk.h>
+#include <libaegis/sub.h>
+#include <libaegis/undo.h>
+#include <libaegis/user.h>
+#include <libaegis/zero.h>
+
+#include <aerevml/usage.h>
+#include <aerevml/arglex3.h>
+#include <aerevml/output/revml_encode.h>
 
 
 #define NO_TIME_SET ((time_t)(-1))
@@ -265,7 +268,7 @@ revml_send(void)
     int description_header = -1;
     int entire_source = -1;
     content_encoding_t ascii_armor = content_encoding_unset;
-    int needs_compression = -1;
+    compression_algorithm_t needs_compression = compression_algorithm_not_set;
     int mime_header = -1;
     arglex();
     while (arglex_token != arglex_token_eoln)
@@ -377,27 +380,65 @@ revml_send(void)
 	    break;
 
 	case arglex_token_compress:
-	    if (needs_compression > 0)
-		duplicate_option(usage);
-	    else if (needs_compression >= 0)
+	    if (needs_compression != compression_algorithm_not_set)
 	    {
-	        compress_yuck:
-		mutually_exclusive_options
-		(
-		    arglex_token_compress,
-		    arglex_token_compress_not,
+		duplicate_option_by_name
+	       	(
+		    arglex_token_compression_algorithm,
 		    usage
 		);
 	    }
-	    needs_compression = 1;
+	    needs_compression = compression_algorithm_unspecified;
 	    break;
 
 	case arglex_token_compress_not:
-	    if (needs_compression == 0)
-		duplicate_option(usage);
-	    else if (needs_compression >= 0)
-		goto compress_yuck;
-	    needs_compression = 0;
+	    if (needs_compression != compression_algorithm_not_set)
+	    {
+		duplicate_option_by_name
+	       	(
+		    arglex_token_compression_algorithm,
+		    usage
+		);
+	    }
+	    needs_compression = compression_algorithm_none;
+	    break;
+
+	case arglex_token_compression_algorithm:
+	    if (arglex() != arglex_token_string)
+	    {
+		option_needs_string(arglex_token_compression_algorithm, usage);
+		// NOTREACHED
+	    }
+	    else
+	    {
+		compression_algorithm_t temp =
+		    compression_algorithm_by_name(arglex_value.alv_string);
+
+		//
+		// We don't complain if the answer is going to be the same,
+		// for compatibility with the old options.
+		//
+		if (temp == needs_compression)
+		    break;
+
+		switch (needs_compression)
+		{
+		case compression_algorithm_not_set:
+		case compression_algorithm_unspecified:
+		    needs_compression = temp;
+		    break;
+
+		case compression_algorithm_none:
+		case compression_algorithm_gzip:
+		case compression_algorithm_bzip2:
+		    duplicate_option_by_name
+		    (
+			arglex_token_compression_algorithm,
+			usage
+		    );
+		    // NOTREACHED
+		}
+	    }
 	    break;
 
 	case arglex_token_mime_header:
@@ -454,6 +495,14 @@ revml_send(void)
     bool use_patch = true;
     if (entire_source)
 	use_patch = false;
+    bool use_bzip2 = true;
+
+    if (compatibility)
+    {
+	// The bzip2 output was introduced in Peter's 4.21.D184,
+	// and publicly in the 4.22 release.
+	use_bzip2 = (strverscmp(compatibility, "4.22") >= 0);
+    }
 
     //
     // If the user asked for one, append a Signed-off-by line to this
@@ -466,28 +515,38 @@ revml_send(void)
     //
     // Open the output
     //
-    switch (ascii_armor)
-    {
-    case content_encoding_unset:
+    if (ascii_armor == content_encoding_unset)
 	ascii_armor = content_encoding_base64;
-	if (needs_compression < 0)
-	    needs_compression = 1;
+    switch (needs_compression)
+    {
+    case compression_algorithm_not_set:
+	if (ascii_armor == content_encoding_none)
+	{
+	    needs_compression = compression_algorithm_none;
+	    break;
+	}
+	// Fall through...
+
+    case compression_algorithm_unspecified:
+	needs_compression =
+	    (
+		use_bzip2
+	    ?
+		compression_algorithm_bzip2
+	    :
+	       	compression_algorithm_gzip
+	    );
 	break;
 
-    case content_encoding_none:
-	if (needs_compression < 0)
-	    needs_compression = 0;
+    case compression_algorithm_none:
 	break;
 
-    case content_encoding_base64:
-    case content_encoding_uuencode:
-	if (needs_compression < 0)
-	    needs_compression = 1;
+    case compression_algorithm_gzip:
+	use_bzip2 = false;
 	break;
 
-    case content_encoding_quoted_printable:
-	if (needs_compression < 0)
-	    needs_compression = 0;
+    case compression_algorithm_bzip2:
+	use_bzip2 = true;
 	break;
     }
     if (mime_header < 0)
@@ -500,7 +559,12 @@ revml_send(void)
     }
     os_become_orig();
     output_ty *ofp = 0;
-    if (ascii_armor == content_encoding_none && needs_compression)
+    if
+    (
+	ascii_armor == content_encoding_none
+    &&
+	needs_compression != compression_algorithm_none
+    )
 	ofp = output_file_binary_open(output.get_ref());
     else
 	ofp = output_file_text_open(output.get_ref());
@@ -543,20 +607,39 @@ revml_send(void)
 	{
 	    ofp->fprintf
 	    (
-		"Content-Name: %s.ae\n",
+		"Content-Name: %s.revml\n",
 		project_name_get(cid.get_pp())->str_text
 	    );
 	    ofp->fprintf
 	    (
-		"Content-Disposition: attachment; filename=%s.ae\n",
+		"Content-Disposition: attachment; filename=%s.revml\n",
 		project_name_get(cid.get_pp())->str_text
 	    );
 	}
 	ofp->fputc('\n');
     }
     ofp = output_content_encoding(ofp, ascii_armor);
-    if (needs_compression)
+    switch (needs_compression)
+    {
+    case compression_algorithm_not_set:
+	assert(0);
+	break;
+
+    case compression_algorithm_none:
+	break;
+
+    case compression_algorithm_unspecified:
+	assert(0);
+	// Fall through...
+
+    case compression_algorithm_gzip:
 	ofp = new output_gzip(ofp, true);
+	break;
+
+    case compression_algorithm_bzip2:
+	ofp = new output_bzip2(ofp, true);
+	break;
+    }
 
     //
     // Emit the doctype and initial wrapper element.
@@ -800,6 +883,17 @@ revml_send(void)
 	for (size_t j = 0; j < file_name_list.size(); ++j)
 	{
 	    fstate_src_ty *src_data = cid.get_project_file(file_name_list[j]);
+	    if
+	    (
+		attributes_list_find_boolean
+		(
+		    src_data->attribute,
+		    "entire-source-hide"
+		)
+	    )
+	    {
+		continue;
+	    }
 	    one_more_src_unique(file_list, src_data);
 	}
     }
@@ -930,8 +1024,7 @@ revml_send(void)
 	// the diff_command.  It's historical.
 	//
 	file_revision original(dev_null, false);
-	file_revision input(dev_null, false);
-	input_ty *ifp = 0;
+	file_revision input_rev(dev_null, false);
         switch (cstate_data->state)
 	{
 	case cstate_state_awaiting_development:
@@ -1029,7 +1122,7 @@ revml_send(void)
 		    if (!s)
 			s = project_file_path(cid.get_pp(), csrc->file_name);
 		    assert(s);
-		    input = file_revision(nstring(s), false);
+		    input_rev = file_revision(nstring(s), false);
 		}
 		break;
 	    }
@@ -1130,7 +1223,7 @@ revml_send(void)
 				&path_unlink
 			    )
 			);
-		    input = file_revision(path, path_unlink);
+		    input_rev = file_revision(path, path_unlink);
 		}
 		break;
 
@@ -1141,7 +1234,7 @@ revml_send(void)
 		    //
 		    if (csrc->move)
 		    {
-			input = file_revision(dev_null, false);
+			input_rev = file_revision(dev_null, false);
 			original = file_revision(dev_null, false);
 			break;
 		    }
@@ -1192,7 +1285,7 @@ revml_send(void)
 		    //
 		    // Get the input file.
 		    //
-		    input = file_revision(dev_null, false);
+		    input_rev = file_revision(dev_null, false);
 		}
 		break;
 
@@ -1212,7 +1305,7 @@ revml_send(void)
 		    if (!felp)
 		    {
 			original = file_revision(dev_null, false);
-			input = file_revision(dev_null, false);
+			input_rev = file_revision(dev_null, false);
 			break;
 		    }
 
@@ -1259,7 +1352,7 @@ revml_send(void)
 				&path_unlink
 			    )
 			);
-		    input = file_revision(path, path_unlink);
+		    input_rev = file_revision(path, path_unlink);
 		}
 		break;
 
@@ -1268,14 +1361,14 @@ revml_send(void)
 		trace(("insulate = \"%s\"\n", csrc->file_name->str_text));
 		assert(0);
 		original = file_revision(dev_null, false);
-		input = file_revision(dev_null, false);
+		input_rev = file_revision(dev_null, false);
 		break;
 
 	    case file_action_transparent:
 		// no file content appears in the output
 		trace(("transparent = \"%s\"\n", csrc->file_name->str_text));
 		original = file_revision(dev_null, false);
-		input = file_revision(dev_null, false);
+		input_rev = file_revision(dev_null, false);
 		break;
 	    }
 	    break;
@@ -1321,7 +1414,7 @@ revml_send(void)
 	if (!ap || !ap->value || !ap->value->str_length)
 	{
 	    os_become_orig();
-	    nstring content_type = os_magic_file(input.get_path());
+	    nstring content_type = os_magic_file(input_rev.get_path());
 	    os_become_undo();
 	    assert(!content_type.empty());
 	    element(ofp, "type", content_type);
@@ -1389,7 +1482,7 @@ revml_send(void)
 	case file_action_modify:
             // FIXME: need to send content for binary files, even when
             // we are just editing.
-	    if (!entire_source && input.get_path() != dev_null)
+	    if (!entire_source && input_rev.get_path() != dev_null)
 	    {
 		//
 		// Run the patch diff command to form the output.
@@ -1399,7 +1492,7 @@ revml_send(void)
 		    cid.get_cp(),
 		    cid.get_up(),
 		    original.get_path().get_ref(),
-		    input.get_path().get_ref(),
+		    input_rev.get_path().get_ref(),
 		    diff_output_filename.get_ref(),
 		    csrc->file_name
 		);
@@ -1408,21 +1501,20 @@ revml_send(void)
 		// Read the diff into the archive.
 		//
 		os_become_orig();
-		ifp = input_file_open(diff_output_filename, true);
-		assert(ifp);
+		input ifp = input_file_open(diff_output_filename, true);
+		assert(ifp.is_open());
 		if (ifp->length() != 0)
 		{
                     // No newline here, or it will add a bogus blank
                     // line to the start of the delta.
 		    ofp->fprintf("<delta type=\"diff-u\" encoding=\"none\">");
 		    output_ty *ofp2 = new output_revml_encode(ofp, false);
-		    input_to_output(ifp, ofp2);
+		    *ofp2 << ifp;
 		    delete ofp2;
 		    ofp2 = 0;
 		    ofp->fputs("</delta>\n");
 		}
-		delete ifp;
-		ifp = 0;
+		ifp.close();
 		os_become_undo();
 		break;
 	    }
@@ -1442,14 +1534,13 @@ revml_send(void)
             // No newline here, or it will add a bogus blank line to the
             // start of the content.
 	    ofp->fputs("<content encoding=\"none\">");
-	    ifp = input_file_open(input.get_path().get_ref());
-	    assert(ifp);
+	    input ifp = input_file_open(input_rev.get_path().get_ref());
+	    assert(ifp.is_open());
 	    output_ty *ofp2 = new output_revml_encode(ofp, false);
-	    input_to_output(ifp, ofp2);
+	    *ofp2 << ifp;
 	    delete ofp2;
 	    ofp2 = 0;
-	    delete ifp;
-	    ifp = 0;
+	    ifp.close();
 	    ofp->fputs("</content>\n");
 	    os_become_undo();
 	    break;

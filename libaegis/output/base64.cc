@@ -20,8 +20,8 @@
 // MANIFEST: functions to encode output as MIME base 64
 //
 
-#include <output/base64.h>
-#include <str.h>
+#include <libaegis/output/base64.h>
+#include <common/str.h>
 
 static char base64[] =
     "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789+/";

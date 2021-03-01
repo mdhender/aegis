@@ -1,6 +1,6 @@
 '\" t
 .\"	aegis - project change supervisor
-.\"	Copyright (C) 1991-1996, 1998, 1999, 2002, 2004 Peter Miller;
+.\"	Copyright (C) 1991-1996, 1998, 1999, 2002, 2004, 2005 Peter Miller;
 .\"	All rights reserved.
 .\"
 .\"	This program is free software; you can redistribute it and/or modify
@@ -188,15 +188,15 @@ lock_wait_preference = (always, background, never);
 This field is consulted by all commands which wait for locks.
 .TP 8n
 always
-The "always" setting says that all commands should always wait
+The \[lq]always\[rq] setting says that all commands should always wait
 for locks.  This is the default.
 .TP 8n
 background
-The "background" setting says that background commands should
+The \[lq]background\[rq] setting says that background commands should
 always wait for locks, and foreground commands will not.
 .TP 8n
 never
-The "never" setting says that no command should ever wait
+The \[lq]never\[rq] setting says that no command should ever wait
 for locks.  If the command would wait, it will exit with status 1.
 .PP
 This user preference can be over-ridden by the
@@ -269,27 +269,27 @@ required, particularly if you are behind a firewall.
 .TP 8n
 whiteout_preference = (always, never);
 All of the commands which cause a change to remove files will consult
-this field to determine if the file should be have a dummy "whiteout"
-file put in the development directory.  Defaults to ``always''
+this field to determine if the file should be have a dummy \[lq]whiteout\[rq]
+file put in the development directory.  Defaults to \[lq]always\[rq]
 if not set.
 .TP 8n
 editor_command = string;
 This command is used to edit a file,
 if the editing is being done in the background.
 Defaults to the EDITOR environment variable if not set,
-or "ed" if not set.
+or \[lq]ed\[rq] if not set.
 .TP 8n
 visual_command = string;
 This command is used to edit a file,
 if the editing is being done in the foreground.
 Defaults to the VISUAL environment variable if not set,
 or to the EDITOR environment variable if not set,
-or "vi" if not set.
+or \[lq]vi\[rq] if not set.
 .TP 8n
 pager_command = string;
 This is the command used to paginate report and listing output.
 Defaults to the PAGER environment variable if not set,
-or to "more" if not set.
+or to \[lq]more\[rq] if not set.
 .TP 8n
 attribute = [ { ... } ];
 .RS

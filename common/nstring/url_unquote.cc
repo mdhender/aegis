@@ -1,6 +1,6 @@
 //
 //	aegis - project change supervisor
-//	Copyright (C) 2004 Peter Miller;
+//	Copyright (C) 2004, 2005 Peter Miller;
 //	All rights reserved.
 //
 //	This program is free software; you can redistribute it and/or modify
@@ -20,8 +20,8 @@
 // MANIFEST: implementation of the html_url_unquote class
 //
 
-#include <nstring.h>
-#include <nstring/accumulator.h>
+#include <common/nstring.h>
+#include <common/nstring/accumulator.h>
 
 
 static int

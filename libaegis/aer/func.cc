@@ -1,6 +1,6 @@
 //
 //	aegis - project change supervisor
-//	Copyright (C) 1994-2004 Peter Miller;
+//	Copyright (C) 1994-2005 Peter Miller;
 //	All rights reserved.
 //
 //	This program is free software; you can redistribute it and/or modify
@@ -20,39 +20,39 @@
 // MANIFEST: functions to manipulate builtin functions
 //
 
-#include <aer/func/capitalize.h>
-#include <aer/func/change.h>
-#include <aer/func/columns.h>
-#include <aer/func/count.h>
-#include <aer/func/dirname.h>
-#include <aer/func/downcase.h>
-#include <aer/func/eject.h>
-#include <aer/func/getenv.h>
-#include <aer/func/gettime.h>
-#include <aer/func/getuid.h>
-#include <aer/func/keys.h>
-#include <aer/func/length.h>
-#include <aer/func/mtime.h>
-#include <aer/func/need.h>
-#include <aer/func/now.h>
-#include <aer/func/page_width.h>
-#include <aer/func/print.h>
-#include <aer/func/project.h>
-#include <aer/func/quote.h>
-#include <aer/func/round.h>
-#include <aer/func/sort.h>
-#include <aer/func/split.h>
-#include <aer/func/sprintf.h>
-#include <aer/func/strftime.h>
-#include <aer/func/substitute.h>
-#include <aer/func/substr.h>
-#include <aer/func/terse.h>
-#include <aer/func/title.h>
-#include <aer/func/typeof.h>
-#include <aer/func/upcase.h>
-#include <aer/func/wrap.h>
-#include <aer/value/func.h>
-#include <symtab.h>
+#include <libaegis/aer/func/capitalize.h>
+#include <libaegis/aer/func/change.h>
+#include <libaegis/aer/func/columns.h>
+#include <libaegis/aer/func/count.h>
+#include <libaegis/aer/func/dirname.h>
+#include <libaegis/aer/func/downcase.h>
+#include <libaegis/aer/func/eject.h>
+#include <libaegis/aer/func/getenv.h>
+#include <libaegis/aer/func/gettime.h>
+#include <libaegis/aer/func/getuid.h>
+#include <libaegis/aer/func/keys.h>
+#include <libaegis/aer/func/length.h>
+#include <libaegis/aer/func/mtime.h>
+#include <libaegis/aer/func/need.h>
+#include <libaegis/aer/func/now.h>
+#include <libaegis/aer/func/page_width.h>
+#include <libaegis/aer/func/print.h>
+#include <libaegis/aer/func/project.h>
+#include <libaegis/aer/func/quote.h>
+#include <libaegis/aer/func/round.h>
+#include <libaegis/aer/func/sort.h>
+#include <libaegis/aer/func/split.h>
+#include <libaegis/aer/func/sprintf.h>
+#include <libaegis/aer/func/strftime.h>
+#include <libaegis/aer/func/substitute.h>
+#include <libaegis/aer/func/substr.h>
+#include <libaegis/aer/func/terse.h>
+#include <libaegis/aer/func/title.h>
+#include <libaegis/aer/func/typeof.h>
+#include <libaegis/aer/func/upcase.h>
+#include <libaegis/aer/func/wrap.h>
+#include <libaegis/aer/value/func.h>
+#include <common/symtab.h>
 
 
 static rpt_func_ty *table[] =

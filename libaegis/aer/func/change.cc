@@ -1,6 +1,6 @@
 //
 //	aegis - project change supervisor
-//	Copyright (C) 1994, 2000, 2003, 2004 Peter Miller;
+//	Copyright (C) 1994, 2000, 2003-2006 Peter Miller;
 //	All rights reserved.
 //
 //	This program is free software; you can redistribute it and/or modify
@@ -20,16 +20,16 @@
 // MANIFEST: functions to manipulate changes
 //
 
-#include <aer/expr.h>
-#include <aer/func/change.h>
-#include <aer/func/project.h>
-#include <aer/value/boolean.h>
-#include <aer/value/integer.h>
-#include <aer/value/string.h>
-#include <error.h>
-#include <project.h>
-#include <user.h>
-#include <zero.h>
+#include <libaegis/aer/expr.h>
+#include <libaegis/aer/func/change.h>
+#include <libaegis/aer/func/project.h>
+#include <libaegis/aer/value/boolean.h>
+#include <libaegis/aer/value/integer.h>
+#include <libaegis/aer/value/string.h>
+#include <common/error.h>
+#include <libaegis/project.h>
+#include <libaegis/user.h>
+#include <libaegis/zero.h>
 
 static long	change_number;
 static int	change_number_set;
@@ -57,7 +57,7 @@ grab(void)
 	// find the project
 	//
 	pp = project_alloc(project_name);
-	project_bind_existing(pp);
+	pp->bind_existing();
 
 	//
 	// allocate the user

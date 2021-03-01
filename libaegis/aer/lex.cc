@@ -1,6 +1,6 @@
 //
 //	aegis - project change supervisor
-//	Copyright (C) 1991-1996, 1998, 1999, 2001-2005 Peter Miller;
+//	Copyright (C) 1991-1996, 1998, 1999, 2001-2006 Peter Miller;
 //	All rights reserved.
 //
 //	This program is free software; you can redistribute it and/or modify
@@ -20,26 +20,26 @@
 // MANIFEST: functions to perform lexical analysis on report scripts
 //
 
-#include <ac/ctype.h>
-#include <ac/errno.h>
-#include <ac/math.h>
-#include <ac/stdlib.h>
+#include <common/ac/ctype.h>
+#include <common/ac/errno.h>
+#include <common/ac/math.h>
+#include <common/ac/stdlib.h>
 
-#include <aer/lex.h>
-#include <aer/pos.h>
-#include <aer/value/integer.h>
-#include <aer/value/real.h>
-#include <aer/value/string.h>
-#include <error.h>
-#include <input/file_text.h>
-#include <mem.h>
-#include <stracc.h>
-#include <sub.h>
-#include <symtab.h>
-#include <aer/report.gen.h> // must be last
+#include <common/error.h>
+#include <common/mem.h>
+#include <common/stracc.h>
+#include <common/symtab.h>
+#include <libaegis/aer/lex.h>
+#include <libaegis/aer/pos.h>
+#include <libaegis/aer/value/integer.h>
+#include <libaegis/aer/value/real.h>
+#include <libaegis/aer/value/string.h>
+#include <libaegis/input/file_text.h>
+#include <libaegis/sub.h>
+#include <libaegis/aer/report.gen.h> // must be last
 
 
-static input_ty *ip;
+static input ip;
 static int	error_count;
 extern aer_report_STYPE aer_report_lval;
 static stracc_t buffer;
@@ -162,8 +162,7 @@ void
 rpt_lex_open(string_ty *s)
 {
     reserved_init();
-    ip = input_file_text_open(s);
-    input_file_text_escaped_newline(ip);
+    ip = input_file_text_open(s, true);
     error_count = 0;
 }
 
@@ -183,8 +182,7 @@ rpt_lex_close(void)
 	// NOTREACHED
 	sub_context_delete(scp);
     }
-    delete ip;
-    ip = 0;
+    ip.close();
 }
 
 
@@ -208,7 +206,7 @@ aer_report_lex(void)
 
     for (;;)
     {
-	c = ip->getc();
+	c = ip->getch();
 	switch (c)
 	{
 	case -1:
@@ -222,7 +220,7 @@ aer_report_lex(void)
 
 	case '0':
 	    n = 0;
-	    c = ip->getc();
+	    c = ip->getch();
 	    if (c == '.')
 	    {
 		buffer.clear();
@@ -237,7 +235,7 @@ aer_report_lex(void)
 		for (;;)
 		{
 		    ++ndigits;
-		    c = ip->getc();
+		    c = ip->getch();
 		    switch (c)
 		    {
 		    case '0':
@@ -299,7 +297,7 @@ aer_report_lex(void)
 		case '6':
 		case '7':
 		    n = 8 * n + c - '0';
-		    c = ip->getc();
+		    c = ip->getch();
 		    continue;
 
 		default:
@@ -324,7 +322,7 @@ aer_report_lex(void)
 	    for (;;)
 	    {
 		buffer.push_back(c);
-		c = ip->getc();
+		c = ip->getch();
 		if (c < 0)
 		    break;
 		if (!isdigit((unsigned char)c))
@@ -344,7 +342,7 @@ aer_report_lex(void)
 		for (;;)
 		{
 		    buffer.push_back(c);
-		    c = ip->getc();
+		    c = ip->getch();
 		    if (c < 0)
 			break;
 		    if (!isdigit((unsigned char)c))
@@ -354,11 +352,11 @@ aer_report_lex(void)
 	    if (c == 'e' || c == 'E')
 	    {
 		buffer.push_back(c);
-		c = ip->getc();
+		c = ip->getch();
 		if (c == '+' || c == '-')
 		{
 		    buffer.push_back(c);
-		    c = ip->getc();
+		    c = ip->getch();
 		}
 		if (c < 0 || !isdigit((unsigned char)c))
 		{
@@ -370,7 +368,7 @@ aer_report_lex(void)
 		    for (;;)
 		    {
 			buffer.push_back(c);
-			c = ip->getc();
+			c = ip->getch();
 			if (c < 0)
 			    break;
 			if (!isdigit((unsigned char)c))
@@ -390,7 +388,7 @@ aer_report_lex(void)
 	    buffer.clear();
 	    for (;;)
 	    {
-		c = ip->getc();
+		c = ip->getch();
 		if (c < 0)
 		{
 		    str_eof:
@@ -406,7 +404,7 @@ aer_report_lex(void)
 		    break;
 		if (c == '\\')
 		{
-		    c = ip->getc();
+		    c = ip->getch();
 		    switch (c)
 		    {
 		    default:
@@ -461,7 +459,7 @@ aer_report_lex(void)
 			    for (nc = 0; nc < 3; ++nc)
 			    {
 				v = v * 8 + c - '0';
-				c = ip->getc();
+				c = ip->getch();
 				switch (c)
 				{
 				case '0':
@@ -550,7 +548,7 @@ aer_report_lex(void)
 	    for (;;)
 	    {
 		buffer.push_back(c);
-		c = ip->getc();
+		c = ip->getch();
 		switch (c)
 		{
 		case '0':
@@ -635,13 +633,13 @@ aer_report_lex(void)
 	    return NAME;
 
 	case '/':
-	    c = ip->getc();
+	    c = ip->getch();
 	    if (c == '/')
 	    {
 		eoln_comment:
 		for (;;)
 		{
-		    c = ip->getc();
+		    c = ip->getch();
 		    if (c < 0)
 			goto bad_comment;
 		    if (c == '\n')
@@ -659,7 +657,7 @@ aer_report_lex(void)
 	    {
 		for (;;)
 		{
-		    c = ip->getc();
+		    c = ip->getch();
 		    if (c < 0)
 		    {
 			bad_comment:
@@ -671,7 +669,7 @@ aer_report_lex(void)
 		}
 		for (;;)
 		{
-		    c = ip->getc();
+		    c = ip->getch();
 		    if (c < 0)
 			goto bad_comment;
 		    if (c != '*')
@@ -683,7 +681,7 @@ aer_report_lex(void)
 	    break;
 
 	case '#':
-	    c = ip->getc();
+	    c = ip->getch();
 	    if (c == '!')
 		goto eoln_comment;
 	    lex_getc_undo(c);
@@ -691,7 +689,7 @@ aer_report_lex(void)
 	    goto normal;
 
 	case '.':
-	    c = ip->getc();
+	    c = ip->getch();
 	    lex_getc_undo(c);
 	    if (c < 0 || !isdigit((unsigned char)c))
 	    {
@@ -721,7 +719,7 @@ aer_report_lex(void)
 		    break;
 		}
 		str_free(s);
-		c = ip->getc();
+		c = ip->getch();
 	    }
 	    s = buffer.mkstr();
 	    tok = reserved(s);
@@ -776,7 +774,7 @@ aer_lex_error(sub_context_ty *scp, rpt_pos_ty *p, const char *fmt)
 	p = rpt_lex_pos_get();
     rpt_pos_error(scp, p, fmt);
 
-    if (!ip)
+    if (!ip.is_open())
 	fatal_intl(0, i18n("report aborted"));
 
     ++error_count;
@@ -797,7 +795,7 @@ rpt_lex_error(rpt_pos_ty *p, const char *fmt)
 {
     rpt_pos_error(0, 0, fmt);
 
-    if (!ip)
+    if (!ip.is_open())
 	fatal_intl(0, i18n("report aborted"));
 
     ++error_count;

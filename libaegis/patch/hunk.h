@@ -1,6 +1,6 @@
 //
 //	aegis - project change supervisor
-//	Copyright (C) 2001, 2002, 2004 Peter Miller;
+//	Copyright (C) 2001, 2002, 2004, 2005 Peter Miller;
 //	All rights reserved.
 //
 //	This program is free software; you can redistribute it and/or modify
@@ -23,7 +23,7 @@
 #ifndef LIBAEGIS_PATCH_HUNK_H
 #define LIBAEGIS_PATCH_HUNK_H
 
-#include <patch/line_list.h>
+#include <libaegis/patch/line_list.h>
 
 struct patch_hunk_ty
 {

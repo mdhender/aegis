@@ -1,6 +1,6 @@
 //
 //	aegis - project change supervisor
-//	Copyright (C) 1996, 2003, 2004 Peter Miller;
+//	Copyright (C) 1996, 2003-2005 Peter Miller;
 //	All rights reserved.
 //
 //	This program is free software; you can redistribute it and/or modify
@@ -20,10 +20,10 @@
 // MANIFEST: functions to manipulate return statements
 //
 
-#include <aer/expr.h>
-#include <aer/stmt/return.h>
-#include <aer/value/void.h>
-#include <trace.h>
+#include <libaegis/aer/expr.h>
+#include <libaegis/aer/stmt/return.h>
+#include <libaegis/aer/value/void.h>
+#include <common/trace.h>
 
 
 struct rpt_stmt_return_ty

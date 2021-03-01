@@ -20,15 +20,15 @@
 // MANIFEST: operating system start point, and command line argument parsing
 //
 
-#include <ac/stdio.h>
-#include <ac/stdlib.h>
+#include <common/ac/stdio.h>
+#include <common/ac/stdlib.h>
 
-#include <arglex.h>
-#include <count.h>
-#include <error.h>
-#include <progname.h>
-#include <quit.h>
-#include <rsrc_limits.h>
+#include <common/arglex.h>
+#include <aemeasure/count.h>
+#include <common/error.h>
+#include <common/progname.h>
+#include <common/quit.h>
+#include <common/rsrc_limits.h>
 
 
 enum

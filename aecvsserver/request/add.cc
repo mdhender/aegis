@@ -1,6 +1,6 @@
 //
 //	aegis - project change supervisor
-//	Copyright (C) 2004, 2005 Peter Miller;
+//	Copyright (C) 2004-2006 Peter Miller;
 //	All rights reserved.
 //
 //	This program is free software; you can redistribute it and/or modify
@@ -168,22 +168,28 @@
 //     sent, but only Is-modified is sent.
 //
 
-#include <ac/string.h>
+#include <common/ac/string.h>
 
-#include <module.h>
-#include <os.h>
-#include <request/add.h>
-#include <server.h>
+#include <aecvsserver/module.h>
+#include <libaegis/os.h>
+#include <aecvsserver/request/add.h>
+#include <aecvsserver/server.h>
 
 
-static void
-run(server_ty *sp, string_ty *fn)
+request_add::~request_add()
 {
-    module_options_ty opt;
-    size_t          j;
-    int             ok;
-    directory_ty    *dp;
+}
 
+
+request_add::request_add()
+{
+}
+
+
+void
+request_add::run_inner(server_ty *sp, string_ty *fn)
+    const
+{
     if (server_root_required(sp, "add"))
 	return;
     if (server_directory_required(sp, "add"))
@@ -192,7 +198,8 @@ run(server_ty *sp, string_ty *fn)
     //
     // Process the options.
     //
-    module_options_constructor(&opt);
+    module_ty::options opt;
+    size_t j = 0;
     for (j = 0; j < sp->np->argument_count(); ++j)
     {
 	string_ty *arg = sp->np->argument_nth(j);
@@ -229,12 +236,11 @@ run(server_ty *sp, string_ty *fn)
     // Now process the rest of the arguments.
     // Each is a file or directory to be added.
     //
-    ok = 1;
-    dp = sp->np->get_curdir();
+    bool ok = 1;
+    directory_ty *dp = sp->np->get_curdir();
     for (; j < sp->np->argument_count(); ++j)
     {
 	string_ty       *arg;
-	module_ty       *mp;
 	string_ty       *client_side;
 	string_ty       *server_side;
 
@@ -271,10 +277,9 @@ run(server_ty *sp, string_ty *fn)
 	// in a single command.  This means we have to lookup the module
 	// for every argument.
 	//
-	mp = module_find_trim(server_side);
-	if (!module_add(mp, sp, client_side, server_side, &opt))
+	module mp = module::find_trim(server_side);
+	if (!mp->add(sp, client_side, server_side, opt))
 	    ok = 0;
-	module_delete(mp);
 	str_free(client_side);
 	str_free(server_side);
 
@@ -284,7 +289,6 @@ run(server_ty *sp, string_ty *fn)
 	if (!ok)
 	    break;
     }
-    module_options_destructor(&opt);
 
     if (ok)
     {
@@ -294,9 +298,17 @@ run(server_ty *sp, string_ty *fn)
 }
 
 
-const request_ty request_add =
+const char *
+request_add::name()
+    const
 {
-    "add",
-    run,
-    1, // reset
-};
+    return "add";
+}
+
+
+bool
+request_add::reset()
+    const
+{
+    return true;
+}

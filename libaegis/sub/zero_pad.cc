@@ -1,6 +1,6 @@
 //
 //      aegis - project change supervisor
-//      Copyright (C) 1996, 2003, 2004 Peter Miller;
+//      Copyright (C) 1996, 2003-2005 Peter Miller;
 //      All rights reserved.
 //
 //      This program is free software; you can redistribute it and/or modify
@@ -20,12 +20,12 @@
 // MANIFEST: functions to manipulate zero_pads
 //
 
-#include <ac/string.h>
+#include <common/ac/string.h>
 
-#include <sub.h>
-#include <sub/zero_pad.h>
-#include <trace.h>
-#include <wstr/list.h>
+#include <libaegis/sub.h>
+#include <libaegis/sub/zero_pad.h>
+#include <common/trace.h>
+#include <common/wstr/list.h>
 
 
 wstring_ty *

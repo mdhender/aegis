@@ -20,10 +20,10 @@
 // MANIFEST: functions to manipulate uuencodes
 //
 
-#include <ac/string.h>
+#include <common/ac/string.h>
 
-#include <output/uuencode.h>
-#include <str.h>
+#include <libaegis/output/uuencode.h>
+#include <common/str.h>
 
 static char etab[] =
            "`!\"#$%&'()*+,-./0123456789:;<=>?@ABCDEFGHIJKLMNOPQRSTUVWXYZ[\\]^_";

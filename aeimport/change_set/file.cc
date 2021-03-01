@@ -1,6 +1,6 @@
 //
 //	aegis - project change supervisor
-//	Copyright (C) 2001, 2002, 2004 Peter Miller;
+//	Copyright (C) 2001, 2002, 2004, 2005 Peter Miller;
 //	All rights reserved.
 //
 //	This program is free software; you can redistribute it and/or modify
@@ -20,8 +20,8 @@
 // MANIFEST: functions to manipulate files
 //
 
-#include <change_set/file.h>
-#include <error.h> // assert
+#include <aeimport/change_set/file.h>
+#include <common/error.h> // assert
 
 
 change_set_file_ty::change_set_file_ty(string_ty *arg1, string_ty *arg2,

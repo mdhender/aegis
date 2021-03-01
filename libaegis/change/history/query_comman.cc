@@ -1,6 +1,6 @@
 //
 //	aegis - project change supervisor
-//	Copyright (C) 1999, 2001-2004 Peter Miller;
+//	Copyright (C) 1999, 2001-2006 Peter Miller;
 //	All rights reserved.
 //
 //	This program is free software; you can redistribute it and/or modify
@@ -20,13 +20,13 @@
 // MANIFEST: functions to manipulate query_commans
 //
 
-#include <change.h>
-#include <change/env_set.h>
-#include <error.h> // for assert
-#include <os.h>
-#include <project.h>
-#include <sub.h>
-#include <trace.h>
+#include <libaegis/change.h>
+#include <libaegis/change/env_set.h>
+#include <common/error.h> // for assert
+#include <libaegis/os.h>
+#include <libaegis/project.h>
+#include <libaegis/sub.h>
+#include <common/trace.h>
 
 
 string_ty *
@@ -43,7 +43,7 @@ change_run_history_query_command(change_ty *cp, fstate_src_ty *src)
     // Ask the history file what its edit number is.  We use this
     // method because the string returned is essentially random,
     // between different history programs.  Only ever executed in
-    // the ``being integrated'' state.  Current directory will be
+    // the "being integrated" state.  Current directory will be
     // set to the base of the history tree.  All of the
     // substitutions described in aesub(5) are available.  In
     // addition
@@ -81,7 +81,7 @@ change_run_history_query_command(change_ty *cp, fstate_src_ty *src)
     sub_context_delete(scp);
 
     change_env_set(cp, 0);
-    hp = project_history_path_get(cp->pp);
+    hp = cp->pp->history_path_get();
     project_become(cp->pp);
     result = os_execute_slurp(the_command, OS_EXEC_FLAG_NO_INPUT, hp);
     project_become_undo();

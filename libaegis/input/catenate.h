@@ -1,6 +1,6 @@
 //
 //	aegis - project change supervisor
-//	Copyright (C) 2002, 2005 Peter Miller;
+//	Copyright (C) 2002, 2005, 2006 Peter Miller;
 //	All rights reserved.
 //
 //	This program is free software; you can redistribute it and/or modify
@@ -23,7 +23,7 @@
 #ifndef LIBAEGIS_INPUT_CATENATE_H
 #define LIBAEGIS_INPUT_CATENATE_H
 
-#include <input.h>
+#include <libaegis/input.h>
 
 class input_catenate:
     public input_ty
@@ -37,7 +37,7 @@ public:
     /**
       * The constructor.
       */
-    input_catenate(input_ty **deeper, size_t ndeeper, bool close_on_close);
+    input_catenate(input deeper[], size_t ndeeper, bool close_on_close);
 
     // See base class for documentation.
     nstring name();
@@ -58,7 +58,7 @@ public:
     bool is_remote() const;
 
 private:
-    input_ty **deeper;
+    input *deeper;
     size_t ndeeper;
     bool delete_on_close;
     size_t selector;

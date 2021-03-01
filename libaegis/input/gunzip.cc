@@ -1,6 +1,6 @@
 //
 //	aegis - project change supervisor
-//	Copyright (C) 1999, 2001-2005 Peter Miller;
+//	Copyright (C) 1999, 2001-2006 Peter Miller;
 //	All rights reserved.
 //
 //	This program is free software; you can redistribute it and/or modify
@@ -20,11 +20,11 @@
 // MANIFEST: functions to manipulate gunzips
 //
 
-#include <ac/zlib.h>
-#include <ac/string.h>
+#include <common/ac/zlib.h>
+#include <common/ac/string.h>
 
-#include <input/gunzip.h>
-#include <sub.h>
+#include <libaegis/input/gunzip.h>
+#include <libaegis/sub.h>
 
 
 #ifndef Z_BUFSIZE
@@ -65,17 +65,13 @@ input_gunzip::~input_gunzip()
     int err = inflateEnd(&stream);
     if (err < 0)
 	zlib_fatal_error(err);
-    if (close_on_close)
-	delete deeper;
-    deeper = 0;
-    delete buf;
+    delete [] buf;
     buf = 0;
 }
 
 
-input_gunzip::input_gunzip(input_ty *arg1, bool arg2) :
-    deeper(arg1),
-    close_on_close(arg2),
+input_gunzip::input_gunzip(input &arg) :
+    deeper(arg),
     z_eof(false),
     crc(crc32(0L, Z_NULL, 0)),
     pos(0),
@@ -113,7 +109,7 @@ input_gunzip::getLong()
     long result = 0;
     for (int j = 0; j < 4; ++j)
     {
-	int c = deeper->getc();
+	int c = deeper->getch();
 	if (c < 0)
     	    fatal_error("gunzip: premature end of file");
 	result += c << (j * 8);
@@ -269,13 +265,13 @@ input_gunzip::length()
 static int gz_magic[2] = {0x1f, 0x8b}; // gzip magic header
 
 bool
-input_gunzip::candidate(input_ty *deeper)
+input_gunzip::candidate(input &deeper)
 {
     //
     // Check for the magic number.
     // If it isn't present, assume transparent mode.
     //
-    int c = deeper->getc();
+    int c = deeper->getch();
     if (c < 0)
 	return false;
     if (c != gz_magic[0])
@@ -283,7 +279,7 @@ input_gunzip::candidate(input_ty *deeper)
 	deeper->ungetc(c);
 	return false;
     }
-    c = deeper->getc();
+    c = deeper->getch();
     if (c < 0)
     {
 	deeper->ungetc(gz_magic[0]);
@@ -308,8 +304,8 @@ input_gunzip::read_header()
     // Check for the magic number.
     // If it isn't present, assume transparent mode.
     //
-    int c1 = deeper->getc();
-    int c2 = deeper->getc();
+    int c1 = deeper->getch();
+    int c2 = deeper->getch();
     if (c1 != gz_magic[0] || c2 != gz_magic[1])
 	deeper->fatal_error("gunzip: wrong magic number");
 
@@ -317,31 +313,31 @@ input_gunzip::read_header()
     // Magic number present, now we require the rest of the header
     // to be present and correctly formed.
     //
-    int method = deeper->getc();
+    int method = deeper->getch();
     if (method != Z_DEFLATED)
 	deeper->fatal_error("gunzip: not deflated encoding");
-    int flags = deeper->getc();
+    int flags = deeper->getch();
     if (flags < 0 || (flags & RESERVED) != 0)
 	deeper->fatal_error("gunzip: unknown flags");
 
     // Discard time, xflags and OS code:
     for (uInt len = 0; len < 6; len++)
-	if (deeper->getc() < 0)
+	if (deeper->getch() < 0)
     	    deeper->fatal_error("gunzip: short file");
 
     if (flags & EXTRA_FIELD)
     {
 	// skip the extra field
-	int elen = deeper->getc();
+	int elen = deeper->getch();
 	if (elen < 0)
 	    deeper->fatal_error("gunzip: invalid character value");
-	int c = deeper->getc();
+	int c = deeper->getch();
 	if (c < 0)
 	    deeper->fatal_error("gunzip: short file");
 	elen += (c << 8);
 	while (elen-- > 0)
 	{
-	    if (deeper->getc() < 0)
+	    if (deeper->getch() < 0)
 		deeper->fatal_error("gunzip: short file");
 	}
     }
@@ -350,7 +346,7 @@ input_gunzip::read_header()
 	// skip the original file name
 	for (;;)
 	{
-    	    int c = deeper->getc();
+    	    int c = deeper->getch();
     	    if (c < 0)
        		deeper->fatal_error("gunzip: short file");
     	    if (c == 0)
@@ -362,7 +358,7 @@ input_gunzip::read_header()
 	// skip the .gz file comment
 	for (;;)
 	{
-    	    int c = deeper->getc();
+    	    int c = deeper->getch();
     	    if (c < 0)
        		deeper->fatal_error("gunzip: short file");
     	    if (c == 0)
@@ -373,7 +369,7 @@ input_gunzip::read_header()
     {
 	// skip the header crc
 	for (int len = 0; len < 2; len++)
-    	    if (deeper->getc() < 0)
+    	    if (deeper->getch() < 0)
        		deeper->fatal_error("gunzip: short file");
     }
 }
@@ -386,8 +382,8 @@ input_gunzip::keepalive()
 }
 
 
-input_ty *
-input_gunzip_open(input_ty *deeper)
+input
+input_gunzip_open(input &deeper)
 {
     if (!input_gunzip::candidate(deeper))
     {

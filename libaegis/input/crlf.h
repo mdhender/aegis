@@ -1,6 +1,6 @@
 //
 //	aegis - project change supervisor
-//	Copyright (C) 1999, 2002, 2005 Peter Miller;
+//	Copyright (C) 1999, 2002, 2005, 2006 Peter Miller;
 //	All rights reserved.
 //
 //	This program is free software; you can redistribute it and/or modify
@@ -23,7 +23,7 @@
 #ifndef LIBAEGIS_INPUT_CRLF_H
 #define LIBAEGIS_INPUT_CRLF_H
 
-#include <input.h>
+#include <libaegis/input.h>
 
 /**
   * The input_crlf class is used to transparently filter CRLF sequences
@@ -40,14 +40,14 @@ public:
 
     /**
       * The constructor.
+      *
+      * @param deeper
+      *     The data source we are to filter.
+      * @param esc_nl
+      *     true if we are to operate in a mode where \\\n and \\\\r\\n
+      *     sequences are to be removed.
       */
-    input_crlf(input_ty *deeper, bool close_on_close);
-
-    /**
-      * The escaped_newline method is used to set a mode where \\\n
-      * and \\\\r\\n sequenes are removed.
-      */
-    void escaped_newline();
+    input_crlf(input &deeper, bool esc_nl = false);
 
     // See base class for documentation.
     nstring name();
@@ -68,12 +68,22 @@ public:
     bool is_remote() const;
 
 private:
-    input_ty *deeper;
-    bool delete_on_close;
+    /**
+      * The deeper instance variable is used to remember the deeper
+      * input source of this filter.
+      */
+    input deeper;
+
     long pos;
     long line_number;
     bool prev_was_newline;
     nstring name_cache;
+
+    /**
+      * The newlines_may_be_escaped instance variable is used to
+      * remember whether we are in the mode where \\\n and \\\\r\\n
+      * sequenes are removed.
+      */
     bool newlines_may_be_escaped;
 
     /**

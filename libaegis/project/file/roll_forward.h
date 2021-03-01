@@ -1,6 +1,6 @@
 //
 //	aegis - project change supervisor
-//	Copyright (C) 2001-2005 Peter Miller;
+//	Copyright (C) 2001-2006 Peter Miller;
 //	All rights reserved.
 //
 //	This program is free software; you can redistribute it and/or modify
@@ -23,16 +23,15 @@
 #ifndef LIBAEGIS_PROJECT_FILE_ROLL_FORWARD_H
 #define LIBAEGIS_PROJECT_FILE_ROLL_FORWARD_H
 
-#pragma interface "project_file_roll_forward"
+#include <common/ac/time.h>
 
-#include <ac/time.h>
-
-#include <change/list.h>
-#include <project.h>
-#include <fstate.h>
-#include <symtab/template.h>
+#include <common/symtab/template.h>
+#include <libaegis/change/list.h>
+#include <libaegis/fstate.h>
+#include <libaegis/project.h>
 
 class nstring_list; // forward
+struct cstate_src_ty; // forward
 
 struct file_event_ty
 {
@@ -105,6 +104,24 @@ public:
       *    other files' histories.
       */
     file_event_list_ty *get(fstate_src_ty *src);
+
+    /**
+      * The get method is used to obtain the events for a given file,
+      * once project_file_roll_forward has been called to construct the
+      * information.
+      *
+      * \param src
+      *    The file description of the file to fetch the event
+      *    list.  Will use the uuid if available (or, for backwards
+      *    compatibility) the file name.
+      * \returns
+      *    Pointer to the event list for the named file, or NULL if the
+      *    file has never existed at the time (delta) specified.
+      * \note
+      *    Do not free the change pointed to, as it may be referenced by
+      *    other files' histories.
+      */
+    file_event_list_ty *get(cstate_src_ty *src);
 
     /**
       * The project_file_roll_forward_get function is used to obtain the
@@ -217,6 +234,16 @@ public:
     change_ty *get_last_change() const;
 
 private:
+    /**
+      * The get_by_uuid method is used by several of the simpler get
+      * methods, once they have performed the uuid-or-filename transform.
+      *
+      * @param uuid
+      *     The UUID of the file, if it has one, otherwise the name of
+      *     the file.
+      */
+    file_event_list_ty *get_by_uuid(string_ty *uuid);
+
     /**
       * The uuid_to_felp instance variable is used to remember the
       * mapping from UUIS to file history (for backwards compatibility,

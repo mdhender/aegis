@@ -1,6 +1,6 @@
 //
 //	aegis - project change supervisor
-//	Copyright (C) 2003, 2004 Peter Miller;
+//	Copyright (C) 2003-2006 Peter Miller;
 //	All rights reserved.
 //
 //	This program is free software; you can redistribute it and/or modify
@@ -20,14 +20,14 @@
 // MANIFEST: functions to manipulate file_branchs
 //
 
-#include <change/file.h>
-#include <change.h>
-#include <complete/private.h>
-#include <complete/project/file_branch.h>
-#include <os.h>
-#include <project/file.h>
-#include <shell.h>
-#include <str_list.h>
+#include <libaegis/change/file.h>
+#include <libaegis/change.h>
+#include <aecomplete/complete/private.h>
+#include <aecomplete/complete/project/file_branch.h>
+#include <libaegis/os.h>
+#include <libaegis/project/file.h>
+#include <aecomplete/shell.h>
+#include <common/str_list.h>
 
 
 struct complete_project_file_ty
@@ -108,7 +108,7 @@ perform(complete_ty *cp, shell_ty *sh)
     // Troll the list of project files in the immediate branch.
     // I.e. the branch change files.
     //
-    pcp = project_change_get(this_thing->cp->pp);
+    pcp = this_thing->cp->pp->change_get();
     string_list_ty candidate;
     prefix = str_catenate(base, shell_prefix_get(sh));
     for (j = 0; ; ++j)

@@ -1,6 +1,6 @@
 //
 //	aegis - project change supervisor
-//	Copyright (C) 1999-2001, 2003-2005 Peter Miller;
+//	Copyright (C) 1999-2001, 2003-2006 Peter Miller;
 //	All rights reserved.
 //
 //	This program is free software; you can redistribute it and/or modify
@@ -20,15 +20,15 @@
 // MANIFEST: functions to manipulate put_commands
 //
 
-#include <change.h>
-#include <change/env_set.h>
-#include <change/file.h>
-#include <change/history/encode.h>
-#include <error.h> // for assert
-#include <os.h>
-#include <project.h>
-#include <sub.h>
-#include <trace.h>
+#include <libaegis/change.h>
+#include <libaegis/change/env_set.h>
+#include <libaegis/change/file.h>
+#include <libaegis/change/history/encode.h>
+#include <common/error.h> // for assert
+#include <libaegis/os.h>
+#include <libaegis/project.h>
+#include <libaegis/sub.h>
+#include <common/trace.h>
 
 
 void
@@ -46,7 +46,7 @@ change_run_history_put_command(change_ty *cp, fstate_src_ty *src)
 
     //
     // Update and existing history.  Only ever happens in the
-    // ``being integrated'' state.  Current directory will be set to
+    // "being integrated" state.  Current directory will be set to
     // the base of the history tree.  All of the substitutions
     // described in aesub(5) are avaliable.  In addition:
     //
@@ -87,7 +87,7 @@ change_run_history_put_command(change_ty *cp, fstate_src_ty *src)
     //
     // Get the path of the history file.
     //
-    hp = project_history_path_get(cp->pp);
+    hp = cp->pp->history_path_get();
     hfn = project_history_filename_get(cp->pp, src);
     sub_var_set_string(scp, "History", hfn);
     hfnr = os_below_dir(hp, hfn);

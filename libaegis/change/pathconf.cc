@@ -1,6 +1,6 @@
 //
 //	aegis - project change supervisor
-//	Copyright (C) 1999, 2004 Peter Miller;
+//	Copyright (C) 1999, 2004-2006 Peter Miller;
 //	All rights reserved.
 //
 //	This program is free software; you can redistribute it and/or modify
@@ -20,26 +20,21 @@
 // MANIFEST: functions to manipulate pathconfs
 //
 
-#include <change.h>
-#include <error.h> // for assert
-#include <os.h>
-#include <project.h>
+#include <libaegis/change.h>
+#include <common/error.h> // for assert
+#include <libaegis/os.h>
+#include <libaegis/project.h>
 
 
 int
 change_pathconf_name_max(change_ty *cp)
 {
-	string_ty	*bl;
-	int		bl_max;
-	string_ty	*dd;
-	int		dd_max;
-
-	assert(cp->reference_count >= 1);
-	bl = project_baseline_path_get(cp->pp, 0);
-	dd = change_development_directory_get(cp, 0);
-	change_become(cp);
-	bl_max = os_pathconf_name_max(bl);
-	dd_max = os_pathconf_name_max(dd);
-	change_become_undo();
-	return (bl_max < dd_max ? bl_max : dd_max);
+    assert(cp->reference_count >= 1);
+    string_ty *bl = cp->pp->baseline_path_get();
+    string_ty *dd = change_development_directory_get(cp, 0);
+    os_become_orig();
+    int bl_max = os_pathconf_name_max(bl);
+    int dd_max = os_pathconf_name_max(dd);
+    os_become_undo();
+    return (bl_max < dd_max ? bl_max : dd_max);
 }

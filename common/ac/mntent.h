@@ -1,30 +1,30 @@
-/*
- *	aegis - project change supervisor
- *	Copyright (C) 1999, 2002, 2004 Peter Miller;
- *	All rights reserved.
- *
- *	This program is free software; you can redistribute it and/or modify
- *	it under the terms of the GNU General Public License as published by
- *	the Free Software Foundation; either version 2 of the License, or
- *	(at your option) any later version.
- *
- *	This program is distributed in the hope that it will be useful,
- *	but WITHOUT ANY WARRANTY; without even the implied warranty of
- *	MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
- *	GNU General Public License for more details.
- *
- *	You should have received a copy of the GNU General Public License
- *	along with this program; if not, write to the Free Software
- *	Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111, USA.
- *
- * MANIFEST: interface definition for common/ac/mntent.c
- */
+//
+//	aegis - project change supervisor
+//	Copyright (C) 1999, 2002, 2004-2006 Peter Miller;
+//	All rights reserved.
+//
+//	This program is free software; you can redistribute it and/or modify
+//	it under the terms of the GNU General Public License as published by
+//	the Free Software Foundation; either version 2 of the License, or
+//	(at your option) any later version.
+//
+//	This program is distributed in the hope that it will be useful,
+//	but WITHOUT ANY WARRANTY; without even the implied warranty of
+//	MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+//	GNU General Public License for more details.
+//
+//	You should have received a copy of the GNU General Public License
+//	along with this program; if not, write to the Free Software
+//	Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111, USA.
+//
+// MANIFEST: interface definition for common/ac/mntent.c
+//
 
 #ifndef COMMON_AC_MNTENT_H
 #define COMMON_AC_MNTENT_H
 
-#include <config.h>
-#include <ac/stdio.h>
+#include <common/config.h>
+#include <common/ac/stdio.h>
 
 #if HAVE_MNTENT_H
 
@@ -34,9 +34,9 @@
 # define MOUNTED "/etc/mtab"
 #endif
 
-#else /* !HAVE_MNTENT_H */
+#else // !HAVE_MNTENT_H
 
-#include <main.h>
+#include <common/main.h>
 #define MOUNTED "/dev/null"
 
 struct mntent
@@ -49,6 +49,6 @@ FILE *setmntent(const char *, const char *);
 struct mntent *getmntent(FILE *);
 int endmntent(FILE *);
 
-#endif /* !HAVE_MNTENT_H */
+#endif // !HAVE_MNTENT_H
 
-#endif /* COMMON_AC_MNTENT_H */
+#endif // COMMON_AC_MNTENT_H

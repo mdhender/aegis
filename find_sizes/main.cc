@@ -20,13 +20,13 @@
 // MANIFEST: functions to manipulate mains
 //
 
-#include <ac/stdio.h>
-#include <ac/stddef.h>
-#include <ac/stdlib.h>
-#include <ac/limits.h>
+#include <common/ac/stdio.h>
+#include <common/ac/stddef.h>
+#include <common/ac/stdlib.h>
+#include <common/ac/limits.h>
 
-#include <arglex.h>
-#include <error.h>
+#include <common/arglex.h>
+#include <common/error.h>
 
 
 struct table_ty

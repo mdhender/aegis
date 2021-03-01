@@ -20,21 +20,21 @@
 // MANIFEST: functions to manipulate lockss
 //
 
-#include <ac/pwd.h>
+#include <common/ac/pwd.h>
 
-#include <ael/change/inappropriat.h>
-#include <ael/project/inappropriat.h>
-#include <ael/locks.h>
-#include <col.h>
-#include <gonzo.h>
-#include <itab.h>
-#include <lock.h>
-#include <output.h>
-#include <project.h>
-#include <str.h>
-#include <str_list.h>
-#include <trace.h>
-#include <zero.h>
+#include <libaegis/ael/change/inappropriat.h>
+#include <libaegis/ael/project/inappropriat.h>
+#include <libaegis/ael/locks.h>
+#include <libaegis/col.h>
+#include <libaegis/gonzo.h>
+#include <common/itab.h>
+#include <libaegis/lock.h>
+#include <libaegis/output.h>
+#include <libaegis/project.h>
+#include <common/str.h>
+#include <common/str_list.h>
+#include <common/trace.h>
+#include <libaegis/zero.h>
 
 
 static col_ty	*colp;

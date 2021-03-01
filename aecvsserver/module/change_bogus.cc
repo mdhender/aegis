@@ -1,6 +1,6 @@
 //
 //	aegis - project change supervisor
-//	Copyright (C) 2004 Peter Miller;
+//	Copyright (C) 2004-2006 Peter Miller;
 //	All rights reserved.
 //
 //	This program is free software; you can redistribute it and/or modify
@@ -20,126 +20,97 @@
 // MANIFEST: functions to manipulate change_boguss
 //
 
-#include <file_info.h>
-#include <input.h>
-#include <module/change_bogus.h>
-#include <module/private.h>
-#include <server.h>
+#include <aecvsserver/file_info.h>
+#include <libaegis/input.h>
+#include <aecvsserver/module/change_bogus.h>
+#include <aecvsserver/server.h>
 
 
-struct module_change_bogus_ty
+module_change_bogus::~module_change_bogus()
 {
-    module_ty       inherited;
-    string_ty       *name;
-    long            number;
-};
-
-
-static void
-destructor(module_ty *mp)
-{
-    module_change_bogus_ty *mcbp;
-
-    mcbp = (module_change_bogus_ty *)mp;
-    str_free(mcbp->name);
-    mcbp->name = 0;
-    mcbp->number = 0;
+    str_free(pname);
+    pname = 0;
+    number = 0;
 }
 
 
-static void
-groan(module_ty *mp, server_ty *sp, const char *caption)
+module_change_bogus::module_change_bogus(string_ty *arg1, long arg2) :
+    pname(str_copy(arg1)),
+    number(arg2)
 {
-    module_change_bogus_ty *mcbp;
+}
 
-    mcbp = (module_change_bogus_ty *)mp;
+
+void
+module_change_bogus::groan(server_ty *sp, const char *caption)
+{
     server_error
     (
 	sp,
 	"%s: project \"%s\": change %ld: no such change",
 	caption,
-	mcbp->name->str_text,
-	mcbp->number
+	pname->str_text,
+	number
     );
 }
 
 
-static void
-modified(module_ty *mp, server_ty *sp, string_ty *file_name, file_info_ty *fip,
-    input_ty *ip)
+void
+module_change_bogus::modified(server_ty *sp, string_ty *file_name,
+    file_info_ty *fip, input &ip)
 {
-    groan(mp, sp, "Modified");
+    groan(sp, "Modified");
 }
 
 
-static int
-update(module_ty *mp, server_ty *sp, string_ty *client_side,
-    string_ty *server_side, module_options_ty *opt)
+bool
+module_change_bogus::update(server_ty *sp, string_ty *client_side,
+    string_ty *server_side, const options &opt)
 {
-    groan(mp, sp, "update");
-    return 0;
+    groan(sp, "update");
+    return false;
 }
 
 
-static int
-checkin(module_ty *mp, server_ty *sp, string_ty *client_side,
+bool
+module_change_bogus::checkin(server_ty *sp, string_ty *client_side,
     string_ty *server_side)
 {
-    groan(mp, sp, "ci");
-    return 0;
+    groan(sp, "ci");
+    return false;
 }
 
 
-static int
-add(module_ty *mp, server_ty *sp, string_ty *client_side,
-    string_ty *server_side, module_options_ty *opt)
+bool
+module_change_bogus::add(server_ty *sp, string_ty *client_side,
+    string_ty *server_side, const options &opt)
 {
-    groan(mp, sp, "add");
-    return 0;
+    groan(sp, "add");
+    return false;
 }
 
 
-static int
-remove(module_ty *mp, server_ty *sp, string_ty *client_side,
-    string_ty *server_side, module_options_ty *opt)
+bool
+module_change_bogus::remove(server_ty *sp, string_ty *client_side,
+    string_ty *server_side, const options &opt)
 {
-    groan(mp, sp, "remove");
-    return 0;
+    groan(sp, "remove");
+    return false;
 }
 
 
-static string_ty *
-canonical_name(module_ty *mp)
+string_ty *
+module_change_bogus::calculate_canonical_name()
+    const
 {
     // FIXME: memory leak
     return str_from_c("no such change");
 }
 
 
-static const module_method_ty vtbl =
+bool
+module_change_bogus::is_bogus()
+    const
 {
-    sizeof(module_change_bogus_ty),
-    destructor,
-    modified,
-    canonical_name,
-    update,
-    checkin,
-    add,
-    remove,
-    1, // bogus
-    "change bogus",
-};
-
-
-module_ty *
-module_change_bogus_new(string_ty *name, long number)
-{
-    module_ty       *mp;
-    module_change_bogus_ty *mcbp;
-
-    mp = module_new(&vtbl);
-    mcbp = (module_change_bogus_ty *)mp;
-    mcbp->name = str_copy(name);
-    mcbp->number = number;
-    return mp;
+    return true;
 }

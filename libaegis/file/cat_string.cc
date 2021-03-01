@@ -1,6 +1,6 @@
 //
 //	aegis - project change supervisor
-//	Copyright (C) 1999, 2003, 2004 Peter Miller;
+//	Copyright (C) 1999, 2003-2005 Peter Miller;
 //	All rights reserved.
 //
 //	This program is free software; you can redistribute it and/or modify
@@ -20,9 +20,9 @@
 // MANIFEST: functions to manipulate cat_strings
 //
 
-#include <ac/unistd.h>
+#include <common/ac/unistd.h>
 
-#include <file.h>
+#include <libaegis/file.h>
 
 
 void

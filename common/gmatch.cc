@@ -1,6 +1,6 @@
 //
 //	aegis - project change supervisor
-//	Copyright (C) 1997-1999, 2002, 2004 Peter Miller;
+//	Copyright (C) 1997-1999, 2002, 2004, 2005 Peter Miller;
 //	All rights reserved.
 //
 //	This program is free software; you can redistribute it and/or modify
@@ -20,11 +20,11 @@
 // MANIFEST: functions to manipulate gmatchs
 //
 
-#include <ac/string.h>
+#include <common/ac/string.h>
 
-#include <gmatch.h>
-#include <nstring.h>
-#include <trace.h>
+#include <common/gmatch.h>
+#include <common/nstring.h>
+#include <common/trace.h>
 
 
 //

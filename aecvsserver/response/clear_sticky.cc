@@ -1,6 +1,6 @@
 //
 //	aegis - project change supervisor
-//	Copyright (C) 2004, 2005 Peter Miller;
+//	Copyright (C) 2004-2006 Peter Miller;
 //	All rights reserved.
 //
 //	This program is free software; you can redistribute it and/or modify
@@ -34,67 +34,41 @@
 //	The directory is created on the client side if it does not exist.
 //
 
-#include <ac/string.h>
+#include <common/ac/string.h>
 
-#include <output.h>
-#include <response/clear_sticky.h>
-#include <response/private.h>
-#include <server.h>
+#include <libaegis/output.h>
+#include <aecvsserver/response/clear_sticky.h>
+#include <aecvsserver/server.h>
 
 
-struct response_clear_sticky_ty
+response_clear_sticky::~response_clear_sticky()
 {
-    response_ty     inherited;
-    string_ty       *client_side;
-    string_ty       *server_side;
-};
-
-
-static void
-destructor(response_ty *rp)
-{
-    response_clear_sticky_ty *rcsp;
-
-    rcsp = (response_clear_sticky_ty *)rp;
-    str_free(rcsp->client_side);
-    rcsp->client_side = 0;
-    str_free(rcsp->server_side);
-    rcsp->server_side = 0;
+    str_free(client_side);
+    client_side = 0;
+    str_free(server_side);
+    server_side = 0;
 }
 
 
-static void
-write(response_ty *rp, output_ty *op)
+response_clear_sticky::response_clear_sticky(string_ty *arg1, string_ty *arg2) :
+    client_side(str_copy(arg1)),
+    server_side(str_copy(arg2))
 {
-    response_clear_sticky_ty *rcsp;
-    const char      *dir;
+}
 
-    rcsp = (response_clear_sticky_ty *)rp;
-    dir = rcsp->client_side->str_text;
+
+void
+response_clear_sticky::write(output_ty *op)
+{
+    const char *dir = client_side->str_text;
     op->fprintf("Clear-sticky %s/\n", dir);
     op->fprintf(ROOT_PATH "/%s/\n", dir);
 }
 
 
-static const response_method_ty vtbl =
+response_code_ty
+response_clear_sticky::code_get()
+    const
 {
-    sizeof(response_clear_sticky_ty),
-    destructor,
-    write,
-    response_code_Clear_sticky,
-    0, // not flushable
-};
-
-
-response_ty *
-response_clear_sticky_new(string_ty *client_side, string_ty *server_side)
-{
-    response_ty     *rp;
-    response_clear_sticky_ty *rcsp;
-
-    rp = response_new(&vtbl);
-    rcsp = (response_clear_sticky_ty *)rp;
-    rcsp->client_side = str_copy(client_side);
-    rcsp->server_side = str_copy(server_side);
-    return rp;
+    return response_code_Clear_sticky;
 }

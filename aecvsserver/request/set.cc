@@ -1,6 +1,6 @@
 //
 //	aegis - project change supervisor
-//	Copyright (C) 2004 Peter Miller;
+//	Copyright (C) 2004-2006 Peter Miller;
 //	All rights reserved.
 //
 //	This program is free software; you can redistribute it and/or modify
@@ -29,12 +29,23 @@
 // Root required: no.
 //
 
-#include <request/set.h>
-#include <server.h>
+#include <aecvsserver/request/set.h>
+#include <aecvsserver/server.h>
 
 
-static void
-run(server_ty *sp, string_ty *arg)
+request_set::~request_set()
+{
+}
+
+
+request_set::request_set()
+{
+}
+
+
+void
+request_set::run_inner(server_ty *sp, string_ty *arg)
+    const
 {
     //
     // It sure would help is cvsclient.texi specified us some variables
@@ -43,9 +54,17 @@ run(server_ty *sp, string_ty *arg)
 }
 
 
-const request_ty request_set =
+const char *
+request_set::name()
+    const
 {
-    "Set",
-    run,
-    0, // no reset
-};
+    return "Set";
+}
+
+
+bool
+request_set::reset()
+    const
+{
+    return false;
+}

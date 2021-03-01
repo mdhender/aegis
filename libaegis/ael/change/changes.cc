@@ -1,6 +1,6 @@
 //
 //	aegis - project change supervisor
-//	Copyright (C) 1999, 2003, 2004 Peter Miller;
+//	Copyright (C) 1999, 2003-2005 Peter Miller;
 //	All rights reserved.
 //
 //	This program is free software; you can redistribute it and/or modify
@@ -20,12 +20,12 @@
 // MANIFEST: functions to list changes
 //
 
-#include <ael/change/by_state.h>
-#include <ael/change/changes.h>
-#include <ael/change/inappropriat.h>
-#include <str_list.h>
-#include <sub.h>
-#include <trace.h>
+#include <libaegis/ael/change/by_state.h>
+#include <libaegis/ael/change/changes.h>
+#include <libaegis/ael/change/inappropriat.h>
+#include <common/str_list.h>
+#include <libaegis/sub.h>
+#include <common/trace.h>
 
 
 void

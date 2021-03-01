@@ -1,6 +1,6 @@
 //
 //	aegis - project change supervisor
-//	Copyright (C) 2003, 2004 Peter Miller;
+//	Copyright (C) 2003-2005 Peter Miller;
 //	All rights reserved.
 //
 //	This program is free software; you can redistribute it and/or modify
@@ -20,9 +20,9 @@
 // MANIFEST: functions to manipulate cxxs
 //
 
-#include <end_with.h>
-#include <getc_special.h>
-#include <lang/cxx.h>
+#include <aemeasure/end_with.h>
+#include <aemeasure/getc_special.h>
+#include <aemeasure/lang/cxx.h>
 
 
 static void

@@ -1,6 +1,6 @@
 //
 //	aegis - project change supervisor
-//	Copyright (C) 1998, 1999, 2002-2004 Peter Miller;
+//	Copyright (C) 1998, 1999, 2002-2005 Peter Miller;
 //	All rights reserved.
 //
 //	This program is free software; you can redistribute it and/or modify
@@ -20,16 +20,16 @@
 // MANIFEST: functions to open GIF files
 //
 
-#include <ac/errno.h>
-#include <ac/stdio.h>
-#include <ac/string.h>
+#include <common/ac/errno.h>
+#include <common/ac/stdio.h>
+#include <common/ac/string.h>
 
-#include <error.h>
-#include <gif.h>
-#include <gif/private.h>
-#include <mem.h>
-#include <sub.h>
-#include <trace.h>
+#include <common/error.h>
+#include <libaegis/gif.h>
+#include <libaegis/gif/private.h>
+#include <common/mem.h>
+#include <libaegis/sub.h>
+#include <common/trace.h>
 
 //
 // This symbol is defined if you want the code to tolerate

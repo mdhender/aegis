@@ -1,6 +1,6 @@
 //
 //	aegis - project change supervisor
-//	Copyright (C) 2001, 2002, 2005 Peter Miller;
+//	Copyright (C) 2001, 2002, 2005, 2006 Peter Miller;
 //	All rights reserved.
 //
 //	This program is free software; you can redistribute it and/or modify
@@ -23,9 +23,9 @@
 #ifndef LIBAEGIS_INPUT_UUDECODE_H
 #define LIBAEGIS_INPUT_UUDECODE_H
 
-#include <ac/limits.h>
+#include <common/ac/limits.h>
 
-#include <input.h>
+#include <libaegis/input.h>
 
 /**
   * The input_uudecode class represents an input source which is
@@ -42,8 +42,11 @@ public:
 
     /**
       * The constructor.
+      *
+      * @param deeper
+      *     The source of data for this filter.
       */
-    input_uudecode(input_ty *deeper, bool close_on_close);
+    input_uudecode(input &deeper);
 
     // See base class for documentation.
     nstring name();
@@ -68,11 +71,15 @@ public:
       * an input needs to be uudecoded.  All input is pushed back, no
       * matter what the result is.
       */
-    static bool candidate(input_ty *deeper);
+    static bool candidate(input &deeper);
 
 private:
-    input_ty *deeper;
-    bool close_on_close;
+    /**
+      * The deeper instance variable is used to remember the source of
+      * data for this filter.
+      */
+    input deeper;
+
     long pos;
     int state;
     char etab[64];
@@ -96,8 +103,8 @@ private:
     input_uudecode &operator=(const input_uudecode &arg);
 };
 
-inline bool
-input_uudecode_recognise(input_ty *ip)
+DEPRECATED inline bool
+input_uudecode_recognise(input ip)
 {
     return input_uudecode::candidate(ip);
 }

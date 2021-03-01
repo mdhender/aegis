@@ -20,7 +20,7 @@
 // MANIFEST: implementation of the nstring::bool operator
 //
 
-#include <nstring.h>
+#include <common/nstring.h>
 
 
 nstring::operator bool()

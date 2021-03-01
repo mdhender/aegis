@@ -71,7 +71,7 @@ then
 else
         echo ''
         echo '  The "fhist" program is not in your command search PATH.'
-        echo '  This is test is therefore -assumed- to pass.'
+        echo '  This test is therefore -assumed- to pass.'
         echo ''
         exit 0
 fi
@@ -123,16 +123,16 @@ unset LANG
 unset LANGUAGE
 
 #
-# If the C++ compiler is called something other than ``c++'', as
+# If the C++ compiler is called something other than "c++", as
 # discovered by the configure script, create a shell script called
-# ``c++'' which invokes the correct C++ compiler.  Make sure the current
+# "c++" which invokes the correct C++ compiler.  Make sure the current
 # directory is in the path, so that it will be invoked.
 #
-if test "$CXX" != "" -a "$CXX" != "c++"
+if test "$CXX" != "c++"
 then
 	cat >> $work/c++ << fubar
 #!/bin/sh
-exec $CXX \$*
+exec ${CXX-g++} \$*
 fubar
 	if test $? -ne 0 ; then no_result; fi
 	chmod a+rx $work/c++

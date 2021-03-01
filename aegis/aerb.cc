@@ -1,6 +1,6 @@
 //
 //      aegis - project change supervisor
-//      Copyright (C) 2001-2005 Peter Miller;
+//      Copyright (C) 2001-2006 Peter Miller;
 //      All rights reserved.
 //
 //      This program is free software; you can redistribute it and/or modify
@@ -20,36 +20,37 @@
 // MANIFEST: functions to manipulate aerbs
 //
 
-#include <ac/stdio.h>
-#include <ac/stdlib.h>
-#include <ac/sys/types.h>
+#include <common/ac/stdio.h>
+#include <common/ac/stdlib.h>
+#include <common/ac/sys/types.h>
 #include <sys/stat.h>
 
-#include <ael/change/by_state.h>
-#include <aerb.h>
-#include <arglex2.h>
-#include <arglex/change.h>
-#include <arglex/project.h>
-#include <change.h>
-#include <change/file.h>
-#include <commit.h>
-#include <dir.h>
-#include <file.h>
-#include <help.h>
-#include <lock.h>
-#include <mem.h>
-#include <os.h>
-#include <pattr.h>
-#include <progname.h>
-#include <project.h>
-#include <project/file.h>
-#include <project/history.h>
-#include <quit.h>
-#include <rss.h>
-#include <sub.h>
-#include <trace.h>
-#include <undo.h>
-#include <user.h>
+#include <common/mem.h>
+#include <common/progname.h>
+#include <common/quit.h>
+#include <common/trace.h>
+#include <libaegis/ael/change/by_state.h>
+#include <libaegis/arglex2.h>
+#include <libaegis/arglex/change.h>
+#include <libaegis/arglex/project.h>
+#include <libaegis/change/file.h>
+#include <libaegis/change.h>
+#include <libaegis/commit.h>
+#include <libaegis/dir.h>
+#include <libaegis/file.h>
+#include <libaegis/help.h>
+#include <libaegis/lock.h>
+#include <libaegis/os.h>
+#include <libaegis/pattr.h>
+#include <libaegis/project/file.h>
+#include <libaegis/project.h>
+#include <libaegis/project/history.h>
+#include <libaegis/rss.h>
+#include <libaegis/sub.h>
+#include <libaegis/undo.h>
+#include <libaegis/user.h>
+
+#include <aegis/aerb.h>
 
 
 static void
@@ -113,7 +114,7 @@ review_begin_list(void)
     mask = 1 << cstate_state_awaiting_review;
 
     //
-    // It's messy.  Depending on the ``develop end action'' project
+    // It's messy.  Depending on the "develop end action" project
     // attribute, we have to cope with both "awaiting review" and
     // "being reviewed" states.
     //
@@ -125,7 +126,7 @@ review_begin_list(void)
     if (!project_name)
         project_name = user_default_project();
     pp = project_alloc(project_name);
-    project_bind_existing(pp);
+    pp->bind_existing();
     if
     (
         project_develop_end_action_get(pp)
@@ -222,7 +223,7 @@ review_begin_main(void)
         project_name = user_default_project();
     pp = project_alloc(project_name);
     str_free(project_name);
-    project_bind_existing(pp);
+    pp->bind_existing();
 
     //
     // locate user data
@@ -299,19 +300,18 @@ review_begin_main(void)
         string_ty       *path_d;
         int             same;
         int             file_required;
-        int             diff_file_required;
 
         src_data = change_file_nth(cp, j, view_path_first);
         if (!src_data)
             break;
 
         file_required = 1;
-        diff_file_required = 1;
+        bool diff_file_required = change_diff_required(cp);
         switch (src_data->usage)
         {
         case file_usage_build:
             file_required = 0;
-            diff_file_required = 0;
+            diff_file_required = false;
             break;
 
         case file_usage_source:
@@ -334,7 +334,7 @@ review_begin_main(void)
             &&
                 change_file_find(cp, src_data->move, view_path_first)
             )
-                diff_file_required = 0;
+                diff_file_required = false;
             break;
 
         case file_action_create:
@@ -363,6 +363,7 @@ review_begin_main(void)
         }
 
         path_d = str_format("%s,D", path->str_text);
+	trace_bool(diff_file_required);
         if (diff_file_required)
         {
             user_become(up);

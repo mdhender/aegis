@@ -1,6 +1,6 @@
 //
 //	aegis - project change supervisor
-//	Copyright (C) 2004, 2005 Peter Miller;
+//	Copyright (C) 2004-2006 Peter Miller;
 //	All rights reserved.
 //
 //	This program is free software; you can redistribute it and/or modify
@@ -23,30 +23,38 @@
 // The command completed successfully.
 //
 
-#include <output.h>
-#include <response/ok.h>
-#include <response/private.h>
+#include <libaegis/output.h>
+#include <aecvsserver/response/ok.h>
 
 
-static void
-write(response_ty *rp, output_ty *op)
+response_ok::~response_ok()
+{
+}
+
+
+response_ok::response_ok()
+{
+}
+
+
+void
+response_ok::write(output_ty *op)
 {
     op->fputs("ok\n");
 }
 
 
-static const response_method_ty vtbl =
+response_code_ty
+response_ok::code_get()
+    const
 {
-    sizeof(response_ty),
-    0, // destructor
-    write,
-    response_code_ok,
-    1, // flushable
-};
+    return response_code_ok;
+}
 
 
-response_ty *
-response_ok_new(void)
+bool
+response_ok::flushable()
+    const
 {
-    return response_new(&vtbl);
+    return true;
 }

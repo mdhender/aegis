@@ -23,7 +23,7 @@
 #ifndef LIBAEGIS_CHANGE_TEST_BATCH_RESULT_H
 #define LIBAEGIS_CHANGE_TEST_BATCH_RESULT_H
 
-#include <str.h>
+#include <common/str.h>
 
 struct batch_result_ty
 {

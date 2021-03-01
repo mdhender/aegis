@@ -1,6 +1,6 @@
 //
 //	aegis - project change supervisor
-//	Copyright (C) 2003-2005 Peter Miller;
+//	Copyright (C) 2003-2006 Peter Miller;
 //	All rights reserved.
 //
 //	This program is free software; you can redistribute it and/or modify
@@ -20,108 +20,145 @@
 // MANIFEST: functions to manipulate changes
 //
 
-#include <ac/ctype.h>
-#include <ac/stdlib.h>
-#include <ac/string.h>
+#include <common/ac/ctype.h>
+#include <common/ac/stdlib.h>
+#include <common/ac/string.h>
 
-#include <arglex2.h>
-#include <arglex/change.h>
-#include <change.h>
-#include <help.h>
-#include <mem.h>
-#include <project/history.h>
-#include <sub.h>
-#include <user.h>
-#include <uuidentifier.h>
-#include <zero.h>
+#include <common/mem.h>
+#include <common/uuidentifier.h>
+#include <libaegis/arglex2.h>
+#include <libaegis/arglex/change.h>
+#include <libaegis/change.h>
+#include <libaegis/help.h>
+#include <libaegis/project/history.h>
+#include <libaegis/sub.h>
+#include <libaegis/user.h>
+#include <libaegis/zero.h>
 
 
-static int
+static inline char
+safe_toupper(char c)
+{
+    if (islower((unsigned char)c))
+	return toupper((unsigned char)c);
+    return c;
+}
+
+
+static inline bool
+safe_isdigit(char c)
+{
+    return isdigit((unsigned char)c);
+}
+
+
+static inline bool
+safe_ispunct(char c)
+{
+    return ispunct((unsigned char)c);
+}
+
+
+static bool
 extract_change_number(string_ty **project_name_p, long *change_number_p)
 {
-    string_ty       *project_name;
-    const char      *cp;
-    char            *end;
-    long            change_number;
-    string_ty       *new_project_name;
-
-    project_name = *project_name_p;
-    cp = strstr(project_name->str_text, ".C");
-    if (!cp)
-	cp = strstr(project_name->str_text, ".c");
-    if (!cp)
-	return 0;
-    change_number = strtol(cp + 2, &end, 10);
-    if (end == cp + 2 || *end)
-	return 0;
-    *change_number_p = change_number;
-    new_project_name =
-	str_n_from_c(project_name->str_text, cp - project_name->str_text);
+    string_ty *project_name = *project_name_p;
+    if (safe_toupper(project_name->str_text[0]) == 'C')
+    {
+	const char *cp = project_name->str_text + 1;
+	char *end = 0;
+	long change_number = strtol(cp, &end, 10);
+	if (end == cp || *end)
+	    return false;
+	*change_number_p = change_number;
+	*project_name_p = str_from_c("");
+    }
+    else
+    {
+	const char *cp = strstr(project_name->str_text, ".C");
+	if (!cp)
+	    cp = strstr(project_name->str_text, ".c");
+	if (!cp)
+	    return false;
+	char *end = 0;
+	long change_number = strtol(cp + 2, &end, 10);
+	if (end == cp + 2 || *end)
+	    return false;
+	*change_number_p = change_number;
+	string_ty *new_project_name =
+	    str_n_from_c(project_name->str_text, cp - project_name->str_text);
+	*project_name_p = new_project_name;
+    }
     str_free(project_name);
-    *project_name_p = new_project_name;
-    return 1;
+    return true;
 }
 
 
-static int
+static bool
 extract_delta_number(string_ty **project_name_p, long *delta_number_p)
 {
-    string_ty       *project_name;
-    const char      *cp;
-    char            *end;
-    long            delta_number;
-    string_ty       *new_project_name;
-
-    project_name = *project_name_p;
-    cp = strstr(project_name->str_text, ".D");
-    if (!cp)
-	cp = strstr(project_name->str_text, ".d");
-    if (!cp)
-	return 0;
-    delta_number = strtol(cp + 2, &end, 10);
-    if (end == cp + 2 || *end)
-	return 0;
-    if (delta_number <= 0)
-	return 0;
-    *delta_number_p = delta_number;
-    new_project_name =
-	str_n_from_c(project_name->str_text, cp - project_name->str_text);
+    string_ty *project_name = *project_name_p;
+    if (safe_toupper(project_name->str_text[0]) == 'D')
+    {
+	const char *cp = project_name->str_text + 1;
+	char *end = 0;
+	long delta_number = strtol(cp, &end, 10);
+	if (end == cp || *end)
+	    return false;
+	if (delta_number <= 0)
+	    return false;
+	*delta_number_p = delta_number;
+	*project_name_p = str_from_c("");
+    }
+    else
+    {
+	const char *cp = strstr(project_name->str_text, ".D");
+	if (!cp)
+	    cp = strstr(project_name->str_text, ".d");
+	if (!cp)
+	    return false;
+	char *end = 0;
+	long delta_number = strtol(cp + 2, &end, 10);
+	if (end == cp + 2 || *end)
+	    return false;
+	if (delta_number <= 0)
+	    return false;
+	*delta_number_p = delta_number;
+	*project_name_p =
+	    str_n_from_c(project_name->str_text, cp - project_name->str_text);
+    }
     str_free(project_name);
-    *project_name_p = new_project_name;
-    return 1;
+    return true;
 }
 
 
-static int
+static bool
 is_a_branch_number(string_ty *s)
 {
-    const char      *cp;
-    int             digit_required;
-
     if (!s->str_length)
-	return 1;
-    digit_required = 1;
-    cp = s->str_text;
+	return true;
+    bool digit_required = true;
+    const char *cp = s->str_text;
     for (;;)
     {
 	if (digit_required)
 	{
 	    if (!*cp)
-		return 0;
-	    if (!isdigit((unsigned char)*cp))
-		return 0;
-	    digit_required = 0;
+		return false;
+	    if (!safe_isdigit(*cp))
+		return false;
+	    digit_required = false;
 	}
 	else
 	{
 	    if (!*cp)
-		return 1;
-	    if (isdigit((unsigned char)*cp))
-		digit_required = 0;
-	    else if (ispunct((unsigned char)*cp))
-		digit_required = 1;
+		return true;
+	    if (safe_isdigit(*cp))
+		digit_required = false;
+	    else if (safe_ispunct(*cp))
+		digit_required = true;
 	    else
-		return 0;
+		return false;
 	}
 	++cp;
     }
@@ -207,7 +244,7 @@ arglex_parse_change_tok(string_ty **project_name_p, long *change_number_p,
 	    if (!project_name)
 		project_name = user_default_project();
 	    project_ty *pp = project_alloc(project_name);
-	    project_bind_existing(pp);
+	    pp->bind_existing();
 	    change_ty *cp = project_uuid_find(pp, s);
 	    if (!cp)
 	    {
@@ -242,8 +279,8 @@ arglex_parse_change_tok(string_ty **project_name_p, long *change_number_p,
 
 		project_name = user_default_project();
 		pp = project_alloc(project_name);
-		project_bind_existing(pp);
-		pp2 = project_find_branch(pp, s->str_text);
+		pp->bind_existing();
+		pp2 = pp->find_branch(s->str_text);
 		project_name = str_copy(project_name_get(pp2));
 		project_free(pp2);
 		project_free(pp);
@@ -266,8 +303,8 @@ arglex_parse_change_tok(string_ty **project_name_p, long *change_number_p,
 
 		project_name = user_default_project();
 		pp = project_alloc(project_name);
-		project_bind_existing(pp);
-		pp2 = project_find_branch(pp, s->str_text);
+		pp->bind_existing();
+		pp2 = pp->find_branch(s->str_text);
 		project_name = str_copy(project_name_get(pp2));
 		change_number =
 		    project_delta_number_to_change_number(pp2, delta_number);
@@ -284,7 +321,7 @@ arglex_parse_change_tok(string_ty **project_name_p, long *change_number_p,
 		project_name = s;
 
 		pp = project_alloc(project_name);
-		project_bind_existing(pp);
+		pp->bind_existing();
 		change_number =
 		    project_delta_number_to_change_number(pp, delta_number);
 		project_free(pp);
@@ -404,8 +441,8 @@ arglex_parse_change_with_branch(string_ty **project_name_p,
 		if (!project_name)
 		    project_name = user_default_project();
 		pp = project_alloc(project_name);
-		project_bind_existing(pp);
-		pp2 = project_find_branch(pp, branch);
+		pp->bind_existing();
+		pp2 = pp->find_branch(branch);
 
 		//
 		// Find the change number.
@@ -424,7 +461,7 @@ arglex_parse_change_with_branch(string_ty **project_name_p,
 		project_name = s;
 
 		pp = project_alloc(project_name);
-		project_bind_existing(pp);
+		pp->bind_existing();
 		change_number =
 		    project_delta_number_to_change_number(pp, delta_number);
 		project_free(pp);

@@ -20,12 +20,12 @@
 // MANIFEST: functions to manipulate conten_encods
 //
 
-#include <arglex.h>
-#include <output/conten_encod.h>
-#include <output/base64.h>
-#include <output/quoted_print.h>
-#include <output/uuencode.h>
-#include <sub.h>
+#include <common/arglex.h>
+#include <libaegis/output/conten_encod.h>
+#include <libaegis/output/base64.h>
+#include <libaegis/output/quoted_print.h>
+#include <libaegis/output/uuencode.h>
+#include <libaegis/sub.h>
 
 
 content_encoding_t

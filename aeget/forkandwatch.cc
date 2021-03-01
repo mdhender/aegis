@@ -1,6 +1,6 @@
 //
 //	aegis - project change supervisor
-//	Copyright (C) 2003, 2004 Peter Miller;
+//	Copyright (C) 2003-2006 Peter Miller;
 //	All rights reserved.
 //
 //	This program is free software; you can redistribute it and/or modify
@@ -20,19 +20,19 @@
 // MANIFEST: functions to manipulate forkandwatchs
 //
 
-#include <ac/errno.h>
-#include <ac/fcntl.h>
-#include <ac/stdio.h>
-#include <ac/string.h>
-#include <ac/unistd.h>
+#include <common/ac/errno.h>
+#include <common/ac/fcntl.h>
+#include <common/ac/stdio.h>
+#include <common/ac/string.h>
+#include <common/ac/unistd.h>
 
-#include <env.h>
-#include <error.h>
-#include <forkandwatch.h>
-#include <http.h>
-#include <os.h>
-#include <quit.h>
-#include <trace.h>
+#include <common/env.h>
+#include <common/error.h>
+#include <aeget/forkandwatch.h>
+#include <aeget/http.h>
+#include <libaegis/os.h>
+#include <common/quit.h>
+#include <common/trace.h>
 
 
 static void
@@ -200,7 +200,8 @@ fork_and_watch(void)
 	//
 	// For errors, we wrap up stderr and send it to them.
 	//
-	printf("500 Internal server error\n");
+	if (!http_fatal_noerror)
+	    printf("Status: 500 Internal server error\n");
 	html_header(0, 0);
 	printf("<title>Error</title></head><body>\n");
 	html_header_ps(0, 0);

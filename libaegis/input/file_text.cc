@@ -1,6 +1,6 @@
 //
 //	aegis - project change supervisor
-//	Copyright (C) 1999, 2001, 2003-2005 Peter Miller;
+//	Copyright (C) 1999, 2001, 2003-2006 Peter Miller;
 //	All rights reserved.
 //
 //	This program is free software; you can redistribute it and/or modify
@@ -20,22 +20,14 @@
 // MANIFEST: functions to read input from text files
 //
 
-#include <input/crlf.h>
-#include <input/file.h>
-#include <input/file_text.h>
+#include <libaegis/input/crlf.h>
+#include <libaegis/input/file.h>
+#include <libaegis/input/file_text.h>
 
 
-input_ty *
-input_file_text_open(string_ty *fn)
+input
+input_file_text_open(string_ty *fn, bool esc_nl)
 {
-    return new input_crlf(input_file_open(fn), 1);
-}
-
-
-void
-input_file_text_escaped_newline(input_ty *ip)
-{
-    input_crlf *icp = dynamic_cast<input_crlf *>(ip);
-    if (icp)
-	icp->escaped_newline();
+    input temp(input_file_open(fn));
+    return new input_crlf(temp, esc_nl);
 }

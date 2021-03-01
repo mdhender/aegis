@@ -1,6 +1,6 @@
 .\"
 .\"	aegis - project change supervisor
-.\"	Copyright (C) 1993, 1994, 1999-2002, 2004 Peter Miller;
+.\"	Copyright (C) 1993, 1994, 1999-2002, 2004, 2005 Peter Miller;
 .\"	All rights reserved.
 .\"
 .\"	This program is free software; you can redistribute it and/or modify
@@ -66,7 +66,7 @@ is not specifically covered in greater detail below.
 .LP
 The aegis program uses
 the \fItest_command\fP field
-of the project \fIconfig\fP file
+of the project \fIaegis.conf\fP file
 to specify how tests are executed.
 The default value of the \fItest_command\fP field:
 .E(
@@ -430,7 +430,7 @@ the module file may actually be in the baseline directory,
 not the development or integration directories.
 To make sure that the test invocation finds the module,
 the \fItest_command\fP field
-in the project \fIconfig\fP file
+in the project \fIaegis.conf\fP file
 should use the Perl
 .B -I
 option to search first the local directory
@@ -578,7 +578,7 @@ on standard error output.
 .LP
 The last piece of the puzzle is to modify
 the \fItest_command\fP field
-of the project \fIconfig\fP file
+of the project \fIaegis.conf\fP file
 to have the
 .I mytest.pl
 script call the test script:
@@ -646,9 +646,9 @@ STDOUT to /dev/null, if you are used to and like the coarser
 PASSED/FAILED status.
 .nh 3 "Batch Testing"
 .LP
-The usual ``\fItest_command\fP'' field of the project \fIconfig\fP
+The usual \[lq]\fItest_command\fP\[rq] field of the project \fIaegis.conf\fP
 file runs a single test at a time.  When you have a multi-CPU machine,
 or are able to distribute the testing load across a range of machines,
-it is often desirable to do so.  The ``\fIbatch_test_command\fP''
+it is often desirable to do so.  The \[lq]\fIbatch_test_command\fP\[rq]
 of the project configuration file is for this purpose.  See \fIaepconf\fP(5)
 for more information.

@@ -1,6 +1,6 @@
 //
 //	aegis - project change supervisor
-//	Copyright (C) 2001-2004 Peter Miller;
+//	Copyright (C) 2001-2006 Peter Miller;
 //	All rights reserved.
 //
 //	This program is free software; you can redistribute it and/or modify
@@ -20,26 +20,27 @@
 // MANIFEST: functions to manipulate config_files
 //
 
-#include <change.h>
-#include <change/branch.h>
-#include <change/file.h>
-#include <change/verbose.h>
-#include <commit.h>
-#include <config_file.h>
-#include <cstate.h>
-#include <error.h>
-#include <format.h>
-#include <io.h>
-#include <lock.h>
-#include <os.h>
-#include <pconf.h>
-#include <project.h>
-#include <project/history.h>
-#include <project/file.h>
-#include <sub.h>
-#include <trace.h>
-#include <user.h>
-#include <uuidentifier.h>
+#include <common/error.h>
+#include <common/trace.h>
+#include <common/uuidentifier.h>
+#include <libaegis/change/branch.h>
+#include <libaegis/change/file.h>
+#include <libaegis/change.h>
+#include <libaegis/change/verbose.h>
+#include <libaegis/commit.h>
+#include <libaegis/cstate.h>
+#include <libaegis/io.h>
+#include <libaegis/lock.h>
+#include <libaegis/os.h>
+#include <libaegis/pconf.h>
+#include <libaegis/project/file.h>
+#include <libaegis/project.h>
+#include <libaegis/project/history.h>
+#include <libaegis/sub.h>
+#include <libaegis/user.h>
+
+#include <aeimport/config_file.h>
+#include <aeimport/format.h>
 
 
 void
@@ -67,8 +68,8 @@ config_file(string_ty *project_name, format_ty *format, time_t when,
     //
     trace(("config_file()\n{\n"));
     pp = project_alloc(project_name);
-    project_bind_existing(pp);
-    project_pstate_lock_prepare(pp);
+    pp->bind_existing();
+    pp->pstate_lock_prepare();
     project_baseline_write_lock_prepare(pp);
     project_history_lock_prepare(pp);
     lock_take();
@@ -95,7 +96,7 @@ config_file(string_ty *project_name, format_ty *format, time_t when,
     //
     // Write the file directly into the baseline.
     //
-    bl = project_baseline_path_get(pp, 0);
+    bl = pp->baseline_path_get();
     pconf_file_name = os_path_join(bl, the_config_file);
     io_comment_append(0, i18n("configuration file hint"));
     project_become(pp);
@@ -251,19 +252,19 @@ config_file(string_ty *project_name, format_ty *format, time_t when,
     // of the files are checkout into the baseline, once all the
     // change sets are in place.
     //
-    p_cstate_data = change_cstate_get(project_change_get(pp));
+    p_cstate_data = change_cstate_get(pp->change_get());
     p_cstate_data->build_time = history_data->when;
 
     //
     // add the copyright year to the project
     //
-    change_copyright_years_now(project_change_get(pp));
+    change_copyright_years_now(pp->change_get());
 
     //
     // Write stuff back out.
     //
     change_cstate_write(cp);
-    project_pstate_write(pp);
+    pp->pstate_write();
     commit();
     lock_release();
 

@@ -20,9 +20,9 @@
 // MANIFEST: functions to manipulate batch_results
 //
 
-#include <change/test/batch_result.h>
-#include <error.h> // for assert
-#include <mem.h>
+#include <libaegis/change/test/batch_result.h>
+#include <common/error.h> // for assert
+#include <common/mem.h>
 
 
 batch_result_list_ty *

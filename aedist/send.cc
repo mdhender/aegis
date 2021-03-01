@@ -1,6 +1,6 @@
 //
 //	aegis - project change supervisor
-//	Copyright (C) 1999-2005 Peter Miller;
+//	Copyright (C) 1999-2006 Peter Miller;
 //	Copyright (C) 2004, 2005 Walter Franzini;
 //	All rights reserved.
 //
@@ -21,83 +21,97 @@
 // MANIFEST: functions to manipulate sends
 //
 
-#include <ac/ctype.h>
-#include <ac/stdlib.h>
-#include <ac/string.h>
+#include <common/ac/ctype.h>
+#include <common/ac/stdlib.h>
+#include <common/ac/string.h>
 
-#include <arglex3.h>
-#include <arglex/change.h>
-#include <arglex/project.h>
-#include <attribute.h>
-#include <change/branch.h>
-#include <change/file.h>
-#include <change/functor/attribu_list.h>
-#include <change/signedoffby.h>
-#include <change.h>
-#include <error.h>	// for assert
-#include <gettime.h>
-#include <help.h>
-#include <input/file.h>
-#include <mem.h>
-#include <now.h>
-#include <option.h>
-#include <os.h>
-#include <output/conten_encod.h>
-#include <output/cpio.h>
-#include <output/file.h>
-#include <output/gzip.h>
-#include <output/indent.h>
-#include <project/file.h>
-#include <project/file/roll_forward.h>
-#include <project/invento_walk.h>
-#include <project.h>
-#include <project/history.h>
-#include <send.h>
-#include <str.h>
-#include <str_list.h>
-#include <sub.h>
-#include <trace.h>
-#include <undo.h>
-#include <usage.h>
-#include <user.h>
-#include <uuidentifier.h>
+#include <common/error.h>	// for assert
+#include <common/gettime.h>
+#include <common/mem.h>
+#include <common/now.h>
+#include <common/str.h>
+#include <common/str_list.h>
+#include <common/trace.h>
+#include <common/uuidentifier.h>
+#include <common/version_stmp.h>
+#include <libaegis/arglex/change.h>
+#include <libaegis/arglex/project.h>
+#include <libaegis/attribute.h>
+#include <libaegis/change/branch.h>
+#include <libaegis/change/file.h>
+#include <libaegis/change/functor/attribu_list.h>
+#include <libaegis/change.h>
+#include <libaegis/change/signedoffby.h>
+#include <libaegis/compres_algo.h>
+#include <libaegis/help.h>
+#include <libaegis/input/file.h>
+#include <libaegis/option.h>
+#include <libaegis/os.h>
+#include <libaegis/output/bzip2.h>
+#include <libaegis/output/conten_encod.h>
+#include <libaegis/output/cpio.h>
+#include <libaegis/output/file.h>
+#include <libaegis/output/gzip.h>
+#include <libaegis/output/indent.h>
+#include <libaegis/project/file.h>
+#include <libaegis/project/file/roll_forward.h>
+#include <libaegis/project.h>
+#include <libaegis/project/history.h>
+#include <libaegis/project/invento_walk.h>
+#include <libaegis/sub.h>
+#include <libaegis/undo.h>
+#include <libaegis/user.h>
+
+#include <aeannotate/usage.h>
+#include <aedist/arglex3.h>
+#include <aedist/send.h>
 
 
 #define NO_TIME_SET ((time_t)(-1))
 
 
-static int
+static bool
 have_it_already(cstate_ty *change_set, fstate_src_ty *src_data)
 {
     size_t          j;
     cstate_src_ty   *dst_data;
 
     if (!change_set->src)
-	return 0;
+	return false;
+
+    // first we look by uuid
+    if (src_data->uuid)
+    {
+	for (j = 0; j < change_set->src->length; ++j)
+	{
+	    dst_data = change_set->src->list[j];
+	    if (dst_data->uuid && str_equal(dst_data->uuid, src_data->uuid))
+		return true;
+	}
+    }
+
+    // second we look by name
     for (j = 0; j < change_set->src->length; ++j)
     {
 	dst_data = change_set->src->list[j];
 	if (str_equal(dst_data->file_name, src_data->file_name))
-	    return 1;
+	    return true;
     }
-    return 0;
+    return false;
 }
 
 
 static void
-one_more_src
-(
-    project_file_roll_forward &historian,
-    cstate_ty *change_set,
-    fstate_src_ty *src_data,
-    int use_attr
-)
+one_more_src(project_file_roll_forward &historian, cstate_ty *change_set,
+    fstate_src_ty *src_data, int use_attr)
 {
     cstate_src_ty   **dst_data_p;
     cstate_src_ty   *dst_data;
     type_ty         *type_p;
 
-    trace(("add \"%s\"\n", src_data->file_name->str_text));
+    trace(("add \"%s\" %s %s\n", src_data->file_name->str_text,
+	file_action_ename(src_data->action),
+	file_usage_ename(src_data->usage)));
     if (!change_set->src)
 	change_set->src = (cstate_src_list_ty *)cstate_src_list_type.alloc();
     dst_data_p =
@@ -159,7 +173,9 @@ one_more_src
         trace(("fn=\"%s\";\nft = %s;\n",
                src_data->file_name->str_text,
                file_action_ename(src_data->action)));
+	assert(historian.is_set());
         file_event_ty *fep = historian.get_older(src_data->file_name);
+
         //
         // The fep *can* be NULL if the change is not completed
         // (e.g. for renamed files).  At the moment we assume this is
@@ -254,7 +270,6 @@ send_main(void)
     int             grandparent;
     int             trunk;
     output_ty       *ofp;
-    input_ty        *ifp;
     project_ty      *pp;
     change_ty       *cp;
     user_ty         *up;
@@ -267,7 +282,6 @@ send_main(void)
     int             baseline;
     int             entire_source;
     content_encoding_t ascii_armor;
-    int             needs_compression;
     string_ty       *dev_null;
     string_ty       *diff_output_filename;
     long            delta_number;
@@ -287,10 +301,11 @@ send_main(void)
     baseline = 0;
     entire_source = -1;
     ascii_armor = content_encoding_unset;
-    needs_compression = -1;
+    compression_algorithm_t needs_compression = compression_algorithm_not_set;
     delta_date = NO_TIME_SET;
     delta_number = -1;
     delta_name = 0;
+    int use_mime_header = -1;
     while (arglex_token != arglex_token_eoln)
     {
 	switch (arglex_token)
@@ -443,6 +458,18 @@ send_main(void)
 	    ascii_armor = content_encoding_none;
 	    break;
 
+	case arglex_token_mime_header:
+	    if (use_mime_header >= 0)
+		duplicate_option(usage);
+	    use_mime_header = 1;
+	    break;
+
+	case arglex_token_mime_header_not:
+	    if (use_mime_header >= 0)
+		duplicate_option(usage);
+	    use_mime_header = 0;
+	    break;
+
 	case arglex_token_content_transfer_encoding:
 	    if (ascii_armor != content_encoding_unset)
 		duplicate_option(usage);
@@ -458,27 +485,65 @@ send_main(void)
 	    break;
 
 	case arglex_token_compress:
-	    if (needs_compression > 0)
-		duplicate_option(usage);
-	    else if (needs_compression >= 0)
+	    if (needs_compression != compression_algorithm_not_set)
 	    {
-	        compress_yuck:
-		mutually_exclusive_options
-		(
-		    arglex_token_compress,
-		    arglex_token_compress_not,
+		duplicate_option_by_name
+	       	(
+		    arglex_token_compression_algorithm,
 		    usage
 		);
 	    }
-	    needs_compression = 1;
+	    needs_compression = compression_algorithm_unspecified;
 	    break;
 
 	case arglex_token_compress_not:
-	    if (needs_compression == 0)
-		duplicate_option(usage);
-	    else if (needs_compression >= 0)
-		goto compress_yuck;
-	    needs_compression = 0;
+	    if (needs_compression != compression_algorithm_not_set)
+	    {
+		duplicate_option_by_name
+	       	(
+		    arglex_token_compression_algorithm,
+		    usage
+		);
+	    }
+	    needs_compression = compression_algorithm_none;
+	    break;
+
+	case arglex_token_compression_algorithm:
+	    if (arglex() != arglex_token_string)
+	    {
+		option_needs_string(arglex_token_compression_algorithm, usage);
+		// NOTREACHED
+	    }
+	    else
+	    {
+		compression_algorithm_t temp =
+		    compression_algorithm_by_name(arglex_value.alv_string);
+
+		//
+		// We don't complain if the answer is going to be the same,
+		// for compatibility with the old options.
+		//
+		if (temp == needs_compression)
+		    break;
+
+		switch (needs_compression)
+		{
+		case compression_algorithm_not_set:
+		case compression_algorithm_unspecified:
+		    needs_compression = temp;
+		    break;
+
+		case compression_algorithm_none:
+		case compression_algorithm_gzip:
+		case compression_algorithm_bzip2:
+		    duplicate_option_by_name
+		    (
+			arglex_token_compression_algorithm,
+			usage
+		    );
+		    // NOTREACHED
+		}
+	    }
 	    break;
 
 	case arglex_token_delta:
@@ -619,6 +684,7 @@ send_main(void)
     use_config = 1;
     use_attributes = 1; // implies UUIDs as well
     use_rename_patch = 1;
+    bool use_bzip2 = true;
     if (compatibility)
     {
 	//
@@ -658,6 +724,18 @@ send_main(void)
         // Peter's 4.18.D004, publicly in 4.19
         //
         use_rename_patch = (strverscmp(compatibility, "4.19") >= 0);
+
+	if (use_mime_header < 0)
+	{
+	    // This was available in Peter's 4.21.Dnnn, publicly in 4.22
+	    use_mime_header = (strverscmp(compatibility, "4.22") >= 0);
+	}
+
+	//
+	// Use the bzip compression algorithm.
+	// Peter's 4.21.D148, publicly in 4.22
+	//
+	use_bzip2 = (strverscmp(compatibility, "4.22") >= 0);
 
 	//
 	// Add new compatibility tests above this comment.
@@ -749,13 +827,13 @@ send_main(void)
 	project_name = user_default_project();
     pp = project_alloc(project_name);
     str_free(project_name);
-    project_bind_existing(pp);
+    pp->bind_existing();
 
     //
     // locate the other branch
     //
     if (branch)
-	pp = project_find_branch(pp, branch);
+	pp = pp->find_branch(branch);
 
     //
     // locate user data
@@ -803,7 +881,7 @@ send_main(void)
     // locate change data
     //
     if (baseline)
-	cp = change_copy(project_change_get(pp));
+	cp = change_copy(pp->change_get());
     else
     {
 	if (!change_number)
@@ -813,7 +891,7 @@ send_main(void)
     }
 
     //
-    // If the use asked for one, append a Signed-off-by line to this
+    // If the user asked for one, append a Signed-off-by line to this
     // change's description.  (Since we don't write the cstate back out,
     // it is safe to change the change's description.)
     //
@@ -839,6 +917,8 @@ send_main(void)
     case cstate_state_being_reviewed:
     case cstate_state_awaiting_review:
     case cstate_state_being_developed:
+	break;
+
     case cstate_state_completed:
 	//
 	// Need to reconstruct the appropriate file histories even for
@@ -864,53 +944,116 @@ send_main(void)
     os_become_orig();
     if (ascii_armor == content_encoding_unset)
 	ascii_armor = content_encoding_base64;
-    if (ascii_armor != content_encoding_none || !needs_compression)
-	ofp = output_file_text_open(output);
-    else
+    switch (needs_compression)
+    {
+    case compression_algorithm_not_set:
+	if (ascii_armor == content_encoding_none)
+	{
+	    needs_compression = compression_algorithm_none;
+	    break;
+	}
+	// Fall through...
+
+    case compression_algorithm_unspecified:
+	needs_compression =
+	    (
+		use_bzip2
+	    ?
+		compression_algorithm_bzip2
+	    :
+	       	compression_algorithm_gzip
+	    );
+	break;
+
+    case compression_algorithm_none:
+    case compression_algorithm_gzip:
+    case compression_algorithm_bzip2:
+	break;
+    }
+    if (ascii_armor == content_encoding_none)
+    {
 	ofp = output_file_binary_open(output);
-    ofp->fputs("MIME-Version: 1.0\n");
-    ofp->fputs("Content-Type: application/aegis-change-set\n");
-    content_encoding_header(ofp, ascii_armor);
-    string_ty *s1 = project_name_get(pp);
-    string_ty *s2 = cstate_data->brief_description;
-    if (entire_source)
-	s2 = project_description_get(pp);
-    ofp->fprintf
-    (
-	"Subject: %.*s - %.*s\n",
-	len_printable(s1, 40),
-	s1->str_text,
-	len_printable(s2, 80),
-	s2->str_text
-    );
-    if (change_number && !entire_source)
-    {
-	ofp->fprintf
-	(
-	    "Content-Name: %s.C%3.3ld.ae\n",
-	    project_name_get(pp)->str_text,
-	    change_number
-	);
-	ofp->fprintf
-	(
-	    "Content-Disposition: attachment; filename=%s.C%3.3ld.ae\n",
-	    project_name_get(pp)->str_text,
-	    change_number
-	);
     }
     else
     {
-	ofp->fprintf("Content-Name: %s.ae\n", project_name_get(pp)->str_text);
+	ofp = output_file_text_open(output);
+    }
+
+    //
+    // The mime header is conditional.
+    //
+    if (use_mime_header < 0)
+	use_mime_header = (ascii_armor != content_encoding_none);
+    if (use_mime_header)
+    {
+	ofp->fputs("MIME-Version: 1.0\n");
+	ofp->fputs("Content-Type: application/aegis-change-set\n");
+	content_encoding_header(ofp, ascii_armor);
+	string_ty *s1 = project_name_get(pp);
+	string_ty *s2 = cstate_data->brief_description;
+	if (entire_source)
+	    s2 = project_description_get(pp);
 	ofp->fprintf
 	(
-	    "Content-Disposition: attachment; filename=%s.ae\n",
-	    project_name_get(pp)->str_text
+	    "Subject: %.*s - %.*s\n",
+	    len_printable(s1, 40),
+	    s1->str_text,
+	    len_printable(s2, 80),
+	    s2->str_text
 	);
+	if (change_number && !entire_source)
+	{
+	    ofp->fprintf
+	    (
+		"Content-Name: %s.C%3.3ld.ae\n",
+		project_name_get(pp)->str_text,
+		change_number
+	    );
+	    ofp->fprintf
+	    (
+		"Content-Disposition: attachment; filename=%s.C%3.3ld.ae\n",
+		project_name_get(pp)->str_text,
+		change_number
+	    );
+	}
+	else
+	{
+	    ofp->fprintf
+    	    (
+		"Content-Name: %s.ae\n",
+		project_name_get(pp)->str_text
+	    );
+	    ofp->fprintf
+	    (
+		"Content-Disposition: attachment; filename=%s.ae\n",
+		project_name_get(pp)->str_text
+	    );
+	}
+	ofp->fputc('\n');
     }
-    ofp->fputc('\n');
+
     ofp = output_content_encoding(ofp, ascii_armor);
-    if (needs_compression)
+    switch (needs_compression)
+    {
+    case compression_algorithm_not_set:
+	assert(0);
+	break;
+
+    case compression_algorithm_none:
+	break;
+
+    case compression_algorithm_unspecified:
+	assert(0);
+	// Fall through...
+
+    case compression_algorithm_gzip:
 	ofp = new output_gzip(ofp, true);
+	break;
+
+    case compression_algorithm_bzip2:
+	ofp = new output_bzip2(ofp, true);
+	break;
+    }
     output_cpio_ty *cpio_p = new output_cpio_ty(ofp);
 
     //
@@ -1132,6 +1275,17 @@ send_main(void)
 		if (!fep)
 		    continue;
 		assert(fep->src);
+		if
+		(
+		    attributes_list_find_boolean
+		    (
+			fep->src->attribute,
+			"entire-source-hide"
+		    )
+		)
+		{
+		    continue;
+		}
 		switch (fep->src->usage)
 		{
 		case file_usage_build:
@@ -1183,13 +1337,25 @@ send_main(void)
 	}
 	else
 	{
+	    trace(("adding project files...\n"));
 	    for (j = 0;; ++j)
 	    {
 		fstate_src_ty   *src_data;
 
-		src_data = project_file_nth(pp, j, view_path_simple);
+		src_data = pp->file_nth(j, view_path_simple);
 		if (!src_data)
 		    break;
+		if
+		(
+		    attributes_list_find_boolean
+		    (
+			src_data->attribute,
+			"entire-source-hide"
+		    )
+		)
+		{
+		    continue;
+		}
 		switch (src_data->usage)
 		{
 		case file_usage_build:
@@ -1262,29 +1428,17 @@ send_main(void)
         trace_int_unsigned(change_set->src->length);
         for (size_t i = 0; i < change_set->src->length; ++i)
         {
-            trace_int_unsigned(i);
-
             if (!change_set->src->list[i])
                 continue;
 
             cstate_src_ty *csrc = change_set->src->list[i];
-            switch (csrc->action)
-            {
-            case file_action_transparent:
-            case file_action_insulate:
-            case file_action_modify:
-                continue;
+	    if (!csrc->move)
+		continue;
 
-            case file_action_remove:
-            case file_action_create:
-                if (!csrc->move)
-                    continue;
-                break;
-            }
-
-            assert(csrc->move);
+	    trace(("%s \"%s\" move \"%s\"\n", file_action_ename(csrc->action),
+		csrc->file_name->str_text, csrc->move->str_text));
             cstate_src_ty *csrc2 = 0;
-            for (size_t k = i+1; k < change_set->src->length; ++k)
+            for (size_t k = i + 1; k < change_set->src->length; ++k)
             {
                 csrc2 = change_set->src->list[k];
 
@@ -1294,115 +1448,65 @@ send_main(void)
                 if (!csrc2->move)
                     continue;
 
-                switch (csrc2->action)
-                {
-                case file_action_create:
-                case file_action_remove:
-                    break;
-
-                case file_action_transparent:
-                case file_action_insulate:
-                case file_action_modify:
-                    assert(0);
-                    continue;
-                }
-
                 //
                 // We have found a regular rename.
                 //
                 if
                 (
                     str_equal(csrc->move, csrc2->file_name)
-                    &&
+		&&
                     str_equal(csrc2->move, csrc->file_name)
-                    &&
-                    csrc->action != csrc2->action
                 )
+		{
+		    trace(("normal move\n"));
                     goto loop_end;
+		}
 
                 //
-                // We have found two unrelated file.
+                // We have found two unrelated files.
                 //
                 if
                 (
                     !str_equal(csrc->move, csrc2->file_name)
-                    &&
+		&&
                     !str_equal(csrc2->move, csrc->file_name)
                 )
                     continue;
 
+		//
+                // If this is not a simple rename, things get
+                // complicated, because the links (via the "move" field)
+                // only make sense when you are doing a history roll
+                // forward.  That is, if a file is moved twice,
+                // you would need *two* move fields to record the
+                // information, and there is only one.
+		//
+                // So we turn the move into a simple create or remove
+                // action.  Some work will be needed to avoid trying to
+                // both rename and remove a file.
                 //
-                // 1) identify A and B
-                //
-                cstate_src_ty *old;
-                cstate_src_ty *newer;
-                size_t newer_idx;
-
-                if (str_equal(csrc->move, csrc2->file_name))
-                {
-                    old = csrc;
-                    newer = csrc2;
-                    newer_idx = k;
-                }
-                else
-                {
-                    old = csrc2;
-                    newer = csrc;
-                    newer_idx = i;
-                }
-
-                assert(old->move);
-                assert(newer->move);
-
-                //
-                // Identify C
-                // Adjust A and C and remove B
-                //
-                for (size_t l = 0; l < change_set->src->length; ++l)
-                {
-                    if (l == i || l == k)
-                        continue;
-
-                    cstate_src_ty *most_recent =
-                        change_set->src->list[l];
-                    if (!most_recent)
-                        continue;
-                    if (!most_recent->move)
-                        continue;
-
-                    if (!str_equal(newer->move, most_recent->file_name))
-                        continue;
-
-                    switch (most_recent->action)
-                    {
-                    case file_action_modify:
-                    case file_action_insulate:
-                    case file_action_transparent:
-#ifdef DEBUG
-                    default:
-#endif
-                        assert(0);
-                        continue;
-
-                    case file_action_create:
-                        assert(most_recent->move);
-                        str_free(most_recent->move);
-                        assert(old->file_name);
-                        most_recent->move = str_copy(old->file_name);
-                        // FALLTHROUGH
-
-                    case file_action_remove:
-                        assert(old->move);
-                        str_free(old->move);
-                        assert(newer->move);
-                        old->move = str_copy(newer->move);
-                        cstate_src_type.free(newer);
-                        change_set->src->list[newer_idx] = 0;
-                        break;
-                    }
-                }
+		if (csrc->uuid && csrc->action == file_action_remove)
+		{
+                    //
+                    // The file has been renamed more than once.  We
+                    // delete dangling removes because we know there
+                    // is a complete rename pair elsewhere in the
+                    // list.  Any such rename will be done correctly by
+                    // consulting the UUID field of the files.
+                    //
+		    trace(("toss \"%s\" %s\n", csrc->file_name->str_text,
+			file_action_ename(csrc->action)));
+		    cstate_src_type.free(csrc);
+		    change_set->src->list[i] = 0;
+		}
+		else
+		{
+		    trace(("drop remove attribute\n"));
+		    str_free(csrc->move);
+		    csrc->move = 0;
+		}
             }
-        loop_end:;
+	    loop_end:;
         }
 
         //
@@ -1412,12 +1516,12 @@ send_main(void)
         //
         for (size_t k = 0; k < change_set->src->length; ++k)
         {
-            trace_int_unsigned(change_set->src->length);
-            trace_int_unsigned(k);
+	    trace(("k = %ld of %ld\n", (long)k, (long)change_set->src->length));
             if (change_set->src->list[k])
                 continue;
 
-            while (!change_set->src->list[--change_set->src->length]);
+            while (!change_set->src->list[--change_set->src->length])
+		;
             change_set->src->list[k] =
                 change_set->src->list[change_set->src->length];
         }
@@ -1493,7 +1597,11 @@ send_main(void)
 	case file_action_transparent:
 	    break;
 	}
-	trace(("file name = \"%s\"\n", csrc->file_name->str_text));
+	trace(("file name = \"%s\", action = %s, usage = %s\n",
+	    csrc->file_name->str_text, file_action_ename(csrc->action),
+	    file_usage_ename(csrc->usage)));
+	if (csrc->move)
+	    trace(("move = \"%s\"\n", csrc->move->str_text));
 
 	//
 	// Find a source file.  Depending on the change state,
@@ -1510,7 +1618,6 @@ send_main(void)
 	// These names are taken from the substitutions for
 	// the diff_command.  It's historical.
 	//
-	ifp = 0;
         switch (cstate_data->state)
 	{
 	case cstate_state_awaiting_development:
@@ -1528,48 +1635,70 @@ send_main(void)
 	    switch (csrc->action)
 	    {
 	    case file_action_create:
-                if (use_rename_patch && csrc->move)
-                {
-                    file_event_list_ty  *orig_felp;
-                    file_event_ty       *orig_fep;
-                    fstate_src_ty       *orig_src;
+		//
+                // We include the need for a UUID because otherwise the
+                // chain of renames can be an arbitrarily long one (and
+                // could possibly loop).  If we only deal with UUIDs, we
+                // simplify the problem immensely.
+		//
+                if (use_rename_patch && csrc->move && csrc->uuid)
+		{
+		    if (historian.is_set())
+		    {
+			trace(("using historian, by uuid\n"));
+			file_event_list_ty *orig_felp = historian.get(csrc);
 
-                    orig_felp = historian.get(csrc->move);
+			//
+			// It's tempting to say
+			//     assert(felp);
+			// but file file may not yet exist at this point in
+			// time, so there is no need (or ability) to create a
+			// patch for it.
+			//
+			if (!orig_felp || orig_felp->length < 2)
+			{
+			    original_filename = str_copy(dev_null);
+			    break;
+			}
 
-                    //
-                    // It's tempting to say
-                    //     assert(felp);
-                    // but file file may not yet exist at this point in
-                    // time, so there is no need (or ability) to create a
-                    // patch for it.
-                    //
-                    assert(!orig_felp || orig_felp->length >= 1);
-                    if (!orig_felp)
-                    {
-                        original_filename = str_copy(dev_null);
-                        break;
-                    }
-
-                    orig_fep = &orig_felp->item[orig_felp->length - 1];
-                    orig_src =
-                        change_file_find
-                        (
-                            orig_fep->cp,
-                            csrc->move,
-                            view_path_first
-                        );
-                    assert(orig_src);
-                    original_filename =
-                        project_file_version_path
-                        (
-                            pp,
-                            orig_src,
-                            &original_filename_unlink
-                        );
-                    fstate_src_type.free(orig_src);
-                }
-                else
-                    original_filename = str_copy(dev_null);
+			file_event_ty *orig_fep =
+			    &orig_felp->item[orig_felp->length - 1];
+			fstate_src_ty *orig_src =
+			    change_file_find
+			    (
+				orig_fep->cp,
+				csrc->move,
+				view_path_first
+			    );
+			assert(orig_src);
+			original_filename =
+			    project_file_version_path
+			    (
+				pp,
+				orig_src,
+				&original_filename_unlink
+			    );
+		    }
+		    else
+		    {
+			fstate_src_ty *orig_src =
+			    project_file_find(pp, csrc, view_path_extreme);
+			if (!orig_src)
+			{
+			    original_filename = str_copy(dev_null);
+			    break;
+			}
+			original_filename =
+			    project_file_version_path
+			    (
+				pp,
+				orig_src,
+				&original_filename_unlink
+			    );
+		    }
+		}
+		else
+		    original_filename = str_copy(dev_null);
 		break;
 
 	    case file_action_modify:
@@ -1623,7 +1752,8 @@ send_main(void)
 		fstate_src_ty  *old_src;
 
 	    case file_action_create:
-		felp = historian.get(csrc->file_name);
+		assert(historian.is_set());
+		felp = historian.get(csrc);
 
 		//
 		// It's tempting to say
@@ -1645,56 +1775,35 @@ send_main(void)
 		// Get the orginal file.  We handle the creation half
 		// of a file rename.
 		//
-                if (use_rename_patch && csrc->move)
+                // We include the need for a uuid because otherwise the
+                // rename chain can be an arbitrarily long one (and
+                // could possibly loop).  If we only deal with UUIDs, we
+                // simplify the problem immensely.
+		//
+                if
+	       	(
+		    use_rename_patch
+		&&
+		    csrc->move
+		&&
+		    csrc->uuid
+		&&
+		    felp->length >= 2
+		)
                 {
-                    file_event_list_ty  *orig_felp;
-                    file_event_ty       *orig_fep;
-                    fstate_src_ty       *orig_src;
-
-                    orig_felp = historian.get(csrc->move);
-
-                    //
-                    // It's tempting to say
-                    //     assert(orig_felp);
-                    // but file file may not yet exist at this point in
-                    // time, so there is no need (or ability) to create a
-                    // patch for it.
 		    //
-		    // It is also tempting to think that for every
-		    // remove there must be a corresponding create.
-		    // However if a file is created an removed on a
-		    // branch, and the branch is ended, the parent
-		    // branch only sees the remove.
+		    // Do the same as modify.
 		    //
-		    // This means you can have a removed file with a
-		    // history length of exactly one.
-                    //
-		    assert(!orig_felp || orig_felp->length >= 1);
-                    if (!orig_felp || orig_felp->length < 2)
-                    {
-                        original_filename = str_copy(dev_null);
-                    }
-		    else
-		    {
-			orig_fep = &orig_felp->item[orig_felp->length - 2];
-			assert(orig_fep);
-			orig_src =
-			    change_file_find
-			    (
-				orig_fep->cp,
-				csrc->move,
-				view_path_first
-			    );
-			assert(orig_src);
-			original_filename =
-			    project_file_version_path
-			    (
-				pp,
-				orig_src,
-				&original_filename_unlink
-			    );
-			fstate_src_type.free(orig_src);
-		    }
+		    fep = &felp->item[felp->length - 2];
+		    old_src = change_file_find(fep->cp, csrc, view_path_first);
+		    assert(old_src);
+		    original_filename =
+			project_file_version_path
+			(
+			    pp,
+			    old_src,
+			    &original_filename_unlink
+			);
                 }
                 else
                     original_filename = str_copy(dev_null);
@@ -1703,8 +1812,7 @@ send_main(void)
 		// Get the input file.
 		//
 		fep = &felp->item[felp->length - 1];
-		old_src =
-		    change_file_find(fep->cp, csrc->file_name, view_path_first);
+		old_src = change_file_find(fep->cp, csrc, view_path_first);
 		assert(old_src);
 		input_filename =
 		    project_file_version_path
@@ -1728,7 +1836,8 @@ send_main(void)
                     break;
                 }
 
-		felp = historian.get(csrc->file_name);
+		assert(historian.is_set());
+		felp = historian.get(csrc);
 
 		//
 		// It's tempting to say
@@ -1778,7 +1887,8 @@ send_main(void)
 		break;
 
 	    case file_action_modify:
-		felp = historian.get(csrc->file_name);
+		assert(historian.is_set());
+		felp = historian.get(csrc);
 
 		//
 		// It's tempting to say
@@ -1923,8 +2033,8 @@ send_main(void)
 		// Read the diff into the archive.
 		//
 		os_become_orig();
-		ifp = input_file_open(diff_output_filename, true);
-		assert(ifp);
+		input ifp = input_file_open(diff_output_filename, true);
+		assert(ifp.is_open());
 		len = ifp->length();
                 assert(len >= 0);
 		if (len > 0 || is_a_rename)
@@ -1932,11 +2042,10 @@ send_main(void)
 		    childs_name =
 			nstring::format("patch/%s", csrc->file_name->str_text);
                     ofp = cpio_p->child(childs_name, len);
-		    input_to_output(ifp, ofp);
+		    *ofp << ifp;
 		    delete ofp;
 		}
-		delete ifp;
-		ifp = 0;
+		ifp.close();
 		os_become_undo();
 
                 // It's tempting to say:
@@ -1966,15 +2075,14 @@ send_main(void)
 	case file_action_modify:
 	case file_action_insulate:
 	    os_become_orig();
-	    ifp = input_file_open(input_filename);
-	    assert(ifp);
+	    input ifp = input_file_open(input_filename);
+	    assert(ifp.is_open());
 	    len = ifp->length();
 	    childs_name =
 		nstring::format("src/%s", csrc->file_name->str_text);
 	    ofp = cpio_p->child(childs_name, len);
-	    input_to_output(ifp, ofp);
-	    delete ifp;
-	    ifp = 0;
+	    *ofp << ifp;
+	    ifp.close();
 	    delete ofp;
 	    ofp = 0;
 	    os_become_undo();

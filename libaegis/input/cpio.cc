@@ -1,6 +1,6 @@
 //
 //	aegis - project change supervisor
-//	Copyright (C) 1999, 2003-2005 Peter Miller;
+//	Copyright (C) 1999, 2003-2006 Peter Miller;
 //	All rights reserved.
 //
 //	This program is free software; you can redistribute it and/or modify
@@ -20,23 +20,21 @@
 // MANIFEST: functions to manipulate cpios
 //
 
-#include <ac/ctype.h>
+#include <common/ac/ctype.h>
 
-#include <error.h> // for assert
-#include <input/cpio.h>
-#include <input/crop.h>
-#include <nstring/accumulator.h>
-#include <trace.h>
+#include <common/error.h> // for assert
+#include <libaegis/input/cpio.h>
+#include <libaegis/input/crop.h>
+#include <common/nstring/accumulator.h>
+#include <common/trace.h>
 
 
 input_cpio::~input_cpio()
 {
-    delete deeper;
-    deeper = 0;
 }
 
 
-input_cpio::input_cpio(input_ty *arg) :
+input_cpio::input_cpio(input &arg) :
     deeper(arg)
 {
 }
@@ -72,21 +70,26 @@ input_cpio::length()
 }
 
 
-input_ty *
+input
 input_cpio::child(nstring &archive_name)
 {
     //
-    // Return NULL at end-of-file
+    // Return a closed input at end-of-file
     //
+    trace(("input_cpio::child(this = %08lX)\n{\n", (long)this));
     if (deeper->peek() < 0)
+    {
+	trace(("return NULL\n"));
+	trace(("}\n"));
 	return 0;
+    }
 
     //
     // read the file header
     //
     for (const char *magic = "070701"; *magic; ++magic)
     {
-	int c = deeper->getc();
+	int c = deeper->getch();
 	if (c != *magic)
     	    deeper->fatal_error("cpio: wrong magic number");
     }
@@ -97,6 +100,7 @@ input_cpio::child(nstring &archive_name)
     hex8();	// nlinks
     hex8();	// mtime
     long hlength = hex8();
+    trace_long(hlength);
     hex8();	// dev_major
     hex8();	// dev_minor
     hex8();	// rdev_major
@@ -112,27 +116,27 @@ input_cpio::child(nstring &archive_name)
     // The trailer record tells us when to stop.
     //
     if (archive_name == "TRAILER!!!")
+    {
+	trace(("NULL\n"));
+	trace(("}\n"));
 	return 0;
+    }
 
     //
     // Figure out how much of the deeper input is to be cropped out for
     // this child.
     //
     long alength = (hlength + 3) & ~3;
+    trace_long(alength);
     input_crop *icp = 0;
     if (alength == hlength)
     {
-	icp = new input_crop(deeper, false, hlength);
+	icp = new input_crop(deeper, hlength);
     }
     else
     {
-	icp =
-	    new input_crop
-	    (
-		new input_crop(deeper, false, alength),
-		true,
-		hlength
-	    );
+	input temp(new input_crop(deeper, alength));
+	icp = new input_crop(temp, hlength);
     }
 
     //
@@ -145,6 +149,8 @@ input_cpio::child(nstring &archive_name)
     //
     // Report success.
     //
+    trace(("return %08lX\n", (long)icp));
+    trace(("}\n"));
     return icp;
 }
 
@@ -162,7 +168,7 @@ input_cpio::padding()
 int
 input_cpio::hex_digit(bool &first)
 {
-    int c = deeper->getc();
+    int c = deeper->getch();
     switch (c)
     {
     default:
@@ -226,7 +232,7 @@ input_cpio::get_name(long namlen)
     name_buffer.clear();
     for (long j = 0; j < namlen; ++j)
     {
-	int c = deeper->getc();
+	int c = deeper->getch();
 	if (c <= 0)
 	    deeper->fatal_error("cpio: short file");
 	if (isspace((unsigned char)c))
@@ -239,7 +245,7 @@ input_cpio::get_name(long namlen)
     //
     // Must have a NUL on the end.
     //
-    if (deeper->getc() != 0)
+    if (deeper->getch() != 0)
 	deeper->fatal_error("cpio: invalid character");
 
     //

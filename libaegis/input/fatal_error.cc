@@ -20,8 +20,8 @@
 // MANIFEST: functions to manipulate fatal_errors
 //
 
-#include <input.h>
-#include <sub.h>
+#include <libaegis/input.h>
+#include <libaegis/sub.h>
 
 
 void

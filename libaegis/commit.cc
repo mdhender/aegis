@@ -20,13 +20,13 @@
 // MANIFEST: functions to store and enact file manipulations for commit
 //
 
-#include <commit.h>
-#include <dir.h>
-#include <dir/functor/rm_dir_tree.h>
-#include <interrupt.h>
-#include <os.h>
-#include <trace.h>
-#include <undo.h>
+#include <libaegis/commit.h>
+#include <libaegis/dir.h>
+#include <libaegis/dir/functor/rm_dir_tree.h>
+#include <libaegis/interrupt.h>
+#include <libaegis/os.h>
+#include <common/trace.h>
+#include <libaegis/undo.h>
 
 //
 // This file contains "commit" functions.

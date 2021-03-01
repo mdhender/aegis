@@ -1,6 +1,6 @@
 //
 //	aegis - project change supervisor
-//	Copyright (C) 1994, 2003, 2004 Peter Miller.
+//	Copyright (C) 1994, 2003-2005 Peter Miller.
 //	All rights reserved.
 //
 //	This program is free software; you can redistribute it and/or modify
@@ -20,13 +20,13 @@
 // MANIFEST: functions to impliment the builtin need function
 //
 
-#include <aer/expr.h>
-#include <aer/func/need.h>
-#include <aer/func/print.h>
-#include <aer/value/integer.h>
-#include <aer/value/void.h>
-#include <col.h>
-#include <error.h>
+#include <libaegis/aer/expr.h>
+#include <libaegis/aer/func/need.h>
+#include <libaegis/aer/func/print.h>
+#include <libaegis/aer/value/integer.h>
+#include <libaegis/aer/value/void.h>
+#include <libaegis/col.h>
+#include <common/error.h>
 
 
 static int

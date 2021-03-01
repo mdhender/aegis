@@ -1,6 +1,6 @@
 //
 //	aegis - project change supervisor
-//	Copyright (C) 2002-2004 Peter Miller;
+//	Copyright (C) 2002-2006 Peter Miller;
 //	All rights reserved.
 //
 //	This program is free software; you can redistribute it and/or modify
@@ -20,18 +20,18 @@
 // MANIFEST: functions to manipulate base_relativs
 //
 
-#include <arglex.h>
-#include <change.h>
-#include <change/file.h>
-#include <cstate.h>
-#include <os.h>
-#include <project.h>
-#include <project/file.h>
-#include <sub.h>
-#include <sub/base_relativ.h>
-#include <str_list.h>
-#include <trace.h>
-#include <wstr/list.h>
+#include <common/arglex.h>
+#include <common/str_list.h>
+#include <common/trace.h>
+#include <common/wstr/list.h>
+#include <libaegis/change/file.h>
+#include <libaegis/change.h>
+#include <libaegis/cstate.h>
+#include <libaegis/os.h>
+#include <libaegis/project/file.h>
+#include <libaegis/project.h>
+#include <libaegis/sub/base_relativ.h>
+#include <libaegis/sub.h>
 
 
 //
@@ -75,7 +75,7 @@ sub_base_relative(sub_context_ty *scp, wstring_list_ty *arg)
 	    trace(("}\n"));
 	    return 0;
 	}
-	cp = project_change_get(pp);
+	cp = pp->change_get();
     }
 
     //

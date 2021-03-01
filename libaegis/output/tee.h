@@ -23,7 +23,7 @@
 #ifndef LIBAEGIS_OUTPUT_TEE_H
 #define LIBAEGIS_OUTPUT_TEE_H
 
-#include <output.h>
+#include <libaegis/output.h>
 
 /**
   * the output_tee_ty class is used to represent an output filter which

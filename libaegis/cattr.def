@@ -1,6 +1,6 @@
 /*
  *	aegis - project change supervisor
- *	Copyright (C) 1991-1994, 2004 Peter Miller.
+ *	Copyright (C) 1991-1994, 2004, 2005 Peter Miller.
  *	All rights reserved.
  *
  *	This program is free software; you can redistribute it and/or modify
@@ -23,7 +23,7 @@
  *	man5/aecattr.so
  */
 
-#include <common.def>
+#include <libaegis/common.def>
 
 /*
  * This file contains a brief description of the change.

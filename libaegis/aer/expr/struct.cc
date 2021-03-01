@@ -1,6 +1,6 @@
 //
 //	aegis - project change supervisor
-//	Copyright (C) 1994, 1996, 2002-2004 Peter Miller;
+//	Copyright (C) 1994, 1996, 2002-2005 Peter Miller;
 //	All rights reserved.
 //
 //	This program is free software; you can redistribute it and/or modify
@@ -20,11 +20,11 @@
 // MANIFEST: functions to manipulate struct expressions
 //
 
-#include <aer/expr/struct.h>
-#include <aer/value/struct.h>
-#include <error.h>
-#include <mem.h>
-#include <symtab.h>
+#include <libaegis/aer/expr/struct.h>
+#include <libaegis/aer/value/struct.h>
+#include <common/error.h>
+#include <common/mem.h>
+#include <common/symtab.h>
 
 static size_t   ntab;
 static size_t   ntab_max;

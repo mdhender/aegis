@@ -173,10 +173,10 @@
 //		; Appendix B as "mail-safe".
 //
 
-#include <ac/ctype.h>
+#include <common/ac/ctype.h>
 
-#include <output/quoted_print.h>
-#include <str.h>
+#include <libaegis/output/quoted_print.h>
+#include <common/str.h>
 
 
 static inline char

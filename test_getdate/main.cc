@@ -1,6 +1,6 @@
 //
 //	aegis - project change supervisor
-//	Copyright (C) 2003, 2004 Peter Miller;
+//	Copyright (C) 2003-2006 Peter Miller;
 //	All rights reserved.
 //
 //	This program is free software; you can redistribute it and/or modify
@@ -20,14 +20,14 @@
 // MANIFEST: functions to manipulate mains
 //
 
-#include <ac/stdio.h>
-#include <ac/stdlib.h>
-#include <ac/string.h>
+#include <common/ac/stdio.h>
+#include <common/ac/stdlib.h>
+#include <common/ac/string.h>
 
-#include <arglex.h>
-#include <error.h>
-#include <gettime.h>
-#include <progname.h>
+#include <common/arglex.h>
+#include <common/error.h>
+#include <common/gettime.h>
+#include <common/progname.h>
 
 
 static void
@@ -49,25 +49,24 @@ usage(void)
 int
 main(int argc, char **argv)
 {
-    time_t          when;
-    char            buffer[2000];
-
     arglex_init(argc, argv, 0);
 
+    char buffer[2000];
     buffer[0] = 0;
+    char *bp = buffer;
     while (arglex_get_string() == arglex_token_string)
     {
 	if (buffer[0])
-	    strlcat(buffer, " ", sizeof(buffer));
-	strlcat(buffer, arglex_value.alv_string, sizeof(buffer));
+	    bp = strendcpy(bp, " ", buffer + sizeof(buffer));
+	bp = strendcpy(bp, arglex_value.alv_string, buffer + sizeof(buffer));
     }
     if (!buffer[0])
 	usage();
 
     //
-    // Attempt to conver the string into a time
+    // Attempt to convert the string into a time
     //
-    when = date_scan(buffer);
+    time_t when = date_scan(buffer);
     if (when == (time_t)(-1))
 	fatal_raw("string \"%s\" is not a valid date or time", buffer);
     printf("%ld\n", (long)when);

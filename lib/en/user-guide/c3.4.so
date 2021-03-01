@@ -53,7 +53,7 @@ you modify it.  Something like \fImd5sum\fP(1) from the GNU Fileutils
 would be good.  Store the checksum in a file next to the history file.
 This would be done in the
 \fIhistory_\%create_\%command\fP and
-\fIhistory_\%put_\%command\fP fields of the project \fIconfig\fP file.
+\fIhistory_\%put_\%command\fP fields of the project \fIaegis.conf\fP file.
 .IP 2. 3n
 Each time the file is read, you need to verify the file's checksum.
 Use the same checksum utility as before, and then compare it using, say,
@@ -63,7 +63,7 @@ need to repair or replace the disk.  You will need to restore from backup
 (yesterday's backup, see below).  This would be done at the beginning
 of the \fIhistory_\%create_\%command\fP, \fIhistory_\%put_\%command\fP,
 \fIhistory_\%get_\%command\fP and \fIhistory_\%query_\%command\fP fields
-of the project \fIconfig\fP file.
+of the project \fIaegis.conf\fP file.
 .IP 3. 3n
 Because you may not actually interact with the file for years at a time,
 you need to check the file fingerprints much more often.  Daily or at
@@ -76,7 +76,7 @@ resides - yesterday's.
 .nh 3 "Configuration Commands"
 .LP
 In order to implement this,
-you need to modify some fields of your project \fIconfig\fP file as follows:
+you need to modify some fields of your project \fIaegis.conf\fP file as follows:
 .IP history_create_command 2m
 You need to test if the history file and its checksum file exist, and
 check the checksum if this is the case.  Then, use whichever history tool

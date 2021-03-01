@@ -1,6 +1,6 @@
 //
 //	aegis - project change supervisor
-//	Copyright (C) 2004 Peter Miller;
+//	Copyright (C) 2004, 2005 Peter Miller;
 //	All rights reserved.
 //
 //	This program is free software; you can redistribute it and/or modify
@@ -20,10 +20,10 @@
 // MANIFEST: functions to manipulate attribu_lists
 //
 
-#include <ac/ctype.h>
+#include <common/ac/ctype.h>
 
-#include <ael/attribu_list.h>
-#include <common.h>
+#include <libaegis/ael/attribu_list.h>
+#include <libaegis/common.h>
 
 
 int

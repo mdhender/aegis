@@ -1,6 +1,6 @@
 //
 //	aegis - project change supervisor
-//	Copyright (C) 1999, 2001, 2003, 2004 Peter Miller;
+//	Copyright (C) 1999, 2001, 2003-2005 Peter Miller;
 //	All rights reserved.
 //
 //	This program is free software; you can redistribute it and/or modify
@@ -20,10 +20,10 @@
 // MANIFEST: functions to manipulate gets
 //
 
-#include <change/file.h>
-#include <metrics.h>
-#include <os.h>
-#include <sub.h>
+#include <libaegis/change/file.h>
+#include <libaegis/metrics.h>
+#include <libaegis/os.h>
+#include <libaegis/sub.h>
 
 
 static void

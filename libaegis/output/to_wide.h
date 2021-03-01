@@ -23,8 +23,8 @@
 #ifndef LIBAEGIS_OUTPUT_TO_WIDE_H
 #define LIBAEGIS_OUTPUT_TO_WIDE_H
 
-#include <output.h>
-#include <wide_output.h>
+#include <libaegis/output.h>
+#include <libaegis/wide_output.h>
 
 /**
   * The output_to_wide_ty class is used to represent a narrow character

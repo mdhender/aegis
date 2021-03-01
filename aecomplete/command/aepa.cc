@@ -1,6 +1,6 @@
 //
 //	aegis - project change supervisor
-//	Copyright (C) 2002-2004 Peter Miller;
+//	Copyright (C) 2002-2005 Peter Miller;
 //	All rights reserved.
 //
 //	This program is free software; you can redistribute it and/or modify
@@ -20,15 +20,15 @@
 // MANIFEST: functions to manipulate aepas
 //
 
-#include <arglex2.h>
-#include <command/aepa.h>
-#include <command/generic.h>
-#include <command/private.h>
-#include <complete/nil.h>
-#include <complete/project/name.h>
-#include <project.h>
-#include <user.h>
-#include <zero.h>
+#include <libaegis/arglex2.h>
+#include <aecomplete/command/aepa.h>
+#include <aecomplete/command/generic.h>
+#include <aecomplete/command/private.h>
+#include <aecomplete/complete/nil.h>
+#include <aecomplete/complete/project/name.h>
+#include <libaegis/project.h>
+#include <libaegis/user.h>
+#include <libaegis/zero.h>
 
 
 static void

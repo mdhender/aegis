@@ -1,6 +1,6 @@
 //
 //	aegis - project change supervisor
-//	Copyright (C) 1994-1996, 2002-2004 Peter Miller;
+//	Copyright (C) 1994-1996, 2002-2005 Peter Miller;
 //	All rights reserved.
 //
 //	This program is free software; you can redistribute it and/or modify
@@ -20,15 +20,15 @@
 // MANIFEST: functions to manipulate expressions
 //
 
-#include <aer/expr.h>
-#include <aer/lex.h>
-#include <aer/value.h>
-#include <error.h>
-#include <mem.h>
-#include <str.h>
-#include <sub.h>
-#include <trace.h>
-#include <wstr.h>
+#include <libaegis/aer/expr.h>
+#include <libaegis/aer/lex.h>
+#include <libaegis/aer/value.h>
+#include <common/error.h>
+#include <common/mem.h>
+#include <common/str.h>
+#include <libaegis/sub.h>
+#include <common/trace.h>
+#include <common/wstr.h>
 
 
 rpt_expr_ty *

@@ -1,6 +1,6 @@
 //
 //      aegis - project change supervisor
-//      Copyright (C) 2001, 2002, 2004 Peter Miller;
+//      Copyright (C) 2001, 2002, 2004, 2005 Peter Miller;
 //      All rights reserved.
 //
 //      This program is free software; you can redistribute it and/or modify
@@ -20,13 +20,13 @@
 // MANIFEST: functions to manipulate finds
 //
 
-#include <change_set/find.h>
-#include <change_set/list.h>
-#include <error.h>
-#include <format/search_list.h>
-#include <format/version_list.h>
-#include <symtab.h>
-#include <trace.h>
+#include <aeimport/change_set/find.h>
+#include <aeimport/change_set/list.h>
+#include <common/error.h>
+#include <aeimport/format/search_list.h>
+#include <aeimport/format/version_list.h>
+#include <common/symtab.h>
+#include <common/trace.h>
 
 
 static symtab_ty *stp;

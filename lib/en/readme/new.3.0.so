@@ -1,6 +1,6 @@
 .\"
 .\"	aegis - project change supervisor
-.\"	Copyright (C) 1995-1997, 1999, 2002 Peter Miller;
+.\"	Copyright (C) 1995-1997, 1999, 2002, 2005 Peter Miller;
 .\"	All rights reserved.
 .\"
 .\"	This program is free software; you can redistribute it and/or modify
@@ -24,7 +24,7 @@
 Version 3.0 is fully backwards compatible with earlier versions,
 however once a project has been used under 3.0,
 it will not be possible to revert, e.g. to version 2.3,
-without restoring the project's ``info'' directory from backup.
+without restoring the project's \[lq]info\[rq] directory from backup.
 While this was generally true of previous releases,
 any additional state information was usually undo-able
 with
@@ -96,7 +96,7 @@ The error messages of Aegis have been internationalized.
 This affects how you build Aegis, and the environment Aegis runs in.
 See the \fIBUILDING\fP file for more information.
 The \fIcshrc\fP and \fIprofile\fP shipped with this release
-set the LANG environment variable to ``en'' (for English)
+set the LANG environment variable to \[lq]en\[rq] (for English)
 if you have not set it;
 otherwise ther error messages would be terse and uninformative.
 .PP
@@ -190,7 +190,7 @@ those that have not yet passed.
 .PP
 .if n *
 .if t \(bu
-Aegis now uses ``fingerprints'' to tell if files have changed,
+Aegis now uses \[lq]fingerprints\[rq] to tell if files have changed,
 rather than simply relying on file modification time stamps.
 While this makes Aegis more robust,
 there is one caveat:
@@ -232,7 +232,7 @@ This can avoid long integration build times for large projects.
 .if t \(bu
 Architecture names are now checked a `develop end' time,
 to ensure there are no unknown variants.
-This fixes the mysterious ``you must build again'' problem.
+This fixes the mysterious \[lq]you must build again\[rq] problem.
 .PP
 .if n *
 .if t \(bu

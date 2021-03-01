@@ -1,6 +1,6 @@
 //
 //	aegis - project change supervisor
-//	Copyright (C) 2001, 2003-2005 Peter Miller;
+//	Copyright (C) 2001, 2003-2006 Peter Miller;
 //	All rights reserved.
 //
 //	This program is free software; you can redistribute it and/or modify
@@ -20,11 +20,11 @@
 // MANIFEST: functions to manipulate contexts
 //
 
-#include <patch/context.h>
+#include <libaegis/patch/context.h>
 
 
-patch_context_ty::patch_context_ty(input_ty *ip) :
-    input(ip)
+patch_context_ty::patch_context_ty(input &arg) :
+    in(arg)
 {
 }
 
@@ -42,7 +42,7 @@ patch_context_ty::getline(int n)
     while (n >= (int)buffer.nstrings)
     {
 	nstring s;
-	if (!input->one_line(s))
+	if (!in->one_line(s))
 	    return 0;
 	buffer.push_back(s.get_ref());
     }

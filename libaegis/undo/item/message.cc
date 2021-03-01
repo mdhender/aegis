@@ -1,6 +1,6 @@
 //
 //	aegis - project change supervisor
-//	Copyright (C) 2004 Peter Miller;
+//	Copyright (C) 2004, 2005 Peter Miller;
 //	All rights reserved.
 //
 //	This program is free software; you can redistribute it and/or modify
@@ -20,10 +20,8 @@
 // MANIFEST: implementation of the undo_item_message class
 //
 
-#pragma implementation "undo_item_message"
-
-#include <sub.h>
-#include <undo/item/message.h>
+#include <libaegis/sub.h>
+#include <libaegis/undo/item/message.h>
 
 
 undo_item_message::~undo_item_message()

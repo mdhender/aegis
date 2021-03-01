@@ -1,6 +1,6 @@
 .\"
 .\"	aegis - project change supervisor
-.\"	Copyright (C) 2000, 2003 Peter Miller;
+.\"	Copyright (C) 2000, 2003, 2005 Peter Miller;
 .\"	All rights reserved.
 .\"
 .\"	This program is free software; you can redistribute it and/or modify
@@ -24,7 +24,7 @@
 .if t \(bu
 \fBPlease Note:\fP Some code has been added to Aegis to assist in
 diagnosing problems when restoring projects from backups.  If you see
-a message ``aegis: \fIproject-path\fP: has been tampered with (fatal)''
+a message \[lq]aegis: \fIproject-path\fP: has been tampered with (fatal)\[rq]
 this means there are problems with the project file ownerships.
 The project owner needs to be >= AEGIS_UID (defaults to 100),
 and the project group needs to be >= AEGIS_GID (defaults to 10).

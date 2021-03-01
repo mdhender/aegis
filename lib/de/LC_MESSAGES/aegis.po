@@ -1,6 +1,6 @@
 #
 # 	aegis - project change supervisor
-# 	Copyright (C) 1995-2005 Peter Miller;
+# 	Copyright (C) 1995-2006 Peter Miller;
 # 	All rights reserved.
 #
 # 	This program is free software; you can redistribute it and/or modify
@@ -31,8 +31,8 @@
 # 	should probably be avoided.
 #
 # 	While Aegis was written by an English speaker, this English
-# 	localization file is necessary, to translate the ``terse
-# 	programmer'' style error messages into something more user
+# 	localization file is necessary, to translate the "terse
+# 	programmer" style error messages into something more user
 # 	friendly.
 #
 # 	Messages which include state names need to leave the state names
@@ -55,7 +55,7 @@
 # -------------------------------------------------------------------------
 #
 msgid	""
-msgstr	"PO-Revision-Date: 2005-11-06\n"
+msgstr	"PO-Revision-Date: 2006-03-02\n"
 	"Last-Translator: Ralf Fassel <ralf@akutech.de>\n"
 	"MIME-Version: 1.0\n"
 	"Content-Type: text/plain; charset=iso-8859-1\n"
@@ -108,7 +108,6 @@ msgstr	"Die Datei \"$filename\" ist kein passender Dateityp.  Dieses "
 	"Symbolische Links und andere spezielle Dateien müssen während "
 	"des Builds angelegt werden."
 
-# TRANSLATION REQUIRED
 #
 # This progress message is issued when a test run against the baseline
 # fails.  This is what it is meant to do because either (a) it is new
@@ -119,10 +118,9 @@ msgstr	"Die Datei \"$filename\" ist kein passender Dateityp.  Dieses "
 # 	$File_Name	The name of the test file.
 # 	$ARCHitecture	The name of the architecture.
 #
-#, fuzzy
 msgid	"$filename baseline fail, architecture $architecture, good"
-msgstr	"test \"$filename\" on $architecture on baseline failed (as it "
-	"should)"
+msgstr	"Test \"$filename\" auf $architecture gegen Baseline "
+	"fehlgeschlagen (wie sich's gehört)"
 
 #
 # This progress message is issued when a test run against the baseline
@@ -137,7 +135,6 @@ msgid	"$filename baseline fail, good"
 msgstr	"Test \"$filename\" gegen Baseline fehlgeschlagen (wie sich's "
 	"gehört)"
 
-# TRANSLATION REQUIRED
 #
 # This error message is issued when a test run against the baseline
 # passes.  See above for why this is not good.
@@ -145,10 +142,9 @@ msgstr	"Test \"$filename\" gegen Baseline fehlgeschlagen (wie sich's "
 # 	$File_Name	The name of the test file.
 # 	$ARCHitecture	The name of the architecture.
 #
-#, fuzzy
 msgid	"$filename baseline pass, architecture $architecture, not good"
-msgstr	"test \"$filename\" on $architecture on baseline passed (it must "
-	"fail)"
+msgstr	"Test \"$filename\" auf $architecture gegen Baseline bestanden "
+	"(er muss fehlschlagen)"
 
 #
 # This error message is issued when a test run against the baseline
@@ -212,16 +208,14 @@ msgstr	"Datei \"$filename\" war veraltet, siehe \"$filename,D\" für die "
 msgid	"$filename fail"
 msgstr	"Test \"$filename\" fehlgeschlagen"
 
-# TRANSLATION REQUIRED
 #
 # This error message is issued when a test against the change fails.
 #
 # 	$File_Name	The name of the test file.
 # 	$ARCHitecture	The name of the architecture tesed on.
 #
-#, fuzzy
 msgid	"$filename fail, architecture $architecture"
-msgstr	"test \"$filename\" failed on $architecture"
+msgstr	"Test \"$filename\" fehlgeschlagen auf $architecture"
 
 #
 # This error message is issued when an aed is performed on a change
@@ -274,9 +268,27 @@ msgstr	"Datei \"$filename\" war nicht mehr aktuell und wurde mit der "
 msgid	"$filename modified by history tool"
 msgstr	"Das History-Tool hat die Source-Datei \"$filename\" verändert"
 
+# TRANSLATION REQUIRED
 #
-# This error message is issued when aet runs a test which returns a ``no
-# result'' exit status.
+# This error message is issued by the aedb command when it finds
+# a problem with the directory permissions above the development
+# directory.  The directories need to be searchable (have the 'x'
+# permission) for the project owner and the reviewers.
+#
+# 	$File_Name	The name of the offending directory.
+# 	$Mode_Change	The additional mode bit required.
+# 	$Mode_Old	The current mode of the directory (optional).
+# 	$Mode_New	The desirable mode of the directory (optional).
+#
+#, fuzzy
+msgid	"$filename needs permissions $mode_change"
+msgstr	"directory \"$filename\" is not traversable, it currently has "
+	"mode $mode_old but is needs at least mode $mode_new, the \"chmod "
+	"$mode_change $filename\" command may be sufficient to fix this"
+
+#
+# This error message is issued when aet runs a test which returns a "no
+# result" exit status.
 #
 # 	$File_Name	The name of the offending file.
 #
@@ -284,19 +296,17 @@ msgid	"$filename no result"
 msgstr	"Test \"$filename\" lieferte kein Ergebnis; ein anderes Problem "
 	"verhinderte, dass der Test durchgeführt werden konnte"
 
-# TRANSLATION REQUIRED
 #
-# This error message is issued when aet runs a test which returns a ``no
-# result'' exit status.
+# This error message is issued when aet runs a test which returns a "no
+# result" exit status.
 #
 # 	$File_Name	The name of the offending file.
 # 	$ARCHitecture	The name of the architecture.
 #
-#, fuzzy
 msgid	"$filename no result, architecture $architecture"
-msgstr	"test \"$filename\" on $architecture returned no result; some  "
-	"other problem prevented the functionality under test from being "
-	"exercised"
+msgstr	"Test \"$filename\" auf $architecture lieferte kein Ergebnis; ein "
+	"anderes Problem verhinderte, dass der Test durchgeführt werden "
+	"konnte"
 
 #
 # This error message is issued when aede cannot find a file in the
@@ -325,16 +335,26 @@ msgstr	"Datei \"$filename\" ist kein Test"
 msgid	"$filename pass"
 msgstr	"Test \"$filename\" bestanden"
 
-# TRANSLATION REQUIRED
 #
 # This progress message is issued when a test against the change passes.
 #
 # 	$File_Name	The name of the test file.
 # 	$ARCHitecture	The name of the architecture.
 #
-#, fuzzy
 msgid	"$filename pass, architecture $architecture"
-msgstr	"test \"$filename\" passed on $architecture"
+msgstr	"Test \"$filename\" bestanden auf $architecture"
+
+# TRANSLATION_REQUIRED
+#
+# This error message is issued when aede discovers a file in the change
+# that has not been altered.  (Sometimes it is a warning.)
+#
+# 	$File_Name	The offending file.
+#
+#, fuzzy
+msgid	"$filename unchanged"
+msgstr	"the \"$filename\" file has not been changed, it should not be "
+	"included in the change"
 
 #
 # This error message is issued when a file named on the command
@@ -347,18 +367,15 @@ msgstr	"Pfadname \"$filename\" liegt nicht innerhalb eines Change- oder "
 	"Projektverzeichnisses; unter Umständen kann die Option -base-"
 	"relative hilfreich sein"
 
-# TRANSLATION REQUIRED
 #
 # This fatal error message is issued by the aefa -uuid command if the
 # file already has a UUID set.
 #
 # 	$File_Name	the offending filename
 #
-#, fuzzy
 msgid	"$filename uuid already set"
-msgstr	"the \"$filename\" file alreday has a UUID"
+msgstr	"Die Datei \"$filename\" hat bereits eine UUID"
 
-# TRANSLATION REQUIRED
 #
 # This fatal error message is issued by the aefa -uuid command if the
 # file already has a UUID set.
@@ -366,10 +383,9 @@ msgstr	"the \"$filename\" file alreday has a UUID"
 # 	$File_Name	the offending filename
 # 	$Other		the other filename using the UUID (optional)
 #
-#, fuzzy
 msgid	"$filename uuid duplicate"
-msgstr	"the UUID specified for the \"$filename\" file is already in use "
-	"by the \"$other\" file"
+msgstr	"Die für die Datei \"$filename\" angegebene UUID wird bereits von "
+	"der Datei \"$other\" verwendet"
 
 #
 # This error message is issued when a substitution function is formed
@@ -477,7 +493,6 @@ msgid	"$filename: arch needs name and pattern"
 msgstr	"$filename: Architekturen müssen sowohl als Name als auch als "
 	"Muster angegeben werden"
 
-# TRANSLATION REQUIRED
 #
 # This error message is issued when aesvt is checking a file checksum,
 # and finds something incorrect.
@@ -486,9 +501,8 @@ msgstr	"$filename: Architekturen müssen sowohl als Name als auch als "
 # 	$Number1	The checksum in the history header.
 # 	$Number2	The checksum calculated when reading the data.
 #
-#, fuzzy
 msgid	"$filename: checksum mismatch ($number1 != $number2)"
-msgstr	"$filename: checksum mismatch ($number1 != $number2)"
+msgstr	"$filename: Checksumme falsch ($number1 != $number2)"
 
 #
 # This error message is issued when an Aegis database file is missing a
@@ -512,6 +526,18 @@ msgstr	"$filename: enthält kein \"$field_name\" Feld"
 msgid	"$filename: corrupted \"$field_name\" field"
 msgstr	"$filename: unbrauchbares \"$field_name\" Feld"
 
+# TRANSLATION REQUIRED
+#
+# This error message is issued when aede-policy detects a file isung DOS
+# line termination when it must use UNIX line termination.
+#
+# 	$File_Name	The offending file.
+#
+#, fuzzy
+msgid	"$filename: dos line termination"
+msgstr	"the \"$filename\" file uses DOS line termination (CRLF) and it "
+	"should use UNIX line termination (LF)"
+
 #
 # This warning is issued when an obsolete field is used.
 #
@@ -530,7 +556,7 @@ msgid	"$filename: gid $number1 invalid, must be >= $number2"
 msgstr	"$filename: die Gruppen-ID ($number1) dieser Datei ist zu klein, "
 	"sie muss größer oder gleich AEGIS_MIN_GID ($number2) sein.  "
 	"Mögliche Ursache ist ein Backup-Restore Problem.  Bitte "
-	"verwenden Sie das Kommando ``chgrp -R <group> $filename'' mit "
+	"verwenden Sie das Kommando \"chgrp -R <group> $filename\" mit "
 	"einem passenden <group> Namen, um das Problem zu beheben.  [Sie "
 	"müssen dazu Root sein.]"
 
@@ -569,12 +595,33 @@ msgstr	"$filename: $number fatal${plural $number e} Fehler gefunden"
 
 # TRANSLATION REQUIRED
 #
+# This error message is issued when aede-policy detects a binary file,
+# and you have specified a policy whis disallows such files.
+#
+# 	$File_Name	The offending file name.
+#
+#, fuzzy
+msgid	"$filename: is binary"
+msgstr	"the \"$filename\" file contains binary bytes"
+
+# TRANSLATION REQUIRED
+#
+# This error message is issued when aede-policy detects unprintable
+# (non-ASCII) characters in a file, and you have specified a policy whis
+# disallows such files.
+#
+# 	$File_Name	The offending file name.
+#
+#, fuzzy
+msgid	"$filename: is unprintable"
+msgstr	"the \"$filename\" file contains unprintable characters"
+
+#
 # This error message is issued by aesvt when the file header within a
 # history file is not in a legal RFC822 format.
 #
-#, fuzzy
 msgid	"$filename: malformed RFC 822 header line"
-msgstr	"$filename: malformed RFC 822 header line"
+msgstr	"$filename: ungültige RFC 822 Header-Zeile"
 
 #
 # This error message is issued when Aegis is checking a file's modes,
@@ -586,6 +633,19 @@ msgstr	"$filename: malformed RFC 822 header line"
 #
 msgid	"$filename: mode is $number1, should be $number2"
 msgstr	"$filename: Modus ist $number1, sollte $number2 sein"
+
+# TRANSLATION REQUIRED
+#
+# This error message is issued by the aede-policy command when a file
+# does not contain and up-to-date copyright notice.
+#
+# 	$File_Name	The name of the offending file.
+# 	$Suggest	A suggested text for the missing notice (optional).
+#
+#, fuzzy
+msgid	"$filename: no current copyright notice"
+msgstr	"$filename: the file does not contain an up-to-date copyright "
+	"notice; a notice of the form \"$suggest\" would be suitable."
 
 #
 # This error message is issued when Aegis is checking a file's owner,
@@ -615,11 +675,10 @@ msgid	"$filename: uid $number1 invalid, must be >= $number2"
 msgstr	"$filename: die User-ID ($number1) dieser Datei ist zu klein, sie "
 	"muss größer oder gleich AEGIS_MIN_UID ($number2) sein.  Mögliche "
 	"Ursache ist ein Backup-Restore Problem.  Bitte verwenden Sie das "
-	"Kommando ``chown -R <user> $filename'' mit einem passenden "
+	"Kommando \"chown -R <user> $filename\" mit einem passenden "
 	"<user> Namen, um das Problem zu beheben.  [Sie müssen dazu Root "
 	"sein.]"
 
-# TRANSLATION REQUIRED
 #
 # This fatal error message is issued by the aesvt -checkin command if
 # the history file already contains a particular version.
@@ -627,11 +686,9 @@ msgstr	"$filename: die User-ID ($number1) dieser Datei ist zu klein, sie "
 # 	$File_Name	the offending filename
 # 	$Number		the offending version number
 #
-#, fuzzy
 msgid	"$filename: version $number already exists"
-msgstr	"$filename: version \"$number\" already exists"
+msgstr	"$filename: Version \"$number\" existiert bereits"
 
-# TRANSLATION REQUIRED
 #
 # This error message is issued when aesvt -checkin finds an
 # inappropriate user-specified version number.
@@ -639,11 +696,9 @@ msgstr	"$filename: version \"$number\" already exists"
 # 	$File_Name	the history file name
 # 	$Number		the offending version number
 #
-#, fuzzy
 msgid	"$filename: version $number invalid"
-msgstr	"$filename: version number \"$number\" not appropriate"
+msgstr	"$filename: Versionsnummer \"$number\" nicht verwendbar"
 
-# TRANSLATION REQUIRED
 #
 # This error message is issued when aesvt -checkout cannot find a
 # version in the history files.
@@ -651,9 +706,8 @@ msgstr	"$filename: version number \"$number\" not appropriate"
 # 	$File_Name	The name of the history file.
 # 	$Number		the offending version number
 #
-#, fuzzy
 msgid	"$filename: version $number not found"
-msgstr	"$filename: version \"$number\" not found"
+msgstr	"$filename: Version \"$number\" nicht gefunden"
 
 #
 # This error message is issued when a generic error in a function is required.
@@ -1140,7 +1194,7 @@ msgstr	"kopiere den Change in das Integrationsverzeichnis"
 #
 # This fatal error message is issued when Aegis determines that the
 # architecture it is currently running on is forbidden by the (5)
-# architecture field of the project ``config'' file.
+# architecture field of the project "aegis.conf" file.
 #
 # 	$Name		The offending architecture name.
 #
@@ -1152,7 +1206,7 @@ msgstr	"Architektur \"$name\" ist nicht zulässig, Sie können dieses "
 # This error message is issued when Aegis is unable to determine which
 # architecture it is currently running on.  This means that the
 # architecture does not match any of the architecture patterns specified
-# in the project ``config'' file.
+# in the project "aegis.conf" file.
 #
 # 	$Name		The offending architecture name.
 #
@@ -1163,13 +1217,13 @@ msgstr	"Architektur \"$name\" unbekannt"
 # This error message is issued when an architecture appears in the list
 # of architectures the change must apply to, but that architecture name
 # is not present in the project's architecture list in the project
-# ``config'' file.
+# "aegis.conf" file.
 #
 # 	$Name		The name of the offending architecture.
 #
 msgid	"architecture \"$name\" unlisted"
 msgstr	"Architektur \"$name\" ist in den Change-Attributen genannt, aber "
-	"nicht in der ``config'' Datei des Projektes aufgeführt"
+	"nicht in der \"aegis.conf\" Datei des Projektes aufgeführt"
 
 #
 # This fatal error message is issued when a file ches size while the
@@ -1196,6 +1250,17 @@ msgstr	"Arithmetischer Typ für Dekrement (angegeben wurde $name) benötigt"
 #
 msgid	"arithmetic type required for increment (was given $name)"
 msgstr	"Arithmetischer Typ für Inkrement (angegeben wurde $name) benötigt"
+
+# TRANSLATION REQUIRED
+#
+# This fatal error message is issued when a user-supplied string can't
+# be interpreted as an attribute name.
+#
+# 	$Name		The offending string.
+#
+#, fuzzy
+msgid	"attribute $name unknown"
+msgstr	"the attribute \"$name\" does not exist"
 
 #
 # This message is issued when an aeca is successfully completed.
@@ -1329,8 +1394,8 @@ msgstr	"Benutzer \"$user\" kann die Attribute des Changes nicht ändern; "
 # 'config' file.
 #
 msgid	"bad ca, unknown architecture"
-msgstr	"Architektur-Feld enthält Variationen, die nicht in der "
-	"``config'' Datei des Projektes enthalten sind"
+msgstr	"Architektur-Feld enthält Variationen, die nicht in der \"aegis."
+	"conf\" Datei des Projektes enthalten sind"
 
 #
 # This error message is issued when a user attempts to set a change's
@@ -1788,7 +1853,7 @@ msgstr	"Dieser Change ist im '$state' Status, er muß im 'being "
 
 #
 # This error message is issued when a version string is given to aenpr
-# which can't be broken into ``ispunct'' separated number.
+# which can't be broken into "ispunct" separated number.
 #
 # 	$Number		The offending version number.
 #
@@ -1879,7 +1944,7 @@ msgstr	"Bool'scher Wert benötigt für ?: Ausdruck (angegeben war $name)"
 # 	$Name		The type name of the offending operand.
 #
 msgid	"boolean value required for logical and (was given $name)"
-msgstr	"Bool'scher Wert für logisches ``and'' benötigt (angegeben wurde "
+msgstr	"Bool'scher Wert für logisches \"and\" benötigt (angegeben wurde "
 	"$name)"
 
 #
@@ -1888,17 +1953,17 @@ msgstr	"Bool'scher Wert für logisches ``and'' benötigt (angegeben wurde "
 # 	$Name		The type name of the offending operand.
 #
 msgid	"boolean value required for logical or (was given $name)"
-msgstr	"Bool'scher Wert für logisches ``or'' benötigt (angegeben wurde "
+msgstr	"Bool'scher Wert für logisches \"or\" benötigt (angegeben wurde "
 	"$name)"
 
 #
-# This error message is issued when the control expression for an ``if''
+# This error message is issued when the control expression for an "if"
 # statement does not evaluate to a boolean.
 #
 # 	$Name		The type name of the offending operand.
 #
 msgid	"boolean value required in if statement (not $name)"
-msgstr	"Bool'scher Wert für ``if''-Anweisung  benötigt (angegeben wurde "
+msgstr	"Bool'scher Wert für \"if\"-Anweisung  benötigt (angegeben wurde "
 	"$name)"
 
 #
@@ -1930,6 +1995,16 @@ msgid	"branch completed"
 msgstr	"Sie können Changes und Branches nur in Branches erzeugen, die "
 	"aktiv sind, dieser Branch ist nicht im 'being developed' Status"
 
+# TRANSLATION_REQUIRED
+#
+# This error messages is issued when aede-policy finds a change set in
+# which the brief description is empty, or has not been changed from the
+# default.
+#
+#, fuzzy
+msgid	"brief_description not set"
+msgstr	"the brief description has been not set"
+
 #
 # This error message is issued when aede finds a file which has not been
 # built.
@@ -1954,9 +2029,9 @@ msgid	"build trashed $filename"
 msgstr	"Die Source-Datei \"$filename\" scheint durch den Build verändert "
 	"worden zu sein. Dies passiert oft, wenn eine Source-Datei in "
 	"eine generierte Datei umgewandelt wird. Ändern Sie in einem "
-	"separaten Change die Build-Konfiguration, oder ``aerm "
-	"$filename'', oder ``aerm $filename'' und dann ``aenf -build "
-	"$filename'' in einem Folgechange."
+	"separaten Change die Build-Konfiguration, oder \"aerm $filename"
+	"\", oder \"aerm $filename\" und dann \"aenf -build $filename\" "
+	"in einem Folgechange."
 
 #
 # This error message is issued when copying a file to stdout fails.
@@ -2155,6 +2230,17 @@ msgstr	"Kommando \"$command\" beendet durch $signal (core dumped)"
 msgid	"command line too short"
 msgstr	"Kommandozeile zu kurz"
 
+# TRANSLATION REQUIRED
+#
+# This fatal error message is issued when an unrecognised compression
+# algorithm name is given on the command line (aedist, aepatch, etc).
+#
+# 	$name		The offending compression algorithm name.
+#
+#, fuzzy
+msgid	"compression algorithm \"$name\" unknown"
+msgstr	"compression algorithm \"$name\" unknown"
+
 #
 # This message is inserted into the top of the project config file
 # automatically created by aeimport.
@@ -2324,6 +2410,16 @@ msgstr	"Delta $number ist ungültig, es muß eine kleine positive Zahl sein"
 #
 msgid	"delta name complete"
 msgstr	"Delta $number kann nun Delta \"$name\" angesprochen werden"
+
+# TRANSLATION_REQUIRED
+#
+# This error messages is issued when aede-policy finds a change set in
+# which the brief description is empty, or has not been changed from the
+# default.
+#
+#, fuzzy
+msgid	"description not set"
+msgstr	"the description field has not been set"
 
 #
 # This progress message is issued when aedb completes successfully.
@@ -2509,7 +2605,7 @@ msgstr	"Zeilenende im Text"
 # 	$Name		The name of the offending environment variable.
 #
 msgid	"environment variable $name not set"
-msgstr	"Umgebungsvariable ``$name'' nicht gesetzt"
+msgstr	"Umgebungsvariable \"$name\" nicht gesetzt"
 
 #
 # This fatal error message is issued when the execution of a command
@@ -2818,7 +2914,7 @@ msgstr	"Datei-Qualifier unbekannt"
 # 	$name	The offending type name.
 #
 msgid	"file type $name unknown"
-msgstr	"Dateityp ``$name'' unbekannt"
+msgstr	"Dateityp \"$name\" unbekannt"
 
 #
 # This error message is a summary issued when one or more change
@@ -2856,22 +2952,22 @@ msgstr	"Prüfsumme \"$filename\": $errno"
 # This error message is issued when a break statement is seen outside any
 # enclosing loop or switch statement.
 #
-msgid	"floating ``break'' statement"
-msgstr	"freilaufende ``break'' Anweisung"
+msgid	"floating \"break\" statement"
+msgstr	"freilaufende \"break\" Anweisung"
 
 #
 # This error message is issued when a continue statement is seen outside
 # any enclosing loop or switch statement.
 #
-msgid	"floating ``continue'' statement"
-msgstr	"freilaufende ``continue'' Anweisung"
+msgid	"floating \"continue\" statement"
+msgstr	"freilaufende \"continue\" Anweisung"
 
 #
 # This error message is issued when a return statement is used outside
 # any function.
 #
-msgid	"floating ``return'' statement"
-msgstr	"freilaufende ``return'' Anweisung"
+msgid	"floating \"return\" statement"
+msgstr	"freilaufende \"return\" Anweisung"
 
 #
 # This format string is used when assembling the list of outstanding
@@ -2888,7 +2984,7 @@ msgstr	"für die $name_list Architektur${plural $number en}"
 # This error message is issued as a summary when one or more
 # architectures appear in the list of architectures the change must
 # apply to, but are not present in the project's architecture list in
-# the project ``config'' file.
+# the project "aegis.conf" file.
 #
 # 	$Number		The number of unknown architecture(s).
 # 			(Optional)
@@ -2897,7 +2993,7 @@ msgid	"found unlisted architectures"
 msgstr	"$number nicht aufgeführte Architektur${plural $number en} "
 	"gefunden, editieren Sie die Change-Attribute, um ${plural "
 	"$number diese sie} zu entfernen, oder editieren Sie die Projekt "
-	"``config'' Datei, um {plural $number diese sie} hinzuzufügen"
+	"\"aegis.conf\" Datei, um {plural $number diese sie} hinzuzufügen"
 
 #
 # This error message is issued when a function which requires exactly
@@ -3038,7 +3134,7 @@ msgstr	"ungültige Addition ($name1 + $name2)"
 # 	$Name		The type name of the offending operand.
 #
 msgid	"illegal bit not ($name)"
-msgstr	"Integerwert benötigt für Bit-wise ``not'' (angegeben wurde $name)"
+msgstr	"Integerwert benötigt für Bit-wise \"not\" (angegeben wurde $name)"
 
 #
 # This error message is issued when an illegal e!=e is attempted.
@@ -3170,13 +3266,13 @@ msgstr	"ungültige Zuweisungsseite (angegeben wurde $name), muss eine "
 # 	$Name		The type name of the offending operand.
 #
 msgid	"illegal logical not ($name)"
-msgstr	"Bool'scher Wert benötigt für logisches ``not'' (angegeben wurde "
+msgstr	"Bool'scher Wert benötigt für logisches \"not\" (angegeben wurde "
 	"$name)"
 
 #
 # This error message is issued when an illegal lookup is attempted.
-# This occurs both for associative arrays ``e1[e2]'', and also for
-# structures ``e1.e2'' (which are implemented as associative arrays).
+# This occurs both for associative arrays "e1[e2]", and also for
+# structures "e1.e2" (which are implemented as associative arrays).
 #
 # 	$Name1		The type name of the first operand.
 # 	$Name2		The type name of the second operand.
@@ -3324,7 +3420,7 @@ msgstr	"Integer-Index benötigt (angegeben wurde $name)"
 # 	$Name		The type name of the offending operand.
 #
 msgid	"integer value required for bit and (was given $name)"
-msgstr	"Integer-Wert benötigt für Bit-wise ``and'' (angegeben wurde "
+msgstr	"Integer-Wert benötigt für Bit-wise \"and\" (angegeben wurde "
 	"$name)"
 
 #
@@ -3333,7 +3429,7 @@ msgstr	"Integer-Wert benötigt für Bit-wise ``and'' (angegeben wurde "
 # 	$Name		The type name of the offending operand.
 #
 msgid	"integer value required for bit or (was given $name)"
-msgstr	"Integer-Wert benötigt für Bit-wise ``or'' (angegeben wurde $name)"
+msgstr	"Integer-Wert benötigt für Bit-wise \"or\" (angegeben wurde $name)"
 
 #
 # This message is issued when an inappropriate ^ is attempted.
@@ -3341,7 +3437,7 @@ msgstr	"Integer-Wert benötigt für Bit-wise ``or'' (angegeben wurde $name)"
 # 	$Name		The type name of the offending operand.
 #
 msgid	"integer value required for bit xor (was given $name)"
-msgstr	"Integer-Wert benötigt für Bit-wise``exclusive or'' (angegeben "
+msgstr	"Integer-Wert benötigt für Bit-wise \"exclusive or\" (angegeben "
 	"wurde $name)"
 
 #
@@ -3470,7 +3566,7 @@ msgid	"list $name ambiguous"
 msgstr	"Listen-Name \"$name\" ist mehrdeutig ($name_list)"
 
 #
-# This message is issued when an inappropriate ``in'' is attempted.
+# This message is issued when an inappropriate "in" is attempted.
 #
 # 	$Name		The type name of the offending operand.
 #
@@ -3988,14 +4084,12 @@ msgid	"no $name project, closest is $guess"
 msgstr	"Projekt \"$name\" unbekannt, das nächste ist das \"$guess\" "
 	"Projekt"
 
-# TRANSLATION REQUIRED
 #
 # This error message is issued if no action was specified on the aesvt
 # command line.  Exactly one is required.
 #
-#, fuzzy
 msgid	"no action specified"
-msgstr	"no action specified"
+msgstr	"Keine Aktion angegeben"
 
 #
 # This fatal error message is issued when an attempt is made to aechown
@@ -4004,6 +4098,15 @@ msgstr	"no action specified"
 msgid	"no branch chown"
 msgstr	"Dieser Change ist ein Branch; es ist nicht möglich, den Besitzer "
 	"eines Branches zu ändern "
+
+# TRANSLATION REQUIRED
+#
+# This information message is issued when aeb is invoked for a change in
+# a project which is configured to not require builds.
+#
+#, fuzzy
+msgid	"no build required"
+msgstr	"no build is required for changes to this project"
 
 #
 # This error message is issued when a command which requires an explicit
@@ -4014,7 +4117,7 @@ msgstr	"Sie müssen für dieses Kommando die Changenummer explizit angeben"
 
 #
 # This fatal error message is issued when a user attempts to perform a
-# cross branch merge on a change in the ``being integrated'' state.
+# cross branch merge on a change in the "being integrated" state.
 #
 msgid	"no cross branch int merge"
 msgstr	"Sie können keinen Merge zwischen Branches für einen Change im "
@@ -4070,6 +4173,16 @@ msgstr	"es sind noch keine Integrationen abgeschlossen,deshalb kann noch "
 msgid	"no dev dir"
 msgstr	"Dieser Change ist im Status '$state', es gibt kein "
 	"Bearbeitungsverzeichnis"
+
+# TRANSLATION REQUIRED
+#
+# This information message is issued when the aed command is run for a
+# change which is in a project configured not to use aed.
+#
+#, fuzzy
+msgid	"no diff required"
+msgstr	"no \"aegis -diff\" command is required for this change, the "
+	"project has been configured to omit this requirement"
 
 #
 # This error message is issued when an attempt is made to specify a
@@ -4131,14 +4244,12 @@ msgid	"no files uncopied"
 msgstr	"$number ${plural $number fatale fataler} Fehler gefunden, es "
 	"wurden keine Dateien aus den Change entfernt"
 
-# TRANSLATION REQUIRED
 #
 # This fatal error message is issued when aesvt finds no history
 # file on the command line.
 #
-#, fuzzy
 msgid	"no history file name specified"
-msgstr	"no history file name specified"
+msgstr	"Kein History-Dateiname angegeben"
 
 #
 # This fatal error message is issued when aeimport finds no history
@@ -4157,14 +4268,12 @@ msgstr	"Keine History-Dateien unterhalb des angegebenen Verzeichnisses "
 msgid	"no info $name"
 msgstr	"Version-Informations-Name \"$name\" unbekannt"
 
-# TRANSLATION REQUIRED
 #
 # This error message is issued if the assvt -checkin command is not
 # given an input file name on the command line.
 #
-#, fuzzy
 msgid	"no input file"
-msgstr	"no input file name specified"
+msgstr	"Keine Eingabedatei angegeben"
 
 #
 # This error message is issued when a request is made which requires the
@@ -4217,14 +4326,12 @@ msgid	"no new files"
 msgstr	"$number ${plural $number fatale fataler} Fehler gefunden, es "
 	"wurden keine neuen Dateien zum Change hinzugefügt"
 
-# TRANSLATION REQUIRED
 #
 # This error message is issued if output file name was specified on the
 # aesvt -checkout command line.
 #
-#, fuzzy
 msgid	"no output file"
-msgstr	"no output file name specified"
+msgstr	"Keine Ausgabedatei angegeben"
 
 #
 # This error message is issued when a command which requires an explicit
@@ -4250,7 +4357,7 @@ msgstr	"Kein Berichtsname angegeben"
 
 #
 # This error message is issued when aet completes unsuccessfully because
-# one or more tests returned a ``no result'' exit code.
+# one or more tests returned a "no result" exit code.
 #
 # 	$Number		The number of tests which failed.
 #
@@ -4404,19 +4511,19 @@ msgid	"open $filename: $errno"
 msgstr	"öffnen von \"$filename\": $errno"
 
 #
-# TRANSLATION REQUIRED
 # This error message is issued when a file open fails because there was
 # no curl library available when ./configure was run.
 #
 # 	$File_Name	The name of the offending file.
 #
-#, fuzzy
 msgid	"open $filename: no curl library"
-msgstr	"unable to open \"$filename\" because there was no -lcurl library "
-	"available when Aegis was built.  The curl library is used to "
-	"read many different style of URL.  If you are using a package "
-	"manager, it may usually be found in the curl-devel package.  You "
-	"will need to reconfigure and rebuild Aegis once it is installed."
+msgstr	"Die Datei \"$filename\" konnte nicht geöffnet werden, weil keine "
+	"-lcurl Bibliothek verfügbar war, als Aegis kompiliert wurde.  "
+	"Die curl-Bibliothek wird zum Lesen verschiedener URL-Stile "
+	"verwendet. Wenn Sie einen Paket-Manager verwenden, befindet sich "
+	"die Bibliothek üblicherweise im Paket curl-devel. Sie müssen "
+	"Aegis nach der Installation dieses Paketes neu konfigurieren und "
+	"kompilieren."
 
 #
 # This error message is issued by aede when attempting to end the
@@ -4643,13 +4750,13 @@ msgstr	"Auschecken der importierten Haupt-Revisionen, um die Baseline zu "
 
 #
 # This verbose message is issued by the aecd command when a change is
-# in the ``awaiting review'' state.  By reminding reviewers to use aerb,
+# in the "awaiting review" state.  By reminding reviewers to use aerb,
 # we make the statistics more meaningful, and also block other reviewes
 # from wasting their time.
 #
 msgid	"remember to use the aerb command"
-msgstr	"Wenn Sie diesen Change reviewen, verwenden Sie das ``aegis -"
-	"review-begin'' Kommando so bald wie möglich.  Damit stellen Sie "
+msgstr	"Wenn Sie diesen Change reviewen, verwenden Sie das \"aegis -"
+	"review-begin\" Kommando so bald wie möglich.  Damit stellen Sie "
 	"sicher, daß keine anderen Reviewer ihre kostbare Zeit vergeuden."
 
 #
@@ -4865,8 +4972,8 @@ msgid	"restart integration after upgrade"
 msgstr	"Es sollten keine Changes im Status $state sein, wenn eine neue "
 	"Version von Aegis installiert wird, weil einige Datei-"
 	"Informationen nicht verfügbar sind. Bitte wenden Sie die "
-	"Kommandos ``aegis -ibu'' und dann``aegis -ib'' auf diesen Change "
-	"an, um die Integration erneut zu starten"
+	"Kommandos \"aegis -ibu\" und dann \"aegis -ib\" auf diesen "
+	"Change an, um die Integration erneut zu starten"
 
 #
 # This progress message is issued when aerb completes successfully.
@@ -5535,7 +5642,7 @@ msgstr	"Wert vom Typ $name benötigt"
 # 	$number	The offending version number.
 #
 msgid	"version $number not a branch"
-msgstr	"Version ``$number'' ist kein Branch"
+msgstr	"Version \"$number\" ist kein Branch"
 
 #
 # This progress message is issued when Aegis is waiting for a lock.
@@ -5551,16 +5658,16 @@ msgstr	"warte auf $name Lock"
 # baseline read lock.  This message is issued with a project indicator.
 #
 msgid	"waiting for baseline read lock"
-msgstr	"warte auf shared Baseline Lock; im Moment läuft ein ``aegis -"
-	"Integrate_PASS'' Kommando"
+msgstr	"warte auf shared Baseline Lock; im Moment läuft ein \"aegis -"
+	"Integrate_PASS\" Kommando"
 
 #
 # This progress message is issued when Aegis is waiting for a project
 # baseline write lock.  This message is issued with a project indicator.
 #
 msgid	"waiting for baseline write lock"
-msgstr	"warte auf exklusiven Baseline Lock; im Moment läuft ein ``aegis -"
-	"Build'' Kommando"
+msgstr	"warte auf exklusiven Baseline Lock; im Moment läuft ein \"aegis -"
+	"Build\" Kommando"
 
 #
 # This progress message is issued when Aegis is waiting for a global state
@@ -5574,8 +5681,8 @@ msgstr	"warte auf Lock für den Index der Projektorte"
 # history lock.  This message is issued with a project indicator.
 #
 msgid	"waiting for history lock"
-msgstr	"warte auf history Lock; im Moment läuft ein ``aegis -"
-	"Integrate_PASS'' Kommando in einem anderen Branch"
+msgstr	"warte auf history Lock; im Moment läuft ein \"aegis -"
+	"Integrate_PASS\" Kommando in einem anderen Branch"
 
 #
 # This progress message is issued when Aegis is waiting for a lock.
@@ -5621,7 +5728,6 @@ msgstr	"Warnung: der Patch für \"$filename\" konnte nicht verwendet "
 	"verwendet; möglicherweise müssen Sie Konflikte manuell auflösen"
 
 #
-# TRANSLATION REQUIRED
 # This warning message is issued when the the old project configuration
 # file name if given to the aenf command, without a -config or -noconfig
 # option.  This has been obsoleted, and users are encouraged to use the
@@ -5630,11 +5736,19 @@ msgstr	"Warnung: der Patch für \"$filename\" konnte nicht verwendet "
 #       $File_Name1      The name of the old project configuration file.
 #       $File_Name2      The name of the new project configuration file default.
 #
-#, fuzzy
 msgid	"warning: $filename1 deprecated, use $filename2 file instead"
-msgstr	"Warning: The \"$filename1\" file has been deprecated, it is "
-	"suggested that you use the \"$filename2\" file instead.  See aenf"
-	"(1) for more information."
+msgstr	"Warnung: die Datei \"$filename1\" sollte nicht mehr verwendet "
+	"werden, Sie sollten stattdessen die Datei \"$filename2\" "
+	"verwenden.  Siehe aenf(1) für weitere Informationen."
+
+#
+# This generic message is used to turn what would otherwise be an error
+# message into a warning message.
+#
+# 	$MeSsaGe	The message to be printed as a warning.
+#
+msgid	"warning: $message"
+msgstr	"Warnung: $message"
 
 #
 # This warning message is issued when the AEGIS environment is observed.

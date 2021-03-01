@@ -1,6 +1,6 @@
 //
 //	aegis - project change supervisor
-//	Copyright (C) 1995-2005 Peter Miller;
+//	Copyright (C) 1995-2006 Peter Miller;
 //	All rights reserved.
 //
 //	This program is free software; you can redistribute it and/or modify
@@ -23,12 +23,14 @@
 #ifndef LIBAEGIS_CHANGE_H
 #define LIBAEGIS_CHANGE_H
 
-#include <main.h>
-#include <cstate.h>
-#include <fstate.h>
-#include <pconf.h>
-#include <view_path.h>
-#include <zero.h>
+#include <common/main.h>
+#include <libaegis/cstate.h>
+#include <libaegis/fstate.h>
+#include <libaegis/pconf.h>
+#include <libaegis/view_path.h>
+#include <libaegis/zero.h>
+
+class nstring_list; // forward
 
 //
 // Name of the project configuration file,
@@ -46,6 +48,7 @@
 struct string_list_ty; // existence
 struct user_ty; // existence
 struct sub_context_ty; // existence
+struct symtab_ty; // existence
 
 struct change_ty
 {
@@ -56,7 +59,8 @@ struct change_ty
 	string_ty	*cstate_filename;
 	int		cstate_is_a_new_file;
 	fstate_ty	*fstate_data;
-	struct symtab_ty *fstate_stp;
+	symtab_ty       *fstate_stp;
+	symtab_ty       *fstate_uuid_stp;
 	string_ty	*fstate_filename;
 	string_ty	*pfstate_filename;
 	int		fstate_is_a_new_file;
@@ -73,11 +77,60 @@ struct change_ty
 	string_ty	*architecture_name;
 	struct string_list_ty *file_list[view_path_MAX];
 
+	/**
+          * The attributes_get method is used to obtain the value of an
+          * attribute of this change set.
+	  *
+	  * @param name
+	  *     The name of the attribute.
+	  *     Attribute names are not case sensitive.
+	  * @returns
+          *     the string value of the attribute, or the empty string
+          *     if not found.
+	  */
+	nstring attributes_get(const nstring &name);
+
+	/**
+          * The attributes_get_boolean method is used to obtain the
+          * value of an attribute of this change set, as a true/false
+          * attribute.
+	  *
+	  * @param name
+	  *     The name of the attribute.
+	  *     Attribute names are not case sensitive.
+	  * @returns
+          *     the boolean value of the attribute, or false if the
+          *     attribute is not found or is not interpretable as a
+          *     boolean.
+	  */
+	bool attributes_get_boolean(const nstring &name);
+
+	/**
+          * The pconf_attributes_get method is used to obtain the
+          * value of an attribute of the project, from the project
+          * configuration file.  It could be in this change, or it could
+          * be in a baseline or an ancestor baseline.
+	  *
+	  * @param name
+	  *     The name of the attribute.
+	  *     Attribute names are not case sensitive.
+	  * @returns
+          *     the string value of the attribute, or the empty string
+          *     if not found.
+	  */
+	nstring pconf_attributes_find(const nstring &name);
+
+	/**
+          * The pconf_copyright_owner_get method is used to obtain the
+          * name of the copyright holder of a project.
+	  */
+	nstring pconf_copyright_owner_get();
+
 	//
 	// if you add to this structure, don't forget to update
-	// change_alloc()     in libaegis/change/alloc.c
-	// change_free()      in libaegis/change/free.c
-	// change_lock_sync() in libaegis/change/lock_sync.c
+	// change_alloc()     in libaegis/change/alloc.cc
+	// change_free()      in libaegis/change/free.cc
+	// change_lock_sync() in libaegis/change/lock_sync.cc
 	//
 };
 
@@ -96,6 +149,7 @@ string_ty *change_developer_name(change_ty *);
 string_ty *change_reviewer_name(change_ty *);
 string_ty *change_integrator_name(change_ty *);
 void change_top_path_set(change_ty *, string_ty *);
+void change_top_path_set(change_ty *, const nstring &);
 void change_development_directory_set(change_ty *, string_ty *);
 void change_integration_directory_set(change_ty *, string_ty *);
 string_ty *change_top_path_get(change_ty *, int);
@@ -234,10 +288,11 @@ void change_run_integrate_begin_command(change_ty *);
 void change_run_integrate_begin_undo_command(change_ty *);
 void change_run_develop_begin_command(change_ty *, struct user_ty *);
 void change_run_develop_begin_undo_command(change_ty *, struct user_ty *);
-int change_run_test_command(change_ty *, struct user_ty *, string_ty *,
-	string_ty *, int, int);
-int change_run_development_test_command(change_ty *, struct user_ty *,
-	string_ty *, string_ty *, int, int);
+int change_run_test_command(change_ty *cp, struct user_ty *up, string_ty *,
+	string_ty *, int, int, const nstring_list &variable_assignments);
+int change_run_development_test_command(change_ty *cp, struct user_ty *up,
+	string_ty *, string_ty *, int, int,
+	const nstring_list &variable_assignments);
 void change_run_build_command(change_ty *);
 void change_run_build_time_adjust_notify_command(change_ty *);
 void change_run_development_build_command(change_ty *, struct user_ty *,
@@ -275,9 +330,72 @@ string_ty *change_run_architecture_discriminator_command(change_ty *cp);
 cstate_architecture_times_ty *change_architecture_times_find(change_ty *,
 	string_ty *);
 void change_build_time_set(change_ty *);
-void change_test_time_set(change_ty *, time_t);
-void change_test_baseline_time_set(change_ty *, time_t);
-void change_regression_test_time_set(change_ty *, time_t);
+
+/**
+  * The change_test_time_set function is used to set the test time for a
+  * change.  The architecture of the currently executing session is used.
+  *
+  * @param cp
+  *     The change in question.
+  * @param when
+  *     The time the test was performed.
+  */
+void change_test_time_set(change_ty *cp, time_t when);
+
+/**
+  * The change_test_time_set function is used to set the test time for a
+  * change, for the given architecture variant.
+  *
+  * @param cp
+  *     The change in question.
+  * @param variant
+  *     The name of the architecture of interest.
+  * @param when
+  *     The time the test was performed.
+  */
+void change_test_time_set(change_ty *cp, string_ty *variant, time_t when);
+
+/**
+  * The change_test_baseline_time_set function is used to set the
+  * baseline test time for a change.  The architecture of the currently
+  * executing session is used.
+  *
+  * @param cp
+  *     The change in question.
+  * @param when
+  *     The time the test was performed.
+  */
+void change_test_baseline_time_set(change_ty *cp, time_t when);
+
+/**
+  * The change_test_baseline_time_set function is used to set the test
+  * time for a change, for the given architecture variant.
+  *
+  * @param cp
+  *     The change in question.
+  * @param variant
+  *     The name of the architecture of interest.
+  * @param when
+  *     The time the test was performed.
+  */
+void change_test_baseline_time_set(change_ty *cp, string_ty *variant,
+    time_t when);
+
+/**
+  * The change_regression_test_time_set function is used to set (or
+  * clear) the regression test time stamp of the chanegh set.
+  *
+  * @param cp
+  *     The change set in question.
+  * @param when
+  *     The time the test was performed, or zero to clear the time.
+  * @param arch_name
+  *     The name of the architecture, or the NULL pointer to mean "the
+  *     current one".
+  */
+void change_regression_test_time_set(change_ty *cp, time_t when,
+    string_ty *arch_name = 0);
+
 void change_test_times_clear(change_ty *);
 void change_build_times_clear(change_ty *);
 void change_architecture_from_pconf(change_ty *);
@@ -352,10 +470,30 @@ string_ty *change_development_directory_template(change_ty *,
 string_ty *change_metrics_filename_pattern_get(change_ty *);
 
 /**
-  * The change_is_being_developed function returns true (non-zero) if the
-  * given change is in the completed state, and false (zero) if it is not.
+  * The change_is_awaiting_development function returns true if the
+  * given change is in the awaiting development state, and false if it
+  * is not.
+  */
+bool change_is_awaiting_development(change_ty *);
+
+/**
+  * The change_is_being_developed function returns true (non-zero) if
+  * the given change is in the being developed state, and false (zero)
+  * if it is not.
   */
 int change_is_being_developed(change_ty *);
+
+/**
+  * The change_is_being_integrated function is used to determine whether
+  * or not a change is in the being integrated state.
+  *
+  * @param cp
+  *     The change in question.
+  * @returns
+  *     bool; true if the given change is in the being integarted state,
+  *     and false if it is not.
+  */
+bool change_is_being_integrated(change_ty *cp);
 
 /**
   * The change_is_completed function returns true (non-zero) if the given
@@ -425,5 +563,27 @@ bool change_reviewer_already(change_ty *cp, string_ty *login);
   *     time_t; the time of the event, or 0 if not found.
   */
 time_t change_when_get(change_ty *cp, cstate_history_what_ty what);
+
+/**
+  * The change_diff_required function is used to see of the project (and
+  * this specific change set) need the diff command to be run.
+  *
+  * @param cp
+  *     The change in question.
+  * @returns
+  *     bool; true if diff command needs to be run, false if not.
+  */
+bool change_diff_required(change_ty *cp);
+
+/**
+  * The change_build_required function is used to see of the project (and
+  * this specific change set) need the build command to be run.
+  *
+  * @param cp
+  *     The change in question.
+  * @returns
+  *     bool; true if build command needs to be run, false if not.
+  */
+bool change_build_required(change_ty *cp);
 
 #endif // LIBAEGIS_CHANGE_H

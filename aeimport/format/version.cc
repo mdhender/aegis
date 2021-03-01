@@ -1,6 +1,6 @@
 //
 //      aegis - project change supervisor
-//      Copyright (C) 2001, 2002, 2004 Peter Miller;
+//      Copyright (C) 2001, 2002, 2004, 2005 Peter Miller;
 //      All rights reserved.
 //
 //      This program is free software; you can redistribute it and/or modify
@@ -20,10 +20,10 @@
 // MANIFEST: functions to manipulate versions
 //
 
-#include <error.h> // for assert
-#include <format/version.h>
-#include <format/version_list.h>
-#include <mem.h>
+#include <common/error.h> // for assert
+#include <aeimport/format/version.h>
+#include <aeimport/format/version_list.h>
+#include <common/mem.h>
 
 
 format_version_ty::format_version_ty() :
@@ -72,7 +72,7 @@ format_version_ty::~format_version_ty()
     before = 0;
     if (after)
     {
-        format_version_delete(after);
+        delete(after);
         after = 0;
     }
     if (after_branch)
@@ -102,7 +102,7 @@ format_version_ty::validate()
         assert(str_validate(description));
     assert(tag.validate());
     if (after)
-        format_version_validate(after);
+        after->validate();
     if (after_branch)
         format_version_list_validate(after_branch);
 }

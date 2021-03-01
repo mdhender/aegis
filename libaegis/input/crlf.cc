@@ -1,6 +1,6 @@
 //
 //	aegis - project change supervisor
-//	Copyright (C) 1999, 2002-2005 Peter Miller;
+//	Copyright (C) 1999, 2002-2006 Peter Miller;
 //	All rights reserved.
 //
 //	This program is free software; you can redistribute it and/or modify
@@ -20,37 +20,36 @@
 // MANIFEST: functions for reading input and filtering out CR LF sequences
 //
 
-#include <input/crlf.h>
-#include <sub.h>
-#include <trace.h>
+#include <common/trace.h>
+#include <libaegis/input/crlf.h>
+#include <libaegis/sub.h>
 
 
 input_crlf::~input_crlf()
 {
-    trace(("input_crlf::~input_crlf()\n{\n"));
+    trace(("input_crlf::~input_crlf(this = %08lX)\n{\n", (long)this));
     pullback_transfer(deeper);
-    if (delete_on_close)
-	delete deeper;
-    deeper = 0;
+    deeper.close();
     trace(("}\n"));
 }
 
 
-input_crlf::input_crlf(input_ty *arg1, bool arg2) :
+input_crlf::input_crlf(input &arg1, bool arg2) :
     deeper(arg1),
-    delete_on_close(arg2),
     pos(0),
     line_number(0),
     prev_was_newline(true),
-    newlines_may_be_escaped(false)
+    newlines_may_be_escaped(arg2)
 {
+    trace(("input_crlf::input_crlf(this = %08lX)\n{\n", (long)this));
+    trace(("}\n"));
 }
 
 
 long
 input_crlf::read_inner(void *data, size_t len)
 {
-    trace(("input_crlf::read_inner()\n{\n"));
+    trace(("input_crlf::read_inner(this = %08lX)\n{\n", (long)this));
     if (prev_was_newline)
     {
 	++line_number;
@@ -67,11 +66,11 @@ input_crlf::read_inner(void *data, size_t len)
     unsigned char *end = cp + len;
     while (cp < end)
     {
-	int c = deeper->getc();
+	int c = deeper->getch();
 	switch (c)
 	{
 	case '\r':
-	    c = deeper->getc();
+	    c = deeper->getch();
 	    if (c == '\n')
 		goto newline;
 	    if (c >= 0)
@@ -86,7 +85,7 @@ input_crlf::read_inner(void *data, size_t len)
 	case '\\':
 	    if (newlines_may_be_escaped)
 	    {
-		c = deeper->getc();
+		c = deeper->getch();
 		if (c == '\n')
 		{
 		    //
@@ -181,7 +180,7 @@ input_crlf::read_inner(void *data, size_t len)
 long
 input_crlf::ftell_inner()
 {
-    trace(("input_crlf_ftell => %ld\n", pos));
+    trace(("input_crlf_ftell(this = %08lX) => %ld\n", (long)this, pos));
     return pos;
 }
 
@@ -189,7 +188,7 @@ input_crlf::ftell_inner()
 nstring
 input_crlf::name()
 {
-    trace(("input_crlf_name\n"));
+    trace(("input_crlf_name(this = %08lX)\n", (long)this));
     if (!line_number)
 	return deeper->name();
     if (!name_cache)
@@ -204,7 +203,7 @@ input_crlf::name()
 long
 input_crlf::length()
 {
-    trace(("input_crlf_length => -1\n"));
+    trace(("input_crlf_length(this = %08lX) => -1\n", (long)this));
     return -1;
 }
 
@@ -213,13 +212,6 @@ void
 input_crlf::keepalive()
 {
     deeper->keepalive();
-}
-
-
-void
-input_crlf::escaped_newline()
-{
-    newlines_may_be_escaped = true;
 }
 
 

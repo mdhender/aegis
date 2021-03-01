@@ -1,6 +1,6 @@
 #
 # 	aegis - project change supervisor
-# 	Copyright (C) 2001-2005 Peter Miller;
+# 	Copyright (C) 2001-2006 Peter Miller;
 # 	All rights reserved.
 #
 # 	This program is free software; you can redistribute it and/or modify
@@ -47,7 +47,7 @@
 # -------------------------------------------------------------------------
 #
 msgid	""
-msgstr	"PO-Revision-Date: 2005-11-06\n"
+msgstr	"PO-Revision-Date: 2006-03-02\n"
 	"Last-Translator: Jelle Boomstra <nietsch@dds.nl>\n"
 	"Language-Team: Nederlands <nl@li.org>\n"
 	"MIME-Version: 1.0\n"
@@ -268,9 +268,27 @@ msgstr	"bestand \"$filename\" was verouderd en is samengevoegd met de "
 msgid	"$filename modified by history tool"
 msgstr	"de history tool heeft het \"$filename\" source bestand gewijzigd"
 
+# TRANSLATION REQUIRED
 #
-# This error message is issued when aet runs a test which returns a ``no
-# result'' exit status.
+# This error message is issued by the aedb command when it finds
+# a problem with the directory permissions above the development
+# directory.  The directories need to be searchable (have the 'x'
+# permission) for the project owner and the reviewers.
+#
+# 	$File_Name	The name of the offending directory.
+# 	$Mode_Change	The additional mode bit required.
+# 	$Mode_Old	The current mode of the directory (optional).
+# 	$Mode_New	The desirable mode of the directory (optional).
+#
+#, fuzzy
+msgid	"$filename needs permissions $mode_change"
+msgstr	"directory \"$filename\" is not traversable, it currently has "
+	"mode $mode_old but is needs at least mode $mode_new, the \"chmod "
+	"$mode_change $filename\" command may be sufficient to fix this"
+
+#
+# This error message is issued when aet runs a test which returns a "no
+# result" exit status.
 #
 # 	$File_Name	The name of the offending file.
 #
@@ -280,8 +298,8 @@ msgstr	"Test \"$filename\" gaf geen resultaat; een ander probleem "
 
 # TRANSLATION REQUIRED
 #
-# This error message is issued when aet runs a test which returns a ``no
-# result'' exit status.
+# This error message is issued when aet runs a test which returns a "no
+# result" exit status.
 #
 # 	$File_Name	The name of the offending file.
 # 	$ARCHitecture	The name of the architecture.
@@ -329,6 +347,18 @@ msgstr	"Test \"$filename\" geslaagd"
 #, fuzzy
 msgid	"$filename pass, architecture $architecture"
 msgstr	"test \"$filename\" passed on $architecture"
+
+# TRANSLATION_REQUIRED
+#
+# This error message is issued when aede discovers a file in the change
+# that has not been altered.  (Sometimes it is a warning.)
+#
+# 	$File_Name	The offending file.
+#
+#, fuzzy
+msgid	"$filename unchanged"
+msgstr	"the \"$filename\" file has not been changed, it should not be "
+	"included in the change"
 
 #
 # TRANSLATION REQUIRED
@@ -508,6 +538,18 @@ msgstr	"$filename: onleesbaar \"$field_name\" veld"
 
 # TRANSLATION REQUIRED
 #
+# This error message is issued when aede-policy detects a file isung DOS
+# line termination when it must use UNIX line termination.
+#
+# 	$File_Name	The offending file.
+#
+#, fuzzy
+msgid	"$filename: dos line termination"
+msgstr	"the \"$filename\" file uses DOS line termination (CRLF) and it "
+	"should use UNIX line termination (LF)"
+
+# TRANSLATION REQUIRED
+#
 # This warning is issued when an obsolete field is used.
 #
 #      $Name1          The name of the obsolete field.
@@ -526,7 +568,7 @@ msgid	"$filename: gid $number1 invalid, must be >= $number2"
 msgstr	"$filename: het  groep ID ($number1) van dit bestand is te laag, "
 	"het moet groter of gelijk zijn aan AEGIS_MIN_GID ($number2). Dit "
 	"is waarschijnlijk het gevolg van een fout bij het terugzetten "
-	"van een backup, gebruik ``chgrp -R <groep> $filename'' op dit op "
+	"van een backup, gebruik \"chgrp -R <groep> $filename\" op dit op "
 	"te lossen, met een geschikte <groep> naam. [Rootrechten nodig]"
 
 #
@@ -564,6 +606,29 @@ msgstr	"$filename: $number fatale fout${plural $number en} gevonden"
 
 # TRANSLATION REQUIRED
 #
+# This error message is issued when aede-policy detects a binary file,
+# and you have specified a policy whis disallows such files.
+#
+# 	$File_Name	The offending file name.
+#
+#, fuzzy
+msgid	"$filename: is binary"
+msgstr	"the \"$filename\" file contains binary bytes"
+
+# TRANSLATION REQUIRED
+#
+# This error message is issued when aede-policy detects unprintable
+# (non-ASCII) characters in a file, and you have specified a policy whis
+# disallows such files.
+#
+# 	$File_Name	The offending file name.
+#
+#, fuzzy
+msgid	"$filename: is unprintable"
+msgstr	"the \"$filename\" file contains unprintable characters"
+
+# TRANSLATION REQUIRED
+#
 # This error message is issued by aesvt when the file header within a
 # history file is not in a legal RFC822 format.
 #
@@ -581,6 +646,19 @@ msgstr	"$filename: malformed RFC 822 header line"
 #
 msgid	"$filename: mode is $number1, should be $number2"
 msgstr	"$filename: rechten zijn $number1, zouden $number2 moeten zijn"
+
+# TRANSLATION REQUIRED
+#
+# This error message is issued by the aede-policy command when a file
+# does not contain and up-to-date copyright notice.
+#
+# 	$File_Name	The name of the offending file.
+# 	$Suggest	A suggested text for the missing notice (optional).
+#
+#, fuzzy
+msgid	"$filename: no current copyright notice"
+msgstr	"$filename: the file does not contain an up-to-date copyright "
+	"notice; a notice of the form \"$suggest\" would be suitable."
 
 #
 # This error message is issued when Aegis is checking a file's owner,
@@ -610,8 +688,8 @@ msgid	"$filename: uid $number1 invalid, must be >= $number2"
 msgstr	"$filename: het gebruikers ID ($number1) van dit bestand is te "
 	"laag, het moet groter of gelijk zijn aan AEGIS_MIN_UID "
 	"($number2). Dit is waarschijnlijk het gevolg van een fout bij "
-	"het terugzetten van een backup, gebruik ``chown -R <gebruiker> "
-	"$filename'' op dit op te lossen, met een geschikte <gebruikers> "
+	"het terugzetten van een backup, gebruik \"chown -R <gebruiker> "
+	"$filename\" op dit op te lossen, met een geschikte <gebruikers> "
 	"naam. [Rootrechten nodig]"
 
 # TRANSLATION REQUIRED
@@ -1133,7 +1211,7 @@ msgstr	"verplaats de wijziging naar de integratie directory"
 #
 # This fatal error message is issued when Aegis determines that the
 # architecture it is currently running on is forbidden by the (5)
-# architecture field of the project ``config'' file.
+# architecture field of the project "aegis.conf" file.
 #
 # 	$Name		The offending architecture name.
 #
@@ -1144,7 +1222,7 @@ msgstr	"architectuur \"$name\" forbidden"
 # This error message is issued when Aegis is unable to determine which
 # architecture it is currently running on.  This means that the
 # architecture does not match any of the architecture patterns specified
-# in the project ``config'' file.
+# in the project "aegis.conf" file.
 #
 # 	$Name		The offending architecture name.
 #
@@ -1155,13 +1233,13 @@ msgstr	"architectuur \"$name\" onbekend"
 # This error message is issued when an architecture appears in the list
 # of architectures the change must apply to, but that architecture name
 # is not present in the project's architecture list in the project
-# ``config'' file.
+# "aegis.conf" file.
 #
 # 	$Name		The name of the offending architecture.
 #
 msgid	"architecture \"$name\" unlisted"
 msgstr	"architectuur \"$name\" komt voor in de wijzigings arrtibuten, "
-	"maar wordt niet genoemd in het project ``config'' bestand"
+	"maar wordt niet genoemd in het project \"aegis.conf\" bestand"
 
 #
 # This fatal error message is issued when a file ches size while the
@@ -1188,6 +1266,17 @@ msgstr	"rekenkundig type nodig voor aftrekken(kreeg $name)"
 #
 msgid	"arithmetic type required for increment (was given $name)"
 msgstr	"rekenkundig type nodig voor optellen (kreeg $name)"
+
+# TRANSLATION REQUIRED
+#
+# This fatal error message is issued when a user-supplied string can't
+# be interpreted as an attribute name.
+#
+# 	$Name		The offending string.
+#
+#, fuzzy
+msgid	"attribute $name unknown"
+msgstr	"the attribute \"$name\" does not exist"
 
 #
 # This message is issued when an aeca is successfully completed.
@@ -1322,8 +1411,8 @@ msgstr	"gebruiker \"$user\" mag de wijzigings-attributen niet "
 # 'config' file.
 #
 msgid	"bad ca, unknown architecture"
-msgstr	"architectuur bevat variaties niet genoemd in het project "
-	"``config'' bestand"
+msgstr	"architectuur bevat variaties niet genoemd in het project \"aegis."
+	"conf\" bestand"
 
 #
 # TRANSLATION REQUIRED
@@ -1789,7 +1878,7 @@ msgstr	"Deze wijziging heeft de status '$state' , hij moet de status "
 
 #
 # This error message is issued when a version string is given to aenpr
-# which can't be broken into ``ispunct'' separated number.
+# which can't be broken into "ispunct" separated number.
 #
 # 	$Number		The offending version number.
 #
@@ -1876,7 +1965,7 @@ msgstr	"booleaanse waarde nodig voor ?: expressie (kreeg $name)"
 # 	$Name		The type name of the offending operand.
 #
 msgid	"boolean value required for logical and (was given $name)"
-msgstr	"booleaanse waarde nodig voor logisch ``en'' (kreeg $name)"
+msgstr	"booleaanse waarde nodig voor logisch \"en\" (kreeg $name)"
 
 #
 # This message is issued when an inappropriate || is attempted.
@@ -1884,16 +1973,16 @@ msgstr	"booleaanse waarde nodig voor logisch ``en'' (kreeg $name)"
 # 	$Name		The type name of the offending operand.
 #
 msgid	"boolean value required for logical or (was given $name)"
-msgstr	"booleaanse waarde nodig voor logisch ``of'' (kreeg $name)"
+msgstr	"booleaanse waarde nodig voor logisch \"of\" (kreeg $name)"
 
 #
-# This error message is issued when the control expression for an ``if''
+# This error message is issued when the control expression for an "if"
 # statement does not evaluate to a boolean.
 #
 # 	$Name		The type name of the offending operand.
 #
 msgid	"boolean value required in if statement (not $name)"
-msgstr	"booleaanse waardenodig voor ``als'' statement (kreeg $name)"
+msgstr	"booleaanse waardenodig voor \"als\" statement (kreeg $name)"
 
 #
 # This error message is issued when an absurd branch number is given.
@@ -1923,6 +2012,16 @@ msgid	"branch completed"
 msgstr	"wijzigingen en takken kunnen alleen aangemaakt worden op aktieve "
 	"takken, deze tak heeft niet de status 'being developed'"
 
+# TRANSLATION REQUIRED
+#
+# This error messages is issued when aede-policy finds a change set in
+# which the brief description is empty, or has not been changed from the
+# default.
+#
+#, fuzzy
+msgid	"brief_description not set"
+msgstr	"the brief description has been not set"
+
 #
 # This error message is issued when aede finds a file which has not been
 # built.
@@ -1947,9 +2046,9 @@ msgstr	"De compilatie heeft het bestand \"$filename\" gewijzigd Dit kan "
 	"gebeuren als een source bestand later gegenereed wordt Om dit op "
 	"te lossen moet in een aparte wijziging be 'build configuration' "
 	"aangepast worden zodat dit niet gebeurd, of verwijder het "
-	"bestand (``aerm $filename''), of verwijder dit bestand (``aerm "
-	"$filename'') en voeg het opnieuw toe met ``aenf -build "
-	"$filename'' in een volgende wijziging."
+	"bestand (\"aerm $filename\"), of verwijder dit bestand (\"aerm "
+	"$filename\") en voeg het opnieuw toe met \"aenf -build $filename"
+	"\" in een volgende wijziging."
 
 #
 # This error message is issued when copying a file to stdout fails.
@@ -2150,6 +2249,17 @@ msgstr	"commando \"$command\" afgebroken door $signal (core gedumpt)"
 msgid	"command line too short"
 msgstr	"opdracht regel is te kort"
 
+# TRANSLATION REQUIRED
+#
+# This fatal error message is issued when an unrecognised compression
+# algorithm name is given on the command line (aedist, aepatch, etc).
+#
+# 	$name		The offending compression algorithm name.
+#
+#, fuzzy
+msgid	"compression algorithm \"$name\" unknown"
+msgstr	"compression algorithm \"$name\" unknown"
+
 #
 # TRANSLATION REQUIRED
 # This message is inserted into the top of the project config file
@@ -2323,6 +2433,16 @@ msgstr	"delta $number buiten bereik, moet een klein positief nummer zijn"
 #
 msgid	"delta name complete"
 msgstr	"delta $number kan nu delta \"$name\" genoemd worden"
+
+# TRANSLATION REQUIRED
+#
+# This error messages is issued when aede-policy finds a change set in
+# which the brief description is empty, or has not been changed from the
+# default.
+#
+#, fuzzy
+msgid	"description not set"
+msgstr	"the description field has not been set"
 
 #
 # This progress message is issued when aedb completes successfully.
@@ -2511,7 +2631,7 @@ msgstr	"einde regel middenin string"
 # 	$Name		The name of the offending environment variable.
 #
 msgid	"environment variable $name not set"
-msgstr	"omgevings variabele ``$name'' niet gezet"
+msgstr	"omgevings variabele \"$name\" niet gezet"
 
 #
 # This fatal error message is issued when the execution of a command
@@ -2822,7 +2942,7 @@ msgstr	"file qualifier unknown"
 # 	$name	The offending type name.
 #
 msgid	"file type $name unknown"
-msgstr	"bestands type ``$name'' onbekend"
+msgstr	"bestands type \"$name\" onbekend"
 
 #
 # This error message is a summary issued when one or more change
@@ -2862,22 +2982,22 @@ msgstr	"fingerprint \"$filename\": $errno"
 # This error message is issued when a break statement is seen outside any
 # enclosing loop or switch statement.
 #
-msgid	"floating ``break'' statement"
-msgstr	"zwevend ``break'' statement"
+msgid	"floating \"break\" statement"
+msgstr	"zwevend \"break\" statement"
 
 #
 # This error message is issued when a continue statement is seen outside
 # any enclosing loop or switch statement.
 #
-msgid	"floating ``continue'' statement"
-msgstr	"zwevend ``continue'' statement"
+msgid	"floating \"continue\" statement"
+msgstr	"zwevend \"continue\" statement"
 
 #
 # This error message is issued when a return statement is used outside
 # any function.
 #
-msgid	"floating ``return'' statement"
-msgstr	"zwevend ``return'' statement"
+msgid	"floating \"return\" statement"
+msgstr	"zwevend \"return\" statement"
 
 #
 # This format string is used when assembling the list of outstanding
@@ -2894,7 +3014,7 @@ msgstr	"voor de $name_list architecture${plural $number n}"
 # This error message is issued as a summary when one or more
 # architectures appear in the list of architectures the change must
 # apply to, but are not present in the project's architecture list in
-# the project ``config'' file.
+# the project "aegis.conf" file.
 #
 # 	$Number		The number of unknown architecture(s).
 # 			(Optional)
@@ -3031,7 +3151,7 @@ msgstr	"niet toegestane optelling ($name1 + $name2)"
 # 	$Name		The type name of the offending operand.
 #
 msgid	"illegal bit not ($name)"
-msgstr	"integer waarde benodigd voor bit-wise ``not'' (kreeg $name)"
+msgstr	"integer waarde benodigd voor bit-wise \"not\" (kreeg $name)"
 
 #
 # This error message is issued when an illegal e!=e is attempted.
@@ -3163,12 +3283,12 @@ msgstr	"niet toegestane linkerzijde toekenning (kreeg $name), moet een "
 # 	$Name		The type name of the offending operand.
 #
 msgid	"illegal logical not ($name)"
-msgstr	"booleanse waarde nodig voor logisch ``not'' (kreeg $name)"
+msgstr	"booleanse waarde nodig voor logisch \"not\" (kreeg $name)"
 
 #
 # This error message is issued when an illegal lookup is attempted.
-# This occurs both for associative arrays ``e1[e2]'', and also for
-# structures ``e1.e2'' (which are implemented as associative arrays).
+# This occurs both for associative arrays "e1[e2]", and also for
+# structures "e1.e2" (which are implemented as associative arrays).
 #
 # 	$Name1		The type name of the first operand.
 # 	$Name2		The type name of the second operand.
@@ -3312,7 +3432,7 @@ msgstr	"integer index nodig (kreeg $name)"
 # 	$Name		The type name of the offending operand.
 #
 msgid	"integer value required for bit and (was given $name)"
-msgstr	"integer waarde nodig voor bit-wise ``and'' (kreeg $name)"
+msgstr	"integer waarde nodig voor bit-wise \"and\" (kreeg $name)"
 
 #
 # This message is issued when an inappropriate | is attempted.
@@ -3320,7 +3440,7 @@ msgstr	"integer waarde nodig voor bit-wise ``and'' (kreeg $name)"
 # 	$Name		The type name of the offending operand.
 #
 msgid	"integer value required for bit or (was given $name)"
-msgstr	"integer waarde nodig voor bit-wise ``or'' (kreeg $name)"
+msgstr	"integer waarde nodig voor bit-wise \"or\" (kreeg $name)"
 
 #
 # This message is issued when an inappropriate ^ is attempted.
@@ -3328,7 +3448,7 @@ msgstr	"integer waarde nodig voor bit-wise ``or'' (kreeg $name)"
 # 	$Name		The type name of the offending operand.
 #
 msgid	"integer value required for bit xor (was given $name)"
-msgstr	"integer waarde nodig voor bit-wise ``exclusief or'' (kreeg $name)"
+msgstr	"integer waarde nodig voor bit-wise \"exclusief or\" (kreeg $name)"
 
 #
 # This progress message is issued when aeib complete successfully.
@@ -3456,7 +3576,7 @@ msgid	"list $name ambiguous"
 msgstr	"lijst naam \"$name\" is niet specifiek: ($name_list)"
 
 #
-# This message is issued when an inappropriate ``in'' is attempted.
+# This message is issued when an inappropriate "in" is attempted.
 #
 # 	$Name		The type name of the offending operand.
 #
@@ -4000,6 +4120,15 @@ msgid	"no branch chown"
 msgstr	"deze wijziging is een tak; het is niet mogelijk het eigendom van "
 	"een tak te veranderen"
 
+# TRANSLATION REQUIRED
+#
+# This information message is issued when aeb is invoked for a change in
+# a project which is configured to not require builds.
+#
+#, fuzzy
+msgid	"no build required"
+msgstr	"no build is required for changes to this project"
+
 #
 # This error message is issued when a command which requires an explicit
 # change number is not given one.
@@ -4009,7 +4138,7 @@ msgstr	"Geef expliciet het wijzigings nummer op voor dit commando"
 
 #
 # This fatal error message is issued when a user attempts to perform a
-# cross branch merge on a change in the ``being integrated'' state.
+# cross branch merge on a change in the "being integrated" state.
 #
 msgid	"no cross branch int merge"
 msgstr	"Een tak-transplantatie kan niet gebeuren op een  wijziging met "
@@ -4065,6 +4194,16 @@ msgstr	"er zijn nog geen integraties gereed, het is nog niet mogelijk "
 msgid	"no dev dir"
 msgstr	"deze wijziging heeft de status '$state', er is geen ontwikkel "
 	"directory"
+
+# TRANSLATION REQUIRED
+#
+# This information message is issued when the aed command is run for a
+# change which is in a project configured not to use aed.
+#
+#, fuzzy
+msgid	"no diff required"
+msgstr	"no \"aegis -diff\" command is required for this change, the "
+	"project has been configured to omit this requirement"
 
 #
 # This error message is issued when an attempt is made to specify a
@@ -4248,7 +4387,7 @@ msgstr	"geen rapport naam opgegeven"
 
 #
 # This error message is issued when aet completes unsuccessfully because
-# one or more tests returned a ``no result'' exit code.
+# one or more tests returned a "no result" exit code.
 #
 # 	$Number		The number of tests which failed.
 #
@@ -4650,7 +4789,7 @@ msgstr	"checking out head revisions of imported files to reconstruct the "
 
 #
 # This verbose message is issued by the aecd command when a change is
-# in the ``awaiting review'' state.  By reminding reviewers to use aerb,
+# in the "awaiting review" state.  By reminding reviewers to use aerb,
 # we make ste statistics more meaningful, and also block other reviewes
 # from wasting their time.
 #
@@ -4874,7 +5013,7 @@ msgstr	"heeft geen argumenten nodig"
 msgid	"restart integration after upgrade"
 msgstr	"Geen enkel wijziging kan de status $state hebben terwijl Aegis "
 	"wordt vernieuwd omdat sommige bestands statussen niet "
-	"beschikbaar zijn. Gebruik ``aegis -ibu'' en daarna ``aegis -ib'' "
+	"beschikbaar zijn. Gebruik \"aegis -ibu\" en daarna \"aegis -ib\" "
 	"op deze wijziging om de integratie te herstarten "
 
 #
@@ -5546,7 +5685,7 @@ msgstr	"waarde van type $name nodig"
 # 	$number	The offending version number.
 #
 msgid	"version $number not a branch"
-msgstr	"versie ``$number'' is geen tak"
+msgstr	"versie \"$number\" is geen tak"
 
 #
 # This progress message is issued when Aegis is waiting for a lock.
@@ -5562,16 +5701,16 @@ msgstr	"wacht op $name slot"
 # baseline read lock.  This message is issued with a project indicator.
 #
 msgid	"waiting for baseline read lock"
-msgstr	"wacht op gedeelde baseline slot; Dit is omdat er een ``aegis -"
-	"Integrate_PASS'' commando bezig is "
+msgstr	"wacht op gedeelde baseline slot; Dit is omdat er een \"aegis -"
+	"Integrate_PASS\" commando bezig is "
 
 #
 # This progress message is issued when Aegis is waiting for a project
 # baseline write lock.  This message is issued with a project indicator.
 #
 msgid	"waiting for baseline write lock"
-msgstr	"wacht op exclusief baseline slot; Er zijn een of meer ``aegis -"
-	"Build'' commandos bezig"
+msgstr	"wacht op exclusief baseline slot; Er zijn een of meer \"aegis -"
+	"Build\" commandos bezig"
 
 #
 # This progress message is issued when Aegis is waiting for a global state
@@ -5585,7 +5724,7 @@ msgstr	"wacht op project locatie index slot"
 # history lock.  This message is issued with a project indicator.
 #
 msgid	"waiting for history lock"
-msgstr	"wacht op history slot; er is een ``aegis -Integrate_PASS'' "
+msgstr	"wacht op history slot; er is een \"aegis -Integrate_PASS\" "
 	"commando bezig op een andere tak"
 
 #
@@ -5648,6 +5787,17 @@ msgid	"warning: $filename1 deprecated, use $filename2 file instead"
 msgstr	"Warning: The \"$filename1\" file has been deprecated, it is "
 	"suggested that you use the \"$filename2\" file instead.  See aenf"
 	"(1) for more information."
+
+# TRANSLATION REQUIRED
+#
+# This generic message is used to turn what would otherwise be an error
+# message into a warning message.
+#
+# 	$MeSsaGe	The message to be printed as a warning.
+#
+#, fuzzy
+msgid	"warning: $message"
+msgstr	"Waarschuwing: $message"
 
 #
 # This warning message is issued when the AEGIS environment is observed.

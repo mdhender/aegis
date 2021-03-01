@@ -1,6 +1,6 @@
 //
 //	aegis - project change supervisor
-//	Copyright (C) 1994-1997, 1999, 2001-2004 Peter Miller;
+//	Copyright (C) 1994-1997, 1999, 2001-2005 Peter Miller;
 //	All rights reserved.
 //
 //	This program is free software; you can redistribute it and/or modify
@@ -20,18 +20,18 @@
 // MANIFEST: functions to manipulate group values
 //
 
-#include <ac/stdio.h>
+#include <common/ac/stdio.h>
 
-#include <aer/value/error.h>
-#include <aer/value/integer.h>
-#include <aer/value/list.h>
-#include <aer/value/group.h>
-#include <aer/value/string.h>
-#include <aer/value/struct.h>
-#include <error.h>
-#include <getgr_cache.h>
-#include <sub.h>
-#include <trace.h>
+#include <libaegis/aer/value/error.h>
+#include <libaegis/aer/value/integer.h>
+#include <libaegis/aer/value/list.h>
+#include <libaegis/aer/value/group.h>
+#include <libaegis/aer/value/string.h>
+#include <libaegis/aer/value/struct.h>
+#include <common/error.h>
+#include <libaegis/getgr_cache.h>
+#include <libaegis/sub.h>
+#include <common/trace.h>
 
 
 static rpt_value_ty *

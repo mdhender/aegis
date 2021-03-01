@@ -20,15 +20,13 @@
 // MANIFEST: implementation of the change_functor_attribute_list class
 //
 
-#pragma implementation "change_functor_attribute_list"
+#include <common/ac/string.h>
 
-#include <ac/string.h>
-
-#include <change/functor/attribu_list.h>
-#include <error.h> // for assert
-#include <attribute.h>
-#include <uuidentifier.h>
-#include <cstate.h>
+#include <common/error.h> // for assert
+#include <common/uuidentifier.h>
+#include <libaegis/attribute.h>
+#include <libaegis/change/functor/attribu_list.h>
+#include <libaegis/cstate.h>
 
 
 change_functor_attribute_list::~change_functor_attribute_list()

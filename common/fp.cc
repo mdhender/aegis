@@ -1,6 +1,6 @@
 //
 //	cook - file construction tool
-//	Copyright (C) 1994, 1998, 1999, 2003, 2004 Peter Miller;
+//	Copyright (C) 1994, 1998, 1999, 2003-2005 Peter Miller;
 //	All rights reserved.
 //
 //	This program is free software; you can redistribute it and/or modify
@@ -20,12 +20,12 @@
 // MANIFEST: functions to manipulate fingerprints
 //
 
-#include <ac/errno.h>
-#include <ac/fcntl.h>
-#include <ac/unistd.h>
+#include <common/ac/errno.h>
+#include <common/ac/fcntl.h>
+#include <common/ac/unistd.h>
 
-#include <fp.h>
-#include <mem.h>
+#include <common/fp.h>
+#include <common/mem.h>
 
 
 fingerprint_ty *

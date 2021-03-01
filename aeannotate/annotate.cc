@@ -1,6 +1,6 @@
 //
 //	aegis - project change supervisor
-//	Copyright (C) 2002-2005 Peter Miller;
+//	Copyright (C) 2002-2006 Peter Miller;
 //	All rights reserved.
 //
 //	This program is free software; you can redistribute it and/or modify
@@ -20,36 +20,38 @@
 // MANIFEST: functions to manipulate annotates
 //
 
-#include <ac/string.h>
+#include <common/ac/string.h>
 
-#include <annotate.h>
-#include <arglex3.h>
-#include <arglex/project.h>
-#include <change.h>
-#include <change/branch.h>
-#include <change/file.h>
-#include <col.h>
-#include <error.h> // for assert
-#include <fstate.h>
-#include <help.h>
-#include <input/file_text.h>
-#include <line_list.h>
-#include <mem.h>
-#include <now.h>
-#include <os.h>
-#include <output.h>
-#include <patch.h>
-#include <patch/list.h>
-#include <project.h>
-#include <project/file.h>
-#include <project/file/roll_forward.h>
-#include <str.h>
-#include <sub.h>
-#include <symtab.h>
-#include <trace.h>
-#include <undo.h>
-#include <usage.h>
-#include <user.h>
+#include <common/error.h> // for assert
+#include <common/mem.h>
+#include <common/now.h>
+#include <common/str.h>
+#include <common/symtab.h>
+#include <common/trace.h>
+#include <libaegis/arglex/project.h>
+#include <libaegis/change/branch.h>
+#include <libaegis/change/file.h>
+#include <libaegis/change/identifier.h>
+#include <libaegis/change.h>
+#include <libaegis/col.h>
+#include <libaegis/fstate.h>
+#include <libaegis/help.h>
+#include <libaegis/input/file_text.h>
+#include <libaegis/os.h>
+#include <libaegis/output.h>
+#include <libaegis/patch.h>
+#include <libaegis/patch/list.h>
+#include <libaegis/project/file.h>
+#include <libaegis/project/file/roll_forward.h>
+#include <libaegis/project.h>
+#include <libaegis/sub.h>
+#include <libaegis/undo.h>
+#include <libaegis/user.h>
+
+#include <aeannotate/annotate.h>
+#include <aeannotate/arglex3.h>
+#include <aeannotate/line_list.h>
+#include <aeannotate/usage.h>
 
 
 struct column_t
@@ -105,10 +107,16 @@ column_list_append(column_list_t *clp, string_ty *formula, string_ty *heading,
 }
 
 
-static void
-process(project_ty *pp, string_ty *filename, line_list_t *buffer)
+static string_ty *
+change_number_get(change_ty *cp)
 {
-    time_t	    when;
+    return str_format("%ld", magic_zero_decode(cp->number));
+}
+
+
+static void
+process(change_identifier &cid, string_ty *filename, line_list_t *buffer)
+{
     size_t	    j;
     file_event_list_ty *felp;
     string_ty	    *prev_ifn;
@@ -119,12 +127,22 @@ process(project_ty *pp, string_ty *filename, line_list_t *buffer)
     patch_ty	    *pap;
 
     //
+    // We can't cope with change history that isn't in history yet.
+    //
+    change_ty *cp = cid.get_cp();
+    project_ty *pp = cid.get_pp();
+    if (!change_was_a_branch(cp) && !change_is_completed(cp))
+    {
+	sub_context_ty sc;
+	sc.var_set_string("Number", change_number_get(cp));
+	project_fatal(pp, &sc, i18n("change $number not completed"));
+	// NOTREACHED
+    }
+
+    //
     // Get the time to extract the files at.
     //
-    // FIXME: add --delta options, so that we can select a time based
-    // on a delta.
-    //
-    when = now();
+    time_t when = change_completion_timestamp(cp);
 
     //
     // Reconstruct the file history.
@@ -134,15 +152,12 @@ process(project_ty *pp, string_ty *filename, line_list_t *buffer)
     felp = historian.get(filename);
     if (!felp)
     {
-	sub_context_ty  *scp;
-
 	// FIXME: add fuzzy file name matching
-	scp = sub_context_new();
-	sub_var_set_string(scp, "File_Name", filename);
-	project_fatal(pp, scp, i18n("no $filename"));
-	// project_fatal(pp, scp, i18n("no $filename, closest is $guess"));
+	// project_fatal(pp, &sc, i18n("no $filename, closest is $guess"));
+	sub_context_ty sc;
+	sc.var_set_string("File_Name", filename);
+	project_fatal(pp, &sc, i18n("no $filename"));
 	// NOTREACHED
-	sub_context_delete(scp);
     }
 
     //
@@ -164,7 +179,7 @@ process(project_ty *pp, string_ty *filename, line_list_t *buffer)
 	file_event_ty	*fep;
 	string_ty	*ifn;
 	int		ifn_unlink;
-	input_ty	*ifp;
+	input ifp;
 	size_t		m;
 
 	//
@@ -198,8 +213,7 @@ process(project_ty *pp, string_ty *filename, line_list_t *buffer)
 		assert(buffer->item[linum].cp == fep->cp);
 		assert(str_equal(buffer->item[linum].text, s.get_ref()));
 	    }
-	    delete ifp;
-	    ifp = 0;
+	    ifp.close();
 	    os_become_undo();
 	    break;
 
@@ -232,8 +246,7 @@ process(project_ty *pp, string_ty *filename, line_list_t *buffer)
 	    os_become_orig();
 	    ifp = input_file_text_open(output_file_name);
 	    plp = patch_read(ifp, 0);
-	    delete ifp;
-	    ifp = 0;
+	    ifp.close();
 	    os_become_undo();
 	    assert(plp);
 
@@ -337,7 +350,7 @@ process(project_ty *pp, string_ty *filename, line_list_t *buffer)
 		    assert(0);
 		}
 	    }
-	    delete ifp;
+	    ifp.close();
 	    os_become_undo();
 #endif
 	    break;
@@ -361,10 +374,6 @@ process(project_ty *pp, string_ty *filename, line_list_t *buffer)
 	prev_ifn_unlink = ifn_unlink;
 
 	trace(("buf line = %ld\n", (long)(buffer->length1 + buffer->length2)));
-
-	//
-	// check that our reconstruction matches the file contents
-	//
     }
 }
 
@@ -608,16 +617,14 @@ emit(line_list_t *buffer, string_ty *outfilename, string_ty *filename,
 void
 annotate(void)
 {
-    string_ty	    *project_name;
     string_ty	    *filename;
     string_ty	    *outfile;
-    project_ty	    *pp;
     line_list_t	    buffer;
 
     trace(("annotate()\n{\n"));
-    project_name = 0;
     filename = 0;
     outfile = 0;
+    change_identifier cid;
     arglex();
     while (arglex_token != arglex_token_eoln)
     {
@@ -627,9 +634,16 @@ annotate(void)
 	    generic_argument(usage);
 	    continue;
 
+	case arglex_token_branch:
+	case arglex_token_change:
+	case arglex_token_delta:
+	case arglex_token_delta_date:
+	case arglex_token_delta_from_change:
+	case arglex_token_grandparent:
+	case arglex_token_number:
 	case arglex_token_project:
-	    arglex();
-	    arglex_parse_project(&project_name, usage);
+	case arglex_token_trunk:
+	    cid.command_line_parse(usage);
 	    continue;
 
 	case arglex_token_string:
@@ -706,6 +720,9 @@ annotate(void)
 	}
 	arglex();
     }
+    if (!cid.set())
+	cid.set_baseline();
+    cid.command_line_check(usage);
     if (!filename)
 	fatal_intl(0, i18n("no file names"));
 
@@ -734,19 +751,9 @@ annotate(void)
 	column_list_append(&columns, formula, heading, width);
     }
 
-    //
-    // locate project data
-    //	    (Even of we don't use it, this confirms it is a valid
-    //	    project name.)
-    //
-    if (!project_name)
-	project_name = user_default_project();
-    pp = project_alloc(project_name);
-    project_bind_existing(pp);
-
-    process(pp, filename, &buffer);
+    process(cid, filename, &buffer);
     trace(("buf lines = %ld\n", (long)(buffer.length1 + buffer.length2)));
-    emit(&buffer, outfile, filename, pp);
+    emit(&buffer, outfile, filename, cid.get_pp());
 
     trace(("}\n"));
 }

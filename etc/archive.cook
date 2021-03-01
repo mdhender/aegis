@@ -1,6 +1,6 @@
 /*
  *	aegis - project change supervisor
- *	Copyright (C) 1997-2005 Peter Miller;
+ *	Copyright (C) 1997-2006 Peter Miller;
  *	All rights reserved.
  *
  *	This program is free software; you can redistribute it and/or modify
@@ -42,7 +42,6 @@ if [find_command tardy] then
      */
 #if 0
     if [find_command rpm] then
-    if [find_command ppmtoxpm] then /* have to be able to build icon */
     {
 	rpm-arch = [collect rpm --showrc | [awk] "'/^build arch/{print $4}'" ];
 	if [matches %1.D%2 [version]] then
@@ -72,41 +71,62 @@ if [find_command png2ico] then
 
 html-targets: [html-targets];
 
-html-sources = [match_mask etc/%0%.html [source_files]];
+html-sources = [match_mask web/%0%.html [source_files]];
 
 html-targets =
-	[fromto etc/%0%.html archive/%0%.html
-		[html-sources]
+    [fromto web/%0%.html archive/%0%.html [html-sources]]
+    archive/[project_short].png
+    [fromto web/%0%.uue archive/%0%
+	[match_mask web/%0%.uue [source_files]]
+    ]
+    archive/missiku/index.html
+    archive/eg_oss_begin.ae
+    archive/eg_oss_build.ae
+    archive/eg_oss_templ.ae
+    ;
+
+/*
+ The "convert" command is part of the ImageMagick package.
+ */
+if [find_command convert] then
+{
+    html-targets +=
+	[fromto web/missiku/%.png.uue archive/missiku/%_2.png
+	    [match_mask web/missiku/%.png.uue [source_files]]
 	]
-	archive/index.html
-	archive/[project_short].png;
 	;
+}
 
 if [count [html-sources]] then
-cascade [html-sources] = etc/version.so;
+cascade [html-sources] = web/version.so;
 
-etc/%0%.html.d: etc/%0%.html
+web/version.so: etc/version.so
+{
+    cp [resolve [need]] [target];
+}
+
+web/%0%.html.d: web/%0%.html
 	set no-cascade
 {
 	c_incl -nc -ns -eia -r -nrec
-		[prepost "-I" /[arch]/etc [search_list]]
-		[prepost "-I" "/etc" [search_list]]
-		-prefix "'cascade etc/%0%.html ='"
+		[prepost "-I" /[arch]/web [search_list]]
+		[prepost "-I" "/web" [search_list]]
+		-prefix "'cascade web/%0%.html ='"
 		-suffix "';'"
-		[resolve etc/%0%.html]
+		[resolve web/%0%.html]
 		[prepost "-rlp=" "" [search_list]] /* remove leading path */
 		-slp [arch] "'[arch]'" /* substitute leading path */
 		-o [target];
 }
-#include-cooked-nowarn [addsuffix ".d" [match_mask etc/%0%.html [source_files]]]
+#include-cooked-nowarn [addsuffix ".d" [match_mask web/%0%.html [source_files]]]
 
-archive/%0%.html: etc/%0%.html: etc/ssp.awk
+archive/%0%.html: web/%0%.html: etc/ssp.awk
 	set shallow
 {
 	roffpp
-		[prepost "-I" /[arch]/etc [search_list]]
-		[prepost "-I" "/etc" [search_list]]
-		[resolve etc/%0%.html]
+		[prepost "-I" /[arch]/web [search_list]]
+		[prepost "-I" "/web" [search_list]]
+		[resolve web/%0%.html]
 	| GROFF_NO_SGR\=-c groff -Tascii -t -P-bhu -man
 	| [awk] -f [resolve etc/ssp.awk]
 	> [target];
@@ -159,7 +179,6 @@ source_file_order =
 	README
 	[project_short].spec /* so RPM can build without separate spec file */
 	[project_short].png
-	[project_short].xpm
 	[sort
 		[stringset
 			[source_files]
@@ -363,11 +382,6 @@ archive/[project_short].png: lib/icon2/64x64.png
 	cp [resolve [need]] [target];
 }
 
-%0%.xpm: %0%.png
-{
-	pngtopnm [resolve %0%.png] | ppmquant 91 | ppmtoxpm > [target];
-}
-
 /*
  * This is not in the integration-build-targets because it takes far
  * too long to do.
@@ -377,7 +391,6 @@ RPM: archive/[project_minus]-1.[rpm-arch].rpm;
 
 archive/[project_minus]-1.[rpm-arch].rpm archive/[project_minus]-1.src.rpm:
 		archive/[project_minus].tar.gz
-		archive/[project_short].xpm
 		etc/rpm-build.sh
 	set shallow
 {
@@ -391,7 +404,6 @@ archive/[project_minus]-1.[rpm-arch].rpm archive/[project_minus]-1.src.rpm:
 	sh [resolve etc/rpm-build.sh]
 		RPM-temporary
 		[resolve archive/[project_minus].tar.gz]
-		[resolve archive/[project_short].xpm]
 		;
 	mv RPM-temporary/RPMS/[rpm-arch]/[project_minus]-1.[rpm-arch].rpm
 		archive/[project_minus]-1.[rpm-arch].rpm
@@ -407,19 +419,13 @@ LICENSE: lib/en/cat1/aelic.1
 	cat [resolve [need]] > [target];
 }
 
-archive/[project_minus].ae: [source_files]
+archive/[project_minus].ae: [source_files] [arch]/bin/aedist
 {
-	if [find_command aedist] then
-		/* must be *system* aedist, not just built aedist,
-		 * since it uses the existing project, which may
-		 * not even be readable by the newly built aedist
-		 */
-		aedist --send --entire-source -ndh -naa
-			-p\=[project] -c\=[change]
-			-o [target];
-	else
-		[print Skipping [target], since no aedist(1) found];
-
+    [arch]/bin/aedist --send --entire-source -ndh
+	--comp-alg\=gzip
+	-p\=[project] -c\=[change]
+	-trace send
+	-o [target] -naa;
 }
 
 
@@ -506,12 +512,6 @@ if [example-make-rcs-baseline] then
     }
 }
 
-archive/index.html: archive/[project_short].html
-    set shallow
-{
-    cp [resolve [need]] [target];
-}
-
 archive/change_log.txt: lib/en/change_log/change_log.txt
     set shallow
 {
@@ -525,4 +525,55 @@ check-tarball: [project_short]-sf.tgz;
     sh [resolve etc/check-tar-gz.sh]
 	[pathname [resolve archive/[project_minus].tar.gz]]
 	[pathname [target]];
+}
+
+archive/%0%.png: web/%0%.png.uue: [arch]/bin/test_base64
+    set shallow
+{
+    [arch]/bin/test_base64 -uu -i -nh [resolve web/%0%.png.uue] [target];
+}
+
+archive/missiku/%_2.png: archive/missiku/%.png
+    set shallow
+{
+
+    convert -scale 64 [resolve archive/missiku/%.png] %.tmp.png;
+    pngcrush -q
+	'-text b "Author" "Gregory Delattre <delattre.greg@free.fr>"'
+	'-text b "Copyright" "(C) 2005 Gregory Delattre"'
+	'-text b "HomePage" "http://zone72.free.fr/"'
+	-brute
+	%.tmp.png [target];
+    rm %.tmp.png
+	set silent;
+}
+
+archive/missiku/index.html: web/missiku/index.sh
+	[match_mask web/missiku/%.png.uue [source_files]]
+    set shallow
+{
+    sh [resolve web/missiku/index.sh]
+	[sort
+	    [fromto %0%.png.uue %.png
+		[match_mask web/missiku/%.png.uue [source_files]]
+	    ]
+	]
+	> [target];
+}
+
+
+archive/eg_oss_%.ae: web/eg_oss_%.sh
+    [arch]/bin/aegis
+    [arch]/bin/aedist
+    lib/config.example/gnu_diff
+    lib/config.example/aesvt
+    lib/config.example/merge
+{
+    sh [resolve web/eg_oss_%.sh]
+	[arch]
+	aegis.conf.d/diff\=[resolve lib/config.example/gnu_diff]
+	aegis.conf.d/history\=[resolve lib/config.example/aesvt]
+	aegis.conf.d/merge\=[resolve lib/config.example/merge]
+	> [target]
+	;
 }

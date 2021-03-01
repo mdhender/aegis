@@ -1,6 +1,6 @@
 //
 //	aegis - project change supervisor
-//	Copyright (C) 2004 Peter Miller;
+//	Copyright (C) 2004-2006 Peter Miller;
 //	All rights reserved.
 //
 //	This program is free software; you can redistribute it and/or modify
@@ -20,13 +20,13 @@
 // MANIFEST: implementation of the get_change_file_invento class
 //
 
-#include <ac/stdio.h>
+#include <common/ac/stdio.h>
 
-#include <change.h>
-#include <change/file.h>
-#include <get/change/file_invento.h>
-#include <http.h>
-#include <project/file.h>
+#include <libaegis/change.h>
+#include <libaegis/change/file.h>
+#include <aeget/get/change/file_invento.h>
+#include <aeget/http.h>
+#include <libaegis/project/file.h>
 
 
 void
@@ -53,7 +53,7 @@ get_change_file_inventory(change_ty *cp, string_ty *filename, string_list_ty *)
     {
 	fstate_src_ty *src = 0;
 	if (cp->bogus)
-	    src = project_file_nth(cp->pp, j, view_path_extreme);
+	    src = cp->pp->file_nth(j, view_path_extreme);
 	else
 	    src = change_file_nth(cp, j, view_path_first);
 	if (!src)

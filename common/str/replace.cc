@@ -1,6 +1,6 @@
 //
 //	aegis - project change supervisor
-//	Copyright (C) 2004 Peter Miller;
+//	Copyright (C) 2004, 2005 Peter Miller;
 //	All rights reserved.
 //
 //	This program is free software; you can redistribute it and/or modify
@@ -20,10 +20,10 @@
 // MANIFEST: implementation of the str_replace class
 //
 
-#include <ac/string.h>
+#include <common/ac/string.h>
 
-#include <str.h>
-#include <stracc.h>
+#include <common/str.h>
+#include <common/stracc.h>
 
 
 string_ty *

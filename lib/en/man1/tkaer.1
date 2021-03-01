@@ -1,6 +1,6 @@
 '\" t
 .\"	aegis - project change supervisor
-.\"	Copyright (C) 2000 Peter Miller;
+.\"	Copyright (C) 2000, 2005 Peter Miller;
 .\"	All rights reserved.
 .\"
 .\"	Contributed by Scott Finneran <sfinneran@lucent.com>,
@@ -40,7 +40,7 @@ Files in the change set are shown in one of four lists. The choice of
 list is based on the operation performed on the file by the change
 (create, modify, move or remove). Empty lists are not shown. The change
 details, as provided by \fIael\fP(1) may be displayed by clicking on the
-``Details'' button.
+\[lq]Details\[rq] button.
 .SH MODIFIED AND MOVED FILES
 \fItkdiff\fP is used to show the
 differenceces between the change and baseline versions of modified and
@@ -62,18 +62,18 @@ that the reviewer can see what has been removed).
 If the change is in the
 .I "being reviewed"
 state, the reviewer may open the comments editor by clicking on the
-``Comments'' button. These comments will be submitted should the
+\[lq]Comments\[rq] button. These comments will be submitted should the
 reviewer decide that the review has failed. An outline of the files
 included in the change is automatically created.
 .PP
 Once the review is
-complete, clicking the ``Finished'' button results in a dialog box which
+complete, clicking the \[lq]Finished\[rq] button results in a dialog box which
 will allow the reviewer to pass or fail (via the \fIaerpass\fP(1) and
 \fIaerfail\fP(1) commands) the change. Alternatively, the reviewer may
 resume reviewing or quit, leaving the change state unmodified. If the
 change was not in the
 .I "being reviewed"
-state, the ``Finished'' button simply causes
+state, the \[lq]Finished\[rq] button simply causes
 .I "\*(n)"
 to exit.
 .SH CONFIGURING TKAER
@@ -85,8 +85,9 @@ file contains the default configuration as described above, such as the
 choice of tools used in reviewing. The configuration file itself is a
 tcl script which is executed by the
 .I "\*(n)"
-script using the \fItcl\fP ``source'' command. Each entry takes the form
-of a ``set'' statement which adds an item to the pref array. Items currently
+script using the \fItcl\fP \[lq]source\[rq] command. Each entry takes the form
+of a \[lq]set\[rq] statement which adds an item to the pref array.
+Items currently
 supported are:
 .PP
 .TP 8n

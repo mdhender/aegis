@@ -1,6 +1,6 @@
 //
 //	aegis - project change supervisor
-//	Copyright (C) 1994, 1996, 2003, 2004 Peter Miller;
+//	Copyright (C) 1994, 1996, 2003-2005 Peter Miller;
 //	All rights reserved.
 //
 //	This program is free software; you can redistribute it and/or modify
@@ -20,12 +20,12 @@
 // MANIFEST: functions to manipulate nul values
 //
 
-#include <aer/value/boolean.h>
-#include <aer/value/integer.h>
-#include <aer/value/list.h>
-#include <aer/value/null.h>
-#include <aer/value/string.h>
-#include <str.h>
+#include <libaegis/aer/value/boolean.h>
+#include <libaegis/aer/value/integer.h>
+#include <libaegis/aer/value/list.h>
+#include <libaegis/aer/value/null.h>
+#include <libaegis/aer/value/string.h>
+#include <common/str.h>
 
 
 static rpt_value_ty *

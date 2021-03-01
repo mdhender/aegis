@@ -1,6 +1,6 @@
 //
 //	aegis - project change supervisor
-//	Copyright (C) 1997, 1999, 2002-2004 Peter Miller;
+//	Copyright (C) 1997, 1999, 2002-2005 Peter Miller;
 //	All rights reserved.
 //
 //	This program is free software; you can redistribute it and/or modify
@@ -20,17 +20,17 @@
 // MANIFEST: functions to manipulate function tree nodes
 //
 
-#include <function.h>
-#include <function/basename.h>
-#include <function/execute.h>
-#include <function/print.h>
-#include <function/stat.h>
-#include <lex.h>
-#include <sub.h>
-#include <symtab.h>
-#include <tree.h>
-#include <tree/list.h>
-#include <tree/this.h>
+#include <aefind/function.h>
+#include <aefind/function/basename.h>
+#include <aefind/function/execute.h>
+#include <aefind/function/print.h>
+#include <aefind/function/stat.h>
+#include <aefind/lex.h>
+#include <libaegis/sub.h>
+#include <common/symtab.h>
+#include <aefind/tree.h>
+#include <aefind/tree/list.h>
+#include <aefind/tree/this.h>
 
 
 struct table_ty

@@ -1,6 +1,6 @@
 //
 //	aegis - project change supervisor
-//	Copyright (C) 2005 Peter Miller,
+//	Copyright (C) 2005, 2006 Peter Miller,
 //	Copyright (C) 2004, 2005 Walter Franzini;
 //	All rights reserved.
 //
@@ -21,37 +21,107 @@
 // MANIFEST: implementation of the replay class
 //
 
-#include <ac/sys/types.h>
-#include <ac/regex.h>
-#include <ac/stdlib.h>
+#include <common/ac/ctype.h>
+#include <common/ac/string.h>
+#include <common/ac/sys/types.h>
+#include <common/ac/regex.h>
+#include <common/ac/stdlib.h>
 
-#include <arglex3.h>
-#include <arglex/change.h>
-#include <arglex/project.h>
-#include <change.h>
-#include <change/branch.h>
-#include <change/functor/invent_build.h>
-#include <change/lock_sync.h>
-#include <error.h>              // for assert
-#include <help.h>
-#include <input.h>
-#include <input/file.h>
-#include <nstring.h>
-#include <nstring/list.h>
-#include <os.h>
-#include <project.h>
-#include <project/history.h>
-#include <project/invento_walk.h>
-#include <quit.h>
-#include <replay/line.h>
-#include <str.h>
-#include <sub.h>
-#include <symtab/template.h>
-#include <url.h>
-#include <usage.h>
-#include <user.h>
-#include <uuidentifier.h>
-#include <trace.h>
+#include <common/error.h>              // for assert
+#include <common/nstring.h>
+#include <common/nstring/list.h>
+#include <common/quit.h>
+#include <common/str.h>
+#include <common/symtab/template.h>
+#include <common/trace.h>
+#include <common/uuidentifier.h>
+#include <common/version_stmp.h>
+#include <libaegis/arglex/change.h>
+#include <libaegis/arglex/project.h>
+#include <libaegis/change/branch.h>
+#include <libaegis/change.h>
+#include <libaegis/change/lock_sync.h>
+#include <libaegis/help.h>
+#include <libaegis/input/file.h>
+#include <libaegis/input.h>
+#include <libaegis/option.h>
+#include <libaegis/os.h>
+#include <libaegis/project.h>
+#include <libaegis/project/history.h>
+#include <libaegis/project/invento_walk.h>
+#include <libaegis/sub.h>
+#include <libaegis/url.h>
+#include <libaegis/user.h>
+
+#include <aedist/usage.h>
+#include <aedist/arglex3.h>
+#include <aedist/change/functor/invent_build.h>
+#include <aedist/replay/line.h>
+
+
+static long
+extract_change_number_from_url(const nstring &url)
+{
+    //
+    // The URLs look like ...aeget/project.Cnnn/...
+    // Look for strings of the form "[.][cC][1-9][0-9]*"
+    //
+    const char *cp = url.c_str();
+    for (;;)
+    {
+	if
+       	(
+	    cp[0] == '.'
+	&&
+	    (cp[1] == 'c' || cp[1] == 'C')
+	&&
+	    isdigit((unsigned char)cp[2])
+	)
+	{
+	    return strtol(cp + 2, 0, 10);
+	}
+	if (!*cp)
+	{
+	    return 0;
+	}
+	++cp;
+    }
+}
+
+
+static nstring
+fix_compatibility_modifier(const nstring &url)
+{
+    trace(("fix_compatibility_modifier(url = %s)\n{\n", url.quote_c().c_str()));
+    if
+    (
+	0 != memcmp("http:", url.c_str(), 5)
+    &&
+	0 != memcmp("https:", url.c_str(), 6)
+    )
+    {
+	// Only mess with HTTP URLs
+	trace(("return %s;\n", url.quote_c().c_str()));
+	trace(("}\n"));
+	return url;
+    }
+    const char *cp = strstr(url.c_str(), "compat=");
+    if (!cp)
+    {
+	nstring result(url + "+compat=" + version_stamp());
+	trace(("return %s;\n", result.quote_c().c_str()));
+	trace(("}\n"));
+	return result;
+    }
+    cp += 7;
+    nstring left(url.c_str(), cp - url.c_str());
+    while (*cp && *cp != '+')
+	++cp;
+    nstring result(left + version_stamp() + cp);
+    trace(("return %s;\n", result.quote_c().c_str()));
+    trace(("}\n"));
+    return result;
+}
 
 
 void
@@ -182,7 +252,7 @@ replay_main(void)
     if (!project_name)
         project_name = user_default_project();
     project_ty *pp = project_alloc(project_name);
-    project_bind_existing(pp);
+    pp->bind_existing();
     user_ty *up = user_executing(pp);
 
     symtab<change_ty> local_inventory;
@@ -204,7 +274,7 @@ replay_main(void)
     {
 	smart_url.set_path_if_empty
 	(
-	    nstring::format("/cgi-bin/aeget/%s", project_name_get(pp)->str_text)
+	    nstring::format("cgi-bin/aeget/%s", project_name_get(pp)->str_text)
 	);
 	smart_url.set_query_if_empty("inventory");
 	ifn = smart_url.reassemble();
@@ -215,7 +285,7 @@ replay_main(void)
     // Open the file (or URL) containing the inventory.
     //
     os_become_orig();
-    input_ty *ifp = input_file_open(ifn.get_ref());
+    input ifp = input_file_open(ifn.get_ref());
     os_become_undo();
 
     nstring_list remote_change;
@@ -270,7 +340,7 @@ replay_main(void)
         )
             continue;
 
-        remote_change.push_back(parts.get_url2());
+        remote_change.push_back_unique(parts.get_url2());
     }
 
     trace(("remote_change.size() = %d;\n", remote_change.size()));
@@ -288,9 +358,7 @@ replay_main(void)
     for (size_t c = 0; c < remote_change.size(); ++c)
     {
         project_ty *pp2 = project_alloc(project_name);
-        project_bind_existing(pp2);
-
-        long change_number = project_next_change_number(pp2, 1);
+        pp2->bind_existing();
 
         //
         // The URL as present in the change set inventory is not
@@ -303,16 +371,42 @@ replay_main(void)
 	    relative.set_host_part_from(smart_url);
 	    url_abs = relative.reassemble();
 	}
+
+	//
+	// There could be a compat=n.nn modifier in the
+	// URL, if so replace it, otherwise add one.
+	//
+	url_abs = fix_compatibility_modifier(url_abs);
+
+	//
+	// If the URL contains a change number, try to use that.
+	// Otherwise, just use the next available change number.
+	//
+	long change_number = extract_change_number_from_url(url_abs);
+	if
+       	(
+	    change_number <= 0
+	||
+	    project_change_number_in_use(pp2, change_number)
+	)
+	{
+	    change_number = project_next_change_number(pp2, 1);
+	}
+
+	//
+	// Start building the command.
+	//
         nstring trace_options(trace_args());
         nstring aedist_cmd =
             nstring::format
             (
-                "aedist -receive -project=%s -change=%ld -file %s%s%s",
+                "aedist -receive -project=%s -change=%ld -file %s%s%s%s",
                 nstring(project_name_get(pp2)).quote_shell().c_str(),
                 change_number,
                 url_abs.quote_shell().c_str(),
                 trojan.c_str(),
-                trace_options.c_str()
+                trace_options.c_str(),
+		(option_verbose_get() ? " --verbose" : "")
             );
         trace_nstring(aedist_cmd);
         os_become_orig();
@@ -325,15 +419,11 @@ replay_main(void)
             );
         os_become_undo();
 
-        //
-        // The project_pstate_get call is here to force a sync of the
-        // pp pointed project_ty structure.
-        //
         project_free(pp2);
         pp2 = 0;
 
         pp2 = project_alloc(project_name);
-        project_bind_existing(pp2);
+        pp2->bind_existing();
         change_ty *cp = change_alloc(pp2, change_number);
         int change_exists = change_bind_existing_errok(cp);
 

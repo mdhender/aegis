@@ -1,6 +1,6 @@
 //
 //	aegis - project change supervisor
-//	Copyright (C) 2002-2004 Peter Miller;
+//	Copyright (C) 2002-2005 Peter Miller;
 //	All rights reserved.
 //
 //	This program is free software; you can redistribute it and/or modify
@@ -20,14 +20,14 @@
 // MANIFEST: functions to manipulate strings
 //
 
-#include <ac/errno.h>
-#include <ac/stdio.h>
+#include <common/ac/errno.h>
+#include <common/ac/stdio.h>
 
-#include <file.h>
-#include <fopen_nfs.h>
-#include <glue.h>
-#include <os.h>
-#include <sub.h>
+#include <libaegis/file.h>
+#include <libaegis/fopen_nfs.h>
+#include <libaegis/glue.h>
+#include <libaegis/os.h>
+#include <libaegis/sub.h>
 
 
 string_ty *

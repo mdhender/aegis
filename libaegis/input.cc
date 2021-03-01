@@ -1,6 +1,6 @@
 //
 //	aegis - project change supervisor
-//	Copyright (C) 1999, 2003-2005 Peter Miller;
+//	Copyright (C) 1999, 2003-2006 Peter Miller;
 //	All rights reserved.
 //
 //	This program is free software; you can redistribute it and/or modify
@@ -20,35 +20,68 @@
 // MANIFEST: functions for reading input
 //
 
-#include <ac/stdarg.h>
-#include <ac/string.h>
+#include <common/ac/stdarg.h>
+#include <common/ac/string.h>
 
-#include <error.h> // for assert
-#include <input.h>
-#include <mem.h>
+#include <common/error.h> // for assert
+#include <common/mem.h>
+#include <common/trace.h>
+#include <libaegis/input.h>
 
 
 input_ty::~input_ty()
 {
+    trace(("input_ty::~input_ty(this = %08lX)\n{\n", (long)this));
+    assert(reference_count_valid());
+    reference_count = -666;
     assert(buffer);
     mem_free(buffer);
     buffer = 0;
     buffer_position = 0;
     buffer_end = 0;
     buffer_size = 0;
+    trace(("}\n"));
 }
 
 
 input_ty::input_ty() :
+    reference_count(1),
     buffer(0),
     buffer_size(0),
     buffer_position(0),
     buffer_end(0)
 {
+    trace(("input_ty::input_ty(this = %08lX)\n{\n", (long)this));
     buffer_size = (size_t)1 << 14;
     buffer = (unsigned char *)mem_alloc(buffer_size);
     buffer_position = buffer;
     buffer_end = buffer;
+    trace(("}\n"));
+}
+
+
+void
+input_ty::reference_count_up()
+{
+    trace(("input_ty::reference_count_up(this = %08lX)\n{\n", (long)this));
+    assert(reference_count_valid());
+    reference_count++;
+    trace(("count = %ld after\n", reference_count));
+    trace(("}\n"));
+}
+
+
+void
+input_ty::reference_count_down()
+{
+    trace(("input_ty::reference_count_down(this = %08lX)\n{\n", (long)this));
+    trace(("count = %ld before\n", reference_count));
+    assert(reference_count_valid());
+    if (reference_count <= 1)
+	delete this;
+    else
+	reference_count--;
+    trace(("}\n"));
 }
 
 
@@ -88,7 +121,7 @@ input_ty::getc_complicated()
 {
     //
     // If there is anything in the buffer, return the first byte of the
-    // buffer.  This should never happen, because the inline getc method
+    // buffer.  This should never happen, because the inline getch method
     // is supposed to make it go away.
     //
     if (buffer_position < buffer_end)

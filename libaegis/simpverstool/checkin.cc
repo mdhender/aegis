@@ -1,6 +1,6 @@
 //
 //	aegis - project change supervisor
-//	Copyright (C) 2005 Peter Miller;
+//	Copyright (C) 2005, 2006 Peter Miller;
 //	All rights reserved.
 //
 //	This program is free software; you can redistribute it and/or modify
@@ -20,24 +20,26 @@
 // MANIFEST: functions to impliment checkin
 //
 
-#include <ac/ctype.h>
-#include <ac/stdlib.h>
-#include <ac/stdio.h>
-#include <ac/pwd.h>
+#include <common/ac/ctype.h>
+#include <common/ac/stdlib.h>
+#include <common/ac/stdio.h>
+#include <common/ac/pwd.h>
 
-#include <adler32.h>
-#include <getpw_cache.h>
-#include <input/file.h>
-#include <input/gunzip.h>
-#include <quit.h>
-#include <quit/action/unlink.h>
-#include <os.h>
-#include <output/file.h>
-#include <output/gzip.h>
-#include <rfc822/functor/version_prev.h>
-#include <rfc822/functor/vers_search.h>
-#include <simpverstool.h>
-#include <sub.h>
+#include <libaegis/adler32.h>
+#include <libaegis/getpw_cache.h>
+#include <libaegis/input/bunzip2.h>
+#include <libaegis/input/file.h>
+#include <libaegis/input/gunzip.h>
+#include <common/quit.h>
+#include <libaegis/quit/action/unlink.h>
+#include <libaegis/os.h>
+#include <libaegis/output/bzip2.h>
+#include <libaegis/output/file.h>
+#include <libaegis/output/gzip.h>
+#include <libaegis/rfc822/functor/version_prev.h>
+#include <libaegis/rfc822/functor/vers_search.h>
+#include <libaegis/simpverstool.h>
+#include <libaegis/sub.h>
 
 
 static nstring
@@ -150,7 +152,7 @@ simple_version_tool::checkin(const nstring &input_file_name,
     //
     // We will need some information about it to put in the header.
     //
-    input_file in(input_file_name);
+    input in = new input_file(input_file_name);
 
     //
     // Build the header to write to the file.
@@ -159,7 +161,7 @@ simple_version_tool::checkin(const nstring &input_file_name,
     header.set("content-type", os_magic_file(input_file_name));
     header.set("checksum", calculate_adler32(input_file_name));
     header.set("version", version);
-    header.set("content-length", in.length());
+    header.set("content-length", in->length());
     header.set("content-transfer-encoding", nstring("8bit"));
 
     //
@@ -177,7 +179,30 @@ simple_version_tool::checkin(const nstring &input_file_name,
     //
     {
 	output_file out_u(temp_file_name);
-	output_gzip out(&out_u, false);
+	output_ty *out_c = 0;
+	switch (compression_algorithm)
+	{
+	case compression_algorithm_none:
+            // "none" is a special case.  Once we have "smart pointers"
+            // for output_ty, it will be possible to honour this option by
+            // doing nothing.  For now, we use gzip.
+
+	case compression_algorithm_gzip:
+	    out_c = new output_gzip(&out_u, false);
+	    break;
+
+#ifndef DEBUG
+	default:
+#endif
+	case compression_algorithm_unspecified:
+	case compression_algorithm_not_set:
+	    // We will default to the best compression available.
+	    // For now, that means bzip2
+
+	case compression_algorithm_bzip2:
+	    out_c = new output_bzip2(&out_u, false);
+	    break;
+	}
 
 	//
         // Each version consists of an RFC 822 header, and the
@@ -189,8 +214,8 @@ simple_version_tool::checkin(const nstring &input_file_name,
         // Note that if the source file is plain text, then the
         // (uncompressed) output will be plain text, too.
 	//
-	header.store(out);
-	out << in;
+	header.store(*out_c);
+	*out_c << in;
 
 	if (there_are_previous_versions)
 	{
@@ -198,13 +223,26 @@ simple_version_tool::checkin(const nstring &input_file_name,
             // Add the previous history on the end of the new file.
             // These previous versions should compress *very* well,
             // because thay are usually almost the same as the new
-            // version.  Thus the gzip compression tables will apply,
+            // version.  Thus the bzip2 compression tables will apply,
             // and provide reasonable compression.
+            //
+            // Note: gzip resets its tables every 32KB, so it's only
+            // good for files smaller than 16KB per version.  The bzip2
+            // algorithm resets its tables every 900KB, so it's good
+            // for file sizes up to 450KB per version.  Both algorithms
+            // keep working beyond these limits, but you don't see the
+            // excellent results that are obtain for smaller source
+            // files.
 	    //
-	    input_file old_hist_uncom(history_file_name);
-	    input_gunzip old_history_file(&old_hist_uncom, false);
-	    out << old_history_file;
+	    input old_hist_uncom = new input_file(history_file_name);
+            // Check both algorithms for decompression, in case we are
+            // looking at an older archive.
+	    input temp = input_gunzip_open(old_hist_uncom);
+	    input old_history_file = input_bunzip2_open(temp);
+	    *out_c << old_history_file;
 	}
+	delete out_c;
+	out_c = 0;
     }
 
     //

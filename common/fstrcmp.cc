@@ -39,12 +39,12 @@
 //	(Volume 15, No. 11, November 1985)
 //
 
-#include <ac/string.h>
+#include <common/ac/string.h>
 
-#include <error.h>
-#include <fstrcmp.h>
-#include <mem.h>
-#include <trace.h>
+#include <common/error.h>
+#include <common/fstrcmp.h>
+#include <common/mem.h>
+#include <common/trace.h>
 
 
 struct snake_t

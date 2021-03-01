@@ -1,6 +1,6 @@
 //
 //	aegis - project change supervisor
-//	Copyright (C) 2004, 2005 Peter Miller;
+//	Copyright (C) 2004-2006 Peter Miller;
 //	All rights reserved.
 //
 //	This program is free software; you can redistribute it and/or modify
@@ -20,43 +20,38 @@
 // MANIFEST: functions to manipulate cvsroots
 //
 
-#include <ac/ctype.h>
+#include <common/ac/ctype.h>
 
-#include <change.h>
-#include <change/branch.h>
-#include <error.h>
-#include <fake_version.h>
-#include <file_info.h>
-#include <gonzo.h>
-#include <input/string.h>
-#include <module/cvsroot.h>
-#include <module/private.h>
-#include <now.h>
-#include <project.h>
-#include <project/history.h>
-#include <response/clear_sticky.h>
-#include <response/clearstatdir.h>
-#include <response/created.h>
+#include <libaegis/change.h>
+#include <libaegis/change/branch.h>
+#include <common/error.h>
+#include <aecvsserver/fake_version.h>
+#include <aecvsserver/file_info.h>
+#include <libaegis/gonzo.h>
+#include <libaegis/input/string.h>
+#include <aecvsserver/module/cvsroot.h>
+#include <common/now.h>
+#include <libaegis/project.h>
+#include <libaegis/project/history.h>
+#include <aecvsserver/response/clear_sticky.h>
+#include <aecvsserver/response/clearstatdir.h>
+#include <aecvsserver/response/created.h>
+#include <aecvsserver/server.h>
 
 
-struct module_cvsroot_ty
+module_cvsroot::~module_cvsroot()
 {
-    module_ty       inherited;
-};
-
-
-static void
-destructor(module_ty *mp)
-{
-    module_cvsroot_ty *mcp;
-
-    mcp = (module_cvsroot_ty *)mp;
 }
 
 
-static void
-modified(module_ty *mp, server_ty *sp, string_ty *file_name, file_info_ty *fip,
-    input_ty *ip)
+module_cvsroot::module_cvsroot()
+{
+}
+
+
+void
+module_cvsroot::modified(server_ty *sp, string_ty *file_name, file_info_ty *fip,
+    input &ip)
 {
     //
     // Throw away the file contents the client is sending to us.  We only
@@ -68,15 +63,17 @@ modified(module_ty *mp, server_ty *sp, string_ty *file_name, file_info_ty *fip,
 	sp,
 	"Module \"%s\" file \"%s\" modify ignored; please\n"
 	    "use Aegis project management commands instead.",
-	mp->vptr->name,
+	name()->str_text,
 	file_name->str_text
     );
 }
 
 
-static string_ty *
-name(module_ty *mp)
+string_ty *
+module_cvsroot::calculate_canonical_name()
+    const
 {
+    // FIXME: memory leak
     return str_from_c("CVSROOT");
 }
 
@@ -84,16 +81,13 @@ name(module_ty *mp)
 static int
 sanitary_length(string_ty *s, int llen)
 {
-    const char      *cp;
-    const char      *cp_max;
-
     if (llen < 15)
 	llen = 15;
     llen = 76 - 2 * llen;
     if (llen <= 0)
 	return 0;
-    cp = s->str_text;
-    cp_max = cp + llen;
+    const char *cp = s->str_text;
+    const char *cp_max = cp + llen;
     while (cp < cp_max && *cp && isprint((unsigned char)*cp))
 	++cp;
     return (cp - s->str_text);
@@ -144,9 +138,7 @@ checkout_modules_inner(string_list_ty *modules, project_ty *pp)
 	// active only
 	if (change_is_a_branch(cp2))
 	{
-	    project_ty	*pp2;
-
-	    pp2 = project_bind_branch(pp, cp2);
+	    project_ty *pp2 = pp->bind_branch(cp2);
 	    checkout_modules_inner(modules, pp2);
 	    project_free(pp2);
 	}
@@ -181,19 +173,18 @@ checkout_modules_inner(string_list_ty *modules, project_ty *pp)
 	    change_free(cp2);
 	}
     }
-    // do NOT free ``lp''
-    // do NOT free ``cp''
+    // do NOT free "lp"
+    // do NOT free "cp"
 }
 
 
-static void
-checkout_modules(module_ty *mp, server_ty *sp)
+void
+module_cvsroot::checkout_modules(server_ty *sp)
 {
     string_list_ty  toplevel;
     size_t          j;
     string_ty       *server_side;
     string_ty       *client_side;
-    input_ty        *ip;
     string_ty       *version;
     int             mode;
     string_ty       *s;
@@ -385,8 +376,8 @@ checkout_modules(module_ty *mp, server_ty *sp)
     //     is executed.  Generally you will find that taginfo is a better
     //     solution (user-defined logging).
     //
-    // You should also see Module program options about how the ``program
-    // options'' programs are run.
+    // You should also see Module program options about how the "program
+    // options" programs are run.
     //
     //
     // Module program options
@@ -398,7 +389,7 @@ checkout_modules(module_ty *mp, server_ty *sp)
     // this program on the server from a temporary directory. The path is
     // searched for this program.
     //
-    // If using ``local access'' (on a local or remote NFS file system, i.e.
+    // If using "local access" (on a local or remote NFS file system, i.e.
     // repository set just to a path), the program will be executed from
     // the newly checked-out tree, if found there, or alternatively searched
     // for in the path if not.
@@ -436,7 +427,7 @@ checkout_modules(module_ty *mp, server_ty *sp)
 
 	prjname = toplevel.string[j];
 	pp = project_alloc(prjname);
-	project_bind_existing(pp);
+	pp->bind_existing();
 
 	//
 	// watch out for permissions
@@ -493,7 +484,7 @@ checkout_modules(module_ty *mp, server_ty *sp)
     //
     server_side = str_from_c("CVSROOT/modules");
     client_side = server_directory_calc_client_side(sp, server_side);
-    ip = new input_string(nstring(s));
+    input ip = new input_string(nstring(s));
     str_free(s);
     mode = 0444;
     version = fake_version_now();
@@ -502,18 +493,17 @@ checkout_modules(module_ty *mp, server_ty *sp)
     server_response_queue
     (
 	sp,
-	response_created_new(client_side, server_side, ip, mode, version)
+	new response_created(client_side, server_side, ip, mode, version)
     );
     str_free(version);
     str_free(client_side);
     str_free(server_side);
-    // do NOT input_delete(ip), this is done by response_created_..., later
 }
 
 
-static int
-update(module_ty *mp, server_ty *sp, string_ty *client_side,
-    string_ty *server_side, module_options_ty *opt)
+bool
+module_cvsroot::update(server_ty *sp, string_ty *client_side,
+    string_ty *server_side, const options &opt)
 {
     //
     // FIXME: the client_side and serve_side COULD be refering to
@@ -527,7 +517,7 @@ update(module_ty *mp, server_ty *sp, string_ty *client_side,
     // history
     // loginfo
     // modules
-    checkout_modules(mp, sp);
+    checkout_modules(sp);
     // rcsinfo
     // verifymsg
 
@@ -535,12 +525,12 @@ update(module_ty *mp, server_ty *sp, string_ty *client_side,
     // Report success.
     //
     server_ok(sp);
-    return 1;
+    return true;
 }
 
 
-static void
-groan(module_ty *mp, server_ty *sp, const char *request_name)
+void
+module_cvsroot::groan(server_ty *sp, const char *request_name)
 {
     server_error
     (
@@ -552,55 +542,28 @@ groan(module_ty *mp, server_ty *sp, const char *request_name)
 }
 
 
-static int
-checkin(module_ty *mp, server_ty *sp, string_ty *client_side,
+bool
+module_cvsroot::checkin(server_ty *sp, string_ty *client_side,
     string_ty *server_side)
 {
-    groan(mp, sp, "ci");
-    return 0;
+    groan(sp, "ci");
+    return false;
 }
 
 
-static int
-add(module_ty *mp, server_ty *sp, string_ty *client_side,
-    string_ty *server_side, module_options_ty *opt)
+bool
+module_cvsroot::add(server_ty *sp, string_ty *client_side,
+    string_ty *server_side, const options &opt)
 {
-    groan(mp, sp, "add");
-    return 0;
+    groan(sp, "add");
+    return false;
 }
 
 
-static int
-remove(module_ty *mp, server_ty *sp, string_ty *client_side,
-    string_ty *server_side, module_options_ty *opt)
+bool
+module_cvsroot::remove(server_ty *sp, string_ty *client_side,
+    string_ty *server_side, const options &opt)
 {
-    groan(mp, sp, "remove");
-    return 0;
-}
-
-
-static const module_method_ty vtbl =
-{
-    sizeof(module_cvsroot_ty),
-    destructor,
-    modified,
-    name,
-    update,
-    checkin,
-    add,
-    remove,
-    0, // not bogus
-    "CVSROOT"
-};
-
-
-module_ty *
-module_cvsroot_new(void)
-{
-    module_ty       *mp;
-    module_cvsroot_ty *mcp;
-
-    mp = module_new(&vtbl);
-    mcp = (module_cvsroot_ty *)mp;
-    return mp;
+    groan(sp, "remove");
+    return false;
 }

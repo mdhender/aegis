@@ -1,6 +1,6 @@
 //
 //	aegis - project change supervisor
-//	Copyright (C) 1991-1993, 1995, 1999, 2002-2004 Peter Miller;
+//	Copyright (C) 1991-1993, 1995, 1999, 2002-2005 Peter Miller;
 //	All rights reserved.
 //
 //	This program is free software; you can redistribute it and/or modify
@@ -20,13 +20,13 @@
 // MANIFEST: functions to automatically indent output
 //
 
-#include <ac/stdio.h>
-#include <ac/stdarg.h>
-#include <ac/errno.h>
+#include <common/ac/stdio.h>
+#include <common/ac/stdarg.h>
+#include <common/ac/errno.h>
 
-#include <error.h>
-#include <indent.h>
-#include <trace.h>
+#include <common/error.h>
+#include <fmtgen/indent.h>
+#include <common/trace.h>
 
 
 #define INDENT 4

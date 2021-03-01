@@ -23,7 +23,7 @@
 #ifndef LIBAEGIS_INPUT_STRING_H
 #define LIBAEGIS_INPUT_STRING_H
 
-#include <input.h>
+#include <libaegis/input.h>
 
 /**
   * The input_string class is used to represent an input source obtained

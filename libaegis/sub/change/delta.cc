@@ -1,6 +1,6 @@
 //
 //	aegis - project change supervisor
-//	Copyright (C) 2001-2004 Peter Miller;
+//	Copyright (C) 2001-2005 Peter Miller;
 //	All rights reserved.
 //
 //	This program is free software; you can redistribute it and/or modify
@@ -20,13 +20,13 @@
 // MANIFEST: functions to manipulate deltas
 //
 
-#include <change.h>
-#include <cstate.h>
-#include <sub/change/delta.h>
-#include <sub.h>
-#include <wstr.h>
-#include <wstr/list.h>
-#include <trace.h>
+#include <common/trace.h>
+#include <common/wstr.h>
+#include <common/wstr/list.h>
+#include <libaegis/change.h>
+#include <libaegis/cstate.h>
+#include <libaegis/sub/change/delta.h>
+#include <libaegis/sub.h>
 
 
 //

@@ -1,6 +1,6 @@
 //
 //	aegis - project change supervisor
-//	Copyright (C) 2002-2004 Peter Miller;
+//	Copyright (C) 2002-2005 Peter Miller;
 //	All rights reserved.
 //
 //	This program is free software; you can redistribute it and/or modify
@@ -20,24 +20,24 @@
 // MANIFEST: functions to manipulate execute_retcs
 //
 
-#include <ac/errno.h>
-#include <ac/grp.h>
-#include <ac/pwd.h>
-#include <ac/signal.h>
-#include <ac/stddef.h>
-#include <ac/unistd.h>
+#include <common/ac/errno.h>
+#include <common/ac/grp.h>
+#include <common/ac/pwd.h>
+#include <common/ac/signal.h>
+#include <common/ac/stddef.h>
+#include <common/ac/unistd.h>
 
-#include <ac/sys/types.h>
+#include <common/ac/sys/types.h>
 #include <sys/stat.h>
 
-#include <env.h>
-#include <error.h>
-#include <option.h>
-#include <os.h>
-#include <os/interrupt.h>
-#include <sub.h>
-#include <trace.h>
-#include <undo.h>
+#include <common/env.h>
+#include <common/error.h>
+#include <libaegis/option.h>
+#include <libaegis/os.h>
+#include <libaegis/os/interrupt.h>
+#include <libaegis/sub.h>
+#include <common/trace.h>
+#include <libaegis/undo.h>
 
 
 #define MAX_CMD_RPT 36

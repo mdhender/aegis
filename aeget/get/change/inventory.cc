@@ -19,14 +19,18 @@
 //
 // MANIFEST: implementation of the get_change_inventory class
 //
-#include <get/change/inventory.h>
-#include <project/invento_walk.h>
-#include <change/functor/inventory.h>
+
+#include <libaegis/project/invento_walk.h>
+
+#include <aeget/get/change/inventory.h>
+#include <aeget/change/functor/inventory.h>
+#include <aeget/http.h>
 
 
 void
-get_change_inventory(project_ty *pp, string_ty *, string_list_ty *)
+get_change_inventory(project_ty *pp, string_ty *, string_list_ty *modifiers)
 {
-    change_functor_inventory cf(false, pp);
+    bool incl_orig = modifier_test(modifiers, "all");
+    change_functor_inventory cf(false, pp, incl_orig);
     project_inventory_walk(pp, cf);
 }

@@ -20,11 +20,11 @@
 // MANIFEST: functions to manipulate uuid_transs
 //
 
-#include <ac/ctype.h>
+#include <common/ac/ctype.h>
 
-#include <error.h>
-#include <project/history/uuid_trans.h>
-#include <uuidentifier.h>
+#include <common/error.h>
+#include <libaegis/project/history/uuid_trans.h>
+#include <common/uuidentifier.h>
 
 
 static int

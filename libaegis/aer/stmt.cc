@@ -1,6 +1,6 @@
 //
 //	aegis - project change supervisor
-//	Copyright (C) 1994, 2003, 2004 Peter Miller.
+//	Copyright (C) 1994, 2003-2005 Peter Miller.
 //	All rights reserved.
 //
 //	This program is free software; you can redistribute it and/or modify
@@ -20,9 +20,9 @@
 // MANIFEST: functions to manipulate statements
 //
 
-#include <aer/stmt.h>
-#include <error.h>
-#include <mem.h>
+#include <libaegis/aer/stmt.h>
+#include <common/error.h>
+#include <common/mem.h>
 
 
 rpt_stmt_ty *

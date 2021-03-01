@@ -20,7 +20,7 @@
  * MANIFEST: functions to manipulate ${basename $fn .c}s
  */
 
-#include <${trim_directory ${trim_extension $fn}.h}>
+#include <${trim_extension $fn}.h>
 
 
 void

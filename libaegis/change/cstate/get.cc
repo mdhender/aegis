@@ -1,6 +1,6 @@
 //
 //	aegis - project change supervisor
-//	Copyright (C) 1999, 2001-2004 Peter Miller;
+//	Copyright (C) 1999, 2001-2005 Peter Miller;
 //	All rights reserved.
 //
 //	This program is free software; you can redistribute it and/or modify
@@ -20,20 +20,18 @@
 // MANIFEST: functions to manipulate gets
 //
 
-#include <change.h>
-#include <change/cstate/improve.h>
-#include <change/lock_sync.h>
-#include <error.h> // for assert
-#include <sub.h>
-#include <symtab.h>
-#include <trace.h>
+#include <libaegis/change.h>
+#include <libaegis/change/cstate/improve.h>
+#include <libaegis/change/lock_sync.h>
+#include <common/error.h> // for assert
+#include <libaegis/sub.h>
+#include <common/symtab.h>
+#include <common/trace.h>
 
 
 static void
 cstate_to_fstate(change_ty *cp)
 {
-    size_t	    j;
-
     trace(("cstate_to_fstate(cp = %08lX)\n{\n", (long)cp));
     assert(cp->reference_count >= 1);
     assert(cp->cstate_data);
@@ -43,11 +41,12 @@ cstate_to_fstate(change_ty *cp)
     cp->fstate_data->src = (fstate_src_list_ty *)fstate_src_list_type.alloc();
     cp->fstate_is_a_new_file = 1;
     cp->fstate_stp = symtab_alloc(5);
+    cp->fstate_uuid_stp = symtab_alloc(5);
 
     //
     // copy the file records from cstate to fstate
     //
-    for (j = 0; j < cp->cstate_data->src->length; ++j)
+    for (size_t j = 0; j < cp->cstate_data->src->length; ++j)
     {
 	cstate_src_ty	*src1;
 	fstate_src_ty	*src2;
@@ -121,6 +120,8 @@ cstate_to_fstate(change_ty *cp)
 	// index to track also
 	//
 	symtab_assign(cp->fstate_stp, src2->file_name, src2);
+	if (src2->uuid && (!src2->move || src2->action != file_action_remove))
+	    symtab_assign(cp->fstate_uuid_stp, src2->uuid, src2);
     }
 
     //

@@ -1,6 +1,6 @@
 //
 //	aegis - project change supervisor
-//	Copyright (C) 1991-1999, 2001-2004 Peter Miller;
+//	Copyright (C) 1991-1999, 2001-2006 Peter Miller;
 //	All rights reserved.
 //
 //	This program is free software; you can redistribute it and/or modify
@@ -20,31 +20,32 @@
 // MANIFEST: functions to implement new change undo
 //
 
-#include <ac/stdio.h>
-#include <ac/stdlib.h>
-#include <ac/time.h>
+#include <common/ac/stdio.h>
+#include <common/ac/stdlib.h>
+#include <common/ac/time.h>
 
-#include <aeca.h>
-#include <ael/change/by_state.h>
-#include <aencu.h>
-#include <arglex2.h>
-#include <arglex/change.h>
-#include <arglex/project.h>
-#include <cattr.h>
-#include <change.h>
-#include <col.h>
-#include <commit.h>
-#include <common.h>
-#include <help.h>
-#include <lock.h>
-#include <os.h>
-#include <progname.h>
-#include <project.h>
-#include <project/history.h>
-#include <quit.h>
-#include <sub.h>
-#include <trace.h>
-#include <user.h>
+#include <common/progname.h>
+#include <common/quit.h>
+#include <common/trace.h>
+#include <libaegis/ael/change/by_state.h>
+#include <libaegis/arglex2.h>
+#include <libaegis/arglex/change.h>
+#include <libaegis/arglex/project.h>
+#include <libaegis/cattr.h>
+#include <libaegis/change.h>
+#include <libaegis/col.h>
+#include <libaegis/commit.h>
+#include <libaegis/common.h>
+#include <libaegis/help.h>
+#include <libaegis/lock.h>
+#include <libaegis/os.h>
+#include <libaegis/project.h>
+#include <libaegis/project/history.h>
+#include <libaegis/sub.h>
+#include <libaegis/user.h>
+
+#include <aegis/aeca.h>
+#include <aegis/aencu.h>
 
 
 static void
@@ -167,7 +168,7 @@ new_change_undo_main(void)
 	project_name = user_default_project();
     pp = project_alloc(project_name);
     str_free(project_name);
-    project_bind_existing(pp);
+    pp->bind_existing();
 
     //
     // locate user data
@@ -191,7 +192,7 @@ new_change_undo_main(void)
     // Take an advisory write lock on the project state
     // and the change state.
     //
-    project_pstate_lock_prepare(pp);
+    pp->pstate_lock_prepare();
     change_cstate_lock_prepare(cp);
     lock_take();
     cstate_data = change_cstate_get(cp);
@@ -229,7 +230,7 @@ new_change_undo_main(void)
     // Update user table row.
     // Release advisory write locks.
     //
-    project_pstate_write(pp);
+    pp->pstate_write();
     commit();
     lock_release();
 

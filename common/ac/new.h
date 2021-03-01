@@ -22,7 +22,7 @@
 #ifndef COMMON_AC_NEW_H
 #define COMMON_AC_NEW_H
 
-#include <config.h>
+#include <common/config.h>
 
 #ifdef HAVE_HEADER_NEW
 # include <new>

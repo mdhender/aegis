@@ -1,6 +1,6 @@
 /*
  *	aegis - project change supervisor
- *	Copyright (C) 1997, 1998, 2002, 2003 Peter Miller;
+ *	Copyright (C) 1997, 1998, 2002, 2003, 2005 Peter Miller;
  *	All rights reserved.
  *
  *	This program is free software; you can redistribute it and/or modify
@@ -86,7 +86,7 @@ for (j = 1; j < count(prj_name_parts); j++)
     long_project_name ##= ".<a href=\"" ## href ## "\" >"
     	## quote_html(prj_name_parts[j]) ## "</a>";
 };
-long_project_name = "``" ## long_project_name ## "'',";
+long_project_name = "&ldquo;" ## long_project_name ## "&rdquo;,";
 /* HTTP limits lines to 510 characters */
 for (j in wrap(long_project_name, 510))
     print(j);
@@ -125,10 +125,10 @@ if (ok)
     print("<dt><a href=\"" ## href ## "\">");
     print("Branch");
     print("</a><dd>");
-    print("This change is a branch of the ``" ## quote_html(pn) ##
-	"'' project.");
+    print("This change is a branch of the &ldquo;" ## quote_html(pn) ##
+	"&rdquo; project.");
     print("This item takes you to a project menu for the");
-    print("``" ## quote_html(pn) ## "." ## cn ## "'' branch.");
+    print("&ldquo;" ## quote_html(pn) ## "." ## cn ## "&rdquo; branch.");
 }
 
 if (c.state >= being_developed)

@@ -1,6 +1,6 @@
 //
 //	cook - file construction tool
-//	Copyright (C) 1994, 1999, 2002-2004 Peter Miller;
+//	Copyright (C) 1994, 1999, 2002-2005 Peter Miller;
 //	All rights reserved.
 //
 //	This program is free software; you can redistribute it and/or modify
@@ -29,11 +29,11 @@
 //	No known patent problems.
 //
 
-#include <ac/stdio.h>
-#include <ac/string.h>
+#include <common/ac/stdio.h>
+#include <common/ac/string.h>
 
-#include <fp/snefru.h>
-#include <find_sizes.h>
+#include <common/fp/snefru.h>
+#include <common/find_sizes.h>
 
 //
 // NAME
@@ -51,7 +51,7 @@
 //	It hashes a 512-bit block in into a 256-bit block out.  The
 //	hash function is cryptographically strong.
 //
-//	To hash in into out, call snefru512(out,in,lev). ``out'' and ``in''
+//	To hash in into out, call snefru512(out,in,lev). "out" and "in"
 //	are arrays of 8 and 16 snefru512_words respectively.
 //	snefru512_word is a 32-bit unsigned integer type.
 //

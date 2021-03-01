@@ -1,6 +1,6 @@
 //
 //	aegis - project change supervisor
-//	Copyright (C) 2001, 2002, 2004, 2005 Peter Miller;
+//	Copyright (C) 2001, 2002, 2004-2006 Peter Miller;
 //	All rights reserved.
 //
 //	This program is free software; you can redistribute it and/or modify
@@ -20,36 +20,33 @@
 // MANIFEST: functions to manipulate slurps
 //
 
-#include <ac/stdlib.h>
+#include <common/ac/stdlib.h>
 
-#include <error.h>
-#include <input.h>
-#include <input/base64.h>
-#include <input/crlf.h>
-#include <input/file.h>
-#include <input/gunzip.h>
-#include <input/quoted_print.h>
-#include <input/uudecode.h>
-#include <os.h>
-#include <rfc822header.h>
-#include <slurp.h>
-#include <sub.h>
-#include <zero.h>
+#include <common/error.h>
+#include <libaegis/input.h>
+#include <libaegis/input/base64.h>
+#include <libaegis/input/bunzip2.h>
+#include <libaegis/input/crlf.h>
+#include <libaegis/input/file.h>
+#include <libaegis/input/gunzip.h>
+#include <libaegis/input/quoted_print.h>
+#include <libaegis/input/uudecode.h>
+#include <libaegis/os.h>
+#include <libaegis/rfc822.h>
+#include <libaegis/sub.h>
+#include <libaegis/zero.h>
+
+#include <aepatch/slurp.h>
 
 
 patch_list_ty *
 patch_slurp(string_ty *ifn)
 {
-    input_ty	    *ifp;
-    rfc822_header_ty *hp;
-    string_ty	    *s;
-    patch_list_ty   *plp;
-
     //
     // open the input
     //
     os_become_orig();
-    ifp = input_file_open(ifn);
+    input ifp = input_file_open(ifn);
     bool is_remote = ifp->is_remote();
 
     //
@@ -58,102 +55,78 @@ patch_slurp(string_ty *ifn)
     // It could tell us useful things, like the content transfer
     // encoding, and the project name.
     //
-    hp = rfc822_header_read(ifp);
+    rfc822 hdr;
+    hdr.load(ifp, true);
 
     //
     // Deal with the content encoding.
     //
-    s = rfc822_header_query(hp, "content-transfer-encoding");
-    if (s)
+    nstring s = hdr.get("content-transfer-encoding");
+    if (!s.empty())
     {
-	static string_ty *base64;
-	static string_ty *uuencode;
-	static string_ty *quotprin;
-	static string_ty *eightbit;
-	static string_ty *sevenbit;
-	static string_ty *none;
+	static nstring base64("base64");
+	static nstring uuencode("uuencode");
+	static nstring quotprin("quoted-printable");
+	static nstring eightbit("8bit");
+	static nstring sevenbit("7bit");
+	static nstring none("none");
 
 	//
 	// We could cope with other encodings here,
 	// if we ever need to.
 	//
-	if (!base64)
-	    base64 = str_from_c("base64");
-	if (!uuencode)
-	    uuencode = str_from_c("uuencode");
-	if (!quotprin)
-	    quotprin = str_from_c("quoted-printable");
-	if (!eightbit)
-	    eightbit = str_from_c("8bit");
-	if (!sevenbit)
-	    sevenbit = str_from_c("7bit");
-	if (!none)
-	    none = str_from_c("none");
-	if (str_equal(s, base64))
+	if (s == base64)
 	{
 	    //
 	    // The rest of the input is in base64 encoding.
 	    //
-	    ifp = new input_base64(ifp, true);
+	    ifp = new input_base64(ifp);
 	}
-	else if (str_equal(s, uuencode))
+	else if (s == uuencode)
 	{
 	    //
 	    // The rest of the input is uuencoded.
 	    //
-	    ifp = new input_uudecode(ifp, true);
+	    ifp = new input_uudecode(ifp);
 	}
-	else if (str_equal(s, quotprin))
+	else if (s == quotprin)
 	{
 	    //
 	    // The rest of the input is uuencoded.
 	    //
-	    ifp = new input_quoted_printable(ifp, true);
+	    ifp = new input_quoted_printable(ifp);
 	}
-	else if
-	(
-	    str_equal(s, sevenbit)
-	||
-	    str_equal(s, eightbit)
-	||
-	    str_equal(s, none)
-	)
+	else if (s == sevenbit || s == eightbit || s == none)
 	{
 	    // do nothing
 	}
 	else
 	{
-	    sub_context_ty  *scp;
-	    string_ty	    *tmp;
-
-	    scp = sub_context_new();
-	    sub_var_set_string(scp, "Name", s);
-	    tmp =
-		subst_intl
-		(
-	    	    scp,
-		    i18n("content transfer encoding $name unknown")
-		);
+	    sub_context_ty sc;
+	    sc.var_set_string("Name", s);
+	    string_ty *tmp =
+		sc.subst_intl(i18n("content transfer encoding $name unknown"));
 	    ifp->fatal_error(tmp->str_text);
 	    str_free(tmp);
-	    sub_context_delete(scp);
 	}
     }
 
     //
-    // The contents could be gzipped.
+    // The contents could be compressed.
     //
     ifp = input_gunzip_open(ifp);
+    ifp = input_bunzip2_open(ifp);
 
     //
     // Filter out any CRLF sequences.
     //
-    ifp = new input_crlf(ifp, true);
+    ifp = new input_crlf(ifp);
 
     //
     // Read the patch body.
     //
-    plp = patch_read(ifp, 1);
+    patch_list_ty *plp = patch_read(ifp, 1);
+    ifp.close();
     os_become_undo();
     assert(plp);
     if (is_remote)
@@ -162,50 +135,44 @@ patch_slurp(string_ty *ifn)
     //
     // Pull useful information out of the patch header.
     //
-    s = rfc822_header_query(hp, "x-aegis-project-name");
-    if (s && s->str_length)
-	plp->project_name = str_copy(s);
+    s = hdr.get("x-aegis-project-name");
+    if (!s.empty())
+	plp->project_name = str_copy(s.get_ref());
 
-    s = rfc822_header_query(hp, "x-aegis-change-number");
-    if (s && s->str_length)
+    s = hdr.get("x-aegis-change-number");
+    if (!s.empty())
     {
-	char		*endptr;
-	long		n;
-
-	n = strtol(s->str_text, &endptr, 0);
+	char *endptr = 0;
+	long n = strtol(s.c_str(), &endptr, 0);
 	if (!*endptr && n >= 0)
 	    plp->change_number = magic_zero_encode(n);
     }
 
-    s = rfc822_header_query(hp, "subject");
-    if (s && s->str_length)
-	plp->brief_description = str_copy(s);
+    s = hdr.get("subject");
+    if (!s.empty())
+	plp->brief_description = str_copy(s.get_ref());
 
-    s = rfc822_header_query(hp, "date");
-    if (s && s->str_length)
+    s = hdr.get("date");
+    if (!s.empty())
     {
 	if (!plp->description)
     	    plp->description = str_from_c("No description.");
-	s = str_format("Date: %s\n%s", s->str_text, plp->description->str_text);
+	string_ty *s2 =
+	    str_format("Date: %s\n%s", s.c_str(), plp->description->str_text);
 	str_free(plp->description);
-	plp->description = s;
+	plp->description = s2;
     }
 
-    s = rfc822_header_query(hp, "from");
-    if (s && s->str_length)
+    s = hdr.get("from");
+    if (!s.empty())
     {
 	if (!plp->description)
     	    plp->description = str_from_c("No description.");
-	s = str_format("From: %s\n%s", s->str_text, plp->description->str_text);
+	string_ty *s2 =
+	    str_format("From: %s\n%s", s.c_str(), plp->description->str_text);
 	str_free(plp->description);
-	plp->description = s;
+	plp->description = s2;
     }
-
-    //
-    // finished with the header
-    //
-    rfc822_header_delete(hp);
-    hp = 0;
 
     //
     // all done

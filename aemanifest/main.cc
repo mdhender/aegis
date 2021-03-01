@@ -20,22 +20,21 @@
 // MANIFEST: functions to manipulate mains
 //
 
-#include <ac/ctype.h>
-#include <ac/stdio.h>
-#include <ac/stdlib.h>
-#include <ac/string.h>
+#include <common/ac/ctype.h>
+#include <common/ac/stdio.h>
+#include <common/ac/stdlib.h>
+#include <common/ac/string.h>
 
-#include <arglex2.h>
-#include <dir_stack.h>
-#include <env.h>
-#include <error.h>
-#include <help.h>
-#include <language.h>
-#include <os.h>
-#include <quit.h>
-#include <progname.h>
-#include <r250.h>
-#include <str_list.h>
+#include <libaegis/arglex2.h>
+#include <libaegis/dir_stack.h>
+#include <common/env.h>
+#include <common/error.h>
+#include <libaegis/help.h>
+#include <common/language.h>
+#include <libaegis/os.h>
+#include <common/quit.h>
+#include <common/progname.h>
+#include <common/str_list.h>
 
 
 static void
@@ -116,7 +115,6 @@ main(int argc, char **argv)
     const char      *ofn;
     FILE            *ofp;
 
-    r250_init();
     os_become_init_mortal();
     arglex2_init(argc, argv);
     env_initialize();

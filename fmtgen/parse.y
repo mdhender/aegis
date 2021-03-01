@@ -1,6 +1,6 @@
 /*
  *	aegis - project change supervisor
- *	Copyright (C) 1991-1994, 1997-1999, 2001-2005 Peter Miller;
+ *	Copyright (C) 1991-1994, 1997-1999, 2001-2006 Peter Miller;
  *	All rights reserved.
  *
  *	This program is free software; you can redistribute it and/or modify
@@ -22,29 +22,29 @@
 
 %{
 
-#include <ac/ctype.h>
-#include <ac/stdio.h>
-#include <ac/stdlib.h>
-#include <ac/string.h>
+#include <common/ac/ctype.h>
+#include <common/ac/stdio.h>
+#include <common/ac/stdlib.h>
+#include <common/ac/string.h>
 
-#include <error.h>
-#include <indent.h>
-#include <lex.h>
-#include <mem.h>
-#include <parse.h>
-#include <progname.h>
-#include <str.h>
-#include <symtab.h>
-#include <trace.h>
-#include <type/boolean.h>
-#include <type/enumeration.h>
-#include <type/integer.h>
-#include <type/list.h>
-#include <type/real.h>
-#include <type/string.h>
-#include <type/structure.h>
-#include <type/time.h>
-#include <str_list.h>
+#include <common/error.h>
+#include <common/mem.h>
+#include <common/progname.h>
+#include <common/str.h>
+#include <common/str_list.h>
+#include <common/symtab.h>
+#include <common/trace.h>
+#include <fmtgen/indent.h>
+#include <fmtgen/lex.h>
+#include <fmtgen/parse.h>
+#include <fmtgen/type/boolean.h>
+#include <fmtgen/type/enumeration.h>
+#include <fmtgen/type/integer.h>
+#include <fmtgen/type/list.h>
+#include <fmtgen/type/real.h>
+#include <fmtgen/type/string.h>
+#include <fmtgen/type/structure.h>
+#include <fmtgen/type/time.h>
 
 #ifdef DEBUG
 #define YYDEBUG 1
@@ -177,7 +177,7 @@ base_name(const char *s)
 	++cp;
     else
 	cp = s;
-    strlcpy(buffer, cp, sizeof(buffer));
+    strendcpy(buffer, cp, buffer + sizeof(buffer));
     bp = strrchr(buffer, '.');
     if (bp)
 	*bp = 0;
@@ -258,13 +258,13 @@ generate_include_file(const char *include_file, const char *definition_file)
     indent_putchar('\n');
     if (time_used)
     {
-	indent_printf("#include <ac/time.h>\n");
+	indent_printf("#include <common/ac/time.h>\n");
 	indent_putchar('\n');
     }
-    indent_printf("#include <meta_lex.h>\n");
-    indent_printf("#include <meta_parse.h>\n");
-    indent_printf("#include <str.h>\n");
-    indent_printf("#include <meta_type.h>\n");
+    indent_printf("#include <common/str.h>\n");
+    indent_printf("#include <libaegis/meta_lex.h>\n");
+    indent_printf("#include <libaegis/meta_parse.h>\n");
+    indent_printf("#include <libaegis/meta_type.h>\n");
     indent_putchar('\n');
     indent_printf("struct output_ty; // forward\n");
     indent_printf("class nstring; // forward\n");
@@ -378,35 +378,29 @@ static void
 generate_code_file(const char *code_file, const char *include_file,
     const char *definition_file)
 {
-    const char      *cp1;
     size_t	    j;
     string_ty	    *s;
 
     trace(("generate_code_file(c = \"%s\", h = \"%s\")\n{\n", code_file,
 	include_file));
-    cp1 = strrchr(include_file, '/');
-    if (cp1)
-	cp1++;
-    else
-	cp1 = include_file;
     s = current->name_short;
     indent_open(code_file);
     this_file_is_generated(definition_file);
     indent_putchar('\n');
-    indent_printf("#include <ac/stddef.h>\n");
-    indent_printf("#include <ac/stdio.h>\n");
+    indent_printf("#include <common/ac/stddef.h>\n");
+    indent_printf("#include <common/ac/stdio.h>\n");
     indent_putchar('\n');
-    indent_printf("#include <%s>\n", cp1);
-    indent_printf("#include <error.h>\n");
-    indent_printf("#include <output/indent.h>\n");
-    indent_printf("#include <output/file.h>\n");
-    indent_printf("#include <output/gzip.h>\n");
-    indent_printf("#include <io.h>\n");
-    indent_printf("#include <mem.h>\n");
-    indent_printf("#include <os.h>\n");
-    indent_printf("#include <trace.h>\n");
-    indent_printf("#include <meta_type.h>\n");
-    cp1 = base_name(code_file);
+    indent_printf("#include <common/error.h>\n");
+    indent_printf("#include <common/mem.h>\n");
+    indent_printf("#include <common/trace.h>\n");
+    indent_printf("#include <libaegis/io.h>\n");
+    indent_printf("#include <libaegis/meta_type.h>\n");
+    indent_printf("#include <libaegis/os.h>\n");
+    indent_printf("#include <libaegis/output/file.h>\n");
+    indent_printf("#include <libaegis/output/bzip2.h>\n");
+    indent_printf("#include <libaegis/output/indent.h>\n");
+    indent_printf("#include <%s>\n", include_file);
+    const char *cp1 = base_name(code_file);
     for (j = 0; j < emit_length; ++j)
     {
 	type_ty *tp = emit_list[j];
@@ -480,7 +474,7 @@ generate_code_file(const char *code_file, const char *include_file,
     indent_less();
     indent_printf("if (needs_compression)\n{\n");
     indent_printf("fp = output_file_binary_open(filename);\n");
-    indent_printf("fp = new output_gzip(fp, true);\n");
+    indent_printf("fp = new output_bzip2(fp, true);\n");
     indent_printf("}\nelse\n{\n");
     indent_printf("fp = output_file_text_open(filename);\n");
     indent_printf("}\n");

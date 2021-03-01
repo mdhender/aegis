@@ -1,6 +1,6 @@
 //
 //	cook - file construction tool
-//	Copyright (C) 1994, 2003, 2004 Peter Miller.
+//	Copyright (C) 1994, 2003-2005 Peter Miller.
 //	All rights reserved.
 //
 //	This program is free software; you can redistribute it and/or modify
@@ -28,12 +28,12 @@
 //	No known patent problems.
 //
 
-#include <error.h>
-#include <fp/combined.h>
-#include <fp/crc32.h>
-#include <fp/len.h>
-#include <fp/md5.h>
-#include <fp/snefru.h>
+#include <common/error.h>
+#include <common/fp/combined.h>
+#include <common/fp/crc32.h>
+#include <common/fp/len.h>
+#include <common/fp/md5.h>
+#include <common/fp/snefru.h>
 
 struct combined_ty
 {

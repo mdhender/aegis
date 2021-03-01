@@ -1,6 +1,6 @@
 .\"
 .\"	aegis - project change supervisor
-.\"	Copyright (C) 2004 Peter Miller;
+.\"	Copyright (C) 2004, 2005 Peter Miller;
 .\"	All rights reserved.
 .\"
 .\"	This program is free software; you can redistribute it and/or modify
@@ -27,7 +27,7 @@ current state of the baseline.
 This is controlled by the \fIdevelopment_\%directory_\%style\fP field of
 the project configuration file.
 Only files which are not involved in the change are updated.
-See also the ``symbolic_links_preference'' field of \fIaeuconf\fP(5).
+See also the \[lq]symbolic_links_preference\[rq] field of \fIaeuconf\fP(5).
 This option is the default, if meaningful for your configuration.
 The name is an historical accident, hard links and file copies are included.
 .TP 8n
@@ -37,6 +37,6 @@ files take place.
 This options is useful when you \fIdefinitely know\fP the files'
 up-to-date-ness isn't important right now; incorrect use of this option
 may have unanticipated build side-effects.
-See also the ``symbolic_links_preference'' field of \fIaeuconf\fP(5).
+See also the \[lq]symbolic_links_preference\[rq] field of \fIaeuconf\fP(5).
 This option is the default, if not meaningful for your configuration.
 The name is an historical accident, hard links and file copies are included.

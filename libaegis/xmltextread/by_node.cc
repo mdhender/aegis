@@ -1,6 +1,6 @@
 //
 //	aegis - project change supervisor
-//	Copyright (C) 2005 Peter Miller;
+//	Copyright (C) 2005, 2006 Peter Miller;
 //	All rights reserved.
 //
 //	This program is free software; you can redistribute it and/or modify
@@ -20,12 +20,10 @@
 // MANIFEST: implementation of the xml_text_reader_by_node class
 //
 
-#pragma implementation "xml_text_reader_by_node"
-
-#include <error.h> // for assert
-#include <trace.h>
-#include <xmltextread/by_node.h>
-#include <xml_node.h>
+#include <common/error.h> // for assert
+#include <common/trace.h>
+#include <libaegis/xmltextread/by_node.h>
+#include <libaegis/xml_node.h>
 
 
 xml_text_reader_by_node::~xml_text_reader_by_node()
@@ -34,8 +32,7 @@ xml_text_reader_by_node::~xml_text_reader_by_node()
 }
 
 
-xml_text_reader_by_node::xml_text_reader_by_node(input_ty *arg1,
-       	bool arg2) :
+xml_text_reader_by_node::xml_text_reader_by_node(input &arg1, bool arg2) :
     xml_text_reader(arg1, arg2),
     current_node(0)
 {

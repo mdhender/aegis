@@ -1,0 +1,554 @@
+.\"
+.\"     aegis - project change supervisor
+.\"     Copyright (C) 2006 Peter Miller;
+.\"     All rights reserved.
+.\"
+.\"     This program is free software; you can redistribute it and/or modify
+.\"     it under the terms of the GNU General Public License as published by
+.\"     the Free Software Foundation; either version 2 of the License, or
+.\"     (at your option) any later version.
+.\"
+.\"     This program is distributed in the hope that it will be useful,
+.\"     but WITHOUT ANY WARRANTY; without even the implied warranty of
+.\"     MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+.\"     GNU General Public License for more details.
+.\"
+.\"     You should have received a copy of the GNU General Public License
+.\"     along with this program; if not, write to the Free Software
+.\"     Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111, USA.
+.\"
+.de an-p-footer
+..
+.ad l
+.hy 0
+.so version.so
+<html><head>
+.br
+<link rel="icon" href="favicon.ico" type="image/x-icon">
+.br
+<link rel="shortcut icon" href="favicon.ico" type="image/x-icon">
+.br
+<title>Aegis Template OSS Project</title></head>
+<body bgcolor="#ffffff"><h1>
+<img src="aegis.png" align=left>
+<img src="missiku/usr_doc_2.png" align=right>
+<center>Aegis \*(v)<br>Template OSS Project</center></h1>
+
+This worked example shows you how to get an existing OSS project managed
+by Aegis in less than 30 minutes.
+
+<h2> Requirements </h2>
+There are a number assumptions mode by this example.
+<ul><li>
+    You have already downloaded, built and installed Aegis; or you
+    installed the <tt>aegis</tt> package using your operating system's
+    package management software.
+    You need Aegis version 4.22 or later for these instructions to work.
+<li>
+    You have a distribution tarball (a <tt>*.tar.gz</tt> file) of the
+    project you want to manage with Aegis.
+    In this example, we will be working with <tt><a
+    href="vgrabbj.sourceforge.net" >vgrabbj</a>-0.9.6.tar.gz</tt> <a
+.nf
+href="http://sourceforge.net/project/showfiles.php?group_id=25978"
+.fi
+    >downloaded</a> from SourceForge.net.
+<li>
+    The project is relatively simple: a single <tt>configure.ac</tt>
+    or <tt>configure.in</tt> file, and that file is in the top-level
+    directory, and an optional <tt>Makefile.am</tt> file, also in the
+    top-level directory.
+<li>
+    The assumption is made that you are using an X11 graphical environment.
+    Alternate text-based interfaces are available and will be noted,
+    but they are slightly more difficult to use.
+</ul>
+<p>
+If your project is more complicated than this, and many are, you may
+be able to adapt these instructions once you understand what they are
+trying to achieve.  I recommend you read on, and keep notes of where you
+will have to change things.
+<p>
+These instructions do not assume you are the primary maintainer of this
+OSS project, you just want "a local branch" for hacking on.  These
+instructions will work just as well for a maintainer, but they do not
+cover migrating from the present version control tool to Aegis.
+
+<h2>Creating a New Project</h2>
+<p>
+The first thing to do is create the project.  In order to have good
+security for your project, the user account which owns the project files
+needs to be different than the developers.  This prevents accidents
+where the master source could be broken accidentally.
+<p>
+In this example, we will call that user &ldquo;repos&rdquo;.
+Create this user in the usual way for your operating system.
+<p>
+Because this example is going to be talking about two accounts, the
+<tt>repos</tt> account, and your usual user account, this example will
+call your usual user account &ldquo;user&rdquo;.
+<p>
+Now, to create the project, use this command:
+
+<blockquote>
+.nf
+<pre>user$ <b>su - repos</b>
+password:
+repos$ <b>aegis -new-project vgrabbj -version -</b>
+repos$</pre>
+.fi
+</blockquote>
+
+The &ldquo;<i>&ndash;version &ndash;</i>&rdquo; tells Aegis you don't
+want it to create a branch hierarchy just yet.
+<p>
+The project directory tree will be established in the
+<tt>repos</tt> user's home directory.  You can put it somewhere
+else using the <tt>-directory</tt> command line option, so long as the
+<tt>repos</tt> user has write permissions to create that directory.
+<p>
+Next, add you usual user account as a project administrator, using this
+command:
+
+<blockquote>
+.nf
+<pre>repos$ <b>aegis -new-administrator</b> <i>user</i> <b>-p vgrabbj</b>
+repos$</pre>
+.fi
+</blockquote>
+
+Remember to replace <i>user</i> with your actual user name.
+<p>
+The above command established your usual account as a project
+administrator.  All of the remaining steps to create the project may be
+done from your normal account.
+
+<blockquote>
+.nf
+<pre>repos$ <b>exit</b>
+user$</pre>
+.fi
+</blockquote>
+
+The next step is to add yourself to all of the remaining project roles:
+developer, reviewer and integrator.
+You can do this, because you are a project administrator.
+
+<blockquote>
+.nf
+<pre>user$ <b>ae_p vgrabbj</b>
+user$ <b>aend</b> <i>user</i>
+user$ <b>aenrv</b> <i>user</i>
+user$ <b>aeni</b> <i>user</i>
+user$</pre>
+.fi
+</blockquote>
+
+The next task is to set the project attributes.
+This is most easily done by using the <i>tkaepa</i>(1) command.
+
+<blockquote>
+.nf
+<pre>user$ <b>tkaepa</b>
+user$</pre>
+.fi
+</blockquote>
+
+<b>Note:</b> if you aren't using X11, the <i>aepa</i>(1) command will
+does the same job, and it's what <i>tkaepa</i>(1) invokes, but you
+will need to read the <i>aepattr</i>(5) man page for the expected input
+format.  For novices, the GUI interface is easier.
+<p>
+You want to turn on just about everything.
+For a single person project, turn on
+<ul><li>
+    &ldquo;developers may create changes&rdquo;,
+<li>
+    &ldquo;developer may review&rdquo;,
+<li>
+    &ldquo;developer may integrate&rdquo; and
+<li>
+    &ldquo;reviewer may integrate&rdquo;.
+<li>
+    If you don't have second person to act as a reviewer,
+    and at this point you probably don't,
+    select &ldquo;Develop End goes to Awaiting Integration&rdquo;.
+<li>
+    lastly, give your project a short descriptive title, for <tt>vgrabbj</tt>
+    this should read &ldquo;Simple Video4Linux image grabber&rdquo;.
+</ul>
+<p>
+The last step is to create the branches.  Assuming vgrabbj is at version
+0.9.6, we will create the 0 and 0.9 branches.
+
+<blockquote>
+.nf
+<pre>user$ <b>aegis -new-branch -p vgrabbj 0</b>
+user$ <b>aegis -new-branch -p vgrabbj.0 9</b>
+user$</pre>
+.fi
+</blockquote>
+
+Things are nearly ready to go.
+
+<h2>Establishing the Development Environment</h2>
+
+At this point, Aegis needs some basic project configurations.
+These are kept in source files inside the project repository,
+so that they are versioned.
+<p>
+The necessary settings and their source file are pre-packaged for you.
+The following command will download the change set and apply it to the project:
+
+<blockquote>
+.nf
+<tt>user$ <b>aedist -rec -f
+    <a href="eg_oss_begin.ae">http://aegis.sourceforge.net/eg_oss_begin.ae</a>
+    -p vgrabbj -c 900 -v</b><br>
+user$</tt>
+.fi
+</blockquote>
+
+The change set is applied to the trunk of the project branch tree (the
+project name doesn't end with <tt>.0.9</tt>) because files are inherited
+by sub-branches, and most of these settings will not be changing.
+<p>
+It's worth mentioning that the Aegis project configuration
+established by this change set consists of five files:
+<dl>
+<dt><tt>aegis.conf</tt><dd>
+    This file contains the directive that all files in the
+    <tt>aegis.conf.d</tt> directory are to be read for additional
+    configuration information.
+<dt><tt>aegis.conf.d/build</tt><dd>
+    This file says how to build the project.
+    Initial it is set to &ldquo;<tt>exit 0</tt>&rdquo;
+    to indicate no build is required.  This will be addressed shortly.
+<dt><tt>aegis.conf.d/diff</tt><dd>
+    This file sets GNU Diff as the file difference tool.
+<dt><tt>aegis.conf.d/merge</tt><dd>
+    This file sets RCS Merge as the file difference tool.
+    It won't be used in this example, but at some point all projects
+    will need it.
+<dt><tt>aegis.cnonf.d/history</tt><dd>
+    This file sets the history tool to be used.  For this example, the
+    <i>aesvt</i>(1) program, which comes with Aegis, is used.  There
+    are example configurations included with the Aegis distribution for
+    SCCS, RCS and FHist; this example is the wrong place to explore all
+    of these alternatives. <b>Note:</b> you can <i>not</i> change the
+    choice of history tool later, you must get the history tool right
+    in the first change set; practice on little examples first, before
+    migrating a serious project.  The History Tool chapter of the Aegis
+    <a href="user-guide.pdf">User Guide</a> has more information about
+    the various history tools.
+</dl>
+<p>
+This change will automatically end development, and you need to
+integrate it.  This is because Aegis breaks the commit step into several
+separate stages, each with its own checks and balances.
+<p>
+The integration step, particularly when it is not being used as a second
+review stage, is most simply accomplished using the <tt>aeintegratq</tt>
+command:
+
+<blockquote>
+.nf
+<pre>user$ <b>aeintegratq vgrabbj</b>
+user$</pre>
+.fi
+</blockquote>
+
+It will take about a minute, and it won't say much, if nothing went wrong.
+<p>
+At this point, many Aegis commands are available, and you may like to
+try some if them out.
+<dl>
+<dt><tt>ael p</tt><dd>
+    List the projects.  This show all the projects that Aegis is managing.
+<dt><tt>ael c</tt><dd>
+    List the changes.  This will show change 0 (branch 0, branches are
+    just big change sets), and change 900 which was used to add the
+    project configuration files.
+<dt><tt>aecd -bl</tt><dd>
+    Change directory to the project baseline.
+    Take a look around using <i>ls</i>(1) and <i>vi</i>(1).
+    You can't break anything - you don't have write permission.
+</dl>
+The Aegis <a href="refman.pdf">Reference Manual</a> would be very useful
+to you at this point, because you can look up each of these commands,
+and discover the wealth of command line options not mentioned in the
+above examples.
+
+<h2>Unpacking the Tarball into a Change Set</h2>
+
+Now we are ready to actually take some OSS code and commit into our
+shiny new repository.
+<p>
+You need to visit <tt><a
+.nf
+href="http://sourceforge.net/projects/vgrabbj/"
+.fi
+>vgrabbj.sourceforge.net</a></tt> and download the
+latest tarball.  This example is based on 0.9.6, but it will not matter
+very much of the minor version has moved on since this was written.
+<p>
+We created branches <tt>0</tt> and <tt>0.9</tt> before, and now we are
+going to use them.
+
+<blockquote>
+.nf
+<pre>user$ <b>ae_p vgrabbj.0.9</b>
+user$</pre>
+.fi
+</blockquote>
+
+This command sets the <tt>AEGIS_PROJECT</tt> environment variable, so
+you don't have to keep typing <tt>--project=vgrabbj.0.9</tt> all the time.
+<p>
+Assuming that the tarball is in the current directory, the following
+command will unpack it into a change set:
+
+<blockquote>
+<tt>user$ <b>aetar --receive -f vgrabbj-0.9.6.tar.gz -c 6
+    --exclude-auto-tools --remove-path-prefix=1</b><br>
+</tt><i>...lots of output...</i><tt><br>
+user$</tt>
+</blockquote>
+
+The <tt>--exclude-auto-tools</tt> option says to exclude common
+non-source files (like <tt>./configure</tt>) from the tarball
+if <i>aetar</i> detects the presence of their precursors (like
+<tt>configure.ac</tt>).  These files will be created by the build
+system, which will be introduced in the next section.
+(This option can be abbreviated to <tt>-eat</tt>.)
+<p>
+The <tt>--remove -path-prefix=1</tt> option says to remove the top-level
+directory from the filenames in the tarball.  It changes with every
+version, and thus is not helpful when you want to track upstream
+versions.
+(This option can be abbreviated to <tt>-rpp=1</tt>.)
+<p>
+If you read the output of this command (scroll up your terminal window)
+you can see all of the commands <i>aetar</i>(1) executed for you.
+Each of the files in the tarball has been created as a source file.
+<p>
+You will also see that it created a private work area for you to do this
+within, inside you home directory, called a development directory.
+Every change set gets its own development directory.
+You can enter this development directory and have a look around using the
+following command:
+
+<blockquote>
+.nf
+<pre>user$ <b>aecd 6</b>
+user$ <b>ls -l</b>
+user$</pre>
+.fi
+</blockquote>
+
+That &ldquo;6&rdquo; is the change set number.  It was specified
+explicitly on the <i>aetar</i>(1) command line, so that it matches the
+tarball.  If you don't specify a number, the <i>aetar</i>(1) command will
+use the next available.
+<p>
+There are a number of other Aegis command which now have some
+content.  Try
+
+<blockquote>
+.nf
+<pre>user$ <b>ael cd</b>
+user$</pre>
+.fi
+</blockquote>
+
+The &ldquo;cd&rdquo; is short for <i>change-details</i> and much faster
+to type than the long version, though that also works.
+<p>
+You will see that the change description isn't especially informative.
+You can use the following command to edit the change set's attributes:
+
+<blockquote>
+.nf
+<pre>user$ <b>tkaeca</b>
+user$</pre>
+.fi
+</blockquote>
+
+Just change the descriptions for now, and resist the urge to kick the
+tires.  You can always create another change set later.
+<p>
+<b>Note:</b> if you aren't using X11, the <i>aeca</i>(1) command will
+does the same job, and it's what <i>tkaeca</i>(1) invokes, but you
+will need to read the <i>aecattr</i>(5) man page for the expected input
+format.  For novices, the GUI interface is easier.
+<p>
+To finish this change set, it's much like the previous one.  All of
+the usual Aegis process will be adhered to (if you consult the <a
+hrf="user-guide.pdf">User Guide</a> you will see what that means) but it
+will go by very quickly in this example.
+
+<blockquote>
+.nf
+<pre>user$ <b>aefinish</b>
+user$ <b>cd</b>
+user$ <b>aeintegratq vgrabbj-0.9</b>
+user$</pre>
+.fi
+</blockquote>
+
+At this point, the most recent upstream version is in your Aegis
+repository.  You can do what you like from now, but the next section
+gets it to build, so that you can start using some of Aegis more
+advanced software development process features.
+
+<h2>Adding the Build to the Development Environment</h2>
+
+The development process modeled by Aegis can be used to enforce policy
+such as &ldquo;change sets must build successfully before they are
+committed&rdquo;.  In order to accomplish this policy, Aegis watches the
+exit status of the build command.  You can use just about any build tool
+you like, but many OSS projects use GNU Make, and <tt>vgrabbj</tt> is no
+exception.
+<p>
+There is a second pre-packaged Aegis change set which you can use to
+have your project be built under Aegis, and enforce such a build policy.
+<p>
+This change set, which you will download very soon, does another thing,
+as well: it sets the development directory style.  Many OSS developers
+are used to CVS or SVN which make a complete copy of the project when
+you check out your private work area.  And their build systems are based
+on the assumption that this has happened.  Aegis is able to provide
+this kind of development directory style, however the default is a
+&ldquo;view path&rdquo; style which only has source files in the private
+work area if they are actually being changed, which can get confusing
+for new users who are expecting a fully populated source tree.
+
+<blockquote>
+.nf
+<tt>user$ <b>aedist -rec -f
+    <a href="eg_oss_build.ae">http://aegis.sourceforge.net/eg_oss_build.ae</a>
+    -p vgrabbj.0.9 -c 901 -v -trojan</b><br>
+</tt><i>...lots of output...</i><tt><br>
+user$</tt>
+.fi
+</blockquote>
+
+This command downloads the change set, creates a private work area for
+it (called a development directory in Aegis speak) and unpacks all the
+files of the change set into it.
+<p>
+The <tt>-trojan</tt> option says to stop once the files are unpacked,
+and before any builds occur.  You can do this for remote changes you
+are not sure about, but it also gives you a chance to poke about the
+development directory and see what Aegis has actually done.
+
+<blockquote>
+.nf
+<pre>user$ <b>aecd 901</b>
+user$ <b>ls</b>
+user$</tt>
+.fi
+</blockquote>
+
+The first thing you will want to know is &ldquo;where have all the
+source files gone?&rdquo;  Remember the view path thing?  The development
+directory style just downloaded hasn't taken effect yet.
+The build will take care of that, and we will get to it shortly.
+<p>
+It is worth taking a look at the files about to be created by this
+change set.  The <tt>aegis.conf.d/build</tt> file tells Aegis how the
+project is built.  It invokes <i>make</i>(1) with a special makefile
+which includes the generated <tt>Makefile</tt>, if it exists, and builds
+it if it does not (in which case it builds it and starts again).  In
+this way, the build is boot-strapped without altering any of the source
+files we got from the tarball.
+<p>
+To build, you just need this command:
+
+<blockquote>
+.nf
+<tt>user$ <b>aeb</b><br>
+<i>...lots of output...</i><br>
+user$</tt>
+.fi
+</blockquote>
+
+If you look at the output (scroll the terminal back) you will see
+that all of the usual and expected things are done to build an OSS
+project.  You will also note that the development directory is now full
+of source files... this is because the <i>aeb</i>(1) command updated
+the development directory automatically before running the configured
+build command.  After this change set is integrated, the next time you
+start a new change set, the development directory will be populated
+immediately.
+
+We will finish this change set the same way as before, using the
+<i>aefinish</i>(1) command, and then integrate it:
+
+<blockquote>
+.nf
+<pre>user$ <b>aefinish</b>
+user$ <b>cd</b>
+user$ <b>aeintegratq vgrabbj-0.9</b>
+user$</pre>
+.fi
+</blockquote>
+
+And now the project builds.  This would be a good time to read through
+the worked example in the Aegis <a href="user-guide.pdf">User Guide</a>.
+
+<h2>Template Contents for New Files</h2>
+
+One of the useful features of Aegis is the ability to provide templated
+contents for new files.  There is a pre-built change set you can
+download which will provide GPL headers for all of your new files.
+
+<blockquote>
+.nf
+<tt>user$ <b>aedist -rec -f
+    <a href="eg_oss_templ.ae">http://aegis.sourceforge.net/eg_oss_templ.ae</a>
+    -p vgrabbj.0.9 -c 902 -v</b><br>
+user$</tt>
+.fi
+</blockquote>
+
+This change set is finished in the usual way.
+
+<blockquote>
+.nf
+<pre>user$ <b>aefinish</b>
+user$ <b>cd</b>
+user$ <b>aeintegratq vgrabbj-0.9</b>
+user$</pre>
+.fi
+</blockquote>
+
+This change set also includes a new file template for new tests.  You
+create a new test with the <i>aent</i>(1) command, from within a
+change set in the <i>being developed</i> state.
+
+<h2>All Done</h2>
+
+At this point your project is ready to go.  You can create a new change
+set, begin development, write a test, and start bug fixing and/or adding
+new functionality.
+
+A couple of tips:
+<ul><li>
+    One bug, one change set.  Aegis keeps track of what source files are
+    associated with what tests, this is how the <i>aet --suggest</i> command
+    know what to suggest.  If you fix lots of things in a single change set,
+    the suggestions aren't as good.
+<li>
+    New change sets and their work areas are cheap to produce.  You can
+    have more than one going at a time, which makes the "one bug, cone
+    change set" suggestion practical.
+<li>
+    Consider writing the tests first (Test Driven Development).
+    The new file templates do most of the hard work, you just have to
+    fill in the gap where something is actually tested.
+</ul>
+
+.so footer.so
+</body>
+</html>

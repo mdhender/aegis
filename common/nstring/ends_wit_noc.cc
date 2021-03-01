@@ -20,9 +20,9 @@
 // MANIFEST: implementation of the nstring_ends_wit_noc class
 //
 
-#include <ac/string.h>
+#include <common/ac/string.h>
 
-#include <nstring.h>
+#include <common/nstring.h>
 
 
 bool

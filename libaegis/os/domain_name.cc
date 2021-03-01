@@ -20,10 +20,10 @@
 // MANIFEST: implementation of the os_domain_name class
 //
 
-#include <file.h>
-#include <os.h>
-#include <os/domain_name.h>
-#include <uname.h>
+#include <libaegis/file.h>
+#include <libaegis/os.h>
+#include <libaegis/os/domain_name.h>
+#include <libaegis/uname.h>
 
 
 static bool

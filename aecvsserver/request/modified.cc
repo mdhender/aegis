@@ -1,6 +1,6 @@
 //
 //	aegis - project change supervisor
-//	Copyright (C) 2004, 2005 Peter Miller;
+//	Copyright (C) 2004-2006 Peter Miller;
 //	All rights reserved.
 //
 //	This program is free software; you can redistribute it and/or modify
@@ -38,16 +38,26 @@
 // Root required: yes.
 //
 
-#include <ac/string.h>
+#include <common/ac/string.h>
 
-#include <error.h>
-#include <file_info.h>
-#include <input.h>
-#include <module.h>
-#include <os.h>
-#include <request/modified.h>
-#include <response/error.h>
-#include <server.h>
+#include <common/error.h>
+#include <aecvsserver/file_info.h>
+#include <libaegis/input.h>
+#include <aecvsserver/module.h>
+#include <libaegis/os.h>
+#include <aecvsserver/request/modified.h>
+#include <aecvsserver/response/error.h>
+#include <aecvsserver/server.h>
+
+
+request_modified::~request_modified()
+{
+}
+
+
+request_modified::request_modified()
+{
+}
 
 
 static void
@@ -57,10 +67,10 @@ extract_project_and_filename(string_ty *from, string_ty **project_name_p,
     const char      *ep;
 
     //
-    // The server-side path is originally specified as ``ROOT_PATH "/"
-    // project "/" filename'', but the command processing has already
-    // stripped the ``ROOT_PATH "/"'' from the string, leaving ``project
-    // "/" filename''.  See aecvsserver/request/directory.c for where
+    // The server-side path is originally specified as "ROOT_PATH /
+    // project / filename", but the command processing has already
+    // stripped the "ROOT_PATH /" from the string, leaving "project
+    // / filename".  See aecvsserver/request/directory.c for where
     // this is done.
     //
     if (from->str_length == 0)
@@ -87,16 +97,15 @@ extract_project_and_filename(string_ty *from, string_ty **project_name_p,
 }
 
 
-static void
-run(server_ty *sp, string_ty *arg)
+void
+request_modified::run_inner(server_ty *sp, string_ty *arg)
+    const
 {
     int             mode;
-    input_ty        *ip;
     string_ty       *server_side;
     directory_ty    *dp;
     string_ty       *project_name;
     string_ty       *file_name;
-    module_ty       *mp;
     file_info_ty    *fip;
 
     assert(sp);
@@ -130,27 +139,33 @@ run(server_ty *sp, string_ty *arg)
     // the method choses to ignore will be thrown away, so as to ensure
     // correct sync with the input stream.
     //
-    ip = server_file_contents_get(sp);
+    input ip = server_file_contents_get(sp);
 
     //
     // Find the module to work on.
     //
-    mp = module_find(project_name);
+    module mp = module::find(project_name);
     str_free(project_name);
 
     //
     // Have the module figure out what to do with the request.
     //
-    module_modified(mp, sp, file_name, fip, ip);
+    mp->modified(sp, file_name, fip, ip);
     str_free(file_name);
-    delete ip;
-    module_delete(mp);
 }
 
 
-const request_ty request_modified =
+const char *
+request_modified::name()
+    const
 {
-    "Modified",
-    run,
-    0, // no reset
-};
+    return "Modified";
+}
+
+
+bool
+request_modified::reset()
+    const
+{
+    return false;
+}

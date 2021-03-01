@@ -1,6 +1,6 @@
 //
 //	aegis - project change supervisor
-//	Copyright (C) 1997, 2003, 2004 Peter Miller;
+//	Copyright (C) 1997, 2003-2005 Peter Miller;
 //	All rights reserved.
 //
 //	This program is free software; you can redistribute it and/or modify
@@ -20,9 +20,9 @@
 // MANIFEST: functions to impliment comment substitutions
 //
 
-#include <sub/comment.h>
-#include <trace.h>
-#include <wstr/list.h>
+#include <libaegis/sub/comment.h>
+#include <common/trace.h>
+#include <common/wstr/list.h>
 
 
 //

@@ -1,6 +1,6 @@
 //
 //	aegis - project change supervisor
-//	Copyright (C) 2002-2004 Peter Miller;
+//	Copyright (C) 2002-2006 Peter Miller;
 //	All rights reserved.
 //
 //	This program is free software; you can redistribute it and/or modify
@@ -20,9 +20,9 @@
 // MANIFEST: functions to manipulate executes
 //
 
-#include <os.h>
-#include <sub.h>
-#include <trace.h>
+#include <libaegis/os.h>
+#include <libaegis/sub.h>
+#include <common/trace.h>
 
 
 #define MAX_CMD_RPT 36
@@ -53,4 +53,11 @@ os_execute(string_ty *cmd, int flags, string_ty *dir)
 	str_free(s);
     }
     trace(("}\n"));
+}
+
+
+void
+os_execute(const nstring &cmd, int flags, const nstring &dir)
+{
+    os_execute(cmd.get_ref(), flags, dir.get_ref());
 }

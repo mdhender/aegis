@@ -1,6 +1,6 @@
 //
 //	aegis - project change supervisor
-//	Copyright (C) 2002, 2004 Peter Miller;
+//	Copyright (C) 2002, 2004-2006 Peter Miller;
 //	All rights reserved.
 //
 //	This program is free software; you can redistribute it and/or modify
@@ -20,8 +20,9 @@
 // MANIFEST: functions to manipulate xargss
 //
 
-#include <os.h>
-#include <str_list.h>
+#include <libaegis/os.h>
+#include <common/str_list.h>
+#include <common/nstring/list.h>
 
 
 void
@@ -52,5 +53,30 @@ os_xargs(string_ty *the_command, string_list_ty *the_list, string_ty *dir)
 	os_execute(s, OS_EXEC_FLAG_INPUT, dir);
 	os_become_undo();
 	str_free(s);
+    }
+}
+
+
+void
+os_xargs(const nstring &the_command, const nstring_list &the_list,
+    const nstring &dir)
+{
+    enum { chunk = 50 };
+    for (size_t j = 0; j < the_list.size(); j += chunk)
+    {
+	size_t nargs = chunk;
+	if (j + nargs > the_list.size())
+	    nargs = the_list.size() - j;
+	nstring_list wl;
+	wl.push_back(the_command);
+	for (size_t k = 0; k < nargs; ++k)
+	{
+	    nstring s = the_list[j + k].quote_shell();
+	    wl.push_back(s);
+	}
+	nstring s = wl.unsplit();
+	os_become_orig();
+	os_execute(s, OS_EXEC_FLAG_INPUT, dir);
+	os_become_undo();
     }
 }

@@ -20,19 +20,19 @@
 // MANIFEST: functions to manipulate relative comparisons
 //
 
-#include <ac/string.h>
+#include <common/ac/string.h>
 
-#include <aer/value/boolean.h>
-#include <aer/value/error.h>
-#include <aer/value/integer.h>
-#include <aer/value/real.h>
-#include <aer/value/string.h>
-#include <error.h> // for assert
-#include <str.h>
-#include <sub.h>
-#include <trace.h>
-#include <tree/diadic.h>
-#include <tree/relative.h>
+#include <libaegis/aer/value/boolean.h>
+#include <libaegis/aer/value/error.h>
+#include <libaegis/aer/value/integer.h>
+#include <libaegis/aer/value/real.h>
+#include <libaegis/aer/value/string.h>
+#include <common/error.h> // for assert
+#include <common/str.h>
+#include <libaegis/sub.h>
+#include <common/trace.h>
+#include <aefind/tree/diadic.h>
+#include <aefind/tree/relative.h>
 
 
 

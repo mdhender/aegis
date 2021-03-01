@@ -1,0 +1,125 @@
+'\" t
+.\"	aegis - project change supervisor
+.\"	Copyright (C) 2005, 2006 Peter Miller;
+.\"	All rights reserved.
+.\"
+.\"	This program is free software; you can redistribute it and/or modify
+.\"	it under the terms of the GNU General Public License as published by
+.\"	the Free Software Foundation; either version 2 of the License, or
+.\"	(at your option) any later version.
+.\"
+.\"	This program is distributed in the hope that it will be useful,
+.\"	but WITHOUT ANY WARRANTY; without even the implied warranty of
+.\"	MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+.\"	GNU General Public License for more details.
+.\"
+.\"	You should have received a copy of the GNU General Public License
+.\"	along with this program; if not, write to the Free Software
+.\"	Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111, USA.
+.\"
+.\" MANIFEST: manual page describing the lib/en/man1/aede-policy command.
+.\"
+.so z_name.so
+.ds n) aede-policy
+.TH "aede-policy" 1 \*(N) "Reference Manual" ""
+.SH NAME
+aede-policy \- check change set is ready for aede
+.XX "aede-policy(1)" "check change set is ready for aede"
+.SH SYNOPSIS
+.B \*(n)
+[
+.IR option \&...
+][
+\fIpolicy\fP...
+]
+.br
+.B \*(n)
+.B \-Help
+.br
+.B \*(n)
+.B \-VERSion
+.br
+.B \*(n)
+.B \-List
+.SH DESCRIPTION
+The \fI\*(n)\fP command is used to verify that a change set is
+ready to end development.  This is intended to be used by the
+\fIdevelop_\%end_\%policy_\%command\fP field of the project
+configuration file.
+.RS
+develop_end_policy_command =
+    "aede-policy -p $project -c $change all";
+.RE
+If any of the pilies should fail, the \fI\*(n)\fP command will fail with
+an exit status of 1.  This, in turn, will cause the \fIaede\fP(1) command
+to leave the change in the \fIbeing developed\fP state.
+.PP
+Note that the \fIaede\fP(1) command sets the appropriate environment
+variables, so the \fB\-Project\fP and \fB\-Change\fP options are rarely
+necessary.
+.SS POLICIES
+There are a range of policies that can be selected.
+.TP 8n
+copyright
+.RS
+This policy checks that each file in the change set contains
+a copyright notice of the form
+.RS
+Copyright (C) \fByear\fP \fIsomething\fP
+.RE
+where \fByear\fP is the current year (you can have a range of years, too).
+Binary files are ignored.
+Change sets marked with a \fIforeign-copyright=true\fP attribute are ignored,
+as are files similarly marked.
+The \fIsomething\fP part is either the project specific
+\fIcopyright-owner\fP attribute, or the executing users full name.
+.RE
+.TP 8n
+crlf
+This policy cheks that all files are using UNIX line termination (NL),
+not DOS line termination (CRLF).
+Binary files are ignored.
+.TP 8n
+description
+This policy checks that the change set \fIbrief_description\fP and
+\fIdescription\fP attributes have been updated to something other than
+the defaults.
+.TP 8n
+printable
+This policy checks that each file in the change set contains only
+printable text characters and white space.  The \fIcontent-type\fP file
+attribute is taken into account; if there is no \fIcontent-type\fP file
+attribute, or there is no charset specified by the \fIcontent-type\fP
+file attribute, plain 7-bit ASCII text is assumed.
+.TP 8n
+text
+This policy checks that each file in the change set contains only text,
+although international character sets are acceptable.  This is basically
+a test for NUL characters, because everything else could be part of a
+valid character encoding of some international character set.
+.TP 8n
+text
+.TP 8n
+all
+Check all of the above policies.
+.PP
+If no policy is specified,
+only the \fIdescription\fP policy will be checked.
+.SH OPTIONS
+The following options are understood:
+.so o_change.so
+.so o_help.so
+.TP 8n
+\fB\-List\fP
+List all of the available validations.
+.so o_project.so
+.so o__rules.so
+.so z_exit.so
+.SH SEE ALSO
+.TP 8n
+.IR aede (1)
+end development of a change
+.TP 8n
+.IR aepconf (5)
+project configuration file
+.so z_cr.so

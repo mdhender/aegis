@@ -40,13 +40,16 @@ text .frame.blurb \
 pack .frame.blurb -side left -fill both -expand 1
 pack .frame -expand 1 -fill both
 
+bind . <q> {
+    exit
+}
+
+
 proc doubleClick { state project change_number } {
     global bindir
-    switch -- $state {
+    if { $state != "completed" && $state != "awaiting_development" } {
 	being_reviewed {
 	    eval "exec $bindir/tkaer -p $project -c $change_number &"
-	}
-	default {
 	}
     }
 }

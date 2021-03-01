@@ -1,6 +1,6 @@
 '\" t
 .\"	aegis - project change supervisor
-.\"	Copyright (C) 1991-1995, 1998, 1999, 2001, 2002, 2004 Peter Miller;
+.\"	Copyright (C) 1991-2006 Peter Miller;
 .\"	All rights reserved.
 .\"
 .\"	This program is free software; you can redistribute it and/or modify
@@ -46,6 +46,10 @@
 .br
 .B \*(n)
 .B -Change_Attributes
+\fIname\fP\fB=\fP\fIvalue\fP
+.br
+.B \*(n)
+.B -Change_Attributes
 .B -List
 [
 .IR option ...
@@ -72,6 +76,11 @@ variant is suitable for use as input at a later time.
 See
 .IR aecattr (5)
 for a description of the file format.
+.PP
+The \fIname\fP\fB=\fP\fIvalue\fP form of the command may be used when
+you wish to add or modify change set attributes.  If an attribute
+is already present, it will be modified; if there is more than one
+attribute with the same name, only the first will be modified.
 .SS Example
 When you edit the file, you will see something like this:
 .RS
@@ -109,6 +118,27 @@ attribute =
 Note the semicolons, you need to get them right.
 Edit the fields you want to change.
 When you quit the editor, they will be updated.
+.SS Known Attribute Names
+While many of the anticipated used of change attributes are to allow
+projects to attach their own specialized data to change sets, Aegis also
+uses some attributes for its own purposes (and arguably, should always
+have done so to maximize forwards compatibility across Aegis upgrades).
+.TP 8n
+aeget:inventory:hide
+boolean.  If true, this change set does not appear in \fIaeget\fP(1)'s
+change set inventory pages, used by \fIaedist -replay\fP to decide what
+to download and apply.  Think of it as a "local only" flag.
+.TP 8n
+foreign-copyright
+boolean.  If true, none of the files in this change set will not be
+checked by the \fIaede-policy\fP(1) \f[CW]copyright\fP validation.
+.TP 8n
+original-uuid
+This is set by \fIaedist -receive\fP when an incoming change set
+is changed before it can end development.
+There may be more than one.
+The \fIaeget\fP(1) inventory "all" page will show these
+additional UUIDs, used by the \fIaedist \-pending\fP command..
 .SS Universal Unique Identifier
 Each change set is assigned a unique universal identifier (UUID) at
 \fIintegrate pass\fP time.  This serves to identify the change across
@@ -128,7 +158,7 @@ The report generator is able to access change attributes.
 You can then have the report generator print the necessary data.
 .TP 8n
 \fIaesub\fP(1)
-Many change atrributes can be accessed via the \fIaesub\fP(5) command
+Many change attributes can be accessed via the \fIaesub\fP(5) command
 substitutions, and printed using the \fIaesub\fP(1) command.
 .TP 8n
 aeca -l
@@ -155,7 +185,7 @@ any of the quotes or escapes present when this command is not used.
 .TP 8n
 \-Fix_ARchitecture
 This option may be used to replace change change's architecture list with
-all of the mandatory architectures from the project \fIconfig\fP file,
+all of the mandatory architectures from the project configuration file,
 plus any of the optional architectures that match the current machine.
 May not be used with \-file or \-edit options.
 .so o_help.so

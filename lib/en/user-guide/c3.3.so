@@ -1,6 +1,6 @@
 .\"
 .\"	aegis - project change supervisor
-.\"	Copyright (C) 1991-1996, 1998, 2001, 2002, 2004 Peter Miller;
+.\"	Copyright (C) 1991-1996, 1998, 2001, 2002, 2004, 2005 Peter Miller;
 .\"	All rights reserved.
 .\"
 .\"	This program is free software; you can redistribute it and/or modify
@@ -35,8 +35,8 @@ or the
 .I -Conditional_Update
 (-cu) flag,
 otherwise updates will complain that
-``Input file "\fIXXX\fP" contains edit \fIA\fP
-instead of \fIB\fP for module "\fIYYY\fP"''
+\[lq]Input file "\fIXXX\fP" contains edit \fIA\fP
+instead of \fIB\fP for module "\fIYYY\fP"\[rq]
 .LP
 The
 .I history_create_command
@@ -158,7 +158,7 @@ To tell it ontherwise, set
 history_content_limitation =
     international_text;
 .E)
-in the project \fIconfig\fP file.
+in the project \fIaegis.conf\fP file.
 .LP
 Aegis will transparently encode binary files (files which contain NUL
 characters) on entry and exit from the history tool.  This means that

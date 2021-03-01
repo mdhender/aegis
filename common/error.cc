@@ -1,6 +1,6 @@
 //
 //	aegis - project change supervisor
-//	Copyright (C) 1991-1995, 1998, 1999, 2002-2005 Peter Miller;
+//	Copyright (C) 1991-1995, 1998, 1999, 2002-2006 Peter Miller;
 //	All rights reserved.
 //
 //	This program is free software; you can redistribute it and/or modify
@@ -20,23 +20,23 @@
 // MANIFEST: functions to report errors
 //
 
-#include <ac/ctype.h>
-#include <ac/errno.h>
-#include <ac/stddef.h>
-#include <ac/stdio.h>
-#include <ac/stdlib.h>
-#include <ac/string.h>
-#include <ac/libintl.h>
+#include <common/ac/ctype.h>
+#include <common/ac/errno.h>
+#include <common/ac/stddef.h>
+#include <common/ac/stdio.h>
+#include <common/ac/stdlib.h>
+#include <common/ac/string.h>
+#include <common/ac/libintl.h>
 
-#include <ac/unistd.h>
-#include <ac/stdarg.h>
+#include <common/ac/unistd.h>
+#include <common/ac/stdarg.h>
 
-#include <arglex.h>
-#include <error.h>
-#include <mprintf.h>
-#include <progname.h>
-#include <quit.h>
-#include <rsrc_limits.h>
+#include <common/arglex.h>
+#include <common/error.h>
+#include <common/mprintf.h>
+#include <common/progname.h>
+#include <common/quit.h>
+#include <common/rsrc_limits.h>
 
 
 //
@@ -60,9 +60,7 @@ wrap(const char *s)
     const char      *progname;
     static char     escapes[] = "\rr\nn\ff\bb\tt";
     int		    page_width;
-    char	    tmp[200];
     int		    first_line;
-    char	    *tp;
 
     if (fflush(stdout) || ferror(stdout))
 	nfatal("(stdout)");
@@ -166,10 +164,15 @@ wrap(const char *s)
 	//
 	// print the line
 	//
+	char tmp[200];
+	char *tp = tmp;
 	if (first_line)
-	    snprintf(tmp, sizeof(tmp), "%s: ", progname);
+	{
+	    tp = strendcpy(tp, progname, tmp + sizeof(tmp));
+	    tp = strendcpy(tp, ": ", tmp + sizeof(tmp));
+	}
 	else
-	    strlcpy(tmp, "\t", sizeof(tmp));
+	    tp = strendcpy(tp, "\t", tmp + sizeof(tmp));
 	tp = tmp + strlen(tmp);
 	while (s < ep)
 	{

@@ -1,6 +1,6 @@
 //
 //	aegis - project change supervisor
-//	Copyright (C) 2004 Peter Miller;
+//	Copyright (C) 2004, 2005 Peter Miller;
 //	All rights reserved.
 //
 //	This program is free software; you can redistribute it and/or modify
@@ -20,8 +20,8 @@
 // MANIFEST: implementation of the symtab_query_fuzzy class
 //
 
-#include <fstrcmp.h>
-#include <symtab.h>
+#include <common/fstrcmp.h>
+#include <common/symtab.h>
 
 
 string_ty *

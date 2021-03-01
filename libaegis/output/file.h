@@ -1,6 +1,6 @@
 //
 //	aegis - project change supervisor
-//	Copyright (C) 1999, 2001, 2002, 2005 Peter Miller;
+//	Copyright (C) 1999, 2001, 2002, 2005, 2006 Peter Miller;
 //	All rights reserved.
 //
 //	This program is free software; you can redistribute it and/or modify
@@ -23,8 +23,8 @@
 #ifndef LIBAEGIS_OUTPUT_FILE_H
 #define LIBAEGIS_OUTPUT_FILE_H
 
-#include <nstring.h>
-#include <output.h>
+#include <common/nstring.h>
+#include <libaegis/output.h>
 
 struct string; // forward
 
@@ -149,6 +149,19 @@ inline output_ty *
 output_file_binary_open(string_ty *fn)
 {
     return output_file_open(nstring(fn), true);
+}
+
+/**
+  * The output_file_binary_open function is used to open a binary output file.
+  *
+  * \param fn
+  *     The path name of the file to be opened.  If the poijnter is NULL
+  *     or the string is empty, the standard output is used.
+  */
+inline output_ty *
+output_file_binary_open(const nstring &fn)
+{
+    return output_file_open(fn, true);
 }
 
 #endif // LIBAEGIS_OUTPUT_FILE_H

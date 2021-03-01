@@ -1,6 +1,6 @@
 .\"
 .\"	aegis - project change supervisor
-.\"	Copyright (C) 2002, 2003 Peter Miller;
+.\"	Copyright (C) 2002, 2003, 2005 Peter Miller;
 .\"	All rights reserved.
 .\"
 .\"	This program is free software; you can redistribute it and/or modify
@@ -24,7 +24,7 @@
 .if t \(bu
 .\" change 27
 The \fIaeipass\fP(1) command now sleeps, rather than issue the rather
-alarming ``warning: file modification times extend into the future''
+alarming \[lq]warning: file modification times extend into the future\[rq]
 message.
 There is a new project \fIconfig\fP file field, \fIbuild_time_adjust\fP,
 which controls this behaviour, but it is strongly recommended that you

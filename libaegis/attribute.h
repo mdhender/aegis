@@ -1,6 +1,6 @@
 //
 //	aegis - project change supervisor
-//	Copyright (C) 2004 Peter Miller;
+//	Copyright (C) 2004-2006 Peter Miller;
 //	All rights reserved.
 //
 //	This program is free software; you can redistribute it and/or modify
@@ -23,7 +23,7 @@
 #ifndef LIBAEGIS_ATTRIBUTE_H
 #define LIBAEGIS_ATTRIBUTE_H
 
-#include <common.h>
+#include <libaegis/common.h>
 
 /**
   * The attributes_list_find function is used to find a specific
@@ -35,6 +35,24 @@
   *     The name of the attribute to search for; not case sensitive.
   */
 attributes_ty *attributes_list_find(attributes_list_ty *alp, const char *name);
+
+/**
+  * The attributes_list_find_boolean function is used to find a specific
+  * attribute in an attribute list.
+  *
+  * \param alp
+  *     The attribute list to be searched.
+  * \param name
+  *     The name of the attribute to search for; not case sensitive.
+  * \param default_value
+  *     The value to use of the attribute is not present.
+  * \returns
+  *     bool; the value of the attribute as a boolean (it understands
+  *     "yes", "no", "true" and "false"), or the default value if not
+  *     present or indecipherable.
+  */
+bool attributes_list_find_boolean(attributes_list_ty *alp, const char *name,
+    bool default_value = false);
 
 /**
   * The attributes_list_extract function is used to find a specific

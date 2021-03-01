@@ -1,6 +1,6 @@
 //
 //	aegis - project change supervisor
-//	Copyright (C) 2004 Peter Miller;
+//	Copyright (C) 2004, 2005 Peter Miller;
 //	All rights reserved.
 //
 //	This program is free software; you can redistribute it and/or modify
@@ -20,11 +20,9 @@
 // MANIFEST: implementation of the regular_expression class
 //
 
-#pragma implementation "regular_expression"
-
-#include <nstring/accumulator.h>
-#include <regula_expre.h>
-#include <trace.h>
+#include <common/nstring/accumulator.h>
+#include <common/regula_expre.h>
+#include <common/trace.h>
 
 
 regular_expression::~regular_expression()

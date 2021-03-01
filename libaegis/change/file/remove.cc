@@ -1,6 +1,6 @@
 //
 //	aegis - project change supervisor
-//	Copyright (C) 1999, 2003, 2004 Peter Miller;
+//	Copyright (C) 1999, 2003-2005 Peter Miller;
 //	All rights reserved.
 //
 //	This program is free software; you can redistribute it and/or modify
@@ -20,10 +20,10 @@
 // MANIFEST: functions to manipulate removes
 //
 
-#include <change/file.h>
-#include <error.h>
-#include <symtab.h>
-#include <trace.h>
+#include <libaegis/change/file.h>
+#include <common/error.h>
+#include <common/symtab.h>
+#include <common/trace.h>
 
 
 void
@@ -44,6 +44,8 @@ change_file_remove(change_ty *cp, string_ty *file_name)
 	src_data = fstate_data->src->list[j];
 	if (!str_equal(src_data->file_name, file_name))
 	    continue;
+	if (src_data->uuid)
+	    symtab_delete(cp->fstate_uuid_stp, src_data->uuid);
 	fstate_src_type.free(src_data);
 	fstate_data->src->list[j] =
 	    fstate_data->src->list[--fstate_data->src->length];

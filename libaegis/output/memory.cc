@@ -20,12 +20,12 @@
 // MANIFEST: functions to manipulate memorys
 //
 
-#include <ac/string.h>
+#include <common/ac/string.h>
 
-#include <error.h>
-#include <output/memory.h>
-#include <str.h>
-#include <trace.h>
+#include <common/error.h>
+#include <libaegis/output/memory.h>
+#include <common/str.h>
+#include <common/trace.h>
 
 
 output_memory_ty::~output_memory_ty()

@@ -1,6 +1,6 @@
 //
 //	aegis - project change supervisor
-//	Copyright (C) 1997, 2002, 2004 Peter Miller;
+//	Copyright (C) 1997, 2002, 2004, 2005 Peter Miller;
 //	All rights reserved.
 //
 //	This program is free software; you can redistribute it and/or modify
@@ -20,13 +20,13 @@
 // MANIFEST: functions to manipulate path tree nodes
 //
 
-#include <aer/value/string.h>
-#include <shorthand/path.h>
-#include <str.h>
-#include <tree.h>
-#include <tree/constant.h>
-#include <tree/match.h>
-#include <tree/this.h>
+#include <libaegis/aer/value/string.h>
+#include <aefind/shorthand/path.h>
+#include <common/str.h>
+#include <aefind/tree.h>
+#include <aefind/tree/constant.h>
+#include <aefind/tree/match.h>
+#include <aefind/tree/this.h>
 
 
 tree_ty *

@@ -1,6 +1,6 @@
 //
 //	aegis - project change supervisor
-//	Copyright (C) 2005 Peter Miller;
+//	Copyright (C) 2005, 2006 Peter Miller;
 //	All rights reserved.
 //
 //	This program is free software; you can redistribute it and/or modify
@@ -20,9 +20,9 @@
 // MANIFEST: functions to impliment the simple version tool checkout
 //
 
-#include <input/svt_checkout.h>
-#include <output/file.h>
-#include <simpverstool.h>
+#include <libaegis/input/svt_checkout.h>
+#include <libaegis/output/file.h>
+#include <libaegis/simpverstool.h>
 
 
 void
@@ -38,6 +38,6 @@ simple_version_tool::checkout(const nstring &output_file_name,
 void
 simple_version_tool::checkout(output_ty &dest, const nstring &version)
 {
-    input_svt_checkout src(history_file_name, version);
+    input src = new input_svt_checkout(history_file_name, version);
     dest << src;
 }

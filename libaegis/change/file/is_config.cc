@@ -1,6 +1,6 @@
 //
 //	aegis - project change supervisor
-//	Copyright (C) 2002-2004 Peter Miller;
+//	Copyright (C) 2002-2005 Peter Miller;
 //	All rights reserved.
 //
 //	This program is free software; you can redistribute it and/or modify
@@ -20,10 +20,10 @@
 // MANIFEST: functions to manipulate is_configs
 //
 
-#include <change/file.h>
-#include <os.h>
-#include <os/isa/path_prefix.h>
-#include <pconf.h>
+#include <libaegis/change/file.h>
+#include <libaegis/os.h>
+#include <libaegis/os/isa/path_prefix.h>
+#include <libaegis/pconf.h>
 
 
 int

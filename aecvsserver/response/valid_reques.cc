@@ -1,6 +1,6 @@
 //
 //	aegis - project change supervisor
-//	Copyright (C) 2004, 2005 Peter Miller;
+//	Copyright (C) 2004-2006 Peter Miller;
 //	All rights reserved.
 //
 //	This program is free software; you can redistribute it and/or modify
@@ -28,62 +28,37 @@
 // update-patches request does not actually do anything.
 //
 
-#include <error.h> // for assert
-#include <output.h>
-#include <response/private.h>
-#include <response/valid_reques.h>
+#include <common/error.h> // for assert
+#include <libaegis/output.h>
+
+#include <aecvsserver/response/valid_reques.h>
 
 
-struct response_valid_requests_ty
+response_valid_requests::~response_valid_requests()
 {
-    response_ty     inherited;
-    string_ty       *message;
-};
-
-
-static void
-destructor(response_ty *rp)
-{
-    response_valid_requests_ty *rvrp;
-
-    assert(rp);
-    rvrp = (response_valid_requests_ty *)rp;
-    assert(rvrp->message);
-    str_free(rvrp->message);
-    rvrp->message = 0;
+    assert(message);
+    str_free(message);
+    message = 0;
 }
 
 
-static void
-write(response_ty *rp, output_ty *np)
+response_valid_requests::response_valid_requests(string_list_ty *arg) :
+    message(arg->unsplit())
 {
-    response_valid_requests_ty *rvrp;
-
-    assert(rp);
-    rvrp = (response_valid_requests_ty *)rp;
-    assert(rvrp->message);
-    np->fprintf("Valid-requests %s\n", rvrp->message->str_text);
 }
 
 
-static const response_method_ty vtbl =
+void
+response_valid_requests::write(output_ty *np)
 {
-    sizeof(response_valid_requests_ty),
-    destructor,
-    write,
-    response_code_Valid_requests,
-    0, // not flushable
-};
+    assert(message);
+    np->fprintf("Valid-requests %s\n", message->str_text);
+}
 
 
-response_ty *
-response_valid_requests_new(string_list_ty *slp)
+response_code_ty
+response_valid_requests::code_get()
+    const
 {
-    response_ty     *rp;
-    response_valid_requests_ty *rvrp;
-
-    rp = response_new(&vtbl);
-    rvrp = (response_valid_requests_ty *)rp;
-    rvrp->message = slp->unsplit();
-    return rp;
+    return response_code_Valid_requests;
 }

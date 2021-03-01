@@ -23,7 +23,7 @@
 #ifndef LIBAEGIS_INPUT_STDIN_H
 #define LIBAEGIS_INPUT_STDIN_H
 
-#include <input.h>
+#include <libaegis/input.h>
 
 /**
   * The input_stdin class is used to represent an input source which

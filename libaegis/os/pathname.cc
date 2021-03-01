@@ -1,6 +1,6 @@
 //
 //	aegis - project change supervisor
-//	Copyright (C) 1999, 2001-2004 Peter Miller;
+//	Copyright (C) 1999, 2001-2005 Peter Miller;
 //	All rights reserved.
 //
 //	This program is free software; you can redistribute it and/or modify
@@ -24,25 +24,25 @@
 // distortion of semantics.
 //
 
-#include <ac/errno.h>
-#include <ac/stdlib.h>
-#include <ac/string.h>
+#include <common/ac/errno.h>
+#include <common/ac/stdlib.h>
+#include <common/ac/string.h>
 
-#include <ac/sys/types.h>
+#include <common/ac/sys/types.h>
 #include <sys/stat.h>
-#include <ac/unistd.h>
-#include <ac/mntent.h>
-#include <ac/sys/clu.h>
+#include <common/ac/unistd.h>
+#include <common/ac/mntent.h>
+#include <common/ac/sys/clu.h>
 
-#include <error.h>
-#include <glue.h>
-#include <mem.h>
-#include <os.h>
-#include <str.h>
-#include <stracc.h>
-#include <str_list.h>
-#include <sub.h>
-#include <trace.h>
+#include <common/error.h>
+#include <libaegis/glue.h>
+#include <common/mem.h>
+#include <libaegis/os.h>
+#include <common/str.h>
+#include <common/stracc.h>
+#include <common/str_list.h>
+#include <libaegis/sub.h>
+#include <common/trace.h>
 
 
 //
@@ -160,8 +160,8 @@ os_curdir(void)
 //	string_ty *has_prefix(string_ty *prefix, string_ty *candidate);
 //
 // DESCRIPTION
-//	The has_prefix function is used to test if the ``prefix'' string
-//	is a prefix of the ``candidate'' string.
+//	The has_prefix function is used to test if the "prefix" string
+//	is a prefix of the "candidate" string.
 //
 // RETURNS
 //	On success: the remainder of the string with the prefix removed.
@@ -202,7 +202,7 @@ has_prefix(string_ty *pfx, string_ty *path)
 //
 // DESCRIPTION
 //	The has_a_prefix function is used to test if any one of the
-//	``prefix'' strings is a prefix of the ``candidate'' string.
+//	"prefix" strings is a prefix of the "candidate" string.
 //
 // RETURNS
 //	On success: the remainder of the string with the prefix removed.
@@ -345,7 +345,7 @@ get_auto_mount_dirs(string_list_ty *prefix)
     }
 
     //
-    // The ``fp'' variable is probably not a real FILE*, so don't
+    // The "fp" variable is probably not a real FILE*, so don't
     // use it like one!  E.g. Cygwin cast it to FILE*, but there's
     // actually a whole 'nother data structure behind there, and it
     // GPFs if you try to access it as if it were a FILE*.
@@ -378,7 +378,7 @@ get_auto_mount_dirs(string_list_ty *prefix)
 	dir = str_from_c(mep->mnt_dir);
 
 	//
-	// Ignore ``/'' because everything is below it.
+	// Ignore "/" because everything is below it.
 	//
 	if (str_equal(dir, slash))
 	{

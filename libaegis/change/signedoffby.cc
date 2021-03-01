@@ -1,6 +1,6 @@
 //
 //	aegis - project change supervisor
-//	Copyright (C) 2004 Peter Miller;
+//	Copyright (C) 2004, 2005 Peter Miller;
 //	All rights reserved.
 //
 //	This program is free software; you can redistribute it and/or modify
@@ -20,15 +20,15 @@
 // MANIFEST: implementation of the change_signedoffby class
 //
 
-#include <ac/ctype.h>
-#include <ac/string.h>
+#include <common/ac/ctype.h>
+#include <common/ac/string.h>
 
-#include <change.h>
-#include <change/signedoffby.h>
-#include <cstate.h>
-#include <option.h>
-#include <str_list.h>
-#include <user.h>
+#include <common/str_list.h>
+#include <libaegis/change.h>
+#include <libaegis/change/signedoffby.h>
+#include <libaegis/cstate.h>
+#include <libaegis/option.h>
+#include <libaegis/user.h>
 
 
 static string_ty *

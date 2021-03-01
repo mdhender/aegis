@@ -1,6 +1,6 @@
 //
 //	aegis - project change supervisor
-//	Copyright (C) 2002-2004 Peter Miller;
+//	Copyright (C) 2002-2005 Peter Miller;
 //	All rights reserved.
 //
 //	This program is free software; you can redistribute it and/or modify
@@ -23,7 +23,7 @@
 #ifndef AECOMPLETE_COMMAND_PRIVATE_H
 #define AECOMPLETE_COMMAND_PRIVATE_H
 
-#include <command.h>
+#include <aecomplete/command.h>
 
 struct command_vtbl_ty
 {

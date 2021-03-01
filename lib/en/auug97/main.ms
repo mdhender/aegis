@@ -1,6 +1,6 @@
 .\"
 .\"	aegis - project change supervisor
-.\"	Copyright (C) 1997, 1999, 2001, 2002 Peter Miller;
+.\"	Copyright (C) 1997, 1999, 2001, 2002, 2005 Peter Miller;
 .\"	All rights reserved.
 .\"
 .\"	This program is free software; you can redistribute it and/or modify
@@ -75,7 +75,7 @@ and shows that they are all symptoms of the same
 problem.  Symptoms that the UNIX community have long accepted
 as a fact of life, but which need not be endured any longer.
 These problems include recursive
-\fImake\fPs which take ``forever'' to
+\fImake\fPs which take \[lq]forever\[rq] to
 work out that they need to do nothing, recursive \fImake\fPs which do
 too much, or too little, recursive \fImake\fPs which are
 overly sensitive to changes in the source code

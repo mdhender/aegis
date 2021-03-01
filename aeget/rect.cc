@@ -20,4 +20,4 @@
 // MANIFEST: functions to manipulate rects
 //
 
-#include <../aerect/rect.cc>
+#include <aerect/rect.cc>

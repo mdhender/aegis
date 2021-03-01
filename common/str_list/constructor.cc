@@ -1,6 +1,6 @@
 //
 //	aegis - project change supervisor
-//	Copyright (C) 2003, 2004 Peter Miller;
+//	Copyright (C) 2003-2005 Peter Miller;
 //	All rights reserved.
 //
 //	This program is free software; you can redistribute it and/or modify
@@ -20,9 +20,7 @@
 // MANIFEST: functions to manipulate constructors
 //
 
-#pragma implementation "string_list_ty"
-
-#include <str_list.h>
+#include <common/str_list.h>
 
 
 string_list_ty::string_list_ty() :

@@ -1,6 +1,6 @@
 //
 //	aegis - project change supervisor
-//	Copyright (C) 1991-1997, 1999, 2000, 2002-2005 Peter Miller;
+//	Copyright (C) 1991-1997, 1999, 2000, 2002-2006 Peter Miller;
 //	All rights reserved.
 //
 //	This program is free software; you can redistribute it and/or modify
@@ -23,8 +23,8 @@
 #ifndef CHANGE_FILE_H
 #define CHANGE_FILE_H
 
-#include <change.h>
-#include <view_path.h>
+#include <libaegis/change.h>
+#include <libaegis/view_path.h>
 
 struct string_list_ty; // forward
 class nstring; // forward
@@ -36,9 +36,9 @@ class nstring; // forward
 fstate_ty *change_fstate_get(change_ty *);
 
 /**
-  * The change_file_find fucntion is used to locate a change file
+  * The change_file_find function is used to locate a change file
   * similar to the one indicated.  If possible it uses the UUID
-  * otherwise (for backwards compatibility) is used the file name.
+  * otherwise (for backwards compatibility) it uses the file name.
   *
   * \param cp
   *     The change to work within.
@@ -51,7 +51,22 @@ fstate_src_ty *change_file_find(change_ty *cp, fstate_src_ty *src,
     view_path_ty vp);
 
 /**
-  * The change_file_find fucntion is used to locate a change file
+  * The change_file_find function is used to locate a change file
+  * similar to the one indicated.  If possible it uses the UUID
+  * otherwise (for backwards compatibility) it uses the file name.
+  *
+  * \param cp
+  *     The change to work within.
+  * \param src
+  *     The meta-data of the file to be found.
+  * \param vp
+  *     The style of view path to be used.
+  */
+fstate_src_ty *change_file_find(change_ty *cp, cstate_src_ty *src,
+    view_path_ty vp);
+
+/**
+  * The change_file_find function is used to locate a change file
   * similar to the one indicated.  If possible it uses the UUID
   * otherwise (for backwards compatibility) is used the file name.
   *
@@ -100,7 +115,48 @@ fstate_src_ty *change_file_find_fuzzy(change_ty *, string_ty *);
 fstate_src_ty *change_file_find_uuid(change_ty *cp, string_ty *uuid,
     view_path_ty view_path);
 
-string_ty *change_file_path(change_ty *, string_ty *);
+/**
+  * The change_file_path function is used to obtain the absolute path to
+  * the given change file.
+  *
+  * @param cp
+  *     The change in question.
+  * @param file_name
+  *     The name of the file in question.
+  * @returns
+  *     a string containing the absolute path, or NULL if the file is
+  *     not a change source file.
+  */
+string_ty *change_file_path(change_ty *cp, string_ty *file_name);
+
+/**
+  * The change_file_path_by_uuid function is used to obtain the absolute
+  * path to the given change file.
+  *
+  * @param cp
+  *     The change in question.
+  * @param uuid
+  *     The UUID of the file in question.
+  * @returns
+  *     a string containing the absolute path, or NULL if the file is
+  *     not a change source file.
+  */
+string_ty *change_file_path_by_uuid(change_ty *cp, string_ty *uuid);
+
+/**
+  * The change_file_path function is used to obtain the absolute path to
+  * the given change file.
+  *
+  * @param cp
+  *     The change in question.
+  * @param src
+  *     The meta-data of the file in question.
+  * @returns
+  *     a string containing the absolute path, or NULL if the file is
+  *     not a change source file.
+  */
+string_ty *change_file_path(change_ty *cp, fstate_src_ty *src);
+
 string_ty *change_file_version_path(change_ty *cp, fstate_src_ty *src,
     int *unlink_p);
 string_ty *change_file_source(change_ty *, string_ty *);
@@ -202,5 +258,21 @@ string_ty *change_file_resolve_name(change_ty *cp, user_ty *up,
   *     true if anything changed, false if nothing changed.
   */
 bool change_file_promote(change_ty *cp);
+
+/**
+  * The change_file_unchanged function is used to determine whether a
+  * source file is unchanged compared to the file in the baseline.
+  *
+  * @param cp
+  *     The change set in question.
+  * @param src_data
+  *     The file in question.
+  * @param up
+  *     The user to perform file actions as.
+  * @returns
+  *     bool; true if the file is unchanged, false if the file has
+  *     changed, and false if the comparison isn't meaningful.
+  */
+bool change_file_unchanged(change_ty *cp, fstate_src_ty *src_data, user_ty *up);
 
 #endif // CHANGE_FILE_H

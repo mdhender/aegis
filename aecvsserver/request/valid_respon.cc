@@ -1,6 +1,6 @@
 //
 //	aegis - project change supervisor
-//	Copyright (C) 2004 Peter Miller;
+//	Copyright (C) 2004-2006 Peter Miller;
 //	All rights reserved.
 //
 //	This program is free software; you can redistribute it and/or modify
@@ -29,13 +29,23 @@
 // Root required: no.
 //
 
-#include <ac/string.h>
+#include <common/ac/string.h>
 
-#include <output.h>
-#include <server.h>
-#include <str_list.h>
-#include <request/valid_respon.h>
-#include <response/private.h>
+#include <common/str_list.h>
+#include <libaegis/output.h>
+
+#include <aecvsserver/request/valid_respon.h>
+#include <aecvsserver/server.h>
+
+
+request_valid_responses::~request_valid_responses()
+{
+}
+
+
+request_valid_responses::request_valid_responses()
+{
+}
 
 
 static int
@@ -94,29 +104,33 @@ find_response_code(const char *name)
 }
 
 
-static void
-run(server_ty *sp, string_ty *arg)
+void
+request_valid_responses::run_inner(server_ty *sp, string_ty *arg)
+    const
 {
-    string_list_ty  wl;
-    size_t          j;
-
+    string_list_ty wl;
     wl.split(arg);
-    for (j = 0; j < wl.nstrings; ++j)
+    for (size_t j = 0; j < wl.nstrings; ++j)
     {
-	int             code;
-	const char      *name;
-
-	name = wl.string[j]->str_text;
-	code = find_response_code(name);
+	const char *vname = wl.string[j]->str_text;
+	int code = find_response_code(vname);
 	if (code >= 0)
 	    sp->np->set_response_valid(code);
     }
 }
 
 
-const request_ty request_valid_responses =
+const char *
+request_valid_responses::name()
+    const
 {
-    "Valid-responses",
-    run,
-    0, // no reset
-};
+    return "Valid-responses";
+}
+
+
+bool
+request_valid_responses::reset()
+    const
+{
+    return false;
+}

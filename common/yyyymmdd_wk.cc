@@ -1,6 +1,6 @@
 //
 //	aegis - project change supervisor
-//	Copyright (C) 2004 Peter Miller;
+//	Copyright (C) 2004, 2005 Peter Miller;
 //	All rights reserved.
 //
 //	This program is free software; you can redistribute it and/or modify
@@ -20,11 +20,11 @@
 // MANIFEST: implementation of the yyyymmdd_wk class
 //
 
-#include <ac/string.h>
-#include <ac/time.h>
+#include <common/ac/string.h>
+#include <common/ac/time.h>
 
-#include <error.h> // for assert
-#include <yyyymmdd_wk.h>
+#include <common/error.h> // for assert
+#include <common/yyyymmdd_wk.h>
 
 
 int

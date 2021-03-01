@@ -1,6 +1,6 @@
 //
 //	aegis - project change supervisor
-//	Copyright (C) 1992-2000, 2002-2004 Peter Miller;
+//	Copyright (C) 1992-2000, 2002-2005 Peter Miller;
 //	All rights reserved.
 //
 //	This program is free software; you can redistribute it and/or modify
@@ -23,9 +23,9 @@
 #ifndef AEGIS_USER_H
 #define AEGIS_USER_H
 
-#include <output.h>
-#include <ustate.h>
-#include <uconf.h>
+#include <libaegis/output.h>
+#include <libaegis/uconf.h>
+#include <libaegis/ustate.h>
 
 struct user_ty
 {

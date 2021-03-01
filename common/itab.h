@@ -1,6 +1,6 @@
 //
 //	aegis - project change supervisor
-//	Copyright (C) 1998, 2003, 2004 Peter Miller;
+//	Copyright (C) 1998, 2003-2005 Peter Miller;
 //	All rights reserved.
 //
 //	This program is free software; you can redistribute it and/or modify
@@ -23,7 +23,7 @@
 #ifndef COMMON_ITAB_H
 #define COMMON_ITAB_H
 
-#include <main.h>
+#include <common/main.h>
 
 /** \addtogroup ITAB
   * \brief [ITAB - Add a description here]

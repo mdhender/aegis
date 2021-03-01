@@ -23,8 +23,8 @@
 #ifndef LIBAEGIS_OUTPUT_UUENCODE_H
 #define LIBAEGIS_OUTPUT_UUENCODE_H
 
-#include <nstring.h>
-#include <output.h>
+#include <common/nstring.h>
+#include <libaegis/output.h>
 
 /**
   * The output_uuencode_ty class is used to represent the state of a

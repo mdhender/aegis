@@ -1,7 +1,7 @@
 #!/bin/sh
 #
 #	aegis - project change supervisor
-#	Copyright (C) 2002, 2005 Peter Miller;
+#	Copyright (C) 2002, 2005, 2006 Peter Miller;
 #	All rights reserved.
 #
 #	This program is free software; you can redistribute it and/or modify
@@ -38,11 +38,20 @@ if test $? -ne 0 ; then exit 2; fi
 
 if test "$1" != "" ; then bin="$here/$1/bin"; else bin="$here/bin"; fi
 
-#
-# set the path, so that the aegis command that aepath invokes
-# is from the same test set as the aepatch command itself.
-#
-PATH=${bin}:$PATH
+if test "$EXEC_SEARCH_PATH" != ""
+then
+    tpath=
+    hold="$IFS"
+    IFS=":$IFS"
+    for tpath2 in $EXEC_SEARCH_PATH
+    do
+	tpath=${tpath}${tpath2}/${1-.}/bin:
+    done
+    IFS="$hold"
+    PATH=${tpath}${PATH}
+else
+    PATH=${bin}:${PATH}
+fi
 export PATH
 
 no_result()
@@ -100,7 +109,7 @@ AEGIS_PROJECT=foo ; export AEGIS_PROJECT
 #
 # make the directories
 #
-activity="working directory 103"
+activity="working directory 112"
 mkdir $work $work/lib
 if test $? -ne 0 ; then no_result; fi
 chmod 777 $work/lib
@@ -119,14 +128,14 @@ unset LANGUAGE
 #
 # make a new project
 #
-activity="new project 122"
+activity="new project 131"
 $bin/aegis -npr foo -vers "" -dir $workproj > log 2>&1
 if test $? -ne 0 ; then cat log; no_result; fi
 
 #
 # change project attributes
 #
-activity="project attributes 129"
+activity="project attributes 138"
 cat > $tmp << 'end'
 description = "A bogus project created to test the aepatch -send (diff) functionality.";
 developer_may_review = true;
@@ -140,7 +149,7 @@ if test $? -ne 0 ; then cat log; no_result; fi
 #
 # create a new change
 #
-activity="new change 143"
+activity="new change 152"
 cat > $tmp << 'end'
 brief_description = "The first change";
 cause = internal_bug;
@@ -152,7 +161,7 @@ if test $? -ne 0 ; then cat log; no_result; fi
 #
 # add the staff
 #
-activity="staff 155"
+activity="staff 164"
 $bin/aegis -nd $USER > log 2>&1
 if test $? -ne 0 ; then cat log; no_result; fi
 $bin/aegis -nrv $USER > log 2>&1
@@ -169,7 +178,7 @@ if test $? -ne 0 ; then cat log; no_result; fi
 #
 # add a new files to the change
 #
-activity="new file 172"
+activity="new file 181"
 $bin/aegis -nf $workchan/main.c -nl \
 	-uuid aaaaaaaa-bbbb-4bbb-8ccc-ccccddddddd1 > log 2>&1
 if test $? -ne 0 ; then cat log; no_result; fi
@@ -210,14 +219,14 @@ if test $? -ne 0 ; then no_result; fi
 cat > $workchan/aegis.conf << 'end'
 build_command = "exit 0";
 link_integration_directory = true;
-history_get_command =
-	"co -u'$e' -p $h,v > $o";
-history_create_command =
-	"ci -f -u -m/dev/null -t/dev/null $i $h,v; rcs -U $h,v";
-history_put_command =
-	"ci -f -u -m/dev/null -t/dev/null $i $h,v; rcs -U $h,v";
-history_query_command =
-	"rlog -r $h,v | awk '/^head:/ {print $$2}'";
+
+history_get_command = "aesvt -check-out -edit ${quote $edit} "
+    "-history ${quote $history} -f ${quote $output}";
+history_put_command = "aesvt -check-in -history ${quote $history} "
+    "-f ${quote $input}";
+history_query_command = "aesvt -query -history ${quote $history}";
+history_content_limitation = binary_capable;
+
 diff_command = "set +e; diff $orig $i > $out; test $$? -le 1";
 diff3_command = "(diff3 -e $mr $orig $i | sed -e '/^w$$/d' -e '/^q$$/d'; \
 	echo '1,$$p' ) | ed - $mr > $out";
@@ -228,7 +237,7 @@ if test $? -ne 0 ; then no_result; fi
 #
 # create a new test
 #
-activity="new test 231"
+activity="new test 240"
 $bin/aegis -nt -uuid aaaaaaaa-bbbb-4bbb-8ccc-ccccddddddd5 > log 2>&1
 if test $? -ne 0 ; then cat log; no_result; fi
 cat > $workchan/test/00/t0001a.sh << 'end'
@@ -240,21 +249,21 @@ if test $? -ne 0 ; then no_result; fi
 #
 # build the change
 #
-activity="build 243"
+activity="build 252"
 $bin/aegis -build -nl -v > log 2>&1
 if test $? -ne 0 ; then cat log; fail; fi
 
 #
 # difference the change
 #
-activity="diff 250"
+activity="diff 259"
 $bin/aegis -diff > log 2>&1
 if test $? -ne 0 ; then cat log; no_result; fi
 
 #
 # test the change
 #
-activity="test 257"
+activity="test 266"
 $bin/aegis -t -v > log 2>&1
 if test $? -ne 0 ; then cat log; no_result; fi
 
@@ -264,49 +273,49 @@ if test $? -ne 0 ; then cat log; no_result; fi
 #
 # finish development of the change
 #
-activity="develop end 267"
+activity="develop end 276"
 $bin/aegis -de > log 2>&1
 if test $? -ne 0 ; then cat log; fail; fi
 
 #
 # pass the review
 #
-activity="review pass 274"
+activity="review pass 283"
 $bin/aegis -rpass -c 1 > log 2>&1
 if test $? -ne 0 ; then cat log; no_result; fi
 
 #
 # start integrating
 #
-activity="integrate begin 281"
+activity="integrate begin 290"
 $bin/aegis -ib 1 > log 2>&1
 if test $? -ne 0 ; then cat log; no_result; fi
 
 #
 # integrate build
 #
-activity="build 288"
+activity="build 297"
 $bin/aegis -b -nl -v > log 2>&1
 if test $? -ne 0 ; then cat log; no_result; fi
 
 #
 # integrate test
 #
-activity="test 295"
+activity="test 304"
 $bin/aegis -t -nl -v > log 2>&1
 if test $? -ne 0 ; then cat log; no_result; fi
 
 #
 # pass the integration
 #
-activity="integrate pass 302"
+activity="integrate pass 311"
 $bin/aegis -intpass -nl > log 2>&1
 if test $? -ne 0 ; then cat log; no_result; fi
 
 #
 # create a new change, to generate a patch
 #
-activity="new change 309"
+activity="new change 318"
 cat > $tmp << 'end'
 brief_description = "The second change";
 cause = internal_bug;
@@ -324,7 +333,7 @@ if test $? -ne 0 ; then cat log; no_result; fi
 #
 # add a new files to the change
 #
-activity="copy file 327"
+activity="copy file 336"
 $bin/aegis -cp $workchan/main.c -c 2 -nl > log 2>&1
 if test $? -ne 0 ; then cat log; no_result; fi
 cat > $workchan/main.c << 'end'
@@ -354,6 +363,7 @@ if test $? -ne 0 ; then no_result; fi
 #
 # And check the the patch is OK.
 #
+action="check patch"
 sed 's/X$//' > ok << 'end'
 MIME-Version: 1.0X
 Content-Type: application/aegis-patchX
@@ -367,10 +377,11 @@ X
 #	The second changeX
 #	X
 # Aegis-Change-Set-BeginX
-# H4sIAAAAAAAAA42PwUoFMQxF9/2KMmtHEFwIw/sLdyJDJs30Bdp0aNqnIv67Kc5G3HghWeTcX
-# NLdbZdrXQIqVj8ZF/MVPz1fySlgkeLyCRJoW9w8LQlcyyNKoCqR163FxjbSt9E75aMZ2SErnX
-# cAOlxEJ/aKVYSdVOrb+3W+2GtUEbd+ANuLFEi3+jVI5M0oxW9Bf34j7dzolWgTy8UwaWe7SUX
-# vXMYAzg1b6b5cbQnRJytMPzoweyA55dzCbx/2L5CHC9q6RUtzdede13cN97PYDNIAQAAX
+# QlpoOTFBWSZTWZ5l1b0AAD/bgEwQUAckSgQKv+ff6jAA2jBokxNTZMp4UGjTTT1Gj0glTJMU
+# 8mSeU0AZAABqaEAGmj0gAABUbnNkaB6SEGSwIMxDaOASiS8sEAoEDSH2gfMZFTY0FMjDYGM9
+# 03PAJA6BeujL0g3ZExm1bLwB1FGzhcKmWtMUr++kJMqrVwExET0+RCBm5425zw68gYR+Obu1
+# wfJFtyc6IWgkQKdBJsH0ML4iwU5vdkn4mUrwopMUzT9ouZuY9IalGkBy4oFik4OY4bXHbnEl
+# Z6iXmkpJZPBKs2OB63FcHk42wpaN6UVGYtP4u5IpwoSE8y6t6A==
 # Aegis-Change-Set-EndX
 #X
 Index: main.cX
@@ -389,21 +400,21 @@ Index: main.cX
 end
 if test $? -ne 0 ; then no_result; fi
 
-diff ok the.patch
+diff -b ok the.patch
 if test $? -ne 0 ; then fail; fi
 
 #
 # receive the patch
 #
-activity="aepatch receive 398"
+activity="aepatch receive 409"
 $bin/aepatch -receive -dir ${workchan}3 -f the.patch -trojan > log 2>&1
 if test $? -ne 0 ; then cat log; fail; fi
 
 #
 # Make sure the patch is applied properly.
 #
-activity="verify 405"
-diff $workchan/main.c ${workchan}3/main.c
+activity="verify 416"
+diff -b $workchan/main.c ${workchan}3/main.c
 if test $? -ne 0 ; then fail; fi
 
 #

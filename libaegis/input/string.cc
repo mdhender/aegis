@@ -20,9 +20,9 @@
 // MANIFEST: functions to manipulate strings
 //
 
-#include <ac/string.h>
+#include <common/ac/string.h>
 
-#include <input/string.h>
+#include <libaegis/input/string.h>
 
 
 input_string::~input_string()

@@ -23,7 +23,7 @@
 #ifndef AETAR_HEADER_H
 #define AETAR_HEADER_H
 
-#include <nstring.h>
+#include <common/nstring.h>
 
 #define TBLOCK 512
 #define NAMSIZ 100

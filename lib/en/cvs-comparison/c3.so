@@ -1,6 +1,6 @@
 .\"
 .\"	aegis - project change supervisor
-.\"	Copyright (C) 2001, 2002, 2004 Peter Miller;
+.\"	Copyright (C) 2001, 2002, 2004, 2005 Peter Miller;
 .\"	All rights reserved.
 .\"
 .\"	This program is free software; you can redistribute it and/or modify
@@ -27,7 +27,7 @@ It is possible to import a CVS repository into Aegis, while preserving
 all of your history information.
 .LP
 Because Aegis uses change sets and CVS does not, it is necessary for Aegis
-to ``synthesize'' the change sets during the import process.  See the
+to \[lq]synthesize\[rq] the change sets during the import process.  See the
 \fIaeimport\fP(1) command page for a complete description of how this is
 done.  Once the change sets have been discovered, the \fIaeimport\fP(1)
 command then synthesizes an Aegis change for each one, and enters it
@@ -53,7 +53,7 @@ however, will want one account per project).
 If you have one account per project, name it after the project (there's
 less to remember that way).
 This example will call the both the account
-and the Aegis project ``\f[CW]example\fP''.
+and the Aegis project \[lq]\f[CW]example\fP\[rq].
 .IP \(bu 2n
 It is also possible to have a separate Unix group for each project.
 This means that you can have fine-grained control over who has read access
@@ -75,7 +75,7 @@ home directory.)
 Wherever you put the project directory, it must be accessible from all
 workstations and/or servers upon which development \fIand\fP code
 reviews are to be carried out.
-(See the ``Teamwork'' chapter of the HOWTO for more information.)
+(See the \[lq]Teamwork\[rq] chapter of the HOWTO for more information.)
 In this example, we are going to put it in \f[CW]/projects/example\fP;
 again, named for the project.
 .IP \(bu 2n
@@ -123,11 +123,12 @@ your expectations (\fIe.g.\fP if the directory tree is not the shape
 you need) remove the project (\fIaermpr\fP) and re-run \fIaeimport\fP(1)
 with the appropriate arguments.
 .IP \(bu 2n
-The above commands create a project called ``\f[CW]example\fP'', with
-branches ``\f[CW]1\fP'' and ``\f[CW]1.0\fP'' (see the Branching chapter
+The above commands create a project called \[lq]\f[CW]example\fP\[rq], with
+branches \[lq]\f[CW]1\fP\[rq] and \[lq]\f[CW]1.0\fP\[rq] (see the
+Branching chapter
 of the User Guide for how branching works in Aegis).  To access branch
-1.0, you use the project name ``\f[CW]example.1.0\fP''.  If you wanted
-no branches at all (just a trunk) then add ``\f[CW]\-version \-\fP''
+1.0, you use the project name \[lq]\f[CW]example.1.0\fP\[rq].  If you wanted
+no branches at all (just a trunk) then add \[lq]\f[CW]\-version \-\fP\[rq]
 to the above \fIimport\fP(1) commands.  If you are new to Aegis, and
 don't understand what this paragraph is talking about, \fIdo not\fP
 change anything.
@@ -172,7 +173,7 @@ for some pre-built configuration settings.
 but the rest are fair game.)
 .sp 0.2
 In  particular, your need to set the build command.
-The \fIaeimport\fP(1) command has set it to ``\f[CW]exit 0\fP''.
+The \fIaeimport\fP(1) command has set it to \[lq]\f[CW]exit 0\fP\[rq].
 See the Dependency Maintenance Tool of the User Guide for more information.
 .LP
 You project should now be ready to use.
@@ -192,7 +193,7 @@ Backup your CVS repository.  The next step will change it.
 .IP \(bu 2n
 Copy the \f[CW],v\fP files from the Aegis history tree into
 the CVS root tree (the Aegis project in this example is called
-``\f[CW]example\fP''.
+\[lq]\f[CW]example\fP\[rq].
 .E(
 ae_p example.1.0
 aecd -bl ../history
@@ -200,7 +201,7 @@ tar cf - . | ( cd $CVSROOT ; tar xf - )
 .E)
 Note that this assumes that the two directory trees are the same shape.
 It is highly likely that you have a module called something like
-``\f[CW]example\fP'', which would change the last line above to look like
+\[lq]\f[CW]example\fP\[rq], which would change the last line above to look like
 .E(
 tar cf - . | ( cd $CVSROOT/example ; tar xf - )
 .E)

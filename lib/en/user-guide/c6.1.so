@@ -1,6 +1,6 @@
 .\"
 .\"	aegis - project change supervisor
-.\"	Copyright (C) 1993-1995, 1998, 2001, 2004 Peter Miller;
+.\"	Copyright (C) 1993-1995, 1998, 2001, 2004, 2005 Peter Miller;
 .\"	All rights reserved.
 .\"
 .\"	This program is free software; you can redistribute it and/or modify
@@ -67,10 +67,10 @@ A solaris system, a very different beast,
 matches the "SunOS-5.*-*-sun4*" pattern.
 Sun's 386 version of Solaris matches the "SunOS-5.*-*-i86pc" pattern.
 A convex system matches the "ConvexOS-*-10.*-convex" pattern.
-.nh 3 "Project \fIconfig\fP File"
+.nh 3 "Project \fIaegis.conf\fP File"
 .LP
 To require a project to build and test on each of these architectures,
-the \fIarchitecture\fR field of the project \fIconfig\fR file is set.
+the \fIarchitecture\fR field of the project \fIaegis.conf\fR file is set.
 See \fIaepconf\fR(5) for more details on this file.
 The above examples of architectures could be represented as
 .E(
@@ -113,7 +113,7 @@ However, once an architecture name appears in a change's architecture
 list, it is mandatory for that change.
 .LP
 If the \fIarchitecture\fP field does not appear in the
-project \fIconfig\fR file,
+project \fIaegis.conf\fR file,
 it defaults to
 .E(
 architecture =
@@ -128,7 +128,7 @@ architecture =
 Setting the architectures
 is usually done as part of the first change of a project,
 but it also may be done to existing projects.
-This information is kept in the project \fIconfig\fP file,
+This information is kept in the project \fIaegis.conf\fP file,
 rather than as a project attribute,
 because it requires that the DMT configuration file
 and the tests have corresponding details (see below).
@@ -194,7 +194,7 @@ To facilitate this,
 there is an \fI${ARCHitecture}\fR substitution available,
 which may then be passed to the DMT using
 the \fIbuild_command\fP field
-of the project \fIconfig\fR file.
+of the project \fIaegis.conf\fR file.
 .LP
 The architecture name used by aegis needs to be used by the DMT,
 so that both aegis and the DMT can agree on which architecture
@@ -204,7 +204,7 @@ is currently targeted.
 As and example of how to do this,
 the cook recipes from the DMT chapter are modified as appropriate.
 First, the \fIbuild_command\fR field of the
-project \fIconfig\fR file is changed
+project \fIaegis.conf\fR file is changed
 to include the \fI${ARCHitecture}\fR substitution:
 .E(
 build_command =
@@ -274,7 +274,7 @@ for this and other reasons.
 .nh 3 "Test Implications"
 .LP
 Tests will need to know in which directory the relevant binary files reside.
-The \fItest_command\fP field of the project \fIconfig\fP file may be
+The \fItest_command\fP field of the project \fIaegis.conf\fP file may be
 changed from the default
 .E(
 test_command =

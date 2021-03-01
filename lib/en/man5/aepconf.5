@@ -1,6 +1,6 @@
 '\" t
 .\"	aegis - project change supervisor
-.\"	Copyright (C) 1994-1996, 1998-2005 Peter Miller;
+.\"	Copyright (C) 1994-1996, 1998-2006 Peter Miller;
 .\"	All rights reserved.
 .\"
 .\"	This program is free software; you can redistribute it and/or modify
@@ -146,6 +146,9 @@ integration builds) the development directory of the change
 (for development builds).
 Exit status: zero is considered success, non-zero is a failure
 and a subsequent successful (exit zero) build will be required.
+.PP
+If this field is set to \f[CW]"exit 0"\fP then no integration build will be
+required, and will not be checked for by the \fIaeipass\fP(1) command.
 .RE
 .TP 8n
 development_build_command = string;
@@ -163,6 +166,9 @@ Executed as: the developer.
 Current directory: the development directory of the change.
 Exit status: zero is considered success, non-zero is a failure
 and a subsequent successful (exit zero) build will be required.
+.PP
+If this field is set to \f[CW]"exit 0"\fP then no development build will be
+required, and will not be checked for by the \fIaede\fP(1) command.
 .RE
 .\" ------------------------------------------------------------------------
 .TP 8n
@@ -238,7 +244,7 @@ should be build reference them.
 It is rarely necessary to explicitly set this field.  It
 defaults to false if you set any of the \fIsource_file_link\fP,
 \fIsource_file_symlink\fP or \fIsource_file_copy\fP to true; it defaults
-to false only if none of them are true.
+to true only if none of them are true.
 .PP
 Not meaningful (always false) for integration builds.
 .RE
@@ -440,7 +446,7 @@ must not be made between the development directory and the baseline.
 These are usually state files for various tools.
 The patterns are matched against the whole filename;
 naming only the last filename path element will \fInot\fP work
-(unless the pattern starts with ``\f[CW]*\fP'').
+(unless the pattern starts with \[lq]\f[CW]*\fP\[rq]).
 .TP 8n
 change_file_command = string;
 .RS 8n
@@ -778,7 +784,7 @@ This field only applies to derived files,
 it does \fInot\fP apply to source files.
 The patterns are matched against the whole filename;
 naming only the last filename path element will \fInot\fP work
-(unless the pattern starts with ``\f[CW]*\fP'').
+(unless the pattern starts with \[lq]\f[CW]*\fP\[rq]).
 .TP 8n
 history_create_command = string;
 .RS 8n
@@ -1153,6 +1159,16 @@ Current directory: the integration directory (for integration diffs),
 or the development directory (for development diffs).
 Exit status: zero indicates success, all non-zero exits indicate failure
 (the aed will fail).
+.PP
+\fBNote:\fP
+It is possible to configure a project to omit the diff step as
+unnecessary, by the following setting:
+.RS
+diff_command = "exit 0";
+.RE
+This disables all generation, checking and validation of difference file
+for each change source file.  The merge functions of the \fIaediff\fP(1)
+command are unaffected by this setting.
 .RE
 .TP 8n
 merge_command = string;
@@ -1182,7 +1198,7 @@ usually in the baseline.
 ${Input}
 .br
 The absolute path of the file in the development directory.
-This is the ``preferred'' edit, if the tool has this concept
+This is the \[lq]preferred\[rq] edit, if the tool has this concept
 when highlighting conflicting edits.
 .TP 8n
 ${Output}
@@ -1362,6 +1378,53 @@ All of the substitutions described by \fIaesub\fP(5) are available.
 Executed as: the developer.
 Current directory: the development directory.
 Exit status: zero indicates success, non-zero indicates failure.
+.PP
+There are some common validations available in the \fIaede-policy\fP(1)
+command; you may choose all or only some of them, or you may choose to
+write a policy command specific to your project.
+.RE
+.TP 8n
+unchanged_file_develop_end_policy = (...);
+.RS
+This field may be used to control what happens when development of a
+change is ended, and the change contains files which have not had their
+contents or their attributes changed.
+.TP 8n
+ignore
+Does not look for or warn about unchanged files.
+This the default.
+.TP 8n
+warning
+If the change sets contains unchanged files, a warning will be
+issued for each one.
+.TP 8n
+error
+If the change set contains unchanged files, an error will be
+issued for each one, and develop end will not complete (the
+change will remain in the \fIbeing developed\fP state).
+.RE
+.TP 8n
+unchanged_file_integrate_pass_policy = (...);
+.RS
+This field may be used to control what happens when a change is
+completed, and the change contains files which have not had their
+contents or their attributes changed.
+.TP 8n
+ignore
+Does not look for or warn about unchanged files.
+The file version will be added to the history.
+This the default.
+.TP 8n
+warning
+If the change sets contains unchanged files,
+a warning will be issued for each one.
+The file version will be added to the history.
+.TP 8n
+remove
+If the change set contains an unchanged file,
+it will be silently removed from the change set.
+The file version will not be added to the history.
+The project file is unaffected.
 .RE
 .TP 8n
 test_command = string;
@@ -1389,7 +1452,13 @@ ${Search_Path_Executable}
 .br
 Colon separated list of directories to search for executable files and
 executable support files.  Usually it is the same as the above,
-\fIexcept\fP during an ``aet -bl'' command.
+\fIexcept\fP during an \[lq]aet -bl\[rq] command.
+.TP 8n
+${VARiables}
+.br
+The text of name=value variable settings from the command line,
+suitably quoted to protect special character from the shell.
+Will be appended to the end of the command if not used explicitly.
 .PP
 Note that tests are source files,
 and thus never have the execute bit set.
@@ -1447,7 +1516,13 @@ ${Search_Path_Executable}
 .br
 Colon separated list of directories to search for executable files and
 executable support files.  Usually it is the same as the above,
-\fIexcept\fP during an ``aet -bl'' command.
+\fIexcept\fP during an \[lq]aet -bl\[rq] command.
+.TP 8n
+${VARiables}
+.br
+The text of name=value variable settings from the command line,
+suitably quoted to protect special character from the shell.
+Will be appended to the end of the command if not used explicitly.
 .PP
 Note that tests are source files,
 and thus never have the execute bit set.
@@ -1496,7 +1571,7 @@ ${Search_Path_Executable}
 .br
 Colon separated list of directories to search for executable files and
 executable support files.  Usually it is the same as the above,
-\fIexcept\fP during an ``aet -bl'' command.
+\fIexcept\fP during an \[lq]aet -bl\[rq] command.
 .TP 8n
 ${Current}
 .br
@@ -1506,6 +1581,12 @@ ${Total}
 .br
 Total number of tests. If this is 0 then no progress messages should be
 issued.
+.TP 8n
+${VARiables}
+.br
+The text of name=value variable settings from the command line,
+suitably quoted to protect special character from the shell.
+Will be appended to the end of the command if not used explicitly.
 .PP
 Note that tests are source files,
 and thus never have the execute bit set.
@@ -1650,7 +1731,7 @@ see
 for more information.
 The patterns are matched against the whole filename;
 naming only the last filename path element will \fInot\fP work
-(unless the pattern starts with ``\f[CW]*\fP'').
+(unless the pattern starts with \[lq]\f[CW]*\fP\[rq]).
 .TP 8n
 body_command = string;
 .RS
@@ -1679,7 +1760,7 @@ whiteout_template = [ { ... } ];
 .br
 The file template is consulted whenever a file is removed, by one of
 the \fIaerm\fP(1) or \fIaemv\fP(1) commands.  It is used to place a
-\&``whiteout'' entry in the development directory, in order to induce
+\&\[lq]whiteout\[rq] entry in the development directory, in order to induce
 compile errors of the removed file is referenced during the build.
 Each list item has the form:
 .RS
@@ -1693,7 +1774,7 @@ see
 for more information.
 The patterns are matched against the whole filename;
 naming only the last filename path element will \fInot\fP work
-(unless the pattern starts with ``\f[CW]*\fP'').
+(unless the pattern starts with \[lq]\f[CW]*\fP\[rq]).
 .TP 8n
 body = string;
 What to initialize the body of the file to.
@@ -1833,7 +1914,7 @@ The directory within which the development directory is
 to be created.
 .TP 8n
 Magic
-A single letter, starting from ``C'', which can be inserted.
+A single letter, starting from \[lq]C\[rq], which can be inserted.
 This must be used,
 as it allows Aegis to try different names should there be a conflict.
 .PP
@@ -1866,7 +1947,7 @@ This will be different for different projects, so you will need to
 update this yourself.
 The patterns are matched against the whole filename;
 naming only the last filename path element will \fInot\fP work
-(unless the pattern starts with ``\f[CW]*\fP'').
+(unless the pattern starts with \[lq]\f[CW]*\fP\[rq]).
 .TP 8n
 project_specific = [ { ... } ];
 .RS
@@ -1886,6 +1967,33 @@ The value to be substituted.
 .PP
 There are almost no limitations on the strings which may appear in either
 of these fields.
+.PP
+There are several attribute names which are known to and used by Aegis,
+these include:
+.TP 8n
+aetar:exclude
+This attribute is used by he \fIaetar\fP(1) receive command to exclude
+files in tarballs from consideration.  This is a space separated list of
+file names.
+.TP 8n
+html:meta
+This attribute is used by the \fIaeget\fP(1) command to customize
+generated web pages.  See \fIaeget\fP(1) for more information.
+.TP 8n
+html:body-begin
+This attribute is used by the \fIaeget\fP(1) command to customize
+generated web pages.  See \fIaeget\fP(1) for more information.
+.TP 8n
+html:body-end
+This attribute is used by the \fIaeget\fP(1) command to customize
+generated web pages.  See \fIaeget\fP(1) for more information.
+.TP 8n
+copyright-owner
+This string is available via the \fI${copyright-owner}\fP substitution,
+and is the one checked by the \fIaede-policy\fP(1) command.
+Only set this attribute if your project is a work-for-hire under copyright law.
+It defaults to the value of \fI${user name}\fP if not set,
+this is almost always correct for Open Source projects.
 .so ../man1/z_cmd_env.so
 .RE
 .TP 8n
@@ -2050,9 +2158,9 @@ Exit status: zero indicates success, all non-zero exits indicate failure
 The problem with this field was that the default usage placed the merged
 source in a strange place.  And subsequent \fIaed\fP(1) commands would
 over-write it.  This meant that merges would be lost, causing a number
-of nasty problems.  Some sites overcame this by adding ``mv'' commands to
+of nasty problems.  Some sites overcame this by adding \[lq]mv\[rq] commands to
 put the output back where the input came from, but this meant that Aegis'
-commentary was misleading.  Use the ``merge_command'' field instead.
+commentary was misleading.  Use the \[lq]merge_command\[rq] field instead.
 It is almost identical, but Aegis will move the files around for you -
 so you get the good behavior by default (no lost merges) and the error
 message is consistent.
@@ -2147,6 +2255,8 @@ find differences between a change and the baseline
 .TP 8n
 .IR aede (1)
 end development of a change
+.IR aede-policy (1)
+check things about a change
 .TP 8n
 .IR aerpass (1)
 pass a review of a change

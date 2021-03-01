@@ -20,18 +20,18 @@
 // MANIFEST: functions to manipulate zshs
 //
 
-#include <ac/ctype.h>
-#include <ac/stdio.h>
-#include <ac/stdlib.h>
-#include <ac/string.h>
+#include <common/ac/ctype.h>
+#include <common/ac/stdio.h>
+#include <common/ac/stdlib.h>
+#include <common/ac/string.h>
 
-#include <arglex.h>
-#include <error.h>
-#include <mem.h>
-#include <progname.h>
-#include <shell/zsh.h>
-#include <shell/private.h>
-#include <str.h>
+#include <common/arglex.h>
+#include <common/error.h>
+#include <common/mem.h>
+#include <common/progname.h>
+#include <aecomplete/shell/zsh.h>
+#include <aecomplete/shell/private.h>
+#include <common/str.h>
 
 
 struct shell_zsh_ty

@@ -1,6 +1,6 @@
 //
 //	cook - file construction tool
-//	Copyright (C) 1994, 1999, 2003, 2004 Peter Miller;
+//	Copyright (C) 1994, 1999, 2003-2005 Peter Miller;
 //	All rights reserved.
 //
 //	This program is free software; you can redistribute it and/or modify
@@ -29,9 +29,9 @@
 //	polynomial $edb88320
 //
 
-#include <ac/stdio.h>
+#include <common/ac/stdio.h>
 
-#include <fp/crc32.h>
+#include <common/fp/crc32.h>
 
 #define CRC32_HASH_LEN 4
 

@@ -20,14 +20,15 @@
 // MANIFEST: functions to manipulate diffs
 //
 
-#include <ac/stdlib.h>
-#include <ac/string.h>
+#include <common/ac/stdio.h>
+#include <common/ac/stdlib.h>
+#include <common/ac/string.h>
 
-#include <error.h>
-#include <patch.h>
-#include <patch/context.h>
-#include <patch/format/diff.h>
-#include <trace.h>
+#include <common/error.h>
+#include <libaegis/patch.h>
+#include <libaegis/patch/context.h>
+#include <libaegis/patch/format/diff.h>
+#include <common/trace.h>
 
 
 static int

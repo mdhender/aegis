@@ -1,6 +1,6 @@
 //
 //	aegis - project change supervisor
-//	Copyright (C) 2004 Peter Miller;
+//	Copyright (C) 2004-2006 Peter Miller;
 //	All rights reserved.
 //
 //	This program is free software; you can redistribute it and/or modify
@@ -30,14 +30,25 @@
 // Root required: yes.
 //
 
-#include <file_info.h>
-#include <request/unchanged.h>
-#include <os.h>
-#include <server.h>
+#include <aecvsserver/file_info.h>
+#include <aecvsserver/request/unchanged.h>
+#include <libaegis/os.h>
+#include <aecvsserver/server.h>
 
 
-static void
-run(server_ty *sp, string_ty *arg)
+request_unchanged::~request_unchanged()
+{
+}
+
+
+request_unchanged::request_unchanged()
+{
+}
+
+
+void
+request_unchanged::run_inner(server_ty *sp, string_ty *arg)
+    const
 {
     directory_ty    *dp;
     string_ty       *server_side;
@@ -62,9 +73,17 @@ run(server_ty *sp, string_ty *arg)
 }
 
 
-const request_ty request_unchanged =
+const char *
+request_unchanged::name()
+    const
 {
-    "Unchanged",
-    run,
-    0, // no reset
-};
+    return "Unchanged";
+}
+
+
+bool
+request_unchanged::reset()
+    const
+{
+    return false;
+}

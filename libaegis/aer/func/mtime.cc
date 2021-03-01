@@ -1,6 +1,6 @@
 //
 //	aegis - project change supervisor
-//	Copyright (C) 2000, 2003, 2004 Peter Miller;
+//	Copyright (C) 2000, 2003-2005 Peter Miller;
 //	All rights reserved.
 //
 //	This program is free software; you can redistribute it and/or modify
@@ -20,22 +20,22 @@
 // MANIFEST: functions to implement the builtin mtime function
 //
 
-#include <ac/errno.h>
-#include <ac/stddef.h>
-#include <ac/stdlib.h>
-#include <ac/sys/types.h>
+#include <common/ac/errno.h>
+#include <common/ac/stddef.h>
+#include <common/ac/stdlib.h>
+#include <common/ac/sys/types.h>
 #include <sys/stat.h>
 
-#include <aer/expr.h>
-#include <aer/func/mtime.h>
-#include <aer/value/error.h>
-#include <aer/value/integer.h>
-#include <aer/value/string.h>
-#include <aer/value/time.h>
-#include <error.h>
-#include <glue.h>
-#include <os.h>
-#include <sub.h>
+#include <libaegis/aer/expr.h>
+#include <libaegis/aer/func/mtime.h>
+#include <libaegis/aer/value/error.h>
+#include <libaegis/aer/value/integer.h>
+#include <libaegis/aer/value/string.h>
+#include <libaegis/aer/value/time.h>
+#include <common/error.h>
+#include <libaegis/glue.h>
+#include <libaegis/os.h>
+#include <libaegis/sub.h>
 
 
 static int

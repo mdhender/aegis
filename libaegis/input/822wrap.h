@@ -1,6 +1,6 @@
 //
 //	aegis - project change supervisor
-//	Copyright (C) 1999, 2002, 2005 Peter Miller;
+//	Copyright (C) 1999, 2002, 2005, 2006 Peter Miller;
 //	All rights reserved.
 //
 //	This program is free software; you can redistribute it and/or modify
@@ -23,7 +23,7 @@
 #ifndef AEDIST_INPUT_822WRAP_H
 #define AEDIST_INPUT_822WRAP_H
 
-#include <input.h>
+#include <libaegis/input.h>
 
 /**
   * The input_822wrap class may be used to transparently join
@@ -41,7 +41,7 @@ public:
     /**
       * The constructor.
       */
-    input_822wrap(input_ty *deeper, bool delete_on_delete);
+    input_822wrap(input &deeper);
 
     // See base class for documentation.
     nstring name();
@@ -66,13 +66,7 @@ private:
       * The deeper instance variable is used to remember the data source
       * for this filter.
       */
-    input_ty *deeper;
-
-    /**
-      * The delete_on_delete instance variable is used to remember
-      * whether or not to delete the data source in the destructor.
-      */
-    bool delete_on_delete;
+    input &deeper;
 
     /**
       * The pos instance variable is used to remember the byte position

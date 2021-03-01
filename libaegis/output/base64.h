@@ -1,6 +1,6 @@
 //
 //	aegis - project change supervisor
-//	Copyright (C) 1999, 2002, 2005 Peter Miller;
+//	Copyright (C) 1999, 2002, 2005, 2006 Peter Miller;
 //	All rights reserved.
 //
 //	This program is free software; you can redistribute it and/or modify
@@ -23,7 +23,7 @@
 #ifndef LIBAEGIS_OUTPUT_BASE64_H
 #define LIBAEGIS_OUTPUT_BASE64_H
 
-#include <output.h>
+#include <libaegis/output.h>
 
 class output_base64_ty:
     public output_ty
@@ -62,10 +62,10 @@ public:
     void end_of_line_inner();
 
     // See base class for documentation.
-    int output_base64_ty::page_width() const;
+    int page_width() const;
 
     // See base class for documentation.
-    int output_base64_ty::page_length() const;
+    int page_length() const;
 
 private:
     /**

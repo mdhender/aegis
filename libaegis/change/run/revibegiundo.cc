@@ -1,6 +1,6 @@
 //
 //	aegis - project change supervisor
-//	Copyright (C) 2001-2004 Peter Miller;
+//	Copyright (C) 2001-2005 Peter Miller;
 //	All rights reserved.
 //
 //	This program is free software; you can redistribute it and/or modify
@@ -20,13 +20,13 @@
 // MANIFEST: functions to manipulate revibegiundos
 //
 
-#include <change.h>
-#include <change/env_set.h>
-#include <error.h> // for assert
-#include <os.h>
-#include <project/history.h>
-#include <sub.h>
-#include <trace.h>
+#include <libaegis/change.h>
+#include <libaegis/change/env_set.h>
+#include <common/error.h> // for assert
+#include <libaegis/os.h>
+#include <libaegis/project/history.h>
+#include <libaegis/sub.h>
+#include <common/trace.h>
 
 
 void

@@ -1,6 +1,6 @@
 //
 //	aegis - project change supervisor
-//	Copyright (C) 2001, 2002, 2004 Peter Miller;
+//	Copyright (C) 2001, 2002, 2004, 2005 Peter Miller;
 //	All rights reserved.
 //
 //	This program is free software; you can redistribute it and/or modify
@@ -20,9 +20,9 @@
 // MANIFEST: functions to manipulate bools
 //
 
-#include <ac/ctype.h>
+#include <common/ac/ctype.h>
 
-#include <str.h>
+#include <common/str.h>
 
 
 int

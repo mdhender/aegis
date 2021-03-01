@@ -1,6 +1,7 @@
 '\" t
 .\"	aegis - project change supervisor
-.\"	Copyright (C) 2002-2004 Peter Miller;
+.\"	Copyright (C) 2002-2004, 2006 Peter Miller;
+.\"	Copyright (C) 2006 Walter Franzini;
 .\"	All rights reserved.
 .\"
 .\"	This program is free software; you can redistribute it and/or modify
@@ -82,13 +83,8 @@ This option may be used to specify a path prefix to be added to every
 filename in the archive.  This means that when the archive is unpacked,
 it will all be placed in the one directory.
 .so o_change.so
-.TP 8n
-\fB\-COmpress
-This option may be used to specify that the output is to be compressed.
-This is the default.
-.TP 8n
-\fB\-No_COmpress
-This option may be used to specify that the output is not to be compressed.
+.so o_compatibil.so
+.so o_compress.so
 .so o_delta.so
 .TP 8n
 \fB\-Entire_Source\fP
@@ -125,6 +121,11 @@ to contain a path prefix.
 \fB\-Remove_Path_Prefix\fP \fIstring\fP
 This option may be used to explicitly specify path prefixes to be removed,
 if present.  It may be specified more than once.
+.TP 8n
+\fB\-Remove_Path_Prefix\fP \fInumber\fP
+Strip the smallest prefix containing num leading slashes from each
+file name found in the patch file.  A sequence of one or more adjacent
+slashes is counted as a single slash.
 .PP
 If you have a complex project directory structure,
 from time to time people may send you tarballs relative to a sub-directory,
@@ -150,6 +151,20 @@ delta in the project's history to copy the file from,
 just as for the \fIaecp\fP(1) command.
 You may also use a delta name instead of a delta number.
 .so o_dir.so
+.TP 8n
+\fB\-EXCLude\fP
+This option may be used to exclude certain files in the tarball
+from consideration.  You can also get the same effect using the
+\fIproject_\%specific\fP field of the project configuration, using the
+\f[CW]aetar:exclude\fP attribute listing file names to exclude sparated
+by spaces.
+.TP 8n
+\fB\-Exclude_Auto_Tools\fP
+This option may be used to exclude files common to tarballs of open
+source projects which used GNU Autoconf or GNU Automake.  This is
+triggered by the presence of \fIconfigure.ac\fP, \fIconfigure.in\fP or
+\fIMakefile.am\fP files.  This only works for simple projects, more
+complex projects will need to use the project exclude attributes.
 .so o_file_cs.so
 .so o_project.so
 .so o_trojan.so

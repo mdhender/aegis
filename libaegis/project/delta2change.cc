@@ -1,6 +1,6 @@
 //
 //	aegis - project change supervisor
-//	Copyright (C) 2003-2005 Peter Miller;
+//	Copyright (C) 2003-2006 Peter Miller;
 //	All rights reserved.
 //
 //	This program is free software; you can redistribute it and/or modify
@@ -20,10 +20,10 @@
 // MANIFEST: functions to convert delta numbers to change numbers
 //
 
-#include <change.h>
-#include <cstate.h>
-#include <project/history.h>
-#include <sub.h>
+#include <libaegis/change.h>
+#include <libaegis/cstate.h>
+#include <libaegis/project/history.h>
+#include <libaegis/sub.h>
 
 
 long
@@ -33,7 +33,7 @@ project_delta_number_to_change_number(project_ty *pp, long delta_number)
     cstate_ty       *cstate_data;
     sub_context_ty  *scp;
 
-    cp = project_change_get(pp);
+    cp = pp->change_get();
     cstate_data = change_cstate_get(cp);
     if (cstate_data->branch)
     {

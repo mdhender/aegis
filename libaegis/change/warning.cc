@@ -20,10 +20,10 @@
 // MANIFEST: implementation of the change_warning class
 //
 
-#include <change.h>
-#include <project.h>
-#include <nstring.h>
-#include <sub.h>
+#include <libaegis/change.h>
+#include <libaegis/project.h>
+#include <common/nstring.h>
+#include <libaegis/sub.h>
 
 
 void
@@ -52,7 +52,7 @@ change_warning(change_ty *cp, sub_context_ty *scp, const char *s)
     // assemble the warning
     //
     subst_intl_change(scp, cp);
-    nstring msg2(subst_intl(scp, "warning: $message"));
+    nstring msg2(subst_intl(scp, i18n("warning: $message")));
 
     //
     // get ready to pass the message to the project error function

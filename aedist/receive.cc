@@ -1,7 +1,7 @@
 //
 //	aegis - project change supervisor
-//	Copyright (C) 1999-2005 Peter Miller;
-//	Copyright (C) 2005 Walter Franzini;
+//	Copyright (C) 1999-2006 Peter Miller;
+//	Copyright (C) 2005, 2006 Walter Franzini;
 //	All rights reserved.
 //
 //	This program is free software; you can redistribute it and/or modify
@@ -21,47 +21,48 @@
 // MANIFEST: functions to receive change sets
 //
 
-#include <ac/stdlib.h>
-#include <ac/string.h>
-#include <ac/unistd.h>
+#include <common/ac/stdlib.h>
+#include <common/ac/string.h>
+#include <common/ac/unistd.h>
 
-#include <arglex3.h>
-#include <arglex/change.h>
-#include <arglex/project.h>
-#include <attribute.h>
-#include <cattr.h>
-#include <change.h>
-#include <change/attributes.h>
-#include <change/branch.h>
-#include <change/file.h>
-#include <change/functor/invent_build.h>
-#include <error.h>	// for assert
-#include <fattr.h>
-#include <help.h>
-#include <input/cpio.h>
-#include <project/invento_walk.h>
-#include <move_list.h>
-#include <nstring.h>
-#include <open.h>
-#include <os.h>
-#include <output/bit_bucket.h>
-#include <output/file.h>
-#include <patch/list.h>
-#include <project.h>
-#include <project/file/trojan.h>
-#include <project/file.h>
-#include <project/history.h>
-#include <receive.h>
-#include <str.h>
-#include <str_list.h>
-#include <sub.h>
-#include <symtab/template.h>
-#include <undo.h>
-#include <user.h>
-#include <usage.h>
-#include <uuidentifier.h>
-#include <version_stmp.h>
-#include <trace.h>
+#include <common/error.h>	// for assert
+#include <common/nstring.h>
+#include <common/str.h>
+#include <common/str_list.h>
+#include <common/symtab/template.h>
+#include <common/trace.h>
+#include <common/uuidentifier.h>
+#include <common/version_stmp.h>
+#include <libaegis/arglex/change.h>
+#include <libaegis/arglex/project.h>
+#include <libaegis/attribute.h>
+#include <libaegis/cattr.h>
+#include <libaegis/change/attributes.h>
+#include <libaegis/change/branch.h>
+#include <libaegis/change/file.h>
+#include <libaegis/change.h>
+#include <libaegis/fattr.h>
+#include <libaegis/help.h>
+#include <libaegis/input/cpio.h>
+#include <libaegis/move_list.h>
+#include <libaegis/os.h>
+#include <libaegis/output/bit_bucket.h>
+#include <libaegis/output/file.h>
+#include <libaegis/patch/list.h>
+#include <libaegis/project/file.h>
+#include <libaegis/project/file/trojan.h>
+#include <libaegis/project.h>
+#include <libaegis/project/history.h>
+#include <libaegis/project/invento_walk.h>
+#include <libaegis/sub.h>
+#include <libaegis/undo.h>
+#include <libaegis/user.h>
+
+#include <aeannotate/usage.h>
+#include <aedist/arglex3.h>
+#include <aedist/change/functor/invent_build.h>
+#include <aedist/open.h>
+#include <aedist/receive.h>
 
 
 static void
@@ -90,6 +91,29 @@ move_xargs(string_ty *project_name, long change_number, string_list_ty *files,
     os_xargs(fmt, files, dd);
 }
 
+static void
+change_uuid_set(const nstring &project_name, long change_number,
+                const nstring &uuid, const nstring &trace_options,
+                const nstring &dd)
+{
+    nstring s =
+        nstring::format
+        (
+            "aegis --change-attr --uuid %s -change=%ld --project=%s%s",
+            uuid.quote_shell().c_str(),
+            change_number,
+            project_name.c_str(),
+            trace_options.c_str()
+        );
+    os_become_orig();
+    os_execute
+    (
+        s.get_ref(),
+        OS_EXEC_FLAG_INPUT | OS_EXEC_FLAG_ERROK,
+        dd.get_ref()
+    );
+    os_become_undo();
+}
 
 static long
 number_of_files(string_ty *project_name, long change_number)
@@ -99,7 +123,7 @@ number_of_files(string_ty *project_name, long change_number)
     long            result;
 
     pp = project_alloc(project_name);
-    project_bind_existing(pp);
+    pp->bind_existing();
     cp = change_alloc(pp, change_number);
     change_bind_existing(cp);
     result = change_file_count(cp);
@@ -139,7 +163,7 @@ project_file_find_by_meta2(project_ty *pp, cstate_src_ty *c_src_data,
     {
 	trace(("uuid = %s\n", c_src_data->uuid->str_text));
 	fstate_src_ty *p_src_data =
-	    project_file_find_by_uuid(pp, c_src_data->uuid, vp);
+	    pp->file_find_by_uuid(c_src_data->uuid, vp);
 	while (p_src_data)
 	{
 	    if (p_src_data->action != file_action_remove || !p_src_data->move)
@@ -216,7 +240,7 @@ find_src(cstate_ty *cs, string_ty *filename)
 
 
 static void
-wrong_file(input_ty *ifp, const nstring &expected)
+wrong_file(input &ifp, const nstring &expected)
 {
     nstring message =
 	nstring::format
@@ -231,7 +255,7 @@ wrong_file(input_ty *ifp, const nstring &expected)
 
 
 static void
-missing_file(input_ty *ifp, const nstring &expected)
+missing_file(input_cpio *ifp, const nstring &expected)
 {
     nstring message =
 	nstring::format
@@ -251,16 +275,12 @@ receive_main(void)
     int		    use_patch;
     string_ty       *project_name;
     long            change_number;
-    string_ty       *ifn;
-    input_ty        *ifp;
     project_ty      *pp;
     change_ty       *cp;
     string_ty       *dd;
     cstate_ty       *change_set;
     size_t          j;
     cattr_ty        *cattr_data;
-    cattr_ty        *dflt;
-    pconf_ty        *pconf_data;
     string_ty       *attribute_file_name;
     move_list_ty    files_moved;
     int             could_have_a_trojan;
@@ -275,12 +295,12 @@ receive_main(void)
 
     project_name = 0;
     change_number = 0;
-    ifn = 0;
     trojan = -1;
     nstring delta;
     devdir = 0;
     use_patch = -1;
     ignore_uuid = -1;
+    nstring ifn;
     arglex();
     while (arglex_token != arglex_token_eoln)
     {
@@ -301,7 +321,7 @@ receive_main(void)
 	    continue;
 
 	case arglex_token_file:
-	    if (ifn)
+	    if (!ifn.empty())
 		duplicate_option(usage);
 	    switch (arglex())
 	    {
@@ -310,11 +330,11 @@ receive_main(void)
 	        // NOTREACHED
 
 	    case arglex_token_string:
-		ifn = str_from_c(arglex_value.alv_string);
+		ifn = arglex_value.alv_string;
 		break;
 
 	    case arglex_token_stdio:
-		ifn = str_from_c("");
+		ifn = "-";
 		break;
 	    }
 	    break;
@@ -437,7 +457,7 @@ receive_main(void)
     //
     // Open the input file and verify the format.
     //
-    input_cpio *cpio_p = aedist_open(ifn, (string_ty **) 0);
+    input_cpio *cpio_p = aedist_open(ifn);
     assert(cpio_p);
 
     //
@@ -457,8 +477,8 @@ receive_main(void)
     //
     os_become_orig();
     nstring archive_name;
-    ifp = cpio_p->child(archive_name);
-    if (!ifp)
+    input ifp = cpio_p->child(archive_name);
+    if (!ifp.is_open())
 	missing_file(cpio_p, "etc/project-name");
     assert(!archive_name.empty());
     if (archive_name != "etc/project-name")
@@ -468,7 +488,7 @@ receive_main(void)
 	ifp->fatal_error("short file");
     if (!project_name)
 	project_name = str_copy(s.get_ref());
-    delete ifp;
+    ifp.close();
     os_become_undo();
 
     //
@@ -477,7 +497,7 @@ receive_main(void)
     //      project name.)
     //
     pp = project_alloc(project_name);
-    project_bind_existing(pp);
+    pp->bind_existing();
 
     //
     // Read the change number form the archive, if it's there.  Use that
@@ -487,7 +507,7 @@ receive_main(void)
     os_become_orig();
     archive_name.clear();
     ifp = cpio_p->child(archive_name);
-    if (!ifp)
+    if (!ifp.is_open())
 	missing_file(cpio_p, "etc/change-set");
     assert(archive_name);
     if (archive_name == "etc/change-number")
@@ -496,8 +516,7 @@ receive_main(void)
 	if (!ifp->one_line(s) || s.empty())
 	    ifp->fatal_error("short file");
 	long proposed_change_number = s.to_long();
-	delete ifp;
-	ifp = 0;
+	ifp.close();
 	os_become_undo();
 
 	//
@@ -520,7 +539,7 @@ receive_main(void)
 	archive_name.clear();
 	os_become_orig();
 	ifp = cpio_p->child(archive_name);
-	if (!ifp)
+	if (!ifp.is_open())
 	    missing_file(cpio_p, "etc/change-set");
     }
     os_become_undo();
@@ -538,7 +557,7 @@ receive_main(void)
     if (archive_name != "etc/change-set")
 	wrong_file(ifp, "etc/change-set");
     change_set = (cstate_ty *)parse_input(ifp, &cstate_type);
-    ifp = 0;	// parse_input input_delete()ed it for us
+    ifp.close();
     os_become_undo();
 
     //
@@ -682,6 +701,14 @@ receive_main(void)
     }
 
     //
+    // We need to work out if we are a project administartor.  This lets
+    // us pass the testing atrributes through literally, rather than
+    // modulo the defaults.
+    //
+    user_ty *up = user_executing(pp);
+    bool am_admin = project_administrator_query(pp, user_name(up));
+
+    //
     // construct change attributes from the change_set
     //
     // Be careful when copying across the testing exemptions, to
@@ -690,53 +717,47 @@ receive_main(void)
     os_become_orig();
     attribute_file_name = os_edit_filename(0);
     undo_unlink_errok(attribute_file_name);
+    os_become_undo();
     cattr_data = (cattr_ty *)cattr_type.alloc();
     cattr_data->brief_description = str_copy(change_set->brief_description);
     cattr_data->description = str_copy(change_set->description);
     cattr_data->cause = change_set->cause;
-    dflt = (cattr_ty *)cattr_type.alloc();
-    dflt->cause = change_set->cause;
-    os_become_undo();
-    pconf_data = project_pconf_get(pp);
-    change_attributes_default(dflt, pp, pconf_data);
-    os_become_orig();
-    cattr_data->test_exempt = (change_set->test_exempt && dflt->test_exempt);
-    cattr_data->test_baseline_exempt =
-	(change_set->test_baseline_exempt && dflt->test_baseline_exempt);
-
-    //
-    // We handle the improvement cause differently because the
-    // regression test exemption is false even if the project admin
-    // selected default_change_exemption = true.
-    //
-    switch (cattr_data->cause)
+    if (am_admin)
     {
-    case change_cause_internal_improvement:
-    case change_cause_external_improvement:
+	//
+        // Only project administrators can do this, otherwise we risk
+        // having the "aegis --new-change" command fail, which isn't nice.
+	//
+	cattr_data->test_exempt = change_set->test_exempt;
+	cattr_data->test_baseline_exempt = change_set->test_baseline_exempt;
         cattr_data->regression_test_exempt = change_set->regression_test_exempt;
-        break;
+    }
+    else
+    {
+	cattr_ty *dflt = (cattr_ty *)cattr_type.alloc();
+	dflt->cause = change_set->cause;
+	pconf_ty *pconf_data = project_pconf_get(pp);
+	change_attributes_default(dflt, pp, pconf_data);
 
-    case change_cause_internal_bug:
-    case change_cause_external_bug:
-    case change_cause_internal_enhancement:
-    case change_cause_external_enhancement:
-    case change_cause_chain:
-#ifndef DEBUG
-    default:
-#endif
+	cattr_data->test_exempt =
+	    (change_set->test_exempt && dflt->test_exempt);
+	cattr_data->test_baseline_exempt =
+	    (change_set->test_baseline_exempt && dflt->test_baseline_exempt);
         cattr_data->regression_test_exempt =
             (
                 change_set->regression_test_exempt
             &&
                 dflt->regression_test_exempt
             );
-        break;
+	cattr_type.free(dflt);
     }
     if (change_set->attribute)
 	cattr_data->attribute = attributes_list_copy(change_set->attribute);
-    cattr_type.free(dflt);
+    os_become_orig();
     cattr_write_file(attribute_file_name, cattr_data, 0);
+    os_become_undo();
     cattr_type.free(cattr_data);
+    cattr_data = 0;
     project_free(pp);
     pp = 0;
 
@@ -744,6 +765,7 @@ receive_main(void)
     // create the new change
     //
     nstring trace_options(trace_args());
+    os_become_orig();
     dot = os_curdir();
     s =
 	nstring::format
@@ -778,7 +800,7 @@ receive_main(void)
     // relative filenames.  It makes things easier to read.
     //
     pp = project_alloc(project_name);
-    project_bind_existing(pp);
+    pp->bind_existing();
     cp = change_alloc(pp, change_number);
     change_bind_existing(cp);
     dd = change_development_directory_get(cp, 0);
@@ -1660,6 +1682,7 @@ receive_main(void)
 
 	// verbose progress message here?
 	src_data = change_set->src->list[j];
+	trace_string(src_data->file_name->str_text);
 	switch (src_data->action)
 	{
 	case file_action_insulate:
@@ -1691,7 +1714,7 @@ receive_main(void)
 	}
 	archive_name.clear();
 	ifp = cpio_p->child(archive_name);
-	if (!ifp)
+	if (!ifp.is_open())
 	{
 	    missing_file
 	    (
@@ -1704,144 +1727,97 @@ receive_main(void)
 	s = nstring::format("patch/%s", src_data->file_name->str_text);
 	if (archive_name == s)
 	{
+	    bool patch_is_empty = (ifp->length() == 0);
+
+	    //
+            // Put the patch into a file, so that we can invoke the
+            // patch command.  It is safe to assume that the patch is in
+            // the correct format to use the patch -p0 option.
+            //
+	    nstring patch_file_name = nstring(os_edit_filename(0));
+	    if (!patch_is_empty)
+	    {
+		ofp = output_file_binary_open(patch_file_name);
+		*ofp << ifp;
+		delete ofp;
+		ofp = 0;
+	    }
+	    ifp.close();
+
 	    //
 	    // We have a patch file, but we also know that a
 	    // complete source follows.  We can apply the patch
 	    // or discard it.  If we fail to apply it cleanly,
 	    // we can always use the complete source which follows.
 	    //
-	    patch_list_ty *plp = patch_read(ifp, 0);
-	    delete ifp;
-	    ifp = 0;
-
 	    switch (src_data->action)
 	    {
-	    case file_action_create:
-                if (!use_patch)
-                    break;
+	    case file_action_remove:
+	    case file_action_insulate:
+	    case file_action_transparent:
+		break;
 
+	    case file_action_create:
                 //
                 // We handle only the create half of the rename.
                 //
                 if (!src_data->move)
                     break;
-
-                assert(plp);
-                assert(plp->length >= 0);
-                if (plp->length > 0)
-                {
-                    patch_ty    *p;
-                    string_ty   *orig;
-                    int         ok;
-
-                    //
-		    // Apply the patch.
-		    //
-		    // The input file (to which the patch is applied)
-		    // is in the change.
-		    //
-		    p = plp->item[0];
-		    os_become_undo();
-		    assert(pp);
-                    trace_string(src_data->file_name->str_text);
-		    orig = project_file_path(pp, src_data->move);
-		    os_become_orig();
-		    ok = patch_apply(p, orig, src_data->file_name);
-		    str_free(orig);
-		    if (ok)
-			need_whole_source = 0;
-		    else
-		    {
-			sub_context_ty  *scp;
-
-			scp = sub_context_new();
-			sub_var_set_string
-			(
-			    scp,
-			    "File_Name",
-			    src_data->file_name
-			);
-			error_intl
-			(
-			    scp,
-			    i18n("warning: $filename patch not used")
-			);
-			sub_context_delete(scp);
-		    }
-                }
-                else
-		{
-                    //
-                    // The patch does not contain any lines, so this is
-                    // a "clean" rename without changes to the new file.
-                    // Thus, the whole source is not needed.
-                    //
-                    need_whole_source = 0;
-		}
-                break;
+		// Fall through...
 
             case file_action_modify:
-		if (use_patch && plp->length == 1)
+		if (!use_patch)
+		    break;
+
+		//
+		// Empty patches always apply cleanly.
+		//
+		if (patch_is_empty)
 		{
-		    patch_ty	*p;
-		    string_ty       *orig;
-		    int             ok;
+		    need_whole_source = 0;
+		    break;
+		}
 
+		//
+		// Apply the patch.
+		//
+		nstring command =
+		    nstring::format
+		    (
+			CONF_PATCH " -p0"
+#ifdef HAVE_GNU_PATCH
+			    " -f -s"
+#endif
+			    " %s %s",
+			src_data->file_name->str_text,
+			patch_file_name.c_str()
+		    );
+		int flags = OS_EXEC_FLAG_NO_INPUT; // + OS_EXEC_FLAG_SILENT;
+		int n = os_execute_retcode(command.get_ref(), flags, dd);
+		if (n == 0)
+		{
 		    //
-		    // Apply the patch.
+		    // The patch applied cleanly.
 		    //
-		    // The input file (to which the patch is applied) may
-		    // be found in the baseline.
-		    //
-		    p = plp->item[0];
-		    os_become_undo();
-		    assert(pp);
-		    orig = project_file_path(pp, src_data->file_name);
-		    os_become_orig();
-		    ok = patch_apply(p, orig, src_data->file_name);
-		    str_free(orig);
-		    if (ok)
-		    {
-			//
-                        // Applying the patch succeeded, so we don't
-                        // need to extract the whole source.
-			//
-			need_whole_source = 0;
-		    }
-		    else
-		    {
-			sub_context_ty  *scp;
-
-			scp = sub_context_new();
-			sub_var_set_string
-			(
-			    scp,
-			    "File_Name",
-			    src_data->file_name
-			);
-			error_intl
-			(
-			    scp,
-			    i18n("warning: $filename patch not used")
-			);
-			sub_context_delete(scp);
-		    }
+		    need_whole_source = 0;
+		}
+		else
+		{
+		    sub_context_ty sc;
+		    sc.var_set_string("File_Name", src_data->file_name);
+		    sc.error_intl(i18n("warning: $filename patch not used"));
 		}
 		break;
-
-	    case file_action_remove:
-	    case file_action_insulate:
-	    case file_action_transparent:
-		break;
 	    }
-	    patch_list_delete(plp);
+	    if (!patch_is_empty)
+		os_unlink(patch_file_name);
 
 	    //
 	    // The src file should be next.
 	    //
 	    archive_name.clear();
 	    ifp = cpio_p->child(archive_name);
-	    if (!ifp)
+	    if (!ifp.is_open())
 	    {
 		missing_file
 		(
@@ -1858,9 +1834,10 @@ receive_main(void)
 	    ofp = output_file_binary_open(src_data->file_name);
 	else
 	    ofp = new output_bit_bucket();
-	input_to_output(ifp, ofp);
+	*ofp << ifp;
 	delete ofp;
-	delete ifp;
+	ofp = 0;
+	ifp.close();
     }
     os_become_undo();
 
@@ -2026,10 +2003,86 @@ receive_main(void)
     os_become_orig();
     archive_name.clear();
     ifp = cpio_p->child(archive_name);
-    if (ifp)
+    if (ifp.is_open())
 	cpio_p->fatal_error("archive too long");
     delete cpio_p;
+    cpio_p = 0;
     os_become_undo();
+
+
+    //
+    // If the change could have a trojan horse in it, stop here with
+    // a warning.  The user needs to look at it and check.
+    //
+    if (trojan > 0)
+	could_have_a_trojan = 1;
+    else if (trojan == 0)
+    {
+	error_intl(0, i18n("warning: potential trojan, proceeding anyway"));
+	could_have_a_trojan = 0;
+	config_seen = 0;
+    }
+
+    //
+    // If the change could have a trojan horse in the project config
+    // file, stop here with a warning.  Don't even difference the
+    // change, because the trojan could be embedded in the diff
+    // command.  The user needs to look at it and check.
+    //
+    // FIX ME: what if the aecpu got rid of it?
+    //
+    if (config_seen)
+    {
+	error_intl
+	(
+	    0,
+	 i18n("warning: potential trojan, review before completing development")
+	);
+
+        //
+        // We set now the uuid of the change so it is preserved.
+        //
+        change_uuid_set
+        (
+            (nstring)project_name,
+            change_number,
+            (nstring)change_set->uuid,
+            trace_options,
+            (nstring)dd
+        );
+
+	//
+	// Make sure we are using an appropriate architecture.	This is
+	// one of the commonest problems when seeding an empty repository.
+	//
+	s =
+	    nstring::format
+	    (
+		"aegis --change-attr --fix-arch --change=%ld --project=%s%s",
+		change_number,
+		project_name->str_text,
+                trace_options.c_str()
+	    );
+	os_become_orig();
+	os_execute(s.get_ref(), OS_EXEC_FLAG_INPUT, dd);
+	os_become_undo();
+	return;
+    }
+
+    //
+    // now merge the change
+    //
+    s =
+	nstring::format
+	(
+	    "aegis --diff --only-merge --change=%ld --project=%s --verbose",
+	    change_number,
+	    project_name->str_text
+        );
+    os_become_orig();
+    os_execute(s.get_ref(), OS_EXEC_FLAG_INPUT, dd);
+    os_become_undo();
+
 
     //
     // Now that all the files have been unpacked,
@@ -2044,24 +2097,14 @@ receive_main(void)
     // because it is no longer the same change set.
     //
     if (change_set->uuid)
-    {
-	string_ty       *quoted_uuid;
-
-	quoted_uuid = str_quote_shell(change_set->uuid);
-	s =
-	    nstring::format
-	    (
-		"aegis --change-attr --uuid %s -change=%ld --project=%s%s",
-		quoted_uuid->str_text,
-		change_number,
-		project_name->str_text,
-                trace_options.c_str()
-	    );
-	str_free(quoted_uuid);
-	os_become_orig();
-	os_execute(s.get_ref(), OS_EXEC_FLAG_INPUT | OS_EXEC_FLAG_ERROK, dd);
-	os_become_undo();
-    }
+        change_uuid_set
+        (
+            (nstring)project_name,
+            change_number,
+            (nstring)change_set->uuid,
+            trace_options,
+            (nstring)dd
+        );
 
     //
     // If we are receiving a change set with an UUID, and the user has
@@ -2144,67 +2187,6 @@ receive_main(void)
 	    return;
 	}
     }
-
-    //
-    // If the change could have a trojan horse in it, stop here with
-    // a warning.  The user needs to look at it and check.
-    //
-    if (trojan > 0)
-	could_have_a_trojan = 1;
-    else if (trojan == 0)
-    {
-	error_intl(0, i18n("warning: potential trojan, proceeding anyway"));
-	could_have_a_trojan = 0;
-	config_seen = 0;
-    }
-
-    //
-    // If the change could have a trojan horse in the project config
-    // file, stop here with a warning.  Don't even difference the
-    // change, because the trojan could be embedded in the diff
-    // command.  The user needs to look at it and check.
-    //
-    // FIX ME: what if the aecpu got rid of it?
-    //
-    if (config_seen)
-    {
-	error_intl
-	(
-	    0,
-	 i18n("warning: potential trojan, review before completing development")
-	);
-
-	//
-	// Make sure we are using an appropriate architecture.	This is
-	// one of the commonest problems when seeding an empty repository.
-	//
-	s =
-	    nstring::format
-	    (
-		"aegis --change-attr --fix-arch --change=%ld --project=%s%s",
-		change_number,
-		project_name->str_text,
-                trace_options.c_str()
-	    );
-	os_become_orig();
-	os_execute(s.get_ref(), OS_EXEC_FLAG_INPUT, dd);
-	os_become_undo();
-	return;
-    }
-
-    //
-    // now merge the change
-    //
-    s =
-	nstring::format
-	(
-	    "aegis --diff --only-merge --change=%ld --project=%s --verbose",
-	    change_number,
-	    project_name->str_text
-        );
-    os_become_orig();
-    os_execute(s.get_ref(), OS_EXEC_FLAG_INPUT, dd);
-    os_become_undo();
 
     //
     // now diff the change

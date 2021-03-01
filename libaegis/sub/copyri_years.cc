@@ -1,6 +1,6 @@
 //
 //	aegis - project change supervisor
-//	Copyright (C) 2002-2004 Peter Miller;
+//	Copyright (C) 2002-2005 Peter Miller;
 //	All rights reserved.
 //
 //	This program is free software; you can redistribute it and/or modify
@@ -20,15 +20,15 @@
 // MANIFEST: functions to manipulate copyri_yearss
 //
 
-#include <change/branch.h>
-#include <error.h> // for assert
-#include <project/history.h>
-#include <str_list.h>
-#include <sub/copyri_years.h>
-#include <sub.h>
-#include <trace.h>
-#include <wstr.h>
-#include <wstr/list.h>
+#include <libaegis/change/branch.h>
+#include <common/error.h> // for assert
+#include <libaegis/project/history.h>
+#include <common/str_list.h>
+#include <libaegis/sub/copyri_years.h>
+#include <libaegis/sub.h>
+#include <common/trace.h>
+#include <common/wstr.h>
+#include <common/wstr/list.h>
 
 
 static int

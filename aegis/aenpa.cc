@@ -1,6 +1,6 @@
 //
 //	aegis - project change supervisor
-//	Copyright (C) 1999, 2001-2004 Peter Miller;
+//	Copyright (C) 1999, 2001-2006 Peter Miller;
 //	All rights reserved.
 //
 //	This program is free software; you can redistribute it and/or modify
@@ -20,22 +20,22 @@
 // MANIFEST: functions to create new project aliases
 //
 
-#include <ac/stdio.h>
+#include <common/ac/stdio.h>
 
-#include <ael/project/aliases.h>
-#include <aenpa.h>
-#include <arglex2.h>
-#include <commit.h>
-#include <gonzo.h>
-#include <help.h>
-#include <lock.h>
-#include <progname.h>
-#include <project.h>
-#include <project/history.h>
-#include <quit.h>
-#include <sub.h>
-#include <trace.h>
-#include <user.h>
+#include <libaegis/ael/project/aliases.h>
+#include <aegis/aenpa.h>
+#include <libaegis/arglex2.h>
+#include <libaegis/commit.h>
+#include <libaegis/gonzo.h>
+#include <libaegis/help.h>
+#include <libaegis/lock.h>
+#include <common/progname.h>
+#include <libaegis/project.h>
+#include <libaegis/project/history.h>
+#include <common/quit.h>
+#include <libaegis/sub.h>
+#include <common/trace.h>
+#include <libaegis/user.h>
 
 
 static void
@@ -130,7 +130,7 @@ project_alias_create_main(void)
     // locate OLD project data
     //
     pp = project_alloc(project_name[0]);
-    project_bind_existing(pp);
+    pp->bind_existing();
 
     //
     // locate user data
@@ -147,12 +147,7 @@ project_alias_create_main(void)
     //
     // Make sure the project alias is acceptable.
     //
-    if
-    (
-	!project_name_ok(project_name[1])
-    ||
-	!gonzo_alias_acceptable(project_name[1])
-    )
+    if (!gonzo_alias_acceptable(project_name[1]))
     {
 	scp = sub_context_new();
 	sub_var_set_string(scp, "Name", project_name[1]);

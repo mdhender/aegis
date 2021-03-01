@@ -1,6 +1,6 @@
 //
 //	aegis - project change supervisor
-//	Copyright (C) 2001, 2003, 2004 Peter Miller;
+//	Copyright (C) 2001, 2003-2005 Peter Miller;
 //	All rights reserved.
 //
 //	This program is free software; you can redistribute it and/or modify
@@ -20,12 +20,12 @@
 // MANIFEST: functions to manipulate rcss
 //
 
-#include <format/private.h>
-#include <format/rcs.h>
-#include <format/rcs/gram.h>
-#include <format/version.h>
-#include <str_list.h>
-#include <os.h>
+#include <aeimport/format/private.h>
+#include <aeimport/format/rcs.h>
+#include <aeimport/format/rcs/gram.h>
+#include <aeimport/format/version.h>
+#include <common/str_list.h>
+#include <libaegis/os.h>
 
 
 static void
@@ -157,7 +157,7 @@ static string_ty *
 diff(format_ty *fp)
 {
     //
-    // I'd prefer to say ``diff -U10'', but we can't rely on GNU
+    // I'd prefer to say "diff -U10", but we can't rely on GNU
     // Diff being installed everywhere.	 It's a risk even using
     // a context diff, because not all non-GNU diff progs have -c.
     //

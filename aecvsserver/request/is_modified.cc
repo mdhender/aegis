@@ -1,6 +1,6 @@
 //
 //	aegis - project change supervisor
-//	Copyright (C) 2004 Peter Miller;
+//	Copyright (C) 2004-2006 Peter Miller;
 //	All rights reserved.
 //
 //	This program is free software; you can redistribute it and/or modify
@@ -20,14 +20,25 @@
 // MANIFEST: functions to manipulate is_modifieds
 //
 
-#include <file_info.h>
-#include <request/is_modified.h>
-#include <os.h>
-#include <server.h>
+#include <aecvsserver/file_info.h>
+#include <aecvsserver/request/is_modified.h>
+#include <libaegis/os.h>
+#include <aecvsserver/server.h>
 
 
-static void
-run(server_ty *sp, string_ty *arg)
+request_is_modified::~request_is_modified()
+{
+}
+
+
+request_is_modified::request_is_modified()
+{
+}
+
+
+void
+request_is_modified::run_inner(server_ty *sp, string_ty *arg)
+    const
 {
     string_ty       *server_side;
     directory_ty    *dp;
@@ -46,9 +57,17 @@ run(server_ty *sp, string_ty *arg)
 }
 
 
-const request_ty request_is_modified =
+const char *
+request_is_modified::name()
+    const
 {
-    "Is-modified",
-    run,
-    0, // no reset
-};
+    return "Is-modified";
+}
+
+
+bool
+request_is_modified::reset()
+    const
+{
+    return false;
+}

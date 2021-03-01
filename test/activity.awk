@@ -1,6 +1,6 @@
 #
 #	aegis - project change supervisor
-#	Copyright (C) 1995 Peter Miller;
+#	Copyright (C) 1995, 2006 Peter Miller;
 #	All rights reserved.
 #
 #	This program is free software; you can redistribute it and/or modify
@@ -19,11 +19,11 @@
 #
 # MANIFEST: Renumber activity lines in tests
 #
-/^activity=".* [1-9][0-9]*"$/ {
+/^[ 	]*activity=".* [1-9][0-9]*"$/ {
 	printf("%.*s %d\"\n", length($0) - length($NF) - 1, $0, FNR)
 	next
 }
-/^activity=".*"$/ {
+/^[ 	]*activity=".*"$/ {
 	printf("%.*s %d\"\n", length($0) - 1, $0, FNR)
 	next
 }

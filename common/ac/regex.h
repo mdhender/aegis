@@ -1,6 +1,6 @@
 //
 //	aegis - project change supervisor
-//	Copyright (C) 1998-2000, 2004 Peter Miller;
+//	Copyright (C) 1998-2000, 2004, 2005 Peter Miller;
 //	All rights reserved.
 //
 //	This program is free software; you can redistribute it and/or modify
@@ -28,8 +28,8 @@
 // file indempotent, so that code which includes *this* file doesn't
 // need to worry about the include file ordering.
 //
-#include <ac/stddef.h>
-#include <ac/sys/types.h>
+#include <common/ac/stddef.h>
+#include <common/ac/sys/types.h>
 
 #if HAVE_RXPOSIX_H && HAVE_LIBRX
 extern "C" {

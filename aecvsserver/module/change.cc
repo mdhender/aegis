@@ -1,6 +1,6 @@
 //
 //	aegis - project change supervisor
-//	Copyright (C) 2004, 2005 Peter Miller;
+//	Copyright (C) 2004-2006 Peter Miller;
 //	All rights reserved.
 //
 //	This program is free software; you can redistribute it and/or modify
@@ -20,83 +20,72 @@
 // MANIFEST: functions to manipulate changes
 //
 
-#include <ac/string.h>
+#include <common/ac/string.h>
 
-#include <change.h>
-#include <change/branch.h>
-#include <change/file.h>
-#include <change/lock_sync.h>
-#include <cstate.h>
-#include <error.h> // for assert
-#include <fake_version.h>
-#include <file_info.h>
-#include <fstate.h>
-#include <input/file.h>
-#include <module/change.h>
-#include <module/change_bogus.h>
-#include <module/private.h>
-#include <module/project_bogu.h>
-#include <os.h>
-#include <output/file.h>
-#include <project.h>
-#include <project/file.h>
-#include <response/checked_in.h>
-#include <response/created.h>
-#include <response/new_entry.h>
-#include <response/removed.h>
-#include <response/remove_entry.h>
-#include <response/update_exist.h>
-#include <symtab.h>
-#include <user.h>
+#include <common/error.h> // for assert
+#include <common/symtab.h>
+#include <libaegis/change/branch.h>
+#include <libaegis/change/file.h>
+#include <libaegis/change.h>
+#include <libaegis/change/lock_sync.h>
+#include <libaegis/cstate.h>
+#include <libaegis/fstate.h>
+#include <libaegis/input/file.h>
+#include <libaegis/os.h>
+#include <libaegis/output/file.h>
+#include <libaegis/project/file.h>
+#include <libaegis/project.h>
+#include <libaegis/user.h>
+
+#include <aecvsserver/fake_version.h>
+#include <aecvsserver/file_info.h>
+#include <aecvsserver/module/change_bogus.h>
+#include <aecvsserver/module/change.h>
+#include <aecvsserver/module/project_bogu.h>
+#include <aecvsserver/response/checked_in.h>
+#include <aecvsserver/response/created.h>
+#include <aecvsserver/response/new_entry.h>
+#include <aecvsserver/response/removed.h>
+#include <aecvsserver/response/remove_entry.h>
+#include <aecvsserver/response/update_exist.h>
+#include <aecvsserver/server.h>
 
 
-struct module_change_ty
+module_change::~module_change()
 {
-    module_ty       inherited;
-    change_ty       *cp;
-    project_ty      *pp;
-    user_ty         *up;
-};
-
-
-static void
-destructor(module_ty *mp)
-{
-    module_change_ty *mcp;
-
-    mcp = (module_change_ty *)mp;
-    change_free(mcp->cp);
-    mcp->cp = 0;
-    user_free(mcp->up);
-    mcp->up = 0;
-    project_free(mcp->pp);
-    mcp->pp = 0;
+    change_free(cp);
+    cp = 0;
+    user_free(up);
+    up = 0;
+    project_free(pp);
+    pp = 0;
 }
 
 
-static void
-modified(module_ty *mp, server_ty *sp, string_ty *file_name, file_info_ty *fip,
-    input_ty *contents)
+module_change::module_change(change_ty *arg) :
+    cp(arg),
+    pp(arg->pp),
+    up(user_executing(arg->pp))
 {
-    module_change_ty *mcp;
-    output_ty       *op;
-    fstate_src_ty   *csrc;
-    string_ty       *dd;
-    string_ty       *abs_file_name;
+}
 
+
+void
+module_change::modified(server_ty *sp, string_ty *file_name, file_info_ty *fip,
+    input &contents)
+{
     //
     // It is an error if the change is not in the "being developed" state.
     //
-    mcp = (module_change_ty *)mp;
-    if (!change_is_being_developed(mcp->cp))
+    if (!change_is_being_developed(cp))
     {
 	server_error
 	(
 	    sp,
 	    "Modified: project \"%s\": change %ld: this change	must be "
 		"in the \"being_developed\" state for this to work",
-	    project_name_get(mcp->pp)->str_text,
-	    mcp->cp->number
+	    project_name_get(pp)->str_text,
+	    cp->number
 	);
 	return;
     }
@@ -104,15 +93,15 @@ modified(module_ty *mp, server_ty *sp, string_ty *file_name, file_info_ty *fip,
     //
     // It is an error if the change is actually a branch.
     //
-    if (change_was_a_branch(mcp->cp))
+    if (change_was_a_branch(cp))
     {
 	server_error
 	(
 	    sp,
 	    "Modified: project \"%s\": change %ld: is a branch; to modify "
 		"files you must use a change on the branch",
-	    project_name_get(mcp->pp)->str_text,
-	    mcp->cp->number
+	    project_name_get(pp)->str_text,
+	    cp->number
 	);
 	return;
     }
@@ -120,17 +109,17 @@ modified(module_ty *mp, server_ty *sp, string_ty *file_name, file_info_ty *fip,
     //
     // It is an error if the change is not assigned to the current user.
     //
-    if (!str_equal(change_developer_name(mcp->cp), user_name(mcp->up)))
+    if (!str_equal(change_developer_name(cp), user_name(up)))
     {
 	server_error
 	(
 	    sp,
 	    "Modified: project \"%s\": change %ld: is owned by user \"%s\", "
 		"but it must be owned by user \"%s\" for this to work",
-	    project_name_get(mcp->pp)->str_text,
-	    mcp->cp->number,
-	    change_developer_name(mcp->cp)->str_text,
-	    user_name(mcp->up)->str_text
+	    project_name_get(pp)->str_text,
+	    cp->number,
+	    change_developer_name(cp)->str_text,
+	    user_name(up)->str_text
 	);
     }
 
@@ -138,7 +127,7 @@ modified(module_ty *mp, server_ty *sp, string_ty *file_name, file_info_ty *fip,
     // If the file doesn't exist in the change, copy it or create it
     // as appropriate.
     //
-    csrc = change_file_find(mcp->cp, file_name, view_path_first);
+    fstate_src_ty *csrc = change_file_find(cp, file_name, view_path_first);
     if (!csrc)
     {
 	string_ty       *qp;
@@ -147,9 +136,9 @@ modified(module_ty *mp, server_ty *sp, string_ty *file_name, file_info_ty *fip,
 	string_ty       *the_command;
 	int             ok;
 
-	qp = str_quote_shell(project_name_get(mcp->pp));
+	qp = str_quote_shell(project_name_get(pp));
 	qf = str_quote_shell(file_name);
-	if (!project_file_find(mcp->pp, file_name, view_path_extreme))
+	if (!project_file_find(pp, file_name, view_path_extreme))
 	{
 	    //
 	    // FIXME: what if it's a new test?
@@ -167,7 +156,7 @@ modified(module_ty *mp, server_ty *sp, string_ty *file_name, file_info_ty *fip,
 		"aegis %s -project=%s -change=%ld -base-relative -v %s",
 		verb,
 		qp->str_text,
-		mcp->cp->number,
+		cp->number,
 		qf->str_text
 	    );
 	str_free(qp);
@@ -186,12 +175,12 @@ modified(module_ty *mp, server_ty *sp, string_ty *file_name, file_info_ty *fip,
         // Change objects can be very long lived in the aecvsserver,
         // so make sure that we re-read the meta data soon.
 	//
-	change_lock_sync_forced(mcp->cp);
+	change_lock_sync_forced(cp);
 
 	//
 	// Now re-get the file information.
 	//
-	csrc = change_file_find(mcp->cp, file_name, view_path_first);
+	csrc = change_file_find(cp, file_name, view_path_first);
 	assert(csrc);
     }
     else if (csrc->action == file_action_remove)
@@ -201,8 +190,8 @@ modified(module_ty *mp, server_ty *sp, string_ty *file_name, file_info_ty *fip,
 	    sp,
 	    "Modified: project \"%s\": change %ld: file \"%s\" is being "
 		"removed, it makes no sense to say it's been modified",
-	    project_name_get(mcp->pp)->str_text,
-	    mcp->cp->number,
+	    project_name_get(pp)->str_text,
+	    cp->number,
 	    file_name->str_text
 	);
 	return;
@@ -211,8 +200,8 @@ modified(module_ty *mp, server_ty *sp, string_ty *file_name, file_info_ty *fip,
     //
     // Figure the path of the file to be written.
     //
-    dd = change_development_directory_get(mcp->cp, 0);
-    abs_file_name = os_path_cat(dd, file_name);
+    string_ty *dd = change_development_directory_get(cp, 0);
+    string_ty *abs_file_name = os_path_cat(dd, file_name);
 
     //
     // Normalize the mode (Aegis has its own idea about file modes).
@@ -222,14 +211,14 @@ modified(module_ty *mp, server_ty *sp, string_ty *file_name, file_info_ty *fip,
     if (fip->mode & 0111)
 	fip->mode |= 0111;
     fip->mode |= 0644;
-    fip->mode &= ~change_umask(mcp->cp);
+    fip->mode &= ~change_umask(cp);
 
     //
     // Copy the file contents to their destination.
     //
     os_become_orig();
-    op = output_file_binary_open(abs_file_name);
-    input_to_output(contents, op);
+    output_ty *op = output_file_binary_open(abs_file_name);
+    *op << contents;
     delete op;
 
     //
@@ -241,33 +230,28 @@ modified(module_ty *mp, server_ty *sp, string_ty *file_name, file_info_ty *fip,
 }
 
 
-static string_ty *
-canonical_name(module_ty *mp)
+string_ty *
+module_change::calculate_canonical_name()
+    const
 {
-    module_change_ty *mcp;
-
     // FIXME: memory leak
-    mcp = (module_change_ty *)mp;
     return
 	str_format
 	(
 	    "%s.C%3.3ld",
-	    project_name_get(mcp->pp)->str_text,
-	    mcp->cp->number
+	    project_name_get(pp)->str_text,
+	    cp->number
 	);
 }
 
 
-static int
-update(module_ty *mp, server_ty *sp, string_ty *client_side_0,
-    string_ty *server_side_0, module_options_ty *opt)
+bool
+module_change::update(server_ty *sp, string_ty *client_side_0,
+    string_ty *server_side_0, const options &opt)
 {
-    module_change_ty *mcp;
     size_t          j;
     static string_ty *minus;
     static string_ty *zero;
-
-    mcp = (module_change_ty *)mp;
 
     //
     // It is an error if the change is not in the "being developed" state.
@@ -278,18 +262,17 @@ update(module_ty *mp, server_ty *sp, string_ty *client_side_0,
     // FIXME: what about changes in the completed state, we will need
     // to use project_file_roll_forward instead.
     //
-    mcp = (module_change_ty *)mp;
-    if (!change_is_being_developed(mcp->cp))
+    if (!change_is_being_developed(cp))
     {
 	server_error
 	(
 	    sp,
 	    "project \"%s\": change %ld: this change must be in the "
 		"\"being_developed\" state for this to work",
-	    project_name_get(mcp->pp)->str_text,
-	    mcp->cp->number
+	    project_name_get(pp)->str_text,
+	    cp->number
 	);
-	return 0;
+	return false;
     }
 
     //
@@ -306,13 +289,12 @@ update(module_ty *mp, server_ty *sp, string_ty *client_side_0,
 	string_ty       *server_side;
 	string_ty       *path;
 	int             need_to_unlink;
-	input_ty        *ip;
 	int             mode;
 	string_ty       *version;
 	int             is_local;
 	file_info_ty    *fip;
 
-	src = change_file_nth(mcp->cp, j, view_path_simple);
+	src = change_file_nth(cp, j, view_path_simple);
 	if (!src)
 	    break;
 	switch (src->usage)
@@ -330,8 +312,8 @@ update(module_ty *mp, server_ty *sp, string_ty *client_side_0,
 	//
         // Make sure the client creates the directories for us.
 	//
-	server_side = os_path_cat(module_name(mp), src->file_name);
-	if (!is_update_prefix(server_side_0, server_side, opt->d))
+	server_side = os_path_cat(name(), src->file_name);
+	if (!is_update_prefix(server_side_0, server_side, opt.d))
 	{
 	    //
 	    // don't create files which are not under one of the
@@ -348,10 +330,10 @@ update(module_ty *mp, server_ty *sp, string_ty *client_side_0,
 	// Determine where to get the file from.
 	//
 	version = 0;
-	path = change_file_version_path(mcp->cp, src, &need_to_unlink);
-	is_local = !!change_file_find(mcp->cp, src->file_name, view_path_first);
+	path = change_file_version_path(cp, src, &need_to_unlink);
+	is_local = !!change_file_find(cp, src->file_name, view_path_first);
 	os_become_orig();
-	ip = input_file_open(path, need_to_unlink);
+	input ip = input_file_open(path, need_to_unlink);
 	if (is_local && os_executable(path))
 	    src->executable = true;
 	if (is_local)
@@ -365,7 +347,7 @@ update(module_ty *mp, server_ty *sp, string_ty *client_side_0,
 	mode = 0666;
 	if (src->executable)
 	    mode |= 0111;
-	mode &= ~change_umask(mcp->cp);
+	mode &= ~change_umask(cp);
 
 	//
 	// Determine the version string to send to the client.
@@ -424,7 +406,7 @@ update(module_ty *mp, server_ty *sp, string_ty *client_side_0,
 		server_response_queue
 		(
 		    sp,
-		    response_removed_new(client_side, server_side)
+		    new response_removed(client_side, server_side)
 		);
 		goto do_nothing;
 
@@ -454,7 +436,7 @@ update(module_ty *mp, server_ty *sp, string_ty *client_side_0,
 	    server_response_queue
 	    (
 		sp,
-		response_created_new
+		new response_created
 		(
 		    client_side,
 		    server_side,
@@ -464,7 +446,7 @@ update(module_ty *mp, server_ty *sp, string_ty *client_side_0,
 		)
 	    );
 	}
-	else if (opt->C)
+	else if (opt.C)
 	{
 	    //
 	    // We have been told to over-write what they have on the
@@ -475,7 +457,7 @@ update(module_ty *mp, server_ty *sp, string_ty *client_side_0,
 		server_response_queue
 		(
 		    sp,
-		    response_update_existing_new
+		    new response_update_existing
 		    (
 			client_side,
 			server_side,
@@ -525,7 +507,7 @@ update(module_ty *mp, server_ty *sp, string_ty *client_side_0,
 		server_response_queue
 		(
 		    sp,
-		    response_update_existing_new
+		    new response_update_existing
 		    (
 			client_side,
 			server_side,
@@ -544,7 +526,7 @@ update(module_ty *mp, server_ty *sp, string_ty *client_side_0,
 		server_response_queue
 		(
 		    sp,
-		    response_update_existing_new
+		    new response_update_existing
 		    (
 			client_side,
 			server_side,
@@ -559,12 +541,16 @@ update(module_ty *mp, server_ty *sp, string_ty *client_side_0,
 	str_free(client_side);
 	str_free(server_side);
 	str_free(version);
+
+	os_become_orig();
+	ip.close();
+	os_become_undo();
     }
-    return 1;
+    return true;
 }
 
 
-static int
+static bool
 file_being_deleted(server_ty *sp, string_ty *server_side)
 {
     file_info_ty    *fip;
@@ -572,20 +558,19 @@ file_being_deleted(server_ty *sp, string_ty *server_side)
 
     fip = server_file_info_find(sp, server_side, 0);
     if (!fip)
-	return 0;
+	return false;
     if (!fip->version)
-	return 0;
+	return false;
     if (!minus)
 	minus = str_from_c("-");
     return str_equal(fip->version, minus);
 }
 
 
-static int
-checkin(module_ty *mp, server_ty *sp, string_ty *client_side,
+bool
+module_change::checkin(server_ty *sp, string_ty *client_side,
     string_ty *server_side)
 {
-    module_change_ty *mcp;
     fstate_src_ty   *src;
     int             mode;
     string_ty       *version;
@@ -595,18 +580,17 @@ checkin(module_ty *mp, server_ty *sp, string_ty *client_side,
     //
     // It is an error if the change is not in the "being developed" state.
     //
-    mcp = (module_change_ty *)mp;
-    if (!change_is_being_developed(mcp->cp))
+    if (!change_is_being_developed(cp))
     {
 	server_error
 	(
 	    sp,
 	    "ci: project \"%s\": change %ld: this change must be "
 		"in the \"being_developed\" state for this to work",
-	    project_name_get(mcp->pp)->str_text,
-	    mcp->cp->number
+	    project_name_get(pp)->str_text,
+	    cp->number
 	);
-	return 0;
+	return false;
     }
 
     //
@@ -622,7 +606,7 @@ checkin(module_ty *mp, server_ty *sp, string_ty *client_side,
     assert(strp);
     filename = str_from_c(strp ? strp + 1 : ".");
 
-    src = change_file_find(mcp->cp, filename, view_path_first);
+    src = change_file_find(cp, filename, view_path_first);
     if (!src)
     {
 	if (file_being_deleted(sp, server_side))
@@ -632,14 +616,14 @@ checkin(module_ty *mp, server_ty *sp, string_ty *client_side,
 	    string_ty       *the_command;
 	    int             ok;
 
-	    qp = str_quote_shell(project_name_get(mcp->pp));
+	    qp = str_quote_shell(project_name_get(pp));
 	    qf = str_quote_shell(filename);
 	    the_command =
 		str_format
 		(
 	  "aegis --remove-file --project=%s --change=%ld --base-relative -v %s",
 		    qp->str_text,
-		    mcp->cp->number,
+		    cp->number,
 		    qf->str_text
 		);
 	    str_free(qp);
@@ -652,13 +636,13 @@ checkin(module_ty *mp, server_ty *sp, string_ty *client_side,
 	    ok = server_execute(sp, the_command);
 	    str_free(the_command);
 	    if (!ok)
-		return 0;
+		return false;
 
 	    //
             // Change objects can be very long lived in the aecvsserver,
             // so make sure that we re-read the meta data soon.
             //
-            change_lock_sync_forced(mcp->cp);
+            change_lock_sync_forced(cp);
 
 	    //
 	    // Let the client know the file is well and truly gone.
@@ -668,24 +652,24 @@ checkin(module_ty *mp, server_ty *sp, string_ty *client_side,
 	    server_response_queue
 	    (
 		sp,
-		response_remove_entry_new(client_side, server_side)
+		new response_remove_entry(client_side, server_side)
 	    );
 
 	    //
 	    // Report success.
 	    //
-	    return 1;
+	    return true;
 	}
 
 	server_error
 	(
 	    sp,
 	    "ci: project \"%s\": change %ld: file \"%s\" unknown",
-	    project_name_get(mcp->pp)->str_text,
-	    mcp->cp->number,
+	    project_name_get(pp)->str_text,
+	    cp->number,
 	    filename->str_text
 	);
-	return 0;
+	return false;
     }
 
     //
@@ -696,7 +680,7 @@ checkin(module_ty *mp, server_ty *sp, string_ty *client_side,
     {
 	string_ty       *path;
 
-	path = change_file_path(mcp->cp, filename);
+	path = change_file_path(cp, filename);
 	os_become_orig();
 	if (os_executable(path))
 	    src->executable = true;
@@ -710,7 +694,7 @@ checkin(module_ty *mp, server_ty *sp, string_ty *client_side,
     mode = 0666;
     if (src->executable)
 	mode |= 0111;
-    mode &= ~change_umask(mcp->cp);
+    mode &= ~change_umask(cp);
 
     //
     // Determine the version string to send to the client.
@@ -748,19 +732,18 @@ checkin(module_ty *mp, server_ty *sp, string_ty *client_side,
     server_response_queue
     (
 	sp,
-	response_checked_in_new(client_side, server_side, mode, version)
+	new response_checked_in(client_side, server_side, mode, version)
     );
     str_free(version);
 
-    return 1;
+    return true;
 }
 
 
-static int
-add(module_ty *mp, server_ty *sp, string_ty *client_side,
-    string_ty *server_side, module_options_ty *opt)
+bool
+module_change::add(server_ty *sp, string_ty *client_side,
+    string_ty *server_side, const options &opt)
 {
-    module_change_ty *mcp;
     fstate_src_ty   *src;
     int             mode;
     string_ty       *version;
@@ -770,18 +753,17 @@ add(module_ty *mp, server_ty *sp, string_ty *client_side,
     //
     // It is an error if the change is not in the "being developed" state.
     //
-    mcp = (module_change_ty *)mp;
-    if (!change_is_being_developed(mcp->cp))
+    if (!change_is_being_developed(cp))
     {
 	server_error
 	(
 	    sp,
 	    "add: project \"%s\": change %ld: this change must be "
 		"in the \"being_developed\" state for this to work",
-	    project_name_get(mcp->pp)->str_text,
-	    mcp->cp->number
+	    project_name_get(pp)->str_text,
+	    cp->number
 	);
-	return 0;
+	return false;
     }
 
     //
@@ -800,7 +782,7 @@ add(module_ty *mp, server_ty *sp, string_ty *client_side,
     // The client sends an "Is-modified" request, so the file isn't
     // necesarily created yet.
     //
-    src = change_file_find(mcp->cp, filename, view_path_first);
+    src = change_file_find(cp, filename, view_path_first);
     if (src)
     {
 	//
@@ -814,14 +796,14 @@ add(module_ty *mp, server_ty *sp, string_ty *client_side,
 	    string_ty       *the_command;
 	    int             ok;
 
-	    qp = str_quote_shell(project_name_get(mcp->pp));
+	    qp = str_quote_shell(project_name_get(pp));
 	    qf = str_quote_shell(filename);
 	    the_command =
 		str_format
 		(
 		    "aegis -rmu -project=%s -change=%ld -base-relative -v %s",
 		    qp->str_text,
-		    mcp->cp->number,
+		    cp->number,
 		    qf->str_text
 		);
 
@@ -835,19 +817,19 @@ add(module_ty *mp, server_ty *sp, string_ty *client_side,
 	    {
 		str_free(qp);
 		str_free(qf);
-		return 0;
+		return false;
 	    }
 
 	    //
 	    // Change objects can be very long lived in the aecvsserver,
 	    // so make sure that we re-read the meta data soon.
 	    //
-	    change_lock_sync_forced(mcp->cp);
+	    change_lock_sync_forced(cp);
 
 	    //
 	    // Now re-get the file information.
 	    //
-	    src = project_file_find(mcp->pp, filename, view_path_extreme);
+	    src = project_file_find(pp, filename, view_path_extreme);
 	    if (src)
 	    {
 		the_command =
@@ -855,7 +837,7 @@ add(module_ty *mp, server_ty *sp, string_ty *client_side,
 		    (
 		"aegis -copy-file -project=%s -change=%ld -base-relative -v %s",
 			qp->str_text,
-			mcp->cp->number,
+			cp->number,
 			qf->str_text
 		    );
 
@@ -869,19 +851,19 @@ add(module_ty *mp, server_ty *sp, string_ty *client_side,
 		{
 		    str_free(qp);
 		    str_free(qf);
-		    return 0;
+		    return false;
 		}
 
 		//
 		// Change objects can be very long lived in the aecvsserver,
 		// so make sure that we re-read the meta data soon.
 		//
-		change_lock_sync_forced(mcp->cp);
+		change_lock_sync_forced(cp);
 
 		//
 		// Now re-get the file information.
 		//
-		src = change_file_find(mcp->cp, filename, view_path_first);
+		src = change_file_find(cp, filename, view_path_first);
 		assert(src);
 	    }
 	    str_free(qp);
@@ -897,7 +879,7 @@ add(module_ty *mp, server_ty *sp, string_ty *client_side,
     {
 	string_ty       *path;
 
-	path = change_file_path(mcp->cp, filename);
+	path = change_file_path(cp, filename);
 	os_become_orig();
 	if (os_executable(path))
 	    src->executable = true;
@@ -911,7 +893,7 @@ add(module_ty *mp, server_ty *sp, string_ty *client_side,
     mode = 0666;
     if (src && src->executable)
 	mode |= 0111;
-    mode &= ~change_umask(mcp->cp);
+    mode &= ~change_umask(cp);
 
     if (!src)
     {
@@ -925,11 +907,11 @@ add(module_ty *mp, server_ty *sp, string_ty *client_side,
 	server_response_queue
 	(
 	    sp,
-	    response_new_entry_new(client_side, server_side, mode, version)
+	    new response_new_entry(client_side, server_side, mode, version)
 	);
 	str_free(version);
 
-	return 1;
+	return true;
     }
 
     //
@@ -974,19 +956,18 @@ add(module_ty *mp, server_ty *sp, string_ty *client_side,
     server_response_queue
     (
 	sp,
-	response_new_entry_new(client_side, server_side, mode, version)
+	new response_new_entry(client_side, server_side, mode, version)
     );
     str_free(version);
 
-    return 1;
+    return true;
 }
 
 
-static int
-remove(module_ty *mp, server_ty *sp, string_ty *client_side,
-    string_ty *server_side, module_options_ty *opt)
+bool
+module_change::remove(server_ty *sp, string_ty *client_side,
+    string_ty *server_side, const options &opt)
 {
-    module_change_ty *mcp;
     fstate_src_ty   *src;
     int             mode;
     string_ty       *version;
@@ -996,18 +977,17 @@ remove(module_ty *mp, server_ty *sp, string_ty *client_side,
     //
     // It is an error if the change is not in the "being developed" state.
     //
-    mcp = (module_change_ty *)mp;
-    if (!change_is_being_developed(mcp->cp))
+    if (!change_is_being_developed(cp))
     {
 	server_error
 	(
 	    sp,
 	    "remove: project \"%s\": change %ld: this change must be "
 		"in the \"being_developed\" state for this to work",
-	    project_name_get(mcp->pp)->str_text,
-	    mcp->cp->number
+	    project_name_get(pp)->str_text,
+	    cp->number
 	);
-	return 0;
+	return false;
     }
 
     //
@@ -1026,7 +1006,7 @@ remove(module_ty *mp, server_ty *sp, string_ty *client_side,
     // If the file already exists in the change,
     // we may have to undo that.
     //
-    src = change_file_find(mcp->cp, filename, view_path_first);
+    src = change_file_find(cp, filename, view_path_first);
     if (src)
     {
 	string_ty       *qp;
@@ -1066,7 +1046,7 @@ remove(module_ty *mp, server_ty *sp, string_ty *client_side,
 	    goto already_being_removed;
 	}
 
-	qp = str_quote_shell(project_name_get(mcp->pp));
+	qp = str_quote_shell(project_name_get(pp));
 	qf = str_quote_shell(filename);
 	the_command =
 	    str_format
@@ -1074,7 +1054,7 @@ remove(module_ty *mp, server_ty *sp, string_ty *client_side,
 		"aegis %s -project=%s -change=%ld -base-relative -v %s",
 		verb,
 		qp->str_text,
-		mcp->cp->number,
+		cp->number,
 		qf->str_text
 	    );
 	str_free(qp);
@@ -1087,13 +1067,13 @@ remove(module_ty *mp, server_ty *sp, string_ty *client_side,
 	ok = server_execute(sp, the_command);
 	str_free(the_command);
 	if (!ok)
-	    return 0;
+	    return false;
 
 	//
 	// Change objects can be very long lived in the aecvsserver,
 	// so make sure that we re-read the meta data soon.
 	//
-	change_lock_sync_forced(mcp->cp);
+	change_lock_sync_forced(cp);
 
 	switch (src->action)
 	{
@@ -1101,9 +1081,9 @@ remove(module_ty *mp, server_ty *sp, string_ty *client_side,
 	    server_response_queue
 	    (
 		sp,
-		response_remove_entry_new(client_side, server_side)
+		new response_remove_entry(client_side, server_side)
 	    );
-	    return 1;
+	    return true;
 
 	case file_action_remove:
 	case file_action_modify:
@@ -1114,7 +1094,7 @@ remove(module_ty *mp, server_ty *sp, string_ty *client_side,
 	src = 0;
     }
 
-    src = project_file_find(mcp->pp, filename, view_path_extreme);
+    src = project_file_find(pp, filename, view_path_extreme);
     if (!src)
     {
 	server_error
@@ -1122,11 +1102,11 @@ remove(module_ty *mp, server_ty *sp, string_ty *client_side,
 	    sp,
 	    "project \"%s\": change %ld: file \"%s\" cannot be removed "
 		"because it does not exist in the project",
-	    project_name_get(mcp->pp)->str_text,
-	    mcp->cp->number,
+	    project_name_get(pp)->str_text,
+	    cp->number,
 	    filename->str_text
 	);
-	return 0;
+	return false;
     }
 
     //
@@ -1152,55 +1132,40 @@ remove(module_ty *mp, server_ty *sp, string_ty *client_side,
     server_response_queue
     (
 	sp,
-	response_new_entry_new(client_side, server_side, mode, version)
+	new response_new_entry(client_side, server_side, mode, version)
     );
     str_free(version);
 
-    return 1;
+    return true;
 }
-
-
-static const module_method_ty vtbl =
-{
-    sizeof(module_change_ty),
-    destructor,
-    modified,
-    canonical_name,
-    update,
-    checkin,
-    add,
-    remove,
-    0, // not bogus
-    "change"
-};
 
 
 module_ty *
 module_change_new(string_ty *project_name, long change_number)
 {
-    project_ty      *pp;
-    change_ty       *cp;
-    module_ty       *mp;
-    module_change_ty *mcp;
-
-    pp = project_alloc(project_name);
-    if (!project_bind_existing_errok(pp))
+    //
+    // Make sure the project makes sense.
+    //
+    project_ty *pp = project_alloc(project_name);
+    if (!pp->bind_existing_errok())
     {
 	project_free(pp);
-	return module_project_bogus_new(project_name);
+	return new module_project_bogus(project_name);
     }
-    cp = change_alloc(pp, change_number);
+
+    //
+    // Make sure the change makes sense.
+    //
+    change_ty *cp = change_alloc(pp, change_number);
     if (!change_bind_existing_errok(cp))
     {
 	change_free(cp);
 	project_free(pp);
-	return module_change_bogus_new(project_name, change_number);
+	return new module_change_bogus(project_name, change_number);
     }
 
-    mp = module_new(&vtbl);
-    mcp = (module_change_ty *)mp;
-    mcp->pp = pp;
-    mcp->up = user_executing(mcp->pp);
-    mcp->cp = cp;
-    return mp;
+    //
+    // OK, looks like we have a viable change.
+    //
+    return new module_change(cp);
 }

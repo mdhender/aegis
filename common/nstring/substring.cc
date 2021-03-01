@@ -20,8 +20,8 @@
 // MANIFEST: implementation of the nstring::substring method
 //
 
-#include <error.h> // for assert
-#include <nstring.h>
+#include <common/error.h> // for assert
+#include <common/nstring.h>
 
 
 nstring

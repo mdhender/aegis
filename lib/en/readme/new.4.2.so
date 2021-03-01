@@ -1,6 +1,6 @@
 .\"
 .\"	aegis - project change supervisor
-.\"	Copyright (C) 2002, 2003 Peter Miller;
+.\"	Copyright (C) 2002, 2003, 2005 Peter Miller;
 .\"	All rights reserved.
 .\"
 .\"	This program is free software; you can redistribute it and/or modify
@@ -62,8 +62,8 @@ integration directory or development directory, all of the execute bits
 .if n *
 .if t \(bu
 .\" change 60
-A bug has been fixed in the ``\fIaecp -ind\fP'' command, where it would
-give a ``there is no development directory'' error when you tried to
+A bug has been fixed in the \[lq]\fIaecp -ind\fP\[rq] command, where it would
+give a \[lq]there is no development directory\[rq] error when you tried to
 extract a file version from history of a completed branch.
 .PP
 .if n *

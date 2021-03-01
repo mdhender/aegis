@@ -20,7 +20,7 @@
 // MANIFEST: implementation of the nstring::cat_three method
 //
 
-#include <nstring.h>
+#include <common/nstring.h>
 
 
 nstring

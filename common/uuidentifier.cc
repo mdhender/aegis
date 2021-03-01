@@ -1,5 +1,6 @@
 //
 //	aegis - project change supervisor
+//	Copyright (C) 2005 Peter Miller
 //	Copyright (C) 2004 Walter Franzini;
 //	All rights reserved.
 //
@@ -19,17 +20,17 @@
 //
 // MANIFEST: functions to manipulate UUIDs
 //
-#include <ac/dce/rpc.h>
-#include <ac/fcntl.h>
-#include <ac/stdlib.h>
-#include <ac/string.h>
-#include <ac/unistd.h>
-#include <ac/uuid.h>
+#include <common/ac/dce/rpc.h>
+#include <common/ac/fcntl.h>
+#include <common/ac/stdlib.h>
+#include <common/ac/string.h>
+#include <common/ac/unistd.h>
+#include <common/ac/uuid.h>
 
-#include <error.h>
-#include <r250.h>
-#include <str.h>
-#include <uuidentifier.h>
+#include <common/error.h>
+#include <common/r250.h>
+#include <common/str.h>
+#include <common/uuidentifier.h>
 
 
 static string_ty *
@@ -67,7 +68,7 @@ make_uuid_random(void)
 
     // version
     buffer[14] = '4';
-    // top 2 bits are variant
+    // top 2 bits are invariant
     buffer[19] = charset[8 | (r250() & 3)];
 
     return str_n_from_c(buffer, 36);
@@ -79,12 +80,8 @@ make_uuid_random(void)
 static string_ty *
 make_uuid(void)
 {
-    uuid_rc_t       u_rc;
-    uuid_t          *uuid;
-    void            *vp;
-    string_ty       *s;
-
-    u_rc = uuid_create(&uuid);
+    uuid_t *uuid = 0;
+    uuid_rc_t u_rc = uuid_create(&uuid);
     if (u_rc != UUID_RC_OK)
     {
 	failed:
@@ -93,14 +90,16 @@ make_uuid(void)
     u_rc = uuid_make(uuid, UUID_MAKE_V4);
     if (u_rc != UUID_RC_OK)
 	goto failed;
-    vp = NULL;
+    void *vp = NULL;
     u_rc = uuid_export(uuid, UUID_FMT_STR, &vp, NULL);
     if (u_rc != UUID_RC_OK)
 	goto failed;
     assert(NULL != vp);
-    s = str_n_from_c((char *)vp, UUID_LEN_STR);
+    string_ty *s1 = str_n_from_c((char *)vp, UUID_LEN_STR);
     free(vp);
-    return s;
+    string_ty *s2 = str_downcase(s1);
+    str_free(s1);
+    return s2;
 }
 
 #elif HAVE_UUID_GENERATE && HAVE_UUID_UNPARSE
@@ -117,7 +116,10 @@ make_uuid(void)
     assert(*uu);
     if (!*uu)
 	return make_uuid_random();
-    return str_n_from_c(uu, 36);
+    string_ty *s1 = str_n_from_c(uu, 36);
+    string_ty *s2 = str_downcase(s1);
+    str_free(s1);
+    return s2;
 }
 
 #elif HAVE_DCE_UUID_H && HAVE_UUID_CREATE && HAVE_UUID_TO_STRING
@@ -128,7 +130,6 @@ make_uuid(void)
     uuid_t	uu_identifier;
     uint32_t	status;
     char	*uu;
-    string_ty	*ret;
 
     uu = 0;
     uuid_create(&uu_identifier, &status);
@@ -137,34 +138,38 @@ make_uuid(void)
     case uuid_s_ok:
 	uuid_to_string(&uu_identifier, &uu, &status);
 	if (uuid_s_ok != status)
-	    uu = 0;
+	{
+	    do_it_ourselves:
+	    return make_uuid_random();
+	}
 	break;
 
     case uuid_s_bad_version:
     case uuid_s_invalid_string_uuid:
     case uuid_s_no_memory:
-	break;
+	goto do_it_ourselves;
     }
 
-    if (!uu && !*uu)
-	ret = make_uuid_random();
-    else
-    {
-	ret = str_n_from_c(uu, 36);
-	//
-	// From
-	// http://www.opengroup.org/onlinepubs/9629399/uuid_to_string.htm
-	//
-	// Note: The RPC run-time system allocates memory for the
-	// string returned in string_uuid. To deallocate the
-	// memory, the application calls the rpc_string_free()
-	// routine.
-	//
-	int ignore;
-	rpc_string_free(&uu, &ignore);
-    }
+    if (!uu || !*uu)
+	goto do_it_ourselves;
 
-    return ret;
+    string_ty *s1 = str_n_from_c(uu, 36);
+
+    //
+    // From
+    // http://www.opengroup.org/onlinepubs/9629399/uuid_to_string.htm
+    //
+    // Note: The RPC run-time system allocates memory for the
+    // string returned in string_uuid. To deallocate the
+    // memory, the application calls the rpc_string_free()
+    // routine.
+    //
+    int ignore;
+    rpc_string_free(&uu, &ignore);
+
+    string_ty *s2 = str_downcase(s1);
+    str_free(s1);
+    return s2;
 }
 
 #elif defined(UUID_IS_LINUX)
@@ -187,7 +192,10 @@ make_uuid(void)
 	goto failed;
     }
     close(fd);
-    return str_n_from_c(buffer, 36);
+    string_ty *s1 = str_n_from_c(buffer, 36);
+    string_ty *s2 = str_downcase(s1);
+    str_free(s1);
+    return s2;
 }
 
 #else
@@ -218,7 +226,7 @@ static const char uuid_charset[] = "0123456789abcdefABCDEF";
 bool
 universal_unique_identifier_valid(string_ty *uuid)
 {
-    return universal_unique_identifier_valid(nstring(str_copy(uuid)));
+    return universal_unique_identifier_valid(nstring(uuid));
 }
 
 
@@ -237,7 +245,7 @@ universal_unique_identifier_valid(const nstring &uuid)
 bool
 universal_unique_identifier_valid_partial(string_ty *uuid)
 {
-    return universal_unique_identifier_valid_partial(nstring(str_copy(uuid)));
+    return universal_unique_identifier_valid_partial(nstring(uuid));
 }
 
 

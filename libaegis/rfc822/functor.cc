@@ -20,9 +20,7 @@
 // MANIFEST: implementation of the rfc822_functor class
 //
 
-#pragma implementation "rfc822_functor"
-
-#include <rfc822/functor.h>
+#include <libaegis/rfc822/functor.h>
 
 
 rfc822_functor::~rfc822_functor()

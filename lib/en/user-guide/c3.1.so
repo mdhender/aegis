@@ -1,6 +1,6 @@
 .\"
 .\"	aegis - project change supervisor
-.\"	Copyright (C) 1991-1995, 1998, 2001, 2002, 2004 Peter Miller;
+.\"	Copyright (C) 1991-1995, 1998, 2001, 2002, 2004, 2005 Peter Miller;
 .\"	All rights reserved.
 .\"
 .\"	This program is free software; you can redistribute it and/or modify
@@ -30,7 +30,8 @@ The command strings in this section assume that the SCCS command
 is in the command search PATH,
 but you may like to hard-wire the path,
 or set PATH at the start of each command.
-(It is also possible that you need to say ``delta'' instead of ``sccs delta''.
+(It is also possible that you need to say \[lq]delta\[rq] instead of
+\[lq]sccs delta\[rq].
 if this is the case, this command needs to be in the path.)
 You should also note that the strings are always handed to
 the Bourne shell to be executed,
@@ -155,8 +156,8 @@ the use of the ${quote} substitution around all of the files names in
 the commands.
 .LP
 In addition, it is possible to have a much more useful description for
-the \fB\-y\fP option.  For example: ``\f[CW]-y${quote ($version) ${change
-description}}\fP'' inserts the version number and the brief description
+the \fB\-y\fP option.  For example: \[lq]\f[CW]-y${quote ($version) ${change
+description}}\fP\[rq] inserts the version number and the brief description
 into the file's log.  This means that using the \fIsccs prs\fP(1) command
 will provide quite useful summaries.
 .nh 3 "Binary Files"

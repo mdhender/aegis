@@ -1,6 +1,6 @@
 '\" t
 .\"	aegis - project change supervisor
-.\"	Copyright (C) 1999, 2002 Peter Miller;
+.\"	Copyright (C) 1999, 2002, 2005, 2006 Peter Miller;
 .\"	All rights reserved.
 .\"
 .\"	This program is free software; you can redistribute it and/or modify
@@ -21,7 +21,7 @@
 .\"
 .so z_name.so
 .ds n) tkaenc
-.TH "\*(n) -Glup" 1 \*(N) "Reference Manual" ""
+.TH "\*(n)" 1 \*(N) "Reference Manual" ""
 .SH NAME
 \*(n) \- GUI interface for aenc, using TCL/TK
 .XX "tkaenc(1)" "GUI interface for aenc, using TCL/TK"
@@ -43,7 +43,7 @@ items don't fit on the screen.)
 The middle section contains text entry areas, for editing the
 \fIbrief_description\fP and \fIdescription\fP fields of the change
 attributes.  The text wraps in a natural way, both here and in (say)
-the ``\fI\*(n) -list change_details\fP'' listing, so only use newlines
+the \[lq]\fI\*(n) -list change_details\fP\[rq] listing, so only use newlines
 to indicate end-of-paragraph.
 .PP
 The lower section contains three boxes.  The first is the testing required
@@ -54,7 +54,7 @@ The third box is whether to begin development immediately (it will
 also run the \fIaedb\fP(1) command), or whether to leave the change in
 \fIawaiting development\fP.
 .PP
-The ``OK'' and ``Cancel'' buttons do what you expect.  The cancel
+The \[lq]OK\[rq] and \[lq]Cancel\[rq] buttons do what you expect.  The cancel
 button simply quits.  The OK button runs the \fIaenc\fP(1) command \-
 if anything goes wrong (\fIe.g.\fP asking for testing exemptions you
 can't have) then the error message will be displayed in the message area

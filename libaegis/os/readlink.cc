@@ -1,6 +1,6 @@
 //
 //	aegis - project change supervisor
-//	Copyright (C) 2001, 2003, 2004 Peter Miller;
+//	Copyright (C) 2001, 2003-2005 Peter Miller;
 //	All rights reserved.
 //
 //	This program is free software; you can redistribute it and/or modify
@@ -20,20 +20,20 @@
 // MANIFEST: functions to manipulate readlinks
 //
 
-#include <ac/errno.h>
-#include <ac/stddef.h>
-#include <ac/unistd.h>
-#include <ac/string.h>
-#include <ac/sys/types.h>
-#include <ac/sys/clu.h>
+#include <common/ac/errno.h>
+#include <common/ac/stddef.h>
+#include <common/ac/unistd.h>
+#include <common/ac/string.h>
+#include <common/ac/sys/types.h>
+#include <common/ac/sys/clu.h>
 #include <sys/stat.h>
 
-#include <error.h>
-#include <glue.h>
-#include <os.h>
-#include <stracc.h>
-#include <sub.h>
-#include <trace.h>
+#include <common/error.h>
+#include <libaegis/glue.h>
+#include <libaegis/os.h>
+#include <common/stracc.h>
+#include <libaegis/sub.h>
+#include <common/trace.h>
 
 
 string_ty *

@@ -1,6 +1,6 @@
 //
 //	aegis - project change supervisor
-//	Copyright (C) 2001, 2002, 2004 Peter Miller;
+//	Copyright (C) 2001, 2002, 2004, 2005 Peter Miller;
 //	All rights reserved.
 //
 //	This program is free software; you can redistribute it and/or modify
@@ -23,9 +23,9 @@
 #ifndef AEIMPORT_FORMAT_H
 #define AEIMPORT_FORMAT_H
 
-#include <ac/time.h>
+#include <common/ac/time.h>
 
-#include <str.h>
+#include <common/str.h>
 
 //
 // This is the base class for deriving all format classes.

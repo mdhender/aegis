@@ -1,6 +1,6 @@
 .\"
 .\"	aegis - project change supervisor
-.\"	Copyright (C) 1999 Peter Miller;
+.\"	Copyright (C) 1999, 2005 Peter Miller;
 .\"	All rights reserved.
 .\"
 .\"	This program is free software; you can redistribute it and/or modify
@@ -90,12 +90,12 @@ Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111, USA.
 .if t .2C
 .nh 1 "Introduction"
 .LP
-This manual contains a series of brief lessons or ``How To'' guides for
+This manual contains a series of brief lessons or \[lq]How To\[rq] guides for
 using Aegis.  Each is arranged to cover two pages, so that when the manual
 lies open on the desk, the whole subject is easily visible in front of you.
 .LP
 When printing this manual, it is essential to print it double sided,
-or the ``subject at once'' effect will not occur.
+or the \[lq]subject at once\[rq] effect will not occur.
 .LP
 The table of contents will be printed last.
 Insert it (there should be two pages, on one sheet of paper) before this page.
@@ -117,7 +117,8 @@ If you installed Aegis using a RedHat or Debian package, this will not
 be at all relevant to you, simply ignore it.
 .nh 2 "Howto Contribute"
 .LP
-If you would like to see other ``How To'' subjects, please drop me an e-mail.
+If you would like to see other \[lq]How To\[rq] subjects, please drop me
+an e-mail.
 Better yet, write one and e-mail it to me.
 .\"
 .\" ,---------------------------------------------------------------------.

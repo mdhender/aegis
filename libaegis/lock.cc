@@ -1,6 +1,6 @@
 //
 //	aegis - project change supervisor
-//	Copyright (C) 1991-1999, 2001-2004 Peter Miller;
+//	Copyright (C) 1991-1999, 2001-2005 Peter Miller;
 //	All rights reserved.
 //
 //	This program is free software; you can redistribute it and/or modify
@@ -20,26 +20,26 @@
 // MANIFEST: functions to lock aegis' data
 //
 
-#include <ac/errno.h>
-#include <ac/fcntl.h>
-#include <ac/stdio.h>
-#include <ac/unistd.h>
-#include <ac/string.h>
-#include <ac/signal.h>
+#include <common/ac/errno.h>
+#include <common/ac/fcntl.h>
+#include <common/ac/stdio.h>
+#include <common/ac/unistd.h>
+#include <common/ac/string.h>
+#include <common/ac/signal.h>
 
-#include <error.h>
-#include <glue.h>
-#include <gonzo.h>
-#include <lock.h>
-#include <mem.h>
-#include <now.h>
-#include <os.h>
-#include <quit.h>
-#include <quit/action/lock.h>
-#include <r250.h>
-#include <sub.h>
-#include <trace.h>
-#include <user.h>
+#include <common/error.h>
+#include <libaegis/glue.h>
+#include <libaegis/gonzo.h>
+#include <libaegis/lock.h>
+#include <common/mem.h>
+#include <common/now.h>
+#include <libaegis/os.h>
+#include <common/quit.h>
+#include <libaegis/quit/action/lock.h>
+#include <common/r250.h>
+#include <libaegis/sub.h>
+#include <common/trace.h>
+#include <libaegis/user.h>
 
 //
 // The HURD does not yet have POSIX semantics for its locks.  You can

@@ -1,7 +1,7 @@
 #!/bin/sh
 #
 #	aegis - project change supervisor
-#	Copyright (C) 2005 Peter Miller;
+#	Copyright (C) 2005, 2006 Peter Miller;
 #	All rights reserved.
 #
 #	This program is free software; you can redistribute it and/or modify
@@ -132,7 +132,7 @@ This is some text to check the checkin.
 fubar
 test $? -eq 0 || no_result
 
-$bin/aesvt -check-in -hist test.in,svt -f test.in
+$bin/aesvt -check-in -comp-algo=gzip -hist test.in,svt -f test.in
 test $? -eq 0 || fail
 
 # it should be compressed

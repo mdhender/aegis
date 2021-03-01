@@ -1,6 +1,6 @@
 //
 //	aegis - project change supervisor
-//	Copyright (C) 1999-2005 Peter Miller;
+//	Copyright (C) 1999-2006 Peter Miller;
 //	All rights reserved.
 //
 //	This program is free software; you can redistribute it and/or modify
@@ -20,25 +20,25 @@
 // MANIFEST: functions to manipulate gets
 //
 
-#include <attrlistveri.h>
-#include <change.h>
-#include <change/file.h>
-#include <change/lock_sync.h>
-#include <error.h>	// for assert
-#include <fstate.h>
-#include <input/catenate.h>
-#include <input/crlf.h>
-#include <input/file.h>
-#include <mem.h>
-#include <os.h>
-#include <os/isa/path_prefix.h>
-#include <project/file.h>
-#include <quit.h>
-#include <quit/action/unlink.h>
-#include <str_list.h>
-#include <sub.h>
-#include <symtab.h>
-#include <trace.h>
+#include <common/error.h>	// for assert
+#include <common/mem.h>
+#include <common/quit.h>
+#include <common/str_list.h>
+#include <common/symtab.h>
+#include <common/trace.h>
+#include <libaegis/attrlistveri.h>
+#include <libaegis/change/file.h>
+#include <libaegis/change.h>
+#include <libaegis/change/lock_sync.h>
+#include <libaegis/fstate.h>
+#include <libaegis/input/catenate.h>
+#include <libaegis/input/crlf.h>
+#include <libaegis/input/file.h>
+#include <libaegis/os.h>
+#include <libaegis/os/isa/path_prefix.h>
+#include <libaegis/project/file.h>
+#include <libaegis/quit/action/unlink.h>
+#include <libaegis/sub.h>
 
 
 static void
@@ -143,23 +143,6 @@ pconf_improve(change_ty *cp)
 	// integrations.
 	//
 	d->remove_symlinks_after_integration_build = true;
-    }
-    if (!d->history_create_command && d->history_put_command)
-	d->history_create_command = str_copy(d->history_put_command);
-    if (!d->history_create_command)
-    {
-	assert(d->errpos);
-	scp = sub_context_new();
-	sub_var_set_string(scp, "File_Name", d->errpos);
-	sub_var_set_charstar(scp, "FieLD_Name", "history_create_command");
-	change_fatal
-	(
-	    cp,
-	    scp,
-	    i18n("$filename: contains no \"$field_name\" field")
-	);
-	// NOTREACHED
-	sub_context_delete(scp);
     }
     if (!d->history_get_command)
     {
@@ -364,21 +347,18 @@ set_pconf_symlink_exceptions_defaults(pconf_ty *pconf_data)
 }
 
 
-static input_ty *
+static input
 input_catenate_tricky(string_list_ty *filename)
 {
-    input_ty        **fpl;
-    size_t          j;
-    input_ty        *fp;
-
     assert(filename->nstrings >= 1);
-    fpl = (input_ty **)mem_alloc(filename->nstrings * sizeof(fpl[0]));
-    for (j = 0; j < filename->nstrings; ++j)
+    input *fpl = new input[filename->nstrings];
+    for (size_t j = 0; j < filename->nstrings; ++j)
     {
-	fpl[j] = new input_crlf(input_file_open(filename->string[j]), true);
+	input temp = input_file_open(filename->string[j]);
+	fpl[j] = new input_crlf(temp);
     }
-    fp = new input_catenate(fpl, filename->nstrings, 1);
-    mem_free(fpl);
+    input fp = new input_catenate(fpl, filename->nstrings, 1);
+    delete [] fpl;
     return fp;
 }
 
@@ -521,9 +501,9 @@ pconf_read_by_usage(change_ty *cp)
     // Read the configuration information.
     //
     change_become(cp);
-    input_ty *ifp = input_catenate_tricky(&filename);
+    input ifp = input_catenate_tricky(&filename);
     pconf_ty *result = (pconf_ty *)parse_input(ifp, &pconf_type);
-    // as a side-effect, parse_input will delete fp
+    ifp.close();
     change_become_undo();
 
     //
@@ -881,6 +861,12 @@ pconf_improve_more(change_ty *cp)
 	d->cache_project_file_list_for_each_delta = true;
 	d->mask |= pconf_cache_project_file_list_for_each_delta_mask;
     }
+
+    //
+    // Default the history_create_command if necessary.
+    //
+    if (!d->history_create_command && d->history_put_command)
+	d->history_create_command = str_copy(d->history_put_command);
 }
 
 
@@ -918,11 +904,12 @@ change_pconf_get(change_ty *cp, int required)
 	    cp->pconf_data->shell_safe_filenames = true;
 	}
 
-	if (required)
-	    pconf_improve(cp);
-
 	pconf_improve_more(cp);
     }
+
+    if (required)
+        pconf_improve(cp);
+
     trace(("return %08lX;\n", (long)cp->pconf_data));
     trace(("}\n"));
     return cp->pconf_data;

@@ -1,6 +1,6 @@
 //
 //	aegis - project change supervisor
-//	Copyright (C) 1999, 2003, 2004 Peter Miller;
+//	Copyright (C) 1999, 2003-2005 Peter Miller;
 //	All rights reserved.
 //
 //	This program is free software; you can redistribute it and/or modify
@@ -20,14 +20,14 @@
 // MANIFEST: functions to manipulate from_strings
 //
 
-#include <ac/fcntl.h>
-#include <ac/errno.h>
-#include <ac/unistd.h>
+#include <common/ac/fcntl.h>
+#include <common/ac/errno.h>
+#include <common/ac/unistd.h>
 
-#include <file.h>
-#include <glue.h>
-#include <sub.h>
-#include <os.h>
+#include <libaegis/file.h>
+#include <libaegis/glue.h>
+#include <libaegis/sub.h>
+#include <libaegis/os.h>
 
 
 void

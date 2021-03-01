@@ -1,6 +1,6 @@
 .\"
 .\"	aegis - project change supervisor
-.\"	Copyright (C) 1998, 2002 Peter Miller;
+.\"	Copyright (C) 1998, 2002, 2005 Peter Miller;
 .\"	All rights reserved.
 .\"
 .\"	This program is free software; you can redistribute it and/or modify
@@ -76,7 +76,8 @@ If there is a loop, according to the arrows, then you have an error.
 \(bu
 Make then performs a \fIpost-order\fP traversal of this graph.
 .br
-\(dg This is a weak condition, it only means ``after dependencies ready'' and
+\(dg This is a weak condition, it only means \[lq]after dependencies
+ready\[rq] and
 nothing more.  The more files, the deeper the graph, the more variety.
 .XP
 \(bu

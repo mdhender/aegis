@@ -1,6 +1,6 @@
 .\"
 .\"	aegis - project change supervisor
-.\"	Copyright (C) 1999, 2002 Peter Miller;
+.\"	Copyright (C) 1999, 2002, 2005 Peter Miller;
 .\"	All rights reserved.
 .\"
 .\"	This program is free software; you can redistribute it and/or modify
@@ -25,12 +25,12 @@ There are a number of questions which are frequently asked by people
 evaluating Aegis.  This section attempts to address some of them.
 .nh 3 "Insulation"
 .LP
-The repository model used by Aegis is of the ``push'' type - that is,
-changes to the baseline are ``pushed'' onto the developer as soon as
+The repository model used by Aegis is of the \[lq]push\[rq] type - that is,
+changes to the baseline are \[lq]pushed\[rq] onto the developer as soon as
 they are integrated.  Many configuration management systems have a
-``pull'' model, where the developer elects when to cope with changes in
+\[lq]pull\[rq] model, where the developer elects when to cope with changes in
 the repository.
-At first glance, Aegis does not appear to have a ``pull'' equivalent.
+At first glance, Aegis does not appear to have a \[lq]pull\[rq] equivalent.
 .LP
 It is possible to insulate your change from the baseline as much or as
 little as required.  The \fIaecp\fP(1) command, used to copy files into a
@@ -42,8 +42,8 @@ the insulation and verify that your change still builds and tests
 successfully with the (probably) now-different baseline.
 .nh 4 "Copy Read-Only"
 .LP
-It is possible to select the degree of insulation.  By using ``\f[CW]aecp
-\&.\fP'' at the top of a development directory, the complete project
+It is possible to select the degree of insulation.  By using \[lq]\f[CW]aecp
+\&.\fP\[rq] at the top of a development directory, the complete project
 source tree will be copied, thus completely insulating you.  Mind you,
 it comes at the cost of a complete build.
 .LP
@@ -130,7 +130,7 @@ The original change will then need to be merged with the baseline, because
 the bug fix change will have been integrated before it.  Usually this
 is straight-forward, as you already have the changes (some merge tools
 make this harder than others).  Often, all that is required is to merge,
-and then say ``\f[CW]aecpu -unch\fP'' to un-copy all files which are
+and then say \[lq]\f[CW]aecpu -unch\fP\[rq] to un-copy all files which are
 (now) unchanged when compared to the current baseline.
 .nh 3 "Multiple Active Branches"
 .LP
@@ -185,7 +185,7 @@ a big change, which has lots of sub-changes.)  This allows parallel
 collaboration between developers.
 .nh 4 "View Path Hacking"
 .LP
-Aegis usually provides a ``view path'' to the build tool.  This specifies
+Aegis usually provides a \[lq]view path\[rq] to the build tool.  This specifies
 where to look for source files and derived files, in order to union
 together the development directory, and the baseline, and the branch's
 ancestors' baselines.  If you run the build by hand, rather than through

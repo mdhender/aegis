@@ -1,6 +1,6 @@
 //
 //	aegis - project change supervisor
-//	Copyright (C) 1998, 2004 Peter Miller;
+//	Copyright (C) 1998, 2004, 2005 Peter Miller;
 //	All rights reserved.
 //
 //	This program is free software; you can redistribute it and/or modify
@@ -20,7 +20,7 @@
 // MANIFEST: functions to manipulate the bowels of GIF files
 //
 
-#include <gif/private.h>
+#include <libaegis/gif/private.h>
 
 
 unsigned char gif_magic_number[] = "GIF87a";

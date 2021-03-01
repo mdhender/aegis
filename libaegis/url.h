@@ -23,9 +23,7 @@
 #ifndef LIBAEGIS_URL_H
 #define LIBAEGIS_URL_H
 
-#pragma interface "url"
-
-#include <nstring.h>
+#include <common/nstring.h>
 
 /**
   * The url class is used to represent a uniform resource locator (URL).

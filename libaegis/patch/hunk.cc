@@ -1,6 +1,6 @@
 //
 //	aegis - project change supervisor
-//	Copyright (C) 2001, 2003, 2004 Peter Miller;
+//	Copyright (C) 2001, 2003-2005 Peter Miller;
 //	All rights reserved.
 //
 //	This program is free software; you can redistribute it and/or modify
@@ -20,8 +20,8 @@
 // MANIFEST: functions to manipulate hunks
 //
 
-#include <mem.h>
-#include <patch/hunk.h>
+#include <common/mem.h>
+#include <libaegis/patch/hunk.h>
 
 
 patch_hunk_ty *

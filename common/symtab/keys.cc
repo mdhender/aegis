@@ -1,6 +1,6 @@
 //
 //	aegis - project change supervisor
-//	Copyright (C) 2002, 2004 Peter Miller;
+//	Copyright (C) 2002, 2004, 2005 Peter Miller;
 //	All rights reserved.
 //
 //	This program is free software; you can redistribute it and/or modify
@@ -20,9 +20,9 @@
 // MANIFEST: functions to manipulate keyss
 //
 
-#include <symtab.h>
-#include <str_list.h>
-#include <nstring/list.h>
+#include <common/symtab.h>
+#include <common/str_list.h>
+#include <common/nstring/list.h>
 
 
 void

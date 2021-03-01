@@ -1,6 +1,6 @@
 //
 //	aegis - project change supervisor
-//	Copyright (C) 1994-1996, 1999, 2002-2004 Peter Miller;
+//	Copyright (C) 1994-1996, 1999, 2002-2005 Peter Miller;
 //	All rights reserved.
 //
 //	This program is free software; you can redistribute it and/or modify
@@ -20,13 +20,13 @@
 // MANIFEST: functions to manipulate increment/decrement expressions
 //
 
-#include <aer/expr/incr.h>
-#include <aer/value/error.h>
-#include <aer/value/integer.h>
-#include <aer/value/real.h>
-#include <aer/value/ref.h>
-#include <error.h>
-#include <sub.h>
+#include <libaegis/aer/expr/incr.h>
+#include <libaegis/aer/value/error.h>
+#include <libaegis/aer/value/integer.h>
+#include <libaegis/aer/value/real.h>
+#include <libaegis/aer/value/ref.h>
+#include <common/error.h>
+#include <libaegis/sub.h>
 
 
 static rpt_value_ty *

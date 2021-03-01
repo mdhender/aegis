@@ -1,6 +1,6 @@
 //
 //	aegis - project change supervisor
-//	Copyright (C) 1999, 2003, 2004 Peter Miller;
+//	Copyright (C) 1999, 2003-2005 Peter Miller;
 //	All rights reserved.
 //
 //	This program is free software; you can redistribute it and/or modify
@@ -20,9 +20,9 @@
 // MANIFEST: functions to manipulate privates
 //
 
-#include <col/private.h>
-#include <error.h> // for assert
-#include <mem.h>
+#include <libaegis/col/private.h>
+#include <common/error.h> // for assert
+#include <common/mem.h>
 
 
 col_ty *

@@ -20,11 +20,11 @@
 // MANIFEST: functions to manipulate sets
 //
 
-#include <pattr.h>
-#include <project.h>
-#include <project/history.h>
-#include <project/pattr/set.h>
-#include <sub.h>
+#include <libaegis/pattr.h>
+#include <libaegis/project.h>
+#include <libaegis/project/history.h>
+#include <libaegis/project/pattr/set.h>
+#include <libaegis/sub.h>
 
 
 void

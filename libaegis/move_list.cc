@@ -1,6 +1,6 @@
 //
 //      aegis - project change supervisor
-//      Copyright (C) 2003, 2004 Peter Miller;
+//      Copyright (C) 2003-2005 Peter Miller;
 //      All rights reserved.
 //
 //      This program is free software; you can redistribute it and/or modify
@@ -20,8 +20,8 @@
 // MANIFEST: functions to manipulate moves
 //
 
-#include <mem.h>
-#include <move_list.h>
+#include <common/mem.h>
+#include <libaegis/move_list.h>
 
 
 void

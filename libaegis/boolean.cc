@@ -20,11 +20,11 @@
 // MANIFEST: functions to impliment the boolean class
 //
 
-#include <ac/stdlib.h>
-#include <ac/string.h>
+#include <common/ac/stdlib.h>
+#include <common/ac/string.h>
 
-#include <boolean.h>
-#include <main.h>
+#include <libaegis/boolean.h>
+#include <common/main.h>
 
 
 nstring

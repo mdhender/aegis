@@ -1,6 +1,6 @@
 //
 //	aegis - project change supervisor
-//	Copyright (C) 2004 Peter Miller;
+//	Copyright (C) 2004-2006 Peter Miller;
 //	All rights reserved.
 //
 //	This program is free software; you can redistribute it and/or modify
@@ -20,11 +20,9 @@
 // MANIFEST: implementation of the nstring_accumulator class
 //
 
-#pragma implementation "nstring_accumulator"
+#include <common/ac/string.h>
 
-#include <ac/string.h>
-
-#include <nstring/accumulator.h>
+#include <common/nstring/accumulator.h>
 
 
 nstring_accumulator::~nstring_accumulator()
@@ -127,4 +125,11 @@ void
 nstring_accumulator::push_back(const char *s)
 {
     push_back(s, strlen(s));
+}
+
+
+void
+nstring_accumulator::push_back(const nstring &s)
+{
+    push_back(s.c_str(), s.size());
 }

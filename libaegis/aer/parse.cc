@@ -1,6 +1,6 @@
 //
 //	aegis - project change supervisor
-//	Copyright (C) 1994, 1995, 1997, 1999, 2001-2004 Peter Miller;
+//	Copyright (C) 1994, 1995, 1997, 1999, 2001-2005 Peter Miller;
 //	All rights reserved.
 //
 //	This program is free software; you can redistribute it and/or modify
@@ -20,25 +20,25 @@
 // MANIFEST: functions to parse report descriptions
 //
 
-#include <ac/string.h>
+#include <common/ac/string.h>
 
-#include <aer/expr/name.h>
-#include <aer/func/print.h>
-#include <aer/lex.h>
-#include <aer/parse.h>
-#include <aer/report.h>
-#include <aer/value/list.h>
-#include <aer/value/ref.h>
-#include <aer/value/string.h>
-#include <arglex.h>
-#include <col.h>
-#include <dir.h>
-#include <error.h>
-#include <gonzo.h>
-#include <os.h>
-#include <rptidx.h>
-#include <sub.h>
-#include <trace.h>
+#include <common/arglex.h>
+#include <common/error.h>
+#include <common/trace.h>
+#include <libaegis/aer/expr/name.h>
+#include <libaegis/aer/func/print.h>
+#include <libaegis/aer/lex.h>
+#include <libaegis/aer/parse.h>
+#include <libaegis/aer/report.h>
+#include <libaegis/aer/value/list.h>
+#include <libaegis/aer/value/ref.h>
+#include <libaegis/aer/value/string.h>
+#include <libaegis/col.h>
+#include <libaegis/dir.h>
+#include <libaegis/gonzo.h>
+#include <libaegis/os.h>
+#include <libaegis/rptidx.h>
+#include <libaegis/sub.h>
 
 
 static string_ty *input;

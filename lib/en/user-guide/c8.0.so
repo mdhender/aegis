@@ -1,6 +1,6 @@
 .\"
 .\"	aegis - project change supervisor
-.\"	Copyright (C) 1993, 1994, 1998, 2002 Peter Miller;
+.\"	Copyright (C) 1993, 1994, 1998, 2002, 2005 Peter Miller;
 .\"	All rights reserved.
 .\"
 .\"	This program is free software; you can redistribute it and/or modify
@@ -33,7 +33,7 @@ but they may be used to accomplish some other things.
 The default setting is for Aegis to reject filenames which contain shell
 special characters.  This ensures that filenames may be substituted
 into the commands without worrying about whether this is safe.  If you
-set the \fIshell_safe_filenames\fP field of the project \fIconfig\fP
+set the \fIshell_safe_filenames\fP field of the project \fIaegis.conf\fP
 file to \f(CWfalse\fP, you will need to surround filenames with the
 \f[CW]${quote\fP \fIfilename\fP\f[CW]}\fP substitution.  This will only
 quote filenames which actually need to be quoted, so users usually will
@@ -52,13 +52,14 @@ The simplest compromise is to treat all files as text, with manual
 repairs for binary files.
 .LP
 A more elegant solution is to use a shell script invoked by the
-\fIdiff_\%command\fP in the project \fIconfig\fP file.
+\fIdiff_\%command\fP in the project \fIaegis.conf\fP file.
 This shell script examines the file to determine the file format, and then
 runs the appropriate difference tool.
 Similar considerations apply to the \fImerge_\%command\fP field.
-.\" Please note that this support is not present in Aegis itself because
-.\" (a) it would cause code bloat, and (b) it is entirely possible to
-.\" do with a shell script launched by \fIdiff_command\fP.
+.LP
+Please note that this support is not present in Aegis itself because
+(a) it would cause code bloat, and (b) it is entirely possible to
+do with a shell script launched by \fIdiff_command\fP.
 .so c8.1.so
 .so c8.2.so
 .so c8.3.so

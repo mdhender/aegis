@@ -1,6 +1,6 @@
 //
 //	aegis - project change supervisor
-//	Copyright (C) 1991-2005 Peter Miller;
+//	Copyright (C) 1991-2006 Peter Miller;
 //	All rights reserved.
 //
 //	This program is free software; you can redistribute it and/or modify
@@ -20,73 +20,71 @@
 // MANIFEST: functions to manipulate project state data
 //
 
-#include <ac/ctype.h>
-#include <ac/stdio.h>
-#include <ac/string.h>
-#include <ac/stdlib.h>
+#include <common/ac/ctype.h>
+#include <common/ac/stdio.h>
+#include <common/ac/string.h>
+#include <common/ac/stdlib.h>
 
-#include <arglex2.h>
-#include <change.h>
-#include <change/branch.h>
-#include <change/file.h>
-#include <commit.h>
-#include <error.h>
-#include <fstrcmp.h>
-#include <gonzo.h>
-#include <lock.h>
-#include <mem.h>
-#include <option.h>
-#include <os.h>
-#include <project.h>
-#include <project/history.h>
-#include <pstate.h>
-#include <skip_unlucky.h>
-#include <sub.h>
-#include <symtab.h>
-#include <trace.h>
-#include <user.h>
-#include <undo.h>
-#include <str_list.h>
+#include <common/error.h>
+#include <common/fstrcmp.h>
+#include <common/mem.h>
+#include <common/skip_unlucky.h>
+#include <common/str_list.h>
+#include <common/symtab.h>
+#include <common/trace.h>
+#include <libaegis/arglex2.h>
+#include <libaegis/change/branch.h>
+#include <libaegis/change/file.h>
+#include <libaegis/change.h>
+#include <libaegis/commit.h>
+#include <libaegis/gonzo.h>
+#include <libaegis/lock.h>
+#include <libaegis/option.h>
+#include <libaegis/os.h>
+#include <libaegis/project.h>
+#include <libaegis/project/history.h>
+#include <libaegis/pstate.h>
+#include <libaegis/sub.h>
+#include <libaegis/undo.h>
+#include <libaegis/user.h>
 
 
-static void
-convert_to_new_format(project_ty *pp)
+void
+project_ty::convert_to_new_format()
 {
-    user_ty	    *up;
-    cstate_history_ty *h;
-    pstate_ty	    *pstate_data;
-    size_t	    j;
-
-    trace(("convert_to_new_format(pp = %08lX)\n{\n", (long)pp));
-    pp->pcp = change_alloc(pp, TRUNK_CHANGE_NUMBER);
-    change_bind_new(pp->pcp);
-    change_branch_new(pp->pcp);
+    trace(("project_ty::convert_to_new_format(this = %08lX)\n{\n", (long)this));
+    // Don't worry about is not being NULL, it won't contain much,
+    // and it will only be a memory leak when the project is first
+    // converted, and will never happen again.
+    pcp = change_alloc(this, TRUNK_CHANGE_NUMBER);
+    change_bind_new(pcp);
+    change_branch_new(pcp);
 
     //
     // The new change is in the 'being developed'
     // state, and will be forever.
     //
-    up = user_executing(pp);
-    h = change_history_new(pp->pcp, up);
+    user_ty *up = user_executing(this);
+    cstate_history_ty *h = change_history_new(pcp, up);
     h->what = cstate_history_what_new_change;
-    h = change_history_new(pp->pcp, up);
+    h = change_history_new(pcp, up);
     h->what = cstate_history_what_develop_begin;
     user_free(up);
-    pp->pcp->cstate_data->state = cstate_state_being_developed;
+    pcp->cstate_data->state = cstate_state_being_developed;
 
     //
     // set the development directory
     //
-    change_development_directory_set(pp->pcp, project_home_path_get(pp));
+    change_development_directory_set(pcp, home_path_get());
 
     //
     // Copy the information from the old format of project state
     // into the newly created change.  Remember to clear the old
     // stuff out, so that it isn't written back to the file.
     //
-    pstate_data = project_pstate_get(pp);
+    pstate_get();
 
-    change_branch_umask_set(pp->pcp, pstate_data->umask);
+    change_branch_umask_set(pcp, pstate_data->umask);
     pstate_data->umask = 0;
 
     if (pstate_data->owner_name)
@@ -105,35 +103,35 @@ convert_to_new_format(project_ty *pp)
 
     if (pstate_data->description)
     {
-	project_description_set(pp, pstate_data->description);
+	project_description_set(this, pstate_data->description);
 	str_free(pstate_data->description);
 	pstate_data->description = 0;
     }
 
     change_branch_developer_may_review_set
     (
-	pp->pcp,
+	pcp,
 	pstate_data->developer_may_review
     );
     pstate_data->developer_may_review = false;
 
     change_branch_developer_may_integrate_set
     (
-	pp->pcp,
+	pcp,
 	pstate_data->developer_may_integrate
     );
     pstate_data->developer_may_integrate = false;
 
     change_branch_reviewer_may_integrate_set
     (
-	pp->pcp,
+	pcp,
 	pstate_data->reviewer_may_integrate
     );
     pstate_data->reviewer_may_integrate = false;
 
     change_branch_developers_may_create_changes_set
     (
-	pp->pcp,
+	pcp,
 	pstate_data->developers_may_create_changes
     );
     pstate_data->developers_may_create_changes = false;
@@ -141,74 +139,74 @@ convert_to_new_format(project_ty *pp)
     //
     // Old-style projects alawys had regression tests exempt by default.
     //
-    change_branch_default_test_regression_exemption_set(pp->pcp, true);
+    change_branch_default_test_regression_exemption_set(pcp, true);
 
     change_branch_forced_develop_begin_notify_command_set
     (
-	pp->pcp,
+	pcp,
 	pstate_data->forced_develop_begin_notify_command
     );
     pstate_data->forced_develop_begin_notify_command = 0;
 
     change_branch_develop_end_notify_command_set
     (
-	pp->pcp,
+	pcp,
 	pstate_data->develop_end_notify_command
     );
     pstate_data->develop_end_notify_command = 0;
 
     change_branch_develop_end_undo_notify_command_set
     (
-	pp->pcp,
+	pcp,
 	pstate_data->develop_end_undo_notify_command
     );
     pstate_data->develop_end_undo_notify_command = 0;
 
     change_branch_review_pass_notify_command_set
     (
-	pp->pcp,
+	pcp,
 	pstate_data->review_pass_notify_command
     );
     pstate_data->review_pass_notify_command = 0;
 
     change_branch_review_pass_undo_notify_command_set
     (
-	pp->pcp,
+	pcp,
 	pstate_data->review_pass_undo_notify_command
     );
     pstate_data->review_pass_undo_notify_command = 0;
 
     change_branch_review_fail_notify_command_set
     (
-	pp->pcp,
+	pcp,
 	pstate_data->review_fail_notify_command
     );
     pstate_data->review_fail_notify_command = 0;
 
     change_branch_integrate_pass_notify_command_set
     (
-	pp->pcp,
+	pcp,
 	pstate_data->integrate_pass_notify_command
     );
     pstate_data->integrate_pass_notify_command = 0;
 
     change_branch_integrate_fail_notify_command_set
     (
-	pp->pcp,
+	pcp,
 	pstate_data->integrate_fail_notify_command
     );
     pstate_data->integrate_fail_notify_command = 0;
 
     change_branch_default_development_directory_set
     (
-	pp->pcp,
+	pcp,
 	pstate_data->default_development_directory
     );
     pstate_data->default_development_directory = 0;
 
     change_branch_default_test_exemption_set
     (
-	pp->pcp,
+	pcp,
 	pstate_data->default_test_exemption
     );
     pstate_data->default_test_exemption = false;
@@ -219,11 +217,11 @@ convert_to_new_format(project_ty *pp)
 	    (pstate_copyright_years_list_ty *)
             pstate_copyright_years_list_type.alloc();
     }
-    for (j = 0; j < pstate_data->copyright_years->length; ++j)
+    for (size_t j = 0; j < pstate_data->copyright_years->length; ++j)
     {
 	change_copyright_year_append
 	(
-	    pp->pcp,
+	    pcp,
 	    pstate_data->copyright_years->list[j]
 	);
     }
@@ -240,30 +238,27 @@ convert_to_new_format(project_ty *pp)
     {
 	pstate_data->src = (pstate_src_list_ty *)pstate_src_list_type.alloc();
     }
-    for (j = 0; j < pstate_data->src->length; ++j)
+    for (size_t j = 0; j < pstate_data->src->length; ++j)
     {
-	pstate_src_ty   *sp1;
-	fstate_src_ty   *sp2;
-
-	sp1 = pstate_data->src->list[j];
+	pstate_src_ty *sp1 = pstate_data->src->list[j];
 	if (!sp1->file_name)
 	{
 	    sub_context_ty  *scp;
 
 	    yuck:
 	    scp = sub_context_new();
-	    sub_var_set_string(scp, "File_Name", pp->pstate_path);
+	    sub_var_set_string(scp, "File_Name", pstate_path);
 	    sub_var_set_charstar(scp, "FieLD_Name", "src");
 	    project_fatal
 	    (
-		pp,
+		this,
 		scp,
 		i18n("$filename: corrupted \"$field_name\" field")
 	    );
 	    // NOTREACHED
 	    sub_context_delete(scp);
 	}
-	sp2 = change_file_new(pp->pcp, sp1->file_name);
+	fstate_src_ty *sp2 = change_file_new(pcp, sp1->file_name);
 	if (!(sp1->mask & pstate_src_usage_mask))
 	    goto yuck;
 	sp2->usage = sp1->usage;
@@ -307,19 +302,19 @@ convert_to_new_format(project_ty *pp)
 	}
     }
     pstate_src_list_type.free(pstate_data->src);
-    pp->pstate_data->src = 0;
+    pstate_data->src = 0;
 
     if (!pstate_data->history)
     {
 	pstate_data->history =
             (pstate_history_list_ty *)pstate_history_list_type.alloc();
     }
-    for (j = 0; j < pstate_data->history->length; ++j)
+    for (size_t j = 0; j < pstate_data->history->length; ++j)
     {
 	pstate_history_ty *hp;
 
 	hp = pstate_data->history->list[j];
-	change_branch_history_new(pp->pcp, hp->delta_number, hp->change_number);
+	change_branch_history_new(pcp, hp->delta_number, hp->change_number);
     }
     pstate_history_list_type.free(pstate_data->history);
     pstate_data->history = 0;
@@ -329,9 +324,9 @@ convert_to_new_format(project_ty *pp)
 	pstate_data->change =
             (pstate_change_list_ty *)pstate_change_list_type.alloc();
     }
-    for (j = 0; j < pstate_data->change->length; ++j)
+    for (size_t j = 0; j < pstate_data->change->length; ++j)
     {
-	change_branch_change_add(pp->pcp, pstate_data->change->list[j], 0);
+	change_branch_change_add(pcp, pstate_data->change->list[j], 0);
     }
     pstate_change_list_type.free(pstate_data->change);
     pstate_data->change = 0;
@@ -339,18 +334,18 @@ convert_to_new_format(project_ty *pp)
     //
     // copy the staff across
     //
-    pstate_data = project_pstate_get(pp);
+    pstate_get();
     if (!pstate_data->administrator)
     {
 	pstate_data->administrator =
 	    (pstate_administrator_list_ty *)
             pstate_administrator_list_type.alloc();
     }
-    for (j = 0; j < pstate_data->administrator->length; ++j)
+    for (size_t j = 0; j < pstate_data->administrator->length; ++j)
     {
 	change_branch_administrator_add
 	(
-	    pp->pcp,
+	    pcp,
 	    pstate_data->administrator->list[j]
 	);
     }
@@ -361,10 +356,10 @@ convert_to_new_format(project_ty *pp)
     {
 	pstate_data->developer =
 	    (pstate_developer_list_ty *)pstate_developer_list_type.alloc();
-     }
-    for (j = 0; j < pstate_data->developer->length; ++j)
+    }
+    for (size_t j = 0; j < pstate_data->developer->length; ++j)
     {
-	change_branch_developer_add(pp->pcp, pstate_data->developer->list[j]);
+	change_branch_developer_add(pcp, pstate_data->developer->list[j]);
     }
     pstate_developer_list_type.free(pstate_data->developer);
     pstate_data->developer = 0;
@@ -374,9 +369,9 @@ convert_to_new_format(project_ty *pp)
 	pstate_data->reviewer =
 	    (pstate_reviewer_list_ty *)pstate_reviewer_list_type.alloc();
     }
-    for (j = 0; j < pstate_data->reviewer->length; ++j)
+    for (size_t j = 0; j < pstate_data->reviewer->length; ++j)
     {
-	change_branch_reviewer_add(pp->pcp, pstate_data->reviewer->list[j]);
+	change_branch_reviewer_add(pcp, pstate_data->reviewer->list[j]);
     }
     pstate_reviewer_list_type.free(pstate_data->reviewer);
     pstate_data->reviewer = 0;
@@ -386,9 +381,9 @@ convert_to_new_format(project_ty *pp)
 	pstate_data->integrator =
 	    (pstate_integrator_list_ty *)pstate_integrator_list_type.alloc();
     }
-    for (j = 0; j < pstate_data->integrator->length; ++j)
+    for (size_t j = 0; j < pstate_data->integrator->length; ++j)
     {
-	change_branch_integrator_add(pp->pcp, pstate_data->integrator->list[j]);
+	change_branch_integrator_add(pcp, pstate_data->integrator->list[j]);
     }
     pstate_integrator_list_type.free(pstate_data->integrator);
     pstate_data->integrator = 0;
@@ -397,7 +392,7 @@ convert_to_new_format(project_ty *pp)
     {
 	change_current_integration_set
 	(
-	    pp->pcp,
+	    pcp,
 	    pstate_data->currently_integrating_change
 	);
 	pstate_data->currently_integrating_change = 0;
@@ -414,14 +409,14 @@ convert_to_new_format(project_ty *pp)
 
     if (pstate_data->version_previous)
     {
-	pp->pcp->cstate_data->version_previous = pstate_data->version_previous;
+	pcp->cstate_data->version_previous = pstate_data->version_previous;
 	pstate_data->version_previous = 0;
     }
 
     //
     // By default we reuse change numbers.
     //
-    change_branch_reuse_change_numbers_set(pp->pcp, 1);
+    change_branch_reuse_change_numbers_set(pcp, 1);
 
     //
     // Phew!  Who would ever have guessed there was so much to do
@@ -431,35 +426,65 @@ convert_to_new_format(project_ty *pp)
 }
 
 
+project_ty::~project_ty()
+{
+    if (pcp)
+	change_free(pcp);
+    assert(name);
+    str_free(name);
+    if (home_path)
+	str_free(home_path);
+    if (baseline_path_unresolved)
+	str_free(baseline_path_unresolved);
+    if (baseline_path)
+	str_free(baseline_path);
+    if (history_path)
+	str_free(history_path);
+    if (info_path)
+	str_free(info_path);
+    if (pstate_path)
+	str_free(pstate_path);
+    if (changes_path)
+	str_free(changes_path);
+    if (pstate_data)
+	pstate_type.free(pstate_data);
+    if (parent)
+	project_free(parent);
+    file_list_invalidate();
+}
+
+
+project_ty::project_ty(string_ty *s) :
+    reference_count(1),
+    name(str_copy(s)),
+    home_path(0),
+    baseline_path_unresolved(0),
+    baseline_path(0),
+    history_path(0),
+    info_path(0),
+    pstate_path(0),
+    changes_path(0),
+    pstate_data(0),
+    is_a_new_file(false),
+    lock_magic(0),
+    pcp(0),
+    uid(-1),
+    gid(-1),
+    parent(0),
+    parent_bn(0)
+{
+    for (size_t j = 0; j < SIZEOF(file_list); ++j)
+	file_list[j] = 0;
+    for (size_t k = 0; k < SIZEOF(file_by_uuid); ++k)
+	file_by_uuid[k] = 0;
+}
+
+
 project_ty *
 project_alloc(string_ty *s)
 {
-    project_ty	    *pp;
-    size_t          n;
-
     trace(("project_alloc(s = \"%s\")\n{\n", s->str_text));
-    pp = (project_ty *)mem_alloc(sizeof(project_ty));
-    pp->reference_count = 1;
-    pp->name = str_copy(s);
-    pp->home_path = 0;
-    pp->baseline_path_unresolved = 0;
-    pp->baseline_path = 0;
-    pp->history_path = 0;
-    pp->info_path = 0;
-    pp->pstate_path = 0;
-    pp->changes_path = 0;
-    pp->pstate_data = 0;
-    pp->is_a_new_file = 0;
-    pp->lock_magic = 0;
-    pp->pcp = 0;
-    pp->uid = -1;
-    pp->gid = -1;
-    pp->parent = 0;
-    pp->parent_bn = 0;
-    for (n = 0; n < SIZEOF(pp->file_list); ++n)
-	pp->file_list[n] = 0;
-    for (n = 0; n < SIZEOF(pp->file_by_uuid); ++n)
-	pp->file_by_uuid[n] = 0;
+    project_ty *pp = new project_ty(s);
     trace(("return %08lX;\n", (long)pp));
     trace(("}\n"));
     return pp;
@@ -478,31 +503,6 @@ project_copy(project_ty *pp)
 }
 
 
-change_ty *
-project_change_get(project_ty *pp)
-{
-    trace(("project_change_get(pp = %08lX)\n{\n", (long)pp));
-    //
-    // It could be an old project.  Make sure the pstate is read in,
-    // and converted if necessary.
-    //
-    if (!pp->parent)
-	project_pstate_get(pp);
-
-    //
-    // If the project change is not yet bound, bind to the trunk
-    // change.	It will already exist.
-    //
-    if (!pp->pcp)
-    {
-	pp->pcp = change_alloc(pp, TRUNK_CHANGE_NUMBER);
-	change_bind_existing(pp->pcp);
-    }
-    trace(("return %08lX;\n}\n", (long)pp->pcp));
-    return pp->pcp;
-}
-
-
 void
 project_free(project_ty *pp)
 {
@@ -511,222 +511,8 @@ project_free(project_ty *pp)
     pp->reference_count--;
     if (pp->reference_count <= 0)
     {
-	if (pp->pcp)
-	    change_free(pp->pcp);
-	assert(pp->name);
-	str_free(pp->name);
-	if (pp->home_path)
-	    str_free(pp->home_path);
-	if (pp->baseline_path_unresolved)
-	    str_free(pp->baseline_path_unresolved);
-	if (pp->baseline_path)
-	    str_free(pp->baseline_path);
-	if (pp->history_path)
-	    str_free(pp->history_path);
-	if (pp->info_path)
-	    str_free(pp->info_path);
-	if (pp->pstate_path)
-	    str_free(pp->pstate_path);
-	if (pp->changes_path)
-	    str_free(pp->changes_path);
-	if (pp->pstate_data)
-	    pstate_type.free(pp->pstate_data);
-	if (pp->parent)
-	    project_free(pp->parent);
-	project_file_list_invalidate(pp);
-	mem_free((char *)pp);
+	delete pp;
     }
-    trace(("}\n"));
-}
-
-
-void
-project_file_list_invalidate(project_ty *pp)
-{
-    size_t          n;
-
-    for (n = 0; n < SIZEOF(pp->file_list); ++n)
-    {
-	if (pp->file_list[n])
-	{
-	    delete pp->file_list[n];
-	    pp->file_list[n] = 0;
-	}
-    }
-    for (n = 0; n < SIZEOF(pp->file_by_uuid); ++n)
-    {
-	if (pp->file_by_uuid[n])
-	{
-	    delete pp->file_by_uuid[n];
-	    pp->file_by_uuid[n] = 0;
-	}
-    }
-}
-
-
-static void
-lock_sync(project_ty *pp)
-{
-    long	    n;
-
-    if (pp->parent)
-	this_is_a_bug();
-    n = lock_magic();
-    if (pp->lock_magic == n)
-	return;
-    pp->lock_magic = n;
-
-    if (pp->pstate_data && !pp->is_a_new_file)
-    {
-	pstate_type.free(pp->pstate_data);
-	pp->pstate_data = 0;
-    }
-    project_file_list_invalidate(pp);
-}
-
-
-static void
-get_the_owner(project_ty *pp)
-{
-    string_ty	    *s;
-
-    //
-    // If the project owner is already established,
-    // don't do anything here.
-    //
-    if (pp->uid >= 0 && pp->gid >= 0)
-	return;
-
-    //
-    // When checking the project home path owner, we append ``/.''
-    // to force the automounter to mount it.  Some automounters
-    // don't actually trigger until the directory lookup happens,
-    // which gives nasty results when we stat the directory to see
-    // who ownes it (the automounter frequently returns 0,0 which
-    // gives a "tampering" error).
-    //
-    os_become_orig();
-    s = str_format("%s/.", project_home_path_get(pp)->str_text);
-    os_owner_query(s, &pp->uid, &pp->gid);
-    str_free(s);
-    os_become_undo();
-
-    //
-    // Make sure the project UID and GID are acceptable.  This mirrors
-    // the tests in aegis/aenpr.c when the project is first created.
-    //
-    if (pp->uid < AEGIS_MIN_UID)
-    {
-	sub_context_ty	*scp;
-
-	scp = sub_context_new();
-	sub_var_set_string(scp, "File_Name", project_home_path_get(pp));
-	sub_var_set_long(scp, "Number1", pp->uid);
-	sub_var_set_long(scp, "Number2", AEGIS_MIN_UID);
-	fatal_intl
-	(
-	    scp,
-	    i18n("$filename: uid $number1 invalid, must be >= $number2")
-	);
-	// NOTREACHED
-	sub_context_delete(scp);
-    }
-    if (pp->gid < AEGIS_MIN_GID)
-    {
-	sub_context_ty	*scp;
-
-	scp = sub_context_new();
-	sub_var_set_string(scp, "File_Name", project_home_path_get(pp));
-	sub_var_set_long(scp, "Number1", pp->gid);
-	sub_var_set_long(scp, "Number2", AEGIS_MIN_GID);
-	fatal_intl
-	(
-	    scp,
-	    i18n("$filename: gid $number1 invalid, must be >= $number2")
-	);
-	// NOTREACHED
-	sub_context_delete(scp);
-    }
-}
-
-
-pstate_ty *
-project_pstate_get(project_ty *pp)
-{
-    trace(("project_pstate_get(pp = %08lX)\n{\n", (long)pp));
-    if (pp->parent)
-	this_is_a_bug();
-    lock_sync(pp);
-    if (!pp->pstate_data)
-    {
-	string_ty	*path;
-
-	path = project_pstate_path_get(pp);
-	pp->is_a_new_file = 0;
-
-	//
-	// can't become the project, because don't know who
-	// the project is, yet.
-	//
-	// This also means we can use UNIX system security
-	// to exclude unwelcome access.
-	//
-	get_the_owner(pp);
-	os_become_orig();
-	os_chown_check(path, 0, pp->uid, pp->gid);
-	pp->pstate_data = pstate_read_file(path);
-	os_become_undo();
-
-	if (!pp->pstate_data->next_test_number)
-	{
-	    sub_context_ty  *scp;
-
-	    scp = sub_context_new();
-	    sub_var_set_string(scp, "File_Name", pp->pstate_path);
-	    sub_var_set_charstar(scp, "FieLD_Name", "next_test_number");
-	    project_fatal
-	    (
-		pp,
-		scp,
-		i18n("$filename: corrupted \"$field_name\" field")
-	    );
-	    // NOTREACHED
-	    sub_context_delete(scp);
-	}
-
-	if (pp->pstate_data->next_change_number)
-	    convert_to_new_format(pp);
-    }
-    trace(("return %08lX;\n", (long)pp->pstate_data));
-    trace(("}\n"));
-    return pp->pstate_data;
-}
-
-
-static void
-waiting_for_lock(void *p)
-{
-    project_ty	    *pp;
-
-    pp = (project_ty *)p;
-    if (user_lock_wait(0))
-	project_error(pp, 0, i18n("waiting for lock"));
-    else
-	project_fatal(pp, 0, i18n("lock not available"));
-}
-
-
-void
-project_pstate_lock_prepare(project_ty *pp)
-{
-    trace(("project_pstate_lock_prepare(pp = %08lX)\n{\n", (long)pp));
-    if (pp->parent)
-    {
-	assert(pp->pcp);
-	change_cstate_lock_prepare(pp->pcp);
-    }
-    else
-	lock_prepare_pstate(pp->name, waiting_for_lock, pp);
     trace(("}\n"));
 }
 
@@ -735,9 +521,7 @@ void
 project_pstate_lock_prepare_top(project_ty *pp)
 {
     trace(("project_pstate_lock_prepare_top(pp = %08lX)\n{\n", (long)pp));
-    while (pp->parent)
-	pp = pp->parent;
-    project_pstate_lock_prepare(pp);
+    pp->trunk_get()->pstate_lock_prepare();
     trace(("}\n"));
 }
 
@@ -759,7 +543,7 @@ void
 project_baseline_read_lock_prepare(project_ty *pp)
 {
     //
-    // A branch's baseline is ``unioned'' with its parent's
+    // A branch's baseline is "unioned" with its parent's
     // baseline, so we need to lock them as well - all the
     // way up the tree.
     //
@@ -773,9 +557,9 @@ project_baseline_read_lock_prepare(project_ty *pp)
 	    waiting_for_baseline_read_lock,
 	    pp
 	);
-	pp = pp->parent;
-	if (!pp)
+	if (pp->is_a_trunk())
 	    break;
+	pp = pp->parent_get();
     }
     trace(("}\n"));
 }
@@ -826,9 +610,8 @@ project_history_lock_prepare(project_ty *pp)
     // branches from trashing each other's history files.
     //
     trace(("project_history_lock_prepare(pp = %08lX)\n{\n", (long)pp));
-    while (pp->parent)
-	pp = pp->parent;
-    lock_prepare_history(pp->name, waiting_for_history_lock, pp);
+    pp = pp->trunk_get();
+    lock_prepare_history(pp->name_get(), waiting_for_history_lock, pp);
     trace(("}\n"));
 }
 
@@ -955,25 +738,27 @@ extract_version_from_project_name(string_ty **name_p, long *buf, int buflen_max,
 
 
 project_ty *
-project_find_branch(project_ty *pp, const char *version_string)
+project_ty::find_branch(const char *version_string)
 {
     long	    version[20];
     int		    version_length;
     int		    j;
 
-    //
-    // As a special case, the ``grandparent'' of a change is
-    // repesented by a branch name of ".." as this is expected to be
-    // the commonest variety of cross branch merge.
-    //
-    if (!strcmp(version_string, "..") && pp->parent)
-	return pp->parent;
+    if (parent)
+    {
+	//
+	// As a special case, the "grandparent" of a change is
+	// repesented by a branch name of ".." as this is expected to be
+	// the commonest variety of cross branch merge.
+	//
+	if (!strcmp(version_string, ".."))
+	    return project_copy(parent);
 
-    //
-    // the version is relative to the trunk of the project
-    //
-    while (pp->parent)
-	pp = pp->parent;
+	//
+	// the version is relative to the trunk of the project
+	//
+	return trunk_get()->find_branch(version_string);
+    }
 
     //
     // break the version string
@@ -1001,10 +786,13 @@ project_find_branch(project_ty *pp, const char *version_string)
 	// NOTREACHED
 	sub_context_delete(scp);
     }
+    if (version_length == 0)
+	return project_copy(this);
 
     //
     // follow the branches down
     //
+    project_ty *pp = this;
     for (j = 0; j < version_length; ++j)
     {
 	long		cn;
@@ -1023,7 +811,7 @@ project_find_branch(project_ty *pp, const char *version_string)
 	    // NOTREACHED
 	    sub_context_delete(scp);
 	}
-	pp = project_bind_branch(pp, cp);
+	pp = pp->bind_branch(cp);
     }
 
     //
@@ -1034,7 +822,7 @@ project_find_branch(project_ty *pp, const char *version_string)
 
 
 void
-project_pstate_write(project_ty *pp)
+project_ty::pstate_write()
 {
     string_ty	    *filename;
     string_ty	    *filename_new;
@@ -1042,38 +830,38 @@ project_pstate_write(project_ty *pp)
     static int	    count;
     int		    compress;
 
-    trace(("project_pstate_write(pp = %08lX)\n{\n", (long)pp));
+    trace(("project_ty::pstate_write(thid = %08lX)\n{\n", (long)this));
 
     //
     // write out the associated change, if it was read in
     //
-    if (pp->pcp)
-	change_cstate_write(pp->pcp);
+    if (pcp)
+	change_cstate_write(pcp);
 
     //
     // write it out
     //
-    compress = project_compress_database_get(pp);
-    if (pp->pstate_data)
+    compress = project_compress_database_get(this);
+    if (pstate_data)
     {
-	filename = project_pstate_path_get(pp);
+	filename = pstate_path_get();
 	filename_new = str_format("%s,%d", filename->str_text, ++count);
 	filename_old = str_format("%s,%d", filename->str_text, ++count);
-	project_become(pp);
+	project_become(this);
 
 	// enums with 0 value not to be printed
 	type_enum_option_set();
 
-	if (pp->is_a_new_file)
+	if (is_a_new_file)
 	{
 	    undo_unlink_errok(filename_new);
-	    pstate_write_file(filename_new, pp->pstate_data, compress);
+	    pstate_write_file(filename_new, pstate_data, compress);
 	    commit_rename(filename_new, filename);
 	}
 	else
 	{
 	    undo_unlink_errok(filename_new);
-	    pstate_write_file(filename_new, pp->pstate_data, compress);
+	    pstate_write_file(filename_new, pstate_data, compress);
 	    commit_rename(filename, filename_old);
 	    commit_rename(filename_new, filename);
 	    commit_unlink_errok(filename_old);
@@ -1083,7 +871,7 @@ project_pstate_write(project_ty *pp)
 	// Change so the project owns it.
 	// (Only needed for new files, but be paranoid.)
 	//
-	os_chmod(filename_new, 0644 & ~project_umask_get(pp));
+	os_chmod(filename_new, 0644 & ~project_umask_get(this));
 	project_become_undo();
 	str_free(filename_new);
 	str_free(filename_old);
@@ -1096,107 +884,22 @@ void
 project_pstate_write_top(project_ty *pp)
 {
     trace(("project_pstate_write_top(pp = %08lX)\n{\n", (long)pp));
-    while (pp->parent)
-	pp = pp->parent;
-    project_pstate_write(pp);
+    pp->trunk_get()->pstate_write();
     trace(("}\n"));
-}
-
-
-string_ty *
-project_home_path_get(project_ty *pp)
-{
-    trace(("project_home_path_get(pp = %08lX)\n{\n", (long)pp));
-    if (pp->parent)
-	this_is_a_bug();
-    if (!pp->home_path)
-    {
-	string_ty	*s;
-
-	//
-	// it is an error if the project name is not known
-	//
-	s = gonzo_project_home_path_from_name(pp->name);
-	if (!s)
-	{
-	    sub_context_ty  *scp;
-
-	    scp = sub_context_new();
-	    sub_var_set_string(scp, "Name", pp->name);
-	    fatal_intl(scp, i18n("no $name project"));
-	    // NOTREACHED
-	    sub_context_delete(scp);
-	}
-
-	//
-	// To cope with automounters, directories are stored as given,
-	// or are derived from the home directory in the passwd file.
-	// Within aegis, pathnames have their symbolic links resolved,
-	// and any comparison of paths is done on this "system idea"
-	// of the pathname.
-	//
-	pp->home_path = str_copy(s);
-    }
-    trace(("return \"%s\";\n", pp->home_path->str_text));
-    trace(("}\n"));
-    return pp->home_path;
 }
 
 
 string_ty *
 project_Home_path_get(project_ty *pp)
 {
-    while (pp->parent)
-	pp = pp->parent;
-    return project_home_path_get(pp);
-}
-
-
-void
-project_home_path_set(project_ty *pp, string_ty *s)
-{
-    //
-    // To cope with automounters, directories are stored as given,
-    // or are derived from the home directory in the passwd file.
-    // Within aegis, pathnames have their symbolic links resolved,
-    // and any comparison of paths is done on this "system idea"
-    // of the pathname.
-    //
-    trace(("project_home_path_set(pp = %08lX, s = \"%s\")\n{\n", (long)pp,
-	s->str_text));
-    if (pp->parent)
-	this_is_a_bug();
-    if (pp->home_path)
-    {
-	sub_context_ty	*scp;
-
-	scp = sub_context_new();
-	sub_var_set_charstar
-	(
-	    scp,
-	    "Name",
-	    arglex_token_name(arglex_token_directory)
-	);
-	fatal_intl(scp, i18n("duplicate $name option"));
-	// NOTREACHED
-	sub_context_delete(scp);
-    }
-    pp->home_path = str_copy(s);
-
-    //
-    // set it in the trunk change, too
-    //
-    change_development_directory_set(project_change_get(pp), s);
-    trace(("}\n"));
+    return pp->trunk_get()->home_path_get();
 }
 
 
 string_ty *
 project_top_path_get(project_ty *pp, int resolve)
 {
-    change_ty	    *cp;
-
-    cp = project_change_get(pp);
+    change_ty *cp = pp->change_get();
     return change_top_path_get(cp, resolve);
 }
 
@@ -1206,130 +909,6 @@ project_rss_path_get(project_ty *pp, bool resolve)
 {
     string_ty *project_top_path = project_top_path_get(pp, resolve);
     return os_path_cat(nstring(project_top_path), "rss");
-}
-
-
-string_ty *
-project_info_path_get(project_ty *pp)
-{
-    trace(("project_info_path_get(pp = %08lX)\n{\n", (long)pp));
-    if (pp->parent)
-	this_is_a_bug();
-    if (!pp->info_path)
-    {
-	pp->info_path =
-	    str_format("%s/info", project_home_path_get(pp)->str_text);
-    }
-    trace(("return \"%s\";\n", pp->info_path->str_text));
-    trace(("}\n"));
-    return pp->info_path;
-}
-
-
-string_ty *
-project_changes_path_get(project_ty *pp)
-{
-    trace(("project_changes_path_get(pp = %08lX)\n{\n", (long)pp));
-    assert(!pp->parent || pp->changes_path);
-    if (!pp->changes_path)
-    {
-	pp->changes_path =
-	    str_format("%s/change", project_info_path_get(pp)->str_text);
-    }
-    trace(("return \"%s\";\n", pp->changes_path->str_text));
-    trace(("}\n"));
-    return pp->changes_path;
-}
-
-
-string_ty *
-project_change_path_get(project_ty *pp, long n)
-{
-    string_ty	    *s;
-
-    trace(("project_change_path_get(pp = %08lX, n = %ld)\n{\n", (long)pp, n));
-    n = magic_zero_decode(n);
-    if (n == TRUNK_CHANGE_NUMBER)
-	s = str_format("%s/trunk", project_info_path_get(pp)->str_text);
-    else
-    {
-	s =
-	    str_format
-	    (
-		"%s/%ld/%3.3ld",
-		project_changes_path_get(pp)->str_text,
-		n / 100,
-		n
-	    );
-    }
-    trace(("return \"%s\";\n", s->str_text));
-    trace(("}\n"));
-    return s;
-}
-
-
-string_ty *
-project_pstate_path_get(project_ty *pp)
-{
-    trace(("project_pstate_path_get(pp = %08lX)\n{\n", (long)pp));
-    if (pp->parent)
-	this_is_a_bug();
-    if (!pp->pstate_path)
-    {
-	pp->pstate_path =
-	    str_format("%s/state", project_info_path_get(pp)->str_text);
-    }
-    trace(("return \"%s\";\n", pp->pstate_path->str_text));
-    trace(("}\n"));
-    return pp->pstate_path;
-}
-
-
-string_ty *
-project_baseline_path_get(project_ty *pp, int resolve)
-{
-    string_ty	    *result;
-
-    //
-    // To cope with automounters, directories are stored as given,
-    // or are derived from the home directory in the passwd file.
-    // Within aegis, pathnames have their symbolic links resolved,
-    // and any comparison of paths is done on this "system idea"
-    // of the pathname.
-    //
-    trace(("project_baseline_path_get(pp = %08lX)\n{\n", (long)pp));
-    if (!pp->baseline_path_unresolved)
-    {
-	string_ty	*dd;
-
-	dd = project_top_path_get(pp, 0);
-	pp->baseline_path_unresolved = str_format("%s/baseline", dd->str_text);
-    }
-    if (!resolve)
-	result = pp->baseline_path_unresolved;
-    else
-    {
-	if (!pp->baseline_path)
-	{
-	    project_become(pp);
-	    pp->baseline_path = os_pathname(pp->baseline_path_unresolved, 1);
-	    project_become_undo();
-	}
-	result = pp->baseline_path;
-    }
-    trace(("return \"%s\";\n", result->str_text));
-    trace(("}\n"));
-    return result;
-}
-
-
-string_ty *
-project_name_get(project_ty *pp)
-{
-    trace(("project_name_get(pp = %08lX)\n{\n", (long)pp));
-    trace(("return \"%s\";\n", pp->name->str_text));
-    trace(("}\n"));
-    return pp->name;
 }
 
 
@@ -1438,9 +1017,7 @@ project_verbose(project_ty *pp, sub_context_ty *scp, const char *s)
 void
 project_change_append(project_ty *pp, long cn, int is_a_branch)
 {
-    change_ty	    *cp;
-
-    cp = project_change_get(pp);
+    change_ty *cp = pp->change_get();
     change_branch_change_add(cp, cn, is_a_branch);
 }
 
@@ -1448,9 +1025,7 @@ project_change_append(project_ty *pp, long cn, int is_a_branch)
 void
 project_change_delete(project_ty *pp, long cn)
 {
-    change_ty	    *cp;
-
-    cp = project_change_get(pp);
+    change_ty *cp = pp->change_get();
     change_branch_change_remove(cp, cn);
 }
 
@@ -1458,9 +1033,7 @@ project_change_delete(project_ty *pp, long cn)
 int
 project_change_number_in_use(project_ty *pp, long cn)
 {
-    change_ty	    *cp;
-
-    cp = project_change_get(pp);
+    change_ty *cp = pp->change_get();
     return change_branch_change_number_in_use(cp, cn);
 }
 
@@ -1471,10 +1044,12 @@ project_version_short_get(project_ty *pp)
     string_ty	    *s;
 
     trace(("project_version_short_get(pp = %08lX)\n{\n", (long)pp));
-    if (pp->parent)
+    if (!pp->is_a_trunk())
     {
-	assert(pp->parent_bn > 0 || pp->parent_bn == MAGIC_ZERO);
-	s = project_version_short_get(pp->parent);
+	assert(pp->parent_branch_number_get() > 0
+               ||
+               pp->parent_branch_number_get() == MAGIC_ZERO);
+	s = project_version_short_get(pp->parent_get());
 	if (s->str_length)
 	{
 	    string_ty	    *s2;
@@ -1485,7 +1060,7 @@ project_version_short_get(project_ty *pp)
 		(
 		    "%s.%ld",
 		    s->str_text,
-		    magic_zero_decode(pp->parent_bn)
+		    magic_zero_decode(pp->parent_branch_number_get())
 		);
 	    str_free(s);
 	    s = s2;
@@ -1493,15 +1068,18 @@ project_version_short_get(project_ty *pp)
 	else
 	{
 	    str_free(s);
-	    s = str_format("%ld", magic_zero_decode(pp->parent_bn));
+	    s =
+		str_format
+		(
+		    "%ld",
+		    magic_zero_decode(pp->parent_branch_number_get())
+		);
 	}
     }
     else
     {
-	pstate_ty	*pstate_data;
-
-	project_change_get(pp); // make sure is in memory
-	pstate_data = project_pstate_get(pp);
+	pp->change_get(); // make sure is in memory
+	pstate_ty *pstate_data = pp->pstate_get();
 	if (pstate_data->version_major || pstate_data->version_minor)
 	{
 	    //
@@ -1527,13 +1105,12 @@ project_version_short_get(project_ty *pp)
 string_ty *
 project_version_get(project_ty *pp)
 {
-    change_ty	    *cp;
     long	    dn;
     string_ty	    *result;
     string_ty	    *tmp;
 
     trace(("project_version_get(pp = %08lX)\n{\n", (long)pp));
-    cp = project_change_get(pp);
+    change_ty *cp = pp->change_get();
     dn = change_history_delta_latest(cp);
     tmp = project_version_short_get(pp);
     result = str_format("%s.D%3.3ld", tmp->str_text, dn);
@@ -1544,35 +1121,12 @@ project_version_get(project_ty *pp)
 }
 
 
-int
-project_uid_get(project_ty *pp)
-{
-    while (pp->parent)
-	pp = pp->parent;
-    get_the_owner(pp);
-    return pp->uid;
-}
-
-
-int
-project_gid_get(project_ty *pp)
-{
-    while (pp->parent)
-	pp = pp->parent;
-    get_the_owner(pp);
-    return pp->gid;
-}
-
-
 user_ty *
 project_user(project_ty *pp)
 {
-    user_ty	    *up;
-
     trace(("project_user(pp = %08lX)\n{\n", (long)pp));
-    while (pp->parent)
-	pp = pp->parent;
-    up = user_numeric(pp, project_uid_get(pp));
+    pp = pp->trunk_get();
+    user_ty *up = user_numeric(pp, pp->uid_get());
     trace(("return %08lX;\n", (long)up));
     trace(("}\n"));
     return up;
@@ -1607,9 +1161,8 @@ project_is_readable(project_ty *pp)
     string_ty	    *s;
     int		    err;
 
-    while (pp->parent)
-	pp = pp->parent;
-    s = project_pstate_path_get(pp);
+    pp = pp->trunk_get();
+    s = pp->pstate_path_get();
     os_become_orig();
     err = os_readable(s);
     os_become_undo();
@@ -1626,9 +1179,8 @@ project_next_test_number_get(project_ty *pp)
 
     trace(("project_next_test_number_get(pp = %08lX)\n{\n", (long)pp));
     skip = project_skip_unlucky_get(pp);
-    while (pp->parent)
-	pp = pp->parent;
-    pstate_data = project_pstate_get(pp);
+    pp = pp->trunk_get();
+    pstate_data = pp->pstate_get();
     result = pstate_data->next_test_number;
     if (skip)
 	result = skip_unlucky(result);
@@ -1642,9 +1194,7 @@ project_next_test_number_get(project_ty *pp)
 long
 project_minimum_change_number_get(project_ty *pp)
 {
-    change_ty	    *cp;
-
-    cp = project_change_get(pp);
+    change_ty *cp = pp->change_get();
     return change_branch_minimum_change_number_get(cp);
 }
 
@@ -1652,9 +1202,7 @@ project_minimum_change_number_get(project_ty *pp)
 void
 project_minimum_change_number_set(project_ty *pp, long n)
 {
-    change_ty	    *cp;
-
-    cp = project_change_get(pp);
+    change_ty *cp = pp->change_get();
     change_branch_minimum_change_number_set(cp, n);
 }
 
@@ -1662,7 +1210,7 @@ project_minimum_change_number_set(project_ty *pp, long n)
 bool
 project_reuse_change_numbers_get(project_ty *pp)
 {
-    change_ty *cp = project_change_get(pp);
+    change_ty *cp = pp->change_get();
     return change_branch_reuse_change_numbers_get(cp);
 }
 
@@ -1670,7 +1218,7 @@ project_reuse_change_numbers_get(project_ty *pp)
 void
 project_reuse_change_numbers_set(project_ty *pp, bool n)
 {
-    change_ty *cp = project_change_get(pp);
+    change_ty *cp = pp->change_get();
     change_branch_reuse_change_numbers_set(cp, n);
 }
 
@@ -1678,9 +1226,7 @@ project_reuse_change_numbers_set(project_ty *pp, bool n)
 long
 project_minimum_branch_number_get(project_ty *pp)
 {
-    change_ty	    *cp;
-
-    cp = project_change_get(pp);
+    change_ty *cp = pp->change_get();
     return change_branch_minimum_branch_number_get(cp);
 }
 
@@ -1688,9 +1234,7 @@ project_minimum_branch_number_get(project_ty *pp)
 void
 project_minimum_branch_number_set(project_ty *pp, long n)
 {
-    change_ty	    *cp;
-
-    cp = project_change_get(pp);
+    change_ty *cp = pp->change_get();
     change_branch_minimum_branch_number_set(cp, n);
 }
 
@@ -1698,7 +1242,7 @@ project_minimum_branch_number_set(project_ty *pp, long n)
 bool
 project_skip_unlucky_get(project_ty *pp)
 {
-    change_ty *cp = project_change_get(pp);
+    change_ty *cp = pp->change_get();
     return change_branch_skip_unlucky_get(cp);
 }
 
@@ -1706,7 +1250,7 @@ project_skip_unlucky_get(project_ty *pp)
 void
 project_skip_unlucky_set(project_ty *pp, bool n)
 {
-    change_ty *cp = project_change_get(pp);
+    change_ty *cp = pp->change_get();
     change_branch_skip_unlucky_set(cp, n);
 }
 
@@ -1738,4 +1282,50 @@ project_name_ok(string_ty *s)
 	    return 0;
     }
     return 1;
+}
+
+
+project::~project()
+{
+    assert(ref);
+    if (ref)
+    {
+	project_free(ref);
+	ref = 0;
+    }
+}
+
+
+project::project(const nstring &arg) :
+    ref(project_alloc(arg.get_ref()))
+{
+    assert(ref);
+}
+
+
+project::project(string_ty *arg) :
+    ref(project_alloc(arg))
+{
+    assert(ref);
+}
+
+
+project::project(const project &arg) :
+    ref(project_copy(arg.ref))
+{
+    assert(ref);
+}
+
+
+project &
+project::operator=(const project &arg)
+{
+    assert(ref);
+    assert(arg.ref);
+    if (this != &arg && ref != arg.ref)
+    {
+	project_free(ref);
+	ref = project_copy(arg.ref);
+    }
+    return *this;
 }

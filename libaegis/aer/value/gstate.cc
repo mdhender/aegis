@@ -1,6 +1,6 @@
 //
 //	aegis - project change supervisor
-//	Copyright (C) 1994, 1996, 1997, 1999, 2000, 2003-2005 Peter Miller;
+//	Copyright (C) 1994, 1996, 1997, 1999, 2000, 2003-2006 Peter Miller;
 //	All rights reserved.
 //
 //	This program is free software; you can redistribute it and/or modify
@@ -20,21 +20,21 @@
 // MANIFEST: functions to manipulate gstate values
 //
 
-#include <ac/string.h> // for strerror()
+#include <common/ac/string.h> // for strerror()
 
-#include <aer/value/error.h>
-#include <aer/value/gstate.h>
-#include <aer/value/integer.h>
-#include <aer/value/list.h>
-#include <aer/value/pstate.h>
-#include <aer/value/string.h>
-#include <aer/value/struct.h>
-#include <change.h>
-#include <error.h>
-#include <project.h>
-#include <str_list.h>
-#include <sub.h>
-#include <trace.h>
+#include <libaegis/aer/value/error.h>
+#include <libaegis/aer/value/gstate.h>
+#include <libaegis/aer/value/integer.h>
+#include <libaegis/aer/value/list.h>
+#include <libaegis/aer/value/pstate.h>
+#include <libaegis/aer/value/string.h>
+#include <libaegis/aer/value/struct.h>
+#include <libaegis/change.h>
+#include <common/error.h>
+#include <libaegis/project.h>
+#include <common/str_list.h>
+#include <libaegis/sub.h>
+#include <common/trace.h>
 
 
 struct rpt_value_gstate_ty
@@ -88,7 +88,7 @@ grab_one(string_ty *project_name)
     // to put in the structure
     //
     pp = project_alloc(project_name);
-    project_bind_existing(pp);
+    pp->bind_existing();
     vp = rpt_value_struct((struct symtab_ty *)0);
 
     name = str_from_c("name");
@@ -116,7 +116,7 @@ grab_one(string_ty *project_name)
 	// The development directory of the project change is
 	// the one which contains the trunk or branch baseline.
 	//
-	cp = project_change_get(pp);
+	cp = pp->change_get();
 	if (change_is_being_developed(cp))
 	{
 	    dd = change_development_directory_get(cp, 0);

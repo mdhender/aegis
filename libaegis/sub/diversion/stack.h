@@ -1,6 +1,6 @@
 //
 //	aegis - project change supervisor
-//	Copyright (C) 2004 Peter Miller;
+//	Copyright (C) 2004, 2005 Peter Miller;
 //	All rights reserved.
 //
 //	This program is free software; you can redistribute it and/or modify
@@ -23,10 +23,8 @@
 #ifndef LIBAEGIS_SUB_DIVERSION_STACK_H
 #define LIBAEGIS_SUB_DIVERSION_STACK_H
 
-#pragma interface "sub_diversion_stack"
-
-#include <ac/stddef.h>
-#include <sub/diversion.h>
+#include <common/ac/stddef.h>
+#include <libaegis/sub/diversion.h>
 
 /**
   * The sub_diversion_stack class is used to represent a push-down stack

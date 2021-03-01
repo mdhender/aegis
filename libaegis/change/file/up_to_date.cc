@@ -1,6 +1,6 @@
 //
 //	aegis - project change supervisor
-//	Copyright (C) 1999, 2001-2004 Peter Miller;
+//	Copyright (C) 1999, 2001-2005 Peter Miller;
 //	All rights reserved.
 //
 //	This program is free software; you can redistribute it and/or modify
@@ -20,11 +20,11 @@
 // MANIFEST: functions to manipulate up_to_dates
 //
 
-#include <change/file.h>
-#include <error.h> // for assert
-#include <project.h>
-#include <project/file.h>
-#include <trace.h>
+#include <libaegis/change/file.h>
+#include <common/error.h> // for assert
+#include <libaegis/project.h>
+#include <libaegis/project/file.h>
+#include <common/trace.h>
 
 
 int

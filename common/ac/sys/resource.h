@@ -1,0 +1,44 @@
+//
+//	aegis - project change supervisor
+//	Copyright (C) 2005 Peter Miller;
+//	All rights reserved.
+//
+//	This program is free software; you can redistribute it and/or modify
+//	it under the terms of the GNU General Public License as published by
+//	the Free Software Foundation; either version 2 of the License, or
+//	(at your option) any later version.
+//
+//	This program is distributed in the hope that it will be useful,
+//	but WITHOUT ANY WARRANTY; without even the implied warranty of
+//	MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+//	GNU General Public License for more details.
+//
+//	You should have received a copy of the GNU General Public License
+//	along with this program; if not, write to the Free Software
+//	Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111, USA.
+//
+// MANIFEST: insulation for sys/resource.h vagueries
+//
+
+#ifndef COMMON_AC_SYS_RESOURCE_H
+#define COMMON_AC_SYS_RESOURCE_H
+
+//
+// MacOS X needs time.h to be included first
+//
+#include <common/ac/time.h>
+
+#include <sys/resource.h>
+
+//
+// MacOS X does not define RLIMIT_AS
+//
+#ifndef RLIMIT_AS
+#  ifdef RLIMIT_MEMLOCK
+#    define RLIMIT_AS RLIMIT_MEMLOCK
+#  else
+#    error Nothing defined for RLIMIT_AS
+#  endif
+#endif
+
+#endif // COMMON_AC_SYS_RESOURCE_H

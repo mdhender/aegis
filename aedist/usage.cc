@@ -20,11 +20,11 @@
 // MANIFEST: implementation of the usage class
 //
 
-#include <ac/stdio.h>
-#include <ac/stdlib.h>
+#include <common/ac/stdio.h>
+#include <common/ac/stdlib.h>
 
-#include <progname.h>
-#include <usage.h>
+#include <common/progname.h>
+#include <aeannotate/usage.h>
 
 
 void

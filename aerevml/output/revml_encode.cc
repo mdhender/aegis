@@ -20,11 +20,9 @@
 // MANIFEST: implementation of the output_revml_encode class
 //
 
-#pragma implementation "output_revml_encode"
+#include <common/ac/ctype.h>
 
-#include <ac/ctype.h>
-
-#include <output/revml_encode.h>
+#include <aerevml/output/revml_encode.h>
 
 
 output_revml_encode::~output_revml_encode()

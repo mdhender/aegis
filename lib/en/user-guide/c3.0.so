@@ -158,7 +158,7 @@ on the values for this field.
 The default setting is for Aegis to reject filenames which contain shell
 special characters.  This ensures that filenames may be substituted
 into the commands without worrying about whether this is safe.  If you
-set the \fIshell_safe_filenames\fP field of the project \fIconfig\fP
+set the \fIshell_safe_filenames\fP field of the project \fIaegis.conf\fP
 file to \f(CWfalse\fP, you will need to surround filenames with the
 \f[CW]${quote\fP \fIfilename\fP\f[CW]}\fP substitution.  This will only
 quote filenames which actually need to be quoted, so users usually will

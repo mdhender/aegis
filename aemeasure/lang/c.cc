@@ -20,14 +20,14 @@
 // MANIFEST: functions to manipulate cs
 //
 
-#include <ac/ctype.h>
+#include <common/ac/ctype.h>
 
-#include <end_with.h>
-#include <error.h>
-#include <getc_special.h>
-#include <lang/c.h>
-#include <stracc.h>
-#include <symtab.h>
+#include <aemeasure/end_with.h>
+#include <common/error.h>
+#include <aemeasure/getc_special.h>
+#include <aemeasure/lang/c.h>
+#include <common/stracc.h>
+#include <common/symtab.h>
 
 
 static FILE     *fp;

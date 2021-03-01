@@ -1,6 +1,6 @@
 //
 //	aegis - project change supervisor
-//	Copyright (C) 2004, 2005 Peter Miller;
+//	Copyright (C) 2004-2006 Peter Miller;
 //	All rights reserved.
 //
 //	This program is free software; you can redistribute it and/or modify
@@ -35,53 +35,40 @@
 // as intended for standard error, the way that the E response does).
 //
 
-#include <ac/string.h>
+#include <common/ac/string.h>
 
-#include <error.h> // for assert
-#include <output.h>
-#include <response/error.h>
-#include <response/private.h>
+#include <common/error.h> // for assert
+#include <libaegis/output.h>
+#include <aecvsserver/response/error.h>
 
 
-struct response_error_ty
+response_error::~response_error()
 {
-    response_ty     inherited;
-    string_ty       *message;
-    string_ty       *extra;
-};
-
-
-static void
-destructor(response_ty *rp)
-{
-    response_error_ty *rep;
-
-    rep = (response_error_ty *)rp;
-    str_free(rep->message);
-    rep->message = 0;
-    if (rep->extra)
+    str_free(message);
+    message = 0;
+    if (extra_text)
     {
-	str_free(rep->extra);
-	rep->extra = 0;
+	str_free(extra_text);
+	extra_text = 0;
     }
 }
 
 
-static void
-write(response_ty *rp, output_ty *op)
+response_error::response_error(string_ty *arg1, string_ty *arg2) :
+    message(arg1),
+    extra_text(arg2)
 {
-    response_error_ty *rep;
-    const char      *lhs;
-    const char      *cp;
+}
 
-    rep = (response_error_ty *)rp;
-    lhs = rep->extra ? rep->extra->str_text : "";
-    cp = rep->message->str_text;
+
+void
+response_error::write(output_ty *op)
+{
+    const char *lhs = extra_text ? extra_text->str_text : "";
+    const char *cp = message->str_text;
     for (;;)
     {
-	const char      *ep;
-
-	ep = strchr(cp, '\n');
+	const char *ep = strchr(cp, '\n');
 	if (!ep)
 	    break;
 	op->fprintf("E %.*s\n", (int)(ep - cp), cp);
@@ -91,52 +78,24 @@ write(response_ty *rp, output_ty *op)
 }
 
 
-static const response_method_ty vtbl =
+response_code_ty
+response_error::code_get()
+    const
 {
-    sizeof(response_error_ty),
-    destructor,
-    write,
-    response_code_error,
-    1, // flushable
-};
-
-
-response_ty *
-response_error_new_v(const char *fmt, va_list ap)
-{
-    response_ty     *rp;
-    response_error_ty *rep;
-
-    assert(fmt);
-    rp = response_new(&vtbl);
-    rep = (response_error_ty *)rp;
-    rep->message = str_vformat(fmt, ap);
-    rep->extra = 0;
-    return rp;
+    return response_code_error;
 }
 
 
-response_ty *
-response_error_new(const char *fmt, ...)
+bool
+response_error::flushable()
+    const
 {
-    va_list         ap;
-    response_ty     *rp;
-
-    assert(fmt);
-    va_start(ap, fmt);
-    rp = response_error_new_v(fmt, ap);
-    va_end(ap);
-    return rp;
+    return true;
 }
 
 
 void
-response_error_extra(response_ty *rp, const char *extra)
+response_error::extra(string_ty *arg)
 {
-    response_error_ty *rep;
-
-    if (rp->vptr != &vtbl)
-	return;
-    rep = (response_error_ty *)rp;
-    rep->extra = str_from_c(extra);
+    extra_text = arg;
 }

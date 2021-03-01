@@ -1,6 +1,6 @@
 //
 //      aegis - project change supervisor
-//      Copyright (C) 1991-1995, 1999, 2002-2004 Peter Miller;
+//      Copyright (C) 1991-1995, 1999, 2002-2005 Peter Miller;
 //      All rights reserved.
 //
 //      This program is free software; you can redistribute it and/or modify
@@ -20,20 +20,20 @@
 // MANIFEST: functions to store and enact file operations on transaction abort
 //
 
-#include <error.h>
-#include <mem.h>
-#include <os.h>
-#include <quit/action/undo.h>
-#include <sub.h>
-#include <trace.h>
-#include <undo.h>
-#include <undo/item/chmod_errok.h>
-#include <undo/item/chmod.h>
-#include <undo/item/message.h>
-#include <undo/item/rename.h>
-#include <undo/item/rmdir_bg.h>
-#include <undo/item/rmdir_errok.h>
-#include <undo/item/unlink_errok.h>
+#include <common/error.h>
+#include <common/mem.h>
+#include <libaegis/os.h>
+#include <libaegis/quit/action/undo.h>
+#include <libaegis/sub.h>
+#include <common/trace.h>
+#include <libaegis/undo.h>
+#include <libaegis/undo/item/chmod_errok.h>
+#include <libaegis/undo/item/chmod.h>
+#include <libaegis/undo/item/message.h>
+#include <libaegis/undo/item/rename.h>
+#include <libaegis/undo/item/rmdir_bg.h>
+#include <libaegis/undo/item/rmdir_errok.h>
+#include <libaegis/undo/item/unlink_errok.h>
 
 
 quit_action_undo undo_quitter;

@@ -1,6 +1,6 @@
 //
 //	aegis - project change supervisor
-//	Copyright (C) 2004, 2005 Peter Miller;
+//	Copyright (C) 2004-2006 Peter Miller;
 //	All rights reserved.
 //
 //	This program is free software; you can redistribute it and/or modify
@@ -20,27 +20,26 @@
 // MANIFEST: implementation of the main class
 //
 
-#include <ac/stdio.h>
-#include <ac/stdlib.h>
+#include <common/ac/stdio.h>
+#include <common/ac/stdlib.h>
 
-#include <arglex2.h>
-#include <arglex/change.h>
-#include <arglex/project.h>
-#include <change.h>
-#include <env.h>
-#include <error.h> // for assert
-#include <language.h>
-#include <help.h>
-#include <os.h>
-#include <option.h>
-#include <progname.h>
-#include <project.h>
-#include <quit.h>
-#include <r250.h>
-#include <rsrc_limits.h>
-#include <trace.h>
-#include <user.h>
-#include <version.h>
+#include <libaegis/arglex2.h>
+#include <libaegis/arglex/change.h>
+#include <libaegis/arglex/project.h>
+#include <libaegis/change.h>
+#include <common/env.h>
+#include <common/error.h> // for assert
+#include <common/language.h>
+#include <libaegis/help.h>
+#include <libaegis/os.h>
+#include <libaegis/option.h>
+#include <common/progname.h>
+#include <libaegis/project.h>
+#include <common/quit.h>
+#include <common/rsrc_limits.h>
+#include <common/trace.h>
+#include <libaegis/user.h>
+#include <libaegis/version.h>
 
 enum
 {
@@ -170,7 +169,7 @@ prompt_main(void)
 	project_name = user_default_project();
     project_ty *pp = project_alloc(project_name);
     str_free(project_name);
-    project_bind_existing(pp);
+    pp->bind_existing();
 
     //
     // locate user data
@@ -206,7 +205,8 @@ prompt_main(void)
     case cstate_state_being_developed:
     case cstate_state_being_integrated:
 	// Is a build required?
-	build_needed = (cstate_data->build_time == 0);
+	build_needed =
+	    change_build_required(cp) && (cstate_data->build_time == 0);
 	test_needed =
 	    (cstate_data->test_time == 0 && !cstate_data->test_exempt);
 	test_baseline_needed =
@@ -258,7 +258,6 @@ main(int argc, char **argv)
 {
     resource_limits_init();
     clear_attributes();
-    r250_init();
     os_become_init_mortal();
     arglex2_init(argc, argv);
     env_initialize();

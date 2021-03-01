@@ -1,6 +1,6 @@
 '\" t
 .\"	aegis - project change supervisor
-.\"	Copyright (C) 1991-1994, 1996, 1998, 1999, 2002 Peter Miller;
+.\"	Copyright (C) 1991-1994, 1996, 1998, 1999, 2002, 2005 Peter Miller;
 .\"	All rights reserved.
 .\"
 .\"	This program is free software; you can redistribute it and/or modify
@@ -98,20 +98,20 @@ You may specify the project version in two ways:
 1.
 The version number may be implicit in the project name,
 in which case the version numbers will be stripped off.
-For example, ``aenpr example.1.2''
-will create a project called ``example''
+For example, \[lq]aenpr example.1.2\[rq]
+will create a project called \[lq]example\[rq]
 with branch number 1 created, and sub-branch 2 of branch 1 created.
 .TP 3n
 2.
 The version number may be stated explicitly,
 in which case it will be subdivided for branch numbers.
-For example, ``aenpr example -version 1.2''
-will create a project called ``example''
+For example, \[lq]aenpr example -version 1.2\[rq]
+will create a project called \[lq]example\[rq]
 with branch number 1 created, and sub-branch 2 of branch 1 created.
 .PP
 In each case,
 these branches may be named wherever a project name may be given,
-such as ``-p example.1'' and ``-p example-1.2''.
+such as \[lq]-p example.1\[rq] and \[lq]-p example-1.2\[rq].
 The actual punctuation character is unimportant.
 .PP
 You may have any depth of version numbers you like.
@@ -119,7 +119,7 @@ Both methods of specifying version numbers may be used,
 and they will be combined.
 If you want no version numbers at all,
 use \fB\-version\fP with a single dash as the argument,
-as in ``\f(CW\-version \-\fP''
+as in \[lq]\f(CW\-version \-\fP\[rq]
 .PP
 If no version number is given,
 either explicitly or implicitly,
@@ -148,7 +148,7 @@ This option may be used to re-attach a project detached using \fIaermpr
 This option may be used to specify the version number
 for the project.
 Version numbers are implemented as branches.
-Use a single dash (``\f(CW\-\fP'') as the argument
+Use a single dash (\[lq]\f(CW\-\fP\[rq]) as the argument
 if you want no version branches created.
 .so o_wait.so
 .so o__rules.so

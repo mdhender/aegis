@@ -1,6 +1,6 @@
 //
 //	aegis - project change supervisor
-//	Copyright (C) 2003, 2004 Peter Miller;
+//	Copyright (C) 2003-2006 Peter Miller;
 //	All rights reserved.
 //
 //	This program is free software; you can redistribute it and/or modify
@@ -20,20 +20,20 @@
 // MANIFEST: functions to manipulate filess
 //
 
-#include <ac/stdio.h>
-#include <ac/string.h>
+#include <common/ac/stdio.h>
+#include <common/ac/string.h>
 
-#include <ael/attribu_list.h>
-#include <attribute.h>
-#include <change.h>
-#include <change/file.h>
-#include <emit/edit_number.h>
-#include <error.h> // for assert
-#include <get/change/files.h>
-#include <http.h>
-#include <project.h>
-#include <project/file.h>
-#include <str_list.h>
+#include <libaegis/ael/attribu_list.h>
+#include <libaegis/attribute.h>
+#include <libaegis/change.h>
+#include <libaegis/change/file.h>
+#include <aeget/emit/edit_number.h>
+#include <common/error.h> // for assert
+#include <aeget/get/change/files.h>
+#include <aeget/http.h>
+#include <libaegis/project.h>
+#include <libaegis/project/file.h>
+#include <common/str_list.h>
 
 
 void
@@ -45,7 +45,7 @@ get_change_files(change_ty *cp, string_ty *filename, string_list_ty *modifier)
 	fstate_src_ty   *src;
 
 	if (cp->bogus)
-	    src = project_file_nth(cp->pp, j, view_path_simple);
+	    src = cp->pp->file_nth(j, view_path_simple);
 	else
 	    src = change_file_nth(cp, j, view_path_first);
 	if (!src)
@@ -101,7 +101,7 @@ get_change_files(change_ty *cp, string_ty *filename, string_list_ty *modifier)
 	fstate_src_ty   *src;
 
 	if (cp->bogus)
-	    src = project_file_nth(cp->pp, file_num, view_path_simple);
+	    src = cp->pp->file_nth(file_num, view_path_simple);
 	else
 	    src = change_file_nth(cp, file_num, view_path_first);
 	if (!src)
@@ -116,7 +116,7 @@ get_change_files(change_ty *cp, string_ty *filename, string_list_ty *modifier)
 	printf("<td valign=top>%s</td>\n", file_usage_ename(src->usage));
 	printf("<td valign=top>%s</td>\n", file_action_ename(src->action));
 	printf("<td valign=top align=right>\n");
-	emit_edit_number(cp, src);
+	emit_edit_number(cp, src, 0);
 	printf("</td>\n");
 	for (size_t k = 0; k < attr_name.nstrings; ++k)
 	{
@@ -189,6 +189,18 @@ get_change_files(change_ty *cp, string_ty *filename, string_list_ty *modifier)
     printf("Listed %ld files.\n", (long)file_num);
     printf("</td></tr>\n");
     printf("</table>\n");
+
+    if (!cp->bogus)
+    {
+	cstate_ty *cstate_data = change_cstate_get(cp);
+	if (cstate_data->state >= cstate_state_being_developed)
+	{
+	    printf("<p>\n");
+	    printf("You may also be interested in the ");
+	    emit_change_href(cp, "file+history");
+	    printf("history</a> listing.\n");
+	}
+    }
     printf("</div>\n");
 
     printf("<hr>A similar report may be obtained from the command line,\n");

@@ -20,12 +20,10 @@
 // MANIFEST: functions to manipulate list types
 //
 
-#pragma implementation "type_list_ty"
-
-#include <error.h> // for assert
-#include <indent.h>
-#include <mem.h>
-#include <type/list.h>
+#include <common/error.h> // for assert
+#include <fmtgen/indent.h>
+#include <common/mem.h>
+#include <fmtgen/type/list.h>
 
 
 type_list_ty::~type_list_ty()
@@ -131,7 +129,7 @@ type_list_ty::gen_code()
     if (!lincl_done)
     {
 	indent_putchar('\n');
-	indent_printf("#include <aer/value/list.h>\n");
+	indent_printf("#include <libaegis/aer/value/list.h>\n");
 	lincl_done = true;
     }
 

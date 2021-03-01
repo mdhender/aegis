@@ -1,6 +1,6 @@
 //
 //	aegis - project change supervisor
-//	Copyright (C) 1994, 1996, 2003, 2004 Peter Miller;
+//	Copyright (C) 1994, 1996, 2003-2005 Peter Miller;
 //	All rights reserved.
 //
 //	This program is free software; you can redistribute it and/or modify
@@ -20,11 +20,11 @@
 // MANIFEST: functions to manipulate function pointer values
 //
 
-#include <aer/func.h>
-#include <aer/value/func.h>
-#include <aer/value/string.h>
-#include <error.h>
-#include <str.h>
+#include <libaegis/aer/func.h>
+#include <libaegis/aer/value/func.h>
+#include <libaegis/aer/value/string.h>
+#include <common/error.h>
+#include <common/str.h>
 
 
 struct rpt_value_func_ty

@@ -20,14 +20,14 @@
 // MANIFEST: functions to manipulate current pathname tree nodes
 //
 
-#include <ac/stdio.h>
+#include <common/ac/stdio.h>
 
-#include <aer/value/string.h>
-#include <error.h> // for assert
-#include <str.h>
-#include <trace.h>
-#include <tree/this.h>
-#include <tree/private.h>
+#include <libaegis/aer/value/string.h>
+#include <common/error.h> // for assert
+#include <common/str.h>
+#include <common/trace.h>
+#include <aefind/tree/this.h>
+#include <aefind/tree/private.h>
 
 
 struct tree_this_ty

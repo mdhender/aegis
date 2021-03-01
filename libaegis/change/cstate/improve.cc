@@ -20,10 +20,10 @@
 // MANIFEST: functions to manipulate improves
 //
 
-#include <change/cstate/improve.h>
-#include <error.h> // for assert
-#include <trace.h>
-#include <uuidentifier.h>
+#include <libaegis/change/cstate/improve.h>
+#include <common/error.h> // for assert
+#include <common/trace.h>
+#include <common/uuidentifier.h>
 
 
 void

@@ -20,7 +20,7 @@
 // MANIFEST: implementation of the nstring::starts_with method
 //
 
-#include <nstring.h>
+#include <common/nstring.h>
 
 
 bool

@@ -20,11 +20,11 @@
 // MANIFEST: functions to manipulate quotes
 //
 
-#include <ac/ctype.h>
+#include <common/ac/ctype.h>
 
-#include <str.h>
-#include <stracc.h>
-#include <trace.h>
+#include <common/str.h>
+#include <common/stracc.h>
+#include <common/trace.h>
 
 
 string_ty *

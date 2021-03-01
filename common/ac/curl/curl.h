@@ -1,40 +1,42 @@
-/*
- *	aegis - project change supervisor
- *	Copyright (C) 2003, 2004 Peter Miller;
- *	All rights reserved.
- *
- *	This program is free software; you can redistribute it and/or modify
- *	it under the terms of the GNU General Public License as published by
- *	the Free Software Foundation; either version 2 of the License, or
- *	(at your option) any later version.
- *
- *	This program is distributed in the hope that it will be useful,
- *	but WITHOUT ANY WARRANTY; without even the implied warranty of
- *	MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
- *	GNU General Public License for more details.
- *
- *	You should have received a copy of the GNU General Public License
- *	along with this program; if not, write to the Free Software
- *	Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111, USA.
- *
- * MANIFEST: interface definition for common/ac/curl/curl.c
- */
+//
+//	aegis - project change supervisor
+//	Copyright (C) 2003-2006 Peter Miller;
+//	All rights reserved.
+//
+//	This program is free software; you can redistribute it and/or modify
+//	it under the terms of the GNU General Public License as published by
+//	the Free Software Foundation; either version 2 of the License, or
+//	(at your option) any later version.
+//
+//	This program is distributed in the hope that it will be useful,
+//	but WITHOUT ANY WARRANTY; without even the implied warranty of
+//	MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+//	GNU General Public License for more details.
+//
+//	You should have received a copy of the GNU General Public License
+//	along with this program; if not, write to the Free Software
+//	Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111, USA.
+//
+// MANIFEST: interface definition for common/ac/curl/curl.c
+//
 
 #ifndef COMMON_AC_CURL_CURL_H
 #define COMMON_AC_CURL_CURL_H
 
-#include <config.h>
+#include <common/config.h>
 
 #ifdef HAVE_CURL_CURL_H
 #include <curl/curl.h>
 
-/*
- * Some older versions of libcurl (CURL_VERSION < 0x070A00) don't
- * include <curl/multi.h> for you, so you have to do it yourself, but it
- * has to be after <curl/curl.h> is included.  It is safe for this file
- * to be included more than once.
- */
+//
+// Some older versions of libcurl (CURL_VERSION < 0x070A00) don't
+// include <curl/multi.h> for you, so you have to do it yourself, but it
+// has to be after <curl/curl.h> is included.  It is safe for this file
+// to be included more than once.
+//
+#ifdef HAVE_CURL_MULTI_H
 #include <curl/multi.h>
+#endif
 
 #ifndef HAVE_CURL_EASY_STRERROR
 
@@ -45,7 +47,7 @@
   */
 const char *curl_easy_strerror(CURLcode);
 
-#endif /* HAVE_CURL_EASY_STRERROR */
+#endif // HAVE_CURL_EASY_STRERROR
 
 #ifndef HAVE_CURL_MULTI_STRERROR
 
@@ -56,7 +58,10 @@ const char *curl_easy_strerror(CURLcode);
   */
 const char *curl_multi_strerror(CURLMcode);
 
-#endif /* HAVE_CURL_MULTI_STRERROR */
-#endif /* HAVE_CURL_CURL_H */
+#endif // HAVE_CURL_MULTI_STRERROR
+#else // !HAVE_CURL_CURL_H
+struct CURL; // forward
+#define CURL_ERROR_SIZE 100
+#endif // HAVE_CURL_CURL_H
 
-#endif /* COMMON_AC_CURL_CURL_H */
+#endif // COMMON_AC_CURL_CURL_H

@@ -1,6 +1,6 @@
 //
 //	aegis - project change supervisor
-//	Copyright (C) 1991-1995, 1997-1999, 2001-2005 Peter Miller;
+//	Copyright (C) 1991-1995, 1997-1999, 2001-2006 Peter Miller;
 //	All rights reserved.
 //
 //	This program is free software; you can redistribute it and/or modify
@@ -20,30 +20,30 @@
 // MANIFEST: functions for manipulating global state data
 //
 
-#include <ac/ctype.h>
-#include <ac/stdio.h>
-#include <ac/stdlib.h>
-#include <ac/string.h>
-#include <ac/unistd.h>
+#include <common/ac/ctype.h>
+#include <common/ac/stdio.h>
+#include <common/ac/stdlib.h>
+#include <common/ac/string.h>
+#include <common/ac/unistd.h>
 
-#include <arglex2.h>
-#include <commit.h>
-#include <env.h>
-#include <error.h>
-#include <gonzo.h>
-#include <gstate.h>
-#include <libdir.h>
-#include <lock.h>
-#include <mem.h>
-#include <os.h>
-#include <progname.h>
-#include <project.h>
-#include <sub.h>
-#include <trace.h>
-#include <undo.h>
-#include <user.h>
-#include <ustate.h>
-#include <str_list.h>
+#include <common/env.h>
+#include <common/error.h>
+#include <common/libdir.h>
+#include <common/mem.h>
+#include <common/progname.h>
+#include <common/str_list.h>
+#include <common/trace.h>
+#include <libaegis/arglex2.h>
+#include <libaegis/commit.h>
+#include <libaegis/gonzo.h>
+#include <libaegis/gstate.h>
+#include <libaegis/lock.h>
+#include <libaegis/os.h>
+#include <libaegis/project.h>
+#include <libaegis/sub.h>
+#include <libaegis/undo.h>
+#include <libaegis/user.h>
+#include <libaegis/ustate.h>
 
 struct gonzo_ty
 {
@@ -793,7 +793,7 @@ gonzo_project_add(project_ty *pp)
     *addr_p = addr;
     trace_pointer(addr);
     addr->project_name = str_copy(project_name_get(pp));
-    addr->directory = str_copy(project_home_path_get(pp));
+    addr->directory = str_copy(pp->home_path_get());
     gp->modified = 1;
     trace(("}\n"));
 }
@@ -1197,31 +1197,8 @@ gonzo_report_path(string_list_ty *p)
 int
 gonzo_alias_acceptable(string_ty *name)
 {
-    char	    *cp;
-
-    //
-    // reject the empty string
-    //
-    if (name->str_length == 0)
-	return 0;
-
-    //
-    // If it ends in [:punct:][0-9][0-9]*
-    // then reject it (because it looks like a branch specifier).
-    // (Also rejects /^[0-9][0-9]*$/ because it looks like a change.)
-    //
-    if (name->str_length == 0)
-	return 0;
-    for (cp = name->str_text + name->str_length; cp > name->str_text; --cp)
-	if (!isdigit((unsigned char)cp[-1]))
-	    break;
-    if (!*cp)
-	return 1;
-    if (cp <= name->str_text || ispunct((unsigned char)cp[-1]))
-	return 0;
-
-    //
-    // looks OK, I suppose
-    //
-    return 1;
+    string_ty *s = str_quote_shell(name);
+    bool ok = str_equal(s, name);
+    str_free(s);
+    return ok;
 }

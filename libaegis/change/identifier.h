@@ -1,6 +1,6 @@
 //
 //	aegis - project change supervisor
-//	Copyright (C) 2004, 2005 Peter Miller;
+//	Copyright (C) 2004-2006 Peter Miller;
 //	All rights reserved.
 //
 //	This program is free software; you can redistribute it and/or modify
@@ -23,12 +23,10 @@
 #ifndef LIBAEGIS_CHANGE_IDENTIFIER_H
 #define LIBAEGIS_CHANGE_IDENTIFIER_H
 
-#pragma interface "change_identifier"
-
-#include <change/identifi_sub.h>
-#include <file_revision.h>
-#include <project/identifi_sub/plain.h>
-#include <project/identifi_sub/branch.h>
+#include <libaegis/change/identifi_sub.h>
+#include <libaegis/file_revision.h>
+#include <libaegis/project/identifi_sub/plain.h>
+#include <libaegis/project/identifi_sub/branch.h>
 
 /**
   * The change_identifier class is used to represent a change and its
@@ -230,6 +228,14 @@ public:
     {
 	change_id.error_if_no_explicit_change_number();
     }
+
+    /**
+      * The invalidate_change_meta_data method is used to discard cached
+      * information about the change.  This is usually necessary when a
+      * sub-command is run and that subcommand would update the change
+      * meta-data.
+      */
+    void invalidate_change_meta_data() { change_id.invalidate_meta_data(); }
 
 private:
     /**

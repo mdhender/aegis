@@ -1,6 +1,6 @@
 //
 //	aegis - project change supervisor
-//	Copyright (C) 2004, 2005 Peter Miller;
+//	Copyright (C) 2004-2006 Peter Miller;
 //	All rights reserved.
 //
 //	This program is free software; you can redistribute it and/or modify
@@ -23,9 +23,7 @@
 #ifndef COMMON_NSTRING_ACCUMULATOR_H
 #define COMMON_NSTRING_ACCUMULATOR_H
 
-#pragma interface "nstring_accumulator"
-
-#include <nstring.h>
+#include <common/nstring.h>
 
 /** \addtogroup String_Accumulator
   * \brief String Accumulation functions
@@ -116,6 +114,15 @@ public:
       *     The string to be appended to the buffer.
       */
     void push_back(const nstring_accumulator &data);
+
+    /**
+      * The push_back method is used to append another string
+      * accumulator to the end of this accumulator.
+      *
+      * \param data
+      *     The string to be appended to the buffer.
+      */
+    void push_back(const nstring &data);
 
     /**
       * The clear method is used to reset the length of the accumulated

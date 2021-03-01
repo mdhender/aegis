@@ -23,9 +23,7 @@
 #ifndef AEDIST_REPLAY_LINE_H
 #define AEDIST_REPLAY_LINE_H
 
-#pragma interface "replay_line"
-
-#include <nstring.h>
+#include <common/nstring.h>
 
 /**
   * The replay line is used to represent a line read from the output of

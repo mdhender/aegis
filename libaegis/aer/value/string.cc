@@ -1,6 +1,6 @@
 //
 //	aegis - project change supervisor
-//	Copyright (C) 1994, 1996, 1998, 1999, 2002-2004 Peter Miller;
+//	Copyright (C) 1994, 1996, 1998, 1999, 2002-2005 Peter Miller;
 //	All rights reserved.
 //
 //	This program is free software; you can redistribute it and/or modify
@@ -20,17 +20,17 @@
 // MANIFEST: functions to manipulate string values
 //
 
-#include <ac/ctype.h>
-#include <ac/math.h>
-#include <ac/stdlib.h>
+#include <common/ac/ctype.h>
+#include <common/ac/math.h>
+#include <common/ac/stdlib.h>
 
-#include <aer/value/boolean.h>
-#include <aer/value/integer.h>
-#include <aer/value/real.h>
-#include <aer/value/string.h>
-#include <error.h>
-#include <str.h>
-#include <trace.h>
+#include <libaegis/aer/value/boolean.h>
+#include <libaegis/aer/value/integer.h>
+#include <libaegis/aer/value/real.h>
+#include <libaegis/aer/value/string.h>
+#include <common/error.h>
+#include <common/str.h>
+#include <common/trace.h>
 
 
 struct rpt_value_string_ty

@@ -1,6 +1,6 @@
 //
 //	aegis - project change supervisor
-//	Copyright (C) 2001, 2002, 2004 Peter Miller;
+//	Copyright (C) 2001, 2002, 2004, 2005 Peter Miller;
 //	All rights reserved.
 //
 //	This program is free software; you can redistribute it and/or modify
@@ -20,9 +20,9 @@
 // MANIFEST: functions to manipulate clus
 //
 
-#include <ac/stdarg.h>
-#include <ac/string.h>
-#include <ac/sys/clu.h>
+#include <common/ac/stdarg.h>
+#include <common/ac/string.h>
+#include <common/ac/sys/clu.h>
 
 
 #if !HAVE_CLU_INFO

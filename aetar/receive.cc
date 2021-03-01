@@ -1,6 +1,7 @@
 //
 //	aegis - project change supervisor
-//	Copyright (C) 2002-2005 Peter Miller;
+//	Copyright (C) 2002-2006 Peter Miller;
+//	Copyright (C) 2006 Walter Franzini;
 //	All rights reserved.
 //
 //	This program is free software; you can redistribute it and/or modify
@@ -20,31 +21,33 @@
 // MANIFEST: functions to receive change sets
 //
 
-#include <ac/stdio.h>
-#include <ac/stdlib.h>
-#include <ac/string.h>
+#include <common/ac/stdio.h>
+#include <common/ac/stdlib.h>
+#include <common/ac/string.h>
 
-#include <arglex3.h>
-#include <arglex/change.h>
-#include <arglex/project.h>
-#include <change.h>
-#include <help.h>
-#include <input/file.h>
-#include <input/gunzip.h>
-#include <input/tar.h>
-#include <nstring.h>
-#include <nstring/list.h>
-#include <os.h>
-#include <output/file.h>
-#include <progname.h>
-#include <project.h>
-#include <project/file.h>
-#include <project/history.h>
-#include <receive.h>
-#include <sub.h>
-#include <trace.h>
-#include <undo.h>
-#include <user.h>
+#include <aetar/arglex3.h>
+#include <common/error.h>       // for assert
+#include <libaegis/arglex/change.h>
+#include <libaegis/arglex/project.h>
+#include <libaegis/change.h>
+#include <libaegis/help.h>
+#include <libaegis/input/bunzip2.h>
+#include <libaegis/input/file.h>
+#include <libaegis/input/gunzip.h>
+#include <aetar/input/tar.h>
+#include <common/nstring.h>
+#include <common/nstring/list.h>
+#include <libaegis/os.h>
+#include <libaegis/output/file.h>
+#include <common/progname.h>
+#include <libaegis/project.h>
+#include <libaegis/project/file.h>
+#include <libaegis/project/history.h>
+#include <aedist/receive.h>
+#include <libaegis/sub.h>
+#include <common/trace.h>
+#include <libaegis/undo.h>
+#include <libaegis/user.h>
 
 
 static void
@@ -83,16 +86,55 @@ is_a_path_prefix(const nstring &haystack, const nstring &needle,
     return false;
 }
 
+static nstring
+remove_path_prefix(const nstring& haystack, long count)
+{
+    size_t n;
+    long slash = 0;
+
+    trace(("remove_path_prefix(\"%s\", %ld)\n{\n", haystack.c_str(), count));
+
+    if (count == 0)
+    {
+        trace(("return \"%s\";\n}\n", haystack.c_str()));
+        return haystack;
+    }
+
+    for (n = 0; n < haystack.size(); ++n)
+    {
+        if (haystack[n] != '/')
+            continue;
+        //
+        // A sequence of one or more slashes is counted as a single slash.
+        //
+        if (n < (haystack.size() - 1) && haystack[n] == haystack[ n + 1 ])
+            continue;
+        ++slash;
+        if (slash == count)
+            break;
+    }
+    trace(("return \"%s\";\n}\n", haystack.c_str() + n + 1));
+    return nstring(haystack.c_str() + n + 1, haystack.size() - n - 1);
+}
+
 
 static nstring path_prefix_add;
 static nstring_list path_prefix_remove;
+static long path_prefix_remove_count = -1;
 
 
 static void
 mangle(nstring &filename)
 {
+    if (path_prefix_remove_count >= 0)
+    {
+        assert(path_prefix_remove.size() == 0);
+        filename = remove_path_prefix(filename, path_prefix_remove_count);
+    }
+
     for (size_t k = 0; k < path_prefix_remove.size(); ++k)
     {
+        assert(path_prefix_remove_count == -1);
 	nstring s;
 	if (is_a_path_prefix(filename, path_prefix_remove[k], s))
 	{
@@ -106,17 +148,23 @@ mangle(nstring &filename)
 }
 
 
+static void
+get_exclude_attribute(change_ty *cp, nstring_list &exclude)
+{
+    nstring value = cp->pconf_attributes_find("aetar:exclude");
+    exclude.split(value);
+}
+
+
 void
 receive(void)
 {
     trace(("receive()\n{\n"));
     string_ty       *project_name;
-    long            change_number;
     nstring         ifn;
     string_ty       *s;
     project_ty      *pp;
     change_ty       *cp;
-    string_ty       *dd;
     string_ty       *attribute_file_name;
     string_ty       *dot;
     const char      *delta;
@@ -125,10 +173,12 @@ receive(void)
     int		    trojan;
 
     project_name = 0;
-    change_number = 0;
+    long change_number = 0;
     trojan = -1;
     delta = 0;
     devdir = 0;
+    nstring_list exclude;
+    bool exclude_auto_tools = false;
     arglex();
     while (arglex_token != arglex_token_eoln)
     {
@@ -225,9 +275,38 @@ receive(void)
 	    break;
 
 	case arglex_token_path_prefix_remove:
+            switch (arglex())
+            {
+            case arglex_token_string:
+                if (path_prefix_remove_count >= 0)
+                    duplicate_option(usage);
+                path_prefix_remove.push_back_unique(arglex_value.alv_string);
+                break;
+
+            case arglex_token_number:
+                if (path_prefix_remove.size() > 0)
+                    duplicate_option(usage);
+                if (arglex_value.alv_number < 0)
+                    option_needs_number(arglex_token_path_prefix_remove, usage);
+                path_prefix_remove_count = arglex_value.alv_number;
+                break;
+
+            default:
+                option_needs_file(arglex_token_path_prefix_remove, usage);
+                break;
+            }
+            break;
+
+	case arglex_token_exclude:
 	    if (arglex() != arglex_token_string)
-		option_needs_file(arglex_token_path_prefix_remove, usage);
-	    path_prefix_remove.push_back_unique(arglex_value.alv_string);
+		option_needs_file(arglex_token_exclude, usage);
+	    exclude.push_back_unique(arglex_value.alv_string);
+	    break;
+
+	case arglex_token_exclude_auto_tools:
+	    if (exclude_auto_tools)
+		duplicate_option(usage);
+	    exclude_auto_tools = true;
 	    break;
 	}
 	arglex();
@@ -237,8 +316,9 @@ receive(void)
     // Open the tape archive file.
     //
     os_become_orig();
-    input_ty *ifp = input_file_open(ifn);
+    input ifp = input_file_open(ifn);
     ifp = input_gunzip_open(ifp);
+    ifp = input_bunzip2_open(ifp);
     input_tar *tar_p = new input_tar(ifp);
     os_become_undo();
 
@@ -248,7 +328,7 @@ receive(void)
     if (!project_name)
 	project_name = user_default_project();
     pp = project_alloc(project_name);
-    project_bind_existing(pp);
+    pp->bind_existing();
 
     //
     // default the change number
@@ -279,7 +359,7 @@ receive(void)
 	str_format
 	(
 	    "aegis --new-change %ld --project=%s --file=%s%s --verbose",
-	    change_number,
+	    magic_zero_decode(change_number),
 	    project_name->str_text,
 	    attribute_file_name->str_text,
             trace_options.c_str()
@@ -296,7 +376,7 @@ receive(void)
 	str_format
 	(
 	    "aegis --develop-begin %ld --project %s --verbose%s%s",
-	    change_number,
+	    magic_zero_decode(change_number),
 	    project_name->str_text,
 	    (devdir ? devdir->str_text : ""),
             trace_options.c_str()
@@ -310,19 +390,20 @@ receive(void)
     // relative filenames.  It makes things easier to read.
     //
     pp = project_alloc(project_name);
-    project_bind_existing(pp);
+    pp->bind_existing();
     cp = change_alloc(pp, change_number);
     change_bind_existing(cp);
-    dd = change_development_directory_get(cp, 0);
-    dd = str_copy(dd);	// will vanish when change_free();
+    nstring dd(change_development_directory_get(cp, 0));
     int umask = change_umask(cp);
+    get_exclude_attribute(cp, exclude);
     change_free(cp);
     cp = 0;
-    string_list_ty  files_created;
-    string_list_ty  files_modified;
+    nstring_list files_created;
+    nstring_list files_modified;
+    nstring_list files_removed;
+    nstring_list file_manifest;
 
     os_chdir(dd);
-
 
     //
     // Now extract each file from the tar archive.
@@ -337,9 +418,9 @@ receive(void)
 	//
 	nstring filename;
 	os_become_orig();
-	input_ty *ip = tar_p->child(filename);
+	input ip = tar_p->child(filename);
 	os_become_undo();
-	if (!ip)
+	if (!ip.is_open())
 	    break;
 
 	//
@@ -347,9 +428,12 @@ receive(void)
 	//
 	mangle(filename);
         trace_string(filename.c_str());
+	if (exclude.member(filename))
+	    continue;
+	file_manifest.push_back(filename);
 
 	//
-	// Work out if the file sxists in the project.
+	// Work out if the file exists in the project.
 	// This is how we decide to copy or create.
 	//
 	fstate_src_ty *src_data =
@@ -386,27 +470,114 @@ receive(void)
                 os_become_orig();
                 os_unlink_errok(src_data->file_name);
                 os_become_undo();
-                files_modified.push_back(filename.get_ref());
+                files_modified.push_back(filename);
                 break;
             }
 	}
 	else
 	{
-            files_created.push_back(filename.get_ref());
+            files_created.push_back(filename);
 	}
 
         //
 	// Now copy the file into the project.
 	//
         os_become_orig();
-        os_mkdir_between(dd, filename.get_ref(), 02755 & ~umask);
-        ofp = output_file_binary_open(filename.get_ref());
-	input_to_output(ip, ofp);
+        os_mkdir_between(dd, filename, 02755 & ~umask);
+        ofp = output_file_binary_open(filename);
+	*ofp << ip;
 	delete ofp;
-	delete ip;
+	ip.close();
 	os_become_undo();
     }
     delete tar_p;
+
+    //
+    // Now we have to see if any of the files in the file manifest need
+    // to be excluded, because they are derived files from the various
+    // GNU auto tools.
+    //
+    if (exclude_auto_tools)
+    {
+	if
+       	(
+	    file_manifest.member("configure.ac")
+	||
+	    file_manifest.member("configure.in")
+	)
+	{
+	    const char *table[] =
+	    {
+		"aclocal.m4",
+		"autom4te.cache",
+		"config.guess",
+		"config.h",
+		"config.h.in",
+		"config.log",
+		"config.status",
+		"config.sub",
+		"configure",
+		"install-sh",
+		"stamp-h",
+		"stamp-h.in",
+	    };
+
+	    for (const char **tp = table; tp < ENDOF(table); ++tp)
+	    {
+		nstring fn = *tp;
+		files_created.remove(fn);
+		files_modified.remove(fn);
+		exclude.push_back_unique(fn);
+	    }
+	}
+	if (file_manifest.member("Makefile.am"))
+	{
+	    const char *table[] =
+	    {
+		"install-sh",
+		"Makefile",
+		"Makefile.in",
+		"missing",
+		"mkinstalldirs",
+		"stamp-h",
+		"stamp-h.in",
+	    };
+
+	    for (const char **tp = table; tp < ENDOF(table); ++tp)
+	    {
+		nstring fn = *tp;
+		files_created.remove(fn);
+		files_modified.remove(fn);
+		exclude.push_back_unique(fn);
+	    }
+	}
+    }
+
+    //
+    // See if we need to remove any of the excluded files.
+    //
+    for (size_t j = 0; j < exclude.size(); ++j)
+    {
+	nstring fn = exclude[j];
+	if (project_file_find(pp, fn.get_ref(), view_path_extreme))
+	    files_removed.push_back(fn);
+
+	os_become_orig();
+	os_unlink_errok(fn);
+	os_become_undo();
+    }
+    if (!files_removed.empty())
+    {
+        nstring cmd =
+            nstring::format
+            (
+                "aegis --remove-file --project=%s --change=%ld%s --verbose",
+                project_name->str_text,
+		magic_zero_decode(change_number),
+                trace_options.c_str()
+            );
+        os_xargs(cmd, files_removed, dd);
+    }
 
     //
     // Now create the new files.
@@ -416,13 +587,13 @@ receive(void)
         nstring cmd =
             nstring::format
             (
-                "aegis --new-file --no-template --project=%s "
-                "--change=%ld%s --no-keep --verbose",
+                "aegis --new-file --no-template --project=%s --change=%ld%s "
+		    "--keep --verbose",
                 project_name->str_text,
-                change_number,
+		magic_zero_decode(change_number),
                 trace_options.c_str()
             );
-        os_xargs(cmd.get_ref(), &files_created, dd);
+        os_xargs(cmd, files_created, dd);
     }
 
     //
@@ -434,12 +605,25 @@ receive(void)
             nstring::format
             (
                 "aegis --copy-file --project=%s --change=%ld%s "
-                "--keep --verbose",
+		    "--keep --verbose",
                 project_name->str_text,
-                change_number,
+		magic_zero_decode(change_number),
                 trace_options.c_str()
             );
-        os_xargs(cmd.get_ref(), &files_modified, dd);
+        os_xargs(cmd, files_modified, dd);
+
+        cmd =
+            nstring::format
+            (
+                "aegis --copy-file-undo --unchanged --project=%s "
+		    "--change=%ld%s --verbose",
+                project_name->str_text,
+		magic_zero_decode(change_number),
+                trace_options.c_str()
+            );
+	os_become_orig();
+	os_execute(cmd, OS_EXEC_FLAG_NO_INPUT, dd);
+	os_become_undo();
     }
 
     project_free(pp);

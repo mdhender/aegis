@@ -20,12 +20,12 @@
 // MANIFEST: implementation of the change_file_promote class
 //
 
-#include <change/file.h>
-#include <error.h> // for assert
-#include <nstring/list.h>
-#include <project/file.h>
-#include <sub.h>
-#include <trace.h>
+#include <libaegis/change/file.h>
+#include <common/error.h> // for assert
+#include <common/nstring/list.h>
+#include <libaegis/project/file.h>
+#include <libaegis/sub.h>
+#include <common/trace.h>
 
 
 bool

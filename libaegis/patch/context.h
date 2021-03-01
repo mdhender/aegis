@@ -1,6 +1,6 @@
 //
 //	aegis - project change supervisor
-//	Copyright (C) 2001, 2002, 2004, 2005 Peter Miller;
+//	Copyright (C) 2001, 2002, 2004-2006 Peter Miller;
 //	All rights reserved.
 //
 //	This program is free software; you can redistribute it and/or modify
@@ -23,8 +23,8 @@
 #ifndef LIBAEGIS_PATCH_CONTEXT_H
 #define LIBAEGIS_PATCH_CONTEXT_H
 
-#include <input.h>
-#include <str_list.h>
+#include <common/str_list.h>
+#include <libaegis/input.h>
 
 /**
   * The patch_context_ty class is used to represent a line buffered
@@ -44,7 +44,7 @@ public:
       * \param arg
       *     The input stream to read and buffer.
       */
-    patch_context_ty(input_ty *arg);
+    patch_context_ty(input &arg);
 
     /**
       * The getline method is used to grab the line with the given
@@ -68,14 +68,14 @@ public:
       * The get_file_name method is used to get the name and line number
       * of the input stream.  This is mostly used for debugging.
       */
-    nstring get_file_name() const { return input->name(); }
+    nstring get_file_name() { return in->name(); }
 
 private:
     /**
       * The input instance variable is used to remember where to get
       * more input lines from.
       */
-    input_ty *input;
+    input in;
 
     /**
       * The buffer instance variable is used to remember lines which
@@ -100,7 +100,7 @@ private:
 };
 
 inline patch_context_ty *
-patch_context_new(input_ty *ip)
+patch_context_new(input &ip)
 {
     return new patch_context_ty(ip);
 }

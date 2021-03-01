@@ -1,6 +1,6 @@
 //
 //	aegis - project change supervisor
-//	Copyright (C) 2003, 2004 Peter Miller;
+//	Copyright (C) 2003-2005 Peter Miller;
 //	All rights reserved.
 //
 //	This program is free software; you can redistribute it and/or modify
@@ -20,11 +20,11 @@
 // MANIFEST: functions to manipulate magics
 //
 
-#include <ac/magic.h>
-#include <ac/string.h>
-#include <ac/stdio.h>
+#include <common/ac/magic.h>
+#include <common/ac/string.h>
+#include <common/ac/stdio.h>
 
-#include <main.h>
+#include <common/main.h>
 
 #ifndef HAVE_MAGIC_FILE
 

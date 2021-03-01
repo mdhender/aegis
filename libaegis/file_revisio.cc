@@ -1,6 +1,6 @@
 //
 //	aegis - project change supervisor
-//	Copyright (C) 2004 Peter Miller;
+//	Copyright (C) 2004, 2005 Peter Miller;
 //	All rights reserved.
 //
 //	This program is free software; you can redistribute it and/or modify
@@ -20,11 +20,9 @@
 // MANIFEST: implementation of the file_revision class
 //
 
-#pragma implementation "file_revision"
-
-#include <error.h> // for assert
-#include <file_revision.h>
-#include <os.h>
+#include <common/error.h> // for assert
+#include <libaegis/file_revision.h>
+#include <libaegis/os.h>
 
 
 file_revision::~file_revision()

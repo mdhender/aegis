@@ -20,14 +20,14 @@
 // MANIFEST: implementation of the sub_email_addres class
 //
 
-#include <arglex.h>
-#include <nstring.h>
-#include <str_list.h>
-#include <sub.h>
-#include <sub/email_addres.h>
-#include <trace.h>
-#include <user.h>
-#include <wstr/list.h>
+#include <common/arglex.h>
+#include <common/nstring.h>
+#include <common/str_list.h>
+#include <libaegis/sub.h>
+#include <libaegis/sub/email_addres.h>
+#include <common/trace.h>
+#include <libaegis/user.h>
+#include <common/wstr/list.h>
 
 
 wstring_ty *

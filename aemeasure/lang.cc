@@ -20,15 +20,15 @@
 // MANIFEST: functions to manipulate langs
 //
 
-#include <ac/math.h>
-#include <ac/string.h>
+#include <common/ac/math.h>
+#include <common/ac/string.h>
 
-#include <error.h>
-#include <lang.h>
-#include <lang/c.h>
-#include <lang/cxx.h>
-#include <lang/generic.h>
-#include <lang/roff.h>
+#include <common/error.h>
+#include <aemeasure/lang.h>
+#include <aemeasure/lang/c.h>
+#include <aemeasure/lang/cxx.h>
+#include <aemeasure/lang/generic.h>
+#include <aemeasure/lang/roff.h>
 
 
 static lang_t *table[] =
@@ -53,7 +53,7 @@ lang_by_name(const char *name)
 	    return lp;
     }
 
-    fatal_raw("language ``%s'' unknown", name);
+    fatal_raw("language \"%s\" unknown", name);
     // NOTREACHED
     return 0;
 }

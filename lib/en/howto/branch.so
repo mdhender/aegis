@@ -1,6 +1,6 @@
 .\"
 .\"	aegis - project change supervisor
-.\"	Copyright (C) 2000, 2001 Peter Miller;
+.\"	Copyright (C) 2000, 2001, 2005 Peter Miller;
 .\"	All rights reserved.
 .\"
 .\"	This program is free software; you can redistribute it and/or modify
@@ -21,7 +21,7 @@
 .\"
 .nh 1 "Howto End A Branch"
 .LP
-``OK, I give up.  I do not understand the ending of branches.''
+\[lq]OK, I give up.  I do not understand the ending of branches.\[rq]
 .LP
 Usually, you end development of a branch the same way you end development
 of a simple change.  In this example, branch \fIexample.1.42\fP will

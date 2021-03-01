@@ -1,6 +1,6 @@
 //
 //      aegis - project change supervisor
-//      Copyright (C) 2001, 2002, 2004 Peter Miller;
+//      Copyright (C) 2001, 2002, 2004, 2005 Peter Miller;
 //      All rights reserved.
 //
 //      This program is free software; you can redistribute it and/or modify
@@ -20,10 +20,10 @@
 // MANIFEST: functions to manipulate lists
 //
 
-#include <ac/stdlib.h>
+#include <common/ac/stdlib.h>
 
-#include <change_set/list.h>
-#include <mem.h>
+#include <aeimport/change_set/list.h>
+#include <common/mem.h>
 
 
 change_set_list_ty *

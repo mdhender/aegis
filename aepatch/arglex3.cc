@@ -1,6 +1,6 @@
 //
 //	aegis - project change supervisor
-//	Copyright (C) 2001-2004 Peter Miller;
+//	Copyright (C) 2001-2006 Peter Miller;
 //	All rights reserved.
 //
 //	This program is free software; you can redistribute it and/or modify
@@ -20,16 +20,13 @@
 // MANIFEST: functions to manipulate arglex3s
 //
 
-#include <arglex3.h>
+#include <aepatch/arglex3.h>
 
 
 static arglex_table_ty argtab[] =
 {
     { "-Ascii_Armor", arglex_token_ascii_armor, },
     { "-Not_Ascii_Armor", arglex_token_ascii_armor_not, },
-    { "-COMPATibility", arglex_token_compatibility, },
-    { "-COmpress", arglex_token_compress, },
-    { "-Not_COmpress", arglex_token_compress_not, },
     { "-Content_Transfer_Encoding", arglex_token_content_transfer_encoding},
     { "-Receive", arglex_token_receive, },
     { "-Send", arglex_token_send, },

@@ -1,6 +1,6 @@
 //
 //	aegis - project change supervisor
-//	Copyright (C) 1999, 2002-2004 Peter Miller;
+//	Copyright (C) 1999, 2002-2006 Peter Miller;
 //	All rights reserved.
 //
 //	This program is free software; you can redistribute it and/or modify
@@ -20,11 +20,11 @@
 // MANIFEST: functions to manipulate existings
 //
 
-#include <change.h>
-#include <error.h> // for assert
-#include <project.h>
-#include <sub.h>
-#include <trace.h>
+#include <libaegis/change.h>
+#include <common/error.h> // for assert
+#include <libaegis/project.h>
+#include <libaegis/sub.h>
+#include <common/trace.h>
 
 
 void
@@ -45,7 +45,7 @@ change_bind_existing(change_ty *cp)
 	trace(("}\n"));
 	return;
     }
-    pcp = project_change_get(cp->pp);
+    pcp = cp->pp->change_get();
     pcsp = change_cstate_get(pcp);
     if (!pcsp->branch)
     {
@@ -89,7 +89,7 @@ change_bind_existing_errok(change_ty *cp)
 	trace(("}\n"));
 	return 1;
     }
-    pcp = project_change_get(cp->pp);
+    pcp = cp->pp->change_get();
     pcsp = change_cstate_get(pcp);
     if (!pcsp->branch)
     {

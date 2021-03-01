@@ -1,6 +1,6 @@
 //
 //      aegis - project change supervisor
-//      Copyright (C) 2003, 2004 Peter Miller;
+//      Copyright (C) 2003-2006 Peter Miller;
 //      All rights reserved.
 //
 //      This program is free software; you can redistribute it and/or modify
@@ -20,35 +20,35 @@
 // MANIFEST: functions to manipulate projects
 //
 
-#include <ac/stdio.h>
-#include <ac/string.h>
+#include <common/ac/stdio.h>
+#include <common/ac/string.h>
 
-#include <emit/project.h>
-#include <get/change.h>
-#include <get/change/list.h>
-#include <get/change/inventory.h>
-#include <get/project.h>
-#include <get/project/aedist.h>
-#include <get/project/change_cause.h>
-#include <get/project/file.h>
-#include <get/project/file_invento.h>
-#include <get/project/files.h>
-#include <get/project/history.h>
-#include <get/project/integr_histo.h>
-#include <get/project/menu.h>
-#include <get/project/progress.h>
-#include <get/project/staff.h>
-#include <get/project/statistics.h>
-#include <get/rss.h>
-#include <http.h>
-#include <project.h>
-#include <str_list.h>
+#include <aeget/emit/project.h>
+#include <aeget/get/change.h>
+#include <aeget/get/change/list.h>
+#include <aeget/get/change/inventory.h>
+#include <aeget/get/project.h>
+#include <aeget/get/project/aedist.h>
+#include <aeget/get/project/change_cause.h>
+#include <aeget/get/project/file.h>
+#include <aeget/get/project/file_invento.h>
+#include <aeget/get/project/files.h>
+#include <aeget/get/project/history.h>
+#include <aeget/get/project/integr_histo.h>
+#include <aeget/get/project/menu.h>
+#include <aeget/get/project/progress.h>
+#include <aeget/get/project/staff.h>
+#include <aeget/get/project/statistics.h>
+#include <aeget/get/rss.h>
+#include <aeget/http.h>
+#include <libaegis/project.h>
+#include <common/str_list.h>
 
 
 static void
 change_handoff(project_ty *pp, string_ty *filename, string_list_ty *modifier)
 {
-    get_change(project_change_get(pp), filename, modifier);
+    get_change(pp->change_get(), filename, modifier);
 }
 
 

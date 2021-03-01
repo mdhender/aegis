@@ -1,6 +1,6 @@
 //
 //	aegis - project change supervisor
-//	Copyright (C) 1999, 2002-2004 Peter Miller;
+//	Copyright (C) 1999, 2002-2006 Peter Miller;
 //	All rights reserved.
 //
 //	This program is free software; you can redistribute it and/or modify
@@ -20,8 +20,8 @@
 // MANIFEST: functions to manipulate conflicts
 //
 
-#include <os/isa/path_prefix.h>
-#include <project/file.h>
+#include <libaegis/os/isa/path_prefix.h>
+#include <libaegis/project/file.h>
 
 
 string_ty *
@@ -45,7 +45,7 @@ project_file_directory_conflict(project_ty *pp, string_ty *file_name)
 	//
 	// include built files in the check
 	//
-	src_data = project_file_nth(pp, j, view_path_extreme);
+	src_data = pp->file_nth(j, view_path_extreme);
 	if (!src_data)
 	    break;
 	if

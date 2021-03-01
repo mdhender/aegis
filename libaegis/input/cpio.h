@@ -1,6 +1,6 @@
 //
 //	aegis - project change supervisor
-//	Copyright (C) 1999, 2002, 2005 Peter Miller;
+//	Copyright (C) 1999, 2002, 2005, 2006 Peter Miller;
 //	All rights reserved.
 //
 //	This program is free software; you can redistribute it and/or modify
@@ -23,7 +23,7 @@
 #ifndef LIBAEGIS_INPUT_CPIO_H
 #define LIBAEGIS_INPUT_CPIO_H
 
-#include <input.h>
+#include <libaegis/input.h>
 
 /**
   * The input_cpio class is used to represent a CPIO archive.
@@ -39,8 +39,11 @@ public:
 
     /**
       * The constructor.
+      *
+      * @param deeper
+      *     The input data source for this filter.
       */
-    input_cpio(input_ty *deeper);
+    input_cpio(input &deeper);
 
     // See base class for documentation.
     nstring name();
@@ -57,14 +60,21 @@ public:
     // See base class for documentation.
     bool is_remote() const;
 
-    input_ty *child(nstring &name);
+    /**
+      * The child method is used to obtain an input which may be read to
+      * obtain the data of a member of the CPIO archive.
+      *
+      * If there are no more members, a closed input will be returned.
+      * Use the input::is_open() method to work this out.
+      */
+    input child(nstring &name);
 
 private:
     /**
-      * The deeper instance variabl;e is sued to remember the input
+      * The deeper instance variable is used to remember the input
       * source for this filter.
       */
-    input_ty *deeper;
+    input deeper;
 
     /**
       * The hex8 method is used to obtain an eight digit hexadecimal

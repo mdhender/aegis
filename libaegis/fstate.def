@@ -1,6 +1,6 @@
 /*
  *	aegis - project change supervisor
- *	Copyright (C) 1995-1998, 2001-2004 Peter Miller;
+ *	Copyright (C) 1995-1998, 2001-2005 Peter Miller;
  *	All rights reserved.
  *
  *	This program is free software; you can redistribute it and/or modify
@@ -23,7 +23,7 @@
  *	man5/aefstate.5
  */
 
-#include <common.def>
+#include <libaegis/common.def>
 
 type fingerprint =
 {
@@ -60,7 +60,7 @@ src =
 
 	/*
 	 * For an active branch, this field records the current
-	 * ``head revision'' of the file.
+	 * "head revision" of the file.
 	 *
 	 * For a completed branch, this field records the edit
 	 * number the file assumed upon integration completion.

@@ -1,6 +1,6 @@
 //
 //	aegis - project change supervisor
-//	Copyright (C) 2004, 2005 Peter Miller;
+//	Copyright (C) 2004-2006 Peter Miller;
 //	All rights reserved.
 //
 //	This program is free software; you can redistribute it and/or modify
@@ -50,51 +50,39 @@
 // S: int mein () { abort (); }
 //
 
-#include <ac/string.h>
+#include <common/ac/string.h>
 
-#include <input.h>
-#include <os.h>
-#include <output.h>
-#include <response/update_exist.h>
-#include <response/private.h>
+#include <libaegis/input.h>
+#include <libaegis/os.h>
+#include <libaegis/output.h>
+#include <aecvsserver/response/update_exist.h>
 
 
-struct response_update_existing_ty
+response_update_existing::~response_update_existing()
 {
-    response_ty     inherited;
-    string_ty       *client_side;
-    string_ty       *server_side;
-    input_ty        *source;
-    int             mode;
-    string_ty       *version;
-};
-
-
-static void
-destructor(response_ty *rp)
-{
-    response_update_existing_ty *rcp;
-
-    rcp = (response_update_existing_ty *)rp;
-    str_free(rcp->client_side);
-    rcp->client_side = 0;
-    str_free(rcp->server_side);
-    rcp->server_side = 0;
-    delete rcp->source;
-    rcp->source = 0;
-    str_free(rcp->version);
-    rcp->version = 0;
+    str_free(client_side);
+    client_side = 0;
+    str_free(server_side);
+    server_side = 0;
+    str_free(version);
+    version = 0;
 }
 
 
-static void
-write(response_ty *rp, output_ty *op)
+response_update_existing::response_update_existing(string_ty *arg1,
+	string_ty *arg2, input &arg3, int arg4, string_ty *arg5) :
+    client_side(str_copy(arg1)),
+    server_side(str_copy(arg2)),
+    source(arg3),
+    mode(arg4),
+    version(str_copy(arg5))
 {
-    response_update_existing_ty *rcp;
-    string_ty       *short_dir_name;
-    string_ty       *short_file_name;
-    long            length;
+}
 
+
+void
+response_update_existing::write(output_ty *op)
+{
     //
     // The output looks something like this...
     //
@@ -104,23 +92,22 @@ write(response_ty *rp, output_ty *op)
     // S: /mungeall.c/1.1///
     // S: u=rw,g=r,o=r
     // S: 26
-    // S: int mein () { abort (); }
+    // S: int main () { abort (); }
     //
-    rcp = (response_update_existing_ty *)rp;
-    short_dir_name = os_dirname_relative(rcp->client_side);
-    short_file_name = os_entryname_relative(rcp->client_side);
+    string_ty *short_dir_name = os_dirname_relative(client_side);
+    string_ty *short_file_name = os_entryname_relative(client_side);
     op->fprintf("M U %s\n", short_file_name->str_text);
     op->fprintf("Update-existing %s/\n", short_dir_name->str_text);
-    op->fprintf("/aegis/%s\n", rcp->server_side->str_text);
+    op->fprintf("/aegis/%s\n", server_side->str_text);
     op->fprintf
     (
 	"/%s/%s///\n",
 	short_file_name->str_text,
-	rcp->version->str_text
+	version->str_text
     );
-    output_mode_string(op, rcp->mode);
+    output_mode_string(op, mode);
     os_become_orig();
-    length = rcp->source->length();
+    long length = source->length();
     if (length > 0)
     {
 	//
@@ -130,7 +117,7 @@ write(response_ty *rp, output_ty *op)
 	// a naive usage of output_gzip().  Just say no.
 	//
 	op->fprintf("%ld\n", length);
-	input_to_output(rcp->source, op);
+	*op << source;
     }
     else
     {
@@ -142,29 +129,17 @@ write(response_ty *rp, output_ty *op)
 }
 
 
-static const response_method_ty vtbl =
+response_code_ty
+response_update_existing::code_get()
+    const
 {
-    sizeof(response_update_existing_ty),
-    destructor,
-    write,
-    response_code_Update_existing,
-    1, // flushable
-};
-
-
-response_ty *
-response_update_existing_new(string_ty *client_side, string_ty *server_side,
-    input_ty *source, int mode, string_ty *version)
-{
-    response_ty     *rp;
-    response_update_existing_ty *rcp;
-
-    rp = response_new(&vtbl);
-    rcp = (response_update_existing_ty *)rp;
-    rcp->client_side = str_copy(client_side);
-    rcp->server_side = str_copy(server_side);
-    rcp->source = source;
-    rcp->mode = mode;
-    rcp->version = str_copy(version);
-    return rp;
+    return response_code_Update_existing;
 }
+
+
+bool
+response_update_existing::flushable()
+    const
+{
+    return true;
+};

@@ -1,6 +1,6 @@
 .\"
 .\"	aegis - project change supervisor
-.\"	Copyright (C) 2003, 2004 Peter Miller;
+.\"	Copyright (C) 2003-2005 Peter Miller;
 .\"	All rights reserved.
 .\"
 .\"	This program is free software; you can redistribute it and/or modify
@@ -54,7 +54,7 @@ end of an \fIaeannotate\fP(1) listing.
 .if n *
 .if t \(bu
 .\" change 55
-A bug has been fixed in \fIaede\fP91) for branches, where Aegis would
+A bug has been fixed in \fIaede\fP(1) for branches, where Aegis would
 complain about build source files (created by the \fIaenf \-build\fP
 command) being out-of-date.  This, of course, was difficult or impossible
 to fix, and unnecessary because the next build would fix them.
@@ -99,7 +99,7 @@ The problem with test 134 failing has been fixed.
 .if n *
 .if t \(bu
 .\" change 27
-A bug has been fixed in \fIaeipass\fP91) which prevented changing a
+A bug has been fixed in \fIaeipass\fP(1) which prevented changing a
 file's usage from being as straight-forward as it should have been.
 .PP
 .if n *

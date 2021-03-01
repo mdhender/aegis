@@ -1,6 +1,6 @@
 //
 //	aegis - project change supervisor
-//	Copyright (C) 1998, 2003, 2004 Peter Miller;
+//	Copyright (C) 1998, 2003-2005 Peter Miller;
 //	All rights reserved.
 //
 //	This program is free software; you can redistribute it and/or modify
@@ -20,7 +20,7 @@
 // MANIFEST: functions to get GIF pixels
 //
 
-#include <gif.h>
+#include <libaegis/gif.h>
 
 
 int

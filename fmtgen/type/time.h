@@ -1,6 +1,6 @@
 //
 //	aegis - project change supervisor
-//	Copyright (C) 1994 Peter Miller.
+//	Copyright (C) 1994, 2005 Peter Miller.
 //	All rights reserved.
 //
 //	This program is free software; you can redistribute it and/or modify
@@ -23,9 +23,7 @@
 #ifndef FMTGEN_TYPE_TIME_H
 #define FMTGEN_TYPE_TIME_H
 
-#pragma interface "type_time_ty"
-
-#include <type.h>
+#include <fmtgen/type.h>
 
 /**
   * The type_time_ty class is used to represent the type of a field

@@ -1,6 +1,6 @@
 //
 //	aegis - project change supervisor
-//	Copyright (C) 2001-2005 Peter Miller;
+//	Copyright (C) 2001-2006 Peter Miller;
 //	All rights reserved.
 //
 //	This program is free software; you can redistribute it and/or modify
@@ -20,41 +20,43 @@
 // MANIFEST: functions to manipulate receives
 //
 
-#include <ac/stdio.h>
-#include <ac/stdlib.h>
-#include <ac/string.h>
-#include <ac/unistd.h>
+#include <common/ac/stdio.h>
+#include <common/ac/stdlib.h>
+#include <common/ac/string.h>
+#include <common/ac/unistd.h>
 
-#include <arglex3.h>
-#include <arglex/change.h>
-#include <arglex/project.h>
-#include <cattr.h>
-#include <change.h>
-#include <change/attributes.h>
-#include <change/file.h>
-#include <change/lock_sync.h>
-#include <error.h>
-#include <help.h>
-#include <input/base64.h>
-#include <input/gunzip.h>
-#include <input/string.h>
-#include <nstring.h>
-#include <os.h>
-#include <patch.h>
-#include <pconf.h>
-#include <progname.h>
-#include <project.h>
-#include <project/file.h>
-#include <project/file/trojan.h>
-#include <project/history.h>
-#include <receive.h>
-#include <slurp.h>
-#include <str_list.h>
-#include <sub.h>
-#include <trace.h>
-#include <undo.h>
-#include <user.h>
-#include <zero.h>
+#include <common/error.h>
+#include <common/nstring.h>
+#include <common/progname.h>
+#include <common/str_list.h>
+#include <common/trace.h>
+#include <libaegis/arglex/change.h>
+#include <libaegis/arglex/project.h>
+#include <libaegis/cattr.h>
+#include <libaegis/change/attributes.h>
+#include <libaegis/change/file.h>
+#include <libaegis/change.h>
+#include <libaegis/change/lock_sync.h>
+#include <libaegis/help.h>
+#include <libaegis/input/base64.h>
+#include <libaegis/input/bunzip2.h>
+#include <libaegis/input/gunzip.h>
+#include <libaegis/input/string.h>
+#include <libaegis/os.h>
+#include <libaegis/patch.h>
+#include <libaegis/pconf.h>
+#include <libaegis/project/file.h>
+#include <libaegis/project/file/trojan.h>
+#include <libaegis/project.h>
+#include <libaegis/project/history.h>
+#include <libaegis/sub.h>
+#include <libaegis/undo.h>
+#include <libaegis/user.h>
+#include <libaegis/zero.h>
+
+#include <aepatch/arglex3.h>
+#include <aepatch/receive.h>
+#include <aepatch/slurp.h>
 
 
 static void
@@ -259,7 +261,7 @@ number_of_files(string_ty *project_name, long change_number)
     long	    result;
 
     pp = project_alloc(project_name);
-    project_bind_existing(pp);
+    pp->bind_existing();
     cp = change_alloc(pp, change_number);
     change_bind_existing(cp);
     result = change_file_count(cp);
@@ -276,7 +278,6 @@ extract_meta_data(string_ty **spp)
     const char      *begin;
     const char      *end;
     string_ty       *s;
-    input_ty        *ip;
 
     //
     // See if the necessary text markers are present.
@@ -303,7 +304,7 @@ extract_meta_data(string_ty **spp)
     //
     // Build an input source out of the marked text.
     //
-    ip = new input_string(nstring(begin, end - begin));
+    input ip = new input_string(nstring(begin, end - begin));
 
     //
     // Crop the description to emit the meta-data
@@ -319,10 +320,11 @@ extract_meta_data(string_ty **spp)
     //
     // Decipher the meta data.
     //
-    ip = new input_base64(ip, true);
+    ip = new input_base64(ip);
     ip = input_gunzip_open(ip);
+    ip = input_bunzip2_open(ip);
     change_set = (cstate_ty *)parse_input(ip, &cstate_type);
-    ip = 0; // parse_input delete-ed it for us
+    ip.close();
     return change_set;
 }
 
@@ -509,7 +511,7 @@ receive(void)
     //	    project name.)
     //
     pp = project_alloc(project_name);
-    project_bind_existing(pp);
+    pp->bind_existing();
 
     //
     // See if the initial prelude contains the project meta-data.
@@ -646,7 +648,7 @@ receive(void)
     // relative filenames.  It makes things easier to read.
     //
     pp = project_alloc(project_name);
-    project_bind_existing(pp);
+    pp->bind_existing();
     cp = change_alloc(pp, change_number);
     change_bind_existing(cp);
     dd = change_development_directory_get(cp, 0);

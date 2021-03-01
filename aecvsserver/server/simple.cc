@@ -1,6 +1,6 @@
 //
 //	aegis - project change supervisor
-//	Copyright (C) 2004, 2005 Peter Miller;
+//	Copyright (C) 2004-2006 Peter Miller;
 //	All rights reserved.
 //
 //	This program is free software; you can redistribute it and/or modify
@@ -20,13 +20,13 @@
 // MANIFEST: functions to manipulate simples
 //
 
-#include <ac/ctype.h>
+#include <common/ac/ctype.h>
 
-#include <error.h> // for assert
-#include <request.h>
-#include <response/error.h>
-#include <server/simple.h>
-#include <server/private.h>
+#include <common/error.h> // for assert
+#include <aecvsserver/request.h>
+#include <aecvsserver/response/error.h>
+#include <aecvsserver/server/simple.h>
+#include <aecvsserver/server/private.h>
 
 
 static void
@@ -36,7 +36,7 @@ run(server_ty *sp)
     {
 	const char      *cp;
 	string_ty       *request_name;
-	const request_ty *rp;
+	const request *rp;
 
 	//
 	// Get the next request.
@@ -56,7 +56,7 @@ run(server_ty *sp)
 	//
 	// Locate the request function.
 	//
-	rp = request_find(request_name);
+	rp = request::find(request_name);
 	assert(rp);
 	if (rp)
 	{
@@ -78,7 +78,7 @@ run(server_ty *sp)
 	    //
 	    // Perform the request.
 	    //
-	    request_run(rp, sp, argument);
+	    rp->run(sp, argument);
 	    str_free(argument);
 	}
 	str_free(request_name);

@@ -20,11 +20,9 @@
 // MANIFEST: implementation of the xml_node_rss class
 //
 
-#pragma implementation "xml_node_rss"
-
-#include <output.h>
-#include <xml_node/rss.h>
-#include <xmltextread/by_node.h>
+#include <libaegis/output.h>
+#include <libaegis/xml_node/rss.h>
+#include <libaegis/xmltextread/by_node.h>
 
 
 xml_node_rss::~xml_node_rss()

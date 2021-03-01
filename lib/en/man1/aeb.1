@@ -1,6 +1,6 @@
 '\" t
 .\"	aegis - project change supervisor
-.\"	Copyright (C) 1991-2005 Peter Miller;
+.\"	Copyright (C) 1991-2006 Peter Miller;
 .\"	All rights reserved.
 .\"
 .\"	This program is free software; you can redistribute it and/or modify
@@ -78,6 +78,13 @@ That is,
 it is not necessary for an integrator to log in as someone else,
 the project account for instance,
 in order to do an integration.
+.SS "No Build Required"
+It is possible to configure your project so that no build is required.
+To do this, set the following
+.RS
+build_command = "exit 0";
+.RE
+in the project configuration file.
 .SS Process Side Effects
 This command will cancel any test registrations,
 because building the project logically invalidates them.

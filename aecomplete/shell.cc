@@ -20,11 +20,11 @@
 // MANIFEST: functions to manipulate shells
 //
 
-#include <error.h> // for assert
-#include <shell.h>
-#include <shell/bash.h>
-#include <shell/zsh.h>
-#include <sub.h>
+#include <common/error.h> // for assert
+#include <aecomplete/shell.h>
+#include <aecomplete/shell/bash.h>
+#include <aecomplete/shell/zsh.h>
+#include <libaegis/sub.h>
 
 
 typedef shell_ty *(*funcptr)(void);

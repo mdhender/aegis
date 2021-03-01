@@ -1,39 +1,39 @@
-/*
- *	aegis - a project change supervisor
- *	Copyright (C) 1994-1996, 2004 Peter Miller;
- *	All rights reserved.
- *
- *	This program is free software; you can redistribute it and/or modify
- *	it under the terms of the GNU General Public License as published by
- *	the Free Software Foundation; either version 2 of the License, or
- *	(at your option) any later version.
- *
- *	This program is distributed in the hope that it will be useful,
- *	but WITHOUT ANY WARRANTY; without even the implied warranty of
- *	MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
- *	GNU General Public License for more details.
- *
- *	You should have received a copy of the GNU General Public License
- *	along with this program; if not, write to the Free Software
- *	Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111, USA.
- *
- * MANIFEST: insulate against <limits.h> presence or absence
- */
+//
+//	aegis - a project change supervisor
+//	Copyright (C) 1994-1996, 2004-2006 Peter Miller;
+//	All rights reserved.
+//
+//	This program is free software; you can redistribute it and/or modify
+//	it under the terms of the GNU General Public License as published by
+//	the Free Software Foundation; either version 2 of the License, or
+//	(at your option) any later version.
+//
+//	This program is distributed in the hope that it will be useful,
+//	but WITHOUT ANY WARRANTY; without even the implied warranty of
+//	MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+//	GNU General Public License for more details.
+//
+//	You should have received a copy of the GNU General Public License
+//	along with this program; if not, write to the Free Software
+//	Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111, USA.
+//
+// MANIFEST: insulate against <limits.h> presence or absence
+//
 
 #ifndef COMMON_AC_LIMITS_H
 #define COMMON_AC_LIMITS_H
 
-#include <config.h>
+#include <common/config.h>
 
 #if HAVE_LIMITS_H
 #include <limits.h>
 #else
 
-/*
- * fake a few of the values
- *	(the *_MIN things only work on 2s compliment machines,
- *	the *SHRT* things do not work on non-compliant compilers)
- */
+//
+// fake a few of the values
+//	(the *_MIN things only work on 2s compliment machines,
+//	the *SHRT* things do not work on non-compliant compilers)
+//
 #ifndef USHRT_MAX
 #define	USHRT_MAX	((unsigned short)~(unsigned)0)
 #endif
@@ -65,6 +65,6 @@
 #define MB_LEN_MAX 1
 #endif
 
-#endif	/* !HAVE_LIMITS_H */
+#endif	// !HAVE_LIMITS_H
 
-#endif /* COMMON_AC_LIMITS_H */
+#endif // COMMON_AC_LIMITS_H

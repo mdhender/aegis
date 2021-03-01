@@ -51,6 +51,9 @@ decompress     ---  dekomprimieren
 decrement      ---  Dekrement (-- operator)
 default        ---  Standard
 delta          ---  Delta
+deprecated     ---  xyz has been deprecated
+		    - xyz sollte nicht mehr verwendet werden
+                    - von der Verwendung von xyz wird abgeraten
 developer      ---  Entwickler
 development    ---  Bearbeitung
 development begin      ---  Bearbeitungsbeginn, Bearbeitung beginnen
@@ -74,6 +77,7 @@ file modification time  ---  Änderungszeit der/einer Datei
 file name pattern       ---  Dateinamensmuster
 fingerprint             ---  Prüfsumme, Fingerabdruck?
 
+history file            ---  History-Datei
 history tool            ---  History-Tool
 
 illegal                 ---  ungültig

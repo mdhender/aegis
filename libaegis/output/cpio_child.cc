@@ -1,6 +1,6 @@
 //
 //	aegis - project change supervisor
-//	Copyright (C) 1999, 2002-2005 Peter Miller;
+//	Copyright (C) 1999, 2002-2006 Peter Miller;
 //	All rights reserved.
 //
 //	This program is free software; you can redistribute it and/or modify
@@ -20,9 +20,9 @@
 // MANIFEST: functions to manipulate cpio_childs
 //
 
-#include <error.h>
-#include <output/cpio_child.h>
-#include <sub.h>
+#include <common/error.h>
+#include <libaegis/output/cpio_child.h>
+#include <libaegis/sub.h>
 
 
 output_cpio_child_ty::~output_cpio_child_ty()
@@ -59,7 +59,7 @@ output_cpio_child_ty::output_cpio_child_ty(output_ty *arg1, const nstring &arg2,
     pos(0),
     bol(true)
 {
-    // assert(length >= 0);
+    assert(length >= 0);
     header();
 }
 
@@ -82,18 +82,22 @@ output_cpio_child_ty::changed_size()
 void
 output_cpio_child_ty::padding()
 {
-    int n = deeper->ftell() % 4;
-    if (n == 0)
-	return;
-    while (n++ < 4)
+    long n = deeper->ftell();
+    assert(n >= 0);
+    for (;;)
+    {
+	if ((n & 3) == 0)
+	    break;
 	deeper->fputc('\n');
+	++n;
+    }
 }
 
 
 void
 output_cpio_child_ty::hex8(long n)
 {
-    deeper->fprintf("%08lx", n);
+    deeper->fprintf("%8.8lx", n);
 }
 
 

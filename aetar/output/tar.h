@@ -23,7 +23,7 @@
 #ifndef AETAR_OUTPUT_TAR_H
 #define AETAR_OUTPUT_TAR_H
 
-#include <output.h>
+#include <libaegis/output.h>
 
 /**
   * The output_tar_ty class is used to represent a tar archive.

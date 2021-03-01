@@ -1,6 +1,6 @@
 .\"
 .\"	aegis - project change supervisor
-.\"	Copyright (C) 1999, 2002 Peter Miller;
+.\"	Copyright (C) 1999, 2002, 2005 Peter Miller;
 .\"	All rights reserved.
 .\"
 .\"	This program is free software; you can redistribute it and/or modify
@@ -22,7 +22,7 @@
 .nh 2 "Security"
 .LP
 This section deals with security issues.
-Security isn't just ``keep the bad guys out'', it actually covers
+Security isn't just \[lq]keep the bad guys out\[rq], it actually covers
 \fIavailability\fP, \fIintegrity\fP and \fIconfidentiality\fP.
 .IP Availability: 8n
 refers to the system being available for use by authorised users.
@@ -36,17 +36,17 @@ For many Open Source projects, this isn't a large concern, but for
 corporate users of Aegis, non-disclosure of change-sets as they cross
 the Internet is a serious requirement.
 .LP
-As you can see, a strategy of ``keep the bad guys out'' is necessary,
+As you can see, a strategy of \[lq]keep the bad guys out\[rq] is necessary,
 but not sufficient, to satisfy security.
 .LP
 This section covers the above security issues, as applied to the use of
 \fIaedist\fP to move change sets around.
 .nh 3 "Trojan Horses"
 .LP
-``A Trojan horse is an apparently useful program containing hidden
+\[lq]A Trojan horse is an apparently useful program containing hidden
 functions that can exploit the privileges of the user [running the
 program], with a resulting security threat.  A Trojan horse does things
-that the program user did not intend\**.''
+that the program user did not intend\**.\[rq]
 .FS
 Summers, Rita C.,
 \fISecure Computing Threats and Safeguards\fP,
@@ -57,13 +57,13 @@ In order to forestall this threat, \fIaedist\fP will cease development
 of the change if it detects the potential for a Trojan horse.
 These include...
 .IP \(bu 2n
-Changing the project \fIconfig\fP file.
+Changing the project \fIaegis.conf\fP file.
 This file contains the build command and the difference commands,
 both of which would be run before a reviewer had a chance to confirm they
 were acceptable.
 .IP \(bu 2n
 Changing any of the files named in the \fItrojan_horse_suspect\fP field
-of the project \fIconfig\fP file.  This lets you cover things like the
+of the project \fIaegis.conf\fP file.  This lets you cover things like the
 build tool's configuration file (\fIe.g.\fP the Makefile or the cookbook),
 and any scripts or code generators which would be run by the build.
 .LP

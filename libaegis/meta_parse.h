@@ -1,6 +1,6 @@
 //
 //	aegis - project change supervisor
-//	Copyright (C) 1991-1994, 1999, 2001-2004 Peter Miller;
+//	Copyright (C) 1991-1994, 1999, 2001-2006 Peter Miller;
 //	All rights reserved.
 //
 //	This program is free software; you can redistribute it and/or modify
@@ -23,9 +23,9 @@
 #ifndef LIBAEGIS_META_PARSE_H
 #define LIBAEGIS_META_PARSE_H
 
-#include <main.h>
-#include <str.h>
-#include <meta_type.h>
+#include <common/main.h>
+#include <common/str.h>
+#include <libaegis/meta_type.h>
 
 struct sem_ty
 {
@@ -45,7 +45,7 @@ void sem_field(string_ty *);
 
 void *parse(string_ty *, type_ty *);
 void *parse_env(const char *, type_ty *);
-struct input_ty; // existence
-void *parse_input(struct input_ty *, type_ty *);
+class input_ty; // forward
+void *parse_input(input &, type_ty *);
 
 #endif // LIBAEGIS_META_PARSE_H

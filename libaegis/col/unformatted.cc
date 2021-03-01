@@ -20,14 +20,14 @@
 // MANIFEST: functions to manipulate unformatteds
 //
 
-#include <col/unformatted.h>
-#include <col/private.h>
-#include <error.h> // for assert
-#include <mem.h>
-#include <output/to_wide.h>
-#include <trace.h>
-#include <wide_output/column.h>
-#include <wide_output/expand.h>
+#include <libaegis/col/unformatted.h>
+#include <libaegis/col/private.h>
+#include <common/error.h> // for assert
+#include <common/mem.h>
+#include <libaegis/output/to_wide.h>
+#include <common/trace.h>
+#include <libaegis/wide_output/column.h>
+#include <libaegis/wide_output/expand.h>
 
 
 struct column_ty

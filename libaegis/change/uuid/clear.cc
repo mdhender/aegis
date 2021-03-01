@@ -1,6 +1,6 @@
 //
 //	aegis - project change supervisor
-//	Copyright (C) 2004 Peter Miller;
+//	Copyright (C) 2004, 2005 Peter Miller;
 //	All rights reserved.
 //
 //	This program is free software; you can redistribute it and/or modify
@@ -20,11 +20,11 @@
 // MANIFEST: functions to manipulate clears
 //
 
-#include <change.h>
-#include <change/attributes.h>
-#include <error.h>              // for assert
-#include <str.h>
-#include <uuidentifier.h>
+#include <libaegis/change.h>
+#include <libaegis/change/attributes.h>
+#include <common/error.h>              // for assert
+#include <common/str.h>
+#include <common/uuidentifier.h>
 
 void
 change_uuid_clear(change_ty *cp)

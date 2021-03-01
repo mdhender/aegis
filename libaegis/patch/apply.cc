@@ -1,6 +1,6 @@
 //
 //	aegis - project change supervisor
-//	Copyright (C) 2001-2005 Peter Miller;
+//	Copyright (C) 2001-2006 Peter Miller;
 //	All rights reserved.
 //
 //	This program is free software; you can redistribute it and/or modify
@@ -20,16 +20,15 @@
 // MANIFEST: functions to manipulate applys
 //
 
-#include <input/file_text.h>
-#include <output/file.h>
-#include <patch.h>
-#include <trace.h>
+#include <libaegis/input/file_text.h>
+#include <libaegis/output/file.h>
+#include <libaegis/patch.h>
+#include <common/trace.h>
 
 
 int
 patch_apply(patch_ty *pp, string_ty *ifn, string_ty *ofn)
 {
-    input_ty        *ifp;
     output_ty       *ofp;
     size_t          j;
     size_t          k;
@@ -69,7 +68,7 @@ patch_apply(patch_ty *pp, string_ty *ifn, string_ty *ofn)
 	// Read  the file into an array.
 	//
 	string_list_ty buffer;
-	ifp = input_file_text_open(ifn);
+	input ifp = input_file_text_open(ifn);
 	for (;;)
 	{
 	    nstring s;
@@ -77,8 +76,7 @@ patch_apply(patch_ty *pp, string_ty *ifn, string_ty *ofn)
 		break;
 	    buffer.push_back(s.get_ref());
 	}
-	delete ifp;
-	ifp = 0;
+	ifp.close();
 
 	//
 	// Now work over the hunk list, looking for where they go.

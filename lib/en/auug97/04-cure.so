@@ -1,6 +1,6 @@
 .\"
 .\"	aegis - project change supervisor
-.\"	Copyright (C) 1997, 2001, 2002 Peter Miller;
+.\"	Copyright (C) 1997, 2001, 2002, 2005 Peter Miller;
 .\"	All rights reserved.
 .\"
 .\"	This program is free software; you can redistribute it and/or modify
@@ -46,14 +46,14 @@ It is not a deficiency of
 itself that recursive \fImake\fP is broken,
 it does the best it can with the flawed input it is given.
 .QP
-``\fIBut, but, but...  You can't do that!\fP'' I hear you cry.
-``\fIA single\fP \f(CWMakefile\fP \fIis too big,
+\[lq]\fIBut, but, but...  You can't do that!\fP\[rq] I hear you cry.
+\[lq]\fIA single\fP \f(CWMakefile\fP \fIis too big,
 it's unmaintainable,
 it's too hard to write the rules,
 you'll run out of memory,
 I only want to build my little bit,
 the build will take too long.
-It's just not practical.\fP''
+It's just not practical.\fP\[rq]
 .LP
 These are valid concerns, and they frequently lead \fImake\fP users to
 the conclusion that re-working their build process does not have any
@@ -80,12 +80,12 @@ is no more complex than in the recursive case.
 Because the DAG is not segmented,
 this form of \f(CWMakefile\fP becomes less complex,
 and thus \fImore\fP maintainable,
-simply because fewer ``tweaks'' are required to keep it working.
+simply because fewer \[lq]tweaks\[rq] are required to keep it working.
 .LP
 Recursive \f(CWMakefiles\fP have a great deal of repetition.
 Many projects solve this by using include files.
 By using a single \f(CWMakefile\fP for the project,
-the need for the ``common'' include files disappears \- the single
+the need for the \[lq]common\[rq] include files disappears \- the single
 \f(CWMakefile\fP is the common part.
 .nh 2 "It's Too Hard To Write The Rules"
 The only change required is to include the directory part in filenames
@@ -124,7 +124,7 @@ Developers always have the option of giving \fImake\fP a specific
 target.  This is always the case, it's just that we usually rely on the
 default target in the \f(CWMakefile\fP in the current directory to
 shorten the command line for us.
-Building ``my little bit'' can still be done with a whole project
+Building \[lq]my little bit\[rq] can still be done with a whole project
 \f(CWMakefile\fP, simply by using a specific target, and an alias if the
 command line is too long.
 .LP
@@ -143,10 +143,10 @@ like these to blow up after the changes are integrated with the master
 source, you want them to blow up on the developer in some nice safe
 sand-box far away from the master source.
 .LP
-If you want to make ``just your little'' bit because you are concerned
+If you want to make \[lq]just your little\[rq] bit because you are concerned
 that performing a full project build will corrupt the project master
 source, due to the directory structure used in your project, see the
-``Projects \fIversus\fP Sand-Boxes'' section below.
+\[lq]Projects \fIversus\fP Sand-Boxes\[rq] section below.
 .nh 2 "The Build Will Take Too Long"
 This statement can be made from one of two perspectives.  First, that a
 whole project \fImake\fP, even when everything is up-to-date, inevitably
@@ -165,7 +165,7 @@ into an executable program.  This system has some 3000 files which
 also explore the possibility that implicit rules (\f(CW\&.y\fP \(->
 \f(CW\&.c\fP for example) may be necessary.
 .LP
-In order to build the DAG, \fImake\fP must ``stat'' 3000 files, plus an
+In order to build the DAG, \fImake\fP must \[lq]stat\[rq] 3000 files, plus an
 additional 2000 files or so, depending on which implicit rules your \fImake\fP
 knows about and your \f(CWMakefile\fP has left enabled.
 On the author's humble 66MHz i486 this takes about 10 seconds;
@@ -257,7 +257,8 @@ fellow developers to find them for you.
 .IP \(bu 2n
 The include dependencies will be recomputed unnecessarily, or will be
 interpreted incorrectly.  This is because \fImake\fP is string based,
-and thus ``.'' and ``../ant'' are two different places, even when you
+and thus \[lq].\[rq] and \[lq]../ant\[rq] are two different places,
+even when you
 are in the \f(CWant\fP directory.  This is of concern when include
 dependencies are automatically generated \- as they are for all large
 projects.

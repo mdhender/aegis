@@ -1,6 +1,6 @@
 //
 //	aegis - project change supervisor
-//	Copyright (C) 2004 Peter Miller;
+//	Copyright (C) 2004, 2005 Peter Miller;
 //	All rights reserved.
 //
 //	This program is free software; you can redistribute it and/or modify
@@ -20,10 +20,10 @@
 // MANIFEST: implementation of the change_id_cmd_lin_che class
 //
 
-#include <arglex2.h>
-#include <change/identifi_sub.h>
-#include <help.h>
-#include <project/identifi_sub.h>
+#include <libaegis/arglex2.h>
+#include <libaegis/change/identifi_sub.h>
+#include <libaegis/help.h>
+#include <libaegis/project/identifi_sub.h>
 
 
 void

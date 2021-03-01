@@ -20,7 +20,7 @@
 // MANIFEST: functions to manipulate read_strict2s
 //
 
-#include <input.h>
+#include <libaegis/input.h>
 
 
 void

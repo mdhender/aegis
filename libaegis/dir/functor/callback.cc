@@ -20,9 +20,7 @@
 // MANIFEST: implementation of the dir_functor_callback class
 //
 
-#pragma implementation "dir_functor_callback"
-
-#include <dir/functor/callback.h>
+#include <libaegis/dir/functor/callback.h>
 
 
 dir_functor_callback::~dir_functor_callback()

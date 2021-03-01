@@ -20,15 +20,15 @@
 // MANIFEST: functions to manipulate stdins
 //
 
-#include <ac/errno.h>
-#include <ac/stdio.h>
-#include <ac/sys/types.h>
+#include <common/ac/errno.h>
+#include <common/ac/stdio.h>
+#include <common/ac/sys/types.h>
 #include <sys/stat.h>
 #include <sys/socket.h>
-#include <ac/unistd.h>
+#include <common/ac/unistd.h>
 
-#include <input/stdin.h>
-#include <sub.h>
+#include <libaegis/input/stdin.h>
+#include <libaegis/sub.h>
 
 
 input_stdin::~input_stdin()

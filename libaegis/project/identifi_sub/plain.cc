@@ -1,6 +1,6 @@
 //
 //	aegis - project change supervisor
-//	Copyright (C) 2004 Peter Miller;
+//	Copyright (C) 2004-2006 Peter Miller;
 //	All rights reserved.
 //
 //	This program is free software; you can redistribute it and/or modify
@@ -20,17 +20,15 @@
 // MANIFEST: implementation of the project_identifier_subset_plain class
 //
 
-#pragma implementation "project_identifier_subset_plain"
-
-#include <arglex2.h>
-#include <arglex/change.h>
-#include <arglex/project.h>
-#include <error.h> // for assert
-#include <help.h>
-#include <project.h>
-#include <project/identifi_sub/plain.h>
-#include <trace.h>
-#include <user.h>
+#include <libaegis/arglex2.h>
+#include <libaegis/arglex/change.h>
+#include <libaegis/arglex/project.h>
+#include <common/error.h> // for assert
+#include <libaegis/help.h>
+#include <libaegis/project.h>
+#include <libaegis/project/identifi_sub/plain.h>
+#include <common/trace.h>
+#include <libaegis/user.h>
 
 
 project_identifier_subset_plain::~project_identifier_subset_plain()
@@ -72,7 +70,7 @@ project_identifier_subset_plain::get_pp()
 	if (!project_name)
 	    project_name = user_default_project();
 	pp = project_alloc(project_name);
-	project_bind_existing(pp);
+	pp->bind_existing();
 	assert(pp);
     }
     return pp;

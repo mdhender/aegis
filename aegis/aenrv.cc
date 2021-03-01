@@ -1,6 +1,6 @@
 //
 //	aegis - project change supervisor
-//	Copyright (C) 1991-1995, 1997-1999, 2001-2004 Peter Miller;
+//	Copyright (C) 1991-1995, 1997-1999, 2001-2006 Peter Miller;
 //	All rights reserved.
 //
 //	This program is free software; you can redistribute it and/or modify
@@ -20,25 +20,25 @@
 // MANIFEST: functions to implement new reviewer
 //
 
-#include <ac/stdio.h>
-#include <ac/stdlib.h>
+#include <common/ac/stdio.h>
+#include <common/ac/stdlib.h>
 
-#include <ael/project/reviewers.h>
-#include <aenrv.h>
-#include <arglex2.h>
-#include <arglex/project.h>
-#include <commit.h>
-#include <help.h>
-#include <lock.h>
-#include <os.h>
-#include <progname.h>
-#include <project.h>
-#include <project/history.h>
-#include <quit.h>
-#include <str_list.h>
-#include <sub.h>
-#include <trace.h>
-#include <user.h>
+#include <libaegis/ael/project/reviewers.h>
+#include <aegis/aenrv.h>
+#include <libaegis/arglex2.h>
+#include <libaegis/arglex/project.h>
+#include <libaegis/commit.h>
+#include <libaegis/help.h>
+#include <libaegis/lock.h>
+#include <libaegis/os.h>
+#include <common/progname.h>
+#include <libaegis/project.h>
+#include <libaegis/project/history.h>
+#include <common/quit.h>
+#include <common/str_list.h>
+#include <libaegis/sub.h>
+#include <common/trace.h>
+#include <libaegis/user.h>
 
 
 static void
@@ -118,7 +118,7 @@ new_reviewer_inner(project_ty *pp, string_list_ty *wlp, int strict)
     //
     // lock the project for change
     //
-    project_pstate_lock_prepare(pp);
+    pp->pstate_lock_prepare();
     lock_take();
 
     //
@@ -172,7 +172,7 @@ new_reviewer_inner(project_ty *pp, string_list_ty *wlp, int strict)
     //
     // write out and release lock
     //
-    project_pstate_write(pp);
+    pp->pstate_write();
     commit();
     lock_release();
 
@@ -271,19 +271,19 @@ new_reviewer_main(void)
     if (!project_name)
 	project_name = user_default_project();
     pp = project_alloc(project_name);
-    project_bind_existing(pp);
+    pp->bind_existing();
     str_free(project_name);
 
     if (recursive)
     {
 	string_list_ty pl;
-	project_list_inner(&pl, pp);
+	pp->list_inner(pl);
 	for (size_t j = 0; j < pl.nstrings; ++j)
 	{
 	    project_ty      *branch;
 
 	    branch = project_alloc(pl.string[j]);
-	    project_bind_existing(branch);
+	    branch->bind_existing();
 	    new_reviewer_inner(branch, &wl, 0);
 	    project_free(branch);
 	}

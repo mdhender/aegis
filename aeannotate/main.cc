@@ -20,20 +20,20 @@
 // MANIFEST: functions to manipulate mains
 //
 
-#include <ac/signal.h>
-#include <ac/stdlib.h>
+#include <common/ac/signal.h>
+#include <common/ac/stdlib.h>
 
-#include <annotate.h>
-#include <arglex3.h>
-#include <env.h>
-#include <help.h>
-#include <language.h>
-#include <list.h>
-#include <os.h>
-#include <quit.h>
-#include <rsrc_limits.h>
-#include <usage.h>
-#include <version.h>
+#include <aeannotate/annotate.h>
+#include <aeannotate/arglex3.h>
+#include <common/env.h>
+#include <libaegis/help.h>
+#include <common/language.h>
+#include <aeannotate/list.h>
+#include <libaegis/os.h>
+#include <common/quit.h>
+#include <common/rsrc_limits.h>
+#include <aeannotate/usage.h>
+#include <libaegis/version.h>
 
 
 static void

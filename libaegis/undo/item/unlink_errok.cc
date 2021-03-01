@@ -1,6 +1,6 @@
 //
 //	aegis - project change supervisor
-//	Copyright (C) 2004 Peter Miller;
+//	Copyright (C) 2004, 2005 Peter Miller;
 //	All rights reserved.
 //
 //	This program is free software; you can redistribute it and/or modify
@@ -20,11 +20,9 @@
 // MANIFEST: implementation of the undo_item_unlink_errok class
 //
 
-#pragma implementation "undo_item_unlink_errok"
-
-#include <os.h>
-#include <sub.h>
-#include <undo/item/unlink_errok.h>
+#include <libaegis/os.h>
+#include <libaegis/sub.h>
+#include <libaegis/undo/item/unlink_errok.h>
 
 
 undo_item_unlink_errok::~undo_item_unlink_errok()

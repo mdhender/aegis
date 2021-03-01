@@ -1,6 +1,6 @@
 .\"
 .\"	aegis - project change supervisor
-.\"	Copyright (C) 1997, 2002 Peter Miller;
+.\"	Copyright (C) 1997, 2002, 2005 Peter Miller;
 .\"	All rights reserved.
 .\"
 .\"	This program is free software; you can redistribute it and/or modify
@@ -120,7 +120,7 @@ How much time is spent figuring out why \fImake\fP did something unexpected?
 How much time is spent figuring out that \fImake\fP \fBdid\fP something
 unexpected?
 How much time is spent tinkering with the build process?
-These activities are often thought of as ``normal'' development overheads.
+These activities are often thought of as \[lq]normal\[rq] development overheads.
 .LP
 Building your project is a fundamental activity.
 If it is performing poorly, so are development, debugging and testing.

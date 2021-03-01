@@ -1,6 +1,6 @@
 /*
  *	aegis - project change supervisor
- *	Copyright (C) 1991-1996, 1998-2005 Peter Miller;
+ *	Copyright (C) 1991-1996, 1998-2006 Peter Miller;
  *	All rights reserved.
  *
  *	This program is free software; you can redistribute it and/or modify
@@ -28,7 +28,7 @@
  *	man5/aepconf.5
  */
 
-#include <common.def>
+#include <libaegis/common.def>
 
 /**
   * The work_area_style type encapsulates a set of parameters
@@ -1065,6 +1065,10 @@ annotate_diff_command = string;
  *
  * ${File_Name}
  *	the absolute path of the test to be executed.
+ * ${VARiables}
+ *      the text of name=value variable settings from the command line,
+ *      suitably quoted to protect special character from the shell.
+ *      Will be appended to the end of the command if not used explicitly.
  *
  * Note that tests are source files, and thus never have the execute bit set.
  *
@@ -1091,6 +1095,10 @@ test_command = string;
  *
  * ${File_Name}
  *	the absolute path of the test to be executed.
+ * ${VARiables}
+ *      the text of name=value variable settings from the command line,
+ *      suitably quoted to protect special character from the shell.
+ *      Will be appended to the end of the command if not used explicitly.
  *
  * Note that tests are source files, and thus never have the execute bit set.
  *
@@ -1103,7 +1111,7 @@ test_command = string;
 development_test_command = string;
 
 /*
- * This is an advanced filed, used to run more than test at once.
+ * This is an advanced field, used to run more than test at once.
  * It is of most use if you have a multi-processor machine.
  *
  * All of the substitutions described in aesub(5) are available,
@@ -1112,7 +1120,10 @@ development_test_command = string;
  * ${File_Names}
  *	The base-relative paths of the tests to be executed.  Note that
  *	tests are source files, and thus never have the execute bit set.
- *
+ * ${VARiables}
+ *      the text of name=value variable settings from the command line,
+ *      suitably quoted to protect special character from the shell.
+ *      Will be appended to the end of the command if not used explicitly.
  * ${Ouput}
  *	The absolute path of a file in aetest(5) format, to be created
  *	by the batch test command, to contain the results of the tests.
@@ -1186,7 +1197,7 @@ file_template =
 	redefinition_ok;
 
 /*
- * Whiteout templates are used to produce ``whiteout'' files in the
+ * Whiteout templates are used to produce "whiteout" files in the
  * development directory when a file has been removed.  The idea is that
  * if it is referenced during the build, it will result in compile errors.
  * If no patters match, 1 1K junk file will be used instead.  An *absent*
@@ -1305,7 +1316,7 @@ new_test_filename = string;
  *		The directory within which the development directory is
  *		to be created.
  * Magic
- *		A single letter, starting from ``C'', which can be
+ *		A single letter, starting from "C", which can be
  *		inserted.  This must be used, as it allows Aegis to try
  *		different names should there be a conflict.
  *
@@ -1441,6 +1452,40 @@ review_policy_command = string;
  *	non-zero means that further review(s) are necessary.
  */
 develop_end_policy_command = string;
+
+/*
+ * The unchanged_file_develop_end_policy field is used to control
+ * what happens when development of a change is ended, and the change
+ * contains files which have not had their contents or their attributes
+ * changed.
+ *
+ * ignore
+ *     Does not look for or warn about unchanged files.
+ * warning
+ *     If the change sets contains unchanged files, an warning will be
+ *     issued for each one.
+ * error
+ *     If the change set contains unchanged files, an error will be
+ *     issued for each one, and develop end will not complete (and the
+ *     change will remain in the "being developed" state).
+ */
+unchanged_file_develop_end_policy = (ignore, warning, error);
+
+/*
+ * The unchanged_file_integrate_pass_policy field is used to control
+ * what happens when a change is completed, and the change contains
+ * files which have not had their contents or their attributes changed.
+ *
+ * ignore
+ *     Does not look for or warn about unchanged files.
+ * warning
+ *     If the change sets contains unchanged files, an warning will be
+ *     issued for each one.
+ * remove
+ *     If the change set contains unchanged files, they will be silently
+ *     removed from the change set.  The project file is unaffected.
+ */
+unchanged_file_integrate_pass_policy = (ignore, warning, remove);
 
 /*
  * It is possible to have Aegis cache the list of project files that

@@ -1,6 +1,6 @@
 .\"
 .\"	aegis - project change supervisor
-.\"	Copyright (C) 1999, 2003 Peter Miller;
+.\"	Copyright (C) 1999, 2003, 2005 Peter Miller;
 .\"	All rights reserved.
 .\"
 .\"	This program is free software; you can redistribute it and/or modify
@@ -23,7 +23,7 @@
 .if n *
 .if t \(bu
 .\" change 36
-The \fIaeib\fP command is now more robust about ``foreign'' files in
+The \fIaeib\fP command is now more robust about \[lq]foreign\[rq] files in
 the baseline (\fIe.g.\fP root-owned core files).
 .PP
 .if n *
@@ -54,13 +54,14 @@ dealing with removed files.
 .if n *
 .if t \(bu
 .\" change 29
-There is now an embryonic ``How To'' document for Aegis.
+There is now an embryonic \[lq]How To\[rq] document for Aegis.
 Please feel free to contribute subjects.
 .PP
 .if n *
 .if t \(bu
 .\" change 29
-You can now say ``\fB\-BRanch -\fP'' as a synonym for the ``\fB\-TRunk\fP
+You can now say \[lq]\fB\-BRanch -\fP\[rq] as a synonym for the
+\[lq]\fB\-TRunk\fP
 option, for those commands which accept it.
 .PP
 .if n *

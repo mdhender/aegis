@@ -1,6 +1,6 @@
 //
 //	aegis - project change supervisor
-//	Copyright (C) 1994, 1996, 2004 Peter Miller;
+//	Copyright (C) 1994, 1996, 2004, 2005 Peter Miller;
 //	All rights reserved.
 //
 //	This program is free software; you can redistribute it and/or modify
@@ -20,7 +20,7 @@
 // MANIFEST: impliment missing functions from <unistd.h>
 //
 
-#include <ac/unistd.h>
+#include <common/ac/unistd.h>
 
 
 #ifndef CONF_NO_seteuid

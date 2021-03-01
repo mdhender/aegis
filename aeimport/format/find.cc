@@ -1,6 +1,6 @@
 //
 //	aegis - project change supervisor
-//	Copyright (C) 2001, 2002, 2004 Peter Miller;
+//	Copyright (C) 2001, 2002, 2004, 2005 Peter Miller;
 //	All rights reserved.
 //
 //	This program is free software; you can redistribute it and/or modify
@@ -20,11 +20,11 @@
 // MANIFEST: functions to manipulate finds
 //
 
-#include <ac/string.h>
+#include <common/ac/string.h>
 
-#include <format/rcs.h>
-#include <format/sccs.h>
-#include <sub.h>
+#include <aeimport/format/rcs.h>
+#include <aeimport/format/sccs.h>
+#include <libaegis/sub.h>
 
 
 format_ty *

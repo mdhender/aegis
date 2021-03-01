@@ -1,6 +1,6 @@
 .\"
 .\"	aegis - project change supervisor
-.\"	Copyright (C) 1999, 2003 Peter Miller;
+.\"	Copyright (C) 1999, 2003, 2005 Peter Miller;
 .\"	All rights reserved.
 .\"
 .\"	This program is free software; you can redistribute it and/or modify
@@ -22,7 +22,7 @@
 .PP
 .if n *
 .if t \(bu
-The ``\fIaedist \-receive\fP'' command now accepts a \fB\-delta\fP option,
+The \[lq]\fIaedist \-receive\fP\[rq] command now accepts a \fB\-delta\fP option,
 allowing a received change set to be applied to an historical version.
 .PP
 .if n *

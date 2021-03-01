@@ -1,6 +1,6 @@
 //
 //	aegis - project change supervisor
-//	Copyright (C) 2004 Peter Miller;
+//	Copyright (C) 2004-2006 Peter Miller;
 //	All rights reserved.
 //
 //	This program is free software; you can redistribute it and/or modify
@@ -20,16 +20,17 @@
 // MANIFEST: implementation of the quit class
 //
 
-#include <ac/stddef.h>
-#include <ac/stdio.h>
-#include <ac/stdlib.h>
+#include <common/ac/stddef.h>
+#include <common/ac/stdio.h>
+#include <common/ac/stdlib.h>
 
-#include <error.h> // for assert
-#include <progname.h>
-#include <quit.h>
+#include <common/error.h> // for assert
+#include <common/progname.h>
+#include <common/quit.h>
 
-static quit_action *quit_list[10];
+static quit_action **quit_list;
 static size_t quit_list_len;
+static size_t quit_list_max;
 static int quitting;
 
 
@@ -38,10 +39,19 @@ quit_register(quit_action &action)
 {
     if (quitting)
 	return;
-    assert(quit_list_len < SIZEOF(quit_list));
     for (size_t j = 0; j < quit_list_len; ++j)
 	if (quit_list[j] == &action)
     	    return;
+    if (quit_list_len >= quit_list_max)
+    {
+	size_t new_max = quit_list_max * 2 + 16;
+	quit_action **new_list = new quit_action * [new_max];
+	for (size_t j = 0; j < quit_list_len; ++j)
+	    new_list[j] = quit_list[j];
+	delete [] quit_list;
+	quit_list = new_list;
+	quit_list_max = new_max;
+    }
     quit_list[quit_list_len++] = &action;
 }
 
@@ -51,7 +61,6 @@ quit_unregister(quit_action &action)
 {
     if (quitting)
 	return;
-    assert(quit_list_len < SIZEOF(quit_list));
     for (size_t j = 0; j < quit_list_len; ++j)
     {
 	if (quit_list[j] == &action)
@@ -68,7 +77,7 @@ quit_unregister(quit_action &action)
 void
 quit(int n)
 {
-    if (quitting > 4)
+    if (quitting++ > 4)
     {
 	fprintf
 	(
@@ -78,7 +87,6 @@ quit(int n)
 	);
 	exit(1);
     }
-    ++quitting;
     while (quit_list_len > 0)
     {
 	quit_action *qap = quit_list[--quit_list_len];

@@ -1,6 +1,6 @@
 //
 //	aegis - project change supervisor
-//	Copyright (C) 2004, 2005 Peter Miller;
+//	Copyright (C) 2004-2006 Peter Miller;
 //	All rights reserved.
 //
 //	This program is free software; you can redistribute it and/or modify
@@ -20,25 +20,24 @@
 // MANIFEST: functions to manipulate mains
 //
 
-#include <ac/stdio.h>
-#include <ac/stdlib.h>
-#include <ac/string.h>
+#include <common/ac/stdio.h>
+#include <common/ac/stdlib.h>
+#include <common/ac/string.h>
 
-#include <arglex2.h>
-#include <arglex/change.h>
-#include <arglex/project.h>
-#include <change/file.h>
-#include <common.h>
-#include <env.h>
-#include <error.h>
-#include <help.h>
-#include <language.h>
-#include <os.h>
-#include <progname.h>
-#include <project.h>
-#include <quit.h>
-#include <r250.h>
-#include <user.h>
+#include <libaegis/arglex2.h>
+#include <libaegis/arglex/change.h>
+#include <libaegis/arglex/project.h>
+#include <libaegis/change/file.h>
+#include <libaegis/common.h>
+#include <common/env.h>
+#include <common/error.h>
+#include <libaegis/help.h>
+#include <common/language.h>
+#include <libaegis/os.h>
+#include <common/progname.h>
+#include <libaegis/project.h>
+#include <common/quit.h>
+#include <libaegis/user.h>
 
 
 enum
@@ -150,7 +149,6 @@ main(int argc, char **argv)
     int             action_column;
     int             n;
 
-    r250_init();
     os_become_init_mortal();
     arglex2_init3(argc, argv, argtab);
     env_initialize();
@@ -222,7 +220,7 @@ main(int argc, char **argv)
 	project_name = user_default_project();
     pp = project_alloc(project_name);
     str_free(project_name);
-    project_bind_existing(pp);
+    pp->bind_existing();
 
     //
     // locate user data

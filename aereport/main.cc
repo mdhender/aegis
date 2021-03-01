@@ -20,29 +20,28 @@
 // MANIFEST: operating system entry point
 //
 
-#include <ac/stdio.h>
-#include <ac/stdlib.h>
+#include <common/ac/stdio.h>
+#include <common/ac/stdlib.h>
 
-#include <aer/func/change.h>
-#include <aer/func/project.h>
-#include <aer/list.h>
-#include <aer/parse.h>
-#include <arglex2.h>
-#include <arglex/change.h>
-#include <arglex/project.h>
-#include <env.h>
-#include <help.h>
-#include <language.h>
-#include <os.h>
-#include <progname.h>
-#include <quit.h>
-#include <r250.h>
-#include <rsrc_limits.h>
-#include <sub.h>
-#include <trace.h>
-#include <str_list.h>
-#include <version.h>
-#include <zero.h>
+#include <libaegis/aer/func/change.h>
+#include <libaegis/aer/func/project.h>
+#include <libaegis/aer/list.h>
+#include <libaegis/aer/parse.h>
+#include <libaegis/arglex2.h>
+#include <libaegis/arglex/change.h>
+#include <libaegis/arglex/project.h>
+#include <common/env.h>
+#include <libaegis/help.h>
+#include <common/language.h>
+#include <libaegis/os.h>
+#include <common/progname.h>
+#include <common/quit.h>
+#include <common/rsrc_limits.h>
+#include <libaegis/sub.h>
+#include <common/trace.h>
+#include <common/str_list.h>
+#include <libaegis/version.h>
+#include <libaegis/zero.h>
 
 
 //
@@ -243,7 +242,6 @@ int
 main(int argc, char **argv)
 {
     resource_limits_init();
-    r250_init();
     os_become_init_mortal();
     arglex2_init(argc, argv);
     env_initialize();

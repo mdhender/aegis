@@ -1,6 +1,6 @@
 //
 //	aegis - project change supervisor
-//	Copyright (C) 1999, 2001-2004 Peter Miller;
+//	Copyright (C) 1999, 2001-2005 Peter Miller;
 //	All rights reserved.
 //
 //	This program is free software; you can redistribute it and/or modify
@@ -20,16 +20,16 @@
 // MANIFEST: functions to manipulate writes
 //
 
-#include <ac/stdlib.h>
-#include <ac/string.h>
+#include <common/ac/stdlib.h>
+#include <common/ac/string.h>
 
-#include <change.h>
-#include <commit.h>
-#include <error.h> // for assert
-#include <os.h>
-#include <project.h>
-#include <trace.h>
-#include <undo.h>
+#include <libaegis/change.h>
+#include <libaegis/commit.h>
+#include <common/error.h> // for assert
+#include <libaegis/os.h>
+#include <libaegis/project.h>
+#include <common/trace.h>
+#include <libaegis/undo.h>
 
 
 static int

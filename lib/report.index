@@ -55,8 +55,8 @@ where =
 	name = "Change_Log";
 	description =
 	    "Report the history of a change.  Usually employed on "
-            "branches, where it can provides a common Internet ``Change "
-            "Log'' style of output.";
+            "branches, where it can provides a common Internet \"Change "
+            "Log\" style of output.";
 	filename = "report/chan_log.rpt";
     },
     {

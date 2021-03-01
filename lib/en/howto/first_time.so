@@ -1,6 +1,6 @@
 .\"
 .\"	aegis - project change supervisor
-.\"	Copyright (C) 1999, 2004 Peter Miller;
+.\"	Copyright (C) 1999, 2004, 2005 Peter Miller;
 .\"	All rights reserved.
 .\"
 .\"	This program is free software; you can redistribute it and/or modify
@@ -39,7 +39,7 @@ to Create a New Project\fP section, and then return here.
 .LP
 The very first time you use Aegis, it will be easiest if you download
 one of the template projects.  This gives you a project which (almost
-always) works correctly the first time ``out of the box''.
+always) works correctly the first time \[lq]out of the box\[rq].
 .IP \(bu 2n
 The template projects can be found on the Aegis home page:
 .\" do not warn "cannot adjust line"
@@ -82,14 +82,14 @@ If you have several levels of directories, reproduce this, too.
 Remove files which are not primary sources (\fIe.g.\fP the generated C
 sources of you have yacc input files).
 .IP \(bu 2n
-Using the ``\fIaenf \&.\fP'' command (yes, that's a dot, meaning ``the
-current directory'') you can tell Aegis to add all of the source files
+Using the \[lq]\fIaenf \&.\fP\[rq] command (yes, that's a dot, meaning \[lq]the
+current directory\[rq]) you can tell Aegis to add all of the source files
 in the development directory to the change set.
 .IP \(bu 2n
 You will probably need to modify your build method to meet
 Aegis' expectations.  Rather than do this immediately, change
 the \fIbuild_command\fP in the project \fIconfig\fP file to read
-``\f[CW]build_command = "exit 0";\fP'' and fix it in the next change set.
+\[lq]\f[CW]build_command = "exit 0";\fP\[rq] and fix it in the next change set.
 .IP \(bu 2n
 Now, build, develop end, review and integrate, as found in the
 \fIUser Guide\fP worked example.  (Except, of course, there is only one

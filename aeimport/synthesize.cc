@@ -1,6 +1,6 @@
 //
 //	aegis - project change supervisor
-//	Copyright (C) 2001-2005 Peter Miller;
+//	Copyright (C) 2001-2006 Peter Miller;
 //	All rights reserved.
 //
 //	This program is free software; you can redistribute it and/or modify
@@ -20,24 +20,25 @@
 // MANIFEST: functions to manipulate synthesizes
 //
 
-#include <change.h>
-#include <change/branch.h>
-#include <change/file.h>
-#include <change/verbose.h>
-#include <change_set.h>
-#include <commit.h>
-#include <cstate.h>
-#include <error.h>
-#include <fstate.h>
-#include <lock.h>
-#include <project.h>
-#include <project/history.h>
-#include <project/file.h>
-#include <sub.h>
-#include <synthesize.h>
-#include <trace.h>
-#include <user.h>
-#include <uuidentifier.h>
+#include <common/error.h>
+#include <common/trace.h>
+#include <common/uuidentifier.h>
+#include <libaegis/change/branch.h>
+#include <libaegis/change/file.h>
+#include <libaegis/change.h>
+#include <libaegis/change/verbose.h>
+#include <libaegis/commit.h>
+#include <libaegis/cstate.h>
+#include <libaegis/fstate.h>
+#include <libaegis/lock.h>
+#include <libaegis/project/file.h>
+#include <libaegis/project.h>
+#include <libaegis/project/history.h>
+#include <libaegis/sub.h>
+#include <libaegis/user.h>
+
+#include <aeimport/change_set.h>
+#include <aeimport/synthesize.h>
 
 
 static string_ty *
@@ -107,8 +108,8 @@ synthesize(string_ty *project_name, change_set_ty *csp)
     //
     trace(("synthesize()\n{\n"));
     pp = project_alloc(project_name);
-    project_bind_existing(pp);
-    project_pstate_lock_prepare(pp);
+    pp->bind_existing();
+    pp->pstate_lock_prepare();
     project_history_lock_prepare(pp);
     lock_take();
 
@@ -256,7 +257,7 @@ synthesize(string_ty *project_name, change_set_ty *csp)
     // Write stuff back out.
     //
     change_cstate_write(cp);
-    project_pstate_write(pp);
+    pp->pstate_write();
     commit();
     lock_release();
 

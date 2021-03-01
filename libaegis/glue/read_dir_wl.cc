@@ -20,8 +20,8 @@
 // MANIFEST: functions to manipulate read_dir_wls
 //
 
-#include <glue.h>
-#include <nstring/list.h>
+#include <libaegis/glue.h>
+#include <common/nstring/list.h>
 
 
 int

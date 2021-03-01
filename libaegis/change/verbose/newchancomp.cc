@@ -1,6 +1,6 @@
 //
 //	aegis - project change supervisor
-//	Copyright (C) 2001, 2003, 2004 Peter Miller;
+//	Copyright (C) 2001, 2003-2005 Peter Miller;
 //	All rights reserved.
 //
 //	This program is free software; you can redistribute it and/or modify
@@ -20,9 +20,9 @@
 // MANIFEST: functions to manipulate newchancomps
 //
 
-#include <change.h>
-#include <change/verbose.h>
-#include <sub.h>
+#include <libaegis/change.h>
+#include <libaegis/change/verbose.h>
+#include <libaegis/sub.h>
 
 
 void

@@ -1,7 +1,7 @@
 #!/bin/sh
 #
 #	aegis - project change supervisor
-#	Copyright (C) 1994, 1995, 1996, 1997, 1998, 2001 Peter Miller;
+#	Copyright (C) 1994-1998, 2001, 2005 Peter Miller;
 #	All rights reserved.
 #
 #	This program is free software; you can redistribute it and/or modify
@@ -162,7 +162,7 @@ fubar
 if test $? -ne 0 ; then no_result; fi
 $bin/aegis -rpt -f test.in -unf -o test.out
 if test $? -ne 0 ; then fail; fi
-diff test.ok test.out
+diff -b test.ok test.out
 if test $? -ne 0 ; then fail; fi
 
 #
@@ -231,7 +231,7 @@ fubar
 if test $? -ne 0 ; then no_result; fi
 $bin/aegis -rpt -f test.in -o test.out -unf
 if test $? -ne 0 ; then fail; fi
-diff test.ok test.out
+diff -b test.ok test.out
 if test $? -ne 0 ; then fail; fi
 
 #
@@ -294,7 +294,7 @@ fubar
 if test $? -ne 0 ; then no_result; fi
 $bin/aegis -rpt -f test.in -o test.out -unf
 if test $? -ne 0 ; then fail; fi
-diff test.ok test.out
+diff -b test.ok test.out
 if test $? -ne 0 ; then fail; fi
 
 #
@@ -345,7 +345,7 @@ fubar
 if test $? -ne 0 ; then no_result; fi
 $bin/aegis -rpt -f test.in -o test.out -unf
 if test $? -ne 0 ; then fail; fi
-diff test.ok test.out
+diff -b test.ok test.out
 if test $? -ne 0 ; then fail; fi
 
 #
@@ -388,7 +388,7 @@ fubar
 if test $? -ne 0 ; then no_result; fi
 $bin/aegis -rpt -f test.in -o test.out -unf
 if test $? -ne 0 ; then fail; fi
-diff test.ok test.out
+diff -b test.ok test.out
 if test $? -ne 0 ; then fail; fi
 
 #
@@ -428,7 +428,7 @@ fubar
 if test $? -ne 0 ; then no_result; fi
 $bin/aegis -rpt t -o test.out -unf
 if test $? -ne 0 ; then fail; fi
-diff test.ok test.out
+diff -b test.ok test.out
 if test $? -ne 0 ; then fail; fi
 
 #
@@ -444,7 +444,7 @@ grep 'look for this line' test.out > test.out2
 if test $? -ne 0 ; then no_result; fi
 sed -e 's| /.*||' < test.out2 > test.out3
 if test $? -ne 0 ; then no_result; fi
-diff test.ok test.out3
+diff -b test.ok test.out3
 if test $? -ne 0 ; then fail; fi
 
 #
@@ -461,7 +461,7 @@ echo $USER > test.ok
 if test $? -ne 0 ; then no_result; fi
 $bin/aegis -rpt -f test.in -o test.out -unf
 if test $? -ne 0 ; then fail; fi
-diff test.ok test.out
+diff -b test.ok test.out
 if test $? -ne 0 ; then fail; fi
 
 #

@@ -1,6 +1,6 @@
 //
 //	aegis - project change supervisor
-//	Copyright (C) 2004 Peter Miller;
+//	Copyright (C) 2004, 2005 Peter Miller;
 //	All rights reserved.
 //
 //	This program is free software; you can redistribute it and/or modify
@@ -20,10 +20,10 @@
 // MANIFEST: functions to manipulate privates
 //
 
-#include <error.h> // for assert
-#include <mem.h>
-#include <net.h>
-#include <server/private.h>
+#include <common/error.h> // for assert
+#include <common/mem.h>
+#include <aecvsserver/net.h>
+#include <aecvsserver/server/private.h>
 
 
 server_ty *

@@ -1,6 +1,6 @@
 //
 //	aegis - project change supervisor
-//	Copyright (C) 1994-1996, 1999, 2002-2004 Peter Miller;
+//	Copyright (C) 1994-1996, 1999, 2002-2005 Peter Miller;
 //	All rights reserved.
 //
 //	This program is free software; you can redistribute it and/or modify
@@ -17,18 +17,18 @@
 //	along with this program; if not, write to the Free Software
 //	Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111, USA.
 //
-// MANIFEST: functions to manipulate ``in'' expressions
+// MANIFEST: functions to manipulate "in" expressions
 //
 
-#include <aer/expr/constant.h>
-#include <aer/expr/rel.h>
-#include <aer/expr/in.h>
-#include <aer/lex.h>
-#include <aer/value/boolean.h>
-#include <aer/value/error.h>
-#include <aer/value/list.h>
-#include <error.h>
-#include <sub.h>
+#include <libaegis/aer/expr/constant.h>
+#include <libaegis/aer/expr/rel.h>
+#include <libaegis/aer/expr/in.h>
+#include <libaegis/aer/lex.h>
+#include <libaegis/aer/value/boolean.h>
+#include <libaegis/aer/value/error.h>
+#include <libaegis/aer/value/list.h>
+#include <common/error.h>
+#include <libaegis/sub.h>
 
 
 static rpt_value_ty *

@@ -1,6 +1,6 @@
 .\"
 .\"	aegis - project change supervisor
-.\"	Copyright (C) 1997, 2001 Peter Miller;
+.\"	Copyright (C) 1997, 2001, 2005 Peter Miller;
 .\"	All rights reserved.
 .\"
 .\"	This program is free software; you can redistribute it and/or modify
@@ -34,7 +34,7 @@ and closely examining the thing they had in common, \fImake\fP,
 it became possible to see the larger pattern.
 Most of us are too caught up in the minutiae of just getting the rotten
 build to work that we don't have time to spare for the big picture.
-Especially when the item in question ``obviously'' works,
+Especially when the item in question \[lq]obviously\[rq] works,
 and has done so continuously for the last 20 years.
 .LP
 It is interesting that the problems of recursive \fImake\fP are rarely
@@ -56,7 +56,7 @@ It is hardly surprising that the original paper did not discuss recursive
 \fImake\fP, Unix projects at the time usually \fIdid\fP fit into a single
 directory.
 .LP
-It may be this which set the ``one \f(CWMakefile\fP in every directory''
+It may be this which set the \[lq]one \f(CWMakefile\fP in every directory\[rq]
 concept so firmly in the collective Unix development mind-set.
 .nh 2 "GNU Make"
 The GNU Make manual
@@ -67,8 +67,8 @@ recursive
 however its discussion of the merits or otherwise
 of the technique are limited to the brief statement that
 .QP
-``This technique is useful when you want to separate
-makefiles for various subsystems that compose a larger system.''
+\[lq]This technique is useful when you want to separate
+makefiles for various subsystems that compose a larger system.\[rq]
 .LP
 No mention is made of the problems you may encounter.
 .nh 2 "Managing Projects with Make"
@@ -80,16 +80,16 @@ over whole project
 .I make
 because
 .QP
-``The cleanest way to build is to put a separate description file in
+\[lq]The cleanest way to build is to put a separate description file in
 each directory, and tie them together through a master description file
 that invokes \fImake\fP recursively.  While cumbersome, the technique is
 easier to maintain than a single, enormous file that covers multiple
-directories.'' (p. 65)
+directories.\[rq] (p. 65)
 .LP
 This is despite the book's advice only two paragraphs earlier that
 .QP
-``\fImake\fP is happiest when you keep all your files in a single
-directory.'' (p. 64)
+\[lq]\fImake\fP is happiest when you keep all your files in a single
+directory.\[rq] (p. 64)
 .LP
 Yet the book fails to discuss the contradiction in these two statements,
 and goes on to describe one of the traditional ways of treating the
@@ -112,7 +112,7 @@ however briefly,
 the relationship between a \f(CWMakefile\fP and a DAG (p. 30).
 There is also a wonderful quote
 .QP
-``If \fImake\fP doesn't do what you expect it to,
-it's a good chance the \f(CWmakefile\fP is wrong.'' (p. 10)
+\[lq]If \fImake\fP doesn't do what you expect it to,
+it's a good chance the \f(CWmakefile\fP is wrong.\[rq] (p. 10)
 .LP
 Which is a pithy summary of the thesis of this paper.

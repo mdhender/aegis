@@ -23,14 +23,17 @@
 #ifndef LIBAEGIS_CHANGE_FUNCTOR_H
 #define LIBAEGIS_CHANGE_FUNCTOR_H
 
-#pragma interface "change_functor"
+#include <common/ac/time.h>
 
-#include <change.h>
+#include <libaegis/change.h>
 
 /**
-  * The change_functor class is used to represent an abstract bas class
+  * The change_functor class is used to represent an abstract base class
   * used to present object which <i>look like</i> callable functions
   * which take a singe change_ty * argument.
+  *
+  * Typically, this is used with the ... class to walk the changes of
+  * branch trees.
   */
 class change_functor
 {
@@ -61,6 +64,34 @@ public:
       * completed changes and branches.
       */
     bool all_changes() const { return all_changes_flag; }
+
+    /**
+      * The earliest method is used to determine the earliest time of
+      * interest to the functor.
+      *
+      * @returns
+      *      time_t; the default implementation returns zero.
+      */
+    virtual time_t earliest();
+
+    /**
+      * The lastest method is used to determine the latest time of
+      * interest to the functor.
+      *
+      * @returns
+      *      time_t; the default implementation returns "now".
+      */
+    virtual time_t latest();
+
+    /**
+      * The recurse_branches method may be used to determine whether to
+      * recurse into nested branches or not.
+      *
+      * @returns
+      *     bool; true if recursion is desired, false if not.
+      *     The default implementation returns true.
+      */
+    virtual bool recurse_branches();
 
 protected:
     /**

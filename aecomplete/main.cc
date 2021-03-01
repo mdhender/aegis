@@ -20,18 +20,17 @@
 // MANIFEST: bash auto completion
 //
 
-#include <ac/stdlib.h>
+#include <common/ac/stdlib.h>
 
-#include <arglex.h>
-#include <command.h>
-#include <complete.h>
-#include <env.h>
-#include <language.h>
-#include <os.h>
-#include <quit.h>
-#include <r250.h>
-#include <rsrc_limits.h>
-#include <shell.h>
+#include <common/arglex.h>
+#include <aecomplete/command.h>
+#include <aecomplete/complete.h>
+#include <common/env.h>
+#include <common/language.h>
+#include <libaegis/os.h>
+#include <common/quit.h>
+#include <common/rsrc_limits.h>
+#include <aecomplete/shell.h>
 
 
 int
@@ -46,7 +45,6 @@ main(int argc, char **argv)
     //
     resource_limits_init();
     arglex_init(argc, argv, 0);
-    r250_init();
     os_become_init_mortal();
     env_initialize();
     language_init();

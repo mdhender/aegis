@@ -1,6 +1,6 @@
 //
 //	aegis - project change supervisor
-//	Copyright (C) 2004, 2005 Peter Miller;
+//	Copyright (C) 2004-2006 Peter Miller;
 //	All rights reserved.
 //
 //	This program is free software; you can redistribute it and/or modify
@@ -107,16 +107,27 @@
 //     at once.
 //
 
-#include <ac/string.h>
+#include <common/ac/string.h>
 
-#include <module.h>
-#include <os.h>
-#include <request/ci.h>
-#include <server.h>
+#include <aecvsserver/module.h>
+#include <libaegis/os.h>
+#include <aecvsserver/request/ci.h>
+#include <aecvsserver/server.h>
 
 
-static void
-run(server_ty *sp, string_ty *fn)
+request_checkin::~request_checkin()
+{
+}
+
+
+request_checkin::request_checkin()
+{
+}
+
+
+void
+request_checkin::run_inner(server_ty *sp, string_ty *fn)
+    const
 {
     size_t          j;
     directory_ty    *dp;
@@ -149,7 +160,6 @@ run(server_ty *sp, string_ty *fn)
     for (; j < sp->np->argument_count(); ++j)
     {
 	string_ty       *arg;
-	module_ty       *mp;
 	string_ty       *client_side;
 	string_ty       *server_side;
 
@@ -168,10 +178,9 @@ run(server_ty *sp, string_ty *fn)
 	// in a single command.  This means we have to lookup the module
 	// for every file.
 	//
-	mp = module_find_trim(server_side);
-	if (!module_checkin(mp, sp, client_side, server_side))
+	module mp = module::find_trim(server_side);
+	if (!mp->checkin(sp, client_side, server_side))
 	    ok = 0;
-	module_delete(mp);
 	str_free(client_side);
 	str_free(server_side);
 	if (!ok)
@@ -191,9 +200,17 @@ run(server_ty *sp, string_ty *fn)
 }
 
 
-const request_ty request_ci =
+const char *
+request_checkin::name()
+    const
 {
-    "ci",
-    run,
-    1, // reset
-};
+    return "ci";
+}
+
+
+bool
+request_checkin::reset()
+    const
+{
+    return true;
+}

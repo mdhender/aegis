@@ -1,6 +1,6 @@
 //
 //	aegis - project change supervisor
-//	Copyright (C) 2005 Peter Miller;
+//	Copyright (C) 2005, 2006 Peter Miller;
 //	All rights reserved.
 //
 //	This program is free software; you can redistribute it and/or modify
@@ -20,9 +20,9 @@
 // MANIFEST: implementation of the change_pfs class
 //
 
-#include <change/pfs.h>
-#include <project.h>
-#include <commit.h>
+#include <libaegis/change/pfs.h>
+#include <libaegis/project.h>
+#include <libaegis/commit.h>
 
 
 void
@@ -43,7 +43,7 @@ change_pfs_write(change_ty *cp)
     pconf_ty *pconf_data = change_pconf_get(cp, 1);
     if (pconf_data->cache_project_file_list_for_each_delta)
     {
-	change_ty *pcp = project_change_get(cp->pp);
+	change_ty *pcp = cp->pp->change_get();
 	string_ty *fn1 = change_fstate_filename_get(pcp);
 	string_ty *fn2 = change_pfstate_filename_get(cp);
 	change_become(cp);

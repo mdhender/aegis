@@ -1,7 +1,7 @@
 #!/bin/sh
 #
 #	aegis - project change supervisor
-#	Copyright (C) 2001, 2002, 2004, 2005 Peter Miller;
+#	Copyright (C) 2001, 2002, 2004-2006 Peter Miller;
 #	All rights reserved.
 #
 #	This program is free software; you can redistribute it and/or modify
@@ -46,6 +46,22 @@ here=`pwd`
 if test $? -ne 0 ; then exit 2; fi
 
 if test "$1" != "" ; then bin="$here/$1/bin"; else bin="$here/bin"; fi
+
+if test "$EXEC_SEARCH_PATH" != ""
+then
+    tpath=
+    hold="$IFS"
+    IFS=":$IFS"
+    for tpath2 in $EXEC_SEARCH_PATH
+    do
+	tpath=${tpath}${tpath2}/${1-.}/bin:
+    done
+    IFS="$hold"
+    PATH=${tpath}${PATH}
+else
+    PATH=${bin}:${PATH}
+fi
+export PATH
 
 no_result()
 {
@@ -102,7 +118,7 @@ AEGIS_PROJECT=foo ; export AEGIS_PROJECT
 #
 # make the directories
 #
-activity="working directory 105"
+activity="working directory 121"
 mkdir $work $work/lib
 if test $? -ne 0 ; then no_result; fi
 chmod 777 $work/lib
@@ -121,14 +137,14 @@ unset LANGUAGE
 #
 # make a new project
 #
-activity="new project 124"
+activity="new project 140"
 $bin/aegis -npr foo -vers "" -dir $workproj > log 2>&1
 if test $? -ne 0 ; then cat log; no_result; fi
 
 #
 # change project attributes
 #
-activity="project attributes 131"
+activity="project attributes 147"
 cat > $tmp << 'end'
 description = "A bogus project created to test the aepatch -send functionality.";
 developer_may_review = true;
@@ -142,7 +158,7 @@ if test $? -ne 0 ; then cat log; no_result; fi
 #
 # create a new change
 #
-activity="new change 145"
+activity="new change 161"
 cat > $tmp << 'end'
 brief_description = "The first change";
 cause = internal_bug;
@@ -154,7 +170,7 @@ if test $? -ne 0 ; then cat log; no_result; fi
 #
 # create a second change
 #
-activity="new change 157"
+activity="new change 173"
 cat > $tmp << 'end'
 brief_description = "The second change";
 cause = internal_bug;
@@ -166,7 +182,7 @@ if test $? -ne 0 ; then cat log; no_result; fi
 #
 # add the staff
 #
-activity="staff 169"
+activity="staff 185"
 $bin/aegis -nd $USER > log 2>&1
 if test $? -ne 0 ; then cat log; no_result; fi
 $bin/aegis -nrv $USER > log 2>&1
@@ -183,7 +199,7 @@ if test $? -ne 0 ; then cat log; no_result; fi
 #
 # add a new files to the change
 #
-activity="new file 186"
+activity="new file 202"
 $bin/aegis -nf $workchan/main.c -nl \
 	-uuid aaaaaaaa-bbbb-4bbb-8ccc-ccccddddddd1 > log 2>&1
 if test $? -ne 0 ; then cat log; no_result; fi
@@ -226,14 +242,14 @@ if test $? -ne 0 ; then no_result; fi
 cat > $workchan/aegis.conf << 'end'
 build_command = "exit 0";
 link_integration_directory = true;
-history_get_command =
-	"co -u'$e' -p $h,v > $o";
-history_create_command =
-	"ci -f -u -m/dev/null -t/dev/null $i $h,v; rcs -U $h,v";
-history_put_command =
-	"ci -f -u -m/dev/null -t/dev/null $i $h,v; rcs -U $h,v";
-history_query_command =
-	"rlog -r $h,v | awk '/^head:/ {print $$2}'";
+
+history_get_command = "aesvt -check-out -edit ${quote $edit} "
+    "-history ${quote $history} -f ${quote $output}";
+history_put_command = "aesvt -check-in -history ${quote $history} "
+    "-f ${quote $input}";
+history_query_command = "aesvt -query -history ${quote $history}";
+history_content_limitation = binary_capable;
+
 diff_command = "set +e; diff $orig $i > $out; test $$? -le 1";
 diff3_command = "(diff3 -e $mr $orig $i | sed -e '/^w$$/d' -e '/^q$$/d'; \
 	echo '1,$$p' ) | ed - $mr > $out";
@@ -251,7 +267,7 @@ if test $? -ne 0 ; then no_result; fi
 #
 # create a new test
 #
-activity="new test 254"
+activity="new test 270"
 $bin/aegis -nt > log 2>&1
 if test $? -ne 0 ; then cat log; no_result; fi
 cat > $workchan/test/00/t0001a.sh << 'end'
@@ -263,21 +279,21 @@ if test $? -ne 0 ; then no_result; fi
 #
 # build the change
 #
-activity="build 266"
+activity="build 282"
 $bin/aegis -build -nl -v > log 2>&1
 if test $? -ne 0 ; then cat log; fail; fi
 
 #
 # difference the change
 #
-activity="diff 273"
+activity="diff 289"
 $bin/aegis -diff > log 2>&1
 if test $? -ne 0 ; then cat log; no_result; fi
 
 #
 # test the change
 #
-activity="test 280"
+activity="test 296"
 $bin/aegis -t -v > log 2>&1
 if test $? -ne 0 ; then cat log; no_result; fi
 
@@ -287,60 +303,60 @@ if test $? -ne 0 ; then cat log; no_result; fi
 #
 # finish development of the change
 #
-activity="develop end 290"
+activity="develop end 306"
 $bin/aegis -de > log 2>&1
 if test $? -ne 0 ; then cat log; fail; fi
 
 #
 # pass the review
 #
-activity="review pass 297"
+activity="review pass 313"
 $bin/aegis -rpass -c 1 > log 2>&1
 if test $? -ne 0 ; then cat log; no_result; fi
 
 #
 # start integrating
 #
-activity="integrate begin 304"
+activity="integrate begin 320"
 $bin/aegis -ib 1 > log 2>&1
 if test $? -ne 0 ; then cat log; no_result; fi
 
 #
 # integrate build
 #
-activity="build 311"
+activity="build 327"
 $bin/aegis -b -nl -v > log 2>&1
 if test $? -ne 0 ; then cat log; no_result; fi
 
 #
 # integrate test
 #
-activity="test 318"
+activity="test 334"
 $bin/aegis -t -nl -v > log 2>&1
 if test $? -ne 0 ; then cat log; no_result; fi
 
 #
 # pass the integration
 #
-activity="integrate pass 325"
+activity="integrate pass 341"
 $bin/aegis -intpass -nl > log 2>&1
 if test $? -ne 0 ; then cat log; no_result; fi
 
 #
 # start work on change 2
 #
-activity="develop begin 332"
+activity="develop begin 348"
 $bin/aegis -db -c 2 -dir $workchan > log 2>&1
 if test $? -ne 0 ; then cat log; fail; fi
 
 #
 # copy a file into the change
 #
-activity="copy file 339"
+activity="copy file 355"
 $bin/aegis -cp $workchan/main.c -nl > log 2>&1
 if test $? -ne 0 ; then cat log; fail; fi
 
-activity="remove file 343"
+activity="remove file 359"
 $bin/aegis -rm $workchan/nothingmuch -nl > log 2>&1
 if test $? -ne 0 ; then cat log; fail; fi
 
@@ -370,6 +386,7 @@ if test $? -ne 0 ; then no_result; fi
 #
 # build a distribution set
 #
+activity="build patch 389"
 $bin/aepatch -send -c 2 -o test.out -naa -nocomp > log 2>&1
 if test $? -ne 0 ; then cat log; fail; fi
 
@@ -389,48 +406,45 @@ X
 #	The second changeX
 #	X
 # Aegis-Change-Set-BeginX
-# H4sIAAAAAAAAA5WPTWrEMAyF9z5FyLopFGZRCHOL7koJiqIkglgOljztMPTuVUigP3TRPrAXX
-# ek/6pD4zjd1AiplX4yTVuaqfZqqUMMlQ4QwyUd2GP0QQipKbLEZZYOlI3EKKJNYGI7WO3iiuX
-# 5pkRFqWj2IPSwkKfruXiZqYpk6oTu+/Nu60GtuHgFdhYJr/iQktad5xmrM7hOdzCyAt1AnHLX
-# 1hFY7tGXLYWHrQCHmt7VnLbvEREbfzjsevA44HF5TAOPV+9XmLaJmkpG3+b97idKks2+Viw4X
-# /493+srLFNOFfuW9tOEDh9xMer8BAAA=X
+# QlpoOTFBWSZTWYT8SQkAAFpbgEwQUAckSgQKv+ff6jABFtWBKImU0bImnlGJ6mg0DQJUyJhE
+# 2UxpANAAAqqaammgyHqbU0NAABkVMzMwuwYfRGBVqjhkOZE3M8I0QUscIDRCeyKvjco/JJLm
+# NbcvL2EFkoIQ/RUrQpYjs+vduxVIUErKz2aavsU5JOyVzQ0UTEmRefPDEYKO6pUs+Z02tN0e
+# lak5LZPe1PNgvQaUfsyNCoukx72/ktiRvHMRlSSnwIWzFR0GKam68hChLF9ZqGUR5MmLoh+b
+# FA2bQgkakWjhRHyQXNGGRSsyySMeNyM6U0uNWJAUS+BS1S14JiyhYD1cYa6QLy014kyBIuQW
+# 9qMq4P4u5IpwoSEJ+JIS
 # Aegis-Change-Set-EndX
 #X
 Index: main.cX
-*** main.cX
 --- main.cX
-***************X
-*** 1,8 ****X
---- 1,15 ----X
-+ #include <stdio.h>X
-+ X
-  intX
-  main(argc, argv)X
-  	int	argc;X
-  	char	**argv;X
-  {X
-+ 	if (argc != 1)X
-+ 	{X
-+ 		fprintf(stderr, "usage: %s\n", argv[0]);X
-+ 		exit(1);X
-+ 	}X
-  	test();X
-  	exit(0);X
-  	return 0;X
++++ main.cX
+@@ -1,8 +1,15 @@X
++#include <stdio.h>X
++X
+ intX
+ main(argc, argv)X
+ 	int	argc;X
+ 	char	**argv;X
+ {X
++	if (argc != 1)X
++	{X
++		fprintf(stderr, "usage: %s\n", argv[0]);X
++		exit(1);X
++	}X
+ 	test();X
+ 	exit(0);X
+ 	return 0;X
 Index: nothingmuchX
-*** nothingmuchX
 --- nothingmuchX
-***************X
-*** 1,4 ****X
-- these linesX
-- are the onesX
-- to beX
-- deletedX
---- 0 ----X
++++ nothingmuchX
+@@ -1,4 +0,0 @@X
+-these linesX
+-are the onesX
+-to beX
+-deletedX
 end
 if test $? -ne 0 ; then no_result; fi
 
-diff test.ok test.out
+diff -b test.ok test.out
 if test $? -ne 0 ; then fail; fi
 
 #

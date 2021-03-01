@@ -1,6 +1,6 @@
 //
 //	aegis - project change supervisor
-//	Copyright (C) 2003, 2004 Peter Miller;
+//	Copyright (C) 2003-2006 Peter Miller;
 //	All rights reserved.
 //
 //	This program is free software; you can redistribute it and/or modify
@@ -20,14 +20,14 @@
 // MANIFEST: functions to manipulate aedists
 //
 
-#include <ac/string.h>
+#include <common/ac/string.h>
 
-#include <change.h>
-#include <get/change/aedist.h>
-#include <get/command.h>
-#include <libdir.h>
-#include <project.h>
-#include <str_list.h>
+#include <libaegis/change.h>
+#include <aeget/get/change/aedist.h>
+#include <aeget/get/command.h>
+#include <common/libdir.h>
+#include <libaegis/project.h>
+#include <common/str_list.h>
 
 
 void
@@ -71,19 +71,20 @@ get_change_aedist(change_ty *cp, string_ty *fn, string_list_ty *modifier)
     //
     // Build the command to be executed.
     //
-    // The "-naa" option (same as "-cte=none") menas don't bother using
+    // The "-naa" option (same as "-cte=none") means don't bother using
     // base64 encoding around it.  Straight binary will download faster.
     //
     qp = str_quote_shell(project_name_get(cp->pp));
     command =
 	str_format
 	(
-	    "%s/aedist -send %s%s -p %s -c %ld -naa -ndh\n",
+	    "%s/aedist -send --project=%s -change=%ld --mime-header "
+		"--content-transfer-encoding=none -compress -ndh %s %s",
 	    configured_bindir(),
-	    (entire_source ? "-es" : ""),
-	    (compatibility ? compatibility->str_text : ""),
 	    qp->str_text,
-	    magic_zero_decode(cp->number)
+	    magic_zero_decode(cp->number),
+	    (entire_source ? "--entire-source" : ""),
+	    (compatibility ? compatibility->str_text : "")
 	);
     str_free(qp);
 

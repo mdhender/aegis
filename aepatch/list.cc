@@ -20,16 +20,16 @@
 // MANIFEST: functions to manipulate lists
 //
 
-#include <ac/stdio.h>
-#include <ac/stdlib.h>
+#include <common/ac/stdio.h>
+#include <common/ac/stdlib.h>
 
-#include <arglex3.h>
-#include <error.h>
-#include <help.h>
-#include <list.h>
-#include <output/file.h>
-#include <progname.h>
-#include <slurp.h>
+#include <aepatch/arglex3.h>
+#include <common/error.h>
+#include <libaegis/help.h>
+#include <aeannotate/list.h>
+#include <libaegis/output/file.h>
+#include <common/progname.h>
+#include <aepatch/slurp.h>
 
 
 static void

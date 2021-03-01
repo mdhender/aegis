@@ -23,9 +23,7 @@
 #ifndef TEST_XML_XML_NODE_DUMP_H
 #define TEST_XML_XML_NODE_DUMP_H
 
-#pragma interface "xml_node_dump"
-
-#include <xml_node.h>
+#include <libaegis/xml_node.h>
 
 class output; // forward
 

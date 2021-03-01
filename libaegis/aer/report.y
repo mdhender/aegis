@@ -1,6 +1,6 @@
 /*
  *	aegis - project change supervisor
- *	Copyright (C) 1994-1996, 1999, 2002 Peter Miller;
+ *	Copyright (C) 1994-1996, 1999, 2002, 2005 Peter Miller;
  *	All rights reserved.
  *
  *	This program is free software; you can redistribute it and/or modify
@@ -22,47 +22,47 @@
 
 %{
 
-#include <ac/stdio.h>
-#include <ac/stdlib.h>
+#include <common/ac/stdio.h>
+#include <common/ac/stdlib.h>
 
-#include <aer/expr/assign.h>
-#include <aer/expr/bit.h>
-#include <aer/expr/constant.h>
-#include <aer/expr/func.h>
-#include <aer/expr/in.h>
-#include <aer/expr/incr.h>
-#include <aer/expr/list.h>
-#include <aer/expr/logical.h>
-#include <aer/expr/lookup.h>
-#include <aer/expr/mul.h>
-#include <aer/expr/name.h>
-#include <aer/expr/neg.h>
-#include <aer/expr/plus.h>
-#include <aer/expr/power.h>
-#include <aer/expr/rel.h>
-#include <aer/expr/shift.h>
-#include <aer/expr/struct.h>
-#include <aer/expr/struct_asign.h>
-#include <aer/lex.h>
-#include <aer/report.h>
-#include <aer/stmt/compound.h>
-#include <aer/stmt/expr.h>
-#include <aer/stmt/for.h>
-#include <aer/stmt/if.h>
-#include <aer/stmt/null.h>
-#include <aer/stmt/return.h>
-#include <aer/stmt/return.h>
-#include <aer/stmt/throw.h>
-#include <aer/stmt/throw.h>
-#include <aer/stmt/try.h>
-#include <aer/stmt/try.h>
-#include <aer/stmt/while.h>
-#include <aer/value/error.h>
-#include <aer/value/null.h>
-#include <error.h>
-#include <str.h>
-#include <sub.h>
-#include <trace.h>
+#include <libaegis/aer/expr/assign.h>
+#include <libaegis/aer/expr/bit.h>
+#include <libaegis/aer/expr/constant.h>
+#include <libaegis/aer/expr/func.h>
+#include <libaegis/aer/expr/in.h>
+#include <libaegis/aer/expr/incr.h>
+#include <libaegis/aer/expr/list.h>
+#include <libaegis/aer/expr/logical.h>
+#include <libaegis/aer/expr/lookup.h>
+#include <libaegis/aer/expr/mul.h>
+#include <libaegis/aer/expr/name.h>
+#include <libaegis/aer/expr/neg.h>
+#include <libaegis/aer/expr/plus.h>
+#include <libaegis/aer/expr/power.h>
+#include <libaegis/aer/expr/rel.h>
+#include <libaegis/aer/expr/shift.h>
+#include <libaegis/aer/expr/struct.h>
+#include <libaegis/aer/expr/struct_asign.h>
+#include <libaegis/aer/lex.h>
+#include <libaegis/aer/report.h>
+#include <libaegis/aer/stmt/compound.h>
+#include <libaegis/aer/stmt/expr.h>
+#include <libaegis/aer/stmt/for.h>
+#include <libaegis/aer/stmt/if.h>
+#include <libaegis/aer/stmt/null.h>
+#include <libaegis/aer/stmt/return.h>
+#include <libaegis/aer/stmt/return.h>
+#include <libaegis/aer/stmt/throw.h>
+#include <libaegis/aer/stmt/throw.h>
+#include <libaegis/aer/stmt/try.h>
+#include <libaegis/aer/stmt/try.h>
+#include <libaegis/aer/stmt/while.h>
+#include <libaegis/aer/value/error.h>
+#include <libaegis/aer/value/null.h>
+#include <common/error.h>
+#include <common/str.h>
+#include <libaegis/sub.h>
+#include <common/trace.h>
 
 #ifdef DEBUG
 #define YYDEBUG 1
@@ -96,19 +96,19 @@ report_interpret(void)
 
 	case rpt_stmt_status_break:
 		scp = sub_context_new();
-		fatal_intl(scp, i18n("floating ``break'' statement"));
+		fatal_intl(scp, i18n("floating \"break\" statement"));
 		sub_context_delete(scp);
 		break;
 
 	case rpt_stmt_status_continue:
 		scp = sub_context_new();
-		fatal_intl(scp, i18n("floating ``continue'' statement"));
+		fatal_intl(scp, i18n("floating \"continue\" statement"));
 		sub_context_delete(scp);
 		break;
 
 	case rpt_stmt_status_return:
 		scp = sub_context_new();
-		fatal_intl(scp, i18n("floating ``return'' statement"));
+		fatal_intl(scp, i18n("floating \"return\" statement"));
 		sub_context_delete(scp);
 		rpt_value_free(ok.thrown);
 		break;

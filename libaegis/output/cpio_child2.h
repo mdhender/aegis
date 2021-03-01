@@ -23,7 +23,7 @@
 #ifndef AEDIST_OUTPUT_CPIO_CHILD2_H
 #define AEDIST_OUTPUT_CPIO_CHILD2_H
 
-#include <output.h>
+#include <libaegis/output.h>
 
 class output_memory_ty; // forward
 

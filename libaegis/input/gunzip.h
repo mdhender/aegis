@@ -1,6 +1,6 @@
 //
 //	aegis - project change supervisor
-//	Copyright (C) 1999, 2002, 2005 Peter Miller;
+//	Copyright (C) 1999, 2002, 2005, 2006 Peter Miller;
 //	All rights reserved.
 //
 //	This program is free software; you can redistribute it and/or modify
@@ -23,9 +23,9 @@
 #ifndef LIBAEGIS_INPUT_GUNZIP_H
 #define LIBAEGIS_INPUT_GUNZIP_H
 
-#include <ac/zlib.h>
+#include <common/ac/zlib.h>
 
-#include <input.h>
+#include <libaegis/input.h>
 
 /**
   * The input_gunzip class is used to represent an input stream which is
@@ -45,10 +45,8 @@ public:
       *
       * @param deeper
       *     The deeper input which this filter reads from.
-      * @param close_on_close
-      *     If true, delete the deeper input in the destructor.
       */
-    input_gunzip(input_ty *deeper, bool close_on_close = true);
+    input_gunzip(input &deeper);
 
     // See base class for documentation.
     nstring name();
@@ -73,11 +71,15 @@ public:
       * gzipped file.  All of the bytes read are unread before this method
       * returns.
       */
-    static bool candidate(input_ty *deeper);
+    static bool candidate(input &deeper);
 
 private:
-    input_ty *deeper;
-    bool close_on_close;
+    /**
+      * The deeper instance variable is used to remember the deeper
+      * input which this filter reads from.
+      */
+    input deeper;
+
     z_stream stream;
     bool z_eof;
     uLong crc;
@@ -105,6 +107,6 @@ private:
     input_gunzip &operator=(const input_gunzip &arg);
 };
 
-input_ty *input_gunzip_open(input_ty *ip);
+input input_gunzip_open(input &ip);
 
 #endif // LIBAEGIS_INPUT_GUNZIP_H

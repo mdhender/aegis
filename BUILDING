@@ -3,7 +3,8 @@ Build(Aegis)							  Build(Aegis)
 NAME
 	aegis -	project	change supervisor
 	Copyright (C) 1991, 1992, 1993,	1994, 1995, 1996, 1997,	1998, 1999,
-	2000, 2001, 2002, 2003,	2004, 2005 Peter Miller; All rights reserved.
+	2000, 2001, 2002, 2003,	2004, 2005, 2006 Peter Miller; All rights
+	reserved.
 
 	The aegis program is distributed under the terms of the	GNU General
 	Public License.	 See the LICENSE section, below, for more details.
@@ -49,12 +50,13 @@ SITE CONFIGURATION
 	to use the GNU gettext configure --with-gnu-gettext option if your
 	system has native gettext tools.
 
-	The configure script checks for	the compression	library	and functions.
-	If your	system does not	have them, it is worth fetching	and installing
-	GNU zlib compression library before you	run the	configure script.
-	(See http://www.gzip.org/zlib/ for download.)  This is essential,
-	because	Aegis will not build.  without it.  (Note: this	is not the
-	same thing as zlibc which does something completely different.)
+	The configure script checks for	compression libraries and functions.
+	If your	system does not	have them, you must download and install the
+	GNU zlib compression library (see http://www.gzip.org/zlib/ for
+	download) and the bzip2	compression library (see http://www.bzip.org/
+	for download) before you run the configure script.  These libraries
+	are essential, Aegis will not build without them.  (Note: zlib is not
+	the same thing as zlibc	which does something completely	different.)
 
 	The configure script checks for	the regular expression library and
 	functions.  If your system does	not have them, it is worth fetching
@@ -66,6 +68,12 @@ SITE CONFIGURATION
 	you will need version 1.8.17 or	later.	You do not have	to install the
 	rest of	GNOME as this library is able to be used by itself.  This
 	package	is not optional, you need it to	successfully build Aegis.
+
+	The libcurl library (http://curl.haxx.se/) is used to fetch remote
+	files.	This library is	optional, but some functionality, particularly
+	aedist -replay,	will not work without it.  If you are using a package
+	based install, you will	need the libcurl-dev or	libcurl-devel package
+	as well.
 
    Running Configure
 	Normally, you just cd to the directory containing aegis' source	code
@@ -138,9 +146,9 @@ SITE CONFIGURATION
 		documentation, reports and shell scripts distributed with
 		Aegis.	On a network, this directory may be shared between all
 		machines; it may be mounted read-only.	Defaults to
-		${prefix}/share/aegis unless otherwise specified.  An
-		``aegis'' directory will be appended if	there is none in the
-		specified path.
+		${prefix}/share/aegis unless otherwise specified.  An "aegis"
+		directory will be appended if there is none in the specified
+		path.
 
 	--libdir=PATH
 		This directory contains	installed data,	such as	the error
@@ -148,7 +156,7 @@ SITE CONFIGURATION
 		shared between machines	with identical hardware	and operating
 		systems; it may	be mounted read-only.  Defaults	to
 		${exec_prefix}/lib/aegis unless	otherwise specified.  An
-		``aegis'' directory will be appended if	there is none in the
+		"aegis"	directory will be appended if there is none in the
 		specified path.
 
 	--mandir=PATH
@@ -163,8 +171,8 @@ SITE CONFIGURATION
 		various	Aegis projects.	 On a network, this directory may be
 		shared between all machines; it	MUST be	mounted	READ-WRITE.
 		Defaults to ${prefix}/com/aegis	unless otherwise specified.
-		An ``aegis'' directory will be appended	if there is none in
-		the specified path.
+		An "aegis" directory will be appended if there is none in the
+		specified path.
 
 	--sysconfdir=PATH
 		Location of system configuration files.	 You should almost
@@ -214,6 +222,13 @@ SITE CONFIGURATION
 	when running configure.	 Substitute the	appropriate prefix if you are
 	using something	other than the default /usr/local prefix.  Watch the
 	output... it should now	find your installed packages correctly.
+
+   GCC Version 3.*
+	On some	operating systems, notabley MacOsX Jaguar and Panther, g++
+	versions 3.* will produce link-time errors complaining of missing
+	typeinfo symbols.  The only known fix for this problem is to use GCC
+	version	2.95, 2.96 or 4.*.  This means MacOsX Tiger does not have the
+	problem.
 
    AIX Command Line Lengths
 	For some reason, AIX has a very	short command line length limit	by
@@ -293,7 +308,7 @@ BUILDING AEGIS
 
 	aegis	The aegis program is a project change supervisor.
 
-	aefp	The aefp program may be	used to	``fingerprint''	files.	It is
+	aefp	The aefp program may be	used to	"fingerprint" files.  It is
 		used to	test Aegis (see	the testing section, below) but	it
 		isn't installed.
 
@@ -357,19 +372,24 @@ OTHER USEFUL SOFTWARE
 		available under	the terms of the GNU General Public License.
 
 	GNU diff
-		If the diff(1) utility supplied	by your	flavor of unix does
+		If the diff(1) utility supplied	by your	flavor of Unix does
 		not have the -c	option,	you will need GNU diff for aepatch(1)
 		to work	(and the aepatch(1) tests to pass).  Context
 		differences are	also helpful for reviewing changes.  GNU diff
 		is essential for Solaris, because the Solaris diff has bugs
 		that Aegis' tests uncover.
 
+	GNU patch
+		For best results with the aepatch(1) and aedist(1) when
+		receiving change sets, you need	the GNU	patch utility.
+
 	RCS	This is	a source control package, and is available from	any of
-		the GNU	archives.  The tests use RCS as	the history mechanism,
-		so it is necessary to have RCS for most	of the tests to	pass.
-		(It is best to compile and install RCS after GNU diff.	This
-		is because the RCS configuration hard-codes the	pathnames of
-		the GNU	diff utilities it needs	into the RCS executables.)
+		the GNU	archives.  (It is best to compile and install RCS
+		after GNU diff.	 This is because the RCS configuration hard-
+		codes the pathnames of the GNU diff utilities it needs into
+		the RCS	executables.)  This package isn't essential as Aegis
+		comes with its own aesvt(1) history tool - although you	are
+		free to	use any	history	tool you like.
 
 	GNU Gettext
 		Many systems do	not yet	supply the gettext(3) function.	 Aegis
@@ -440,10 +460,10 @@ OTHER USEFUL SOFTWARE
 
 	The tests also depend on the presence of a number of common UNIX
 	programs, including but	not limited to:	cc, cmp, diff, ed, find, make,
-	the RCS	package, etc.  Depending on your version of UNIX, some or all
-	of these programs may be in optional packages.	(This is especially
-	true of	Linux.)	 You need to ensure that these programs	are correctly
-	installed before you run the tests.
+	etc.  Depending	on your	version	of UNIX, some or all of	these programs
+	may be in optional packages.  (This is especially true of Linux.)  You
+	need to	ensure that these programs are correctly installed before you
+	run the	tests.
 
 TESTING	AEGIS
 	The Aegis program comes	with a test suite.  To run this	test suite,
@@ -462,9 +482,6 @@ TESTING	AEGIS
 	./configure has	been run you need to edit the Makefile to statically
 	link the executables.
 
-	The tests assume that the RCS commands "ci", "co", "rlog" and "rcs"
-	are somewhere in the command search PATH.
-
 	The test/00/t0011a.sh file assumes the cook(1) command by the author
 	is somewhere in	the command search path.  This test reproduces the
 	example	used in	Chapter	3 of the User Guide.  If the cook(1) command
@@ -475,8 +492,8 @@ TESTING	AEGIS
 	to edit	the Makefile to	only optimize at -O, delete the	objects	and
 	rebuild.
 
-	If you are using Solaris' diff,	test 133 will report ``no result''.
-	You need to install GNU	diff, because the Solaris diff has bugs.
+	If you are using Solaris' diff,	test 133 will report "no result".  You
+	need to	install	GNU diff, because the Solaris diff has bugs.
 
 	If you are using Sun's tmpfs file system as your /tmp directory, the
 	tests will fail.  This is because the tmpfs file system	does not
@@ -655,7 +672,7 @@ GETTING	HELP
 	When reporting problems, please	include	the version number given by
 	the
 		% aegis	-version
-		aegis version 4
+		aegis version
 		...
 		%
 	command.  Please run this command to get the exact number, do not send
@@ -790,7 +807,7 @@ WINDOWS-NT
 	software for both Unix and Windows NT simultaneously.  This means that
 	the security of	the repository needs to	be guaranteed to be handled in
 	the same way by	both operating systems,	otherwise one can act as a
-	``back door'' into the repository.  Many sites do not have the same
+	"back door" into the repository.  Many sites do	not have the same
 	users and permissions (sourced from the	same network register of
 	users) on both Unix and	Windows	NT, making the mapping almost
 	impossible even	if the security	models did actually correspond.
@@ -841,29 +858,29 @@ WINDOWS-NT
 	files on some partitions, like /tmp.  (This took me days to work out!)
 	This confuses both Aegis and RCS.
 
-	If you get weird ``Permission denied'' errors from amazingly unlikely
+	If you get weird "Permission denied" errors from amazingly unlikely
 	causes,	this is	probably why.
 
    Before You Start
 	There are several pieces of software you need before you can build
 	Aegis on Cygwin.
 
-	I'm going to keep mentioning ``your local GNU mirror''.	 You can find
+	I'm going to keep mentioning "your local GNU mirror".  You can find
 		GNU at http://www.gnu.org, however you are better off using a
 		local mirror, and these	are scattered around the globe.
-		Follow the ``mirrors'' link on their front page	to find	your
+		Follow the "mirrors" link on their front page to find your
 		closest	mirror.	 Also, it's often a good idea to configure
-		these packages with the	``--with-gnu-gettext'' option to their
+		these packages with the	"--with-gnu-gettext" option to their
 		./configure commands.
 
 	Do not use WinZip to unpack the	tarball.  It has a nasty habit of
 		turning	all of the newlines into CRLFs.	 This will confuse
-		lots of	utilities, especially GNU Groff.  Use the ``tar	xzf
-		aegis-4.tar.gz'' command from within Cygwin.
+		lots of	utilities, especially GNU Groff.  Use the "tar xzf
+		aegis-4.tar.gz"	command	from within Cygwin.
 
 	Make sure the Cygwin you are using has GNU Groff 1.15 or later
-		(use a ``groff -v'' command).  Grab and	install	the latest
-		from your local	GNU mirror, if it isn't.
+		(use a "groff -v" command).  Grab and install the latest from
+		your local GNU mirror, if it isn't.
 
 	util-linux
 		You need to get	GNU rx,	but to make it work you	have to	find a
@@ -931,7 +948,7 @@ WINDOWS-NT
 	+o Several tests	fail because ci	(RCS 5.7) dumps	core much too often
 	  for my liking.
 
-	+o A couple of tests fail because they don't expect the ``.exe''
+	+o A couple of tests fail because they don't expect the ".exe"
 	  extension on executable files.
 
 	+o A couple of tests (notably, the aedist tests)	fail because of	the
@@ -944,10 +961,10 @@ WINDOWS-NT
    Install
 	Installing the software	works as usual,	though you need	to make	some
 	choices	right at the start (I told you to read this all	the way
-	through	first).	 If you	want to	use the	``/usr/local'' prefix (or any
+	through	first).	 If you	want to	use the	"/usr/local" prefix (or	any
 	other install prefix) you mount	it right at the	start.	For anything
-	other than the ``/usr/local'' default prefix, you also needed to give
-	a ``--prefix=blahblah''	argument to the	configure script, right	at the
+	other than the "/usr/local" default prefix, you	also needed to give a
+	"--prefix=blahblah" argument to	the configure script, right at the
 	start.
 		bash$ make install
 		...lots	of output...

@@ -1,6 +1,6 @@
 //
 //	aegis - project change supervisor
-//	Copyright (C) 2001-2004 Peter Miller;
+//	Copyright (C) 2001-2006 Peter Miller;
 //	All rights reserved.
 //
 //	This program is free software; you can redistribute it and/or modify
@@ -20,20 +20,21 @@
 // MANIFEST: functions to manipulate reconstructs
 //
 
-#include <change.h>
-#include <change/file.h>
-#include <commit.h>
-#include <error.h> // for assert
-#include <fstate.h>
-#include <lock.h>
-#include <os.h>
-#include <project.h>
-#include <project/file.h>
-#include <project/history.h>
-#include <reconstruct.h>
-#include <sub.h>
-#include <trace.h>
-#include <user.h>
+#include <common/error.h> // for assert
+#include <common/trace.h>
+#include <libaegis/change/file.h>
+#include <libaegis/change.h>
+#include <libaegis/commit.h>
+#include <libaegis/fstate.h>
+#include <libaegis/lock.h>
+#include <libaegis/os.h>
+#include <libaegis/project/file.h>
+#include <libaegis/project.h>
+#include <libaegis/project/history.h>
+#include <libaegis/sub.h>
+#include <libaegis/user.h>
+
+#include <aeimport/reconstruct.h>
 
 
 static void
@@ -52,7 +53,7 @@ process(change_ty *cp, fstate_src_ty *src, user_ty *up)
 	return;
     }
     pp = cp->pp;
-    bl = project_baseline_path_get(pp, 0);
+    bl = pp->baseline_path_get();
     mode = 0755 & ~project_umask_get(pp);
     project_become(pp);
     os_mkdir_between(bl, src->file_name, mode);
@@ -91,7 +92,7 @@ process(change_ty *cp, fstate_src_ty *src, user_ty *up)
 	project_become_undo();
     }
 
-    if (pp->parent)
+    if (!pp->is_a_trunk())
     {
 	string_ty	*path_in = 0;
 	string_ty	*path_d;
@@ -154,9 +155,9 @@ reconstruct(string_ty *project_name)
     //
     trace(("reconstruct()\n{\n"));
     pp = project_alloc(project_name);
-    project_bind_existing(pp);
+    pp->bind_existing();
     project_error(pp, 0, i18n("reconstruct baseline"));
-    project_pstate_lock_prepare(pp);
+    pp->pstate_lock_prepare();
     project_baseline_write_lock_prepare(pp);
     lock_take();
 
@@ -167,14 +168,14 @@ reconstruct(string_ty *project_name)
     change_bind_new(cp_bogus);
     change_architecture_from_pconf(cp_bogus);
     cp_bogus->bogus = 1;
-    bl = project_baseline_path_get(pp, 0);
+    bl = pp->baseline_path_get();
     change_integration_directory_set(cp_bogus, bl);
     up = project_user(pp);
     for (j = 0; ; ++j)
     {
 	fstate_src_ty   *src;
 
-	src = project_file_nth(pp, j, view_path_simple);
+	src = pp->file_nth(j, view_path_simple);
 	if (!src)
 	    break;
 	process(cp_bogus, src, up);
@@ -184,7 +185,7 @@ reconstruct(string_ty *project_name)
     //
     // Write it all back out.
     //
-    project_pstate_write(pp);
+    pp->pstate_write();
     commit();
     lock_release();
     project_verbose(pp, 0, i18n("import complete"));

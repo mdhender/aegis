@@ -1,6 +1,6 @@
 //
 //	aegis - project change supervisor
-//	Copyright (C) 1999, 2002-2004 Peter Miller;
+//	Copyright (C) 1999, 2002-2005 Peter Miller;
 //	All rights reserved.
 //
 //	This program is free software; you can redistribute it and/or modify
@@ -20,13 +20,13 @@
 // MANIFEST: functions to manipulate dirnames
 //
 
-#include <os.h>
-#include <str.h>
-#include <str_list.h>
-#include <sub.h>
-#include <sub/dirname.h>
-#include <trace.h>
-#include <wstr/list.h>
+#include <libaegis/os.h>
+#include <common/str.h>
+#include <common/str_list.h>
+#include <libaegis/sub.h>
+#include <libaegis/sub/dirname.h>
+#include <common/trace.h>
+#include <common/wstr/list.h>
 
 
 //

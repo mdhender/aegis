@@ -1,6 +1,6 @@
 //
 //	aegis - project change supervisor
-//	Copyright (C) 2002-2005 Peter Miller;
+//	Copyright (C) 2002-2006 Peter Miller;
 //	All rights reserved.
 //
 //	This program is free software; you can redistribute it and/or modify
@@ -20,34 +20,39 @@
 // MANIFEST: functions to manipulate sends
 //
 
-#include <ac/stdio.h>
-#include <ac/stdlib.h>
+#include <common/ac/stdio.h>
+#include <common/ac/stdlib.h>
+#include <common/ac/string.h>
 
-#include <arglex3.h>
-#include <arglex/change.h>
-#include <arglex/project.h>
-#include <change.h>
-#include <change/branch.h>
-#include <change/file.h>
-#include <error.h> // assert
-#include <help.h>
-#include <input/file.h>
-#include <send.h>
-#include <gettime.h>
-#include <now.h>
-#include <nstring.h>
-#include <os.h>
-#include <output/file.h>
-#include <output/gzip.h>
-#include <output/tar.h>
-#include <progname.h>
-#include <project.h>
-#include <project/file.h>
-#include <project/file/roll_forward.h>
-#include <project/history.h>
-#include <str_list.h>
-#include <sub.h>
-#include <user.h>
+#include <common/error.h> // assert
+#include <common/gettime.h>
+#include <common/now.h>
+#include <common/nstring.h>
+#include <common/progname.h>
+#include <common/str_list.h>
+#include <libaegis/arglex/change.h>
+#include <libaegis/arglex/project.h>
+#include <libaegis/attribute.h>
+#include <libaegis/change/branch.h>
+#include <libaegis/change/file.h>
+#include <libaegis/change.h>
+#include <libaegis/compres_algo.h>
+#include <libaegis/help.h>
+#include <libaegis/input/file.h>
+#include <libaegis/os.h>
+#include <libaegis/output/bzip2.h>
+#include <libaegis/output/file.h>
+#include <libaegis/output/gzip.h>
+#include <libaegis/project/file.h>
+#include <libaegis/project/file/roll_forward.h>
+#include <libaegis/project.h>
+#include <libaegis/project/history.h>
+#include <libaegis/sub.h>
+#include <libaegis/user.h>
+
+#include <aedist/send.h>
+#include <aetar/arglex3.h>
+#include <aetar/output/tar.h>
 
 
 #define NO_TIME_SET ((time_t)(-1))
@@ -74,7 +79,6 @@ tar_send(void)
     int             grandparent;
     int             trunk;
     output_ty       *ofp;
-    input_ty        *ifp;
     project_ty      *pp;
     change_ty       *cp;
     user_ty         *up;
@@ -83,7 +87,6 @@ tar_send(void)
     size_t          j;
     int             baseline;
     int             entire_source;
-    int             needs_compression;
     int             include_build = -1;
     long            delta_number;
     time_t          delta_date;
@@ -97,11 +100,12 @@ tar_send(void)
     output = 0;
     baseline = 0;
     entire_source = -1;
-    needs_compression = -1;
+    compression_algorithm_t needs_compression = compression_algorithm_not_set;
     delta_date = NO_TIME_SET;
     delta_number = -1;
     delta_name = 0;
     nstring path_prefix;
+    const char *compatibility = 0;
     arglex();
     while (arglex_token != arglex_token_eoln)
     {
@@ -208,27 +212,65 @@ tar_send(void)
 	    break;
 
 	case arglex_token_compress:
-	    if (needs_compression > 0)
-		duplicate_option(usage);
-	    else if (needs_compression >= 0)
+	    if (needs_compression != compression_algorithm_not_set)
 	    {
-	        compress_yuck:
-		mutually_exclusive_options
-		(
-		    arglex_token_compress,
-		    arglex_token_compress_not,
+		duplicate_option_by_name
+	       	(
+		    arglex_token_compression_algorithm,
 		    usage
 		);
 	    }
-	    needs_compression = 1;
+	    needs_compression = compression_algorithm_unspecified;
 	    break;
 
 	case arglex_token_compress_not:
-	    if (needs_compression == 0)
-		duplicate_option(usage);
-	    else if (needs_compression >= 0)
-		goto compress_yuck;
-	    needs_compression = 0;
+	    if (needs_compression != compression_algorithm_not_set)
+	    {
+		duplicate_option_by_name
+	       	(
+		    arglex_token_compression_algorithm,
+		    usage
+		);
+	    }
+	    needs_compression = compression_algorithm_none;
+	    break;
+
+	case arglex_token_compression_algorithm:
+	    if (arglex() != arglex_token_string)
+	    {
+		option_needs_string(arglex_token_compression_algorithm, usage);
+		// NOTREACHED
+	    }
+	    else
+	    {
+		compression_algorithm_t temp =
+		    compression_algorithm_by_name(arglex_value.alv_string);
+
+		//
+		// We don't complain if the answer is going to be the same,
+		// for compatibility with the old options.
+		//
+		if (temp == needs_compression)
+		    break;
+
+		switch (needs_compression)
+		{
+		case compression_algorithm_not_set:
+		case compression_algorithm_unspecified:
+		    needs_compression = temp;
+		    break;
+
+		case compression_algorithm_none:
+		case compression_algorithm_gzip:
+		case compression_algorithm_bzip2:
+		    duplicate_option_by_name
+		    (
+			arglex_token_compression_algorithm,
+			usage
+		    );
+		    // NOTREACHED
+		}
+	    }
 	    break;
 
 	case arglex_token_delta:
@@ -313,6 +355,22 @@ tar_send(void)
             }
             include_build = 0;
             break;
+
+	case arglex_token_compatibility:
+	    if (compatibility)
+		duplicate_option(usage);
+	    switch (arglex())
+	    {
+	    case arglex_token_string:
+	    case arglex_token_number:
+		compatibility = arglex_value.alv_string;
+		break;
+
+	    default:
+		option_needs_string(arglex_token_compatibility, usage);
+		// NOTREACHED
+	    }
+	    break;
         }
         arglex();
     }
@@ -396,13 +454,13 @@ tar_send(void)
 	project_name = user_default_project();
     pp = project_alloc(project_name);
     str_free(project_name);
-    project_bind_existing(pp);
+    pp->bind_existing();
 
     //
     // locate the other branch
     //
     if (branch)
-	pp = project_find_branch(pp, branch);
+	pp = pp->find_branch(branch);
 
     //
     // locate user data
@@ -449,7 +507,7 @@ tar_send(void)
     // locate change data
     //
     if (baseline)
-	cp = change_copy(project_change_get(pp));
+	cp = change_copy(pp->change_get());
     else
     {
 	if (!change_number)
@@ -498,12 +556,74 @@ tar_send(void)
     }
 
     //
+    // Figure what to do for compatibility.
+    //
+    bool use_bzip2 = true;
+    if (compatibility)
+    {
+	//
+	// The bzip compression algorithm was first available in
+	// Peter's 4.21.D186, publicly in 4.22
+	//
+	use_bzip2 = (strverscmp(compatibility, "4.22") >= 0);
+
+	//
+	// Add new compatibility tests above this comment.
+	//
+    }
+
+    //
+    // Refine the compression to be used.
+    //
+    switch (needs_compression)
+    {
+    case compression_algorithm_not_set:
+    case compression_algorithm_unspecified:
+	needs_compression =
+	    (
+		use_bzip2
+	    ?
+		compression_algorithm_bzip2
+	    :
+	       	compression_algorithm_gzip
+	    );
+	break;
+
+    case compression_algorithm_none:
+	break;
+
+    case compression_algorithm_gzip:
+	use_bzip2 = false;
+	break;
+
+    case compression_algorithm_bzip2:
+	use_bzip2 = true;
+	break;
+    }
+
+    //
     // open the output
     //
     os_become_orig();
     ofp = output_file_binary_open(output);
-    if (needs_compression)
+    switch (needs_compression)
+    {
+    case compression_algorithm_not_set:
+    case compression_algorithm_unspecified:
+	assert(0);
+	// fall through...
+
+    case compression_algorithm_none:
+	break;
+
+    case compression_algorithm_gzip:
 	ofp = new output_gzip(ofp, true);
+	break;
+
+    case compression_algorithm_bzip2:
+	ofp = new output_bzip2(ofp, true);
+	break;
+    }
     output_tar_ty *tar_p = new output_tar_ty(ofp);
     os_become_undo();
 
@@ -568,6 +688,17 @@ tar_send(void)
 		assert(src_data);
 		if (!src_data)
 		    continue;
+		if
+		(
+		    attributes_list_find_boolean
+		    (
+			src_data->attribute,
+			"entire-source-hide"
+		    )
+		)
+		{
+		    continue;
+		}
 		switch (src_data->usage)
 		{
 		case file_usage_build:
@@ -614,9 +745,20 @@ tar_send(void)
 	    {
 		fstate_src_ty   *src_data;
 
-		src_data = project_file_nth(pp, j, view_path_extreme);
+		src_data = pp->file_nth(j, view_path_extreme);
 		if (!src_data)
 		    break;
+		if
+		(
+		    attributes_list_find_boolean
+		    (
+			src_data->attribute,
+			"entire-source-hide"
+		    )
+		)
+		{
+		    continue;
+		}
 		wl.push_back_unique(src_data->file_name);
 	    }
 	}
@@ -644,7 +786,6 @@ tar_send(void)
 
 	filename = wl.string[j];
 
-	ifp = 0;
 	switch (cstate_data->state)
 	{
 	    file_event_ty  *fep;
@@ -768,14 +909,13 @@ tar_send(void)
 	case file_action_insulate:
 	    {
 		os_become_orig();
-		ifp = input_file_open(abs_filename);
-		assert(ifp);
+		input ifp = input_file_open(abs_filename);
+		assert(ifp.is_open());
 		len = ifp->length();
 		nstring tar_name = path_prefix + nstring(str_copy(filename));
 		ofp = tar_p->child(tar_name, len, csrc->executable);
-		input_to_output(ifp, ofp);
-		delete ifp;
-		ifp = 0;
+		*ofp << ifp;
+		ifp.close();
 		delete ofp;
 		ofp = 0;
 		os_become_undo();

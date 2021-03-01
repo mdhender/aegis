@@ -1,6 +1,6 @@
 //
 //	aegis - project change supervisor
-//	Copyright (C) 2004, 2005 Peter Miller;
+//	Copyright (C) 2004-2006 Peter Miller;
 //	All rights reserved.
 //
 //	This program is free software; you can redistribute it and/or modify
@@ -28,44 +28,32 @@
 // is output is subject to vary at the discretion of the server.
 //
 
-#include <ac/string.h>
+#include <common/ac/string.h>
 
-#include <output.h>
-#include <response/e.h>
-#include <response/private.h>
+#include <libaegis/output.h>
+#include <aecvsserver/response/e.h>
 
 
-struct response_e_ty
+response_e::~response_e()
 {
-    response_ty     inherited;
-    string_ty       *message;
-};
-
-
-static void
-destructor(response_ty *rp)
-{
-    response_e_ty   *rep;
-
-    rep = (response_e_ty *)rp;
-    str_free(rep->message);
-    rep->message = 0;
+    str_free(message);
+    message = 0;
 }
 
 
-static void
-write(response_ty *rp, output_ty *np)
+response_e::response_e(string_ty *arg) :
+    message(arg)
 {
-    response_e_ty   *rep;
-    const char      *cp;
+}
 
-    rep = (response_e_ty *)rp;
-    cp = rep->message->str_text;
+
+void
+response_e::write(output_ty *np)
+{
+    const char *cp = message->str_text;
     for (;;)
     {
-	const char      *ep;
-
-	ep = strchr(cp, '\n');
+	const char *ep = strchr(cp, '\n');
 	if (!ep)
 	    break;
 	np->fprintf("E %.*s\n", (int)(ep - cp), cp);
@@ -76,37 +64,9 @@ write(response_ty *rp, output_ty *np)
 }
 
 
-static const response_method_ty vtbl =
+response_code_ty
+response_e::code_get()
+    const
 {
-    sizeof(response_e_ty),
-    destructor,
-    write,
-    response_code_E,
-    0, // not flushable
-};
-
-
-response_ty *
-response_e_new_v(const char *fmt, va_list ap)
-{
-    response_ty     *rp;
-    response_e_ty   *rep;
-
-    rp = response_new(&vtbl);
-    rep = (response_e_ty *)rp;
-    rep->message = str_vformat(fmt, ap);
-    return rp;
-}
-
-
-response_ty *
-response_e_new(const char *fmt, ...)
-{
-    va_list         ap;
-    response_ty     *rp;
-
-    va_start(ap, fmt);
-    rp = response_e_new_v(fmt, ap);
-    va_end(ap);
-    return rp;
+    return response_code_E;
 }

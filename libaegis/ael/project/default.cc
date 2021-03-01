@@ -1,6 +1,6 @@
 //
 //	aegis - project change supervisor
-//	Copyright (C) 1999, 2003, 2004 Peter Miller;
+//	Copyright (C) 1999, 2003-2006 Peter Miller;
 //	All rights reserved.
 //
 //	This program is free software; you can redistribute it and/or modify
@@ -20,15 +20,15 @@
 // MANIFEST: functions to manipulate defaults
 //
 
-#include <ac/stdio.h>
+#include <common/ac/stdio.h>
 
-#include <ael/project/default.h>
-#include <ael/change/inappropriat.h>
-#include <ael/project/inappropriat.h>
-#include <project.h>
-#include <str_list.h>
-#include <trace.h>
-#include <user.h>
+#include <libaegis/ael/project/default.h>
+#include <libaegis/ael/change/inappropriat.h>
+#include <libaegis/ael/project/inappropriat.h>
+#include <libaegis/project.h>
+#include <common/str_list.h>
+#include <common/trace.h>
+#include <libaegis/user.h>
 
 
 void
@@ -39,8 +39,6 @@ list_default_project(string_ty *project_name, long change_number,
     // check for silly arguments
     //
     trace(("list_default_project()\n{\n"));
-    if (project_name)
-	list_project_inappropriate();
     if (change_number)
 	list_change_inappropriate();
 
@@ -54,21 +52,26 @@ list_default_project(string_ty *project_name, long change_number,
     }
     else
     {
-	string_ty        *login;
-	user_ty          *up;
-
 	//
 	// Use the user name supplied by the caller.
 	//
-	login = args->string[0];
-	up = user_symbolic((project_ty *)0, login);
+	string_ty *login = args->string[0];
+	user_ty *up = user_symbolic((project_ty *)0, login);
 	project_name = user_default_project_by_user(up);
 	user_free(up);
     }
 
     //
+    // Bind to the project.  This detects non-existent pojects, and
+    // allows us to turn project aliases into exact project names.
+    //
+    project_ty *pp = project_alloc(project_name);
+    pp->bind_existing();
+
+    //
     // print it out
     //
-    printf("%s\n", project_name->str_text);
+    printf("%s\n", project_name_get(pp)->str_text);
+    project_free(pp);
     trace(("}\n"));
 }

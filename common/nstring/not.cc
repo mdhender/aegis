@@ -20,7 +20,7 @@
 // MANIFEST: implementation of the nstring::not operator
 //
 
-#include <nstring.h>
+#include <common/nstring.h>
 
 
 bool

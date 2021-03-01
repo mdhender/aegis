@@ -1,6 +1,6 @@
 //
 //	aegis - project change supervisor
-//	Copyright (C) 2004 Peter Miller;
+//	Copyright (C) 2004, 2005 Peter Miller;
 //	All rights reserved.
 //
 //	This program is free software; you can redistribute it and/or modify
@@ -20,11 +20,11 @@
 // MANIFEST: implementation of the sub_change_attribute class
 //
 
-#include <change/attributes.h>
-#include <sub.h>
-#include <sub/change/attribute.h>
-#include <trace.h>
-#include <wstr/list.h>
+#include <libaegis/change/attributes.h>
+#include <libaegis/sub.h>
+#include <libaegis/sub/change/attribute.h>
+#include <common/trace.h>
+#include <common/wstr/list.h>
 
 
 wstring_ty *

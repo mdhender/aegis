@@ -1,6 +1,6 @@
 //
 //	aegis - project change supervisor
-//	Copyright (C) 1991-1999, 2001-2004 Peter Miller;
+//	Copyright (C) 1991-1999, 2001-2006 Peter Miller;
 //	All rights reserved.
 //
 //	This program is free software; you can redistribute it and/or modify
@@ -20,40 +20,43 @@
 // MANIFEST: functions to list and modify change attributes
 //
 
-#include <ac/stdio.h>
-#include <ac/stdlib.h>
-#include <ac/libintl.h>
+#include <common/ac/stdio.h>
+#include <common/ac/stdlib.h>
+#include <common/ac/string.h>
+#include <common/ac/libintl.h>
 
-#include <aeca.h>
-#include <arglex2.h>
-#include <arglex/change.h>
-#include <arglex/project.h>
-#include <cattr.h>
-#include <change.h>
-#include <change/attributes.h>
-#include <change/branch.h>
-#include <change/file.h>
-#include <change/identifier.h>
-#include <commit.h>
-#include <error.h>
-#include <file.h>
-#include <gmatch.h>
-#include <help.h>
-#include <io.h>
-#include <language.h>
-#include <lock.h>
-#include <os.h>
-#include <progname.h>
-#include <project.h>
-#include <project/history.h>
-#include <quit.h>
-#include <str_list.h>
-#include <sub.h>
-#include <trace.h>
-#include <uname.h>
-#include <undo.h>
-#include <user.h>
-#include <uuidentifier.h>
+#include <common/error.h>
+#include <common/gmatch.h>
+#include <common/language.h>
+#include <common/nstring/list.h>
+#include <common/progname.h>
+#include <common/quit.h>
+#include <common/str_list.h>
+#include <common/trace.h>
+#include <common/uuidentifier.h>
+#include <libaegis/arglex2.h>
+#include <libaegis/arglex/change.h>
+#include <libaegis/arglex/project.h>
+#include <libaegis/attribute.h>
+#include <libaegis/cattr.h>
+#include <libaegis/change/attributes.h>
+#include <libaegis/change/branch.h>
+#include <libaegis/change/file.h>
+#include <libaegis/change.h>
+#include <libaegis/change/identifier.h>
+#include <libaegis/commit.h>
+#include <libaegis/file.h>
+#include <libaegis/help.h>
+#include <libaegis/io.h>
+#include <libaegis/lock.h>
+#include <libaegis/os.h>
+#include <libaegis/project.h>
+#include <libaegis/project/history.h>
+#include <libaegis/sub.h>
+#include <libaegis/uname.h>
+#include <libaegis/undo.h>
+#include <libaegis/user.h>
+#include <aegis/aeca.h>
 
 
 static void
@@ -164,23 +167,30 @@ change_attributes_list(void)
 static void
 check_permissions(change_identifier &cid)
 {
+    if (project_administrator_query(cid.get_pp(), user_name(cid.get_up())))
+	return;
     if
     (
-	!project_administrator_query(cid.get_pp(), user_name(cid.get_up()))
+	change_is_being_developed(cid.get_cp())
     &&
+	str_equal
 	(
-	    !change_is_being_developed(cid.get_cp())
-	||
-	    !str_equal
-	    (
-		change_developer_name(cid.get_cp()),
-		user_name(cid.get_up())
-	    )
+	    change_developer_name(cid.get_cp()),
+	    user_name(cid.get_up())
 	)
     )
-    {
-	change_fatal(cid.get_cp(), 0, i18n("bad ca, not auth"));
-    }
+	return;
+    if
+    (
+	project_developers_may_create_changes_get(cid.get_pp())
+    &&
+	change_is_awaiting_development(cid.get_cp())
+    &&
+	project_developer_query(cid.get_pp(), user_name(cid.get_up()))
+    )
+	return;
+
+    change_fatal(cid.get_cp(), 0, i18n("bad ca, not auth"));
 }
 
 
@@ -446,6 +456,7 @@ change_attributes_main(void)
     cattr_data = 0;
     input = 0;
     fix_architecture = 0;
+    nstring_list name_value_pairs;
     while (arglex_token != arglex_token_eoln)
     {
 	switch (arglex_token)
@@ -455,6 +466,11 @@ change_attributes_main(void)
 	    continue;
 
 	case arglex_token_string:
+	    if (strchr(arglex_value.alv_string, '='))
+	    {
+		name_value_pairs.push_back(arglex_value.alv_string);
+		break;
+	    }
 	    scp = sub_context_new();
 	    sub_var_set_charstar
 	    (
@@ -568,6 +584,11 @@ change_attributes_main(void)
 	    );
 	}
     }
+    if (!name_value_pairs.empty())
+    {
+	if (fix_architecture || edit != edit_not_set || input)
+	    change_attributes_usage();
+    }
     if (input)
     {
 	if (description_only)
@@ -590,7 +611,16 @@ change_attributes_main(void)
 	assert(cattr_data);
 	change_attributes_fixup(cattr_data);
     }
-    if (!cattr_data && edit == edit_not_set && !fix_architecture)
+    if
+    (
+	!cattr_data
+    &&
+	edit == edit_not_set
+    &&
+	!fix_architecture
+    &&
+	name_value_pairs.empty()
+    )
     {
 	scp = sub_context_new();
 	sub_var_set_charstar
@@ -615,7 +645,7 @@ change_attributes_main(void)
     //
     // edit the attributes
     //
-    if (fix_architecture)
+    if (fix_architecture || !name_value_pairs.empty())
     {
 	// Do nothing, yet
     }
@@ -667,6 +697,48 @@ change_attributes_main(void)
 
     if (fix_architecture)
 	cattr_data = cattr_fix_arch(cid);
+
+    //
+    // Now apply the name=value pairs
+    //
+    if (!name_value_pairs.empty())
+    {
+	if (!cattr_data)
+	{
+	    cattr_data = (cattr_ty *)cattr_type.alloc();
+	    change_attributes_copy(cattr_data, cstate_data);
+	}
+	if (!cattr_data->attribute)
+	{
+	    cattr_data->attribute =
+		(attributes_list_ty *)attributes_list_type.alloc();
+	}
+	for (size_t j = 0; j < name_value_pairs.size(); ++j)
+	{
+	    nstring pair = name_value_pairs[j];
+	    const char *eqp = strchr(pair.c_str(), '=');
+	    assert(eqp);
+	    if (eqp)
+	    {
+		nstring name(pair.c_str(), eqp - pair.c_str());
+		nstring value(eqp + 1);
+
+		//
+		// Note that this will replace the first attribute with
+		// that name.  If there is more than one of that name,
+		// the second and subsequent attributes are unchanged.
+		// If there is no attribute of that name, it will be
+		// appended.
+		//
+		attributes_list_insert
+		(
+		    cattr_data->attribute,
+		    name.c_str(),
+		    value.c_str()
+		);
+	    }
+	}
+    }
 
     //
     // make sure they are allowed to

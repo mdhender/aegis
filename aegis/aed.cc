@@ -1,6 +1,6 @@
 //
 //	aegis - project change supervisor
-//	Copyright (C) 1991-1999, 2001-2005 Peter Miller;
+//	Copyright (C) 1991-1999, 2001-2006 Peter Miller;
 //	All rights reserved.
 //
 //	This program is free software; you can redistribute it and/or modify
@@ -20,34 +20,34 @@
 // MANIFEST: difference a change
 //
 
-#include <ac/stdio.h>
-#include <ac/stdlib.h>
-#include <ac/time.h>
-#include <ac/unistd.h>
+#include <common/ac/stdio.h>
+#include <common/ac/stdlib.h>
+#include <common/ac/time.h>
+#include <common/ac/unistd.h>
 
-#include <aed.h>
-#include <ael/change/files.h>
-#include <arglex2.h>
-#include <arglex/change.h>
-#include <arglex/project.h>
-#include <change/branch.h>
-#include <change/file.h>
-#include <col.h>
-#include <commit.h>
-#include <error.h>
-#include <help.h>
-#include <lock.h>
-#include <log.h>
-#include <os.h>
-#include <progname.h>
-#include <project.h>
-#include <project/file.h>
-#include <quit.h>
-#include <sub.h>
-#include <trace.h>
-#include <undo.h>
-#include <user.h>
-#include <str_list.h>
+#include <aegis/aed.h>
+#include <libaegis/ael/change/files.h>
+#include <libaegis/arglex2.h>
+#include <libaegis/arglex/change.h>
+#include <libaegis/arglex/project.h>
+#include <libaegis/change/branch.h>
+#include <libaegis/change/file.h>
+#include <libaegis/col.h>
+#include <libaegis/commit.h>
+#include <common/error.h>
+#include <libaegis/help.h>
+#include <libaegis/lock.h>
+#include <libaegis/log.h>
+#include <libaegis/os.h>
+#include <common/progname.h>
+#include <libaegis/project.h>
+#include <libaegis/project/file.h>
+#include <common/quit.h>
+#include <libaegis/sub.h>
+#include <common/trace.h>
+#include <libaegis/undo.h>
+#include <libaegis/user.h>
+#include <common/str_list.h>
 
 #define NOT_SET (-1)
 
@@ -145,15 +145,15 @@ anticipate(string_ty *project_name, long change_number, const char *branch,
 	project_name = user_default_project();
     pp = project_alloc(project_name);
     str_free(project_name);
-    project_bind_existing(pp);
+    pp->bind_existing();
 
     //
     // locate the other branch
     //
     if (branch)
-	pp2 = project_find_branch(pp, branch);
+	pp2 = pp->find_branch(branch);
     else
-	pp2 = pp;
+	pp2 = project_copy(pp);
 
     //
     // locate user data
@@ -204,6 +204,17 @@ anticipate(string_ty *project_name, long change_number, const char *branch,
     }
     if (!str_equal(change_developer_name(cp), user_name(up)))
 	change_fatal(cp, 0, i18n("not developer"));
+
+    //
+    // Make sure that we terminate elegantly if no diff is required for
+    // this project.
+    //
+    if (!change_diff_required(cp))
+    {
+	change_verbose(cp, 0, i18n("no diff required"));
+	quit(0);
+	// NOTREACHED
+    }
 
     //
     // If no files were named on the command line,
@@ -808,15 +819,15 @@ difference_main(void)
 	project_name = user_default_project();
     pp = project_alloc(project_name);
     str_free(project_name);
-    project_bind_existing(pp);
+    pp->bind_existing();
 
     //
     // locate which branch
     //
     if (branch)
-	pp2 = project_find_branch(pp, branch);
+	pp2 = pp->find_branch(branch);
     else
-	pp2 = pp;
+	pp2 = project_copy(pp);
 
     //
     // locate user data
@@ -1173,8 +1184,8 @@ difference_main(void)
 	//
 	// when integrating, the baseline is one project deeper
 	//
-	if (pp2->parent)
-	    pp2bl = pp2->parent;
+	if (!pp2->is_a_trunk())
+	    pp2bl = pp2->parent_get();
     }
     else
 	diff_user_p = up;
@@ -1401,7 +1412,7 @@ difference_main(void)
 	    // use the appropriate merge command
 	    //
 	    trace(("project file path %s\n", p_src_data->file_name->str_text));
-	    most_recent = project_file_path(pp2, p_src_data->file_name);
+	    most_recent = project_file_path(pp2, p_src_data);
 	    assert(most_recent);
 	    if (change_has_merge_command(cp))
 	    {
@@ -1548,6 +1559,17 @@ difference_main(void)
 	    sub_var_optional(scp, "Number");
 	    change_verbose(cp, scp, i18n("warning: mergable files"));
 	    sub_context_delete(scp);
+	}
+
+	//
+        // Make sure that we terminate elegantly if no diff is required
+        // for this project.
+	//
+	if (!change_diff_required(cp))
+	{
+	    change_verbose(cp, 0, i18n("no diff required"));
+	    quit(0);
+	    // NOTREACHED
 	}
 
 	//

@@ -1,6 +1,6 @@
 /*
  *      aegis - project change supervisor
- *      Copyright (C) 2001-2004 Peter Miller;
+ *      Copyright (C) 2001-2005 Peter Miller;
  *      All rights reserved.
  *
  *      This program is free software; you can redistribute it and/or modify
@@ -22,18 +22,18 @@
 
 %{
 
-#include <ac/stdio.h>
-#include <ac/stdlib.h>
+#include <common/ac/stdio.h>
+#include <common/ac/stdlib.h>
 
-#include <error.h> /* for assert */
-#include <format/sccs/gram.h>
-#include <format/sccs/lex.h>
-#include <format/version.h>
-#include <format/version_list.h>
-#include <gettime.h>
-#include <help.h>
-#include <itab.h>
-#include <str_list.h>
+#include <common/error.h> /* for assert */
+#include <aeimport/format/sccs/gram.h>
+#include <aeimport/format/sccs/lex.h>
+#include <aeimport/format/version.h>
+#include <aeimport/format/version_list.h>
+#include <common/gettime.h>
+#include <libaegis/help.h>
+#include <common/itab.h>
+#include <common/str_list.h>
 
 #ifdef DEBUG
 #undef YYDEBUG
@@ -88,7 +88,7 @@ find(int n)
     fvp = (format_version_ty *)itab_query(itp, n);
     if (!fvp)
     {
-        fvp = format_version_new();
+        fvp = new format_version_ty();
         itab_assign(itp, n, fvp);
         fvp->filename_physical = str_copy(pfn);
         fvp->filename_logical = str_copy(lfn);

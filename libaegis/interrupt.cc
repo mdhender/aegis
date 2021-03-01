@@ -1,6 +1,6 @@
 //
 //	aegis - project change supervisor
-//	Copyright (C) 2002, 2004 Peter Miller;
+//	Copyright (C) 2002, 2004, 2005 Peter Miller;
 //	All rights reserved.
 //
 //	This program is free software; you can redistribute it and/or modify
@@ -20,11 +20,11 @@
 // MANIFEST: functions to manipulate interrupts
 //
 
-#include <error.h> // for assert
-#include <ac/signal.h>
-#include <ac/unistd.h>
+#include <common/error.h> // for assert
+#include <common/ac/signal.h>
+#include <common/ac/unistd.h>
 
-#include <interrupt.h>
+#include <libaegis/interrupt.h>
 
 
 static int depth;

@@ -1,5 +1,6 @@
 .so ../man1/aegis.1
 .so ../man1/ae-cvs-ci.1
+.so ../man1/ae-repo-ci.1
 .so ../man1/ae-sccs-put.1
 .so ../man1/ae_c.1
 .so ../man1/ae_p.1
@@ -19,6 +20,7 @@
 .so ../man1/aed.1
 .so ../man1/aedb.1
 .so ../man1/aedbu.1
+.so ../man1/aede-policy.1
 .so ../man1/aede.1
 .so ../man1/aedeu.1
 .so ../man1/aediff.1
@@ -27,6 +29,7 @@
 .so ../man1/aeedit.1
 .so ../man1/aefa.1
 .so ../man1/aefind.1
+.so ../man1/aefinish.1
 .so ../man1/aefp.1
 .so ../man1/aeget.1
 .so ../man1/aegis.cgi.1
@@ -39,6 +42,7 @@
 .so ../man1/ael.1
 .so ../man1/aelcf.1
 .so ../man1/aelic.1
+.so ../man1/aelock.1
 .so ../man1/aelpf.1
 .so ../man1/aels.1
 .so ../man1/aemeasure.1

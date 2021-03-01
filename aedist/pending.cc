@@ -1,7 +1,7 @@
 //
 //	aegis - project change supervisor
-//	Copyright (C) 2005 Walter Franzini;
-//	Copyright (C) 2004, 2005 Peter Miller;
+//	Copyright (C) 2005, 2006 Walter Franzini;
+//	Copyright (C) 2004-2006 Peter Miller;
 //	All rights reserved.
 //
 //	This program is free software; you can redistribute it and/or modify
@@ -21,26 +21,26 @@
 // MANIFEST: implementation of the pending class
 //
 
-#include <ael/column_width.h>
-#include <arglex3.h>
-#include <arglex/project.h>
-#include <change/functor/pendin_print.h>
-#include <col.h>
-#include <error.h>
-#include <help.h>
-#include <input/file.h>
-#include <missing.h>
-#include <nstring/list.h>
-#include <os.h>
-#include <output.h>
-#include <project.h>
-#include <project/invento_walk.h>
-#include <replay/line.h>
-#include <symtab/template.h>
-#include <trace.h>
-#include <url.h>
-#include <usage.h>
-#include <user.h>
+#include <libaegis/ael/column_width.h>
+#include <aedist/arglex3.h>
+#include <libaegis/arglex/project.h>
+#include <aedist/change/functor/pendin_print.h>
+#include <libaegis/col.h>
+#include <common/error.h>
+#include <libaegis/help.h>
+#include <libaegis/input/file.h>
+#include <aedist/missing.h>
+#include <common/nstring/list.h>
+#include <libaegis/os.h>
+#include <libaegis/output.h>
+#include <libaegis/project.h>
+#include <libaegis/project/invento_walk.h>
+#include <aedist/replay/line.h>
+#include <common/symtab/template.h>
+#include <common/trace.h>
+#include <libaegis/url.h>
+#include <aeannotate/usage.h>
+#include <libaegis/user.h>
 
 
 void
@@ -147,7 +147,7 @@ pending_main(void)
     if (!project_name)
         project_name = user_default_project();
     project_ty *pp = project_alloc(project_name);
-    project_bind_existing(pp);
+    pp->bind_existing();
 
     //
     // Parse the input file name to work out whether it is a file name
@@ -161,9 +161,9 @@ pending_main(void)
     {
 	smart_url.set_path_if_empty
 	(
-	    nstring::format("/cgi-bin/aeget/%s", project_name->str_text)
+	    nstring::format("/cgi-bin/aeget/%s", project_name_get(pp)->str_text)
 	);
-	smart_url.set_query_if_empty("inventory");
+	smart_url.set_query_if_empty("inventory+all");
 	ifn = smart_url.reassemble();
     }
     trace_nstring(ifn);
@@ -172,7 +172,7 @@ pending_main(void)
     // Open the file (or URL) containing the inventory.
     //
     os_become_orig();
-    input_ty *ifp = input_file_open(ifn.get_ref());
+    input ifp = input_file_open(ifn.get_ref());
     os_become_undo();
 
     //

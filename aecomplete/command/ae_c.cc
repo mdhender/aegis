@@ -1,6 +1,6 @@
 //
 //	aegis - project change supervisor
-//	Copyright (C) 2002-2004 Peter Miller;
+//	Copyright (C) 2002-2006 Peter Miller;
 //	All rights reserved.
 //
 //	This program is free software; you can redistribute it and/or modify
@@ -20,13 +20,14 @@
 // MANIFEST: functions to manipulate ae_cs
 //
 
-#include <change.h>
-#include <command/ae_c.h>
-#include <command/private.h>
-#include <complete/change/number.h>
-#include <cstate.h>
-#include <project.h>
-#include <user.h>
+#include <libaegis/change.h>
+#include <libaegis/cstate.h>
+#include <libaegis/project.h>
+#include <libaegis/user.h>
+
+#include <aecomplete/command/ae_c.h>
+#include <aecomplete/command/private.h>
+#include <aecomplete/complete/change/number.h>
 
 
 static void
@@ -46,7 +47,7 @@ completion_get(command_ty *cmd)
     //
     project_name = user_default_project();
     pp = project_alloc(project_name);
-    project_bind_existing(pp);
+    pp->bind_existing();
 
     //
     // We are going to complete a change number.

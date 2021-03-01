@@ -1,6 +1,6 @@
 //
 //      aegis - project change supervisor
-//      Copyright (C) 1991-2005 Peter Miller;
+//      Copyright (C) 1991-2006 Peter Miller;
 //      All rights reserved.
 //
 //      This program is free software; you can redistribute it and/or modify
@@ -20,43 +20,46 @@
 // MANIFEST: functions to implement develop end
 //
 
-#include <ac/stdio.h>
-#include <ac/stdlib.h>
-#include <ac/string.h>
-#include <ac/time.h>
+#include <common/ac/stdio.h>
+#include <common/ac/stdlib.h>
+#include <common/ac/string.h>
+#include <common/ac/time.h>
 
-#include <ac/sys/types.h>
+#include <common/ac/sys/types.h>
 #include <sys/stat.h>
 
-#include <aede.h>
-#include <ael/change/by_state.h>
-#include <arglex2.h>
-#include <arglex/change.h>
-#include <arglex/project.h>
-#include <change/branch.h>
-#include <change/develop_direct/read_only.h>
-#include <change/file.h>
-#include <change/signedoffby.h>
-#include <col.h>
-#include <commit.h>
-#include <common.h>
-#include <error.h>
-#include <file.h>
-#include <help.h>
-#include <lock.h>
-#include <progname.h>
-#include <option.h>
-#include <os.h>
-#include <project.h>
-#include <project/active.h>
-#include <project/file.h>
-#include <project/history.h>
-#include <quit.h>
-#include <rss.h>
-#include <sub.h>
-#include <trace.h>
-#include <undo.h>
-#include <user.h>
+#include <common/error.h>
+#include <common/progname.h>
+#include <common/quit.h>
+#include <common/trace.h>
+#include <libaegis/ael/change/by_state.h>
+#include <libaegis/arglex2.h>
+#include <libaegis/arglex/change.h>
+#include <libaegis/arglex/project.h>
+#include <libaegis/attribute.h>
+#include <libaegis/change/attributes.h>
+#include <libaegis/change/branch.h>
+#include <libaegis/change/develop_direct/read_only.h>
+#include <libaegis/change/file.h>
+#include <libaegis/change/signedoffby.h>
+#include <libaegis/col.h>
+#include <libaegis/commit.h>
+#include <libaegis/common.h>
+#include <libaegis/file.h>
+#include <libaegis/help.h>
+#include <libaegis/lock.h>
+#include <libaegis/option.h>
+#include <libaegis/os.h>
+#include <libaegis/project/active.h>
+#include <libaegis/project/file.h>
+#include <libaegis/project.h>
+#include <libaegis/project/history.h>
+#include <libaegis/rss.h>
+#include <libaegis/sub.h>
+#include <libaegis/undo.h>
+#include <libaegis/user.h>
+
+#include <aegis/aede.h>
 
 
 static void
@@ -127,7 +130,6 @@ develop_end_main(void)
     user_ty         *up;
     user_ty         *up_admin;
     int             diff_whine;
-    int             errs;
     time_t          youngest;
     string_ty       *youngest_name;
     int             config_seen;
@@ -203,7 +205,7 @@ develop_end_main(void)
         project_name = user_default_project();
     pp = project_alloc(project_name);
     str_free(project_name);
-    project_bind_existing(pp);
+    pp->bind_existing();
 
     //
     // locate user data
@@ -241,7 +243,7 @@ develop_end_main(void)
     // table.  Take an advisory write lock on the appropriate row of the
     // user table.  Block until can get both simultaneously.
     //
-    project_pstate_lock_prepare(pp);
+    pp->pstate_lock_prepare();
     change_cstate_lock_prepare(cp);
     user_ustate_lock_prepare(up);
     lock_take();
@@ -262,7 +264,7 @@ develop_end_main(void)
         change_fatal(cp, 0, i18n("not developer"));
     if (!change_file_nth(cp, (size_t)0, view_path_first))
         change_fatal(cp, 0, i18n("no files"));
-    errs = 0;
+    int number_of_errors = 0;
     diff_whine = 0;
     config_seen = 0;
 
@@ -279,6 +281,8 @@ develop_end_main(void)
     youngest = 0;
     youngest_name = 0;
     is_a_branch = change_is_a_branch(cp);
+    pconf_ty *pconf_data = change_pconf_get(cp, 1);
+    bool entire_source_hide = true;
     for (j = 0;; ++j)
     {
         fstate_src_ty   *c_src_data;
@@ -288,15 +292,57 @@ develop_end_main(void)
         int             same;
         int             same_d;
         int             file_required;
-        int             diff_file_required;
 
         c_src_data = change_file_nth(cp, j, view_path_first);
         if (!c_src_data)
             break;
         trace(("file_name = \"%s\"\n", c_src_data->file_name->str_text));
 
+	//
+        // We need to know if all the files in this change set are
+        // marked entire-source-hide so that we can mark the change set
+        // with the aeget:inventory:hide attribute.
+	//
+	if
+       	(
+	    !attributes_list_find_boolean
+	    (
+		c_src_data->attribute,
+		"entire-source-hide"
+	    )
+	)
+	{
+	    entire_source_hide = false;
+	}
+
+	switch (pconf_data->unchanged_file_develop_end_policy)
+	{
+	case pconf_unchanged_file_develop_end_policy_ignore:
+	    break;
+
+	case pconf_unchanged_file_develop_end_policy_warning:
+	    if (change_file_unchanged(cp, c_src_data, up))
+	    {
+		sub_context_ty sc;
+		sc.var_set_string("File_Name", c_src_data->file_name);
+		change_warning(cp, &sc, i18n("$filename unchanged"));
+	    }
+	    break;
+
+	case pconf_unchanged_file_develop_end_policy_error:
+	    if (change_file_unchanged(cp, c_src_data, up))
+	    {
+		sub_context_ty sc;
+		sc.var_set_string("File_Name", c_src_data->file_name);
+		change_error(cp, &sc, i18n("$filename unchanged"));
+		++number_of_errors;
+	    }
+	    break;
+	}
+
         file_required = 1;
-        diff_file_required = 1;
+        bool diff_file_required = change_diff_required(cp);
+	trace_bool(diff_file_required);
         switch (c_src_data->action)
         {
         case file_action_create:
@@ -319,7 +365,7 @@ develop_end_main(void)
                     );
                 if (!src)
                 {
-                    diff_file_required = 0;
+                    diff_file_required = false;
                 }
             }
 
@@ -332,7 +378,7 @@ develop_end_main(void)
             &&
                 change_file_find(cp, c_src_data->move, view_path_first)
             )
-                diff_file_required = 0;
+                diff_file_required = false;
             break;
 
         case file_action_transparent:
@@ -340,19 +386,19 @@ develop_end_main(void)
             // Don't check anything for branches (the file is going).
             // For changes, make sure it's the same as the ancestor.
             //
-            diff_file_required = 0;
+            diff_file_required = false;
             file_required = 0;
             if (!is_a_branch)
             {
-                assert(pp->parent);
-                if (pp->parent)
+                assert(pp->parent_get());
+                if (!pp->is_a_trunk())
                 {
                     fstate_src_ty   *pp_src;
 
                     pp_src =
                         project_file_find
                         (
-                            pp->parent,
+                            pp->parent_get(),
                             c_src_data->file_name,
                             view_path_extreme
                         );
@@ -365,7 +411,7 @@ develop_end_main(void)
                         blf =
                             project_file_path
                             (
-                                pp->parent,
+                                pp->parent_get(),
                                 c_src_data->file_name
                             );
                         assert(blf);
@@ -385,7 +431,7 @@ develop_end_main(void)
                             );
                             change_error(cp, scp, i18n("$filename altered"));
                             sub_context_delete(scp);
-                            ++errs;
+                            ++number_of_errors;
                         }
                     }
                 }
@@ -396,7 +442,7 @@ develop_end_main(void)
         {
         case file_usage_build:
             file_required = 0;
-            diff_file_required = 0;
+            diff_file_required = false;
             break;
 
         case file_usage_source:
@@ -440,7 +486,7 @@ develop_end_main(void)
                 change_error(cp, scp, i18n("$filename not found"));
                 sub_context_delete(scp);
                 str_free(path);
-                errs++;
+                ++number_of_errors;
                 continue;
             }
 
@@ -473,7 +519,7 @@ develop_end_main(void)
                 str_free(e);
                 change_error(cp, scp, i18n("$message"));
                 sub_context_delete(scp);
-                ++errs;
+                ++number_of_errors;
             }
         }
 
@@ -512,7 +558,7 @@ develop_end_main(void)
                 );
                 change_error(cp, scp, i18n("$filename not found"));
                 sub_context_delete(scp);
-                errs++;
+                ++number_of_errors;
             }
         }
         else
@@ -523,7 +569,7 @@ develop_end_main(void)
         // check that a difference has been done,
         // and that no files have been modified since.
         //
-        if (!diff_whine)
+        if (!diff_whine && diff_file_required)
         {
             if (file_required && !same && c_src_data->file_fp->oldest)
             {
@@ -532,16 +578,9 @@ develop_end_main(void)
                 change_error(cp, scp, i18n("$filename changed after diff"));
                 sub_context_delete(scp);
                 diff_whine++;
-                errs++;
+                ++number_of_errors;
             }
-            else if
-            (
-                diff_file_required
-            &&
-                !same_d
-            &&
-                c_src_data->diff_file_fp->youngest
-            )
+            else if (!same_d && c_src_data->diff_file_fp->youngest)
             {
                 scp = sub_context_new();
                 sub_var_set_format
@@ -554,18 +593,13 @@ develop_end_main(void)
                 change_error(cp, scp, i18n("$filename changed after diff"));
                 sub_context_delete(scp);
                 diff_whine++;
-                errs++;
+                ++number_of_errors;
             }
-            else if
-            (
-                (file_required && !same)
-            ||
-                (diff_file_required && !same_d)
-            )
+            else if ((file_required && !same) || !same_d)
             {
                 change_error(cp, 0, i18n("diff required"));
                 diff_whine++;
-                errs++;
+                ++number_of_errors;
             }
         }
 
@@ -582,7 +616,7 @@ develop_end_main(void)
         project_file_shallow(pp, c_src_data->file_name, change_number);
 
         //
-        // Find the project after ``shallowing'' it, as this
+        // Find the project after "shallowing" it, as this
         // gives the project file on the immediate branch,
         // rather than deeper down the family tree.
         //
@@ -611,7 +645,7 @@ develop_end_main(void)
                 sub_var_set_string(scp, "File_Name", c_src_data->file_name);
                 change_error(cp, scp, i18n("no $filename in baseline"));
                 sub_context_delete(scp);
-                errs++;
+                ++number_of_errors;
             }
 
             //
@@ -666,7 +700,7 @@ develop_end_main(void)
                     change_error(cp, scp, i18n("baseline $filename changed"));
                 }
                 sub_context_delete(scp);
-                errs++;
+                ++number_of_errors;
             }
 
             //
@@ -684,7 +718,7 @@ develop_end_main(void)
                     i18n("file \"$filename\" locked for change $number")
                 );
                 sub_context_delete(scp);
-                errs++;
+                ++number_of_errors;
             }
             else
                 p_src_data->locked_by = change_number;
@@ -713,7 +747,7 @@ develop_end_main(void)
                 sub_var_set_string(scp, "File_Name", c_src_data->file_name);
                 change_error(cp, scp, i18n("no $filename in baseline"));
                 sub_context_delete(scp);
-                errs++;
+                ++number_of_errors;
                 continue;
             }
 
@@ -772,7 +806,7 @@ develop_end_main(void)
                     sub_var_set_string(scp, "File_Name", c_src_data->file_name);
                     change_error(cp, scp, i18n("baseline $filename changed"));
                     sub_context_delete(scp);
-                    errs++;
+                    ++number_of_errors;
                     break;
                 }
             }
@@ -792,7 +826,7 @@ develop_end_main(void)
                     i18n("file \"$filename\" locked for change $number")
                 );
                 sub_context_delete(scp);
-                errs++;
+                ++number_of_errors;
             }
             else
                 p_src_data->locked_by = change_number;
@@ -821,7 +855,7 @@ develop_end_main(void)
                         i18n("file \"$filename\" locked for change $number")
                     );
                     sub_context_delete(scp);
-                    ++errs;
+                    ++number_of_errors;
                 }
                 else if (!p_src_data->deleted_by)
                 {
@@ -829,7 +863,7 @@ develop_end_main(void)
                     sub_var_set_string(scp, "File_Name", c_src_data->file_name);
                     change_error(cp, scp, i18n("$filename in baseline"));
                     sub_context_delete(scp);
-                    ++errs;
+                    ++number_of_errors;
                 }
             }
             else
@@ -858,9 +892,24 @@ develop_end_main(void)
             sub_var_set_string(scp, "File_Name", c_src_data->file_name);
             change_error(cp, scp, i18n("$filename is insulation"));
             sub_context_delete(scp);
-            errs++;
+            ++number_of_errors;
             break;
         }
+    }
+
+    //
+    // If all the files in this change set are marked entire-source-hide
+    // we mark the change set with the aeget:inventory:hide attribute,
+    // unless the user has already done so.
+    //
+    if
+    (
+	entire_source_hide
+    &&
+	!change_attributes_find_boolean(cp, "aeget:inventory:hide")
+    )
+    {
+	change_attributes_append(cstate_data, "aeget:inventory:hide", "true");
     }
 
     //
@@ -881,7 +930,7 @@ develop_end_main(void)
             fstate_src_ty   *p_src_data;
             string_ty       *e;
 
-            p_src_data = project_file_nth(pp, j, view_path_extreme);
+            p_src_data = pp->file_nth(j, view_path_extreme);
             if (!p_src_data)
                 break;
             if (change_file_find(cp, p_src_data->file_name, view_path_first))
@@ -895,7 +944,7 @@ develop_end_main(void)
                 str_free(e);
                 change_error(cp, scp, i18n("project $message"));
                 sub_context_delete(scp);
-                ++errs;
+                ++number_of_errors;
             }
         }
     }
@@ -904,8 +953,16 @@ develop_end_main(void)
     // verify that the youngest file is older than the
     // build, test, test -bl and test -reg times
     //
-    if (!cstate_data->build_time || youngest >= cstate_data->build_time)
+    trace(("build required = %s\n",
+		(change_build_required(cp) ? "true" : "false")));
+    if
+    (
+	change_build_required(cp)
+    &&
+        (!cstate_data->build_time || youngest >= cstate_data->build_time)
+    )
     {
+	trace(("mark\n"));
         if (youngest_name && cstate_data->build_time)
         {
             scp = sub_context_new();
@@ -933,7 +990,7 @@ develop_end_main(void)
             change_error(cp, scp, i18n("build required"));
             sub_context_delete(scp);
         }
-        ++errs;
+        ++number_of_errors;
     }
     if
     (
@@ -952,7 +1009,7 @@ develop_end_main(void)
         sub_var_optional(scp, "Outstanding");
         change_error(cp, scp, i18n("test required"));
         sub_context_delete(scp);
-        ++errs;
+        ++number_of_errors;
     }
     if
     (
@@ -975,7 +1032,7 @@ develop_end_main(void)
         sub_var_optional(scp, "Outstanding");
         change_error(cp, scp, i18n("test -bl required"));
         sub_context_delete(scp);
-        ++errs;
+        ++number_of_errors;
     }
     if
     (
@@ -998,17 +1055,17 @@ develop_end_main(void)
         sub_var_optional(scp, "Outstanding");
         change_error(cp, scp, i18n("test -reg required"));
         sub_context_delete(scp);
-        ++errs;
+        ++number_of_errors;
     }
 
     //
     // if there was any problem,
     // stay in 'being developed' state.
     //
-    if (errs)
+    if (number_of_errors)
     {
         scp = sub_context_new();
-        sub_var_set_long(scp, "Number", errs);
+        sub_var_set_long(scp, "Number", number_of_errors);
         sub_var_optional(scp, "Number");
         change_fatal(cp, scp, i18n("develop end fail"));
         sub_context_delete(scp);
@@ -1068,7 +1125,7 @@ develop_end_main(void)
     //
     // It is tempting to call
     //
-     // change_build_times_clear(cp);
+    //     change_build_times_clear(cp);
     //
     // at this point, but we don't.  This is so that in the event
     // of an aedeu (to get out of the way of another change, maybe)
@@ -1101,7 +1158,7 @@ develop_end_main(void)
     // arrived via aedist or aepatch.  This means that the change
     // (a) was signed off by the sender of the change set and (b)
     // the receiver of the change set has not edited it in any way;
-    // therefore there is not need for *this* user to sign off.
+    // therefore there is no need for *this* user to sign off.
     //
     if
     (
@@ -1119,7 +1176,7 @@ develop_end_main(void)
     // Release advisory locks.
     //
     change_cstate_write(cp);
-    project_pstate_write(pp);
+    pp->pstate_write();
     user_ustate_write(up);
     commit();
     lock_release();
@@ -1127,7 +1184,20 @@ develop_end_main(void)
     //
     // run the notify command
     //
-    change_run_develop_end_notify_command(cp);
+    switch (project_develop_end_action_get(pp))
+    {
+#ifndef DEBUG
+    default:
+#endif
+    case cstate_branch_develop_end_action_goto_being_reviewed:
+    case cstate_branch_develop_end_action_goto_awaiting_review:
+	change_run_develop_end_notify_command(cp);
+        break;
+
+    case cstate_branch_develop_end_action_goto_awaiting_integration:
+	change_run_review_pass_notify_command(cp);
+        break;
+    }
 
     //
     // Update the RSS feed file if necessary.

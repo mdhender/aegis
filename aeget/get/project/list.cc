@@ -1,6 +1,6 @@
 //
 //	aegis - project change supervisor
-//	Copyright (C) 2003, 2004 Peter Miller;
+//	Copyright (C) 2003-2006 Peter Miller;
 //	All rights reserved.
 //
 //	This program is free software; you can redistribute it and/or modify
@@ -20,14 +20,14 @@
 // MANIFEST: functions to manipulate lists
 //
 
-#include <ac/stdio.h>
+#include <common/ac/stdio.h>
 
-#include <get/project/list.h>
-#include <http.h>
-#include <project.h>
-#include <project/history.h>
-#include <str_list.h>
-#include <trace.h>
+#include <aeget/get/project/list.h>
+#include <aeget/http.h>
+#include <libaegis/project.h>
+#include <libaegis/project/history.h>
+#include <common/str_list.h>
+#include <common/trace.h>
 
 
 void
@@ -63,7 +63,7 @@ get_project_list(void)
 	int		err;
 
 	pp = project_alloc(name.string[j]);
-	project_bind_existing(pp);
+	pp->bind_existing();
 
 	err = project_is_readable(pp);
 	if (err)

@@ -20,10 +20,10 @@
 // MANIFEST: implementation of the sub_diff class
 //
 
-#include <sub.h>
-#include <sub/diff.h>
-#include <trace.h>
-#include <wstr/list.h>
+#include <libaegis/sub.h>
+#include <libaegis/sub/diff.h>
+#include <common/trace.h>
+#include <common/wstr/list.h>
 
 
 wstring_ty *

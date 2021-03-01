@@ -20,11 +20,9 @@
 // MANIFEST: implementation of the quit_action_unlink class
 //
 
-#pragma implementation "quit_action_unlink"
-
-#include <error.h> // for assert
-#include <os.h>
-#include <quit/action/unlink.h>
+#include <common/error.h> // for assert
+#include <libaegis/os.h>
+#include <libaegis/quit/action/unlink.h>
 
 
 quit_action_unlink::~quit_action_unlink()

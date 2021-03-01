@@ -20,14 +20,14 @@
 // MANIFEST: functions to manipulate run_annotates
 //
 
-#include <change.h>
-#include <change/env_set.h>
-#include <error.h> // for assert
-#include <os.h>
-#include <project.h>
-#include <sub.h>
-#include <trace.h>
-#include <user.h>
+#include <libaegis/change.h>
+#include <libaegis/change/env_set.h>
+#include <common/error.h> // for assert
+#include <libaegis/os.h>
+#include <libaegis/project.h>
+#include <libaegis/sub.h>
+#include <common/trace.h>
+#include <libaegis/user.h>
 
 
 void

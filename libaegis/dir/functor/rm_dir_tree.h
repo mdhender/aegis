@@ -23,9 +23,7 @@
 #ifndef LIBAEGIS_DIR_FUNCTOR_RM_DIR_TREE_H
 #define LIBAEGIS_DIR_FUNCTOR_RM_DIR_TREE_H
 
-#pragma interface "dir_functor_rm_dir_tree"
-
-#include <dir/functor.h>
+#include <libaegis/dir/functor.h>
 
 /**
   * The dir_functor_rm_dir_tree class is used to represent an object

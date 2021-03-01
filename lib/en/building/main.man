@@ -1,6 +1,6 @@
 '\" t
 .\"	aegis - project change supervisor
-.\"	Copyright (C) 1992-1995, 1997-2005 Peter Miller;
+.\"	Copyright (C) 1992-1995, 1997-2006 Peter Miller;
 .\"	All rights reserved.
 .\"
 .\"	This program is free software; you can redistribute it and/or modify
@@ -102,15 +102,15 @@ even for English speakers, will be terse and uninformative.
 Remember to use the GNU gettext configure \fI--with-gnu-gettext\fP option
 if your system has native gettext tools.
 .PP
-The \fIconfigure\fP script checks for the compression library and
-functions.  If your system does not have them, it is worth fetching
-and installing \fBGNU zlib\fP compression library before you run the
-\fIconfigure\fP script.
-(See \f[CW]http://www.gzip.org/zlib/\fP for download.)
-This is essential, because Aegis will not build.
-without it.
+The \fIconfigure\fP script checks for compression libraries
+and functions.  If your system does not have them, you must
+download and install the \fBGNU zlib\fP compression library (see
+\f[CW]http://www.gzip.org/zlib/\fP for download) and the \fBbzip2\fP
+compression library (see \f[CW]http://www.bzip.org/\fP for download)
+before you run the \fIconfigure\fP script.
+These libraries are essential, Aegis will not build without them.
 (\fBNote:\fP
-this is not the same thing as \f[CW]zlib\fP\f[CB]c\fP
+\f[CW]zlib\fP is not the same thing as \f[CW]zlib\fP\f[CB]c\fP
 which does something completely different.)
 .PP
 The \fIconfigure\fP script checks for the regular expression library
@@ -125,6 +125,12 @@ parse XML, you will need version 1.8.17 or later.  You do not have to
 install the rest of GNOME as this library is able to be used by itself.
 This package is \fBnot\fP optional, you need it to successfully build
 Aegis.
+.PP
+The libcurl library (\f[CW]http://curl.haxx.se/\fP) is used to fetch
+remote files.  This library is optional, but some functionality,
+particularly \fIaedist \-replay, will not work without it.  If you are
+using a package based install, you will need the \fIlibcurl-dev\fP or
+\fIlibcurl-devel\fP package as well.
 .SS Running Configure
 Normally,
 you just
@@ -261,7 +267,7 @@ This directory contains installed data, such as the documentation,
 reports and shell scripts distributed with Aegis.  On a network, this
 directory may be shared between all machines; it may be mounted
 read-only.  Defaults to \fI${prefix}/share/aegis\fP unless otherwise
-specified.  An ``aegis'' directory will be appended if there is none in
+specified.  An \[lq]aegis\[rq] directory will be appended if there is none in
 the specified path.
 .TP 8n
 \f[CW]--libdir=\fP\fIPATH\fP
@@ -269,7 +275,7 @@ This directory contains installed data, such as the error message
 catalogues.  On a network, this directory may be shared between machines
 with identical hardware and operating systems; it may be mounted
 read-only.  Defaults to \fI${exec_prefix}/lib/aegis\fP unless otherwise
-specified.  An ``aegis'' directory will be appended if there is none in
+specified.  An \[lq]aegis\[rq] directory will be appended if there is none in
 the specified path.
 .TP 8n
 \f[CW]--mandir=\fP\fIPATH\fP
@@ -285,7 +291,8 @@ a network, this directory may be shared between all machines;
 .if t it \fBmust\fP be mounted \fBread-write\fP.
 .if n it MUST be mounted READ-WRITE.
 Defaults to \fI${prefix}/com/aegis\fP unless otherwise specified.
-An ``aegis'' directory will be appended if there is none in the specified path.
+An \[lq]aegis\[rq] directory will be appended if there is none in the
+specified path.
 .TP 8n
 \f[CW]--sysconfdir=\fP\fIPATH\fP
 Location of system configuration files.
@@ -368,6 +375,12 @@ $
 when running configure.  Substitute the appropriate prefix if you are
 using something other than the default \fI/usr/local\fP prefix.
 Watch the output... it should now find your installed packages correctly.
+.SS GCC Version 3.*
+On some operating systems, notabley MacOsX Jaguar and Panther, g++
+versions 3.* will produce link-time errors complaining of missing
+typeinfo symbols.  The only known fix for this problem is to use GCC
+version 2.95, 2.96 or 4.*.  This means MacOsX Tiger does not have the
+problem.
 .SS AIX Command Line Lengths
 For some reason, AIX has a very short command line length limit by default.
 You can extend this by using the command
@@ -528,7 +541,7 @@ program is a project change supervisor.
 .B aefp
 The
 .I aefp
-program may be used to ``fingerprint'' files.
+program may be used to \[lq]fingerprint\[rq] files.
 It is used to test Aegis (see the testing section, below) but it isn't
 installed.
 .TP 8n
@@ -651,7 +664,7 @@ program is available under the terms of the GNU General Public License.
 GNU diff
 If the
 .IR diff (1)
-utility supplied by your flavor of unix does not have the
+utility supplied by your flavor of Unix does not have the
 .B -c
 option,
 you will need GNU diff for \fIaepatch\fP(1) to work (and the
@@ -660,15 +673,18 @@ Context differences are also helpful for reviewing changes.
 GNU diff is essential for Solaris, because the Solaris diff has bugs
 that Aegis' tests uncover.
 .TP 8n
+GNU patch
+For best results with the \fIaepatch\fP(1) and \fIaedist\gP(1) when
+receiving change sets, you need the GNU patch utility.
+.TP 8n
 RCS
 This is a source control package,
 and is available from any of the GNU archives.
-The tests use RCS as the history mechanism,
-so it is necessary to have RCS
-for most of the tests to pass.
 (It is best to compile and install RCS \fIafter\fP GNU diff.  This is
 because the RCS configuration hard-codes the pathnames of the GNU diff
 utilities it needs into the RCS executables.)
+This package isn't essential as Aegis comes with its own \fIaesvt\fP(1)
+history tool - although you are free to use any history tool you like.
 .TP 8n
 GNU Gettext
 .RS
@@ -761,13 +777,12 @@ present when Aegis is built, a much less accurate method will be used.
 .PP
 The tests also depend on the presence of a number of common UNIX programs,
 including but not limited to:
-.IR cc ,
-.IR cmp ,
-.IR diff ,
-.BR ed ,
-.IR find ,
-.IR make ,
-the \fIRCS\fP package,
+\fIcc\fP,
+\fIcmp\fP,
+\fIdiff\fP,
+\fIed\fP,
+\fIfind\fP,
+\fImake\fP,
 etc.
 Depending on your version of UNIX,
 some or all of these programs may be in optional packages.
@@ -802,9 +817,6 @@ necessary to install GNU Gettext before running \&./configure, and once
 \&./configure has been run you need to edit the Makefile to statically
 link the executables.
 .PP
-The tests assume that the RCS commands "ci", "co", "rlog" and "rcs" are
-somewhere in the command search PATH.
-.PP
 The
 .I test/00/t0011a.sh
 file assumes the
@@ -820,7 +832,7 @@ If you are using HPUX and GCC, test 32 fails if you use -O2.
 You need to edit the Makefile to only optimize at -O,
 delete the objects and rebuild.
 .PP
-If you are using Solaris' diff, test 133 will report ``no result''.
+If you are using Solaris' diff, test 133 will report \[lq]no result\[rq].
 You need to install GNU diff, because the Solaris diff has bugs.
 .PP
 If you are using Sun's

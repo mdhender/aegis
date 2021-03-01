@@ -22,8 +22,8 @@
 // Taken from cvs-1.12.5/src/scramble.c...
 //
 
-#include <nstring/accumulator.h>
-#include <scramble.h>
+#include <common/nstring/accumulator.h>
+#include <aecvsserver/scramble.h>
 
 //
 // Trivially encode strings to protect them from innocent eyes (i.e.,

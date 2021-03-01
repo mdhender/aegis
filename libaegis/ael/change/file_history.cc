@@ -1,6 +1,6 @@
 //
 //	aegis - project change supervisor
-//	Copyright (C) 2001-2005 Peter Miller;
+//	Copyright (C) 2001-2006 Peter Miller;
 //	All rights reserved.
 //
 //	This program is free software; you can redistribute it and/or modify
@@ -20,22 +20,22 @@
 // MANIFEST: functions to manipulate file_historys
 //
 
-#include <ael/change/file_history.h>
-#include <ael/column_width.h>
-#include <ael/formeditnum.h>
-#include <change/branch.h>
-#include <change/file.h>
-#include <change.h>
-#include <col.h>
-#include <error.h> // for assert
-#include <option.h>
-#include <output.h>
-#include <project/file.h>
-#include <project/file/roll_forward.h>
-#include <project.h>
-#include <str_list.h>
-#include <trace.h>
-#include <user.h>
+#include <libaegis/ael/change/file_history.h>
+#include <libaegis/ael/column_width.h>
+#include <libaegis/ael/formeditnum.h>
+#include <libaegis/change/branch.h>
+#include <libaegis/change/file.h>
+#include <libaegis/change.h>
+#include <libaegis/col.h>
+#include <common/error.h> // for assert
+#include <libaegis/option.h>
+#include <libaegis/output.h>
+#include <libaegis/project/file.h>
+#include <libaegis/project/file/roll_forward.h>
+#include <libaegis/project.h>
+#include <common/str_list.h>
+#include <common/trace.h>
+#include <libaegis/user.h>
 
 
 #define VERSION_WIDTH 10
@@ -89,7 +89,7 @@ list_change_file_history(string_ty *project_name, long change_number,
 	project_name = str_copy(project_name);
     pp = project_alloc(project_name);
     str_free(project_name);
-    project_bind_existing(pp);
+    pp->bind_existing();
 
     //
     // locate user data

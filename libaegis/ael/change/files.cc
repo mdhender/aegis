@@ -1,6 +1,6 @@
 //
 //	aegis - project change supervisor
-//	Copyright (C) 1999, 2001-2005 Peter Miller;
+//	Copyright (C) 1999, 2001-2006 Peter Miller;
 //	All rights reserved.
 //
 //	This program is free software; you can redistribute it and/or modify
@@ -20,23 +20,23 @@
 // MANIFEST: functions to manipulate filess
 //
 
-#include <ael/attribu_list.h>
-#include <ael/build_header.h>
-#include <ael/change/files.h>
-#include <ael/column_width.h>
-#include <ael/formeditnum.h>
-#include <change.h>
-#include <change/file.h>
-#include <col.h>
-#include <error.h> // for assert
-#include <option.h>
-#include <output.h>
-#include <project.h>
-#include <project/file.h>
-#include <str_list.h>
-#include <symtab.h>
-#include <trace.h>
-#include <user.h>
+#include <libaegis/ael/attribu_list.h>
+#include <libaegis/ael/build_header.h>
+#include <libaegis/ael/change/files.h>
+#include <libaegis/ael/column_width.h>
+#include <libaegis/ael/formeditnum.h>
+#include <libaegis/change.h>
+#include <libaegis/change/file.h>
+#include <libaegis/col.h>
+#include <common/error.h> // for assert
+#include <libaegis/option.h>
+#include <libaegis/output.h>
+#include <libaegis/project.h>
+#include <libaegis/project/file.h>
+#include <common/str_list.h>
+#include <common/symtab.h>
+#include <common/trace.h>
+#include <libaegis/user.h>
 
 
 static void
@@ -76,7 +76,7 @@ list_change_files(string_ty *project_name, long change_number,
 	project_name = str_copy(project_name);
     pp = project_alloc(project_name);
     str_free(project_name);
-    project_bind_existing(pp);
+    pp->bind_existing();
 
     //
     // locate user data
@@ -226,7 +226,7 @@ list_change_files(string_ty *project_name, long change_number,
 	    {
 		//
 		// The current head revision of the branch may not equal
-		// the version ``originally'' copied.
+		// the version "originally" copied.
 		//
 		if (psrc_data && psrc_data->edit)
 		{
@@ -241,7 +241,7 @@ list_change_files(string_ty *project_name, long change_number,
 	    if (src_data->edit_origin_new)
 	    {
 		//
-		// The ``cross branch merge'' version.
+		// The "cross branch merge" version.
 		//
 		assert(src_data->edit_origin_new->revision);
 		edit_col->end_of_line();

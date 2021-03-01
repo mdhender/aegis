@@ -1,6 +1,6 @@
 #
 # 	aegis - project change supervisor
-# 	Copyright (C) 2003-2005 Peter Miller;
+# 	Copyright (C) 2003-2006 Peter Miller;
 # 	All rights reserved.
 #
 # 	This program is free software; you can redistribute it and/or modify
@@ -32,8 +32,8 @@
 # 	should probably be avoided.
 #
 # 	While Aegis was written by an English speaker, this English
-# 	localization file is necessary, to translate the ``terse
-# 	programmer'' style error messages into something more user
+# 	localization file is necessary, to translate the "terse
+# 	programmer" style error messages into something more user
 # 	friendly.
 #
 # 	Messages which include state names need to leave the state names
@@ -56,7 +56,7 @@
 # -------------------------------------------------------------------------
 #
 msgid	""
-msgstr	"PO-Revision-Date: 2005-11-06\n"
+msgstr	"PO-Revision-Date: 2006-03-02\n"
 	"MIME-Version: 1.0\n"
 	"Content-Type: text/plain; charset=ISO-8859-1\n"
 	"Content-Transfer-Encoding: 8bit\n"
@@ -274,9 +274,27 @@ msgid	"$filename modified by history tool"
 msgstr	"la herramienta de la historia modific \"$filename\" el archivo "
 	"de fuente"
 
+# TRANSLATION REQUIRED
 #
-# This error message is issued when aet runs a test which returns a ``no
-# result'' exit status.
+# This error message is issued by the aedb command when it finds
+# a problem with the directory permissions above the development
+# directory.  The directories need to be searchable (have the 'x'
+# permission) for the project owner and the reviewers.
+#
+# 	$File_Name	The name of the offending directory.
+# 	$Mode_Change	The additional mode bit required.
+# 	$Mode_Old	The current mode of the directory (optional).
+# 	$Mode_New	The desirable mode of the directory (optional).
+#
+#, fuzzy
+msgid	"$filename needs permissions $mode_change"
+msgstr	"directory \"$filename\" is not traversable, it currently has "
+	"mode $mode_old but is needs at least mode $mode_new, the \"chmod "
+	"$mode_change $filename\" command may be sufficient to fix this"
+
+#
+# This error message is issued when aet runs a test which returns a "no
+# result" exit status.
 #
 # 	$File_Name	The name of the offending file.
 #
@@ -286,8 +304,8 @@ msgstr	"pruebe \"$filename\" no volvi ningn resultado; un cierto otro "
 
 # TRANSLATION REQUIRED
 #
-# This error message is issued when aet runs a test which returns a ``no
-# result'' exit status.
+# This error message is issued when aet runs a test which returns a "no
+# result" exit status.
 #
 # 	$File_Name	The name of the offending file.
 # 	$ARCHitecture	The name of the architecture.
@@ -335,6 +353,18 @@ msgstr	"pruebe \"$filename\" pasado"
 #, fuzzy
 msgid	"$filename pass, architecture $architecture"
 msgstr	"test \"$filename\" passed on $architecture"
+
+# TRANSLATION_REQUIRED
+#
+# This error message is issued when aede discovers a file in the change
+# that has not been altered.  (Sometimes it is a warning.)
+#
+# 	$File_Name	The offending file.
+#
+#, fuzzy
+msgid	"$filename unchanged"
+msgstr	"the \"$filename\" file has not been changed, it should not be "
+	"included in the change"
 
 #
 # TRANSLATION REQUIRED
@@ -514,6 +544,18 @@ msgstr	"$filename: \"$field_name\" campo corrompido"
 
 # TRANSLATION REQUIRED
 #
+# This error message is issued when aede-policy detects a file isung DOS
+# line termination when it must use UNIX line termination.
+#
+# 	$File_Name	The offending file.
+#
+#, fuzzy
+msgid	"$filename: dos line termination"
+msgstr	"the \"$filename\" file uses DOS line termination (CRLF) and it "
+	"should use UNIX line termination (LF)"
+
+# TRANSLATION REQUIRED
+#
 # This warning is issued when an obsolete field is used.
 #
 #      $Name1          The name of the obsolete field.
@@ -571,6 +613,29 @@ msgstr	"$filename: encontr $number error fatal"
 
 # TRANSLATION REQUIRED
 #
+# This error message is issued when aede-policy detects a binary file,
+# and you have specified a policy whis disallows such files.
+#
+# 	$File_Name	The offending file name.
+#
+#, fuzzy
+msgid	"$filename: is binary"
+msgstr	"the \"$filename\" file contains binary bytes"
+
+# TRANSLATION REQUIRED
+#
+# This error message is issued when aede-policy detects unprintable
+# (non-ASCII) characters in a file, and you have specified a policy whis
+# disallows such files.
+#
+# 	$File_Name	The offending file name.
+#
+#, fuzzy
+msgid	"$filename: is unprintable"
+msgstr	"the \"$filename\" file contains unprintable characters"
+
+# TRANSLATION REQUIRED
+#
 # This error message is issued by aesvt when the file header within a
 # history file is not in a legal RFC822 format.
 #
@@ -588,6 +653,19 @@ msgstr	"$filename: malformed RFC 822 header line"
 #
 msgid	"$filename: mode is $number1, should be $number2"
 msgstr	"$filename: el modo es $number1, debe ser $number2"
+
+# TRANSLATION REQUIRED
+#
+# This error message is issued by the aede-policy command when a file
+# does not contain and up-to-date copyright notice.
+#
+# 	$File_Name	The name of the offending file.
+# 	$Suggest	A suggested text for the missing notice (optional).
+#
+#, fuzzy
+msgid	"$filename: no current copyright notice"
+msgstr	"$filename: the file does not contain an up-to-date copyright "
+	"notice; a notice of the form \"$suggest\" would be suitable."
 
 #
 # This error message is issued when Aegis is checking a file's owner,
@@ -1145,7 +1223,7 @@ msgstr	"aplicacin del cambio al directorio de la integracin"
 #
 # This fatal error message is issued when Aegis determines that the
 # architecture it is currently running on is forbidden by the (5)
-# architecture field of the project ``config'' file.
+# architecture field of the project "aegis.conf" file.
 #
 # 	$Name		The offending architecture name.
 #
@@ -1157,7 +1235,7 @@ msgstr	"arquitectura \"$name\" prohibida, usted no puede realizar este "
 # This error message is issued when Aegis is unable to determine which
 # architecture it is currently running on.  This means that the
 # architecture does not match any of the architecture patterns specified
-# in the project ``config'' file.
+# in the project "aegis.conf" file.
 #
 # 	$Name		The offending architecture name.
 #
@@ -1168,7 +1246,7 @@ msgstr	"arquitectura \"$name\" desconocido"
 # This error message is issued when an architecture appears in the list
 # of architectures the change must apply to, but that architecture name
 # is not present in the project's architecture list in the project
-# ``config'' file.
+# "aegis.conf" file.
 #
 # 	$Name		The name of the offending architecture.
 #
@@ -1201,6 +1279,17 @@ msgstr	"tipo aritmtico requerido para el decremento (fue dado $name)"
 #
 msgid	"arithmetic type required for increment (was given $name)"
 msgstr	"tipo aritmtico requerido para el incremento (fue dado $name)"
+
+# TRANSLATION REQUIRED
+#
+# This fatal error message is issued when a user-supplied string can't
+# be interpreted as an attribute name.
+#
+# 	$Name		The offending string.
+#
+#, fuzzy
+msgid	"attribute $name unknown"
+msgstr	"the attribute \"$name\" does not exist"
 
 #
 # This message is issued when an aeca is successfully completed.
@@ -1795,7 +1884,7 @@ msgstr	"este cambio est en '$state' el estado, debe estar en 'being "
 
 #
 # This error message is issued when a version string is given to aenpr
-# which can't be broken into ``ispunct'' separated number.
+# which can't be broken into "ispunct" separated number.
 #
 # 	$Number		The offending version number.
 #
@@ -1895,7 +1984,7 @@ msgid	"boolean value required for logical or (was given $name)"
 msgstr	"valor boleano requerido para el \"or\" lgico (fue dado $name)"
 
 #
-# This error message is issued when the control expression for an ``if''
+# This error message is issued when the control expression for an "if"
 # statement does not evaluate to a boolean.
 #
 # 	$Name		The type name of the offending operand.
@@ -1931,6 +2020,16 @@ msgstr	"el nmero del rama $number se ha utilizado ya, elige por favor "
 msgid	"branch completed"
 msgstr	"usted puede crear solamente cambios y los ramas en los ramas que "
 	"son activos, este rama no estn en 'being developed' estado"
+
+# TRANSLATION REQUIRED
+#
+# This error messages is issued when aede-policy finds a change set in
+# which the brief description is empty, or has not been changed from the
+# default.
+#
+#, fuzzy
+msgid	"brief_description not set"
+msgstr	"the brief description has been not set"
 
 #
 # This error message is issued when aede finds a file which has not been
@@ -2159,6 +2258,17 @@ msgstr	"comando \"$command\" terminado cerca $signal (base descargada)"
 msgid	"command line too short"
 msgstr	"lnea de comando demasiado corta"
 
+# TRANSLATION REQUIRED
+#
+# This fatal error message is issued when an unrecognised compression
+# algorithm name is given on the command line (aedist, aepatch, etc).
+#
+# 	$name		The offending compression algorithm name.
+#
+#, fuzzy
+msgid	"compression algorithm \"$name\" unknown"
+msgstr	"compression algorithm \"$name\" unknown"
+
 #
 # This message is inserted into the top of the project config file
 # automatically created by aeimport.
@@ -2328,6 +2438,16 @@ msgstr	"delta $number fuera de la gama, debe ser un nmero positivo pequeo"
 #
 msgid	"delta name complete"
 msgstr	"el delta $number se puede ahora referir como delta \"$name\""
+
+# TRANSLATION REQUIRED
+#
+# This error messages is issued when aede-policy finds a change set in
+# which the brief description is empty, or has not been changed from the
+# default.
+#
+#, fuzzy
+msgid	"description not set"
+msgstr	"the description field has not been set"
 
 #
 # This progress message is issued when aedb completes successfully.
@@ -2867,21 +2987,21 @@ msgstr	"huella digital \"$filename\": $errno"
 # This error message is issued when a break statement is seen outside any
 # enclosing loop or switch statement.
 #
-msgid	"floating ``break'' statement"
+msgid	"floating \"break\" statement"
 msgstr	"declaracin flotante \"break\" de la rotura"
 
 #
 # This error message is issued when a continue statement is seen outside
 # any enclosing loop or switch statement.
 #
-msgid	"floating ``continue'' statement"
+msgid	"floating \"continue\" statement"
 msgstr	"el flotante \"continue\" la declaracin"
 
 #
 # This error message is issued when a return statement is used outside
 # any function.
 #
-msgid	"floating ``return'' statement"
+msgid	"floating \"return\" statement"
 msgstr	"declaracin de \"return\" flotante"
 
 #
@@ -2899,7 +3019,7 @@ msgstr	"para $name_list el architecture"
 # This error message is issued as a summary when one or more
 # architectures appear in the list of architectures the change must
 # apply to, but are not present in the project's architecture list in
-# the project ``config'' file.
+# the project "aegis.conf" file.
 #
 # 	$Number		The number of unknown architecture(s).
 # 			(Optional)
@@ -3186,8 +3306,8 @@ msgstr	"valor boleano requerido para el \"not\" lgico no (fue dado $name)"
 
 #
 # This error message is issued when an illegal lookup is attempted.
-# This occurs both for associative arrays ``e1[e2]'', and also for
-# structures ``e1.e2'' (which are implemented as associative arrays).
+# This occurs both for associative arrays "e1[e2]", and also for
+# structures "e1.e2" (which are implemented as associative arrays).
 #
 # 	$Name1		The type name of the first operand.
 # 	$Name2		The type name of the second operand.
@@ -3486,7 +3606,7 @@ msgid	"list $name ambiguous"
 msgstr	"el nombre de la lista \"$name\" es ambiguo ($name_list)"
 
 #
-# This message is issued when an inappropriate ``in'' is attempted.
+# This message is issued when an inappropriate "in" is attempted.
 #
 # 	$Name		The type name of the offending operand.
 #
@@ -4019,6 +4139,15 @@ msgid	"no branch chown"
 msgstr	"este cambio es un rama; no es posible cambiar la propiedad de un "
 	"rama"
 
+# TRANSLATION REQUIRED
+#
+# This information message is issued when aeb is invoked for a change in
+# a project which is configured to not require builds.
+#
+#, fuzzy
+msgid	"no build required"
+msgstr	"no build is required for changes to this project"
+
 #
 # This error message is issued when a command which requires an explicit
 # change number is not given one.
@@ -4028,7 +4157,7 @@ msgstr	"usted debe dar el nmero de cambio explcitamente a este comando"
 
 #
 # This fatal error message is issued when a user attempts to perform a
-# cross branch merge on a change in the ``being integrated'' state.
+# cross branch merge on a change in the "being integrated" state.
 #
 msgid	"no cross branch int merge"
 msgstr	"usted no puede realizar una fusin cruzada del rama en un cambio "
@@ -4085,6 +4214,16 @@ msgstr	"no se ha terminado ningunas integraciones, as que no es todava "
 msgid	"no dev dir"
 msgstr	"este cambio est en '$state' el estado, all no es ningn "
 	"directorio del desarrollo"
+
+# TRANSLATION REQUIRED
+#
+# This information message is issued when the aed command is run for a
+# change which is in a project configured not to use aed.
+#
+#, fuzzy
+msgid	"no diff required"
+msgstr	"no \"aegis -diff\" command is required for this change, the "
+	"project has been configured to omit this requirement"
 
 #
 # This error message is issued when an attempt is made to specify a
@@ -4267,7 +4406,7 @@ msgstr	"ningn nombre del informe especificado"
 
 #
 # This error message is issued when aet completes unsuccessfully because
-# one or more tests returned a ``no result'' exit code.
+# one or more tests returned a "no result" exit code.
 #
 # 	$Number		The number of tests which failed.
 #
@@ -4662,7 +4801,7 @@ msgstr	"comprobacin fuera de las revisiones principales de archivos "
 
 #
 # This verbose message is issued by the aecd command when a change is
-# in the ``awaiting review'' state.  By reminding reviewers to use aerb,
+# in the "awaiting review" state.  By reminding reviewers to use aerb,
 # we make the statistics more meaningful, and also block other reviewes
 # from wasting their time.
 #
@@ -5653,6 +5792,17 @@ msgid	"warning: $filename1 deprecated, use $filename2 file instead"
 msgstr	"Warning: The \"$filename1\" file has been deprecated, it is "
 	"suggested that you use the \"$filename2\" file instead.  See aenf"
 	"(1) for more information."
+
+# TRANSLATION REQUIRED
+#
+# This generic message is used to turn what would otherwise be an error
+# message into a warning message.
+#
+# 	$MeSsaGe	The message to be printed as a warning.
+#
+#, fuzzy
+msgid	"warning: $message"
+msgstr	"advertencia: $message"
 
 #
 # This warning message is issued when the AEGIS environment is observed.

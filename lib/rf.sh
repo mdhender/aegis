@@ -1,7 +1,7 @@
 #!/bin/sh
 #
 #	aegis - project change supervisor
-#	Copyright (C) 1992, 1993, 1995, 1999-2004 Peter Miller
+#	Copyright (C) 1992, 1993, 1995, 1999-2004, 2006 Peter Miller
 #
 #	This program is free software; you can redistribute it and/or modify
 #	it under the terms of the GNU General Public License as published by
@@ -55,7 +55,7 @@ then
    aliases=" ["`echo $aliases | tr ' ' ','`"]"
 fi
 
-to=`aesub "\${email_address -comma $developer $reviewer}"`
+to=`aesub "\\\${email_address -comma $developer $reviewer}"`
 
 #
 # build the notice to be mailed

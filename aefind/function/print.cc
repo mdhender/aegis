@@ -20,15 +20,15 @@
 // MANIFEST: functions to manipulate print tree nodes
 //
 
-#include <ac/stdio.h>
+#include <common/ac/stdio.h>
 
-#include <aer/value/boolean.h>
-#include <aer/value/string.h>
-#include <function/needs.h>
-#include <function/print.h>
-#include <str.h>
-#include <tree/list.h>
-#include <tree/monadic.h>
+#include <libaegis/aer/value/boolean.h>
+#include <libaegis/aer/value/string.h>
+#include <aefind/function/needs.h>
+#include <aefind/function/print.h>
+#include <common/str.h>
+#include <aefind/tree/list.h>
+#include <aefind/tree/monadic.h>
 
 
 static rpt_value_ty *

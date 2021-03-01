@@ -1,6 +1,6 @@
 //
 //	aegis - project change supervisor
-//	Copyright (C) 2001, 2004 Peter Miller;
+//	Copyright (C) 2001, 2004, 2005 Peter Miller;
 //	All rights reserved.
 //
 //	This program is free software; you can redistribute it and/or modify
@@ -20,11 +20,11 @@
 // MANIFEST: functions to implement the builtin getuid function
 //
 
-#include <aer/expr.h>
-#include <aer/func/getuid.h>
-#include <aer/value/integer.h>
-#include <os.h>
-#include <error.h>
+#include <libaegis/aer/expr.h>
+#include <libaegis/aer/func/getuid.h>
+#include <libaegis/aer/value/integer.h>
+#include <libaegis/os.h>
+#include <common/error.h>
 
 
 static int

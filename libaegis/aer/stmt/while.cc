@@ -1,6 +1,6 @@
 //
 //	aegis - project change supervisor
-//	Copyright (C) 1994-1996, 1999, 2003, 2004 Peter Miller;
+//	Copyright (C) 1994-1996, 1999, 2003-2005 Peter Miller;
 //	All rights reserved.
 //
 //	This program is free software; you can redistribute it and/or modify
@@ -20,12 +20,12 @@
 // MANIFEST: functions to manipulate while statements
 //
 
-#include <aer/expr.h>
-#include <aer/lex.h>
-#include <aer/stmt/while.h>
-#include <aer/value/boolean.h>
-#include <aer/value/error.h>
-#include <sub.h>
+#include <libaegis/aer/expr.h>
+#include <libaegis/aer/lex.h>
+#include <libaegis/aer/stmt/while.h>
+#include <libaegis/aer/value/boolean.h>
+#include <libaegis/aer/value/error.h>
+#include <libaegis/sub.h>
 
 
 struct rpt_stmt_while_ty

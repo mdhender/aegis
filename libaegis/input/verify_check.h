@@ -1,6 +1,6 @@
 //
 //	aegis - project change supervisor
-//	Copyright (C) 2005 Peter Miller;
+//	Copyright (C) 2005, 2006 Peter Miller;
 //	All rights reserved.
 //
 //	This program is free software; you can redistribute it and/or modify
@@ -23,9 +23,7 @@
 #ifndef LIBAEGIS_INPUT_VERIFY_CHECK_H
 #define LIBAEGIS_INPUT_VERIFY_CHECK_H
 
-#pragma interface "input_verify_checksum"
-
-#include <input.h>
+#include <libaegis/input.h>
 
 /**
   * The input_verify_checksum class is used to represent an input filter
@@ -47,7 +45,7 @@ public:
       *     The source input stream that this filter uses to obtain its data.
       * @param checksum
       */
-    input_verify_checksum(input_ty &deeper, unsigned long checksum);
+    input_verify_checksum(input &deeper, unsigned long checksum);
 
     // See base class for documentation.
     long read_inner(void *data, size_t nbytes);
@@ -69,7 +67,7 @@ private:
       * The deeper instance variable is sued to remember the source
       * input stream that this filter uses to obtain its data.
       */
-    input_ty *deeper;
+    input deeper;
 
     /**
       * The checksum_given instance variable is used to remember the

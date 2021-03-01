@@ -4,11 +4,24 @@ MANIFEST	This file.
 README	Blurb about the project
 aegis.spec	no manifest specified
 aegis.png	no manifest specified
-aegis.xpm	no manifest specified
 BUILDING	Instructions how to build, test and install
 LICENSE	GNU General Public License
 MANIFEST	This file
 Makefile.in	instructions to make, how to build the Aegis package
+ae-repo-ci/arglex3.cc	implementation of the arglex3 class
+ae-repo-ci/arglex3.h	interface of the arglex3 class
+ae-repo-ci/checkin.cc	implementation of the checkin class
+ae-repo-ci/checkin.h	interface of the checkin class
+ae-repo-ci/main.cc	operating system entry point
+ae-repo-ci/repository.cc	implementation of the repository class
+ae-repo-ci/repository.h	interface of the repository class
+ae-repo-ci/repository/cvs.cc	implementation of the repository_cvs class
+ae-repo-ci/repository/cvs.h	interface of the repository_cvs class
+ae-repo-ci/repository/factory.cc	implementation of the repository_factory class
+ae-repo-ci/repository/is_binary.cc	implementation of the repository_is_binary class
+ae-repo-ci/repository/rename.cc	implementation of the repository_rename class
+ae-repo-ci/repository/subversion.cc	implementation of the repository_subversion class
+ae-repo-ci/repository/subversion.h	interface of the repository_subversion class
 aeannotate/annotate.cc	functions to manipulate annotates
 aeannotate/annotate.h	interface definition for aeannotate/annotate.c
 aeannotate/arglex3.cc	functions to manipulate arglex3s
@@ -183,6 +196,7 @@ aecvsserver/file_info.h	interface definition for aecvsserver/file_info.c
 aecvsserver/main.cc	functions to manipulate mains
 aecvsserver/module.cc	functions to manipulate modules
 aecvsserver/module.h	interface definition for aecvsserver/module.c
+aecvsserver/module/bogus.h	interface of the module_bogus class
 aecvsserver/module/change.cc	functions to manipulate changes
 aecvsserver/module/change.h	interface definition for aecvsserver/module/change.c
 aecvsserver/module/change_bogus.cc	functions to manipulate change_boguss
@@ -190,12 +204,12 @@ aecvsserver/module/change_bogus.h	interface definition for aecvsserver/module/ch
 aecvsserver/module/cvsroot.cc	functions to manipulate cvsroots
 aecvsserver/module/cvsroot.h	interface definition for aecvsserver/module/cvsroot.c
 aecvsserver/module/find.cc	functions to manipulate finds
-aecvsserver/module/private.cc	functions to manipulate privates
-aecvsserver/module/private.h	interface definition for aecvsserver/module/private.c
+aecvsserver/module/options.cc	implementation of the module class
 aecvsserver/module/project.cc	functions to manipulate projects
 aecvsserver/module/project.h	interface definition for aecvsserver/module/project.c
 aecvsserver/module/project_bogu.cc	functions to manipulate project_bogus
 aecvsserver/module/project_bogu.h	interface definition for aecvsserver/module/project_bogu.c
+aecvsserver/module/smart.cc	implementation of the module class
 aecvsserver/module/updateprefix.cc	functions to manipulate updateprefixs
 aecvsserver/net.cc	functions to manipulate nets
 aecvsserver/net.h	interface definition for ae-cvs-server/net.c
@@ -248,6 +262,8 @@ aecvsserver/request/update.cc	functions to manipulate updates
 aecvsserver/request/update.h	interface definition for aecvsserver/request/update.c
 aecvsserver/request/useunchanged.cc	functions to manipulate useunchangeds
 aecvsserver/request/useunchanged.h	interface definition for aecvsserver/request/useunchanged.c
+aecvsserver/request/valid_reques.cc	implementation of the request_valid_requests class
+aecvsserver/request/valid_reques.h	interface of the request_valid_requests class
 aecvsserver/request/valid_respon.cc	functions to manipulate valid_respons
 aecvsserver/request/valid_respon.h	interface definition for aecvsserver/request/valid_respon.c
 aecvsserver/request/version.cc	functions to manipulate versions
@@ -278,8 +294,6 @@ aecvsserver/response/new_entry.cc	functions to manipulate new_entrys
 aecvsserver/response/new_entry.h	interface definition for aecvsserver/response/new_entry.c
 aecvsserver/response/ok.cc	functions to manipulate oks
 aecvsserver/response/ok.h	interface definition for ae-cvs-server/response/ok.c
-aecvsserver/response/private.cc	functions to manipulate privates
-aecvsserver/response/private.h	interface definition for ae-cvs-server/response/private.c
 aecvsserver/response/remove_entry.cc	functions to manipulate remove_entrys
 aecvsserver/response/remove_entry.h	interface definition for aecvsserver/response/remove_entry.c
 aecvsserver/response/removed.cc	functions to manipulate removeds
@@ -304,6 +318,30 @@ aecvsserver/server/private.cc	functions to manipulate privates
 aecvsserver/server/private.h	interface definition for ae-cvs-server/server/private.c
 aecvsserver/server/simple.cc	functions to manipulate simples
 aecvsserver/server/simple.h	interface definition for ae-cvs-server/server/simple.c
+aede-policy/list.cc	implementation of the list class
+aede-policy/list.h	interface of the list class
+aede-policy/main.cc	operating system entry point
+aede-policy/policy.cc	implementation of the policy class
+aede-policy/policy.h	interface of the policy class
+aede-policy/usage.cc	implementation of the usage class
+aede-policy/usage.h	interface of the usage class
+aede-policy/validation.cc	implementation of the validation class
+aede-policy/validation.h	interface of the validation class
+aede-policy/validation/all.cc	implementation of the validation_all class
+aede-policy/validation/all.h	interface of the validation_all class
+aede-policy/validation/copyright.cc	implementation of the validation_copyright class
+aede-policy/validation/copyright.h	interface of the validation_copyright class
+aede-policy/validation/crlf.cc	implementation of the validation_crlf class
+aede-policy/validation/crlf.h	interface of the validation_crlf class
+aede-policy/validation/description.cc	implementation of the validation_description class
+aede-policy/validation/description.h	interface of the validation_description class
+aede-policy/validation/factory.cc	implementation of the validation_factory class
+aede-policy/validation/list.cc	implementation of the validation_list class
+aede-policy/validation/list.h	interface of the validation_list class
+aede-policy/validation/printable.cc	implementation of the validation_printable class
+aede-policy/validation/printable.h	interface of the validation_printable class
+aede-policy/validation/text.cc	implementation of the validation_text class
+aede-policy/validation/text.h	interface of the validation_text class
 aediff/arglex3.cc	implementation of the arglex3 class
 aediff/arglex3.h	interface of the arglex3 class
 aediff/diff.cc	implementation of the diff class
@@ -321,7 +359,7 @@ aedist/main.cc	functions to manipulate mains
 aedist/missing.cc	implementation of the missing class
 aedist/missing.h	interface of the missing class
 aedist/open.cc	functions to manipulate opens
-aedist/open.h	interface definition for aedist/open.c
+aedist/open.h	interface definition for aedist/open.cc
 aedist/pending.cc	implementation of the pending class
 aedist/pending.h	interface of the pending class
 aedist/receive.cc	functions to receive change sets
@@ -387,9 +425,14 @@ aefind/tree/relative.cc	functions to manipulate relative comparisons
 aefind/tree/relative.h	interface definition for aefind/tree/relative.c
 aefind/tree/this.cc	functions to manipulate current pathname tree nodes
 aefind/tree/this.h	interface definition for aefind/tree/this.c
+aefinish/finish.cc	implementation of the finish class
+aefinish/finish.h	functions to finish development
+aefinish/main.cc	operating system entry point
 aefp/main.cc	operating system start point, and command line argument parsing
 aeget/cgi.cc	functions to manipulate cgis
 aeget/cgi.h	interface definition for aeget/cgi.c
+aeget/change/functor/integr_histo.cc	implementation of the change_functor_integr_histo class
+aeget/change/functor/integr_histo.h	interface of the change_functor_integr_histo class
 aeget/change/functor/inventory.cc	implementation of the change_functor_inventory class
 aeget/change/functor/inventory.h	interface of the change_functor_inventory class
 aeget/emit/brief_descri.cc	implementation of the emit_brief_descri class
@@ -646,6 +689,13 @@ aeimport/reconstruct.h	interface definition for aeimport/reconstruct.c
 aeimport/synthesize.cc	functions to manipulate synthesizes
 aeimport/synthesize.h	interface definition for aeimport/synthesize.c
 aelcf/main.cc	operating system entry point
+aelock/list.cc	implementation of the list class
+aelock/list.h	interface of the list class
+aelock/lock.cc	implementation of the lock class
+aelock/lock.h	interface of the lock class
+aelock/main.cc	operating system entry point
+aelock/usage.cc	implementation of the usage class
+aelock/usage.h	interface of the usage class
 aelpf/main.cc	operating system entry point
 aels/list.cc	functions to manipulate lists
 aels/list.h	interface definition for aels/list.c
@@ -755,6 +805,8 @@ cklinlen/main.cc	functions to manipulate mains
 cklinlen/module.cook	module.cook
 common/abbreviate.cc	functions to manipulate abbreviates
 common/abbreviate.h	interface definition for common/abbreviate.c
+common/ac/bzlib.cc	implementation of the ac_bzlib class
+common/ac/bzlib.h	interface of the ac_bzlib class
 common/ac/crypt.h	inclulation for crypt.h presence or absence
 common/ac/ctype.h	insulate against <ctype.h> vagueries
 common/ac/curl/curl.cc	functions to manipulate curls
@@ -792,6 +844,7 @@ common/ac/sys/clu.cc	functions to manipulate clus
 common/ac/sys/clu.h	interface definition for common/ac/sys/clu.c
 common/ac/sys/ioctl.h	interface definition for common/ac/sys/ioctl.c
 common/ac/sys/prctl.h	interface definition for common/ac/sys/prctl.c
+common/ac/sys/resource.h	insulation for sys/resource.h vagueries
 common/ac/sys/types.h	insulate sys/types.h peculiarities
 common/ac/termios.h	insulate against <sys/ioctl.h> vs <termios.h> differences
 common/ac/time.cc	impliment missing functions from <time.h>
@@ -849,7 +902,7 @@ common/mem.cc	functions to manipulate dynamic memory
 common/mem.h	interface definition for common/mem.c
 common/mprintf.cc	functions to printf into memory
 common/mprintf.h	interface definition for common/mprintf.c
-common/noreturn.h	careful definition of ``noreturn'' function attribute
+common/noreturn.h	careful definition of "noreturn" function attribute
 common/now.cc	functions to manipulate nows
 common/now.h	interface definition for common/now.c
 common/nstring.cc	implementation of the nstring class
@@ -875,10 +928,12 @@ common/nstring/list/get.cc	implementation of the nstring_list::get method
 common/nstring/list/gmatch_candi.cc	implementation of the nstring_list::gmatch_candidate method
 common/nstring/list/gmatch_patte.cc	implementation of the nstring_list::gmatch_pattern method
 common/nstring/list/member.cc	implementation of the nstring_list::member method
+common/nstring/list/remove.cc	implementation of the nstring_list_remove class
 common/nstring/list/sort.cc	implementation of the nstring_list::sort method
 common/nstring/list/split.cc	implementation of the nstring_list::split method
 common/nstring/list/unsplit.cc	implementation of the nstring_list::unsplit method
 common/nstring/not.cc	implementation of the nstring::not operator
+common/nstring/quote_c.cc	implementation of the nstring::quote_c method
 common/nstring/quote_shell.cc	implementation of the nstring::quote_shell method
 common/nstring/replace.cc	implementation of the nstring::replace method
 common/nstring/starts_with.cc	implementation of the nstring::starts_with method
@@ -905,6 +960,8 @@ common/rsrc_limits.cc	implementation of the rsrc_limits class
 common/rsrc_limits.h	interface of the rsrc_limits class
 common/skip_unlucky.cc	functions to skip unlucky numbers
 common/skip_unlucky.h	interface definition for common/skip_unlucky.c
+common/stack.cc	implementation of the stack class
+common/stack.h	interface of the stack class
 common/str.cc	string manipulation functions
 common/str.h	interface definition for common/str.c
 common/str/bool.cc	functions to manipulate bools
@@ -1002,7 +1059,6 @@ etc/Howto.conf.in	instructions to cook, architecture specific
 etc/Howto.cook	instructions to cook(1), how to build project
 etc/Makefile.head	instructions to make, how to build the Aegis package
 etc/adver2.gif.uue	adver2.gif.uue
-etc/aegis.html	input for archive/aegis.html
 etc/archive.cook	instructions to cook(1), how to build archive directory
 etc/autoconf.cook	autoconf.cook
 etc/cfmt.cook	cfmt.cook
@@ -1011,8 +1067,6 @@ etc/check-tar-gz.sh	shell script to manipulate check-tar-gzs
 etc/compat.2.3.in	compat.2.3.in
 etc/configure.ac	how to configure aegis, input to the GNU autoconf program
 etc/documents.cook	instructions to cook(1), how to build documents
-etc/documents.html	input for archive/aegis.html
-etc/download.html	input for archive/download.html
 etc/doxygen.cfg	instructions to Doxygen
 etc/doxygen.cook	functions to manipulate foos
 etc/faq.toc.awk	awk script to extract the table of contents from the faq
@@ -1027,29 +1081,19 @@ etc/flint/stdlib.h	no manifest specified
 etc/flint/string.h	no manifest specified
 etc/flint/time.h	no manifest specified
 etc/flint/wchar.h	no manifest specified
-etc/homonym.html	input for archive/homonym.html
 etc/howtodevnbr.sh	shell script to manipulate howtodevnbrs
 etc/i18n-munge.awk	i18n-munge.awk
 etc/i18n.clean.sh	shell script to manipulate i18n.cleans
 etc/i18n.cook	instructions to cook(1), how to build internationalization files
-etc/incl-check.awk	include file check
 etc/libdir.so.in	template for the etc/libdir.so file
 etc/lint.cook	lint.cook
 etc/lint.flags.lnt	lint.flags.lnt
-etc/mail-list.html	input for archive/aegis.html
 etc/metrics.cook	metrics.cook
 etc/msgfmt.sh	shell script to insulate agains gettext vagueries
 etc/page-list.awk	page-list.awk
 etc/patch.fil.sh	shell script to generate the patch for a file
 etc/patches.sh	shell script to generate the patch file
 etc/proj_files.awk	proj_files.awk
-etc/propaganda/crossroads.html	index.html
-etc/propaganda/diversity.html	input for archive/diversity.html
-etc/propaganda/features.html	input for archive/features.html
-etc/propaganda/index.html	index.html
-etc/propaganda/security.html	propaganda/security.html
-etc/propaganda/sites.html	sites.html
-etc/propaganda/startup.html	no manifest specified
 etc/ptx.ignore	ptx.ignore
 etc/ptx.sh	shell script to manipulate ptxs
 etc/ptx1.awk	ptx1.awk
@@ -1073,13 +1117,8 @@ etc/template/report	report the $fn
 etc/template/sh	shell script to manipulate ${basename $fn .sh}s
 etc/template/test	Test the ??? functionality
 etc/test.sh	shell script to run tests
-etc/tmpl-proj.html	input for archive/aegis.html
 etc/toc.so	table of contents macros
-etc/translate.html	translate.html
 etc/version.so	no manifest specified
-etc/webiface.html	input for archive/webiface.html
-etc/windowsnt.html	input for archive/aegis.html
-etc/year2000.html	input for archive/aegis.html
 find_sizes/main.cc	functions to manipulate mains
 fmtgen/indent.cc	functions to automatically indent output
 fmtgen/indent.h	interface definition for fmtgen/indent.c
@@ -1117,9 +1156,12 @@ lib/config.example/cake	example use of cake in project config file
 lib/config.example/cook	example use of cook in project config file
 lib/config.example/diff	example use of diff in the project config file
 lib/config.example/diff3	example use of diff3 for merging in the project config file
+lib/config.example/diff_not	example of no diff required in the project config file
 lib/config.example/fhist	example use of fhist in the project config file
+lib/config.example/gnu_diff	example use of diff in the project config file
 lib/config.example/make	example use of cook in project config file
 lib/config.example/makefile	example makefile
+lib/config.example/merge	example of using RCS merge in the project config file
 lib/config.example/rcs	example of using rcs in the project config file
 lib/config.example/sccs	example of using sccs in the project config file
 lib/cshrc.in	csh user config for aegis
@@ -1248,7 +1290,8 @@ lib/en/html/proj_prgr3.rpt	report the project progress in a month
 lib/en/html/proj_staff.rpt	report the staff currently assigned to a project
 lib/en/html/proj_stats.rpt	report statistics about a project
 lib/en/lsm/main.roff	input for archive/Aegis.lsm
-lib/en/man1/ae-cvs-ci.1	manual page describing the lib/en/man/ae-cvs-ci command.
+lib/en/man1/ae-cvs-ci.1	manual page describing the ae-cvs-ci command.
+lib/en/man1/ae-repo-ci.1	manual page describing the lib/en/man1/ae-repo-ci command.
 lib/en/man1/ae-sccs-put.1	manual page describing the lib/en/man1/ae-sccs-put command.
 lib/en/man1/ae_c.1	manual page describing the ae_p command.
 lib/en/man1/ae_p.1	manual page describing the ae_p command.
@@ -1268,6 +1311,7 @@ lib/en/man1/aecvsserver.1	manual page describing the lib/en/man1/ae-cvs-serve co
 lib/en/man1/aed.1	manual entry for 'aegis -DIFFerence' command
 lib/en/man1/aedb.1	manual entry for 'aegis -Develop_Begin' command
 lib/en/man1/aedbu.1	manual entry for 'aegis -Develop_Begin_Undo' command
+lib/en/man1/aede-policy.1	manual page describing the lib/en/man1/aede-policy command.
 lib/en/man1/aede.1	manual entry for 'aegis -Develop_End' command
 lib/en/man1/aedeu.1	manual entry for 'aegis -Develop_End_Undo' command
 lib/en/man1/aediff.1	manual page describing the lib/en/man1/aediff command.
@@ -1276,6 +1320,7 @@ lib/en/man1/aedn.1	manual page describing the aedn command.
 lib/en/man1/aeedit.1	manual page describing the lib/en/man1/aeedit command.
 lib/en/man1/aefa.1	manual entry for 'aegis -File_ATtributes' command
 lib/en/man1/aefind.1	manual page describing the aefind command.
+lib/en/man1/aefinish.1	manual page describing the lib/en/man1/aefinish command.
 lib/en/man1/aefp.1	manual entry for the aefp command
 lib/en/man1/aeget.1	manual page describing the lib/en/man1/aeget command.
 lib/en/man1/aegis.1	manual entry for aegis
@@ -1289,6 +1334,7 @@ lib/en/man1/aeipass.1	manual entry for 'aegis -Integrate_Pass' command
 lib/en/man1/ael.1	manual entry for 'aegis -List' command
 lib/en/man1/aelcf.1	manual page describing the lib/en/man1/aelcf command.
 lib/en/man1/aelic.1	no manifest specified
+lib/en/man1/aelock.1	manual page describing the lib/en/man1/aelock command.
 lib/en/man1/aelpf.1	manual page describing the lib/en/man1/aelpf command.
 lib/en/man1/aels.1	manual page describing the lib/en/man1/aels command.
 lib/en/man1/aemeasure.1	manual page describing the lib/en/man1/aemeasure command.
@@ -1346,6 +1392,8 @@ lib/en/man1/o_baserel.so	document describing o_baserel.so
 lib/en/man1/o_branch.so	description of the -BRanch command line option
 lib/en/man1/o_change.so	description of -Change command line option
 lib/en/man1/o_clone_merg.so	document describing lib/en/man1/o_clone_mergs
+lib/en/man1/o_compatibil.so	document describing lib/en/man1/o_compatibils
+lib/en/man1/o_compress.so	document describing lib/en/man1/o_compresss
 lib/en/man1/o_cte.so	document describing lib/en/man1/o_ctes
 lib/en/man1/o_delta.so	document describing lib/en/man1/o_deltas
 lib/en/man1/o_devdir.so	description of -Development_Directory command line option
@@ -1361,6 +1409,7 @@ lib/en/man1/o_lib.so	description of -LIBrary command line option
 lib/en/man1/o_list.so	description of -List command line option
 lib/en/man1/o_major.so	description of -MAJor command line option
 lib/en/man1/o_manual.so	description of -MINor command line option
+lib/en/man1/o_mime_heade.so	document describing lib/en/man1/o_mime_heades
 lib/en/man1/o_min.so	description of -MINImum command line option
 lib/en/man1/o_minor.so	description of -MINOr command line option
 lib/en/man1/o_nolog.so	description of -Not_Logging command line option
@@ -1473,6 +1522,7 @@ lib/en/readme/new.4.19.so	document describing new 4.19 features
 lib/en/readme/new.4.2.so	document describing new 4.2 features
 lib/en/readme/new.4.20.so	document describing new 4.20 features
 lib/en/readme/new.4.21.so	document describing new 4.21 features
+lib/en/readme/new.4.22.so	document describing new 4.22 features
 lib/en/readme/new.4.3.so	document describing new 4.3 features
 lib/en/readme/new.4.4.so	document describing new 4.4 features
 lib/en/readme/new.4.5.so	document describing new 4.5 features
@@ -1523,6 +1573,7 @@ lib/en/user-guide/c4.4.so	User Guide, The Dependency Maintenance Tool, Using Mak
 lib/en/user-guide/c4.5.so	document describing lib/en/user-guide/c4.5s
 lib/en/user-guide/c4.6.so	User Guide, The Dependency Maintenance Tool, Work Area Style
 lib/en/user-guide/c4.7.so	User Guide, The Dependency Maintenance Tool, GNU Autoconf
+lib/en/user-guide/c4.8.so	User Guide, The Dependency Maintenance Tool, Optional
 lib/en/user-guide/c5.0.so	User Guide, The Project Attributes
 lib/en/user-guide/c6.0.so	User Guide, Tips and Traps
 lib/en/user-guide/c6.1.so	User Guide, Tips and Traps, Heterogeneous Development
@@ -1692,7 +1743,7 @@ libaegis/aer/expr/constant.cc	functions to manipulate constants in expressions
 libaegis/aer/expr/constant.h	interface definition for aegis/aer/expr/constant.c
 libaegis/aer/expr/func.cc	functions to manipulate function call expressions
 libaegis/aer/expr/func.h	interface definition for aegis/aer/expr/func.c
-libaegis/aer/expr/in.cc	functions to manipulate ``in'' expressions
+libaegis/aer/expr/in.cc	functions to manipulate "in" expressions
 libaegis/aer/expr/in.h	interface definition for aegis/aer/expr/in.c
 libaegis/aer/expr/incr.cc	functions to manipulate increment/decrement expressions
 libaegis/aer/expr/incr.h	interface definition for aegis/aer/expr/incr.c
@@ -1888,7 +1939,10 @@ libaegis/change/attributes/copy.cc	functions to manipulate copys
 libaegis/change/attributes/default.cc	functions to manipulate defaults
 libaegis/change/attributes/edit.cc	functions to manipulate edits
 libaegis/change/attributes/find.cc	implementation of the change_attributes_find class
+libaegis/change/attributes/find_bool.cc	implementation of the change_attributes_find_bool class
 libaegis/change/attributes/fixup.cc	implementation of the change_attributes_fixup function
+libaegis/change/attributes/get.cc	implementation of the change_attributes_get class
+libaegis/change/attributes/get_bool.cc	implementation of the change_attributes_get_bool class
 libaegis/change/attributes/verify.cc	functions to manipulate verifys
 libaegis/change/become.cc	functions to manipulate becomes
 libaegis/change/bind/existing.cc	functions to manipulate existings
@@ -1975,6 +2029,7 @@ libaegis/change/branch/umask_set.cc	functions to manipulate umask_sets
 libaegis/change/branch/uuid_find.cc	functions to manipulate uuid_finds
 libaegis/change/branch/was.cc	functions to manipulate wass
 libaegis/change/briefdescget.cc	functions to manipulate briefdescgets
+libaegis/change/build/required.cc	implementation of the change_build_required class
 libaegis/change/build/run_dev_com.cc	functions to manipulate run_dev_coms
 libaegis/change/build/run_int_com.cc	functions to manipulate run_int_coms
 libaegis/change/build/run_time_com.cc	functions to run the build_time_adjust_notify_command
@@ -2008,6 +2063,7 @@ libaegis/change/develop_direct/set.cc	functions to manipulate sets
 libaegis/change/develop_direct/template.cc	functions to manipulate templates
 libaegis/change/develop_name.cc	functions to manipulate develop_names
 libaegis/change/diff/has_merge.cc	functions to manipulate has_merges
+libaegis/change/diff/required.cc	implementation of the change_diff_required class
 libaegis/change/diff/run_annotate.cc	functions to manipulate run_annotates
 libaegis/change/diff/run_diff.cc	functions to manipulate run_diffs
 libaegis/change/diff/run_diff3.cc	functions to manipulate run_diff3s
@@ -2027,6 +2083,7 @@ libaegis/change/file/directory/query.cc	functions to manipulate querys
 libaegis/change/file/find.cc	functions to manipulate finds
 libaegis/change/file/find2.cc	implementation of the change_file_find2 class
 libaegis/change/file/find_fuzzy.cc	functions to manipulate find_fuzzys
+libaegis/change/file/find_legacy.cc	implementation of the change_file_find_legacy class
 libaegis/change/file/fingerprint/check.cc	functions to manipulate checks
 libaegis/change/file/fingerprint/same.cc	functions to manipulate sames
 libaegis/change/file/fstate.cc	functions to manipulate fstates
@@ -2039,6 +2096,8 @@ libaegis/change/file/name_check.cc	functions to manipulate name_checks
 libaegis/change/file/new.cc	functions to manipulate news
 libaegis/change/file/nth.cc	functions to manipulate nths
 libaegis/change/file/path.cc	functions to manipulate paths
+libaegis/change/file/path_by_meta.cc	implementation of the change_file_path_by_meta class
+libaegis/change/file/path_by_uuid.cc	functions to manipulate paths
 libaegis/change/file/promote.cc	implementation of the change_file_promote class
 libaegis/change/file/remove.cc	functions to manipulate removes
 libaegis/change/file/remove_all.cc	functions to manipulate remove_alls
@@ -2051,6 +2110,7 @@ libaegis/change/file/test_bl_time/set.cc	functions to manipulate sets
 libaegis/change/file/test_time/clear.cc	functions to manipulate clears
 libaegis/change/file/test_time/get.cc	functions to manipulate gets
 libaegis/change/file/test_time/set.cc	functions to manipulate sets
+libaegis/change/file/unchanged.cc	implementation of the change_file_unchanged function
 libaegis/change/file/up_to_date.cc	functions to manipulate up_to_dates
 libaegis/change/file/uuid.cc	functions to manipulate uuids
 libaegis/change/file/version_path.cc	functions to manipulate version_paths
@@ -2100,6 +2160,7 @@ libaegis/change/identifi_sub/get_devdir.cc	implementation of the change_identifi
 libaegis/change/identifi_sub/get_historia.cc	implementation of the change_identifi_sub_get_historia class
 libaegis/change/identifi_sub/get_proj_fi2.cc	implementation of the change_identifi_sub_get_proj_fi2 class
 libaegis/change/identifi_sub/get_proj_fil.cc	implementation of the change_identifi_sub_get_proj_fil class
+libaegis/change/identifi_sub/invalidate.cc	implementation of the change_identifi_sub_invalidate class
 libaegis/change/identifi_sub/need_history.cc	implementation of the change_identifi_sub_need_history class
 libaegis/change/identifi_sub/set.cc	implementation of the change_id_set class
 libaegis/change/identifi_sub/set_change.cc	implementation of the change_id_set_change class
@@ -2109,7 +2170,9 @@ libaegis/change/integra_direct/clear.cc	functions to manipulate clears
 libaegis/change/integra_direct/get.cc	functions to manipulate gets
 libaegis/change/integra_direct/set.cc	functions to manipulate sets
 libaegis/change/integra_name.cc	functions to manipulate integra_names
+libaegis/change/is_await_dev.cc	implementation of the change_is_await_dev class
 libaegis/change/is_being_dev.cc	functions to manipulate is_beingdeves
+libaegis/change/is_being_int.cc	implementation of the change_is_being_int class
 libaegis/change/is_completed.cc	functions to manipulate is_completeds
 libaegis/change/list.cc	functions to manipulate lists
 libaegis/change/list.h	interface definition for libaegis/change/list.c
@@ -2120,6 +2183,8 @@ libaegis/change/logfile/get.cc	functions to manipulate gets
 libaegis/change/metrics/file_pat_get.cc	functions to manipulate file_pat_gets
 libaegis/change/outstanding.cc	functions to manipulate outstandings
 libaegis/change/pathconf.cc	functions to manipulate pathconfs
+libaegis/change/pconf/attribu_find.cc	implementation of the change_pconf_attribu_find class
+libaegis/change/pconf/copyri_owner.cc	implementation of the change_ty::pconf_copyright_owner_get method
 libaegis/change/pconf/get.cc	functions to manipulate gets
 libaegis/change/pfs.cc	implementation of the change_pfs class
 libaegis/change/pfs.h	interface of the change_pfs class
@@ -2199,6 +2264,8 @@ libaegis/collect.h	interface of the collect class
 libaegis/commit.cc	functions to store and enact file manipulations for commit
 libaegis/commit.h	interface definition for aegis/commit.c
 libaegis/common.def	enumerations common to many aegis file contents
+libaegis/compres_algo.cc	implementation of the compres_algo class
+libaegis/compres_algo.h	interface of the compres_algo class
 libaegis/cstate.def	change state file contents definition
 libaegis/dir.cc	functions to walk directory trees
 libaegis/dir.h	interface definition for aegis/dir.c
@@ -2269,6 +2336,8 @@ libaegis/input/822wrap.cc	functions to perfom rfc822 line wrapping
 libaegis/input/822wrap.h	interface definition for aedist/input/822wrap.c
 libaegis/input/base64.cc	functions to manipulate base64s
 libaegis/input/base64.h	interface definition for libaegis/input/base64.c
+libaegis/input/bunzip2.cc	implementation of the input_bunzip2 class
+libaegis/input/bunzip2.h	interface of the input_bunzip2 class
 libaegis/input/catenate.cc	functions to manipulate catenates
 libaegis/input/catenate.h	interface definition for libaegis/input/catenate.c
 libaegis/input/cpio.cc	functions to manipulate cpios
@@ -2288,6 +2357,8 @@ libaegis/input/file_text.cc	functions to read input from text files
 libaegis/input/file_text.h	interface definition for libaegis/input/file_text.c
 libaegis/input/gunzip.cc	functions to manipulate gunzips
 libaegis/input/gunzip.h	interface definition for libaegis/input/gunzip.c
+libaegis/input/null.cc	implementation of the input_null class
+libaegis/input/null.h	interface of the input_null class
 libaegis/input/one_line.cc	functions to manipulate one_lines
 libaegis/input/pushba_trans.cc	functions to manipulate pushba_transs
 libaegis/input/quoted_print.cc	functions to manipulate quoted_prints
@@ -2295,13 +2366,13 @@ libaegis/input/quoted_print.h	interface definition for libaegis/input/quoted_pri
 libaegis/input/read_strict.cc	functions to manipulate read_stricts
 libaegis/input/read_strict2.cc	functions to manipulate read_strict2s
 libaegis/input/skip.cc	functions to manipulate skips
+libaegis/input/smart.cc	implementation of the input_smart class
 libaegis/input/stdin.cc	functions to manipulate stdins
 libaegis/input/stdin.h	interface definition for libaegis/input/stdin.c
 libaegis/input/string.cc	functions to manipulate strings
 libaegis/input/string.h	interface definition for libaegis/input/string.c
 libaegis/input/svt_checkout.cc	implementation of the input_svt_checkout class
 libaegis/input/svt_checkout.h	interface of the input_svt_checkout class
-libaegis/input/to_output.cc	functions to copy inputs to outputs
 libaegis/input/uudecode.cc	functions to manipulate uudecodes
 libaegis/input/uudecode.h	interface definition for libaegis/input/uudecode.c
 libaegis/input/verify_check.cc	implementation of the input_verify_check class
@@ -2332,10 +2403,12 @@ libaegis/os/background.cc	functions to manipulate backgrounds
 libaegis/os/basename.cc	implementation of the os_basename class
 libaegis/os/become.cc	wrappers around operating system functions
 libaegis/os/below_dir.cc	wrappers around operating system functions
+libaegis/os/canonify_dir.cc	implementation of the os_canonify_dir class
 libaegis/os/chdir.cc	wrappers around operating system functions
 libaegis/os/chmod/chmod.cc	wrappers around operating system functions
 libaegis/os/chmod/errok.cc	wrappers around operating system functions
 libaegis/os/chmod/query.cc	wrappers around operating system functions
+libaegis/os/ck_path_trav.cc	implementation of the os_ck_path_trav class
 libaegis/os/dirname.cc	functions to manipulate dirnames
 libaegis/os/dirname_rel.cc	functions to manipulate dirnames
 libaegis/os/domain_name.cc	implementation of the os_domain_name class
@@ -2398,6 +2471,8 @@ libaegis/output/base64.cc	functions to encode output as MIME base 64
 libaegis/output/base64.h	interface definition for libaegis/output/base64.c
 libaegis/output/bit_bucket.cc	functions to manipulate bit_buckets
 libaegis/output/bit_bucket.h	interface definition for libaegis/output/bit_bucket.c
+libaegis/output/bzip2.cc	implementation of the output_bzip2 class
+libaegis/output/bzip2.h	interface of the output_bzip2 class
 libaegis/output/conten_encod.cc	functions to manipulate conten_encods
 libaegis/output/conten_encod.h	interface definition for libaegis/output/conten_encod.c
 libaegis/output/cpio.cc	functions to output to cpio archivess
@@ -2461,13 +2536,20 @@ libaegis/project.cc	functions to manipulate project state data
 libaegis/project.h	interface definition for aegis/project.c
 libaegis/project/active.cc	functions to manipulate actives
 libaegis/project/active.h	interface definition for libaegis/project/active.c
+libaegis/project/baselin_path.cc	implementation of the project_ty::baseline_path_get method
 libaegis/project/bind/branch.cc	functions to manipulate branchs
 libaegis/project/bind/existing.cc	functions to manipulate existings
 libaegis/project/bind/new.cc	functions to manipulate news
 libaegis/project/briefdescget.cc	functions to manipulate briefdescgets
+libaegis/project/change/dir_path_get.cc	implementation of the project_ty::changes_path_get method
+libaegis/project/change/get.cc	implementation of the project_ty::change_get method
+libaegis/project/change/path_get.cc	implementation of the project_ty::change_path_get method
+libaegis/project/change/walk.cc	implementation of the project_change_walk function
+libaegis/project/change/walk.h	interface of the project_change_walk class
 libaegis/project/change2delta.cc	functions to manipulate change2deltas
 libaegis/project/compdataget.cc	functions to manipulate compdatagets
 libaegis/project/compdataset.cc	functions to manipulate compdatasets
+libaegis/project/copyright_years/slurp.cc	implementation of the project_ty::copyright_years_slurp method
 libaegis/project/deftesreexge.cc	implementation of the project_deftesreexge class
 libaegis/project/deftesreexse.cc	implementation of the project_deftesreexse class
 libaegis/project/delta2change.cc	functions to convert delta numbers to change numbers
@@ -2482,11 +2564,15 @@ libaegis/project/file/find.cc	functions to manipulate finds
 libaegis/project/file/find_by_meta.cc	functions to manipulate find_by_metas
 libaegis/project/file/find_by_uuid.cc	functions to manipulate find_by_uuids
 libaegis/project/file/find_fuzzy.cc	functions to manipulate find_fuzzys
+libaegis/project/file/find_legacy.cc	implementation of the project_ty::file_find_* methods
 libaegis/project/file/list_get.cc	functions to manipulate list_gets
-libaegis/project/file/list_get.h	interface definition for libaegis/project/file/list_get.c
+libaegis/project/file/list_invalid.cc	implementation of the project_ty::file_list_invalidate method
 libaegis/project/file/new.cc	functions to manipulate news
 libaegis/project/file/nth.cc	functions to manipulate nths
 libaegis/project/file/path.cc	functions to manipulate paths
+libaegis/project/file/path_by_meta.cc	implementation of the project_file_path_by_meta class
+libaegis/project/file/path_by_uuid.cc	implementation of the project_file_path_by_uuid class
+libaegis/project/file/path_legacy.cc	implementation of the project_file_path_legacy class
 libaegis/project/file/remove.cc	functions to manipulate removes
 libaegis/project/file/roll_forward.cc	functions to manipulate roll_forwards
 libaegis/project/file/roll_forward.h	interface definition for libaegis/project/file/roll_forward.c
@@ -2495,21 +2581,33 @@ libaegis/project/file/shallow_chk.cc	functions to manipulate shallow_chks
 libaegis/project/file/trojan.cc	functions to check filenames for trojan suspectedness
 libaegis/project/file/trojan.h	interface definition for libaegis/project/file/trojan.c
 libaegis/project/file/version_path.cc	functions to manipulate version_paths
+libaegis/project/find_branch.cc	implementation of the project_ty::find_branch method
 libaegis/project/history.h	interface definition for aegis/project_hist.c
 libaegis/project/history/filename_get.cc	functions to manipulate filename_gets
 libaegis/project/history/path_get.cc	functions to manipulate path_gets
 libaegis/project/history/uuid_trans.cc	functions to manipulate uuid_transs
 libaegis/project/history/uuid_trans.h	interface definition for libaegis/project/history/uuid_trans.c
+libaegis/project/home_path/get.cc	implementation of the project_ty::home_path_get method
+libaegis/project/home_path/set.cc	implementation of the project_ty::home_path_set method
 libaegis/project/identifi_sub.cc	implementation of the project_identifier_subset class
 libaegis/project/identifi_sub.h	interface of the project_identifier_subset class
 libaegis/project/identifi_sub/branch.cc	implementation of the project_identifier_subset_branch class
 libaegis/project/identifi_sub/branch.h	interface of the project_identifier_subset_branch class
 libaegis/project/identifi_sub/plain.cc	implementation of the project_identifier_subset_plain class
 libaegis/project/identifi_sub/plain.h	interface of the project_identifi_sub_plain class
+libaegis/project/info_path.cc	implementation of the project_ty::info_path_get method
 libaegis/project/invento_walk.cc	implementation of the project_invento_walk class
 libaegis/project/invento_walk.h	interface of the project_invento_walk class
 libaegis/project/list.cc	functions to manipulate lists
+libaegis/project/lock/everything.cc	implementation of the project_ty::lock_prepare_everything method
+libaegis/project/lock/prepare.cc	implementation of the project_lock_prepare class
+libaegis/project/lock/sync.cc	implementation of the project_ty::lock_sync method
+libaegis/project/name_get.cc	implementation of the project_name_get class
 libaegis/project/new_branch.cc	functions to manipulate new_branchs
+libaegis/project/owner/copy.cc	implementation of the project_ty::copy_the_owner method
+libaegis/project/owner/get.cc	implementation of the project_ty::get_the_owner method
+libaegis/project/owner/gid.cc	implementation of the project_ty::gid_get method
+libaegis/project/owner/uid.cc	implementation of the project_ty::uid_get method
 libaegis/project/pattr/edit.cc	functions to manipulate edits
 libaegis/project/pattr/edit.h	interface definition for libaegis/project/pattr/edit.c
 libaegis/project/pattr/get.cc	functions to get a pattr from a project
@@ -2519,11 +2617,14 @@ libaegis/project/pattr/set.h	interface definition for libaegis/project/pattr/set
 libaegis/project/pconf/get.cc	functions to manipulate gets
 libaegis/project/prodevdirget.cc	functions to manipulate prodevdirgets
 libaegis/project/prodevdirset.cc	functions to manipulate prodevdirsets
+libaegis/project/pstate/get.cc	implementation of the project_ty::pstate_get method
+libaegis/project/pstate/path_get.cc	implementation of the project_ty::pstate_path_get method
 libaegis/project/rebeunnocoge.cc	functions to manipulate rebeunnocoges
 libaegis/project/rebeunnocose.cc	functions to manipulate rebeunnocoses
 libaegis/project/revbegnocoge.cc	functions to manipulate revbegnocoges
 libaegis/project/revbegnocose.cc	functions to manipulate revbegnocoses
 libaegis/project/sch_path_get.cc	functions to manipulate sch_path_gets
+libaegis/project/trunk_get.cc	implementation of the project_ty::trunk_get method
 libaegis/project/uuid_find.cc	functions to manipulate uuid_finds
 libaegis/project/verbose.h	interface definition for libaegis/project/verbose.c
 libaegis/project/verbose/directory.cc	functions to manipulate directorys
@@ -2555,8 +2656,6 @@ libaegis/rfc822/functor/vers_search.cc	implementation of the rfc822_functor_vers
 libaegis/rfc822/functor/vers_search.h	interface of the rfc822_functor_vers_search class
 libaegis/rfc822/functor/version_prev.cc	implementation of the rfc822_functor_version_prev class
 libaegis/rfc822/functor/version_prev.h	interface of the rfc822_functor_version_prev class
-libaegis/rfc822header.cc	functions to manipulate headers
-libaegis/rfc822header.h	interface definition for aedist/rfc822header.c
 libaegis/rptidx.def	report index file format definition
 libaegis/rss.cc	implementation of the rss class
 libaegis/rss.h	interface of the rss class
@@ -2613,6 +2712,8 @@ libaegis/sub/comment.cc	functions to impliment comment substitutions
 libaegis/sub/comment.h	interface definition for aegis/sub/comment.c
 libaegis/sub/common_direc.cc	functions to manipulate common_direcs
 libaegis/sub/common_direc.h	interface definition for libaegis/sub/common_direc.c
+libaegis/sub/copyri_owner.cc	implementation of the $copyright_owner substitution
+libaegis/sub/copyri_owner.h	interface of the sub_copyri_owner class
 libaegis/sub/copyri_years.cc	functions to manipulate copyri_yearss
 libaegis/sub/copyri_years.h	interface definition for libaegis/sub/copyri_years.c
 libaegis/sub/data_directo.cc	functions to manipulate data_directos
@@ -2805,6 +2906,7 @@ script/tkaepa.in	tcl-tk aepa equivalent
 script/tkaer.in	tcl-tk review assist program contributed by Scott Finneran.
 script/xaegis.in	wish script to give aegis a GUI interface
 test/00/t0001a.sh	test -Help for each function
+test/00/t0002a-jerr.sh	Test multi-architecture testing functionality
 test/00/t0002a.sh	Test core functionality.
 test/00/t0003a.sh	Test 'aegis -VERSion'
 test/00/t0004a.sh	Test the 'aegis -DIFFerence' command.
@@ -3019,17 +3121,29 @@ test/02/t0211a-walt.sh	Test the aed functionality
 test/02/t0211a.sh	Test the aesvt get_head functionality
 test/02/t0212a.sh	Test the aesvt meta-data functionality
 test/02/t0213a-walt.sh	Test the symlink farm against derived symlinks (maintain)
+test/02/t0213a.sh	Test the unchanged_file_develop_end_policy functionality
 test/02/t0214a-walt.sh	Test the symlink farm against derived symlinks (unmantain)
+test/02/t0215a.sh	Test the unchanged_file_develop_end_policy functionality
+test/02/t0216a.sh	Test the aed (optional) functionality
 test/02/t0217a-walt.sh	Test the aedist -replay functionality
+test/02/t0218a-pmil.sh	Test the aelock functionality
+test/02/t0219a-pmil.sh	Test the aeb (optional) functionality
+test/02/t0220a-pmil.sh	Test the aede-policy functionality
 test/02/t0220a-walt.sh	Test the integration dir style functionality
+test/02/t0221a-pmil.sh	Test the ae-repo-ci functionality
 test/02/t0221a-walt.sh	Test the change_pconf_get functionality
+test/02/t0222a-pmil.sh	Test the ae-repo-ci functionality
+test/02/t0223a-pmil.sh	Test the html_quote href functionality
 test/02/t0224a-walt.sh	Test the aedist functionality
+test/02/t0225a-pmil.sh	Test the bzip2 functionality
 test/02/t0227a-walt.sh	Test the cpio functionality
 test/02/t0228a-matt.sh	Test the aeget/?rssicon functionality
 test/02/t0229a-matt.sh	Test the rss_item functionality
 test/02/t0230a-walt.sh	Test the aedist -rec functionality
 test/02/t0231a-walt.sh	Test the aedist -rec functionality
 test/02/t0232a-walt.sh	Test the aedist functionality
+test/02/t0233a-walt.sh	Test aeipass vs. missing history_create_command
+test/02/t0234a-walt.sh	Test the aem -gp functionality
 test/activity.awk	Renumber activity lines in tests
 test/activity.sh	shell script to manipulate activitys
 test_base64/main.cc	functions to manipulate mains
@@ -3041,6 +3155,44 @@ test_xml/main.cc	implementation of the main class
 test_xml/xml_node/dump.cc	implementation of the xml_node_dump class
 test_xml/xml_node/dump.h	interface of the xml_node_dump class
 test_zlib/main.cc	functions to manipulate mains
+web/aegis2.png.uue	no manifest specified
+web/documents.html	input for archive/aegis.html
+web/download.html	input for archive/download.html
+web/eg_oss.html	no manifest specified
+web/eg_oss_begin.sh	shell script to construct the eg_oss_begin.ae file
+web/eg_oss_build.sh	shell script to manipulate eg_oss_begins
+web/eg_oss_templ.sh	shell script to manipulate eg_oss_begins
+web/footer.so	document describing web/footers
+web/footer2.so	document describing web/footers
+web/homonym.html	input for archive/homonym.html
+web/index.html	input for archive/index.html
+web/mail-list.html	input for archive/aegis.html
+web/missiku/boxopen.png.uue	no manifest specified
+web/missiku/dgn_dir.png.uue	no manifest specified
+web/missiku/dgn_doc.png.uue	no manifest specified
+web/missiku/email.png.uue	no manifest specified
+web/missiku/html.png.uue	no manifest specified
+web/missiku/index.sh	shell script to generate the web/missiku/index.html file
+web/missiku/network.png.uue	no manifest specified
+web/missiku/pdf_dir.png.uue	no manifest specified
+web/missiku/pdf_doc.png.uue	no manifest specified
+web/missiku/usr_dir.png.uue	no manifest specified
+web/missiku/usr_doc.png.uue	no manifest specified
+web/missiku/window.png.uue	no manifest specified
+web/missiku/world.png.uue	no manifest specified
+web/propaganda/crossroads.html	index.html
+web/propaganda/diversity.html	input for archive/diversity.html
+web/propaganda/features.html	input for archive/features.html
+web/propaganda/features0.html	input for archive/aegis.html
+web/propaganda/index.html	index.html
+web/propaganda/security.html	propaganda/security.html
+web/propaganda/sites.html	sites.html
+web/propaganda/startup.html	no manifest specified
+web/tmpl-proj.html	input for archive/aegis.html
+web/translate.html	translate.html
+web/webiface.html	input for archive/webiface.html
+web/windowsnt.html	input for archive/aegis.html
+web/year2000.html	input for archive/aegis.html
 etc/CHANGES.txt	Change history of the project
 po/aegis.pot	English localization
 po/aegis.de.po	German localization

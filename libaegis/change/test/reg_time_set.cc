@@ -1,6 +1,6 @@
 //
 //	aegis - project change supervisor
-//	Copyright (C) 1999, 2003, 2004 Peter Miller;
+//	Copyright (C) 1999, 2003-2006 Peter Miller;
 //	All rights reserved.
 //
 //	This program is free software; you can redistribute it and/or modify
@@ -20,23 +20,23 @@
 // MANIFEST: functions to manipulate reg_time_sets
 //
 
-#include <change.h>
-#include <change/architecture/find_variant.h>
-#include <error.h> // for assert
+#include <libaegis/change.h>
+#include <libaegis/change/architecture/find_variant.h>
+#include <common/error.h> // for assert
 
 
 void
-change_regression_test_time_set(change_ty *cp, time_t when)
+change_regression_test_time_set(change_ty *cp, time_t when, string_ty *variant)
 {
-    size_t          j, k;
-    cstate_architecture_times_ty *tp;
-    cstate_ty       *cstate_data;
+    if (!variant)
+	variant = change_architecture_name(cp, 1);
 
     //
     // set the regression_test_time in the architecture variant record
     //
     assert(cp->reference_count >= 1);
-    tp = change_find_architecture_variant(cp);
+    cstate_architecture_times_ty *tp =
+	change_find_architecture_variant(cp, variant);
     tp->regression_test_time = when;
 
     //
@@ -44,10 +44,11 @@ change_regression_test_time_set(change_ty *cp, time_t when)
     // figure the oldest time of all variants.
     // if one is missing, then is zero.
     //
-    cstate_data = change_cstate_get(cp);
+    cstate_ty *cstate_data = change_cstate_get(cp);
     cstate_data->regression_test_time = tp->regression_test_time;
-    for (j = 0; j < cstate_data->architecture->length; ++j)
+    for (size_t j = 0; j < cstate_data->architecture->length; ++j)
     {
+	size_t k;
 	for (k = 0; k < cstate_data->architecture_times->length; ++k)
 	{
 	    tp = cstate_data->architecture_times->list[k];
@@ -59,7 +60,7 @@ change_regression_test_time_set(change_ty *cp, time_t when)
 	    cstate_data->regression_test_time = 0;
 	    break;
 	}
-	if ( tp->regression_test_time < cstate_data->regression_test_time)
+	if (tp->regression_test_time < cstate_data->regression_test_time)
 	    cstate_data->regression_test_time = tp->regression_test_time;
     }
 }

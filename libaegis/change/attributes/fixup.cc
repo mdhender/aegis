@@ -20,10 +20,10 @@
 // MANIFEST: implementation of the change_attributes_fixup function
 //
 
-#include <ac/ctype.h>
+#include <common/ac/ctype.h>
 
-#include <cattr.h>
-#include <change/attributes.h>
+#include <libaegis/cattr.h>
+#include <libaegis/change/attributes.h>
 
 
 static string_ty *

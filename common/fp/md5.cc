@@ -43,11 +43,11 @@
 //	documentation and/or software.
 //
 
-#include <ac/stdio.h>
-#include <ac/string.h>
+#include <common/ac/stdio.h>
+#include <common/ac/string.h>
 
-#include <fp/md5.h>
-#include <find_sizes.h>
+#include <common/fp/md5.h>
+#include <common/find_sizes.h>
 
 #define MD5_HASH_LEN 16
 

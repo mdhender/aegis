@@ -1,6 +1,6 @@
 //
 //	aegis - project change supervisor
-//	Copyright (C) 2004 Peter Miller;
+//	Copyright (C) 2004-2006 Peter Miller;
 //	All rights reserved.
 //
 //	This program is free software; you can redistribute it and/or modify
@@ -20,22 +20,19 @@
 // MANIFEST: functions to manipulate path_gets
 //
 
-#include <project.h>
-#include <trace.h>
+#include <libaegis/project.h>
+#include <common/trace.h>
 
 
 string_ty *
-project_history_path_get(project_ty *pp)
+project_ty::history_path_get()
 {
-    trace(("project_history_path_get(pp = %08lX)\n{\n", (long)pp));
-    while (pp->parent)
-	pp = pp->parent;
-    if (!pp->history_path)
-    {
-	pp->history_path =
-	    str_format("%s/history", project_home_path_get(pp)->str_text);
-    }
-    trace(("return \"%s\";\n", pp->history_path->str_text));
+    trace(("project_ty::history_path_get(this = %08lX)\n{\n", (long)this));
+    if (parent)
+	return trunk_get()->history_path_get();
+    if (!history_path)
+	history_path = str_format("%s/history", home_path_get()->str_text);
+    trace(("return \"%s\";\n", history_path->str_text));
     trace(("}\n"));
-    return pp->history_path;
+    return history_path;
 }

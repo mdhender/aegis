@@ -1,6 +1,6 @@
 //
 //	aegis - project change supervisor
-//	Copyright (C) 1996, 2002-2004 Peter Miller;
+//	Copyright (C) 1996, 2002-2005 Peter Miller;
 //	All rights reserved.
 //
 //	This program is free software; you can redistribute it and/or modify
@@ -23,7 +23,7 @@
 #ifndef AEGIS_AER_POS_H
 #define AEGIS_AER_POS_H
 
-#include <main.h>
+#include <common/main.h>
 
 struct sub_context_ty; // existence
 

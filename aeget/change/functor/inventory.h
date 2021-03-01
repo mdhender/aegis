@@ -23,9 +23,7 @@
 #ifndef AEGET_CHANGE_FUNCTOR_INVENTORY_H
 #define AEGET_CHANGE_FUNCTOR_INVENTORY_H
 
-#pragma interface "change_functor_inventory"
-
-#include <change/functor.h>
+#include <libaegis/change/functor.h>
 
 struct project_ty; // forward
 
@@ -44,8 +42,17 @@ public:
 
     /**
       * The constructor.
+      *
+      * @param incbr
+      *     whether or not to recurse down brabches
+      * @param pp
+      *     The project in question.
+      * @param include_original_uuid
+      *     whether or not we want to include original-UUID attributes
+      *     in the output.
       */
-    change_functor_inventory(bool incbr, project_ty *pp);
+    change_functor_inventory(bool incbr, project_ty *pp,
+	bool include_original_uuid);
 
     // See base class for documentation.
     void operator()(change_ty *);
@@ -64,6 +71,13 @@ private:
       * The pp instance variabel is used to remember the project being listed.
       */
     project_ty *pp;
+
+    /**
+      * The include_original_uuid instance variable is used to remember
+      * whether or not we want to include original-UUID attributes in
+      * the output.
+      */
+    bool include_original_uuid;
 
     /**
       * The num instance variable is used to remember the number of row

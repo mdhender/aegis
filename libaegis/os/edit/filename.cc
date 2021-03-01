@@ -20,12 +20,12 @@
 // MANIFEST: functions to manipulate filenames
 //
 
-#include <ac/stdlib.h>
+#include <common/ac/stdlib.h>
 
-#include <nstring.h>
-#include <os.h>
-#include <progname.h>
-#include <uuidentifier.h>
+#include <common/nstring.h>
+#include <libaegis/os.h>
+#include <common/progname.h>
+#include <common/uuidentifier.h>
 
 
 static nstring

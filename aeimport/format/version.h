@@ -1,6 +1,6 @@
 //
 //	aegis - project change supervisor
-//	Copyright (C) 2001, 2002, 2004 Peter Miller;
+//	Copyright (C) 2001, 2002, 2004, 2005 Peter Miller;
 //	All rights reserved.
 //
 //	This program is free software; you can redistribute it and/or modify
@@ -23,11 +23,9 @@
 #ifndef AEIMPORT_FORMAT_VERSION_H
 #define AEIMPORT_FORMAT_VERSION_H
 
-#pragma interface "format_version_ty"
+#include <common/ac/time.h>
 
-#include <ac/time.h>
-
-#include <str_list.h>
+#include <common/str_list.h>
 
 class format_version_ty
 {
@@ -74,23 +72,5 @@ private:
       */
     format_version_ty &operator=(const format_version_ty &);
 };
-
-inline format_version_ty *
-format_version_new(void)
-{
-    return new format_version_ty();
-}
-
-inline void
-format_version_delete(format_version_ty *arg)
-{
-    delete arg;
-}
-
-inline void
-format_version_validate(const format_version_ty *arg)
-{
-    arg->validate();
-}
 
 #endif // AEIMPORT_FORMAT_VERSION_H

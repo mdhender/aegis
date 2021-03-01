@@ -1,6 +1,6 @@
 //
 //	aegis - project change supervisor
-//	Copyright (C) 2001-2004 Peter Miller;
+//	Copyright (C) 2001-2005 Peter Miller;
 //	All rights reserved.
 //
 //	This program is free software; you can redistribute it and/or modify
@@ -23,11 +23,9 @@
 #ifndef LIBAEGIS_PATCH_H
 #define LIBAEGIS_PATCH_H
 
-#pragma interface "patch_ty"
-
-#include <common.h>
-#include <patch/hunk_list.h>
-#include <str_list.h>
+#include <libaegis/common.h>
+#include <libaegis/patch/hunk_list.h>
+#include <common/str_list.h>
 
 /**
   * The patch_ty class is used to represent a diff between one file

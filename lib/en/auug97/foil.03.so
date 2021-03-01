@@ -1,6 +1,6 @@
 .\"
 .\"	aegis - project change supervisor
-.\"	Copyright (C) 1998 Peter Miller;
+.\"	Copyright (C) 1998, 2005 Peter Miller;
 .\"	All rights reserved.
 .\"
 .\"	This program is free software; you can redistribute it and/or modify
@@ -64,7 +64,7 @@ It's not a fancy shell interpreter.
 \(bu
 Make works out the order to do things,
 from the information you give it.
-This is in the form of ``this file before that file'' sets.
+This is in the form of \[lq]this file before that file\[rq] sets.
 .XP
 \(bu
 Make is not a fancy shell interpreter.

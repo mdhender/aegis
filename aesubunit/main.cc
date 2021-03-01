@@ -20,18 +20,18 @@
 // MANIFEST: implementation of the main class
 //
 
-#include <ac/stdio.h>
-#include <ac/signal.h>
+#include <common/ac/stdio.h>
+#include <common/ac/signal.h>
 
-#include <arglex3.h>
-#include <subunit.h>
-#include <env.h>
-#include <help.h>
-#include <language.h>
-#include <os.h>
-#include <quit.h>
-#include <str.h>
-#include <version.h>
+#include <aesubunit/arglex3.h>
+#include <aesubunit/subunit.h>
+#include <common/env.h>
+#include <libaegis/help.h>
+#include <common/language.h>
+#include <libaegis/os.h>
+#include <common/quit.h>
+#include <common/str.h>
+#include <libaegis/version.h>
 
 
 static void

@@ -1,6 +1,6 @@
 //
 //	aegis - project change supervisor
-//	Copyright (C) 2002-2004 Peter Miller;
+//	Copyright (C) 2002-2005 Peter Miller;
 //	All rights reserved.
 //
 //	This program is free software; you can redistribute it and/or modify
@@ -20,13 +20,13 @@
 // MANIFEST: functions to manipulate edits
 //
 
-#include <ac/string.h>
+#include <common/ac/string.h>
 
-#include <arglex2.h>
-#include <error.h> // for assert
-#include <os.h>
-#include <sub.h>
-#include <user.h>
+#include <libaegis/arglex2.h>
+#include <common/error.h> // for assert
+#include <libaegis/os.h>
+#include <libaegis/sub.h>
+#include <libaegis/user.h>
 
 
 void

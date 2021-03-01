@@ -1,6 +1,6 @@
 //
 //	aegis - project change supervisor
-//	Copyright (C) 2005 Peter Miller;
+//	Copyright (C) 2005, 2006 Peter Miller;
 //	All rights reserved.
 //
 //	This program is free software; you can redistribute it and/or modify
@@ -20,12 +20,10 @@
 // MANIFEST: implementation of the input_verify_check class
 //
 
-#pragma implementation "input_verify_checksum"
+#include <common/ac/zlib.h>
 
-#include <ac/zlib.h>
-
-#include <input/verify_check.h>
-#include <sub.h>
+#include <libaegis/input/verify_check.h>
+#include <libaegis/sub.h>
 
 
 input_verify_checksum::~input_verify_checksum()
@@ -33,9 +31,8 @@ input_verify_checksum::~input_verify_checksum()
 }
 
 
-input_verify_checksum::input_verify_checksum(input_ty &arg1,
-	unsigned long arg2) :
-    deeper(&arg1),
+input_verify_checksum::input_verify_checksum(input &arg1, unsigned long arg2) :
+    deeper(arg1),
     checksum_given(arg2),
     checksum_calculated(adler32(0L, Z_NULL, 0)),
     pos(0)

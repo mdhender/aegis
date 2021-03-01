@@ -1,6 +1,6 @@
 //
 //	aegis - project change supervisor
-//	Copyright (C) 2002-2004 Peter Miller;
+//	Copyright (C) 2002-2006 Peter Miller;
 //	All rights reserved.
 //
 //	This program is free software; you can redistribute it and/or modify
@@ -20,30 +20,30 @@
 // MANIFEST: functions to manipulate aemtus
 //
 
-#include <ac/stdio.h>
+#include <common/ac/stdio.h>
 
-#include <ael/change/files.h>
-#include <aemtu.h>
-#include <arglex2.h>
-#include <arglex/change.h>
-#include <arglex/project.h>
-#include <change/branch.h>
-#include <change/file.h>
-#include <change.h>
-#include <commit.h>
-#include <error.h>
-#include <help.h>
-#include <lock.h>
-#include <log.h>
-#include <os.h>
-#include <progname.h>
-#include <project/file.h>
-#include <project.h>
-#include <quit.h>
-#include <str_list.h>
-#include <sub.h>
-#include <trace.h>
-#include <user.h>
+#include <libaegis/ael/change/files.h>
+#include <aegis/aemtu.h>
+#include <libaegis/arglex2.h>
+#include <libaegis/arglex/change.h>
+#include <libaegis/arglex/project.h>
+#include <libaegis/change/branch.h>
+#include <libaegis/change/file.h>
+#include <libaegis/change.h>
+#include <libaegis/commit.h>
+#include <common/error.h>
+#include <libaegis/help.h>
+#include <libaegis/lock.h>
+#include <libaegis/log.h>
+#include <libaegis/os.h>
+#include <common/progname.h>
+#include <libaegis/project/file.h>
+#include <libaegis/project.h>
+#include <common/quit.h>
+#include <common/str_list.h>
+#include <libaegis/sub.h>
+#include <common/trace.h>
+#include <libaegis/user.h>
 
 
 static void
@@ -247,7 +247,7 @@ make_transparent_undo_main(void)
 	project_name = user_default_project();
     pp = project_alloc(project_name);
     str_free(project_name);
-    project_bind_existing(pp);
+    pp->bind_existing();
 
     //
     // locate user data

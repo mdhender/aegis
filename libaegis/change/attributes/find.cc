@@ -1,6 +1,6 @@
 //
 //	aegis - project change supervisor
-//	Copyright (C) 2004 Peter Miller;
+//	Copyright (C) 2004, 2005 Peter Miller;
 //	All rights reserved.
 //
 //	This program is free software; you can redistribute it and/or modify
@@ -20,10 +20,10 @@
 // MANIFEST: implementation of the change_attributes_find class
 //
 
-#include <attribute.h>
-#include <change.h>
-#include <change/attributes.h>
-#include <error.h> // for assert
+#include <libaegis/attribute.h>
+#include <libaegis/change.h>
+#include <libaegis/change/attributes.h>
+#include <common/error.h> // for assert
 
 
 string_ty *

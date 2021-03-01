@@ -1,0 +1,42 @@
+.\"
+.\"	aegis - project change supervisor
+.\"	Copyright (C) 2006 Peter Miller;
+.\"	All rights reserved.
+.\"
+.\"	This program is free software; you can redistribute it and/or modify
+.\"	it under the terms of the GNU General Public License as published by
+.\"	the Free Software Foundation; either version 2 of the License, or
+.\"	(at your option) any later version.
+.\"
+.\"	This program is distributed in the hope that it will be useful,
+.\"	but WITHOUT ANY WARRANTY; without even the implied warranty of
+.\"	MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+.\"	GNU General Public License for more details.
+.\"
+.\"	You should have received a copy of the GNU General Public License
+.\"	along with this program; if not, write to the Free Software
+.\"	Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111, USA.
+.\"
+.\" MANIFEST: document describing web/footers
+.\"
+<hr>
+<table width="100%">
+<tr>
+<td valign=top width=64>
+<a href="missiku/index.html">
+<img src="missiku/boxopen_2.png" width=64 height=64 border=0></a>
+</td>
+<td valign=top>
+The beautiful graphics on this web site are by
+<a href="missiku/index.html">Gr&eacute;gory Delattre</a>.</p>
+</td>
+<td valign=bottom align=right>
+Return to the Aegis
+<a href="http://aegis.sourceforge.net/">home page</a>.
+</td>
+<td valign=bottom width=64>
+<a href="http://aegis.sourceforge.net/">
+<img src="aegis.png" width=64 height=64 border=0></a>
+</td>
+</tr>
+</table>

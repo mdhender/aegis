@@ -1,6 +1,6 @@
 //
 //	aegis - project change supervisor
-//	Copyright (C) 1994-1999, 2001-2004 Peter Miller;
+//	Copyright (C) 1994-1999, 2001-2006 Peter Miller;
 //	All rights reserved.
 //
 //	This program is free software; you can redistribute it and/or modify
@@ -20,34 +20,35 @@
 // MANIFEST: functions to implement the 'aegis -Change_Owner' command
 //
 
-#include <ac/stdio.h>
-#include <ac/string.h>
-#include <ac/libintl.h>
+#include <common/ac/stdio.h>
+#include <common/ac/string.h>
+#include <common/ac/libintl.h>
 
-#include <aechown.h>
-#include <ael/change/by_state.h>
-#include <arglex2.h>
-#include <arglex/change.h>
-#include <arglex/project.h>
-#include <error.h>
-#include <change.h>
-#include <change/branch.h>
-#include <change/file.h>
-#include <commit.h>
-#include <cstate.h>
-#include <file.h>
-#include <help.h>
-#include <lock.h>
-#include <os.h>
-#include <progname.h>
-#include <project.h>
-#include <project/history.h>
-#include <pstate.h>
-#include <quit.h>
-#include <sub.h>
-#include <trace.h>
-#include <undo.h>
-#include <user.h>
+#include <common/error.h>
+#include <common/progname.h>
+#include <common/quit.h>
+#include <common/trace.h>
+#include <libaegis/ael/change/by_state.h>
+#include <libaegis/arglex2.h>
+#include <libaegis/arglex/change.h>
+#include <libaegis/arglex/project.h>
+#include <libaegis/change/branch.h>
+#include <libaegis/change/file.h>
+#include <libaegis/change.h>
+#include <libaegis/commit.h>
+#include <libaegis/cstate.h>
+#include <libaegis/file.h>
+#include <libaegis/help.h>
+#include <libaegis/lock.h>
+#include <libaegis/os.h>
+#include <libaegis/project.h>
+#include <libaegis/project/history.h>
+#include <libaegis/pstate.h>
+#include <libaegis/sub.h>
+#include <libaegis/undo.h>
+#include <libaegis/user.h>
+
+#include <aegis/aechown.h>
 
 
 static void
@@ -217,7 +218,7 @@ change_owner_main(void)
 	project_name = user_default_project();
     pp = project_alloc(project_name);
     str_free(project_name);
-    project_bind_existing(pp);
+    pp->bind_existing();
 
     //
     // it is an error if the named user is not a developer
@@ -274,7 +275,7 @@ change_owner_main(void)
     // table.  Take an advisory write lock on the appropriate row of the
     // user table.  Block until can get both simultaneously.
     //
-    project_pstate_lock_prepare(pp);
+    pp->pstate_lock_prepare();
     change_cstate_lock_prepare(cp);
     user_ustate_lock_prepare(up1);
     user_ustate_lock_prepare(up2);
@@ -423,7 +424,7 @@ change_owner_main(void)
     // Release advisory locks.
     //
     change_cstate_write(cp);
-    project_pstate_write(pp);
+    pp->pstate_write();
     user_ustate_write(up1);
     user_ustate_write(up2);
     commit();

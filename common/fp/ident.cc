@@ -1,6 +1,6 @@
 //
 //	cook - file construction tool
-//	Copyright (C) 1995, 1999, 2003, 2004 Peter Miller;
+//	Copyright (C) 1995, 1999, 2003-2005 Peter Miller;
 //	All rights reserved.
 //
 //	This program is free software; you can redistribute it and/or modify
@@ -20,13 +20,13 @@
 // MANIFEST: functions to manipulate identifier fingerprints
 //
 
-#include <ac/stdio.h>
-#include <ac/string.h>
+#include <common/ac/stdio.h>
+#include <common/ac/string.h>
 
-#include <error.h>
-#include <fp/ident.h>
-#include <fp/combined.h>
-#include <fp/crc32.h>
+#include <common/error.h>
+#include <common/fp/ident.h>
+#include <common/fp/combined.h>
+#include <common/fp/crc32.h>
 
 struct ident_ty
 {

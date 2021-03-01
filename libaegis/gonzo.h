@@ -1,33 +1,33 @@
-/*
- *	aegis - project change supervisor
- *	Copyright (C) 1991-1994, 1997, 1999, 2002, 2003 Peter Miller;
- *	All rights reserved.
- *
- *	This program is free software; you can redistribute it and/or modify
- *	it under the terms of the GNU General Public License as published by
- *	the Free Software Foundation; either version 2 of the License, or
- *	(at your option) any later version.
- *
- *	This program is distributed in the hope that it will be useful,
- *	but WITHOUT ANY WARRANTY; without even the implied warranty of
- *	MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
- *	GNU General Public License for more details.
- *
- *	You should have received a copy of the GNU General Public License
- *	along with this program; if not, write to the Free Software
- *	Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111, USA.
- *
- * MANIFEST: interface definition for aegis/gonzo.c
- */
+//
+//	aegis - project change supervisor
+//	Copyright (C) 1991-2006 Peter Miller;
+//	All rights reserved.
+//
+//	This program is free software; you can redistribute it and/or modify
+//	it under the terms of the GNU General Public License as published by
+//	the Free Software Foundation; either version 2 of the License, or
+//	(at your option) any later version.
+//
+//	This program is distributed in the hope that it will be useful,
+//	but WITHOUT ANY WARRANTY; without even the implied warranty of
+//	MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+//	GNU General Public License for more details.
+//
+//	You should have received a copy of the GNU General Public License
+//	along with this program; if not, write to the Free Software
+//	Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111, USA.
+//
+// MANIFEST: interface definition for aegis/gonzo.c
+//
 
 #ifndef GONZO_H
 #define GONZO_H
 
-#include <main.h>
-#include <gstate.h>
+#include <common/main.h>
+#include <libaegis/gstate.h>
 
-struct string_list_ty; /* existence */
-struct project_ty; /* existence */
+struct string_list_ty; // existence
+struct project_ty; // existence
 
 void gonzo_gstate_write(void);
 
@@ -55,4 +55,4 @@ void gonzo_alias_list(struct string_list_ty *);
 struct string_ty *gonzo_alias_to_actual(string_ty *);
 int gonzo_alias_acceptable(string_ty *);
 
-#endif /* GONZO_H */
+#endif // GONZO_H

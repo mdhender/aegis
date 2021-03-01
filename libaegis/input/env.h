@@ -1,6 +1,6 @@
 //
 //	aegis - project change supervisor
-//	Copyright (C) 1994, 1999, 2002, 2005 Peter Miller;
+//	Copyright (C) 1994, 1999, 2002, 2005, 2006 Peter Miller;
 //	All rights reserved.
 //
 //	This program is free software; you can redistribute it and/or modify
@@ -23,7 +23,7 @@
 #ifndef AEGIS_INPUT_ENV_H
 #define AEGIS_INPUT_ENV_H
 
-#include <input.h>
+#include <libaegis/input.h>
 
 class input_env:
     public input_ty
@@ -72,6 +72,6 @@ private:
     input_env &operator=(const input_env &arg);
 };
 
-input_ty *input_env_open(const char *name);
+input input_env_open(const char *name);
 
 #endif // AEGIS_INPUT_ENV_H

@@ -1,6 +1,6 @@
 //
 //      aegis - project change supervisor
-//      Copyright (C) 2001, 2002, 2004 Peter Miller;
+//      Copyright (C) 2001, 2002, 2004, 2005 Peter Miller;
 //      All rights reserved.
 //
 //      This program is free software; you can redistribute it and/or modify
@@ -20,8 +20,8 @@
 // MANIFEST: functions to manipulate privates
 //
 
-#include <format/private.h>
-#include <mem.h>
+#include <aeimport/format/private.h>
+#include <common/mem.h>
 
 
 format_ty *

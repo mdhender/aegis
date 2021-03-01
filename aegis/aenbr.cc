@@ -1,6 +1,6 @@
 //
 //	aegis - project change supervisor
-//	Copyright (C) 1995-2005 Peter Miller;
+//	Copyright (C) 1995-2006 Peter Miller;
 //	All rights reserved.
 //
 //	This program is free software; you can redistribute it and/or modify
@@ -20,29 +20,29 @@
 // MANIFEST: functions to implement new branch
 //
 
-#include <ac/stdio.h>
+#include <common/ac/stdio.h>
 
-#include <ael/change/changes.h>
-#include <aenbr.h>
-#include <arglex2.h>
-#include <arglex/change.h>
-#include <arglex/project.h>
-#include <change.h>
-#include <change/branch.h>
-#include <commit.h>
-#include <file.h>
-#include <help.h>
-#include <lock.h>
-#include <os.h>
-#include <progname.h>
-#include <project.h>
-#include <project/verbose.h>
-#include <project/history.h>
-#include <quit.h>
-#include <sub.h>
-#include <trace.h>
-#include <undo.h>
-#include <user.h>
+#include <libaegis/ael/change/changes.h>
+#include <aegis/aenbr.h>
+#include <libaegis/arglex2.h>
+#include <libaegis/arglex/change.h>
+#include <libaegis/arglex/project.h>
+#include <libaegis/change.h>
+#include <libaegis/change/branch.h>
+#include <libaegis/commit.h>
+#include <libaegis/file.h>
+#include <libaegis/help.h>
+#include <libaegis/lock.h>
+#include <libaegis/os.h>
+#include <common/progname.h>
+#include <libaegis/project.h>
+#include <libaegis/project/verbose.h>
+#include <libaegis/project/history.h>
+#include <common/quit.h>
+#include <libaegis/sub.h>
+#include <common/trace.h>
+#include <libaegis/undo.h>
+#include <libaegis/user.h>
 
 
 static void
@@ -221,12 +221,12 @@ new_branch_main(void)
 	fatal_intl(0, i18n("no project name"));
     pp = project_alloc(project_name);
     str_free(project_name);
-    project_bind_existing(pp);
+    pp->bind_existing();
 
     //
     // make sure this branch of the project is still active
     //
-    if (!change_is_a_branch(project_change_get(pp)))
+    if (!change_is_a_branch(pp->change_get()))
 	project_fatal(pp, 0, i18n("branch completed"));
 
     //
@@ -239,7 +239,7 @@ new_branch_main(void)
     // is no need to lock the project state file of the new branch
     // as that file does not exist.
     //
-    project_pstate_lock_prepare(pp);
+    pp->pstate_lock_prepare();
     lock_take();
 
     //
@@ -300,8 +300,8 @@ new_branch_main(void)
     //
     // Write out the various files
     //
-    change_cstate_write(bp->pcp);
-    project_pstate_write(pp);
+    change_cstate_write(bp->change_get());
+    pp->pstate_write();
 
     //
     // release the locks

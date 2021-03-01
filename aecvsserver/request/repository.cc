@@ -1,6 +1,6 @@
 //
 //	aegis - project change supervisor
-//	Copyright (C) 2004 Peter Miller;
+//	Copyright (C) 2004-2006 Peter Miller;
 //	All rights reserved.
 //
 //	This program is free software; you can redistribute it and/or modify
@@ -34,12 +34,23 @@
 // Root required: yes.
 //
 
-#include <request/repository.h>
-#include <server.h>
+#include <aecvsserver/request/repository.h>
+#include <aecvsserver/server.h>
 
 
-static void
-run(server_ty *sp, string_ty *server_side)
+request_repository::~request_repository()
+{
+}
+
+
+request_repository::request_repository()
+{
+}
+
+
+void
+request_repository::run_inner(server_ty *sp, string_ty *server_side)
+    const
 {
     if (server_root_required(sp, "Repository"))
 	return;
@@ -47,9 +58,17 @@ run(server_ty *sp, string_ty *server_side)
 }
 
 
-const request_ty request_repository =
+const char *
+request_repository::name()
+    const
 {
-    "Repository",
-    run,
-    0, // no reset
-};
+    return "Repository";
+}
+
+
+bool
+request_repository::reset()
+    const
+{
+    return false;
+}

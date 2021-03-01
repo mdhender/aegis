@@ -1,6 +1,6 @@
 .\"
 .\"	aegis - project change supervisor
-.\"	Copyright (C) 1999-2004 Peter Miller;
+.\"	Copyright (C) 1999-2005 Peter Miller;
 .\"	All rights reserved.
 .\"
 .\"	This program is free software; you can redistribute it and/or modify
@@ -218,7 +218,7 @@ aegis: user "\f(CIyou\fP" is now an integrator
 .E)
 .LP
 At this point, the rest of the commands in this chapter may (should!) be
-executed as ``\fIyou\fP,'' your usual login account.  When you added your
+executed as \[lq]\fIyou\fP,\[rq] your usual login account.  When you added your
 normal account as an administrator just now, you authorized yourself to
 perform the necessary actions.
 .LP
@@ -226,11 +226,11 @@ You will need about 120MB of free space to build and integrate Aegis
 changes, or more, depending on the changes you make and the size of your
 development directories.
 .LP
-The \fI\&.forward\fP file of the ``aegis'' user needs to be set to
+The \fI\&.forward\fP file of the \[lq]aegis\[rq] user needs to be set to
 someone appropriate to read mail directed at the project.
 .LP
-You can now set the ``aegis'' user's password field to ``*''.  This
-effectively prevents the ``aegis'' user from logging in.  Aegis is
+You can now set the \[lq]aegis\[rq] user's password field to \[lq]*\[rq].  This
+effectively prevents the \[lq]aegis\[rq] user from logging in.  Aegis is
 designed to make this unnecessary from now on.
 .nh 2 "The Download"
 .LP
@@ -439,7 +439,7 @@ aegis: project "aegis.1.0": change 10:
 %
 .E)
 .LP
-The ``\fIcd\fP'' command you see is actually important: you need to
+The \[lq]\fIcd\fP\[rq] command you see is actually important: you need to
 be out of the development directory and integration directory
 so that they can be cleaned up (deleted) when the change completes.
 .nh 2 "The Bleeding Edge"
@@ -468,7 +468,7 @@ interesting than a PC.
 If you got this far, your local Aegis project is ready for use.
 .LP
 It is strongly suggested that you complete the first change
-``as is'' and perform your own customizations in later changes,
+\[lq]as is\[rq] and perform your own customizations in later changes,
 rather than trying to get the project started and customize it
 at the same time.
 .LP

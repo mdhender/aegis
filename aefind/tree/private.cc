@@ -1,6 +1,6 @@
 //
 //	aegis - project change supervisor
-//	Copyright (C) 1997, 2002-2004 Peter Miller;
+//	Copyright (C) 1997, 2002-2005 Peter Miller;
 //	All rights reserved.
 //
 //	This program is free software; you can redistribute it and/or modify
@@ -20,8 +20,8 @@
 // MANIFEST: functions to manipulate private tree parts
 //
 
-#include <mem.h>
-#include <tree/private.h>
+#include <common/mem.h>
+#include <aefind/tree/private.h>
 
 
 tree_ty *

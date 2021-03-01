@@ -176,6 +176,20 @@ T}	T{
 .ad l
 aedb
 T}
+aede-policy(1)	\*[Page*Of*aede-policy(1)]	T{
+.ad r
+aede-policy - check change set is ready for
+T}	T{
+.ad l
+aede
+T}
+aede-policy(1)	\*[Page*Of*aede-policy(1)]	T{
+.ad r
+
+T}	T{
+.ad l
+aede-policy - check change set is ready for aede
+T}
 aediff(1)	\*[Page*Of*aediff(1)]	T{
 .ad r
 
@@ -210,6 +224,13 @@ aefattr(5)	\*[Page*Of*aefattr(5)]	T{
 T}	T{
 .ad l
 aefattr - aegis file attribute file format
+T}
+aefinish(1)	\*[Page*Of*aefinish(1)]	T{
+.ad r
+
+T}	T{
+.ad l
+aefinish - finish a change
 T}
 aefstate(5)	\*[Page*Of*aefstate(5)]	T{
 .ad r
@@ -288,6 +309,13 @@ T}	T{
 .ad l
 aelcf - list change files
 T}
+aelock(1)	\*[Page*Of*aelock(1)]	T{
+.ad r
+
+T}	T{
+.ad l
+aelock - take a lock while a command runs
+T}
 aelpf(1)	\*[Page*Of*aelpf(1)]	T{
 .ad r
 
@@ -357,6 +385,13 @@ aerect(1)	\*[Page*Of*aerect(1)]	T{
 T}	T{
 .ad l
 aerect - draw a rectangle
+T}
+ae-repo-ci(1)	\*[Page*Of*ae-repo-ci(1)]	T{
+.ad r
+
+T}	T{
+.ad l
+ae-repo-ci - redundant repository checkin
 T}
 aerevml(1)	\*[Page*Of*aerevml(1)]	T{
 .ad r
@@ -757,6 +792,13 @@ T}	T{
 .ad l
 change
 T}
+aefinish(1)	\*[Page*Of*aefinish(1)]	T{
+.ad r
+aefinish - finish a
+T}	T{
+.ad l
+change
+T}
 aeb(1)	\*[Page*Of*aeb(1)]	T{
 .ad r
 aegis -Build - build a
@@ -1023,6 +1065,13 @@ T}	T{
 .ad l
 changes as patches
 T}
+aede-policy(1)	\*[Page*Of*aede-policy(1)]	T{
+.ad r
+aede-policy - check
+T}	T{
+.ad l
+change set is ready for aede
+T}
 aerevml(1)	\*[Page*Of*aerevml(1)]	T{
 .ad r
 aerevml - send and receive RevML
@@ -1100,6 +1149,20 @@ T}	T{
 .ad l
 change via tar
 T}
+aede-policy(1)	\*[Page*Of*aede-policy(1)]	T{
+.ad r
+aede-policy -
+T}	T{
+.ad l
+check change set is ready for aede
+T}
+ae-repo-ci(1)	\*[Page*Of*ae-repo-ci(1)]	T{
+.ad r
+ae-repo-ci - redundant repository
+T}	T{
+.ad l
+checkin
+T}
 ae-cvs-ci(1)	\*[Page*Of*ae-cvs-ci(1)]	T{
 .ad r
 ae-cvs-ci -
@@ -1113,6 +1176,13 @@ ae-cvs-
 T}	T{
 .ad l
 ci - checkin a change set to CVS
+T}
+ae-repo-ci(1)	\*[Page*Of*ae-repo-ci(1)]	T{
+.ad r
+ae-repo-
+T}	T{
+.ad l
+ci - redundant repository checkin
 T}
 aeclean(1)	\*[Page*Of*aeclean(1)]	T{
 .ad r
@@ -1162,6 +1232,13 @@ aecomplete -
 T}	T{
 .ad l
 command completion
+T}
+aelock(1)	\*[Page*Of*aelock(1)]	T{
+.ad r
+aelock - take a lock while a
+T}	T{
+.ad l
+command runs
 T}
 aesub(5)	\*[Page*Of*aesub(5)]	T{
 .ad r
@@ -1926,6 +2003,13 @@ T}	T{
 .ad l
 fingerprint
 T}
+aefinish(1)	\*[Page*Of*aefinish(1)]	T{
+.ad r
+aefinish -
+T}	T{
+.ad l
+finish a change
+T}
 tkaeca(1)	\*[Page*Of*tkaeca(1)]	T{
 .ad r
 aegis - GUI interface
@@ -1939,6 +2023,13 @@ aegis - GUI interface
 T}	T{
 .ad l
 for aeca, using TCL/TK
+T}
+aede-policy(1)	\*[Page*Of*aede-policy(1)]	T{
+.ad r
+aede-policy - check change set is ready
+T}	T{
+.ad l
+for aede
 T}
 tkaegis(1)	\*[Page*Of*tkaegis(1)]	T{
 .ad r
@@ -2353,6 +2444,13 @@ T}	T{
 .ad l
 into projects
 T}
+aede-policy(1)	\*[Page*Of*aede-policy(1)]	T{
+.ad r
+aede-policy - check change set
+T}	T{
+.ad l
+is ready for aede
+T}
 aer(5)	\*[Page*Of*aer(5)]	T{
 .ad r
 aer - report script
@@ -2415,6 +2513,13 @@ aegis
 T}	T{
 .ad l
 locks - how locking works, and which commands use them
+T}
+aelock(1)	\*[Page*Of*aelock(1)]	T{
+.ad r
+aelock - take a
+T}	T{
+.ad l
+lock while a command runs
 T}
 aemtu(1)	\*[Page*Of*aemtu(1)]	T{
 .ad r
@@ -2850,6 +2955,13 @@ T}	T{
 .ad l
 patches
 T}
+aede-policy(1)	\*[Page*Of*aede-policy(1)]	T{
+.ad r
+aede-
+T}	T{
+.ad l
+policy - check change set is ready for aede
+T}
 ael(1)	\*[Page*Of*ael(1)]	T{
 .ad r
 aegis -List - list (
@@ -3102,6 +3214,13 @@ T}	T{
 .ad l
 put sccs version
 T}
+aede-policy(1)	\*[Page*Of*aede-policy(1)]	T{
+.ad r
+aede-policy - check change set is
+T}	T{
+.ad l
+ready for aede
+T}
 aedeu(1)	\*[Page*Of*aedeu(1)]	T{
 .ad r
 aegis -Develop End Undo -
@@ -3129,6 +3248,13 @@ aerect - draw a
 T}	T{
 .ad l
 rectangle
+T}
+ae-repo-ci(1)	\*[Page*Of*ae-repo-ci(1)]	T{
+.ad r
+ae-repo-ci -
+T}	T{
+.ad l
+redundant repository checkin
 T}
 aenrls(1)	\*[Page*Of*aenrls(1)]	T{
 .ad r
@@ -3298,6 +3424,13 @@ T}	T{
 .ad l
 rename one or more files as part of a change
 T}
+ae-repo-ci(1)	\*[Page*Of*ae-repo-ci(1)]	T{
+.ad r
+ae-
+T}	T{
+.ad l
+repo-ci - redundant repository checkin
+T}
 aer(1)	\*[Page*Of*aer(1)]	T{
 .ad r
 aegis -RePorT -
@@ -3325,6 +3458,13 @@ aer -
 T}	T{
 .ad l
 report script language definition
+T}
+ae-repo-ci(1)	\*[Page*Of*ae-repo-ci(1)]	T{
+.ad r
+ae-repo-ci - redundant
+T}	T{
+.ad l
+repository checkin
 T}
 aeimport(1)	\*[Page*Of*aeimport(1)]	T{
 .ad r
@@ -3473,6 +3613,13 @@ T}	T{
 .ad l
 RevML change sets
 T}
+aelock(1)	\*[Page*Of*aelock(1)]	T{
+.ad r
+aelock - take a lock while a command
+T}	T{
+.ad l
+runs
+T}
 aesubunit(1)	\*[Page*Of*aesubunit(1)]	T{
 .ad r
 aesubunit -
@@ -3549,6 +3696,13 @@ aegis -Change Owner -
 T}	T{
 .ad l
 set change owner
+T}
+aede-policy(1)	\*[Page*Of*aede-policy(1)]	T{
+.ad r
+aede-policy - check change
+T}	T{
+.ad l
+set is ready for aede
 T}
 ae_p(1)	\*[Page*Of*ae_p(1)]	T{
 .ad r
@@ -3710,6 +3864,13 @@ aegis -DELta NAme - assign a
 T}	T{
 .ad l
 symbolic name to a project delta
+T}
+aelock(1)	\*[Page*Of*aelock(1)]	T{
+.ad r
+aelock -
+T}	T{
+.ad l
+take a lock while a command runs
 T}
 aetar(1)	\*[Page*Of*aetar(1)]	T{
 .ad r
@@ -4130,6 +4291,13 @@ aegis locks - how locking works, and
 T}	T{
 .ad l
 which commands use them
+T}
+aelock(1)	\*[Page*Of*aelock(1)]	T{
+.ad r
+aelock - take a lock
+T}	T{
+.ad l
+while a command runs
 T}
 aelock(5)	\*[Page*Of*aelock(5)]	T{
 .ad r

@@ -1,6 +1,6 @@
 //
 //	aegis - project change supervisor
-//	Copyright (C) 1990-1994, 2003, 2004 Peter Miller.
+//	Copyright (C) 1990-1994, 2003-2006 Peter Miller.
 //	All rights reserved.
 //
 //	This program is free software; you can redistribute it and/or modify
@@ -20,17 +20,17 @@
 // MANIFEST: functions to manipulate environment variables
 //
 
-#include <ac/stdarg.h>
-#include <ac/stddef.h>
-#include <ac/stdio.h>
-#include <ac/stdlib.h>
-#include <ac/string.h>
+#include <common/ac/stdarg.h>
+#include <common/ac/stddef.h>
+#include <common/ac/stdio.h>
+#include <common/ac/stdlib.h>
+#include <common/ac/string.h>
 
-#include <env.h>
-#include <error.h>
-#include <mem.h>
-#include <page.h>
-#include <trace.h>
+#include <common/env.h>
+#include <common/error.h>
+#include <common/mem.h>
+#include <common/page.h>
+#include <common/trace.h>
 
 
 extern	char	**environ;
@@ -72,7 +72,7 @@ env_initialize(void)
 	char *was = old[j];
 	size_t nbytes = strlen(was) + 1;
 	char *cp = (char *)mem_alloc(nbytes);
-	strlcpy(cp, was, nbytes);
+	strendcpy(cp, was, cp + nbytes);
 	environ[j] = cp;
     }
     environ[nenvirons] = 0;

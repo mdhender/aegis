@@ -1,6 +1,6 @@
 //
 //      aegis - project change supervisor
-//      Copyright (C) 1999-2004 Peter Miller;
+//      Copyright (C) 1999-2005 Peter Miller;
 //      All rights reserved.
 //
 //      This program is free software; you can redistribute it and/or modify
@@ -24,12 +24,12 @@
 // discarded.
 //
 
-#include <language.h>
-#include <mem.h>
-#include <str.h>
-#include <wide_output.h>
-#include <wide_output/private.h>
-#include <wide_output/truncate.h>
+#include <common/language.h>
+#include <common/mem.h>
+#include <common/str.h>
+#include <libaegis/wide_output.h>
+#include <libaegis/wide_output/private.h>
+#include <libaegis/wide_output/truncate.h>
 
 
 struct wide_output_truncate_ty

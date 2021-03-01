@@ -1,6 +1,6 @@
 //
 //	aegis - project change supervisor
-//	Copyright (C) 2004 Peter Miller;
+//	Copyright (C) 2004, 2005 Peter Miller;
 //	All rights reserved.
 //
 //	This program is free software; you can redistribute it and/or modify
@@ -23,20 +23,19 @@
 // its execution time became unreasonably slow.
 //
 
-#include <ac/stdio.h>
-#include <ac/stdlib.h>
+#include <common/ac/stdio.h>
+#include <common/ac/stdlib.h>
 
-#include <arglex.h>
-#include <env.h>
-#include <error.h>
-#include <language.h>
-#include <nstring/list.h>
-#include <printer/stdout.h>
-#include <printer/wrap.h>
-#include <process/body.h>
-#include <process/tail.h>
-#include <progname.h>
-#include <r250.h>
+#include <common/arglex.h>
+#include <common/env.h>
+#include <common/error.h>
+#include <common/language.h>
+#include <common/nstring/list.h>
+#include <aemakefile/printer/stdout.h>
+#include <aemakefile/printer/wrap.h>
+#include <aemakefile/process/body.h>
+#include <aemakefile/process/tail.h>
+#include <common/progname.h>
 
 
 enum
@@ -96,7 +95,6 @@ slurp(const char *filename, nstring_list &nsl)
 int
 main(int argc, char **argv)
 {
-    r250_init();
     arglex_init(argc, argv, argtab);
     env_initialize();
     language_init();

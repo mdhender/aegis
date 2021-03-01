@@ -1,6 +1,6 @@
 //
 //	aegis - project change supervisor
-//	Copyright (C) 1998, 1999, 2003, 2004 Peter Miller;
+//	Copyright (C) 1998, 1999, 2003-2005 Peter Miller;
 //	All rights reserved.
 //
 //	This program is free software; you can redistribute it and/or modify
@@ -20,7 +20,7 @@
 // MANIFEST: functions to join path elements
 //
 
-#include <os.h>
+#include <libaegis/os.h>
 
 
 static string_ty *

@@ -1,6 +1,6 @@
 //
 //	aegis - project change supervisor
-//	Copyright (C) 2004, 2005 Peter Miller;
+//	Copyright (C) 2004-2006 Peter Miller;
 //	All rights reserved.
 //
 //	This program is free software; you can redistribute it and/or modify
@@ -31,57 +31,33 @@
 // specified with -d, not the name of the module).
 //
 
-#include <output.h>
-#include <response/module_expan.h>
-#include <response/private.h>
+#include <libaegis/output.h>
+#include <aecvsserver/response/module_expan.h>
 
 
-struct response_module_expansion_ty
+response_module_expansion::~response_module_expansion()
 {
-    response_ty     inherited;
-    string_ty       *name;
-};
-
-
-static void
-destructor(response_ty *rp)
-{
-    response_module_expansion_ty *rmep;
-
-    rmep = (response_module_expansion_ty *)rp;
-    str_free(rmep->name);
-    rmep->name = 0;
+    str_free(answer);
+    answer = 0;
 }
 
 
-static void
-write(response_ty *rp, output_ty *op)
+response_module_expansion::response_module_expansion(string_ty *arg) :
+    answer(str_copy(arg))
 {
-    response_module_expansion_ty *rmep;
-
-    rmep = (response_module_expansion_ty *)rp;
-    op->fprintf("Module-expansion %s\n", rmep->name->str_text);
 }
 
 
-static const response_method_ty vtbl =
+void
+response_module_expansion::write(output_ty *op)
 {
-    sizeof(response_module_expansion_ty),
-    destructor,
-    write,
-    response_code_Module_expansion,
-    0, // not flushable
-};
+    op->fprintf("Module-expansion %s\n", answer->str_text);
+}
 
 
-response_ty *
-response_module_expansion_new(string_ty *name)
+response_code_ty
+response_module_expansion::code_get()
+    const
 {
-    response_ty     *rp;
-    response_module_expansion_ty *rmep;
-
-    rp = response_new(&vtbl);
-    rmep = (response_module_expansion_ty *)rp;
-    rmep->name = str_copy(name);
-    return rp;
+    return response_code_Module_expansion;
 }

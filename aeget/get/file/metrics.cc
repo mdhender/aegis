@@ -1,6 +1,6 @@
 //
 //	aegis - project change supervisor
-//	Copyright (C) 2003, 2004 Peter Miller;
+//	Copyright (C) 2003-2006 Peter Miller;
 //	All rights reserved.
 //
 //	This program is free software; you can redistribute it and/or modify
@@ -20,22 +20,22 @@
 // MANIFEST: functions to manipulate metricss
 //
 
-#include <ac/stdio.h>
-#include <ac/stdlib.h>
-#include <ac/math.h>
+#include <common/ac/stdio.h>
+#include <common/ac/stdlib.h>
+#include <common/ac/math.h>
 
-#include <change.h>
-#include <change/file.h>
-#include <emit/edit_number.h>
-#include <emit/project.h>
-#include <error.h> // for assert
-#include <get/file/metrics.h>
-#include <http.h>
-#include <mem.h>
-#include <project/file.h>
-#include <project.h>
-#include <str_list.h>
-#include <symtab.h>
+#include <libaegis/change.h>
+#include <libaegis/change/file.h>
+#include <aeget/emit/edit_number.h>
+#include <aeget/emit/project.h>
+#include <common/error.h> // for assert
+#include <aeget/get/file/metrics.h>
+#include <aeget/http.h>
+#include <common/mem.h>
+#include <libaegis/project/file.h>
+#include <libaegis/project.h>
+#include <common/str_list.h>
+#include <common/symtab.h>
 
 
 struct row_ty
@@ -138,7 +138,7 @@ get_file_metrics(change_ty *cp, string_ty *filename, string_list_ty *modifier)
 	metric_list_ty  *mlp;
 
 	if (cp->bogus || !change_is_completed(cp))
-	    src = project_file_nth(pp, j, view_path_extreme);
+	    src = pp->file_nth(j, view_path_extreme);
 	else
 	    src = change_file_nth(cp, j, view_path_first);
 	if (!src)
@@ -184,7 +184,7 @@ get_file_metrics(change_ty *cp, string_ty *filename, string_list_ty *modifier)
 	metric_list_ty  *mlp;
 
 	if (cp->bogus || !change_is_completed(cp))
-	    src = project_file_nth(pp, j, view_path_extreme);
+	    src = pp->file_nth(j, view_path_extreme);
 	else
 	    src = change_file_nth(cp, j, view_path_first);
 	if (!src)
@@ -293,7 +293,7 @@ get_file_metrics(change_ty *cp, string_ty *filename, string_list_ty *modifier)
 	printf("</td>\n");
 
 	printf("<td valign=\"top\" align=\"right\">\n");
-	emit_edit_number(cp, src);
+	emit_edit_number(cp, src, 0);
 	printf("</td>\n");
 
 	for (k = 0; k < key.nstrings; ++k)

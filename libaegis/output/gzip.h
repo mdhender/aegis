@@ -23,9 +23,9 @@
 #ifndef LIBAEGIS_OUTPUT_GZIP_H
 #define LIBAEGIS_OUTPUT_GZIP_H
 
-#include <ac/zlib.h>
+#include <common/ac/zlib.h>
 
-#include <output.h>
+#include <libaegis/output.h>
 
 /**
   * The output_gzip class is used to represent an output filter which

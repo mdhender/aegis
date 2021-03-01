@@ -1,6 +1,6 @@
 //
 //	aegis - project change supervisor
-//	Copyright (C) 2004 Peter Miller;
+//	Copyright (C) 2004-2006 Peter Miller;
 //	All rights reserved.
 //
 //	This program is free software; you can redistribute it and/or modify
@@ -20,9 +20,9 @@
 // MANIFEST: functions to manipulate find_by_metas
 //
 
-#include <error.h> // for assert
-#include <project/file.h>
-#include <trace.h>
+#include <common/error.h> // for assert
+#include <libaegis/project/file.h>
+#include <common/trace.h>
 
 
 fstate_src_ty *
@@ -54,7 +54,7 @@ project_file_find_by_meta(project_ty *pp, fstate_src_ty *c_src_data,
     //
     if (c_src_data->uuid)
     {
-	p_src_data = project_file_find_by_uuid(pp, c_src_data->uuid, vp);
+	p_src_data = pp->file_find_by_uuid(c_src_data->uuid, vp);
 	while (p_src_data)
 	{
 	    if (p_src_data->action != file_action_remove || !p_src_data->move)

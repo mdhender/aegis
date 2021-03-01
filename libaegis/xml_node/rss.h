@@ -23,9 +23,7 @@
 #ifndef LIBAEGIS_XML_NODE_RSS_H
 #define LIBAEGIS_XML_NODE_RSS_H
 
-#pragma interface "xml_node_rss"
-
-#include <xml_node.h>
+#include <libaegis/xml_node.h>
 
 // Forward declarations
 class output_ty;

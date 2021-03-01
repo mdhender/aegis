@@ -1,6 +1,6 @@
 //
 //	aegis - project change supervisor
-//	Copyright (C) 2004, 2005 Peter Miller;
+//	Copyright (C) 2004-2006 Peter Miller;
 //	All rights reserved.
 //
 //	This program is free software; you can redistribute it and/or modify
@@ -20,20 +20,20 @@
 // MANIFEST: implementation of the project_invento_walk class
 //
 
-#include <change/branch.h>
-#include <error.h> // for assert
-#include <now.h>
-#include <project.h>
-#include <project/history.h>
-#include <project/invento_walk.h>
-#include <str_list.h>
-#include <trace.h>
+#include <libaegis/change/branch.h>
+#include <common/error.h> // for assert
+#include <common/now.h>
+#include <libaegis/project.h>
+#include <libaegis/project/history.h>
+#include <libaegis/project/invento_walk.h>
+#include <common/str_list.h>
+#include <common/trace.h>
 
 
 static bool
 project_is_completed_branch(project_ty *pp)
 {
-    change_ty *cp = project_change_get(pp);
+    change_ty *cp = pp->change_get();
     return change_is_completed(cp);
 }
 
@@ -41,7 +41,7 @@ project_is_completed_branch(project_ty *pp)
 static time_t
 project_completion_timestamp(project_ty *pp)
 {
-    change_ty *cp = project_change_get(pp);
+    change_ty *cp = pp->change_get();
     return change_completion_timestamp(cp);
 }
 
@@ -76,8 +76,7 @@ project_change_inventory_get(project_ty *pp, change_functor &result,
 		    //
 		    // Recurse on branches.
 		    //
-		    project_ty *sub_pp =
-			project_bind_branch(pp, change_copy(cp));
+		    project_ty *sub_pp = pp->bind_branch(change_copy(cp));
 		    project_change_inventory_get
 		    (
 			sub_pp,
@@ -113,7 +112,7 @@ project_change_inventory_get(project_ty *pp, change_functor &result,
 	    // This is especially important when there are parallel branches
 	    // in operation.  They will have been integrated in a specific
 	    // order, and the first branches changes come first, then the
-	    // seconds branbches changes come second.
+	    // seconds branches changes come second.
 	    //
 	    long cn = 0;
 	    long dn = 0;
@@ -143,7 +142,7 @@ project_change_inventory_get(project_ty *pp, change_functor &result,
 		//
 		// Recurse on completed branches.
 		//
-		project_ty *sub_pp = project_bind_branch(pp, change_copy(cp));
+		project_ty *sub_pp = pp->bind_branch(change_copy(cp));
 		project_change_inventory_get(sub_pp, result, time_limit, false);
 		project_free(sub_pp);
 	    }
@@ -165,8 +164,8 @@ static void
 project_change_inventory_getr(project_ty *pp, change_functor &result,
     time_t limit, time_t maximum)
 {
-    if (pp->parent)
-	project_change_inventory_getr(pp->parent, result, limit, false);
+    if (!pp->is_a_trunk())
+	project_change_inventory_getr(pp->parent_get(), result, limit, false);
     project_change_inventory_get(pp, result, limit, maximum);
 }
 
@@ -183,9 +182,9 @@ project_inventory_walk(project_ty *pp, change_functor &result, time_t limit,
 	if (time_limit > limit)
 	    time_limit = limit;
 	project_ty *ppp = pp;
-	while (ppp->parent)
+	while (!ppp->is_a_trunk())
 	{
-	    ppp = ppp->parent;
+	    ppp = ppp->parent_get();
 	    if (!project_is_completed_branch(ppp))
 		break;
 	}

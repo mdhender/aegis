@@ -21,6 +21,16 @@
 # MANIFEST: Test the aeimport functionality
 #
 
+rcs -V > /dev/null
+if test $? -ne 0
+then
+    echo
+    echo '	Your system does not appear to have RCS installed.'
+    echo '	This test is therefore -assumed- to pass.'
+    echo
+    exit 0
+fi
+
 unset AEGIS_PROJECT
 unset AEGIS_CHANGE
 unset AEGIS_PATH

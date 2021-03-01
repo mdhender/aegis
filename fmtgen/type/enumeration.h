@@ -1,6 +1,6 @@
 //
 //	aegis - project change supervisor
-//	Copyright (C) 1994 Peter Miller.
+//	Copyright (C) 1994, 2005 Peter Miller.
 //	All rights reserved.
 //
 //	This program is free software; you can redistribute it and/or modify
@@ -23,10 +23,8 @@
 #ifndef FMTGEN_TYPE_ENUMERATION_H
 #define FMTGEN_TYPE_ENUMERATION_H
 
-#pragma interface "type_enumeration_ty"
-
-#include <type.h>
-#include <nstring/list.h>
+#include <fmtgen/type.h>
+#include <common/nstring/list.h>
 
 /**
   * The type_enumeration_ty class is used to represent the type of a

@@ -1,6 +1,6 @@
 //
 //	aegis - project change supervisor
-//	Copyright (C) 1994-1997, 1999, 2001-2004 Peter Miller;
+//	Copyright (C) 1994-1997, 1999, 2001-2005 Peter Miller;
 //	All rights reserved.
 //
 //	This program is free software; you can redistribute it and/or modify
@@ -20,22 +20,22 @@
 // MANIFEST: functions to implement the 'aegis -RePorT' command
 //
 
-#include <ac/stdio.h>
+#include <common/ac/stdio.h>
 
-#include <aer.h>
-#include <aer/list.h>
-#include <aer/parse.h>
-#include <aer/func/change.h>
-#include <aer/func/project.h>
-#include <arglex2.h>
-#include <arglex/change.h>
-#include <arglex/project.h>
-#include <help.h>
-#include <progname.h>
-#include <quit.h>
-#include <sub.h>
-#include <trace.h>
-#include <zero.h>
+#include <aegis/aer.h>
+#include <libaegis/aer/list.h>
+#include <libaegis/aer/parse.h>
+#include <libaegis/aer/func/change.h>
+#include <libaegis/aer/func/project.h>
+#include <libaegis/arglex2.h>
+#include <libaegis/arglex/change.h>
+#include <libaegis/arglex/project.h>
+#include <libaegis/help.h>
+#include <common/progname.h>
+#include <common/quit.h>
+#include <libaegis/sub.h>
+#include <common/trace.h>
+#include <libaegis/zero.h>
 
 
 //

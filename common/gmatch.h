@@ -1,6 +1,6 @@
 //
 //	aegis - project change supervisor
-//	Copyright (C) 1997, 1999 Peter Miller;
+//	Copyright (C) 1997, 1999, 2005 Peter Miller;
 //	All rights reserved.
 //
 //	This program is free software; you can redistribute it and/or modify
@@ -23,7 +23,7 @@
 #ifndef COMMON_GMATCH_H
 #define COMMON_GMATCH_H
 
-#include <main.h>
+#include <common/main.h>
 
 /** \addtogroup Misc
   * @{

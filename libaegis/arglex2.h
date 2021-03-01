@@ -1,29 +1,29 @@
-/*
- *	aegis - project change supervisor
- *	Copyright (C) 1991-2005 Peter Miller;
- *	All rights reserved.
- *
- *	This program is free software; you can redistribute it and/or modify
- *	it under the terms of the GNU General Public License as published by
- *	the Free Software Foundation; either version 2 of the License, or
- *	(at your option) any later version.
- *
- *	This program is distributed in the hope that it will be useful,
- *	but WITHOUT ANY WARRANTY; without even the implied warranty of
- *	MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
- *	GNU General Public License for more details.
- *
- *	You should have received a copy of the GNU General Public License
- *	along with this program; if not, write to the Free Software
- *	Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111, USA.
- *
- * MANIFEST: definitions of command line tokens
- */
+//
+//	aegis - project change supervisor
+//	Copyright (C) 1991-2006 Peter Miller;
+//	All rights reserved.
+//
+//	This program is free software; you can redistribute it and/or modify
+//	it under the terms of the GNU General Public License as published by
+//	the Free Software Foundation; either version 2 of the License, or
+//	(at your option) any later version.
+//
+//	This program is distributed in the hope that it will be useful,
+//	but WITHOUT ANY WARRANTY; without even the implied warranty of
+//	MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+//	GNU General Public License for more details.
+//
+//	You should have received a copy of the GNU General Public License
+//	along with this program; if not, write to the Free Software
+//	Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111, USA.
+//
+// MANIFEST: definitions of command line tokens
+//
 
 #ifndef ARGLEX2_H
 #define ARGLEX2_H
 
-#include <arglex.h>
+#include <common/arglex.h>
 
 enum
 {
@@ -39,6 +39,10 @@ enum
 	arglex_token_change_owner,
 	arglex_token_clean,
 	arglex_token_clone,
+	arglex_token_compatibility,
+	arglex_token_compress,
+	arglex_token_compress_not,
+	arglex_token_compression_algorithm,
 	arglex_token_configured,
 	arglex_token_configured_not,
 	arglex_token_copy_file,
@@ -83,6 +87,8 @@ enum
 	arglex_token_merge_automatic,
 	arglex_token_merge_not,
 	arglex_token_merge_only,
+	arglex_token_mime_header,
+	arglex_token_mime_header_not,
 	arglex_token_minimum,
 	arglex_token_minor,
 	arglex_token_move_file,
@@ -166,4 +172,4 @@ void arglex2_init3(int, char **, arglex_table_ty *);
 
 void arglex2_retable(arglex_table_ty *);
 
-#endif /* ARGLEX2_H */
+#endif // ARGLEX2_H

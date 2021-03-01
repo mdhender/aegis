@@ -1,6 +1,6 @@
 //
 //	aegis - project change supervisor
-//	Copyright (C) 1998-2005 Peter Miller;
+//	Copyright (C) 1998-2006 Peter Miller;
 //	All rights reserved.
 //
 //	This program is free software; you can redistribute it and/or modify
@@ -20,33 +20,33 @@
 // MANIFEST: functions to implement the 'aegis -CLone' command
 //
 
-#include <ac/stdio.h>
+#include <common/ac/stdio.h>
 
-#include <aeclone.h>
-#include <ael/change/by_state.h>
-#include <aenc.h>
-#include <arglex2.h>
-#include <arglex/change.h>
-#include <arglex/project.h>
-#include <change.h>
-#include <change/branch.h>
-#include <change/file.h>
-#include <commit.h>
-#include <error.h>
-#include <file.h>
-#include <help.h>
-#include <lock.h>
-#include <os.h>
-#include <progname.h>
-#include <project.h>
-#include <project/file.h>
-#include <project/history.h>
-#include <quit.h>
-#include <str_list.h>
-#include <sub.h>
-#include <trace.h>
-#include <undo.h>
-#include <user.h>
+#include <aegis/aeclone.h>
+#include <libaegis/ael/change/by_state.h>
+#include <aegis/aenc.h>
+#include <libaegis/arglex2.h>
+#include <libaegis/arglex/change.h>
+#include <libaegis/arglex/project.h>
+#include <libaegis/change.h>
+#include <libaegis/change/branch.h>
+#include <libaegis/change/file.h>
+#include <libaegis/commit.h>
+#include <common/error.h>
+#include <libaegis/file.h>
+#include <libaegis/help.h>
+#include <libaegis/lock.h>
+#include <libaegis/os.h>
+#include <common/progname.h>
+#include <libaegis/project.h>
+#include <libaegis/project/file.h>
+#include <libaegis/project/history.h>
+#include <common/quit.h>
+#include <common/str_list.h>
+#include <libaegis/sub.h>
+#include <common/trace.h>
+#include <libaegis/undo.h>
+#include <libaegis/user.h>
 
 
 static void
@@ -302,12 +302,12 @@ clone_main(void)
 	project_name = user_default_project();
     pp = project_alloc(project_name);
     str_free(project_name);
-    project_bind_existing(pp);
+    pp->bind_existing();
 
     //
     // make sure this branch of the project is still active
     //
-    if (!change_is_a_branch(project_change_get(pp)))
+    if (!change_is_a_branch(pp->change_get()))
 	project_fatal(pp, 0, i18n("branch completed"));
 
     //
@@ -319,7 +319,7 @@ clone_main(void)
     // Lock the project state file.
     // Block if necessary.
     //
-    project_pstate_lock_prepare(pp);
+    pp->pstate_lock_prepare();
     user_ustate_lock_prepare(up);
     lock_take();
 
@@ -332,9 +332,9 @@ clone_main(void)
     // locate which branch
     //
     if (branch)
-	pp2 = project_find_branch(pp, branch);
+	pp2 = pp->find_branch(branch);
     else
-	pp2 = pp;
+	pp2 = project_copy(pp);
 
     //
     // locate change data
@@ -563,7 +563,8 @@ clone_main(void)
 		//
 		// construct the paths to the files
 		//
-		from = project_file_path(pp->parent, src_data2->file_name);
+		from =
+		    project_file_path(pp->parent_get(), src_data2->file_name);
 		to = os_path_join(devdir, src_data2->file_name);
 
 		//
@@ -774,7 +775,7 @@ clone_main(void)
     // Write the user table rows.
     // Release advisory locks.
     //
-    project_pstate_write(pp);
+    pp->pstate_write();
     user_ustate_write(up);
     commit();
     lock_release();

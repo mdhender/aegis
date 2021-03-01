@@ -1,6 +1,6 @@
 //
 //	aegis - project change supervisor
-//	Copyright (C) 2004, 2005 Peter Miller;
+//	Copyright (C) 2004-2006 Peter Miller;
 //	All rights reserved.
 //
 //	This program is free software; you can redistribute it and/or modify
@@ -25,30 +25,38 @@
 // using 'E' and/or 'error'.
 //
 
-#include <output.h>
-#include <response/hate.h>
-#include <response/private.h>
+#include <libaegis/output.h>
+#include <aecvsserver/response/hate.h>
 
 
-static void
-write(response_ty *rp, output_ty *op)
+response_hate::~response_hate()
+{
+}
+
+
+response_hate::response_hate()
+{
+}
+
+
+void
+response_hate::write(output_ty *op)
 {
     op->fputs("I HATE YOU\n");
 }
 
 
-static const response_method_ty vtbl =
+response_code_ty
+response_hate::code_get()
+    const
 {
-    sizeof(response_ty),
-    0, // destructor
-    write,
-    response_code_hate,
-    1, // flushable
-};
+    return response_code_hate;
+}
 
 
-response_ty *
-response_hate_new(void)
+bool
+response_hate::flushable()
+    const
 {
-    return response_new(&vtbl);
+    return true;
 }

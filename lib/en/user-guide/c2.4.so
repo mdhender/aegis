@@ -1,6 +1,6 @@
 .\"
 .\"	aegis - project change supervisor
-.\"	Copyright (C) 1991-1993, 1998, 1999, 2002 Peter Miller;
+.\"	Copyright (C) 1991-1993, 1998, 1999, 2002, 2005, 2006 Peter Miller;
 .\"	All rights reserved.
 .\"
 .\"	This program is free software; you can redistribute it and/or modify
@@ -131,9 +131,9 @@ Branches inherit their attributes and staff lists from their parent
 branches when they are first created, which is why we set all that
 stuff first.
 .E(
-alex% \f(CBaegis -nbr example 1\fP
+alex% \f(CBaegis -nbr -p example 1\fP
 aegis: project "example.1": created
-alex% \f(CBaegis -nbr example.1 0\fP
+alex% \f(CBaegis -nbr -p example.1 0\fP
 aegis: project "example.1.0": created
 alex%
 .E)
@@ -180,7 +180,7 @@ alex% \f(CBaenc -edit -p example.1.0\fP
 aegis: project "example.1.0": change 10: created
 alex%
 .E)
-Notice that the first change number is ``10''.  This is done so that
+Notice that the first change number is \[lq]10\[rq].  This is done so that
 changes 1 to 9 could be used as bug-fix branches at some future time.
 See the \fIBranching\fP chapter for more information.
 You can over-ride this is you need to.

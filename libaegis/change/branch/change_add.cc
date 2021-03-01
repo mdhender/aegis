@@ -1,6 +1,6 @@
 //
 //	aegis - project change supervisor
-//	Copyright (C) 2001-2004 Peter Miller;
+//	Copyright (C) 2001-2005 Peter Miller;
 //	All rights reserved.
 //
 //	This program is free software; you can redistribute it and/or modify
@@ -20,9 +20,9 @@
 // MANIFEST: functions to manipulate change_adds
 //
 
-#include <change/branch.h>
-#include <error.h>
-#include <trace.h>
+#include <libaegis/change/branch.h>
+#include <common/error.h>
+#include <common/trace.h>
 
 
 void

@@ -20,22 +20,23 @@
 // MANIFEST: implementation of the subunit class
 //
 
-#include <ac/errno.h>
-#include <ac/stdio.h>
-#include <ac/stdlib.h>
-#include <ac/string.h>
+#include <common/ac/errno.h>
+#include <common/ac/stdio.h>
+#include <common/ac/stdlib.h>
+#include <common/ac/string.h>
 
-#include <arglex3.h>
-#include <error.h>
-#include <help.h>
-#include <nstring/list.h>
-#include <os.h>
-#include <output/file.h>
-#include <progname.h>
-#include <quit.h>
-#include <sub.h>
-#include <subunit.h>
-#include <tstrslt.h>
+#include <common/error.h>
+#include <common/nstring/list.h>
+#include <common/progname.h>
+#include <common/quit.h>
+#include <libaegis/help.h>
+#include <libaegis/os.h>
+#include <libaegis/output/file.h>
+#include <libaegis/sub.h>
+#include <libaegis/tstrslt.h>
+
+#include <aesubunit/arglex3.h>
+#include <aesubunit/subunit.h>
 
 
 void

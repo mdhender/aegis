@@ -1,6 +1,6 @@
 //
 //	aegis - project change supervisor
-//	Copyright (C) 1991-1994, 1999, 2004 Peter Miller;
+//	Copyright (C) 1991-1994, 1999, 2004, 2005 Peter Miller;
 //	All rights reserved.
 //
 //	This program is free software; you can redistribute it and/or modify
@@ -28,8 +28,8 @@
   * \ingroup Common
   * @{
   */
-#include <ac/stddef.h>
-#include <main.h>
+#include <common/ac/stddef.h>
+#include <common/main.h>
 
 /**
   * \brief allocate memory

@@ -1,6 +1,6 @@
 //
 //	aegis - project change supervisor
-//	Copyright (C) 2004 Peter Miller;
+//	Copyright (C) 2004, 2005 Peter Miller;
 //	All rights reserved.
 //
 //	This program is free software; you can redistribute it and/or modify
@@ -20,11 +20,9 @@
 // MANIFEST: implementation of the printer_wrap class
 //
 
-#pragma implementation "printer_wrap"
+#include <common/ac/string.h>
 
-#include <ac/string.h>
-
-#include <printer/wrap.h>
+#include <aemakefile/printer/wrap.h>
 
 
 printer_wrap::~printer_wrap()

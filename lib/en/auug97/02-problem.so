@@ -1,6 +1,6 @@
 .\"
 .\"	aegis - project change supervisor
-.\"	Copyright (C) 1997, 2002, 2003 Peter Miller;
+.\"	Copyright (C) 1997, 2002, 2003, 2005 Peter Miller;
 .\"	All rights reserved.
 .\"
 .\"	This program is free software; you can redistribute it and/or modify
@@ -28,7 +28,7 @@ It is very hard to get the
 .I order
 of the recursion into the sub-directories correct.
 This order is very unstable
-and frequently needs to be manually ``tweaked.''
+and frequently needs to be manually \[lq]tweaked.\[rq]
 Increasing the number of directories,
 or increasing the depth in the directory tree,
 cause this order to be increasingly unstable.
@@ -41,7 +41,7 @@ Because the builds take so long, some dependency information is omitted,
 otherwise development builds take unreasonable lengths of time,
 and the developers are unproductive.
 This usually leads to things not being updated when they need to be,
-requiring frequent ``clean'' builds from scratch,
+requiring frequent \[lq]clean\[rq] builds from scratch,
 to ensure everything has actually been built.
 .IP \(bu 2n
 Because inter-directory dependencies are either omitted or too hard to express,
@@ -54,12 +54,12 @@ can result in a product which is incapable of building cleanly,
 requiring the build process to be carefully watched by a human.
 .IP \(bu 2n
 Related to the above, some projects are incapable of taking advantage of
-various ``parallel make'' impementations, because the build does patently
+various \[lq]parallel make\[rq] impementations, because the build does patently
 silly things.
 .LP
 Not all projects experience all of these problems.  Those that do
 experience the problems may do so intermittently, and dismiss the
-problems as unexplained ``one off'' quirks.  This paper attempts to
+problems as unexplained \[lq]one off\[rq] quirks.  This paper attempts to
 bring together a range of symptoms observed over long practice, and
 presents a systematic analysis and solution.
 .LP

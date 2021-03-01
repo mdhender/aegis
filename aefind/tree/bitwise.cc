@@ -20,14 +20,14 @@
 // MANIFEST: functions to manipulate bitwise operators
 //
 
-#include <aer/value/error.h>
-#include <aer/value/integer.h>
-#include <error.h>
-#include <sub.h>
-#include <trace.h>
-#include <tree/bitwise.h>
-#include <tree/diadic.h>
-#include <tree/monadic.h>
+#include <libaegis/aer/value/error.h>
+#include <libaegis/aer/value/integer.h>
+#include <common/error.h>
+#include <libaegis/sub.h>
+#include <common/trace.h>
+#include <aefind/tree/bitwise.h>
+#include <aefind/tree/diadic.h>
+#include <aefind/tree/monadic.h>
 
 
 static rpt_value_ty *

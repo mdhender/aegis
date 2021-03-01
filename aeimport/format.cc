@@ -20,13 +20,13 @@
 // MANIFEST: functions to manipulate formats
 //
 
-#include <dir.h>
-#include <error.h>
-#include <format.h>
-#include <format/private.h>
-#include <format/search_list.h>
-#include <mem.h>
-#include <os.h>
+#include <libaegis/dir.h>
+#include <common/error.h>
+#include <aeimport/format.h>
+#include <aeimport/format/private.h>
+#include <aeimport/format/search_list.h>
+#include <common/mem.h>
+#include <libaegis/os.h>
 
 
 void

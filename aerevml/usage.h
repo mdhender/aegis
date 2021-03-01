@@ -23,7 +23,7 @@
 #ifndef AEREVML_USAGE_H
 #define AEREVML_USAGE_H
 
-#include <main.h>
+#include <common/main.h>
 
 /**
   * The usage function is used to print a usage messages and exit with

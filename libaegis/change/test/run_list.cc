@@ -1,6 +1,6 @@
 //
 //	aegis - project change supervisor
-//	Copyright (C) 2000, 2002-2005 Peter Miller;
+//	Copyright (C) 2000, 2002-2006 Peter Miller;
 //	All rights reserved.
 //
 //	This program is free software; you can redistribute it and/or modify
@@ -20,21 +20,22 @@
 // MANIFEST: functions to manipulate run_lists
 //
 
-#include <change.h>
-#include <change/test/batch.h>
-#include <change/test/batch_fake.h>
-#include <change/test/run_list.h>
-#include <pconf.h>
-#include <project.h>
-#include <project/history.h>
-#include <str_list.h>
-#include <trace.h>
-#include <user.h>
+#include <common/str_list.h>
+#include <common/trace.h>
+#include <libaegis/change.h>
+#include <libaegis/change/test/batch_fake.h>
+#include <libaegis/change/test/batch.h>
+#include <libaegis/change/test/run_list.h>
+#include <libaegis/pconf.h>
+#include <libaegis/project.h>
+#include <libaegis/project/history.h>
+#include <libaegis/user.h>
 
 
 batch_result_list_ty *
 project_test_run_list(project_ty *pp, string_list_ty *wlp, user_ty *up,
-    bool progress_flag, time_t time_limit)
+    bool progress_flag, time_t time_limit,
+    const nstring_list &variable_assignments)
 {
     change_ty	    *cp;
     batch_result_list_ty *result;
@@ -63,7 +64,8 @@ project_test_run_list(project_ty *pp, string_list_ty *wlp, user_ty *up,
 	    up,
 	    false, // not baseline, positive!
 	    progress_flag,
-	    time_limit
+	    time_limit,
+	    variable_assignments
 	);
     change_free(cp);
     trace(("return %08lX;\n", (long)result));
@@ -74,7 +76,8 @@ project_test_run_list(project_ty *pp, string_list_ty *wlp, user_ty *up,
 
 static batch_result_list_ty *
 change_test_run_list_inner(change_ty *cp, string_list_ty *wlp, user_ty *up,
-    bool baseline_flag, int current, int total, time_t time_limit)
+    bool baseline_flag, int current, int total, time_t time_limit,
+    const nstring_list &variable_assignments)
 {
     pconf_ty        *pconf_data;
     batch_result_list_ty *result;
@@ -100,7 +103,8 @@ change_test_run_list_inner(change_ty *cp, string_list_ty *wlp, user_ty *up,
 		up,
 		baseline_flag,
 		current,
-		total
+		total,
+		variable_assignments
 	    );
     }
     else
@@ -115,7 +119,8 @@ change_test_run_list_inner(change_ty *cp, string_list_ty *wlp, user_ty *up,
 		baseline_flag,
 		current,
 		total,
-		time_limit
+		time_limit,
+		variable_assignments
 	    );
     }
     trace(("return %08lX;\n", (long)result));
@@ -131,7 +136,8 @@ change_test_run_list_inner(change_ty *cp, string_list_ty *wlp, user_ty *up,
 
 batch_result_list_ty *
 change_test_run_list(change_ty *cp, string_list_ty *wlp, user_ty *up,
-    bool baseline_flag, bool progress_flag, time_t time_limit)
+    bool baseline_flag, bool progress_flag, time_t time_limit,
+    const nstring_list &variable_assignments)
 {
     batch_result_list_ty *result;
     size_t	    multiple;
@@ -140,7 +146,7 @@ change_test_run_list(change_ty *cp, string_list_ty *wlp, user_ty *up,
 
     //
     // We limit ourselves to commands with at most 100 tests, because
-    // some Unix implementations have very short sommand lines and can't
+    // some Unix implementations have very short command lines and can't
     // cope with more.
     //
     multiple = 100;
@@ -166,7 +172,8 @@ change_test_run_list(change_ty *cp, string_list_ty *wlp, user_ty *up,
 		baseline_flag,
 		0, // start
 		(progress_flag ? wlp->nstrings : 0),
-		time_limit
+		time_limit,
+		variable_assignments
 	    );
     }
     trace(("change_test_run_list(cp = %08lX, wlp = %08lX, up = %08lX, "
@@ -196,7 +203,8 @@ change_test_run_list(change_ty *cp, string_list_ty *wlp, user_ty *up,
 		baseline_flag,
 		j,
 		(progress_flag ? wlp->nstrings : 0),
-		time_limit
+		time_limit,
+		variable_assignments
 	    );
 	batch_result_list_append_list(result, result2);
 	batch_result_list_delete(result2);

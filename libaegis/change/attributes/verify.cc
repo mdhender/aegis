@@ -1,6 +1,6 @@
 //
 //	aegis - project change supervisor
-//	Copyright (C) 2000-2004 Peter Miller;
+//	Copyright (C) 2000-2005 Peter Miller;
 //	All rights reserved.
 //
 //	This program is free software; you can redistribute it and/or modify
@@ -20,10 +20,10 @@
 // MANIFEST: functions to manipulate verifys
 //
 
-#include <attrlistveri.h>
-#include <cattr.h>
-#include <change/attributes.h>
-#include <sub.h>
+#include <libaegis/attrlistveri.h>
+#include <libaegis/cattr.h>
+#include <libaegis/change/attributes.h>
+#include <libaegis/sub.h>
 
 
 void

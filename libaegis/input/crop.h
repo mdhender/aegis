@@ -1,6 +1,6 @@
 //
 //	aegis - project change supervisor
-//	Copyright (C) 2004, 2005 Peter Miller;
+//	Copyright (C) 2004-2006 Peter Miller;
 //	All rights reserved.
 //
 //	This program is free software; you can redistribute it and/or modify
@@ -23,7 +23,7 @@
 #ifndef LIBAEGIS_INPUT_CROP_H
 #define LIBAEGIS_INPUT_CROP_H
 
-#include <input.h>
+#include <libaegis/input.h>
 
 /**
   * The input_crop class is used to represent an input which will read
@@ -40,8 +40,13 @@ public:
 
     /**
       * The constructor.
+      *
+      * @param deeper
+      *     the data source for this filter.
+      * @param length
+      *     How many bytes of data are in the cropped region.
       */
-    input_crop(input_ty *deeper, bool close_on_close, long length);
+    input_crop(input &deeper, long length);
 
     // See base class for documentation.
     nstring name();
@@ -64,10 +69,28 @@ public:
     void set_name(const nstring &arg) { name_cache = arg; }
 
 private:
-    input_ty *deeper;
-    bool delete_on_close;
+    /**
+      * The deeper instance variable is used to remember the data source
+      * for this filter.
+      */
+    input deeper;
+
+    /**
+      * The deeper instance variable is used to remember how many bytes
+      * of data are in the cropped region.
+      */
     long maximum;
+
+    /**
+      * The pos instance variable is used to remember where we are up to
+      * in the crop region.
+      */
     long pos;
+
+    /**
+      * The name_cache instance variable is used to remember the name of
+      * the deeper input stream.
+      */
     nstring name_cache;
 
     /**

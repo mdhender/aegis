@@ -1,6 +1,6 @@
 //
 //	aegis - project change supervisor
-//	Copyright (C) 2005 Peter Miller;
+//	Copyright (C) 2005, 2006 Peter Miller;
 //	All rights reserved.
 //
 //	This program is free software; you can redistribute it and/or modify
@@ -23,20 +23,15 @@
 #ifndef AEREVML_ARGLEX3_H
 #define AEREVML_ARGLEX3_H
 
-#include <arglex2.h>
+#include <libaegis/arglex2.h>
 
 enum
 {
-	arglex_token_compatibility = ARGLEX2_MAX,
-	arglex_token_compress,
-	arglex_token_compress_not,
-	arglex_token_content_transfer_encoding,
+	arglex_token_content_transfer_encoding = ARGLEX2_MAX,
 	arglex_token_description_header,
 	arglex_token_description_header_not,
 	arglex_token_entire_source,
 	arglex_token_entire_source_not,
-	arglex_token_mime_header,
-	arglex_token_mime_header_not,
 	arglex_token_receive,
 	arglex_token_send,
 	arglex_token_trojan,

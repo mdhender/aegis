@@ -1,6 +1,6 @@
 //
 //      aegis - project change supervisor
-//      Copyright (C) 2001, 2002, 2004, 2005 Peter Miller;
+//      Copyright (C) 2001, 2002, 2004-2006 Peter Miller;
 //      All rights reserved.
 //
 //      This program is free software; you can redistribute it and/or modify
@@ -20,17 +20,17 @@
 // MANIFEST: lexical analysis of RCS files
 //
 
-#include <format/rcs/lex.h>
-#include <input/file.h>
-#include <quit.h>
-#include <str_list.h>
-#include <sub.h>
-#include <symtab.h>
-#include <stracc.h>
-#include <trace.h>
-#include <format/rcs/gram.gen.h> // needs to be after <str_list.h>
+#include <aeimport/format/rcs/lex.h>
+#include <common/quit.h>
+#include <common/stracc.h>
+#include <common/str_list.h>
+#include <common/symtab.h>
+#include <common/trace.h>
+#include <libaegis/input/file.h>
+#include <libaegis/sub.h>
+#include <aeimport/format/rcs/gram.gen.h> // must be after <common/str_list.h>
 
-static input_ty *ip;
+static input ip;
 static int      keyword_expected;
 static symtab_ty *stp;
 static int      error_count;
@@ -99,8 +99,7 @@ rcs_lex_close(void)
 {
     if (error_count)
         quit(1);
-    delete ip;
-    ip = 0;
+    ip.close();
 }
 
 
@@ -422,7 +421,7 @@ format_rcs_gram_lex(void)
 
     for (;;)
     {
-        c = ip->getc();
+        c = ip->getch();
         if (c < 0)
         {
             trace(("EOF\n"));
@@ -443,7 +442,7 @@ format_rcs_gram_lex(void)
             for (;;)
             {
                 buffer.push_back(c);
-                c = ip->getc();
+                c = ip->getch();
                 if (c < 0)
                     break;
                 d = ctab[c];
@@ -484,7 +483,7 @@ format_rcs_gram_lex(void)
             for (;;)
             {
                 buffer.push_back(c);
-                c = ip->getc();
+                c = ip->getch();
                 if (c < 0)
                     break;
                 d = ctab[c];
@@ -509,13 +508,13 @@ format_rcs_gram_lex(void)
             buffer.clear();
             for (;;)
             {
-                c = ip->getc();
+                c = ip->getch();
                 if (c < 0)
                         break;
                 d = ctab[c];
                 if (d == ctab_is_string)
                 {
-                    c = ip->getc();
+                    c = ip->getch();
                     if (c < 0)
                         break;
                     d = ctab[c];

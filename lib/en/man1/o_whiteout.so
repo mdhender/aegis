@@ -1,6 +1,6 @@
 .\"
 .\"	aegis - project change supervisor
-.\"	Copyright (C) 1999 Peter Miller;
+.\"	Copyright (C) 1999, 2005 Peter Miller;
 .\"	All rights reserved.
 .\"
 .\"	This program is free software; you can redistribute it and/or modify
@@ -22,10 +22,10 @@
 .TP 8n
 \fB\-WhiteOut\fP
 This option may be used to request that deleted files be replaced by
-a ``whiteout'' file in the development directory.  The idea is that
+a \[lq]whiteout\[rq] file in the development directory.  The idea is that
 compiling such a file will result in a fatal error, in order that all
 references may be found.  This is usually the default.
 .TP 8n
 \fB\-No_WhiteOut\fP
-This option may be used to request that no ``whiteout'' file be placed
+This option may be used to request that no \[lq]whiteout\[rq] file be placed
 in the development directory.

@@ -23,8 +23,6 @@
 #ifndef LIBAEGIS_XML_NODE_H
 #define LIBAEGIS_XML_NODE_H
 
-#pragma interface "xml_node"
-
 class nstring; // forward
 
 /**

@@ -1,6 +1,6 @@
 //
 //	aegis - project change supervisor
-//	Copyright (C) 2004 Peter Miller;
+//	Copyright (C) 2004, 2005 Peter Miller;
 //	All rights reserved.
 //
 //	This program is free software; you can redistribute it and/or modify
@@ -23,7 +23,7 @@
 #ifndef AECVSSERVER_DIRECTO_LIST_H
 #define AECVSSERVER_DIRECTO_LIST_H
 
-#include <directory.h>
+#include <aecvsserver/directory.h>
 
 struct directory_list_ty
 {

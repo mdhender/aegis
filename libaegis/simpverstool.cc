@@ -1,6 +1,6 @@
 //
 //	aegis - project change supervisor
-//	Copyright (C) 2005 Peter Miller;
+//	Copyright (C) 2005, 2006 Peter Miller;
 //	All rights reserved.
 //
 //	This program is free software; you can redistribute it and/or modify
@@ -20,9 +20,7 @@
 // MANIFEST: implementation of the simpverstool class
 //
 
-#pragma implementation "simple_version_tool"
-
-#include <simpverstool.h>
+#include <libaegis/simpverstool.h>
 
 
 simple_version_tool::~simple_version_tool()
@@ -30,7 +28,9 @@ simple_version_tool::~simple_version_tool()
 }
 
 
-simple_version_tool::simple_version_tool(const nstring &arg) :
-    history_file_name(arg)
+simple_version_tool::simple_version_tool(const nstring &arg1,
+	compression_algorithm_t arg2) :
+    history_file_name(arg1),
+    compression_algorithm(arg2)
 {
 }

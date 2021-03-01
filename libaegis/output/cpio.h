@@ -23,7 +23,7 @@
 #ifndef AEDIST_OUTPUT_CPIO_H
 #define AEDIST_OUTPUT_CPIO_H
 
-#include <output.h>
+#include <libaegis/output.h>
 
 struct string_ty; // forward
 

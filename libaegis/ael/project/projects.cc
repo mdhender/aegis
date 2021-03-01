@@ -1,6 +1,6 @@
 //
 //	aegis - project change supervisor
-//	Copyright (C) 1999, 2001-2005 Peter Miller;
+//	Copyright (C) 1999, 2001-2006 Peter Miller;
 //	All rights reserved.
 //
 //	This program is free software; you can redistribute it and/or modify
@@ -20,19 +20,19 @@
 // MANIFEST: functions to manipulate projectss
 //
 
-#include <ac/string.h>
+#include <common/ac/string.h>
 
-#include <ael/change/inappropriat.h>
-#include <ael/column_width.h>
-#include <ael/project/inappropriat.h>
-#include <ael/project/projects.h>
-#include <col.h>
-#include <option.h>
-#include <output.h>
-#include <project.h>
-#include <project/history.h>
-#include <str_list.h>
-#include <trace.h>
+#include <libaegis/ael/change/inappropriat.h>
+#include <libaegis/ael/column_width.h>
+#include <libaegis/ael/project/inappropriat.h>
+#include <libaegis/ael/project/projects.h>
+#include <libaegis/col.h>
+#include <libaegis/option.h>
+#include <libaegis/output.h>
+#include <libaegis/project.h>
+#include <libaegis/project/history.h>
+#include <common/str_list.h>
+#include <common/trace.h>
 
 
 void
@@ -89,7 +89,7 @@ list_projects(string_ty *project_name, long change_number, string_list_ty *args)
     for (j = 0; j < name.nstrings; ++j)
     {
 	project_ty *pp = project_alloc(name.string[j]);
-	project_bind_existing(pp);
+	pp->bind_existing();
 
 	int err = project_is_readable(pp);
 

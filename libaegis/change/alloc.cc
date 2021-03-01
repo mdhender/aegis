@@ -1,6 +1,6 @@
 //
 //	aegis - project change supervisor
-//	Copyright (C) 1999, 2000, 2002-2004 Peter Miller;
+//	Copyright (C) 1999, 2000, 2002-2005 Peter Miller;
 //	All rights reserved.
 //
 //	This program is free software; you can redistribute it and/or modify
@@ -20,11 +20,11 @@
 // MANIFEST: functions to manipulate allocs
 //
 
-#include <change.h>
-#include <error.h> // for assert
-#include <mem.h>
-#include <project.h>
-#include <trace.h>
+#include <libaegis/change.h>
+#include <common/error.h> // for assert
+#include <common/mem.h>
+#include <libaegis/project.h>
+#include <common/trace.h>
 
 
 change_ty *
@@ -46,6 +46,7 @@ change_alloc(project_ty *pp, long number)
     cp->cstate_is_a_new_file = 0;
     cp->fstate_data = 0;
     cp->fstate_stp = 0;
+    cp->fstate_uuid_stp = 0;
     cp->fstate_filename = 0;
     cp->pfstate_filename = 0;
     cp->fstate_is_a_new_file = 0;

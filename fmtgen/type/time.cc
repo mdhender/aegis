@@ -1,6 +1,6 @@
 //
 //	aegis - project change supervisor
-//	Copyright (C) 1993, 1994, 1998, 1999, 2002-2004 Peter Miller;
+//	Copyright (C) 1993, 1994, 1998, 1999, 2002-2005 Peter Miller;
 //	All rights reserved.
 //
 //	This program is free software; you can redistribute it and/or modify
@@ -20,11 +20,9 @@
 // MANIFEST: functions to manipulate time type
 //
 
-#pragma implementation "type_time_ty"
-
-#include <indent.h>
-#include <mem.h>
-#include <type/time.h>
+#include <fmtgen/indent.h>
+#include <common/mem.h>
+#include <fmtgen/type/time.h>
 
 
 type_time_ty::~type_time_ty()

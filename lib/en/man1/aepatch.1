@@ -1,6 +1,6 @@
 '\" t
 .\"	aegis - project change supervisor
-.\"	Copyright (C) 2001-2004 Peter Miller;
+.\"	Copyright (C) 2001-2004, 2006 Peter Miller;
 .\"	All rights reserved.
 .\"
 .\"	This program is free software; you can redistribute it and/or modify
@@ -72,17 +72,21 @@ the way.
 .PP
 The output of the \fIaepatch -send\fP command is a normal Unix patch,
 as you would produce using
-\fIdiff\fP(1), \fIgzip\fP(1) and a MIME encoder such as \fImpack\fP(1).
+\fIdiff\fP(1), \fIbzip2\fP(1) and a MIME encoder such as \fImpack\fP(1).
 There are no special formats.  The output can be uncompressed with the
-normal \fIgunzip\fP(1) command and applied with the normal \fIpatch\fP(1)
+normal \fIbunzip2\fP(1) command and applied with the normal \fIpatch\fP(1)
 command.
+.PP
+The compression algorithm is selectable via the \fB\-compression-algorithm\fP
+option, see the OPTIONS section, below, for details.
+The \fB\-compatibility\fP option also understands compression needs.
 .SS Generating Traditional Patches
 If you wish to send "traditional" patches to developers who are not using
 Aegis to manage the sources at their end, you can use the following
 options:
 .RS
 .ft CW
-aepatch -send -cte=none -nocomp
+aepatch -send -cte=none -comp-alg=none
 .ft R
 .RE
 This says to use no Content Transfer Encoding, and no compression.
@@ -114,19 +118,8 @@ source files; it produces less than ideal results for binary files.
 .SS Options
 The following options are understood by the send variant:
 .so o_change.so
-.TP 8n
-\fB\-COmpress
-This option may be used to specify that the output is to be compressed.
-This is the default.
-.TP 8n
-\fB\-No_COmpress
-This option may be used to specify that the output is not to be compressed.
-.TP 8n
-\fB\-COMPATibility\fP \fIversion-number\fP
-This option may be used to specify the version of \fIaepatch\fP(1) which
-will be \fIreceiving\fP this change set.  This information is used to
-select which features to include in the data, and which to omit.
-By default, the latest feature set will be used.
+.so o_compatibil.so
+.so o_compress.so
 .so o_cte.so
 .so o_delta.so
 .so o_output.so

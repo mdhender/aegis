@@ -20,7 +20,7 @@
 // MANIFEST: implementation of the nstring_list::split method
 //
 
-#include <nstring/list.h>
+#include <common/nstring/list.h>
 
 
 void

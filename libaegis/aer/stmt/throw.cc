@@ -1,6 +1,6 @@
 //
 //	aegis - project change supervisor
-//	Copyright (C) 1996, 1999, 2003, 2004 Peter Miller;
+//	Copyright (C) 1996, 1999, 2003-2005 Peter Miller;
 //	All rights reserved.
 //
 //	This program is free software; you can redistribute it and/or modify
@@ -20,12 +20,12 @@
 // MANIFEST: functions to manipulate throw statements
 //
 
-#include <aer/stmt/throw.h>
-#include <aer/value/error.h>
-#include <aer/value/string.h>
-#include <str.h>
-#include <sub.h>
-#include <trace.h>
+#include <libaegis/aer/stmt/throw.h>
+#include <libaegis/aer/value/error.h>
+#include <libaegis/aer/value/string.h>
+#include <common/str.h>
+#include <libaegis/sub.h>
+#include <common/trace.h>
 
 
 struct rpt_stmt_throw_ty

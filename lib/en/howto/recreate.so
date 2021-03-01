@@ -1,6 +1,6 @@
 .\"
 .\"	aegis - project change supervisor
-.\"	Copyright (C) 2003 Peter Miller;
+.\"	Copyright (C) 2003, 2005 Peter Miller;
 .\"	All rights reserved.
 .\"
 .\"	This program is free software; you can redistribute it and/or modify
@@ -69,12 +69,12 @@ vs. American numeric formats, use month names instead).
 You can find delta numbers in a number of ways:
 .LP
 \(bu
-The ``\fIael change-details\fP'' command will list change details.
+The \[lq]\fIael change-details\fP\[rq] command will list change details.
 If changes are completed, their delta number will appear at the top of
 the listing.
 .LP
 \(bu
-The ``\fIael project-history\fP'' command lists all integration for a
+The \[lq]\fIael project-history\fP\[rq] command lists all integration for a
 project, including their change numbers and delta numbers.
 .LP
 \(bu
@@ -132,7 +132,7 @@ The next step is to merge the files.
 Because you are working with historical versions of the files,
 Aegis will think they are out-of-date and want you to merge them.
 Do this is the usual way (using the \fIaem\fP(1) command).
-Remember that Aegis will stash a backup copy with a ``,B'' suffix
+Remember that Aegis will stash a backup copy with a \[lq],B\[rq] suffix
 before merging.
 .LP
 You may find the following command

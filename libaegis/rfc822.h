@@ -1,6 +1,6 @@
 //
 //	aegis - project change supervisor
-//	Copyright (C) 2005 Peter Miller;
+//	Copyright (C) 2005, 2006 Peter Miller;
 //	All rights reserved.
 //
 //	This program is free software; you can redistribute it and/or modify
@@ -23,11 +23,9 @@
 #ifndef LIBAEGIS_RFC822_H
 #define LIBAEGIS_RFC822_H
 
-#pragma interface "rfc822"
+#include <common/symtab/template.h>
 
-#include <symtab/template.h>
-
-class input_ty; // forward
+class input; // forward
 class output_ty; // forward
 
 /**
@@ -183,7 +181,7 @@ public:
       * @param src
       *     The input to read the data from.
       */
-    void load(input_ty &src);
+    void load(input &src, bool maybe_not = false);
 
     /**
       * The load_from_file method is used to load the database contents

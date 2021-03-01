@@ -1,6 +1,6 @@
 //
 //	aegis - project change supervisor
-//	Copyright (C) 2004 Peter Miller;
+//	Copyright (C) 2004, 2005 Peter Miller;
 //	All rights reserved.
 //
 //	This program is free software; you can redistribute it and/or modify
@@ -23,9 +23,7 @@
 #ifndef LIBAEGIS_QUIT_ACTION_LOG_H
 #define LIBAEGIS_QUIT_ACTION_LOG_H
 
-#pragma interface "quit_action_log"
-
-#include <quit/action.h>
+#include <common/quit/action.h>
 
 /**
   * The quit_action_log class is used to represent the action to be

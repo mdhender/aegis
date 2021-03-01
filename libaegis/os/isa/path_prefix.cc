@@ -1,6 +1,6 @@
 //
 //	aegis - project change supervisor
-//	Copyright (C) 1999, 2001, 2003, 2004 Peter Miller;
+//	Copyright (C) 1999, 2001, 2003-2005 Peter Miller;
 //	All rights reserved.
 //
 //	This program is free software; you can redistribute it and/or modify
@@ -20,10 +20,10 @@
 // MANIFEST: functions to manipulate path_prefixs
 //
 
-#include <ac/string.h>
+#include <common/ac/string.h>
 
-#include <os/isa/path_prefix.h>
-#include <str.h>
+#include <libaegis/os/isa/path_prefix.h>
+#include <common/str.h>
 
 
 int

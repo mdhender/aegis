@@ -1,6 +1,6 @@
 //
 //	aegis - project change supervisor
-//	Copyright (C) 2001-2004 Peter Miller;
+//	Copyright (C) 2001-2005 Peter Miller;
 //	All rights reserved.
 //
 //	This program is free software; you can redistribute it and/or modify
@@ -20,11 +20,11 @@
 // MANIFEST: functions to manipulate pconfs
 //
 
-#include <aer/value/pconf.h>
-#include <change.h>
-#include <error.h> // for assert
-#include <pconf.h>
-#include <trace.h>
+#include <common/error.h> // for assert
+#include <common/trace.h>
+#include <libaegis/aer/value/pconf.h>
+#include <libaegis/change.h>
+#include <libaegis/pconf.h>
 
 
 struct rpt_value_pconf_ty

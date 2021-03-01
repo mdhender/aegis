@@ -20,11 +20,9 @@
 // MANIFEST: implementation of the quit_action_undo class
 //
 
-#pragma implementation "quit_action_undo"
-
-#include <os.h>
-#include <quit/action/undo.h>
-#include <undo.h>
+#include <libaegis/os.h>
+#include <libaegis/quit/action/undo.h>
+#include <libaegis/undo.h>
 
 
 quit_action_undo::~quit_action_undo()

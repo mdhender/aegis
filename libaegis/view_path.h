@@ -1,6 +1,6 @@
 //
 //	aegis - project change supervisor
-//	Copyright (C) 2003, 2004 Peter Miller;
+//	Copyright (C) 2003-2005 Peter Miller;
 //	All rights reserved.
 //
 //	This program is free software; you can redistribute it and/or modify
@@ -23,7 +23,7 @@
 #ifndef LIBAEGIS_VIEW_PATH_H
 #define LIBAEGIS_VIEW_PATH_H
 
-#include <main.h>
+#include <common/main.h>
 
 /**
   * If you add to this enum, make sure you extend project_ty::file_list

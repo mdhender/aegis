@@ -1,6 +1,7 @@
 //
 //	aegis - project change supervisor
 //	Copyright (C) 2004 Walter Franzini;
+//	Copyright (C) 2006 Peter Miller;
 //	All rights reserved.
 //
 //	This program is free software; you can redistribute it and/or modify
@@ -20,19 +21,18 @@
 // MANIFEST: functions to manipulate mains
 //
 
-#include <ac/stdlib.h>
-#include <ac/stdio.h>
+#include <common/ac/stdlib.h>
+#include <common/ac/stdio.h>
 
-#include <arglex.h>
-#include <error.h> // for assert
-#include <os.h>
-#include <output.h>
-#include <output/file.h>
-#include <input.h>
-#include <input/file.h>
-#include <progname.h>
-#include <r250.h>
-#include <uuidentifier.h>
+#include <common/arglex.h>
+#include <common/error.h> // for assert
+#include <libaegis/os.h>
+#include <libaegis/output.h>
+#include <libaegis/output/file.h>
+#include <libaegis/input.h>
+#include <libaegis/input/file.h>
+#include <common/progname.h>
+#include <common/uuidentifier.h>
 
 enum
 {
@@ -84,14 +84,11 @@ static int
 check_uuid(string_ty *ifn, string_ty *ofn)
 {
     os_become_orig();
-    input_ty *ifp = input_file_open(ifn);
-    if (!ifp)
-	fatal_raw("unable to open %s", ifn->str_text);
+    input ifp = input_file_open(ifn);
     nstring uuid;
     if (!ifp->one_line(uuid))
 	fatal_raw("Unable to read uuid from %s", ifn);
-    delete ifp;
-    ifp = 0;
+    ifp.close();
     os_become_undo();
     return universal_unique_identifier_valid(uuid);
 }
@@ -106,7 +103,6 @@ main(int argc, char **argv)
     int		    (*func)(string_ty *, string_ty *);
 
     arglex_init(argc, argv, argtab);
-    r250_init();
     arglex();
     os_become_init_mortal();
     ifn = NULL;

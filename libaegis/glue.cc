@@ -1,6 +1,6 @@
 //
 //	aegis - project change supervisor
-//	Copyright (C) 1993-1995, 1997-1999, 2001-2004 Peter Miller;
+//	Copyright (C) 1993-1995, 1997-1999, 2001-2006 Peter Miller;
 //	All rights reserved.
 //
 //	This program is free software; you can redistribute it and/or modify
@@ -36,15 +36,15 @@
 // which is broken.  These systems will also need to use this glue.
 //
 
-#include <ac/stdio.h>
-#include <ac/stdlib.h>
-#include <ac/string.h>
-#include <ac/errno.h>
-#include <ac/signal.h>
+#include <common/ac/stdio.h>
+#include <common/ac/stdlib.h>
+#include <common/ac/string.h>
+#include <common/ac/errno.h>
+#include <common/ac/signal.h>
 
-#include <ac/sys/types.h>
-#include <ac/fcntl.h>
-#include <ac/unistd.h>
+#include <common/ac/sys/types.h>
+#include <common/ac/fcntl.h>
+#include <common/ac/unistd.h>
 #include <utime.h>
 #include <sys/stat.h>
 
@@ -54,14 +54,14 @@
 //
 #define aegis_glue_disable
 
-#include <error.h>
-#include <glue.h>
-#include <lock.h> // for lock_release_child
-#include <mem.h>
-#include <os.h>
-#include <sub.h>
-#include <trace.h>
-#include <undo.h>
+#include <common/error.h>
+#include <libaegis/glue.h>
+#include <libaegis/lock.h> // for lock_release_child
+#include <common/mem.h>
+#include <libaegis/os.h>
+#include <libaegis/sub.h>
+#include <common/trace.h>
+#include <libaegis/undo.h>
 
 #define GUARD1 0x416E6479
 #define GUARD2 0x4C777279
@@ -81,6 +81,7 @@ enum
 	command_getcwd,
 	command_link,
 	command_lstat,
+	command_lutime,
 	command_mkdir,
 	command_open,
 	command_pathconf,
@@ -145,6 +146,7 @@ command_name(int n)
 	case command_getcwd:	return "getcwd";
 	case command_link:	return "link";
 	case command_lstat:	return "lstat";
+	case command_lutime:	return "lutime";
 	case command_mkdir:	return "mkdir";
 	case command_open:	return "open";
 	case command_pathconf:	return "pathconf";
@@ -556,6 +558,19 @@ proxy(int rd_fd, int wr_fd)
 				put_int(reply, 0);
 				put_binary(reply, &st, sizeof(st));
 			}
+			break;
+
+		case command_lutime:
+			path = (char *)get_string(command);
+			get_binary(command, &utb, sizeof(utb));
+#ifdef HAVE_LUTIME
+			result = utime(path, &utb);
+			if (result)
+				result = errno;
+#else
+			result = EINVAL;
+#endif
+			put_int(reply, result);
 			break;
 
 		case command_mkdir:
@@ -1296,7 +1311,7 @@ glue_getcwd(char *buf, int max)
 	else
 	{
 		s = (char *)get_string(pp->reply);
-		strlcpy(buf, s, max);
+		strendcpy(buf, s, buf + max);
 		s = buf;
 		trace(("return \"%s\";\n", s));
 	}
@@ -1355,6 +1370,35 @@ glue_utime(char *path, struct utimbuf *values)
 	trace(("return %d; /* errno = %d */\n", result, errno));
 	trace(("}\n"));
 	return result;
+}
+
+
+int
+glue_lutime(char *path, struct utimbuf *values)
+{
+#ifdef HAVE_UTIME
+	proxy_ty	*pp;
+	int		result;
+
+	trace(("glue_utime()\n{\n"));
+	pp = proxy_find();
+	fputc(command_lutime, pp->command);
+	put_string(pp->command, path);
+	put_binary(pp->command, values, sizeof(*values));
+	end_of_command(pp);
+	result = get_int(pp->reply);
+	if (result)
+	{
+		errno = result;
+		result = -1;
+	}
+	trace(("return %d; /* errno = %d */\n", result, errno));
+	trace(("}\n"));
+	return result;
+#else
+	errno = EINVAL;
+	return -1;
+#endif
 }
 
 

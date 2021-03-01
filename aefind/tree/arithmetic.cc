@@ -20,19 +20,19 @@
 // MANIFEST: functions to manipulate arithmetics
 //
 
-#include <ac/math.h>
+#include <common/ac/math.h>
 
-#include <aer/value/error.h>
-#include <aer/value/integer.h>
-#include <aer/value/real.h>
-#include <aer/value/string.h>
-#include <error.h> // for assert
-#include <str.h>
-#include <sub.h>
-#include <trace.h>
-#include <tree/arithmetic.h>
-#include <tree/diadic.h>
-#include <tree/monadic.h>
+#include <libaegis/aer/value/error.h>
+#include <libaegis/aer/value/integer.h>
+#include <libaegis/aer/value/real.h>
+#include <libaegis/aer/value/string.h>
+#include <common/error.h> // for assert
+#include <common/str.h>
+#include <libaegis/sub.h>
+#include <common/trace.h>
+#include <aefind/tree/arithmetic.h>
+#include <aefind/tree/diadic.h>
+#include <aefind/tree/monadic.h>
 
 
 #define PAIR(a, b)	((a) * rpt_value_type_MAX + (b))

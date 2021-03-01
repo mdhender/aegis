@@ -1,6 +1,6 @@
 .\"
 .\"	aegis - project change supervisor
-.\"	Copyright (C) 2001, 2003 Peter Miller;
+.\"	Copyright (C) 2001, 2003, 2005 Peter Miller;
 .\"	All rights reserved.
 .\"
 .\"	This program is free software; you can redistribute it and/or modify
@@ -37,7 +37,7 @@ for use within scripts.
 .if n *
 .if t \(bu
 .\" change 27
-The \fI--file\fP option has now been generalized to accept ``-'' to mean
+The \fI--file\fP option has now been generalized to accept \[lq]-\[rq] to mean
 the standard input.  This is useful in scripts.
 .PP
 .if n *
@@ -50,14 +50,15 @@ Named after the \fIxbuffy\fP(1) command.
 .if n *
 .if t \(bu
 .\" change 23
-The \fItkaer\fP(1) command now presents you with a ``detail'' button,
+The \fItkaer\fP(1) command now presents you with a \[lq]detail\[rq] button,
 so that you may see the change details when pwerforming a review.
 .PP
 .if n *
 .if t \(bu
 .\" change 21
 The restriction that placed the function name at the start of the command
-line (\fIe.g.\fP the ``\-cp'' of \fIaecp\fP) has been relaxed.  This may now
+line (\fIe.g.\fP the \[lq]\-cp\[rq] of \fIaecp\fP) has been relaxed.
+This may now
 appear anywhere on the command line.
 .PP
 .if n *

@@ -1,6 +1,6 @@
 //
 //	aegis - project change supervisor
-//	Copyright (C) 1996, 1999, 2002-2004 Peter Miller;
+//	Copyright (C) 1996, 1999, 2002-2005 Peter Miller;
 //	All rights reserved.
 //
 //	This program is free software; you can redistribute it and/or modify
@@ -20,14 +20,14 @@
 // MANIFEST: functions to manipulate try/catch statements
 //
 
-#include <aer/stmt/try.h>
-#include <aer/value/error.h>
-#include <aer/value/ref.h>
-#include <aer/value/string.h>
-#include <error.h>
-#include <str.h>
-#include <sub.h>
-#include <trace.h>
+#include <libaegis/aer/stmt/try.h>
+#include <libaegis/aer/value/error.h>
+#include <libaegis/aer/value/ref.h>
+#include <libaegis/aer/value/string.h>
+#include <common/error.h>
+#include <common/str.h>
+#include <libaegis/sub.h>
+#include <common/trace.h>
 
 
 struct rpt_stmt_try_ty

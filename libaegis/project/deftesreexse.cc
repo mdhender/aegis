@@ -1,6 +1,6 @@
 //
 //	aegis - project change supervisor
-//	Copyright (C) 2005 Peter Miller;
+//	Copyright (C) 2005, 2006 Peter Miller;
 //	All rights reserved.
 //
 //	This program is free software; you can redistribute it and/or modify
@@ -20,13 +20,13 @@
 // MANIFEST: implementation of the project_deftesreexse class
 //
 
-#include <change/branch.h>
-#include <project.h>
+#include <libaegis/change/branch.h>
+#include <libaegis/project.h>
 
 
 void
 project_default_test_regression_exemption_set(project_ty *pp, bool n)
 {
-    change_ty *cp = project_change_get(pp);
+    change_ty *cp = pp->change_get();
     change_branch_default_test_regression_exemption_set(cp, n);
 }

@@ -1,6 +1,6 @@
 /*
  *	aegis - project change supervisor
- *	Copyright (C) 2004 Peter Miller;
+ *	Copyright (C) 2004, 2005 Peter Miller;
  *	All rights reserved.
  *
  *	This program is free software; you can redistribute it and/or modify
@@ -20,7 +20,7 @@
  * MANIFEST: definition for the aefattr(5) file format
  */
 
-#include <common.def>
+#include <libaegis/common.def>
 
 /*
  * The attribute field describes a list of user-specified file attributes.

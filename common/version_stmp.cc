@@ -1,6 +1,6 @@
 //
 //	aegis - project change supervisor
-//	Copyright (C) 1994, 2003, 2004 Peter Miller.
+//	Copyright (C) 1994, 2003-2005 Peter Miller.
 //	All rights reserved.
 //
 //	This program is free software; you can redistribute it and/or modify
@@ -20,8 +20,8 @@
 // MANIFEST: functions to query the version stamp
 //
 
-#include <version_stmp.h>
-#include <patchlevel.h>
+#include <common/version_stmp.h>
+#include <common/patchlevel.h>
 
 
 const char *

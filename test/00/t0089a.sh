@@ -1,7 +1,7 @@
 #!/bin/sh
 #
 #	aegis - project change supervisor
-#	Copyright (C) 1999, 2000, 2002, 2004, 2005 Peter Miller;
+#	Copyright (C) 1999, 2000, 2002, 2004-2006 Peter Miller;
 #	Copyright (C) 2005 Walter Franzini;
 #	All rights reserved.
 #
@@ -38,6 +38,22 @@ here=`pwd`
 if test $? -ne 0 ; then exit 2; fi
 
 if test "$1" != "" ; then bin="$here/$1/bin"; else bin="$here/bin"; fi
+
+if test "$EXEC_SEARCH_PATH" != ""
+then
+    tpath=
+    hold="$IFS"
+    IFS=":$IFS"
+    for tpath2 in $EXEC_SEARCH_PATH
+    do
+	tpath=${tpath}${tpath2}/${1-.}/bin:
+    done
+    IFS="$hold"
+    PATH=${tpath}${PATH}
+else
+    PATH=${bin}:${PATH}
+fi
+export PATH
 
 check_it()
 {
@@ -100,11 +116,11 @@ AEGIS_THROTTLE=2
 export AEGIS_THROTTLE
 
 worklib=$work/lib
-workproj=$work/foo.proj
-workchan=$work/foo.chan
+workproj=$work/proj.dir
+workchan=$work/chan.dir
 tmp=$work/tmp
 AEGIS_PATH=$worklib ; export AEGIS_PATH
-AEGIS_PROJECT=foo ; export AEGIS_PROJECT
+AEGIS_PROJECT=abcdefg ; export AEGIS_PROJECT
 
 #
 # make the directories
@@ -129,7 +145,7 @@ unset LANGUAGE
 # make a new project
 #
 activity="new project 131"
-$bin/aegis -npr foo -vers "" -dir $workproj > log 2>&1
+$bin/aegis -npr $AEGIS_PROJECT -vers "" -dir $workproj > log 2>&1
 if test $? -ne 0 ; then cat log; no_result; fi
 
 #
@@ -158,13 +174,13 @@ if test $? -ne 0 ; then cat log; no_result; fi
 $bin/aegis -ni $USER > log 2>&1
 if test $? -ne 0 ; then cat log; no_result; fi
 
-$bin/aegis -nbr -p foo 4 > log 2>&1
+$bin/aegis -nbr -p $AEGIS_PROJECT 4 > log 2>&1
 if test $? -ne 0 ; then cat log; no_result; fi
 
-$bin/aegis -nbr -p foo.4 2 > log 2>&1
+$bin/aegis -nbr -p ${AEGIS_PROJECT}.4 2 > log 2>&1
 if test $? -ne 0 ; then cat log; no_result; fi
 
-AEGIS_PROJECT=foo.4.2 ; export AEGIS_PROJECT
+AEGIS_PROJECT=${AEGIS_PROJECT}.4.2 ; export AEGIS_PROJECT
 
 #
 # create a new change
@@ -175,7 +191,7 @@ brief_description = "The first change";
 cause = internal_bug;
 end
 if test $? -ne 0 ; then no_result; fi
-$bin/aegis -nc 1 -f $tmp -p foo.4.2 > log 2>&1
+$bin/aegis -nc 1 -f $tmp -p ${AEGIS_PROJECT} > log 2>&1
 if test $? -ne 0 ; then cat log; no_result; fi
 
 #
@@ -200,14 +216,14 @@ cat > $workchan/aegis.conf << 'end'
 build_command = "exit 0";
 link_integration_directory = true;
 create_symlinks_before_build = true;
-history_get_command =
-	"co -u'$e' -p $h,v > $o";
-history_create_command =
-	"ci -f -u -m/dev/null -t/dev/null $i $h,v; rcs -U $h,v";
-history_put_command =
-	"ci -f -u -m/dev/null -t/dev/null $i $h,v; rcs -U $h,v";
-history_query_command =
-	"rlog -r $h,v | awk '/^head:/ {print $$2}'";
+
+history_get_command = "aesvt -check-out -edit ${quote $edit} "
+    "-history ${quote $history} -f ${quote $output}";
+history_put_command = "aesvt -check-in -history ${quote $history} "
+    "-f ${quote $input}";
+history_query_command = "aesvt -query -history ${quote $history}";
+history_content_limitation = binary_capable;
+
 diff_command = "set +e; diff $orig $i > $out; test $$? -le 1";
 diff3_command = "(diff3 -e $mr $orig $i | sed -e '/^w$$/d' -e '/^q$$/d'; \
 	echo '1,$$p' ) | ed - $mr > $out";
@@ -253,20 +269,20 @@ cat > $work/header.ok <<EOF
 MIME-Version: 1.0
 Content-Type: application/aegis-change-set
 Content-Transfer-Encoding: base64
-Subject: foo.4.2 - The first change
-Content-Name: foo.4.2.C001.ae
-Content-Disposition: attachment; filename=foo.4.2.C001.ae
+Subject: ${AEGIS_PROJECT} - The first change
+Content-Name: ${AEGIS_PROJECT}.C001.ae
+Content-Disposition: attachment; filename=${AEGIS_PROJECT}.C001.ae
 EOF
 if test $? -ne 0; then no_result; fi
 
 head -6 $work/test.out > $work/header.test
 if test $? -ne 0; then no_result; fi
 
-diff $work/header.ok $work/header.test
+diff -b $work/header.ok $work/header.test
 if test $? -ne 0; then fail; fi
 
 #
-# Chech the archive structure
+# Check the archive structure
 #
 activity="check the archive structure 271"
 cat > $work/test.ok <<EOF
@@ -292,7 +308,7 @@ cat > $work/test.ok <<EOF
 $AEGIS_PROJECT
 EOF
 if test $? -ne 0; then no_result; fi
-diff test.ok test.d/etc/project-name
+diff -b test.ok test.d/etc/project-name
 if test $? -ne 0; then fail; fi
 
 activity="etc/change-number 298"
@@ -300,7 +316,7 @@ cat > $work/test.ok <<'EOF'
 1
 EOF
 if test $? -ne 0; then no_result; fi
-diff $work/test.ok $work/test.d/etc/change-number
+diff -b $work/test.ok $work/test.d/etc/change-number
 if test $? -ne 0; then fail; fi
 
 activity="etc/change-set 306"
@@ -327,7 +343,7 @@ src =
 ];
 EOF
 if test $? -ne 0; then fail; fi
-diff $work/test.ok $work/test.d/etc/change-set
+diff -b $work/test.ok $work/test.d/etc/change-set
 if test $? -ne 0; then fail; fi
 
 #
@@ -335,10 +351,58 @@ if test $? -ne 0; then fail; fi
 #
 activity="check the archive contents 336"
 
-diff $work/test.d/src/aegis.conf $workchan/aegis.conf > log 2>&1
+diff -b $work/test.d/src/aegis.conf $workchan/aegis.conf > log 2>&1
 if test $? -ne 0; then cat log; fail; fi
-diff $work/test.d/src/main.c $workchan/main.c > log 2>&1
+diff -b $work/test.d/src/main.c $workchan/main.c > log 2>&1
 if test $? -ne 0; then cat log; fail; fi
+
+############################################################################
+#
+# Test some things again, this time using the real cpio command
+# but only if the real cpio command is available.
+#
+cpio -o < /dev/null > /dev/null 2>&1
+if test $? -eq 0
+then
+    activity="aedist -send 235"
+    $bin/aedist -send -o test.out.gz -nmh -ndh -cte=none \
+	-comp-alg=gzip > log 2>&1
+    if test $? -ne 0 ; then cat log; fail; fi
+
+    gunzip < test.out.gz > test.out
+    if test $? -ne 0; then cat log; no_result; fi
+
+    #
+    # Check the aedist archive
+    #
+    activity="extract the archive 242"
+    mkdir $work/test.d2 > log 2>&1
+    if test $? -ne 0; then cat log; no_result; fi
+    ( cd test.d2 ; cpio -i -d < ../test.out ) > log 2>&1
+    if test $? -ne 0; then cat log; no_result; fi
+
+    grep 'junk' log
+    test $? -ne 0 || fail
+
+    #
+    # Check the archive structure
+    #
+    activity="check the archive structure 271"
+    cat > $work/test.ok <<EOF
+$work/test.d2/etc/change-number
+$work/test.d2/etc/change-set
+$work/test.d2/etc/project-name
+$work/test.d2/src/aegis.conf
+$work/test.d2/src/main.c
+EOF
+    if test $? -ne 0; then no_result; fi
+
+    find $work/test.d2 -type f -print | sort > $work/out.list
+    if test $? -ne 0; then no_result; fi
+
+    diff $work/test.ok $work/out.list
+    if test $? -ne 0; then fail; fi
+fi
 
 #
 # the things tested in this test, worked

@@ -1,6 +1,6 @@
 //
 //	aegis - project change supervisor
-//	Copyright (C) 1998, 2000, 2002-2004 Peter Miller;
+//	Copyright (C) 1998, 2000, 2002-2005 Peter Miller;
 //	All rights reserved.
 //
 //	This program is free software; you can redistribute it and/or modify
@@ -20,10 +20,10 @@
 // MANIFEST: functions to manipulate rectangles
 //
 
-#include <ac/string.h>
+#include <common/ac/string.h>
 
-#include <rect.h>
-#include <gif.h>
+#include <aeget/rect.h>
+#include <libaegis/gif.h>
 
 
 static	int	color[3]	= { -1, -1, -1 };

@@ -20,17 +20,17 @@
 // MANIFEST: functions to manipulate to_wides
 //
 
-#include <ac/stdlib.h>
-#include <ac/string.h>
-#include <ac/wchar.h>
+#include <common/ac/stdlib.h>
+#include <common/ac/string.h>
+#include <common/ac/wchar.h>
 
-#include <error.h> // for assert
-#include <language.h>
-#include <output.h>
-#include <output/to_wide.h>
-#include <str.h>
-#include <trace.h>
-#include <wide_output.h>
+#include <common/error.h> // for assert
+#include <common/language.h>
+#include <libaegis/output.h>
+#include <libaegis/output/to_wide.h>
+#include <common/str.h>
+#include <common/trace.h>
+#include <libaegis/wide_output.h>
 
 
 static mbstate_t initial_state;

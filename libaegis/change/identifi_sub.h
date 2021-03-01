@@ -1,6 +1,6 @@
 //
 //	aegis - project change supervisor
-//	Copyright (C) 2004, 2005 Peter Miller;
+//	Copyright (C) 2004-2006 Peter Miller;
 //	All rights reserved.
 //
 //	This program is free software; you can redistribute it and/or modify
@@ -23,10 +23,8 @@
 #ifndef LIBAEGIS_CHANGE_IDENTIFI_SUB_H
 #define LIBAEGIS_CHANGE_IDENTIFI_SUB_H
 
-#pragma interface "change_identifier_subset"
-
-#include <file_revision.h>
-#include <project/identifi_sub/branch.h>
+#include <libaegis/file_revision.h>
+#include <libaegis/project/identifi_sub/branch.h>
 
 class change_functor; // forward
 struct change_ty; // forward
@@ -216,6 +214,14 @@ public:
       *     be refactored to hide it again.
       */
     project_file_roll_forward *get_historian();
+
+    /**
+      * The invalidate_meta_data method is used to discard cached
+      * information about the change.  This is usually necessary when a
+      * sub-command is run and that subcommand would update the change
+      * meta-data.
+      */
+    void invalidate_meta_data();
 
 private:
     /**

@@ -1,6 +1,6 @@
 //
 //	aegis - project change supervisor
-//	Copyright (C) 2004 Peter Miller;
+//	Copyright (C) 2004, 2005 Peter Miller;
 //	All rights reserved.
 //
 //	This program is free software; you can redistribute it and/or modify
@@ -23,9 +23,7 @@
 #ifndef AEMAKEFILE_PRINTER_WRAP_H
 #define AEMAKEFILE_PRINTER_WRAP_H
 
-#pragma interface "printer_wrap"
-
-#include <printer.h>
+#include <aemakefile/printer.h>
 
 /**
   * The printer_wrap class is used to represent a line wrapping output

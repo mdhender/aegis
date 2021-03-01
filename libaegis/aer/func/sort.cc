@@ -1,6 +1,6 @@
 //
 //	aegis - project change supervisor
-//	Copyright (C) 1994-1996, 1999, 2003, 2004 Peter Miller;
+//	Copyright (C) 1994-1996, 1999, 2003-2005 Peter Miller;
 //	All rights reserved.
 //
 //	This program is free software; you can redistribute it and/or modify
@@ -20,18 +20,18 @@
 // MANIFEST: functions to implement the builtin sort function
 //
 
-#include <ac/stdlib.h>
-#include <ac/string.h>
+#include <common/ac/stdlib.h>
+#include <common/ac/string.h>
 
-#include <aer/expr.h>
-#include <aer/func/sort.h>
-#include <aer/value/error.h>
-#include <aer/value/integer.h>
-#include <aer/value/list.h>
-#include <aer/value/real.h>
-#include <aer/value/string.h>
-#include <mem.h>
-#include <sub.h>
+#include <libaegis/aer/expr.h>
+#include <libaegis/aer/func/sort.h>
+#include <libaegis/aer/value/error.h>
+#include <libaegis/aer/value/integer.h>
+#include <libaegis/aer/value/list.h>
+#include <libaegis/aer/value/real.h>
+#include <libaegis/aer/value/string.h>
+#include <common/mem.h>
+#include <libaegis/sub.h>
 
 
 #define PAIR(a, b) ((a) * rpt_value_type_MAX + (b))

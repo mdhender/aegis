@@ -1,6 +1,6 @@
 .\"
 .\"	aegis - project change supervisor
-.\"	Copyright (C) 1999, 2002 Peter Miller;
+.\"	Copyright (C) 1999, 2002, 2005 Peter Miller;
 .\"	All rights reserved.
 .\"
 .\"	This program is free software; you can redistribute it and/or modify
@@ -30,7 +30,7 @@ Change sets can be sent automatically when a change passes integration.
 You do this by setting the \fIintegrate_\%pass_\%notify_\%command\fP
 field of the project attributes.
 .LP
-In this example, the ``example'' project sends all integrations to all
+In this example, the \[lq]example\[rq] project sends all integrations to all
 the addresses on the \f(CWexample-developers\fP mailing list.  (The
 mailing list is maintained outside of Aegis, \fIe.g.\fP by Majordomo.)
 The relevant attribute (edited by using the \fIaepa\fP(1) command)

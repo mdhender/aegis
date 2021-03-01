@@ -1,6 +1,6 @@
 //
 //	aegis - project change supervisor
-//	Copyright (C) 2002-2005 Peter Miller;
+//	Copyright (C) 2002-2006 Peter Miller;
 //	All rights reserved.
 //
 //	This program is free software; you can redistribute it and/or modify
@@ -20,19 +20,20 @@
 // MANIFEST: functions to manipulate lists
 //
 
-#include <ac/stdio.h>
-#include <ac/stdlib.h>
+#include <common/ac/stdio.h>
+#include <common/ac/stdlib.h>
 
-#include <arglex3.h>
-#include <help.h>
-#include <input/file.h>
-#include <input/gunzip.h>
-#include <input/tar.h>
-#include <list.h>
-#include <os.h>
-#include <output/file.h>
-#include <progname.h>
-#include <str.h>
+#include <aetar/arglex3.h>
+#include <libaegis/help.h>
+#include <libaegis/input/bunzip2.h>
+#include <libaegis/input/file.h>
+#include <libaegis/input/gunzip.h>
+#include <aetar/input/tar.h>
+#include <aeannotate/list.h>
+#include <libaegis/os.h>
+#include <libaegis/output/file.h>
+#include <common/progname.h>
+#include <common/str.h>
 
 
 static void
@@ -51,7 +52,6 @@ void
 list(void)
 {
     string_ty	    *ifn;
-    input_ty	    *ifp;
     string_ty	    *ofn;
     output_ty	    *ofp;
 
@@ -111,12 +111,13 @@ list(void)
     // read the input
     //
     os_become_orig();
-    ifp = input_file_open(ifn);
+    input ifp = input_file_open(ifn);
 
     //
     // It may be compressed.
     //
     ifp = input_gunzip_open(ifp);
+    ifp = input_bunzip2_open(ifp);
 
     //
     // Now treat it as a tar archive.
@@ -130,17 +131,16 @@ list(void)
     for (;;)
     {
 	nstring archive_name;
-	input_ty *ip = itp->child(archive_name);
-	if (!ip)
+	input ip = itp->child(archive_name);
+	if (!ip.is_open())
 	    break;
 	ofp->fputs(archive_name);
 	ofp->fputc('\n');
 #ifdef DEBUG
 	ofp->flush();
 #endif
-	delete ip;
     }
     delete ofp;
-    delete ifp;
+    ifp.close();
     os_become_undo();
 }

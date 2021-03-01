@@ -1,6 +1,6 @@
 //
 //	aegis - project change supervisor
-//	Copyright (C) 2002-2004 Peter Miller;
+//	Copyright (C) 2002-2005 Peter Miller;
 //	All rights reserved.
 //
 //	This program is free software; you can redistribute it and/or modify
@@ -20,13 +20,13 @@
 // MANIFEST: functions to manipulate lists
 //
 
-#include <ael/project/files.h>
-#include <arglex2.h>
-#include <arglex/project.h>
-#include <help.h>
-#include <list.h>
-#include <str.h>
-#include <usage.h>
+#include <libaegis/ael/project/files.h>
+#include <libaegis/arglex2.h>
+#include <libaegis/arglex/project.h>
+#include <libaegis/help.h>
+#include <aeannotate/list.h>
+#include <common/str.h>
+#include <aeannotate/usage.h>
 
 
 void

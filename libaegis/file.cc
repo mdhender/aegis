@@ -1,6 +1,6 @@
 //
 //	aegis - project change supervisor
-//	Copyright (C) 1991-1995, 1998, 1999, 2001-2005 Peter Miller;
+//	Copyright (C) 1991-1995, 1998, 1999, 2001-2006 Peter Miller;
 //	All rights reserved.
 //
 //	This program is free software; you can redistribute it and/or modify
@@ -20,20 +20,20 @@
 // MANIFEST: functions for pushing files around
 //
 
-#include <ac/stdio.h>
-#include <ac/ctype.h>
-#include <ac/errno.h>
+#include <common/ac/stdio.h>
+#include <common/ac/ctype.h>
+#include <common/ac/errno.h>
 
-#include <error.h>
-#include <file.h>
-#include <fopen_nfs.h>
-#include <glue.h>
-#include <input/file_text.h>
-#include <mem.h>
-#include <nstring/accumulator.h>
-#include <os.h>
-#include <sub.h>
-#include <trace.h>
+#include <common/error.h>
+#include <libaegis/file.h>
+#include <libaegis/fopen_nfs.h>
+#include <libaegis/glue.h>
+#include <libaegis/input/file_text.h>
+#include <common/mem.h>
+#include <common/nstring/accumulator.h>
+#include <libaegis/os.h>
+#include <libaegis/sub.h>
+#include <common/trace.h>
 
 
 //
@@ -110,6 +110,12 @@ copy_whole_file(string_ty *from, string_ty *to, int cmt)
     trace(("}\n"));
 }
 
+void
+copy_whole_file(const nstring &from, const nstring &to, bool cmt)
+{
+    copy_whole_file(from.get_ref(), to.get_ref(), cmt);
+}
+
 
 string_ty *
 read_whole_file(string_ty *fn)
@@ -124,57 +130,41 @@ read_whole_file(const nstring &fn)
 {
     nstring_accumulator acc;
     os_become_must_be_active();
-    input_ty *fp = input_file_text_open(fn.get_ref());
+    input fp = input_file_text_open(fn.get_ref());
     for (;;)
     {
-	int c = fp->getc();
+	int c = fp->getch();
 	if (c == EOF)
 	    break;
 	acc.push_back(c);
     }
     while (acc.size() > 0 && isspace((unsigned char)acc.back()))
 	acc.pop_back();
-    delete fp;
     return acc.mkstr();
 }
 
 
-//
-// NAME
-//	files_are_different
-//
-// SYNOPSIS
-//	int files_are_different(string_ty *, string_ty *);
-//
-// DESCRIPTION
-//	The files_are_different function is used to compare the
-//	contents of two files.	The files to compare are given by the
-//	two arguments.	It is assumed that os_become is active.
-//
-// RETURNS
-//	int;	zero if the files are the same
-//		non-zero if the file are different
-//
+bool
+files_are_different(const nstring &s1, const nstring &s2)
+{
+    os_become_must_be_active();
+    int result = glue_file_compare(s1.c_str(), s2.c_str());
+    if (result < 0)
+    {
+	int errno_old = errno;
+	sub_context_ty sc;
+	sc.errno_setx(errno_old);
+	sc.var_set_string("File_Name1", s1);
+	sc.var_set_string("File_Name2", s2);
+	sc.fatal_intl(i18n("cmp $filename1 $filename2: $errno"));
+	// NOTREACHED
+    }
+    return (result != 0);
+}
+
 
 int
 files_are_different(string_ty *s1, string_ty *s2)
 {
-    int		    result;
-
-    os_become_must_be_active();
-    result = glue_file_compare(s1->str_text, s2->str_text);
-    if (result < 0)
-    {
-	sub_context_ty	*scp;
-	int             errno_old;
-
-	errno_old = errno;
-	scp = sub_context_new();
-	sub_errno_setx(scp, errno_old);
-	sub_var_set_string(scp, "File_Name1", s1);
-	sub_var_set_string(scp, "File_Name2", s2);
-	fatal_intl(scp, i18n("cmp $filename1 $filename2: $errno"));
-	// NOTREACHED
-    }
-    return result;
+    return files_are_different(nstring(s1), nstring(s2));
 }

@@ -1,6 +1,6 @@
 //
 //	aegis - project change supervisor
-//	Copyright (C) 2002, 2004 Peter Miller;
+//	Copyright (C) 2002, 2004, 2005 Peter Miller;
 //	All rights reserved.
 //
 //	This program is free software; you can redistribute it and/or modify
@@ -20,14 +20,14 @@
 // MANIFEST: functions to manipulate capitalizes
 //
 
-#include <aer/expr.h>
-#include <aer/func/capitalize.h>
-#include <aer/value/error.h>
-#include <aer/value/integer.h>
-#include <aer/value/string.h>
-#include <error.h>
-#include <mem.h>
-#include <sub.h>
+#include <libaegis/aer/expr.h>
+#include <libaegis/aer/func/capitalize.h>
+#include <libaegis/aer/value/error.h>
+#include <libaegis/aer/value/integer.h>
+#include <libaegis/aer/value/string.h>
+#include <common/error.h>
+#include <common/mem.h>
+#include <libaegis/sub.h>
 
 
 static int

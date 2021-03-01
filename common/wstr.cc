@@ -1,6 +1,6 @@
 //
 //	aegis - project change supervisor
-//	Copyright (C) 1995, 1996, 1998, 1999, 2002-2004 Peter Miller;
+//	Copyright (C) 1995, 1996, 1998, 1999, 2002-2005 Peter Miller;
 //	All rights reserved.
 //
 //	This program is free software; you can redistribute it and/or modify
@@ -28,19 +28,19 @@
 // a pointer test, and thus very fast.
 //
 
-#include <ac/stddef.h>
-#include <ac/stdio.h>
-#include <ac/stdlib.h>
-#include <ac/string.h>
-#include <ac/stdarg.h>
-#include <ac/wchar.h>
-#include <ac/wctype.h>
+#include <common/ac/stddef.h>
+#include <common/ac/stdio.h>
+#include <common/ac/stdlib.h>
+#include <common/ac/string.h>
+#include <common/ac/stdarg.h>
+#include <common/ac/wchar.h>
+#include <common/ac/wctype.h>
 
-#include <error.h>
-#include <language.h>
-#include <mem.h>
-#include <str.h>
-#include <wstr.h>
+#include <common/error.h>
+#include <common/language.h>
+#include <common/mem.h>
+#include <common/str.h>
+#include <common/wstr.h>
 
 
 static wstring_ty **hash_table;
@@ -374,7 +374,7 @@ wstr_n_from_c(const char *s, size_t length)
     language_C();
 
     //
-    // build the result from the image in ``buf''
+    // build the result from the image in "buf"
     //
     return wstr_n_from_wc(buf, op - buf);
 }

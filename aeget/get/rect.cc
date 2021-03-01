@@ -1,6 +1,6 @@
 //
 //	aegis - project change supervisor
-//	Copyright (C) 2003, 2004 Peter Miller;
+//	Copyright (C) 2003-2005 Peter Miller;
 //	All rights reserved.
 //
 //	This program is free software; you can redistribute it and/or modify
@@ -20,13 +20,13 @@
 // MANIFEST: functions to manipulate rects
 //
 
-#include <ac/stdlib.h>
-#include <ac/string.h>
+#include <common/ac/stdlib.h>
+#include <common/ac/string.h>
 
-#include <error.h> // for assert
-#include <get/rect.h>
-#include <rect.h>
-#include <str_list.h>
+#include <common/error.h> // for assert
+#include <common/str_list.h>
+#include <aeget/get/rect.h>
+#include <aeget/rect.h>
 
 
 static long

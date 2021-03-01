@@ -1,6 +1,6 @@
 //
 //	aegis - project change supervisor
-//	Copyright (C) 1999, 2003, 2004 Peter Miller;
+//	Copyright (C) 1999, 2003-2005 Peter Miller;
 //	All rights reserved.
 //
 //	This program is free software; you can redistribute it and/or modify
@@ -20,11 +20,11 @@
 // MANIFEST: functions to manipulate data_directos
 //
 
-#include <libdir.h>
-#include <sub.h>
-#include <sub/data_directo.h>
-#include <trace.h>
-#include <wstr/list.h>
+#include <common/libdir.h>
+#include <libaegis/sub.h>
+#include <libaegis/sub/data_directo.h>
+#include <common/trace.h>
+#include <common/wstr/list.h>
 
 
 //

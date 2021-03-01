@@ -1,6 +1,6 @@
 //
 //	aegis - project change supervisor
-//	Copyright (C) 1991-1994, 2001-2004 Peter Miller;
+//	Copyright (C) 1991-1994, 2001-2005 Peter Miller;
 //	All rights reserved.
 //
 //	This program is free software; you can redistribute it and/or modify
@@ -23,10 +23,10 @@
 #ifndef LIBAEGIS_META_TYPE_H
 #define LIBAEGIS_META_TYPE_H
 
-#include <ac/stddef.h>
+#include <common/ac/stddef.h>
 
-#include <main.h>
-#include <str.h>
+#include <common/main.h>
+#include <common/str.h>
 
 struct type_table_ty
 {

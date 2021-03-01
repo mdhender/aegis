@@ -1,6 +1,6 @@
 //
 //	aegis - project change supervisor
-//	Copyright (C) 2004, 2005 Peter Miller;
+//	Copyright (C) 2004-2006 Peter Miller;
 //	All rights reserved.
 //
 //	This program is free software; you can redistribute it and/or modify
@@ -20,13 +20,13 @@
 // MANIFEST: implementation of the change_history_tran_beg_com class
 //
 
-#include <change.h>
-#include <change/env_set.h>
-#include <error.h> // for assert
-#include <os.h>
-#include <project.h>
-#include <sub.h>
-#include <trace.h>
+#include <libaegis/change.h>
+#include <libaegis/change/env_set.h>
+#include <common/error.h> // for assert
+#include <libaegis/os.h>
+#include <libaegis/project.h>
+#include <libaegis/sub.h>
+#include <common/trace.h>
 
 
 void
@@ -40,7 +40,7 @@ change_run_history_transaction_begin_command(change_ty *cp)
     if (the_command && the_command->str_length)
     {
 	the_command = substitute(0, cp, the_command);
-	string_ty *dir = project_history_path_get(cp->pp);
+	string_ty *dir = cp->pp->history_path_get();
 	change_env_set(cp, 0);
 	project_become(cp->pp);
 	os_execute(the_command, OS_EXEC_FLAG_NO_INPUT, dir);

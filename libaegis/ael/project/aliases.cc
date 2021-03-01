@@ -1,6 +1,6 @@
 //
 //	aegis - project change supervisor
-//	Copyright (C) 1999, 2001, 2003-2005 Peter Miller;
+//	Copyright (C) 1999, 2001, 2003-2006 Peter Miller;
 //	All rights reserved.
 //
 //	This program is free software; you can redistribute it and/or modify
@@ -20,16 +20,16 @@
 // MANIFEST: functions to manipulate aliasess
 //
 
-#include <ael/change/inappropriat.h>
-#include <ael/column_width.h>
-#include <ael/project/aliases.h>
-#include <col.h>
-#include <error.h> // for assert
-#include <gonzo.h>
-#include <option.h>
-#include <output.h>
-#include <str_list.h>
-#include <trace.h>
+#include <libaegis/ael/change/inappropriat.h>
+#include <libaegis/ael/column_width.h>
+#include <libaegis/ael/project/aliases.h>
+#include <libaegis/col.h>
+#include <common/error.h> // for assert
+#include <libaegis/gonzo.h>
+#include <libaegis/option.h>
+#include <libaegis/output.h>
+#include <common/str_list.h>
+#include <common/trace.h>
 
 
 void
@@ -39,7 +39,6 @@ list_project_aliases(string_ty *project_name, long change_number,
     string_list_ty  name;
     output_ty       *name_col = 0;
     output_ty       *desc_col = 0;
-    size_t          j;
     col_ty          *colp;
     int             nprinted = 0;
 
@@ -54,24 +53,40 @@ list_project_aliases(string_ty *project_name, long change_number,
     name.sort();
 
     //
+    // Find the longest name, and round it up so that the column is
+    // always one less than a multiple of eight (it makes for nice numbers
+    // of tabs).
+    //
+    size_t longest = PROJECT_WIDTH;
+    for (size_t k = 0; k < name.nstrings; ++k)
+    {
+	size_t x = name.string[k]->str_length;
+	if (longest < x)
+	    longest = x;
+    }
+    longest |= 7;
+
+    //
     // create the columns
     //
     colp = col_open((string_ty *)0);
     col_title(colp, "List of Project Aliases", (char *)0);
 
-    name_col = col_create(colp, 0, PROJECT_WIDTH, "Alias\n---------");
+    int left = 0;
+    name_col = col_create(colp, 0, longest, "Alias\n---------");
+    left += longest + 1;
 
     if (!option_terse_get())
     {
 	desc_col =
-	    col_create ( colp, PROJECT_WIDTH + 1, 0, "Project\n-----------");
+	    col_create(colp, left, 0, "Project\n-----------");
     }
 
     //
     // list each alias
     //
     nprinted = 0;
-    for (j = 0; j < name.nstrings; ++j)
+    for (size_t j = 0; j < name.nstrings; ++j)
     {
 	if (project_name)
 	{

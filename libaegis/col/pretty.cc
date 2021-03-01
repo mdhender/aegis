@@ -20,19 +20,19 @@
 // MANIFEST: functions to manipulate prettys
 //
 
-#include <col/pretty.h>
-#include <col/private.h>
-#include <error.h> // for assert
-#include <mem.h>
-#include <option.h>
-#include <output/to_wide.h>
-#include <trace.h>
-#include <wide_output/column.h>
-#include <wide_output/expand.h>
-#include <wide_output/head.h>
-#include <wide_output/header.h>
-#include <wide_output/unexpand.h>
-#include <wide_output/wrap.h>
+#include <libaegis/col/pretty.h>
+#include <libaegis/col/private.h>
+#include <common/error.h> // for assert
+#include <common/mem.h>
+#include <libaegis/option.h>
+#include <libaegis/output/to_wide.h>
+#include <common/trace.h>
+#include <libaegis/wide_output/column.h>
+#include <libaegis/wide_output/expand.h>
+#include <libaegis/wide_output/head.h>
+#include <libaegis/wide_output/header.h>
+#include <libaegis/wide_output/unexpand.h>
+#include <libaegis/wide_output/wrap.h>
 
 
 struct column_ty

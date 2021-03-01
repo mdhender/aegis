@@ -13,7 +13,7 @@
  * Please note that the [# edit #] feature needs to be avoided, or the
  * -Fored_Update (-fu) flag needs to be used in addition to the
  * -Conditional_Update (-cu) flag, otherwise updates will complain that
- * ``Input file "XXX" contains edit A instead of B for module "YYY"''
+ * "Input file XXX contains edit A instead of B for module YYY"
  *
  * The history_create_command and the history_put_command are
  * intentionally identical.  This minimizes problems when using

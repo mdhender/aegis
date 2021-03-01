@@ -1,0 +1,13 @@
+/*
+ *	aegis - project change supervisor
+ *	This file is in the Public Domain, 2005, Peter Miller.
+ *
+ * MANIFEST: example of no diff required in the project config file
+ */
+
+
+/*
+ * If the diff_command is set to the exact string "exit 0", then no
+ * difference files will be generated, checked or validated.
+ */
+diff_command = "exit 0";

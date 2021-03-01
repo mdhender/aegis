@@ -1,6 +1,6 @@
 //
 //	aegis - project change supervisor
-//	Copyright (C) 2001-2005 Peter Miller;
+//	Copyright (C) 2001-2006 Peter Miller;
 //	All rights reserved.
 //
 //	This program is free software; you can redistribute it and/or modify
@@ -20,20 +20,20 @@
 // MANIFEST: functions to manipulate new_branchs
 //
 
-#include <ac/ctype.h>
+#include <common/ac/ctype.h>
 
-#include <change.h>
-#include <change/branch.h>
-#include <cstate.h>
-#include <error.h> // for assert
-#include <os.h>
-#include <pconf.h>
-#include <project.h>
-#include <project/history.h>
-#include <sub.h>
-#include <trace.h>
-#include <undo.h>
-#include <user.h>
+#include <common/error.h> // for assert
+#include <common/trace.h>
+#include <libaegis/change/branch.h>
+#include <libaegis/change.h>
+#include <libaegis/cstate.h>
+#include <libaegis/os.h>
+#include <libaegis/pconf.h>
+#include <libaegis/project.h>
+#include <libaegis/project/history.h>
+#include <libaegis/sub.h>
+#include <libaegis/undo.h>
+#include <libaegis/user.h>
 
 
 static string_ty *
@@ -45,8 +45,7 @@ branch_description_invent(project_ty *pp)
     string_ty	    *result;
 
     s2 = project_version_short_get(pp);
-    while (pp->parent)
-	pp = pp->parent;
+    pp = pp->trunk_get();
     s1 = project_description_get(pp);
     if (s1->str_length == 0)
     {
@@ -89,8 +88,9 @@ project_new_branch(project_ty *ppp, user_ty *up, long change_number,
     // On entry it is assumed that you have
     // a project state lock, to create the branches
     //
-    trace(("project_new_branch(ppp = %8.8lX, change_number = %ld)\n{\n",
-	(long)ppp, change_number));
+    trace(("project_new_branch(ppp = %8.8lX, change_number = %ld, "
+           "topdir = %ld, reason = %ld)\n{\n", (long)ppp, change_number,
+           (long)topdir, (long)reason));
 
     //
     // create the new branch.
@@ -99,7 +99,7 @@ project_new_branch(project_ty *ppp, user_ty *up, long change_number,
     cp = change_alloc(ppp, change_number);
     change_bind_new(cp);
     change_branch_new(cp);
-    pp = project_bind_branch(ppp, cp);
+    pp = ppp->bind_branch(cp);
 
     //
     // The copyright years are not copied from the parent, because
@@ -107,8 +107,8 @@ project_new_branch(project_ty *ppp, user_ty *up, long change_number,
     // represent the copyright years for the changes made by the
     // branch.
     //
-    // However, when copyright years are calculated for ``ael
-    // version'' the branch's copyright years (actually, all
+    // However, when copyright years are calculated for "ael
+    // version" the branch's copyright years (actually, all
     // ancestors') are included.
     //
 
@@ -288,6 +288,11 @@ project_new_branch(project_ty *ppp, user_ty *up, long change_number,
     (
 	cp,
 	project_default_development_directory_get(ppp)
+    );
+    change_branch_compress_database_set
+    (
+	cp,
+	project_compress_database_get(ppp)
     );
     change_branch_protect_development_directory_set
     (

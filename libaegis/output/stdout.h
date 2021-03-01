@@ -1,6 +1,6 @@
 //
 //	aegis - project change supervisor
-//	Copyright (C) 1999, 2002, 2004, 2005 Peter Miller;
+//	Copyright (C) 1999, 2002, 2004-2006 Peter Miller;
 //	All rights reserved.
 //
 //	This program is free software; you can redistribute it and/or modify
@@ -23,7 +23,7 @@
 #ifndef LIBAEGIS_OUTPUT_STDOUT_H
 #define LIBAEGIS_OUTPUT_STDOUT_H
 
-#include <output.h>
+#include <libaegis/output.h>
 
 /**
   * The output_stdout class is used to repersent the state of an
@@ -66,10 +66,16 @@ public:
 
 private:
     /**
-      * The bol instance variable is used toi remember whether or not we
+      * The bol instance variable is used to remember whether or not we
       * are at the beginning of a line.
       */
     bool bol;
+
+    /**
+      * The pos instance variable is used to remember our relative
+      * position in the standard output stream.
+      */
+    long pos;
 
     /**
       * The copy constructor.  Do not use.

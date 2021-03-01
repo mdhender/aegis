@@ -1,6 +1,6 @@
 //
 //	aegis - project change supervisor
-//	Copyright (C) 1997, 1998, 2002-2004 Peter Miller;
+//	Copyright (C) 1997, 1998, 2002-2005 Peter Miller;
 //	All rights reserved.
 //
 //	This program is free software; you can redistribute it and/or modify
@@ -20,13 +20,13 @@
 // MANIFEST: functions to manipulate abbreviates
 //
 
-#include <ac/ctype.h>
-#include <ac/string.h>
+#include <common/ac/ctype.h>
+#include <common/ac/string.h>
 
-#include <abbreviate.h>
-#include <error.h>	// for assert
-#include <mem.h>
-#include <str_list.h>
+#include <common/abbreviate.h>
+#include <common/error.h>	// for assert
+#include <common/mem.h>
+#include <common/str_list.h>
 
 
 static string_ty *

@@ -1,6 +1,6 @@
 //
 //	aegis - project change supervisor
-//	Copyright (C) 2004 Peter Miller;
+//	Copyright (C) 2004-2006 Peter Miller;
 //	All rights reserved.
 //
 //	This program is free software; you can redistribute it and/or modify
@@ -20,10 +20,10 @@
 // MANIFEST: functions to manipulate filename_gets
 //
 
-#include <project.h>
-#include <os.h>
-#include <project/history/uuid_trans.h>
-#include <trace.h>
+#include <libaegis/project.h>
+#include <libaegis/os.h>
+#include <libaegis/project/history/uuid_trans.h>
+#include <common/trace.h>
 
 
 string_ty *
@@ -35,7 +35,7 @@ project_history_filename_get(project_ty *pp, fstate_src_ty *src)
 
     trace(("project_history_filename_get(pp = %8.8lX, src=%8.8lX)\n\{\n",
 	(long)pp, (long)src));
-    path = project_history_path_get(pp);
+    path = pp->history_path_get();
     trace(("path = \"%s\"\n", path->str_text));
     rel = project_history_uuid_translate(src);
     trace(("rel = \"%s\"\n", rel->str_text));

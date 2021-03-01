@@ -1,7 +1,7 @@
 #!/bin/sh
 #
 #	aegis - project change supervisor
-#	Copyright (C) 2005 Peter Miller;
+#	Copyright (C) 2005, 2006 Peter Miller;
 #	All rights reserved.
 #
 #	This program is free software; you can redistribute it and/or modify
@@ -140,7 +140,7 @@ $bin/aesvt -check-in -history test,svt -f test.in2
 test $? -eq 0 || fail
 
 # this tests the case where there is an existing history file
-$bin/aesvt -check-in -history test,svt -f test.in3
+$bin/aesvt -check-in --compression-algorithm=gzip -history test,svt -f test.in3
 test $? -eq 0 || fail
 
 gunzip < test,svt > test.out.messy

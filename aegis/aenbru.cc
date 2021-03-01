@@ -1,6 +1,6 @@
 //
 //	aegis - project change supervisor
-//	Copyright (C) 1995, 1999, 2001-2004 Peter Miller;
+//	Copyright (C) 1995, 1999, 2001-2006 Peter Miller;
 //	All rights reserved.
 //
 //	This program is free software; you can redistribute it and/or modify
@@ -20,38 +20,38 @@
 // MANIFEST: functions to perform new branch undo
 //
 
-#include <ac/stdio.h>
-#include <ac/stdlib.h>
-#include <ac/string.h>
-#include <ac/time.h>
-#include <ac/sys/types.h>
+#include <common/ac/stdio.h>
+#include <common/ac/stdlib.h>
+#include <common/ac/string.h>
+#include <common/ac/time.h>
+#include <common/ac/sys/types.h>
 #include <sys/stat.h>
 
-#include <ael/change/by_state.h>
-#include <aenbru.h>
-#include <arglex2.h>
-#include <arglex/change.h>
-#include <arglex/project.h>
-#include <change.h>
-#include <change/branch.h>
-#include <change/file.h>
-#include <col.h>
-#include <commit.h>
-#include <dir.h>
-#include <error.h>
-#include <gonzo.h>
-#include <help.h>
-#include <lock.h>
-#include <os.h>
-#include <progname.h>
-#include <project.h>
-#include <project/active.h>
-#include <project/history.h>
-#include <quit.h>
-#include <sub.h>
-#include <trace.h>
-#include <undo.h>
-#include <user.h>
+#include <libaegis/ael/change/by_state.h>
+#include <aegis/aenbru.h>
+#include <libaegis/arglex2.h>
+#include <libaegis/arglex/change.h>
+#include <libaegis/arglex/project.h>
+#include <libaegis/change.h>
+#include <libaegis/change/branch.h>
+#include <libaegis/change/file.h>
+#include <libaegis/col.h>
+#include <libaegis/commit.h>
+#include <libaegis/dir.h>
+#include <common/error.h>
+#include <libaegis/gonzo.h>
+#include <libaegis/help.h>
+#include <libaegis/lock.h>
+#include <libaegis/os.h>
+#include <common/progname.h>
+#include <libaegis/project.h>
+#include <libaegis/project/active.h>
+#include <libaegis/project/history.h>
+#include <common/quit.h>
+#include <libaegis/sub.h>
+#include <common/trace.h>
+#include <libaegis/undo.h>
+#include <libaegis/user.h>
 
 
 static void
@@ -124,8 +124,8 @@ branch_changes_path_get(change_ty *cp)
     string_ty	    *result;
 
     assert(change_is_a_branch(cp));
-    pp = project_bind_branch(cp->pp, change_copy(cp));
-    result = str_copy(project_changes_path_get(pp));
+    pp = cp->pp->bind_branch(change_copy(cp));
+    result = str_copy(pp->changes_path_get());
     project_free(pp);
     return result;
 }
@@ -197,7 +197,7 @@ new_branch_undo_main(void)
 	project_name = user_default_project();
     pp = project_alloc(project_name);
     str_free(project_name);
-    project_bind_existing(pp);
+    pp->bind_existing();
 
     //
     // locate user data
@@ -232,7 +232,7 @@ new_branch_undo_main(void)
     // user table.  Block until can get both simultaneously.
     //
     gonzo_gstate_lock_prepare_new();
-    project_pstate_lock_prepare(pp);
+    pp->pstate_lock_prepare();
     change_cstate_lock_prepare(cp);
     user_ustate_lock_prepare(up);
     lock_take();
@@ -297,7 +297,7 @@ new_branch_undo_main(void)
     // Update user table row.
     // Release advisory write locks.
     //
-    project_pstate_write(pp);
+    pp->pstate_write();
     gonzo_gstate_write();
     commit();
     lock_release();

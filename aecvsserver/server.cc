@@ -1,6 +1,6 @@
 //
 //	aegis - project change supervisor
-//	Copyright (C) 2004, 2005 Peter Miller;
+//	Copyright (C) 2004-2006 Peter Miller;
 //	All rights reserved.
 //
 //	This program is free software; you can redistribute it and/or modify
@@ -20,15 +20,16 @@
 // MANIFEST: functions to manipulate servers
 //
 
-#include <error.h> // for assert
-#include <file_info.h>
-#include <mem.h>
-#include <os.h>
-#include <response/error.h>
-#include <response/e.h>
-#include <response/m.h>
-#include <response/ok.h>
-#include <server/private.h>
+#include <common/error.h> // for assert
+#include <common/mem.h>
+#include <libaegis/os.h>
+
+#include <aecvsserver/file_info.h>
+#include <aecvsserver/response/error.h>
+#include <aecvsserver/response/e.h>
+#include <aecvsserver/response/m.h>
+#include <aecvsserver/response/ok.h>
+#include <aecvsserver/server/private.h>
 
 
 void
@@ -55,7 +56,7 @@ server_delete(server_ty *sp)
 
 
 void
-server_response_queue(server_ty *sp, response_ty *rp)
+server_response_queue(server_ty *sp, response *rp)
 {
     sp->np->response_queue(rp);
 }
@@ -79,46 +80,49 @@ void
 server_ok(server_ty *sp)
 {
     assert(sp);
-    server_response_queue(sp, response_ok_new());
+    server_response_queue(sp, new response_ok());
 }
 
 
 void
 server_error(server_ty *sp, const char *fmt, ...)
 {
-    va_list         ap;
-
     assert(sp);
     assert(fmt);
+    va_list ap;
     va_start(ap, fmt);
-    server_response_queue(sp, response_error_new_v(fmt, ap));
+    string_ty *msg = str_vformat(fmt, ap);
     va_end(ap);
+
+    server_response_queue(sp, new response_error(msg));
 }
 
 
 void
 server_e(server_ty *sp, const char *fmt, ...)
 {
-    va_list         ap;
-
     assert(sp);
     assert(fmt);
+    va_list ap;
     va_start(ap, fmt);
-    server_response_queue(sp, response_e_new_v(fmt, ap));
+    string_ty *msg = str_vformat(fmt, ap);
     va_end(ap);
+
+    server_response_queue(sp, new response_e(msg));
 }
 
 
 void
 server_m(server_ty *sp, const char *fmt, ...)
 {
-    va_list         ap;
-
     assert(sp);
     assert(fmt);
+    va_list ap;
     va_start(ap, fmt);
-    server_response_queue(sp, response_m_new_v(fmt, ap));
+    string_ty *msg = str_vformat(fmt, ap);
     va_end(ap);
+
+    server_response_queue(sp, new response_m(msg));
 }
 
 

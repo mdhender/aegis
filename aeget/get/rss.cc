@@ -1,6 +1,7 @@
 //
 //      aegis - project change supervisor
 //      Copyright (C) 2005 Matthew Lee;
+//      Copyright (C) 2006 Peter Miller;
 //      All rights reserved.
 //
 //      This program is free software; you can redistribute it and/or modify
@@ -20,20 +21,23 @@
 // MANIFEST: implementation of the get_rss class
 //
 
-#include <ac/stdio.h>
-#include <ac/string.h>
-#include <emit/project.h>
-#include <get/rss.h>
-#include <gif.h>
-#include <http.h>
-#include <input/file.h>
-#include <libdir.h>
-#include <nstring.h>
-#include <os.h>
-#include <output/file.h>
-#include <project.h>
-#include <rss.h>
-#include <str_list.h>
+#include <common/ac/stdio.h>
+#include <common/ac/string.h>
+
+#include <common/error.h> // for assert
+#include <common/libdir.h>
+#include <common/nstring.h>
+#include <common/str_list.h>
+#include <libaegis/gif.h>
+#include <libaegis/input/file.h>
+#include <libaegis/os.h>
+#include <libaegis/output/file.h>
+#include <libaegis/project.h>
+#include <libaegis/rss.h>
+
+#include <aeget/emit/project.h>
+#include <aeget/get/rss.h>
+#include <aeget/http.h>
 
 
 static void
@@ -80,8 +84,9 @@ get_rss(project_ty *pp, string_ty *, string_list_ty *modifier)
         {
             // Read in the file.  Replace the script name placeholders with
             // real script names and write to stdout.
-            input_ty *ip = input_file_open(path.get_ref());
-            if (ip != 0)
+            input ip = input_file_open(path.get_ref());
+	    assert(ip.is_open());
+            if (ip.is_open())
             {
                 printf("Content-Type: application/rss+xml\n\n");
 

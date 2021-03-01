@@ -54,6 +54,22 @@ if test $? -ne 0 ; then exit 2; fi
 
 bin=$here/${1-.}/bin
 
+if test "$EXEC_SEARCH_PATH" != ""
+then
+    tpath=
+    hold="$IFS"
+    IFS=":$IFS"
+    for tpath2 in $EXEC_SEARCH_PATH
+    do
+	tpath=${tpath}${tpath2}/${1-.}/bin:
+    done
+    IFS="$hold"
+    PATH=${tpath}${PATH}
+else
+    PATH=${bin}:${PATH}
+fi
+export PATH
+
 pass()
 {
 	set +x
@@ -153,14 +169,14 @@ $bin/aegis -nf $changedir/aegis.conf $changedir/fred -v > log 2>&1
 if test $? -ne 0 ; then cat log; no_result; fi
 cat > $changedir/aegis.conf << 'fubar'
 build_command = "exit 0";
-history_get_command =
-	"co -u'$e' -p $h,v > $o";
-history_create_command =
-	"ci -f -u -m/dev/null -t/dev/null $i $h,v; rcs -U $h,v";
-history_put_command =
-	"ci -f -u -m/dev/null -t/dev/null $i $h,v; rcs -U $h,v";
-history_query_command =
-	"rlog -r $h,v | awk '/^head:/ {print $$2}'";
+
+history_get_command = "aesvt -check-out -edit ${quote $edit} "
+    "-history ${quote $history} -f ${quote $output}";
+history_put_command = "aesvt -check-in -history ${quote $history} "
+    "-f ${quote $input}";
+history_query_command = "aesvt -query -history ${quote $history}";
+history_content_limitation = binary_capable;
+
 diff_command = "set +e; diff $orig $i > $out; test $$? -le 1";
 diff3_command = "(diff3 -e $mr $orig $i | sed -e '/^w$$/d' -e '/^q$$/d'; \
 	echo '1,$$p' ) | ed - $mr > $out";

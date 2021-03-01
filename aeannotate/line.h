@@ -1,6 +1,6 @@
 //
 //	aegis - project change supervisor
-//	Copyright (C) 2002, 2004 Peter Miller;
+//	Copyright (C) 2002, 2004, 2005 Peter Miller;
 //	All rights reserved.
 //
 //	This program is free software; you can redistribute it and/or modify
@@ -23,7 +23,7 @@
 #ifndef AEANNOTATE_LINE_H
 #define AEANNOTATE_LINE_H
 
-#include <str.h>
+#include <common/str.h>
 
 struct line_t
 {

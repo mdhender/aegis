@@ -1,6 +1,6 @@
 //
 //	aegis - project change supervisor
-//	Copyright (C) 1991-1999, 2001-2004 Peter Miller;
+//	Copyright (C) 1991-1999, 2001-2006 Peter Miller;
 //	All rights reserved.
 //
 //	This program is free software; you can redistribute it and/or modify
@@ -20,31 +20,32 @@
 // MANIFEST: functions to list and modify project attributes
 //
 
-#include <ac/stdio.h>
-#include <ac/stdlib.h>
+#include <common/ac/stdio.h>
+#include <common/ac/stdlib.h>
 
-#include <aepa.h>
-#include <arglex2.h>
-#include <arglex/project.h>
-#include <commit.h>
-#include <error.h>
-#include <help.h>
-#include <io.h>
-#include <lock.h>
-#include <os.h>
-#include <progname.h>
-#include <pattr.h>
-#include <project.h>
-#include <project/pattr/edit.h>
-#include <project/pattr/get.h>
-#include <project/pattr/set.h>
-#include <project/history.h>
-#include <quit.h>
-#include <str_list.h>
-#include <sub.h>
-#include <trace.h>
-#include <undo.h>
-#include <user.h>
+#include <common/error.h>
+#include <common/progname.h>
+#include <common/quit.h>
+#include <common/str_list.h>
+#include <common/trace.h>
+#include <libaegis/arglex2.h>
+#include <libaegis/arglex/project.h>
+#include <libaegis/commit.h>
+#include <libaegis/help.h>
+#include <libaegis/io.h>
+#include <libaegis/lock.h>
+#include <libaegis/os.h>
+#include <libaegis/pattr.h>
+#include <libaegis/project.h>
+#include <libaegis/project/history.h>
+#include <libaegis/project/pattr/edit.h>
+#include <libaegis/project/pattr/get.h>
+#include <libaegis/project/pattr/set.h>
+#include <libaegis/sub.h>
+#include <libaegis/undo.h>
+#include <libaegis/user.h>
+
+#include <aegis/aepa.h>
 
 
 static void
@@ -119,7 +120,7 @@ project_attributes_list(void)
 	project_name = user_default_project();
     pp = project_alloc(project_name);
     str_free(project_name);
-    project_bind_existing(pp);
+    pp->bind_existing();
 
     pattr_data = (pattr_ty *)pattr_type.alloc();
     project_pattr_get(pp, pattr_data);
@@ -154,7 +155,7 @@ change_existing_project_attributes(project_ty *pp, pattr_ty *pattr_data)
     //
     // take project lock
     //
-    project_pstate_lock_prepare(pp);
+    pp->pstate_lock_prepare();
     lock_take();
 
     //
@@ -168,7 +169,7 @@ change_existing_project_attributes(project_ty *pp, pattr_ty *pattr_data)
     //
     project_pattr_set(pp, pattr_data);
 
-    project_pstate_write(pp);
+    pp->pstate_write();
     commit();
     lock_release();
     project_verbose(pp, 0, i18n("project attributes complete"));
@@ -325,7 +326,7 @@ project_attributes_main(void)
 	project_name = user_default_project();
     pp = project_alloc(project_name);
     str_free(project_name);
-    project_bind_existing(pp);
+    pp->bind_existing();
 
     //
     // edit the attributes
@@ -360,13 +361,13 @@ project_attributes_main(void)
     if (recursive)
     {
 	string_list_ty pl;
-	project_list_inner(&pl, pp);
+	pp->list_inner(pl);
 	for (size_t j = 0; j < pl.nstrings; ++j)
 	{
 	    project_ty      *branch;
 
 	    branch = project_alloc(pl.string[j]);
-	    project_bind_existing(branch);
+	    branch->bind_existing();
 	    change_existing_project_attributes(branch, pattr_data);
 	    project_free(branch);
 	}

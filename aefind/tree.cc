@@ -20,16 +20,16 @@
 // MANIFEST: functions to manipulate trees
 //
 
-#include <ac/string.h>
-#include <ac/sys/types.h>
+#include <common/ac/string.h>
+#include <common/ac/sys/types.h>
 #include <sys/stat.h>
 
-#include <aer/value.h>
-#include <error.h> // for assert
-#include <mem.h>
-#include <str.h>
-#include <tree/constant.h>
-#include <tree/private.h>
+#include <libaegis/aer/value.h>
+#include <common/error.h> // for assert
+#include <common/mem.h>
+#include <common/str.h>
+#include <aefind/tree/constant.h>
+#include <aefind/tree/private.h>
 
 
 tree_ty *

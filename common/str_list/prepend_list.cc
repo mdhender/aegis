@@ -20,9 +20,9 @@
 // MANIFEST: functions to manipulate prepend_lists
 //
 
-#include <ac/string.h>
+#include <common/ac/string.h>
 
-#include <str_list.h>
+#include <common/str_list.h>
 
 
 void

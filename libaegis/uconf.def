@@ -1,6 +1,6 @@
 /*
  *	aegis - project change supervisor
- *	Copyright (C) 1991-1996, 1998, 1999, 2002 Peter Miller;
+ *	Copyright (C) 1991-1996, 1998, 1999, 2002, 2005 Peter Miller;
  *	All rights reserved.
  *
  *	This program is free software; you can redistribute it and/or modify
@@ -27,7 +27,7 @@
  *	man5/aeuconf.5
  */
 
-#include <common.def>
+#include <libaegis/common.def>
 
 /*
  * The name of a project.
@@ -58,7 +58,7 @@ default_project_directory = string;
 /*
  * All of the commands which delete files will
  * consult this field to determine if the file should be deleted.
- * Defaults to ``no_keep'' if not set.
+ * Defaults to "no_keep" if not set.
  */
 delete_file_preference = (no_keep, interactive, keep);
 
@@ -81,23 +81,23 @@ diff_preference = (automatic_merge, no_merge, only_merge);
 
 /*
  * This field is consulted whenever a pager is required, usually for
- * a listing or for a help page.  Defaults to ``foreground'' if not set.
+ * a listing or for a help page.  Defaults to "foreground" if not set.
  */
 pager_preference = (foreground, never);
 
 /*
  * This field is consulted by the aet command, to determine if it should
- * run all tests, or stop after the first failure.  Defaults to ``all''
+ * run all tests, or stop after the first failure.  Defaults to "all"
  * if not set.
  */
 persevere_preference = (all, stop);
 
 /*
  * This field is consulted by all commands which log their output to the
- * log file.  Usually defaults to ``snuggle'' if not set, though some
- * commands default to ``append''.
+ * log file.  Usually defaults to "snuggle" if not set, though some
+ * commands default to "append".
  *
- * The ``snuggle'' means append if the file was last changed less than
+ * The "snuggle" means append if the file was last changed less than
  * 30 seconds ago, allowing runs of aegis commands to keep appending to
  * the log file.
  */
@@ -161,7 +161,7 @@ email_address = string;
 /*
  * All of the commands which remove files (e.g. aerm, aemv) will consult
  * this field to determine if the file should be have a dummy "whiteout"
- * file put in the development directory.  Defaults to ``always''
+ * file put in the development directory.  Defaults to "always"
  * if not set.
  */
 whiteout_preference = (always, never);

@@ -1,6 +1,6 @@
 //
 //	aegis - project change supervisor
-//	Copyright (C) 2004 Peter Miller;
+//	Copyright (C) 2004, 2005 Peter Miller;
 //	All rights reserved.
 //
 //	This program is free software; you can redistribute it and/or modify
@@ -20,10 +20,8 @@
 // MANIFEST: implementation of the quit_action_pager class
 //
 
-#pragma implementation "quit_action_pager"
-
-#include <quit/action/pager.h>
-#include <output/pager.h>
+#include <libaegis/quit/action/pager.h>
+#include <libaegis/output/pager.h>
 
 
 quit_action_pager::~quit_action_pager()

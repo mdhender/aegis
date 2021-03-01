@@ -20,16 +20,14 @@
 // MANIFEST: implementation of the change_functor_pending_printer class
 //
 
-#pragma implementation "change_functor_pending_printer"
-
-#include <ael/column_width.h>
-#include <change.h>
-#include <change/branch.h>
-#include <change/functor/pendin_print.h>
-#include <col.h>
-#include <output.h>
-#include <project.h>
-#include <symtab/template.h>
+#include <libaegis/ael/column_width.h>
+#include <libaegis/change.h>
+#include <libaegis/change/branch.h>
+#include <aedist/change/functor/pendin_print.h>
+#include <libaegis/col.h>
+#include <libaegis/output.h>
+#include <libaegis/project.h>
+#include <common/symtab/template.h>
 
 change_functor_pending_printer::~change_functor_pending_printer()
 {

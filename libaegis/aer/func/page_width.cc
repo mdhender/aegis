@@ -1,6 +1,6 @@
 //
 //	aegis - project change supervisor
-//	Copyright (C) 1994, 1999, 2002-2004 Peter Miller;
+//	Copyright (C) 1994, 1999, 2002-2005 Peter Miller;
 //	All rights reserved.
 //
 //	This program is free software; you can redistribute it and/or modify
@@ -20,11 +20,11 @@
 // MANIFEST: functions to impliment the builtin page_width function
 //
 
-#include <aer/expr.h>
-#include <aer/func/page_width.h>
-#include <aer/value/integer.h>
-#include <error.h>
-#include <page.h>
+#include <libaegis/aer/expr.h>
+#include <libaegis/aer/func/page_width.h>
+#include <libaegis/aer/value/integer.h>
+#include <common/error.h>
+#include <common/page.h>
 
 
 static int

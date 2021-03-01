@@ -20,13 +20,11 @@
 // MANIFEST: implementation of the dir_functor_rm_dir_tree class
 //
 
-#pragma implementation "dir_functor_rm_dir_tree"
-
-#include <commit.h>
-#include <dir/functor/rm_dir_tree.h>
-#include <nstring.h>
-#include <os.h>
-#include <trace.h>
+#include <libaegis/commit.h>
+#include <libaegis/dir/functor/rm_dir_tree.h>
+#include <common/nstring.h>
+#include <libaegis/os.h>
+#include <common/trace.h>
 
 
 dir_functor_rm_dir_tree::~dir_functor_rm_dir_tree()

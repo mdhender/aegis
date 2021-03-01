@@ -1,6 +1,6 @@
 .\"
 .\"	aegis - project change supervisor
-.\"	Copyright (C) 1999, 2002 Peter Miller;
+.\"	Copyright (C) 1999, 2002, 2005 Peter Miller;
 .\"	All rights reserved.
 .\"
 .\"	This program is free software; you can redistribute it and/or modify
@@ -94,7 +94,7 @@ as rows in a database table, and each change-set as a transaction against
 that table.  The build step represents maintaining referential integrity
 of the database, but also represents an input validation step, as does
 the review.  And like databases, the transactions are all-or-nothing
-affairs, it is not possible to commit ``half'' a transaction.
+affairs, it is not possible to commit \[lq]half\[rq] a transaction.
 .LP
 As you can see, Aegis changes are already elegantly validated, recorded
 and tracked, and ideally suited to being packaged and sent to remote
@@ -104,11 +104,11 @@ repositories.
 In distributed systems such as described in this chapter,
 there are two clear methods of distribution:
 .IP \(bu 2n
-The ``push'' method has the change set producer automatically send the
+The \[lq]push\[rq] method has the change set producer automatically send the
 change-set to a registered list of interested consumers.
 This is supported by Aegis and \fIaedist\fP.
 .IP \(bu 2n
-The ``pull'' method has the change set producer make the change sets
+The \[lq]pull\[rq] method has the change set producer make the change sets
 available for interested consumers to come and collect.
 This is supported by Aegis and \fIaedist\fP.
 .LP
@@ -121,18 +121,19 @@ when you draw the graphs) are supported by Aegis and \fIaedist\fP:
 .IP \(bu 2n
 The star topology has a central master repository, surrounded by
 contributing satellite repositories.  The satellites are almost always
-``push'' model, however the central master could be either ``push'' or
-``pull'' model.
+\[lq]push\[rq] model, however the central master could be either
+\[lq]push\[rq] or
+\[lq]pull\[rq] model.
 .IP \(bu 2n
 The snowflake topology is like a hierarchical star topology, with
 contributors feeding staging posts, which eventually feed the master
 repository.  Common for large Open Source Internet projects.  Towards the
-master repository is almost always ``push'' model, and away from the
-master is almost always ``pull'' model.
+master repository is almost always \[lq]push\[rq] model, and away from the
+master is almost always \[lq]pull\[rq] model.
 .IP \(bu 2n
 The network topology is your basic anarchic autonomous collective,
 with change sets flying about peer-to-peer with no particular structure.
-Often done as a ``push'' model through an e-mail mailing list.
+Often done as a \[lq]push\[rq] model through an e-mail mailing list.
 .LP
 All of these topologies, and any mixture you can dream up, are supported
 by Aegis and \fIaedist\fP.  The choice of the right topology depends on

@@ -20,26 +20,26 @@
 // MANIFEST: functions to manipulate contentss
 //
 
-#include <ac/stdio.h>
-#include <ac/string.h>
-#include <ac/sys/types.h>
+#include <common/ac/stdio.h>
+#include <common/ac/string.h>
+#include <common/ac/sys/types.h>
 #include <sys/stat.h>
 
-#include <attribute.h>
-#include <change.h>
-#include <change/branch.h>
-#include <change/file.h>
-#include <dir_stack.h>
-#include <error.h>
-#include <file.h>
-#include <get/file/contents.h>
-#include <http.h>
-#include <now.h>
-#include <os.h>
-#include <project/file.h>
-#include <project/file/roll_forward.h>
-#include <project.h>
-#include <str_list.h>
+#include <libaegis/attribute.h>
+#include <libaegis/change.h>
+#include <libaegis/change/branch.h>
+#include <libaegis/change/file.h>
+#include <libaegis/dir_stack.h>
+#include <common/error.h>
+#include <libaegis/file.h>
+#include <aeget/get/file/contents.h>
+#include <aeget/http.h>
+#include <common/now.h>
+#include <libaegis/os.h>
+#include <libaegis/project/file.h>
+#include <libaegis/project/file/roll_forward.h>
+#include <libaegis/project.h>
+#include <common/str_list.h>
 
 
 static void
@@ -407,9 +407,9 @@ emit_dir(change_ty *cp, string_list_ty *search_path, string_ty *filename,
 
 	if (long_flag)
 	{
-	    printf("<td valign=top>");
 	    if (!has_been_removed)
 	    {
+		printf("<td valign=top>");
 		printf("<tt>");
 		html_encode_charstar(mode_string(st.st_mode));
 		printf("</tt>");
@@ -426,16 +426,16 @@ emit_dir(change_ty *cp, string_list_ty *search_path, string_ty *filename,
 		html_encode_charstar(buffer);
 		printf("</td>\n<td valign=\"top\" align=\"right\">");
 		printf("%ld", (long)st.st_size);
+		printf("</td>\n");
 	    }
 	    else
 	    {
-		printf("</td>\n<td></td>\n<td></td>\n<td>");
+		printf("<td colspan=4 align=\"CENTER\"><i>removed</i></td>\n");
 	    }
-	    printf("</td>\n");
 	}
 
 	printf("<td valign=\"top\">\n");
-	if (is_a_directory || is_a_file)
+	if (is_a_directory || (is_a_file && !has_been_removed))
 	{
 	    printf("<a href=\"%s/", http_script_name());
 	    if (cp->bogus)
@@ -467,7 +467,7 @@ emit_dir(change_ty *cp, string_list_ty *search_path, string_ty *filename,
 	    printf("\">\n");
 	}
 	html_encode_string(gizzards.string[j]);
-	if (is_a_directory || is_a_file)
+	if (is_a_directory || (is_a_file && !has_been_removed))
 	    printf("</a>");
 	if (is_a_directory)
 	    printf("/");

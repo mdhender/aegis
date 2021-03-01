@@ -1,6 +1,6 @@
 //
 //	aegis - project change supervisor
-//	Copyright (C) 1994, 1996, 2002, 2004 Peter Miller;
+//	Copyright (C) 1994, 1996, 2002, 2004-2006 Peter Miller;
 //	All rights reserved.
 //
 //	This program is free software; you can redistribute it and/or modify
@@ -20,7 +20,7 @@
 // MANIFEST: impliment missing functions from <time.h>
 //
 
-#include <ac/time.h>
+#include <common/ac/time.h>
 
 
 //
@@ -171,7 +171,7 @@ strftime(char *buf, size_t max, char *fmt, struct tm *tm)
 	    //
 	    // the full weekday name
 	    //
-	    strlcpy(output, weekday[tm->tm_wday], sizeof(output));
+	    strendcpy(output, weekday[tm->tm_wday], output + sizeof(output));
 	    break;
 
 	case 'b':
@@ -186,7 +186,7 @@ strftime(char *buf, size_t max, char *fmt, struct tm *tm)
 	    //
 	    // the full month name
 	    //
-	    strlcpy(output, month[tm->tm_mon], sizeof(output));
+	    strendcpy(output, month[tm->tm_mon], output + sizeof(output));
 	    break;
 
 	case 'c':
@@ -309,9 +309,9 @@ strftime(char *buf, size_t max, char *fmt, struct tm *tm)
 	    // meridian indicator
 	    //
 	    if (tm->tm_hour >= 12)
-		strlcpy(output, "PM", output);
+		strendcpy(output, "PM", output + sizeof(output));
 	    else
-		strlcpy(output, "AM", output);
+		strendcpy(output, "AM", output + sizeof(output));
 	    break;
 
 	case 'r':
@@ -422,12 +422,19 @@ strftime(char *buf, size_t max, char *fmt, struct tm *tm)
 	    //
 #ifndef HAVE_tm_zone
 	    if (tm->tm_isdst >= 0 && tm->tm_isdst <= 1)
-		strlcpy(output, tzname[tm->tm_isdst], sizeof(output));
+	    {
+		strendcpy
+		(
+		    output,
+		    tzname[tm->tm_isdst],
+		    output + sizeof(output)
+		);
+	    }
 	    else
 		output[0] = 0;
 #else
 	    // Berkeley derivatives have extra tm field
-	    strlcpy(output, tm->tm_zone, sizeof(output));
+	    strendcpy(output, tm->tm_zone, output + sizeof(output));
 #endif
 	    break;
 	}

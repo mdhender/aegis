@@ -20,8 +20,8 @@
 // MANIFEST: implementation of the change_branch_deftesreexse class
 //
 
-#include <change/branch.h>
-#include <error.h> // for assert
+#include <libaegis/change/branch.h>
+#include <common/error.h> // for assert
 
 
 void

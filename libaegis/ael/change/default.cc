@@ -1,6 +1,6 @@
 //
 //	aegis - project change supervisor
-//	Copyright (C) 1999, 2003, 2004 Peter Miller;
+//	Copyright (C) 1999, 2003-2006 Peter Miller;
 //	All rights reserved.
 //
 //	This program is free software; you can redistribute it and/or modify
@@ -20,15 +20,15 @@
 // MANIFEST: functions to manipulate defaults
 //
 
-#include <ac/stdio.h>
+#include <common/ac/stdio.h>
 
-#include <ael/change/default.h>
-#include <ael/change/inappropriat.h>
-#include <project.h>
-#include <str_list.h>
-#include <trace.h>
-#include <user.h>
-#include <zero.h>
+#include <libaegis/ael/change/default.h>
+#include <libaegis/ael/change/inappropriat.h>
+#include <libaegis/project.h>
+#include <common/str_list.h>
+#include <common/trace.h>
+#include <libaegis/user.h>
+#include <libaegis/zero.h>
 
 
 void
@@ -54,7 +54,7 @@ list_default_change(string_ty *project_name, long change_number,
 	project_name = str_copy(project_name);
     pp = project_alloc(project_name);
     str_free(project_name);
-    project_bind_existing(pp);
+    pp->bind_existing();
 
     //
     // locate user data

@@ -1,6 +1,6 @@
 //
 //	aegis - project change supervisor
-//	Copyright (C) 2004 Peter Miller;
+//	Copyright (C) 2004, 2005 Peter Miller;
 //	All rights reserved.
 //
 //	This program is free software; you can redistribute it and/or modify
@@ -20,12 +20,12 @@
 // MANIFEST: implementation of the sub_change_reviewr_list class
 //
 
-#include <change.h>
-#include <sub.h>
-#include <sub/change/reviewr_list.h>
-#include <str_list.h>
-#include <trace.h>
-#include <wstr/list.h>
+#include <libaegis/change.h>
+#include <libaegis/sub.h>
+#include <libaegis/sub/change/reviewr_list.h>
+#include <common/str_list.h>
+#include <common/trace.h>
+#include <common/wstr/list.h>
 
 
 wstring_ty *

@@ -1,6 +1,6 @@
 //
 //	aegis - project change supervisor
-//	Copyright (C) 1994, 2002-2004 Peter Miller.
+//	Copyright (C) 1994, 2002-2005 Peter Miller.
 //	All rights reserved.
 //
 //	This program is free software; you can redistribute it and/or modify
@@ -23,7 +23,7 @@
 #ifndef FMTGEN_SYMTAB_H
 #define FMTGEN_SYMTAB_H
 
-#include <str.h>
+#include <common/str.h>
 
 class string_list_ty; // forward
 class nstring_list; // forward

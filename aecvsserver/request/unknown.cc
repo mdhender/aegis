@@ -1,6 +1,6 @@
 //
 //	aegis - project change supervisor
-//	Copyright (C) 2004 Peter Miller;
+//	Copyright (C) 2004-2006 Peter Miller;
 //	All rights reserved.
 //
 //	This program is free software; you can redistribute it and/or modify
@@ -20,47 +20,50 @@
 // MANIFEST: functions to manipulate unknowns
 //
 
-#include <ac/ctype.h>
+#include <common/ac/ctype.h>
 
-#include <mem.h>
-#include <request/unknown.h>
-#include <server.h>
-
-
-static void run(server_ty *sp, string_ty *arg);
+#include <aecvsserver/request/unknown.h>
+#include <aecvsserver/server.h>
 
 
-static request_ty unknown =
+request_unknown::~request_unknown()
 {
-    0, // name
-    run,
-    0, // reset
-};
+}
 
 
-static void
-run(server_ty *sp, string_ty *arg)
+request_unknown::request_unknown(string_ty *arg) :
+    vname(str_copy(arg))
+{
+}
+
+
+void
+request_unknown::run_inner(server_ty *sp, string_ty *arg)
+    const
 {
     //
     // Complain about unknown requests.
     //
-    server_error(sp, "request \"%s\" unknown", unknown.name);
+    server_error(sp, "request \"%s\" unknown", vname->str_text);
+}
 
+
+const char *
+request_unknown::name()
+    const
+{
+    return vname->str_text;
+}
+
+
+bool
+request_unknown::reset()
+    const
+{
     //
     // The general rule is that requests with names which start
     // with an upper case letter accumulate input and parameters
     // for other requests.  The rest consume them.
     //
-    if (!isupper((unsigned char)unknown.name[0]))
-	server_accumulator_reset(sp);
-}
-
-
-const request_ty *
-request_unknown(const char *name)
-{
-    if (unknown.name)
-	mem_free((void *)unknown.name);
-    unknown.name = mem_copy_string(name);
-    return &unknown;
+    return !isupper((unsigned char)vname->str_text[0]);
 }

@@ -1,6 +1,6 @@
 //
 //	aegis - project change supervisor
-//	Copyright (C) 1993-1999, 2001-2005 Peter Miller;
+//	Copyright (C) 1993-1999, 2001-2006 Peter Miller;
 //	Copyright (C) 2005 Walter Franzini;
 //	All rights reserved.
 //
@@ -21,32 +21,32 @@
 // MANIFEST: functions to implement move file
 //
 
-#include <ac/stdio.h>
-#include <ael/project/files.h>
+#include <common/ac/stdio.h>
+#include <libaegis/ael/project/files.h>
 
-#include <aemv.h>
-#include <arglex2.h>
-#include <arglex/change.h>
-#include <arglex/project.h>
-#include <change/branch.h>
-#include <change/file.h>
-#include <commit.h>
-#include <error.h>
-#include <file.h>
-#include <help.h>
-#include <lock.h>
-#include <log.h>
-#include <move_list.h>
-#include <os.h>
-#include <progname.h>
-#include <project.h>
-#include <project/file.h>
-#include <quit.h>
-#include <sub.h>
-#include <trace.h>
-#include <undo.h>
-#include <user.h>
-#include <str_list.h>
+#include <aegis/aemv.h>
+#include <libaegis/arglex2.h>
+#include <libaegis/arglex/change.h>
+#include <libaegis/arglex/project.h>
+#include <libaegis/change/branch.h>
+#include <libaegis/change/file.h>
+#include <libaegis/commit.h>
+#include <common/error.h>
+#include <libaegis/file.h>
+#include <libaegis/help.h>
+#include <libaegis/lock.h>
+#include <libaegis/log.h>
+#include <libaegis/move_list.h>
+#include <libaegis/os.h>
+#include <common/progname.h>
+#include <libaegis/project.h>
+#include <libaegis/project/file.h>
+#include <common/quit.h>
+#include <libaegis/sub.h>
+#include <common/trace.h>
+#include <libaegis/undo.h>
+#include <libaegis/user.h>
+#include <common/str_list.h>
 
 
 static void
@@ -152,7 +152,7 @@ move_file_innards(user_ty *up, change_ty *cp, string_ty *old_name,
     p_src_data = project_file_find(pp, old_name, view_path_extreme);
     if (!p_src_data)
     {
-	p_src_data = project_file_find_fuzzy(pp, old_name, view_path_extreme);
+	p_src_data = pp->file_find_fuzzy(old_name, view_path_extreme);
 	if (p_src_data)
 	{
 	    sub_context_ty  *scp;
@@ -335,7 +335,7 @@ move_file_innards(user_ty *up, change_ty *cp, string_ty *old_name,
     // Copy the file.
     //
     // Note: the file copy destroys anything in the development
-    // direcory at both ``from'' and ``to''.
+    // direcory at both "from" and "to".
     //
     user_become(up);
     os_mkdir_between(dd, new_name, 02755);
@@ -453,7 +453,7 @@ move_file_main(void)
 	project_name = user_default_project();
     pp = project_alloc(project_name);
     str_free(project_name);
-    project_bind_existing(pp);
+    pp->bind_existing();
 
     //
     // locate user data

@@ -1,6 +1,6 @@
 //
 //	aegis - project change supervisor
-//	Copyright (C) 2004 Peter Miller;
+//	Copyright (C) 2004, 2005 Peter Miller;
 //	All rights reserved.
 //
 //	This program is free software; you can redistribute it and/or modify
@@ -23,10 +23,8 @@
 #ifndef COMMON_WSTRING_LIST_H
 #define COMMON_WSTRING_LIST_H
 
-#pragma interface "wstring_list"
-
-#include <wstring.h>
-#include <wstr/list.h>
+#include <common/wstring.h>
+#include <common/wstr/list.h>
 
 /**
   * The wstring_list class is used to represent a dynamically sized list

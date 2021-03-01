@@ -1,6 +1,6 @@
 //
 //	aegis - project change supervisor
-//	Copyright (C) 1994, 1996, 2003, 2004 Peter Miller;
+//	Copyright (C) 1994, 1996, 2003-2005 Peter Miller;
 //	All rights reserved.
 //
 //	This program is free software; you can redistribute it and/or modify
@@ -20,8 +20,8 @@
 // MANIFEST: functions to manipulate compound statements
 //
 
-#include <aer/stmt/compound.h>
-#include <trace.h>
+#include <libaegis/aer/stmt/compound.h>
+#include <common/trace.h>
 
 
 static void

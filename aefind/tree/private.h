@@ -23,7 +23,7 @@
 #ifndef AEFIND_TREE_PRIVATE_H
 #define AEFIND_TREE_PRIVATE_H
 
-#include <tree.h>
+#include <aefind/tree.h>
 
 struct tree_method_ty
 {

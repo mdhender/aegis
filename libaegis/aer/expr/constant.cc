@@ -1,6 +1,6 @@
 //
 //	aegis - project change supervisor
-//	Copyright (C) 1994, 2002-2004 Peter Miller.
+//	Copyright (C) 1994, 2002-2005 Peter Miller.
 //	All rights reserved.
 //
 //	This program is free software; you can redistribute it and/or modify
@@ -20,10 +20,10 @@
 // MANIFEST: functions to manipulate constants in expressions
 //
 
-#include <aer/expr/constant.h>
-#include <aer/value/ref.h>
-#include <error.h>
-#include <trace.h>
+#include <libaegis/aer/expr/constant.h>
+#include <libaegis/aer/value/ref.h>
+#include <common/error.h>
+#include <common/trace.h>
 
 
 struct rpt_expr_constant_ty

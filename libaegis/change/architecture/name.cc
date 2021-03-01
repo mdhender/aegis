@@ -1,6 +1,6 @@
 //
 //	aegis - project change supervisor
-//	Copyright (C) 1999, 2001-2004 Peter Miller;
+//	Copyright (C) 1999, 2001-2005 Peter Miller;
 //	All rights reserved.
 //
 //	This program is free software; you can redistribute it and/or modify
@@ -20,12 +20,12 @@
 // MANIFEST: functions to manipulate names
 //
 
-#include <change.h>
-#include <error.h> // for assert
-#include <gmatch.h>
-#include <sub.h>
-#include <trace.h>
-#include <uname.h>
+#include <libaegis/change.h>
+#include <common/error.h> // for assert
+#include <common/gmatch.h>
+#include <libaegis/sub.h>
+#include <common/trace.h>
+#include <libaegis/uname.h>
 
 
 string_ty *

@@ -23,7 +23,7 @@
 #ifndef AEGET_GET_RSS_H
 #define AEGET_GET_RSS_H
 
-#include <main.h>
+#include <common/main.h>
 
 struct project_ty;
 struct string_ty;

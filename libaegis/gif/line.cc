@@ -20,9 +20,9 @@
 // MANIFEST: functions to draw lines in GIF files
 //
 
-#include <ac/stdlib.h>
+#include <common/ac/stdlib.h>
 
-#include <gif.h>
+#include <libaegis/gif.h>
 
 
 #define XLO (1 << 0)

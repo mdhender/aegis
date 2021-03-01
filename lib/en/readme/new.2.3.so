@@ -1,6 +1,6 @@
 .\"
 .\"	aegis - project change supervisor
-.\"	Copyright (C) 1994, 1995, 2004 Peter Miller;
+.\"	Copyright (C) 1994, 1995, 2004, 2005 Peter Miller;
 .\"	All rights reserved.
 .\"
 .\"	This program is free software; you can redistribute it and/or modify
@@ -63,12 +63,13 @@ major version number.
 .PP
 .if t \(bu
 .if n *
-A new ``copyright_years'' project attribute has been added.
+A new \[lq]copyright_years\[rq] project attribute has been added.
 This is a list of years maintained at integrate begin time,
 to automate the insertion of list of copyright years into
 copyright messages and documentation.
 There is a new ${Copyright_Years} substitution
-and the copyright years are also listed in the ``aegis -list version'' listing.
+and the copyright years are also listed in the \[lq]aegis -list
+version\[rq] listing.
 See
 .IR aesub (5)
 and

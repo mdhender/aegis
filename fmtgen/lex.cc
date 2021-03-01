@@ -1,6 +1,6 @@
 //
 //	aegis - project change supervisor
-//	Copyright (C) 1991-1995, 1997, 1999, 2002-2004 Peter Miller;
+//	Copyright (C) 1991-1995, 1997, 1999, 2002-2006 Peter Miller;
 //	All rights reserved.
 //
 //	This program is free software; you can redistribute it and/or modify
@@ -20,20 +20,20 @@
 // MANIFEST: lexical analyzer
 //
 
-#include <ac/stdio.h>
-#include <ac/stdarg.h>
-#include <ac/stdlib.h>
-#include <ac/errno.h>
-#include <ac/string.h>
+#include <common/ac/stdio.h>
+#include <common/ac/stdarg.h>
+#include <common/ac/stdlib.h>
+#include <common/ac/errno.h>
+#include <common/ac/string.h>
 
-#include <error.h>
-#include <lex.h>
-#include <mem.h>
-#include <str.h>
-#include <symtab.h>
-#include <type.h>
-#include <str_list.h>
-#include <parse.gen.h> // must be last
+#include <common/error.h>
+#include <common/mem.h>
+#include <common/str.h>
+#include <common/str_list.h>
+#include <common/symtab.h>
+#include <fmtgen/lex.h>
+#include <fmtgen/type.h>
+#include <fmtgen/parse.gen.h> // must be last
 
 
 struct file_ty
@@ -514,7 +514,8 @@ lex_include_path(const char *s)
 
 #ifdef DEBUG
 
-static char lex_debug_buffer[3000];
+static char lex_debug_buf[3000];
+static char *lex_debug_buf_p = lex_debug_buf;
 
 
 void
@@ -523,8 +524,15 @@ lex_debug_vprintf(const char *s, va_list ap)
     char buffer[1000];
     vsnprintf(buffer, sizeof(buffer), s, ap);
 
-    strlcat(lex_debug_buffer, buffer, sizeof(lex_debug_buffer));
-    const char *ep = strchr(lex_debug_buffer, '\n');
+    char *start = lex_debug_buf_p;
+    lex_debug_buf_p =
+	strendcpy
+	(
+	    lex_debug_buf_p,
+	    buffer,
+	    lex_debug_buf + sizeof(lex_debug_buf)
+	);
+    const char *ep = strchr(start, '\n');
     if (ep)
     {
 	error_raw
@@ -532,15 +540,17 @@ lex_debug_vprintf(const char *s, va_list ap)
 	    "%s: %d: %.*s",
 	    file->file_name,
 	    file->line_number,
-	    (ep - lex_debug_buffer),
-	    lex_debug_buffer
+	    (ep - lex_debug_buf),
+	    lex_debug_buf
 	);
+	size_t nbytes = lex_debug_buf_p - (ep + 1);
 	memmove
 	(
-	    lex_debug_buffer,
+	    lex_debug_buf,
 	    ep + 1,
-	    lex_debug_buffer + strlen(lex_debug_buffer) - ep
+	    nbytes + 1
 	);
+	lex_debug_buf_p = lex_debug_buf + nbytes;
     }
 }
 

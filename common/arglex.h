@@ -1,6 +1,6 @@
 //
 //	aegis - project change supervisor
-//	Copyright (C) 1991-1993, 1995, 1999, 2001-2004 Peter Miller;
+//	Copyright (C) 1991-1993, 1995, 1999, 2001-2005 Peter Miller;
 //	All rights reserved.
 //
 //	This program is free software; you can redistribute it and/or modify
@@ -28,7 +28,7 @@
   * \ingroup Common
   * @{
   */
-#include <main.h>
+#include <common/main.h>
 
 #define ARGLEX_END_MARKER { (const char *)0, 0, }
 

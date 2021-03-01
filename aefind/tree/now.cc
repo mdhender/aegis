@@ -1,6 +1,6 @@
 //
 //	aegis - project change supervisor
-//	Copyright (C) 1997, 2002-2004 Peter Miller;
+//	Copyright (C) 1997, 2002-2005 Peter Miller;
 //	All rights reserved.
 //
 //	This program is free software; you can redistribute it and/or modify
@@ -20,11 +20,11 @@
 // MANIFEST: functions to manipulate now tree nodes
 //
 
-#include <aer/value/time.h>
-#include <now.h>
-#include <tree.h>
-#include <tree/constant.h>
-#include <tree/now.h>
+#include <libaegis/aer/value/time.h>
+#include <common/now.h>
+#include <aefind/tree.h>
+#include <aefind/tree/constant.h>
+#include <aefind/tree/now.h>
 
 
 tree_ty *

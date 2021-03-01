@@ -1,6 +1,6 @@
 //
 //	aegis - project change supervisor
-//	Copyright (C) 2004 Peter Miller;
+//	Copyright (C) 2004, 2005 Peter Miller;
 //	All rights reserved.
 //
 //	This program is free software; you can redistribute it and/or modify
@@ -23,8 +23,8 @@
 #ifndef AE_CVS_SERVER_SERVER_PRIVATE_H
 #define AE_CVS_SERVER_SERVER_PRIVATE_H
 
-#include <net.h>
-#include <server.h>
+#include <aecvsserver/net.h>
+#include <aecvsserver/server.h>
 
 struct server_method_ty
 {

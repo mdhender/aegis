@@ -23,9 +23,7 @@
 #ifndef LIBAEGIS_RFC822_FUNCTOR_VERSION_PREV_H
 #define LIBAEGIS_RFC822_FUNCTOR_VERSION_PREV_H
 
-#pragma interface "rfc822_functor_version_previous"
-
-#include <rfc822/functor.h>
+#include <libaegis/rfc822/functor.h>
 
 /**
   * The rfc822_functor_version_previous class is used to represent the

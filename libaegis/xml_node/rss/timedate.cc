@@ -20,13 +20,11 @@
 // MANIFEST: implementation of the xml_node_rss_timedate class
 //
 
-#pragma implementation "xml_node_rss_timedate"
-
-#include <gettime.h>
-#include <now.h>
-#include <output.h>
-#include <xml_node/rss/timedate.h>
-#include <xmltextread/by_node.h>
+#include <common/gettime.h>
+#include <common/now.h>
+#include <libaegis/output.h>
+#include <libaegis/xml_node/rss/timedate.h>
+#include <libaegis/xmltextread/by_node.h>
 
 
 xml_node_rss_timedate::~xml_node_rss_timedate()

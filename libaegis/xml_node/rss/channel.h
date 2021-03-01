@@ -23,9 +23,7 @@
 #ifndef LIBAEGIS_XML_NODE_RSS_CHANNEL_H
 #define LIBAEGIS_XML_NODE_RSS_CHANNEL_H
 
-#pragma interface "xml_node_rss_channel"
-
-#include <xml_node/rss.h>
+#include <libaegis/xml_node/rss.h>
 
 // Forward declarations
 class rss_item;

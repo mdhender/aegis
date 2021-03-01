@@ -1,6 +1,6 @@
 .\"
 .\"	aegis - project change supervisor
-.\"	Copyright (C) 1999, 2003 Peter Miller;
+.\"	Copyright (C) 1999, 2003, 2005 Peter Miller;
 .\"	All rights reserved.
 .\"
 .\"	This program is free software; you can redistribute it and/or modify
@@ -63,9 +63,9 @@ you need access to the Aegis substitutions in a script.
 .PP
 .if n *
 .if t \(bu
-The command line option ``\f(CW\-\-\fP'' is now understood.  It means
-``the rest of the arguments on the command line are filenames or
-strings''.  Because this makes the options on the command line more
+The command line option \[lq]\f(CW\-\-\fP\[rq] is now understood.  It means
+\[lq]the rest of the arguments on the command line are filenames or
+strings\[rq].  Because this makes the options on the command line more
 "order sensitive" than usual, use with care.
 .PP
 .if n *
@@ -81,7 +81,7 @@ description text has been fixed.)
 .if t \(bu
 .\" change 19
 The \fIaenf\fP(1) command now does the right thing with directories named
-on the command line.  In particular, you can now use ``aenf .'' to import
+on the command line.  In particular, you can now use \[lq]aenf .\[rq] to import
 whole directory trees.
 .PP
 .if n *

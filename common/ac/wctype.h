@@ -1,46 +1,46 @@
-/*
- *	aegis - project change supervisor
- *	Copyright (C) 1996, 1998, 2002, 2004 Peter Miller;
- *	All rights reserved.
- *
- *	This program is free software; you can redistribute it and/or modify
- *	it under the terms of the GNU General Public License as published by
- *	the Free Software Foundation; either version 2 of the License, or
- *	(at your option) any later version.
- *
- *	This program is distributed in the hope that it will be useful,
- *	but WITHOUT ANY WARRANTY; without even the implied warranty of
- *	MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
- *	GNU General Public License for more details.
- *
- *	You should have received a copy of the GNU General Public License
- *	along with this program; if not, write to the Free Software
- *	Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111, USA.
- *
- * MANIFEST: insulate against <wctype.h> presence or absence
- */
+//
+//	aegis - project change supervisor
+//	Copyright (C) 1996, 1998, 2002, 2004-2006 Peter Miller;
+//	All rights reserved.
+//
+//	This program is free software; you can redistribute it and/or modify
+//	it under the terms of the GNU General Public License as published by
+//	the Free Software Foundation; either version 2 of the License, or
+//	(at your option) any later version.
+//
+//	This program is distributed in the hope that it will be useful,
+//	but WITHOUT ANY WARRANTY; without even the implied warranty of
+//	MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+//	GNU General Public License for more details.
+//
+//	You should have received a copy of the GNU General Public License
+//	along with this program; if not, write to the Free Software
+//	Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111, USA.
+//
+// MANIFEST: insulate against <wctype.h> presence or absence
+//
 
 #ifndef COMMON_AC_WCTYPE_H
 #define COMMON_AC_WCTYPE_H
 
-/*
- * Often needed, if <wctype.h> is implemented in terms of <ctype.h>.
- * Not strictly ANSI C standard conforming.
- */
-#include <ac/ctype.h>
+//
+// Often needed, if <wctype.h> is implemented in terms of <ctype.h>.
+// Not strictly ANSI C standard conforming.
+//
+#include <common/ac/ctype.h>
 
-/*
- * Often needed, particularly to implement the dummy functions if real
- * ones aren't present.  Not strictly ANSI C standard conforming.
- */
-#include <ac/stddef.h>
+//
+// Often needed, particularly to implement the dummy functions if real
+// ones aren't present.  Not strictly ANSI C standard conforming.
+//
+#include <common/ac/stddef.h>
 
-/* Solaris bug 1250837: include wchar.h before widec.h */
-#include <ac/wchar.h>
+// Solaris bug 1250837: include wchar.h before widec.h
+#include <common/ac/wchar.h>
 
-/*
- * Silicon Graphics
- */
+//
+// Silicon Graphics
+//
 #if HAVE_WIDEC_H
 #include <widec.h>
 #endif
@@ -49,18 +49,18 @@
 #include <wctype.h>
 #endif
 
-/*
- * The ANSI C standard states that wint_t symbol shall be defined by
- * <wchar.h> and <wctype.h>.  The GNU people also define it in <stddef.h>,
- * but this is incorrect.
- */
+//
+// The ANSI C standard states that wint_t symbol shall be defined by
+// <wchar.h> and <wctype.h>.  The GNU people also define it in <stddef.h>,
+// but this is incorrect.
+//
 #ifndef HAVE_WINT_T
 #define HAVE_WINT_T 1
 typedef wchar_t wint_t;
 #endif
 
 #if !HAVE_WCTYPE_H
-#include <main.h>
+#include <common/main.h>
 int iswalnum(wint_t);
 int iswdigit(wint_t);
 int iswlower(wint_t);
@@ -72,14 +72,14 @@ wint_t towlower(wint_t);
 wint_t towupper(wint_t);
 #endif
 
-/*
- * HAVE_ISWPRINT is only set if (a) there is a have_iswprint function,
- * and (b) it works for ascii.  It is assumed that if iswprint is absent
- * or brain-dead, then so are the rest.
- *
- * This code copes with the case where (a) it exists, (b) it is broken,
- * and (c) it is defined in <wctype.h>
- */
+//
+// HAVE_ISWPRINT is only set if (a) there is a have_iswprint function,
+// and (b) it works for ascii.  It is assumed that if iswprint is absent
+// or brain-dead, then so are the rest.
+//
+// This code copes with the case where (a) it exists, (b) it is broken,
+// and (c) it is defined in <wctype.h>
+//
 #if !HAVE_ISWPRINT
 
 #ifdef iswprint
@@ -118,6 +118,6 @@ wint_t towupper(wint_t);
 #undef towlower
 #endif
 
-#endif /* !HAVE_ISWPRINT */
+#endif // !HAVE_ISWPRINT
 
-#endif /* COMMON_AC_WCTYPE_H */
+#endif // COMMON_AC_WCTYPE_H

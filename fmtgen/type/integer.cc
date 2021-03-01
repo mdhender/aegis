@@ -1,6 +1,6 @@
 //
 //	aegis - project change supervisor
-//	Copyright (C) 1991-1994, 1998, 1999, 2002-2004 Peter Miller;
+//	Copyright (C) 1991-1994, 1998, 1999, 2002-2005 Peter Miller;
 //	All rights reserved.
 //
 //	This program is free software; you can redistribute it and/or modify
@@ -20,11 +20,9 @@
 // MANIFEST: functions to manipulate integer type
 //
 
-#pragma implementation "type_integer_ty"
-
-#include <indent.h>
-#include <mem.h>
-#include <type/integer.h>
+#include <fmtgen/indent.h>
+#include <common/mem.h>
+#include <fmtgen/type/integer.h>
 
 
 type_integer_ty::~type_integer_ty()

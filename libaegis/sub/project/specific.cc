@@ -1,6 +1,6 @@
 //
 //	aegis - project change supervisor
-//	Copyright (C) 2001-2004 Peter Miller;
+//	Copyright (C) 2001-2005 Peter Miller;
 //	All rights reserved.
 //
 //	This program is free software; you can redistribute it and/or modify
@@ -20,17 +20,17 @@
 // MANIFEST: functions to manipulate specifics
 //
 
-#include <ac/string.h>
+#include <common/ac/string.h>
 
-#include <attribute.h>
-#include <change.h>
-#include <error.h>
-#include <pconf.h>
-#include <sub/project/specific.h>
-#include <sub.h>
-#include <trace.h>
-#include <wstr.h>
-#include <wstr/list.h>
+#include <common/error.h>
+#include <common/trace.h>
+#include <common/wstr.h>
+#include <common/wstr/list.h>
+#include <libaegis/attribute.h>
+#include <libaegis/change.h>
+#include <libaegis/pconf.h>
+#include <libaegis/sub.h>
+#include <libaegis/sub/project/specific.h>
 
 
 static string_ty *

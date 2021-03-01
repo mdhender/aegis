@@ -1,6 +1,6 @@
 //
 //	aegis - project change supervisor
-//	Copyright (C) 2004 Peter Miller;
+//	Copyright (C) 2004, 2005 Peter Miller;
 //	All rights reserved.
 //
 //	This program is free software; you can redistribute it and/or modify
@@ -20,8 +20,8 @@
 // MANIFEST: functions to manipulate fake_versions
 //
 
-#include <fake_version.h>
-#include <now.h>
+#include <aecvsserver/fake_version.h>
+#include <common/now.h>
 
 
 string_ty *

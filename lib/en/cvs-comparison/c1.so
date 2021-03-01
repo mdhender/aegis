@@ -1,6 +1,6 @@
 .\"
 .\"	aegis - project change supervisor
-.\"	Copyright (C) 1999, 2001, 2002, 2004 Peter Miller;
+.\"	Copyright (C) 1999, 2001, 2002, 2004, 2005 Peter Miller;
 .\"	All rights reserved.
 .\"
 .\"	This program is free software; you can redistribute it and/or modify
@@ -39,14 +39,14 @@ the paragraph.
 .nh 2 "The Aegis Process"
 .PP
 .ad r
-``\fIWriting software is hard, improving the way that software is
-written is harder.\fP''  Bill Pugh
+\[lq]\fIWriting software is hard, improving the way that software is
+written is harder.\fP\[rq]  Bill Pugh
 .ad l
 .PP
 Aegis sets out to perform configuration management.  This is very
 different to version control, but to see why you'll need to understand
 what Aegis thinks a configuration is.
-Also that ``management'' word impies a degree of authorization and
+Also that \[lq]management\[rq] word impies a degree of authorization and
 reporting, which Aegis also provides.
 .IP \(bu 2n
 A configuration is a snapshot of the source files, \fIall\fP source files
@@ -93,28 +93,28 @@ misquote the X11 folks, is
 .ce 1
 Aegis is about rules, not tools.
 .br
-because the rules (the process) is the ``missing bit'' Aegis was written
+because the rules (the process) is the \[lq]missing bit\[rq] Aegis was written
 to provide.
 The "management" part of software configuration management.
 .nh 2 "CVS has no Built-in Process"
 .LP
-``By not having a process built into CVS, the team must work out a process
+\[lq]By not having a process built into CVS, the team must work out a process
 separately.  Since you're not likely to do better than the Aegis process,
 the likely result is to do worse.  Also you will have to expend effort
-to implement and enforce the process.''
+to implement and enforce the process.\[rq]
 \fITrenton G. Twining <tgt@cycletime.com>\fP
 .LP
-``Every project I've seen \fIuse\fP either Aegis or an Aegis approach,
+\[lq]Every project I've seen \fIuse\fP either Aegis or an Aegis approach,
 so drastically outshines other projects in the same organization, it's
 clear to me that the Aegis approach is the difference.  It works better
 with some analysis.  It works better with some planning and forethought.
-It works.''
+It works.\[rq]
 \fITrenton G. Twining <tgt@cycletime.com>\fP
 .LP
-``For one thing, [Aegis] was actually designed, rather than just having
+\[lq]For one thing, [Aegis] was actually designed, rather than just having
 accreted like CVS.  And if you are looking for code reviews and all
 that stuff, it's probably easier to do them with Aegis (with CVS it is
-a roll-your-own type affair).''
+a roll-your-own type affair).\[rq]
 \fIJim Kingdon <kingdon@panix7.panix.com>\fP
 (for many years, the chief CVS maintainer)
 .nh 2 "The Good, the Bad and the Ugly"
@@ -276,7 +276,7 @@ Copy of the remote project repository to a local project repository.
 T};T{
 Fetch the latest complete version from
 a web server running the Aegis CGI interface.
-Process this downloaded ``.ae'' file with
+Process this downloaded \[lq].ae\[rq] file with
 \fIaedist --receive\fP,
 building and integrating with the usual Aegis process.
 T};T{
@@ -288,7 +288,7 @@ T};T{
 Fetch the latest complete version \fIor\fP
 the individual change sets of interest, from
 a web server runnjing the Aegis CGI interface.
-Process this downloaded ``.ae'' file with
+Process this downloaded \[lq].ae\[rq] file with
 \fIaedist --receive\fP,
 building and integrating with the usual Aegis process.
 T};T{

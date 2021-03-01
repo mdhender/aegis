@@ -1,7 +1,7 @@
 #!/bin/sh
 #
 #	aegis - project change supervisor
-#	Copyright (C) 1991-1998, 2002-2005 Peter Miller;
+#	Copyright (C) 1991-1998, 2002-2006 Peter Miller;
 #	All rights reserved.
 #
 #	This program is free software; you can redistribute it and/or modify
@@ -54,7 +54,7 @@ then
 else
 	echo ''
 	echo '	The "cook" program is not in your command search PATH.'
-	echo '	This is test is therefore -assumed- to pass.'
+	echo '	This test is therefore -assumed- to pass.'
 	echo ''
 	exit 0
 fi
@@ -63,6 +63,22 @@ here=`pwd`
 if test $? -ne 0 ; then exit 2; fi
 
 if test "$1" != "" ; then bin="$here/$1/bin"; else bin="$here/bin"; fi
+
+if test "$EXEC_SEARCH_PATH" != ""
+then
+    tpath=
+    hold="$IFS"
+    IFS=":$IFS"
+    for tpath2 in $EXEC_SEARCH_PATH
+    do
+	tpath=${tpath}${tpath2}/${1-.}/bin:
+    done
+    IFS="$hold"
+    PATH=${tpath}${PATH}
+else
+    PATH=${bin}:${PATH}
+fi
+export PATH
 
 no_result()
 {
@@ -128,16 +144,16 @@ unset LANG
 unset LANGUAGE
 
 #
-# If the C++ compiler is called something other than ``c++'', as
+# If the C++ compiler is called something other than "c++", as
 # discovered by the configure script, create a shell script called
-# ``c++'' which invokes the correct C++ compiler.  Make sure the current
+# "c++" which invokes the correct C++ compiler.  Make sure the current
 # directory is in the path, so that it will be invoked.
 #
-if test "$CXX" != "" -a "$CXX" != "c++"
+if test "$CXX" != "c++"
 then
 	cat >> c++ << fubar
 #!/bin/sh
-exec $CXX \$*
+exec ${CXX-g++} \$*
 fubar
 	if test $? -ne 0 ; then no_result; fi
 	chmod a+rx c++
@@ -162,6 +178,7 @@ description = "aegis user's guide";
 developer_may_review = true;
 developer_may_integrate = true;
 reviewer_may_integrate = true;
+compress_database = true;
 TheEnd
 if test $? -ne 0 ; then no_result; fi
 
@@ -299,14 +316,12 @@ cat > $workchan/aegis.conf << 'TheEnd'
 build_command = "cook -b ${s Howto.cook} project=$p change=$c version=$v -nl";
 link_integration_directory = true;
 
-history_get_command =
-	"co -u'$e' -p $h,v > $o";
-history_create_command =
-	"ci -f -u -m/dev/null -t/dev/null $i $h,v; rcs -U $h,v";
-history_put_command =
-	"ci -f -u -m/dev/null -t/dev/null $i $h,v; rcs -U $h,v";
-history_query_command =
-	"rlog -r $h,v | awk '/^head:/ {print $$2}'";
+history_get_command = "aesvt -check-out -edit ${quote $edit} "
+    "-history ${quote $history} -f ${quote $output}";
+history_put_command = "aesvt -check-in -history ${quote $history} "
+    "-f ${quote $input}";
+history_query_command = "aesvt -query -history ${quote $history}";
+history_content_limitation = binary_capable;
 
 diff_command = "set +e; diff $orig $i > $out; test $$? -le 1";
 

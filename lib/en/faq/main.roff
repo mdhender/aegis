@@ -1,6 +1,6 @@
 .\"
 .\"	aegis - project change supervisor
-.\"	Copyright (C) 1995, 1997-1999, 2002, 2004 Peter Miller;
+.\"	Copyright (C) 1995, 1997-1999, 2002, 2004, 2005 Peter Miller;
 .\"	All rights reserved.
 .\"
 .\"	This program is free software; you can redistribute it and/or modify
@@ -121,7 +121,7 @@ Compounding this is the fact that many sites want to develop their
 software for both Unix and Windows NT simultaneously.  This means that
 the security of the repository needs to be guaranteed to be handled
 in the same way by both operating systems, otherwise one can act as a
-\&``back door'' into the repository.  Many sites do not have the same
+\[lq]back door\[rq] into the repository.  Many sites do not have the same
 users and permissions (sourced from the same network register of users)
 on both Unix and Windows NT, making the mapping almost impossible even
 if the security models did actually correspond.
@@ -192,9 +192,9 @@ The software which handles this mailing list
 send you a copy of \fIAegis\fP.
 Please use FTP or ftp-by-email, instead.
 .H 2 "How does Aegis compare with program X?"
-For all X, ``The author has no experience with X.
+For all X, \[lq]The author has no experience with X.
 If you wish to contribute a comparison between Aegis and X,
-it will be considered for addition here.''
+it will be considered for addition here.\[rq]
 .H 1 "Configuration and initial build problems"
 Aegis is accompanied by a set of regression tests,
 and the BUILDING instructions included in the distribution
@@ -228,7 +228,7 @@ not useful to your project,
 the other aspects of Aegis' process still are
 (e.g. concurrent development, mandatory reviews, etc.).
 .H 2 "Can I use something besides a shell script?"
-Yes, the ``test_command'' field of the project configuration file
+Yes, the \[lq]test_command\[rq] field of the project configuration file
 may be set to whatever command you like,
 see \fIaepconf\fP(5) for more information.
 .sp
@@ -236,19 +236,20 @@ A shell script is the default,
 because you can run anything out of the shell script.
 In particular, you can set up a temporary directory
 within which to run the tests.
-If you ``cd'' into this temporary directory when running tests,
+If you \[lq]cd\[rq] into this temporary directory when running tests,
 cleanup, no matter what the fallout, even a core dump,
-is thus a simple matter of ``rm -rf'' of the temporary directory.
+is thus a simple matter of \[lq]rm -rf\[rq] of the temporary directory.
 .H 2 "Testing curses programs"
 I don't have a curses program tester,
 nor do I know of one.
-It seems to me that the ``screen'' program contains all the necessary elements,
+It seems to me that the \[lq]screen\[rq] program contains all the
+necessary elements,
 however additional code would be required to make it a suitable test harness.
 .sp
 If anyone has found suitable curses testers, even commercial ones,
 I would be happy to list (FTP) locations here.
 .H 3 "Expect"
-Some sites have been using ``expect'' to test curses programs.
+Some sites have been using \[lq]expect\[rq] to test curses programs.
 You need to be careful about terminal types.
 The author is Don Libes <libes@nist.gov>
 .sp
@@ -361,7 +362,7 @@ I would like to include it here.
 .H 1 "Miscellaneous"
 This section contains a whole bunch of things which do not yet belong
 anywhere else.
-.H 2 "How do you pronounce ``Aegis''?"
+.H 2 "How do you pronounce \[lq]Aegis\[rq]?"
 There are many alternatives for pronouncing this word,
 and all focus on the myriad of sounds available for the "ae" vowel.
 Alternatives include: maestro, aerial, algae, etc.
@@ -377,30 +378,27 @@ This Perl script is a good starting point
 for customizing automatic integrations.
 .sp
 Please note that the integration phase also serves to answer the question
-``who reviews the reviewers?''
+\[lq]who reviews the reviewers?\[rq]
 Monitoring review quality is essential to maintain product quality.
 Automating the integration queue potentially denies you this quality
 opportunity.
 .H 2 "How do I enforce coding standards?"
-The ``diff_command'' field of the project configuration file
-need not only difference the file,
-it can also be overloaded to do other things.
-If the difference command fails
-for any source file,
-the change may not leave the being developed state.
+The \[lq]develop_end_policy_command\[rq] field of the project
+configuration file is for this purpose.  If this command fails, the
+change may not leave the \fIbeing developed\fP state.
 .sp
-For example,
-if you wanted to check that line lengths were always 80 characters or less,
-you could run the hypothetical ``cklinlen'' command
-at diff time, using
+For example, if you wanted to check that all files conformed
+to project coding standards, you could run the hypothetical
+\[lq]check_standards.sh\[rq] script (a project source file, of course),
+using
 .e(
-diff_command = "cklinlen $in && fcomp -w -s $orig $in -o $out";
+develop_end_policy_command = "sh ${source check_standards.sh}";
 .e)
-Checking other coding standards are also possible
-using the same basic method.
+This script would use the \fIaelcf\fP command to obtain the list of
+files to be checked.
 .H 2 "How do I get dates printed before and after build commands?"
-Just as the diff_command file of the project configuration file
-can be extended, so can the build_command field.
+The \fIbuild_command\fP field of the project configuration file can also
+be used to do more than just build:
 .e(
 build_command = "set +e; date; cook ...; x=$?; date; exit $x";
 .e)
@@ -409,11 +407,11 @@ because Aegis invokes the shell to run
 the commands with the \f(CW-e\fP option,
 to abort after the first error.
 .sp
-You may want to upgrade to Aegis 3.0.
+You may want to upgrade to Aegis 3.0 or later.
 In this version, the times are automatically printed as part of the
 verbose commencement and completion messages.
 .H 2 "How do I stop Aegis automatically merging?"
-The merging behavior is controlled by the ``diff_preference'' field
+The merging behavior is controlled by the \[lq]diff_preference\[rq] field
 of the user configuration file.
 See \fIaeuconf\fP(5) for more information.
 There are also three command line options
@@ -426,8 +424,8 @@ diff_preference = no_merge;
 .e)
 to the .aegisrc file in your more directory.
 To specifically perform a merge after that,
-you will need to use the ``aed -merge_only'' command.
-There is an ``aem'' alias for your convenience.
+you will need to use the \[lq]aed -merge_only\[rq] command.
+There is an \[lq]aem\[rq] alias for your convenience.
 .H 2 "How do I modify which developer is assigned to a change?"
 There have been times when we have one developer
 working on a change and,
@@ -546,7 +544,7 @@ If you can't do that,
 run \fIrdate\fP(1) on your client machines from cron,
 to sync their clocks with the file server's clock.
 .H 3 "Build Architectures"
-The ``aede'' can also complain about builds when
+The \[lq]aede\[rq] can also complain about builds when
 you have changed the architecture field
 of the project configuration file,
 but have not yet updated the change's attributes to match.
@@ -554,10 +552,10 @@ This can also happen when a separate change updates the architecture
 field, and all existing changes suddenly get this mystery error.
 .sp
 It happens because the default architecture is "unspecified"
-in the change attributes (use ``aeca -l'' to take a look).
+in the change attributes (use \[lq]aeca -l\[rq] to take a look).
 When the project configuration file changes, the required architecture,
 according to the change's attributes, is still "unspecified".
-To fix, use ``aeca -e'' and edit the change's attributes
+To fix, use \[lq]aeca -e\[rq] and edit the change's attributes
 to match the architecture names in the project configuration file.
 .sp
 You may wish to upgrade to version 3.0,
@@ -578,7 +576,7 @@ There is a set of default error messages in the code itself.
 These error messages are used if the localization file
 cannot be found, or if the message is absent from the localization
 file for some reason.
-These messages tend to be in the ``programmer cryptic'' language,
+These messages tend to be in the \[lq]programmer cryptic\[rq] language,
 and the English localization has probably not been installed correctly.
 The English localization
 .if n *needs*
@@ -593,7 +591,7 @@ Please report any problems immediately to the author.
 .H 2 "What controls which language is used?"
 There are a range of environment variables, depending on your operating system.
 The most common is the LANG environment variable.
-The default is ``en'' (for English) if nothing is specified.
+The default is \[lq]en\[rq] (for English) if nothing is specified.
 .H 2 "What localizations are available?"
 Only English is available at this writing.
 .sp
@@ -610,18 +608,18 @@ please email them to the author.
 .H 1 "Branches"
 This section discusses a number of issued surrounding branching.
 .H 2 "What is a Branch?"
-Aegis treats branches as ``big changes''.  This allows much of Aegis'
+Aegis treats branches as \[lq]big changes\[rq].  This allows much of Aegis'
 development model be be applied unchanged, but still allow the development
 of projects to be broken down into fine grained pieces, or aggregated
-into large ``release sized'' chunks.
+into large \[lq]release sized\[rq] chunks.
 .H 2 "What is an Anabranch?"
 Aegis' branches can end.  This is a consequence of treating branches as
-``big changes''.  Logical places to end branches are times like when a
+\[lq]big changes\[rq].  Logical places to end branches are times like when a
 release of the software is made.  The geographic term for a stream which
 breaks off and rejoins downstream is an anabranch.
 .sp
 Because branches can end, combined with the fact that branches are
-``big changes'', this means that you use ``aede'' to end development
+\[lq]big changes\[rq], this means that you use \[lq]aede\[rq] to end development
 of the branch.  After that, it is just like any other change on its
 parent branch.
 .H 2 "Do branches have to end?"
@@ -630,7 +628,7 @@ are not required to end development of a change.  In particular, the
 project trunk is an unnumbered branch which never ends.  How you manage
 your project is up to you.
 .H 2 "Why are branches called projects?"
-In order for the branches to be ``big changes'', there are times when you
+In order for the branches to be \[lq]big changes\[rq], there are times when you
 will refer to the branch as a change to its parent project.  In order
 for branches to have changes, there are times when you will refer to
 them as a project.
@@ -638,18 +636,18 @@ them as a project.
 The conversion between the two is intended to be simple.  When you need to
 refer to a branch in its project role, join the branch's parent project
 name to the branch's number with a dot;
-\fIe.g.\fP ``-p aegis.1.2''.
+\fIe.g.\fP \[lq]-p aegis.1.2\[rq].
 When you need to refer to a branch in its change role, separate the
 branch's project name from the branch's number at the last dot;
-\fIe.g.\fP ``-p aegis.1 -c 2''.
+\fIe.g.\fP \[lq]-p aegis.1 -c 2\[rq].
 .H 2 "Why must aed be used when integrating a branch?"
-Because branches are ``big changes'' and follow \fIall\fP of the things
+Because branches are \[lq]big changes\[rq] and follow \fIall\fP of the things
 a change must do, including aed.  The only time a branch is writable is
 at integration time for a change on that branch.  Thus, the aed for the
 branch is done between aeib and aeipass.  The trunk doesn't require it,
 because you never say aede to the trunk.
 .H 2 "How come the branch baseline is incomplete?"
-The branch baseline is the development directory for the ``big change''
+The branch baseline is the development directory for the \[lq]big change\[rq]
 represented by the branch.  Just as a developers development directory
 only contains the things being worked on, and their implications, so
 does the branch baseline.
@@ -657,11 +655,11 @@ does the branch baseline.
 This means that wherever you specify a search path (-I, VPATH, \fIetc\fP)
 to look first in your development directory and then in the baseline,
 it must also look in each of the branch's ancestors' baselines.
-Aegis provides a ``$search_path'' substitution telling you where to
-search; this is usually used in the ``build_command'' field of
+Aegis provides a \[lq]$search_path\[rq] substitution telling you where to
+search; this is usually used in the \[lq]build_command\[rq] field of
 the project \fIconfig\fP file.
 .sp
-The ``aefind'' command may also be used to perform actions similar to
+The \[lq]aefind\[rq] command may also be used to perform actions similar to
 use usual Unix find(1), but across the Aegis search path.
 .\"
 .\" This is the end of the digest.

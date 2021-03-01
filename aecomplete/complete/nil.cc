@@ -1,6 +1,6 @@
 //
 //	aegis - project change supervisor
-//	Copyright (C) 2002, 2004 Peter Miller;
+//	Copyright (C) 2002, 2004, 2005 Peter Miller;
 //	All rights reserved.
 //
 //	This program is free software; you can redistribute it and/or modify
@@ -20,8 +20,8 @@
 // MANIFEST: functions to manipulate nils
 //
 
-#include <complete/nil.h>
-#include <complete/private.h>
+#include <aecomplete/complete/nil.h>
+#include <aecomplete/complete/private.h>
 
 
 static complete_vtbl_ty vtbl =

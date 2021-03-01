@@ -23,9 +23,7 @@
 #ifndef LIBAEGIS_RFC822_FUNCTOR_VERS_SEARCH_H
 #define LIBAEGIS_RFC822_FUNCTOR_VERS_SEARCH_H
 
-#pragma interface "rfc822_functor_version_search"
-
-#include <rfc822/functor.h>
+#include <libaegis/rfc822/functor.h>
 
 /**
   * The rfc822_functor_version_search class is used to represent the

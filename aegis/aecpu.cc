@@ -1,6 +1,6 @@
 //
 //	aegis - project change supervisor
-//	Copyright (C) 1991-1999, 2001-2004 Peter Miller;
+//	Copyright (C) 1991-1999, 2001-2006 Peter Miller;
 //	All rights reserved.
 //
 //	This program is free software; you can redistribute it and/or modify
@@ -20,34 +20,34 @@
 // MANIFEST: functions to impliment copy file undo
 //
 
-#include <ac/stdio.h>
-#include <ac/stdlib.h>
-#include <ac/unistd.h>
-#include <ac/libintl.h>
+#include <common/ac/stdio.h>
+#include <common/ac/stdlib.h>
+#include <common/ac/unistd.h>
+#include <common/ac/libintl.h>
 
-#include <aecpu.h>
-#include <ael/change/files.h>
-#include <arglex2.h>
-#include <arglex/change.h>
-#include <arglex/project.h>
-#include <commit.h>
-#include <change/branch.h>
-#include <change/file.h>
-#include <error.h>
-#include <file.h>
-#include <help.h>
-#include <lock.h>
-#include <log.h>
-#include <os.h>
-#include <progname.h>
-#include <project.h>
-#include <project/file.h>
-#include <quit.h>
-#include <sub.h>
-#include <trace.h>
-#include <undo.h>
-#include <user.h>
-#include <str_list.h>
+#include <aegis/aecpu.h>
+#include <libaegis/ael/change/files.h>
+#include <libaegis/arglex2.h>
+#include <libaegis/arglex/change.h>
+#include <libaegis/arglex/project.h>
+#include <libaegis/commit.h>
+#include <libaegis/change/branch.h>
+#include <libaegis/change/file.h>
+#include <common/error.h>
+#include <libaegis/file.h>
+#include <libaegis/help.h>
+#include <libaegis/lock.h>
+#include <libaegis/log.h>
+#include <libaegis/os.h>
+#include <common/progname.h>
+#include <libaegis/project.h>
+#include <libaegis/project/file.h>
+#include <common/quit.h>
+#include <libaegis/sub.h>
+#include <common/trace.h>
+#include <libaegis/undo.h>
+#include <libaegis/user.h>
+#include <common/str_list.h>
 
 
 static void
@@ -140,7 +140,6 @@ copy_file_undo_main(void)
     log_style_ty    log_style;
     user_ty	    *up;
     int		    config_seen;
-    int             unchanged;
     int		    number_of_errors;
     string_list_ty  search_path;
     int		    based;
@@ -153,7 +152,8 @@ copy_file_undo_main(void)
     project_name = 0;
     change_number = 0;
     log_style = log_style_append_default;
-    unchanged = 0;
+    bool unchanged = false;
+    bool uninsulate = false;
     while (arglex_token != arglex_token_eoln)
     {
 	switch (arglex_token)
@@ -212,7 +212,7 @@ copy_file_undo_main(void)
 	case arglex_token_unchanged:
 	    if (unchanged)
 		duplicate_option(copy_file_undo_usage);
-	    unchanged = 1;
+	    unchanged = true;
 	    break;
 
 	case arglex_token_wait:
@@ -229,10 +229,16 @@ copy_file_undo_main(void)
 	case arglex_token_symbolic_links_not:
 	    user_symlink_pref_argument(copy_file_undo_usage);
 	    break;
+
+	case arglex_token_read_only:
+	    if (uninsulate)
+		duplicate_option(copy_file_undo_usage);
+	    uninsulate = true;
+	    break;
 	}
 	arglex();
     }
-    if (!unchanged && !wl.nstrings)
+    if (!uninsulate && !unchanged && !wl.nstrings)
 	fatal_intl(0, i18n("no file names"));
 
     //
@@ -242,7 +248,7 @@ copy_file_undo_main(void)
 	project_name = user_default_project();
     pp = project_alloc(project_name);
     str_free(project_name);
-    project_bind_existing(pp);
+    pp->bind_existing();
 
     //
     // locate user data
@@ -277,8 +283,8 @@ copy_file_undo_main(void)
 	change_fatal(cp, 0, i18n("not developer"));
 
     //
-    // If no files were named and the -unchanged option was used,
-    // add all of the modified files in the change.
+    // If no files were named and the -insulate or -unchanged options
+    // were used, add all of the modified files in the change.
     // It is an error if there are none.
     //
     if (!wl.nstrings)
@@ -508,14 +514,40 @@ copy_file_undo_main(void)
     //
     for (j = 0; j < wl.nstrings; ++j)
     {
-	int		exists;
-        int             blf_unlink = 0;
+        //
+        // We cannot move the 'blf' and 'exists' declaration near the
+        // first usage because some compiler (gcc-4.0.3) will complain
+        // about jumps (gotos) that crosses initializazion of such
+        // variables.
+        //
+	int             blf_unlink = 0;
+        int             exists;
+        string_ty       *blf = 0;
 
 	s1 = wl.string[j];
 	s2 = change_file_path(cp, s1);
 	assert(s2);
+
+	if (uninsulate)
+	{
+	    fstate_src_ty *src_data = change_file_find(cp, s1, view_path_first);
+	    if (!src_data)
+		goto not_this_one;
+	    switch (src_data->action)
+	    {
+	    case file_action_insulate:
+		break;
+
+	    case file_action_create:
+	    case file_action_modify:
+	    case file_action_remove:
+	    case file_action_transparent:
+		goto not_this_one;
+	    }
+	}
+
 	user_become(up);
-	exists = os_exists(s2);
+        exists = os_exists(s2);
 	user_become_undo();
 
 	//
@@ -524,7 +556,6 @@ copy_file_undo_main(void)
 	//
 	if (unchanged && exists)
 	{
-	    string_ty	    *blf;
 	    int		    different;
 	    fstate_src_ty   *src_data;
 	    fstate_src_ty   *psrc_data;
@@ -539,6 +570,8 @@ copy_file_undo_main(void)
 		goto not_this_one;
 	    if (src_data->edit_origin_new)
 	    {
+		// Do not remove cross branch merges, the meta-data is imprtant.
+		// FIXME: what about changed attributes with unchanged data?
 		assert(src_data->edit_origin_new->revision);
 		goto not_this_one;
 	    }
@@ -558,14 +591,15 @@ copy_file_undo_main(void)
 	    // The file could have vanished from under us,
 	    // so make sure this is sensable.
 	    //
-	    psrc_data = project_file_find(pp, s1, view_path_extreme);
+	    psrc_data =
+		project_file_find_by_meta(pp, src_data, view_path_extreme);
 	    if (!psrc_data)
 		goto not_this_one;
 
 	    //
 	    // Compare the files.
 	    //
-	    blf = project_file_path(pp, s1);
+	    blf = project_file_path(pp, psrc_data->file_name);
 	    assert(blf);
 	    {
 		os_become_orig();
@@ -635,6 +669,17 @@ copy_file_undo_main(void)
 	    commit_unlink_errok(s1);
 	str_free(s1);
 	user_become_undo();
+
+	//
+	// verbose success message
+	// (possibly premature, but usually not)
+	//
+	{
+	    sub_context_ty sc;
+	    sc.var_set_string("File_Name", wl.string[j]);
+	    change_verbose(cp, &sc, i18n("copy file undo $filename complete"));
+	}
+
 	next:
 	str_free(s2);
     }
@@ -703,7 +748,7 @@ copy_file_undo_main(void)
     // Only clear the various timestamps if we actually did something.
     //
     // This is especially important for aedist -receive, which
-    // automagtically calls aecpu -unch to make sure it supresses change
+    // automagically calls aecpu -unch to make sure it supresses change
     // sets we already have.  But we don't want to clear the UUID if we
     // didn't remove any files from the change set.
     //
@@ -742,17 +787,6 @@ copy_file_undo_main(void)
     change_cstate_write(cp);
     commit();
     lock_release();
-
-    //
-    // verbose success message
-    //
-    for (j = 0; j < wl.nstrings; ++j)
-    {
-	scp = sub_context_new();
-	sub_var_set_string(scp, "File_Name", wl.string[j]);
-	change_verbose(cp, scp, i18n("copy file undo $filename complete"));
-	sub_context_delete(scp);
-    }
 
     project_free(pp);
     change_free(cp);

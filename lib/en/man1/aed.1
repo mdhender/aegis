@@ -65,6 +65,15 @@ file (see
 .IR aepconf (5)
 for more information).
 .PP
+It is possible to configure a project to omit the diff step as
+unnecessary, by the following setting:
+.RS
+diff_command = "exit 0";
+.RE
+This disables all generation, checking and validation of difference file
+for each change source file.  The merge functions of the \fIaediff\fP(1)
+command are unaffected by this setting.
+.PP
 Please note that the \fIhistory_\%content_\%limitation\fP field
 of the project configuration file does \fBnot\fP apply to the
 \fIdiff_\%command\fP field.
@@ -205,7 +214,7 @@ csh%	alias aed '\*(n) -diff \e!* -v'
 sh$	aed(){\*(n) -diff "$@" -v}
 .fi
 For user's convenience,
-particularly when they have selected the ``no merge'' preference,
+particularly when they have selected the \[lq]no merge\[rq] preference,
 there is also a merge alias:
 .nf
 .ta 8n 16n

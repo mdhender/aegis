@@ -1,6 +1,6 @@
 //
 //	aegis - project change supervisor
-//	Copyright (C) 2004 Peter Miller;
+//	Copyright (C) 2004-2006 Peter Miller;
 //	All rights reserved.
 //
 //	This program is free software; you can redistribute it and/or modify
@@ -20,8 +20,8 @@
 // MANIFEST: implementation of the ac_regex class
 //
 
-#include <ac/regex.h>
-#include <ac/string.h>
+#include <common/ac/regex.h>
+#include <common/ac/string.h>
 
 #if !((HAVE_RXPOSIX_H && HAVE_LIBRX) || HAVE_REGEX_H)
 
@@ -44,7 +44,12 @@ size_t
 regerror(int errcode, const regex_t *preg, char *errbuf,  size_t
     errbuf_size)
 {
-    strlcpy(errbuf, "Regular expressions not available", errbuf_size);
+    strendcpy
+    (
+	errbuf,
+	"Regular expressions not available",
+	errbuf + errbuf_size
+    );
 }
 
 

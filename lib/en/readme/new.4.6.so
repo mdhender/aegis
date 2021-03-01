@@ -1,6 +1,6 @@
 .\"
 .\"	aegis - project change supervisor
-.\"	Copyright (C) 2002-2004 Peter Miller;
+.\"	Copyright (C) 2002-2005 Peter Miller;
 .\"	All rights reserved.
 .\"
 .\"	This program is free software; you can redistribute it and/or modify
@@ -80,7 +80,7 @@ problems when seeding new projects.
 .if n *
 .if t \(bu
 .\" change 32
-Some deficiencies on the ``How to Become a Developer'' instructions have
+Some deficiencies on the \[lq]How to Become a Developer \[rq] instructions have
 been addressed.
 .\" change 30
 The native Aegis build (but not the Makefile.in) now builds the "tags"

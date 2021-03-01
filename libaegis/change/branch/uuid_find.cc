@@ -1,6 +1,6 @@
 //
 //	aegis - project change supervisor
-//	Copyright (C) 2004, 2005 Peter Miller;
+//	Copyright (C) 2004-2006 Peter Miller;
 //	All rights reserved.
 //
 //	This program is free software; you can redistribute it and/or modify
@@ -20,9 +20,9 @@
 // MANIFEST: functions to manipulate uuid_finds
 //
 
-#include <change/branch.h>
-#include <change/list.h>
-#include <project.h>
+#include <libaegis/change/branch.h>
+#include <libaegis/change/list.h>
+#include <libaegis/project.h>
 
 
 void
@@ -37,7 +37,7 @@ change_branch_uuid_find(change_ty *cp, string_ty *uuid, change_list_ty &result)
     }
     if (cstate_data->branch)
     {
-	project_ty *pp2 = project_bind_branch(cp->pp, cp);
+	project_ty *pp2 = cp->pp->bind_branch(cp);
 	for (size_t j = 0; j < cstate_data->branch->change->length; ++j)
 	{
 	    long change_number = cstate_data->branch->change->list[j];

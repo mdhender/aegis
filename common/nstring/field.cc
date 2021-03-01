@@ -20,7 +20,7 @@
 // MANIFEST: implementation of the nstring::field method
 //
 
-#include <nstring.h>
+#include <common/nstring.h>
 
 
 nstring

@@ -1,6 +1,6 @@
 //
 //	aegis - project change supervisor
-//	Copyright (C) 2004 Peter Miller;
+//	Copyright (C) 2004, 2005 Peter Miller;
 //	All rights reserved.
 //
 //	This program is free software; you can redistribute it and/or modify
@@ -20,11 +20,9 @@
 // MANIFEST: implementation of the type_boolean class
 //
 
-#pragma implementation "type_boolean"
-
-#include <indent.h>
-#include <mem.h>
-#include <type/boolean.h>
+#include <fmtgen/indent.h>
+#include <common/mem.h>
+#include <fmtgen/type/boolean.h>
 
 
 type_boolean::~type_boolean()

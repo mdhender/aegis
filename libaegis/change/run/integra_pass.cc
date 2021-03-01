@@ -1,6 +1,6 @@
 //
 //	aegis - project change supervisor
-//	Copyright (C) 1999, 2002-2004 Peter Miller;
+//	Copyright (C) 1999, 2002-2006 Peter Miller;
 //	All rights reserved.
 //
 //	This program is free software; you can redistribute it and/or modify
@@ -20,13 +20,13 @@
 // MANIFEST: functions to manipulate integra_passs
 //
 
-#include <change.h>
-#include <change/env_set.h>
-#include <error.h> // for assert
-#include <os.h>
-#include <project/history.h>
-#include <sub.h>
-#include <trace.h>
+#include <libaegis/change.h>
+#include <libaegis/change/env_set.h>
+#include <common/error.h> // for assert
+#include <libaegis/os.h>
+#include <libaegis/project/history.h>
+#include <libaegis/sub.h>
+#include <common/trace.h>
 
 
 void
@@ -64,7 +64,7 @@ change_run_integrate_pass_notify_command(change_ty *cp)
     //
     // execute the command
     //
-    bl = project_baseline_path_get(cp->pp, 0);
+    bl = cp->pp->baseline_path_get();
     change_env_set(cp, 0);
     project_become(cp->pp);
     os_execute(the_command, OS_EXEC_FLAG_NO_INPUT + OS_EXEC_FLAG_ERROK, bl);

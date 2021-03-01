@@ -1,29 +1,29 @@
-/*
- *	aegis - project change supervisor
- *	Copyright (C) 2003 Peter Miller;
- *	All rights reserved.
- *
- *	This program is free software; you can redistribute it and/or modify
- *	it under the terms of the GNU General Public License as published by
- *	the Free Software Foundation; either version 2 of the License, or
- *	(at your option) any later version.
- *
- *	This program is distributed in the hope that it will be useful,
- *	but WITHOUT ANY WARRANTY; without even the implied warranty of
- *	MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
- *	GNU General Public License for more details.
- *
- *	You should have received a copy of the GNU General Public License
- *	along with this program; if not, write to the Free Software
- *	Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111, USA.
- *
- * MANIFEST: interface definition for common/page.c
- */
+//
+//	aegis - project change supervisor
+//	Copyright (C) 2003, 2005, 2006 Peter Miller;
+//	All rights reserved.
+//
+//	This program is free software; you can redistribute it and/or modify
+//	it under the terms of the GNU General Public License as published by
+//	the Free Software Foundation; either version 2 of the License, or
+//	(at your option) any later version.
+//
+//	This program is distributed in the hope that it will be useful,
+//	but WITHOUT ANY WARRANTY; without even the implied warranty of
+//	MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+//	GNU General Public License for more details.
+//
+//	You should have received a copy of the GNU General Public License
+//	along with this program; if not, write to the Free Software
+//	Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111, USA.
+//
+// MANIFEST: interface definition for common/page.c
+//
 
 #ifndef COMMON_PAGE_H
 #define COMMON_PAGE_H
 
-#include <main.h>
+#include <common/main.h>
 
 /** \addtogroup Page
   * \brief Page size manipulation
@@ -31,10 +31,10 @@
   * @{
   */
 
-/*
- * These error values are returned by the page_width_set and
- * page_length_set functions.
- */
+//
+// These error values are returned by the page_width_set and
+// page_length_set functions.
+//
 #define PAGE_SET_ERROR_NONE 0
 #define PAGE_SET_ERROR_DUPLICATE -1
 #define PAGE_SET_ERROR_RANGE -2
@@ -50,4 +50,4 @@ int page_length_set(int rows);
 int page_length_get(int);
 
 /** @} */
-#endif /* COMMON_PAGE_H */
+#endif // COMMON_PAGE_H

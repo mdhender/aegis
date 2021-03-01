@@ -20,24 +20,24 @@
 // MANIFEST: functions to manipulate curls
 //
 
-#include <ac/ctype.h>
-#include <ac/curl/curl.h>
-#include <ac/errno.h>
-#include <ac/stdlib.h>
-#include <ac/string.h>
-#include <ac/time.h>
-#include <ac/unistd.h>
+#include <common/ac/ctype.h>
+#include <common/ac/curl/curl.h>
+#include <common/ac/errno.h>
+#include <common/ac/stdlib.h>
+#include <common/ac/string.h>
+#include <common/ac/time.h>
+#include <common/ac/unistd.h>
 
-#include <error.h>
-#include <input/curl.h>
-#include <mem.h>
-#include <nstring.h>
-#include <option.h>
-#include <os.h>
-#include <page.h>
-#include <sub.h>
-#include <itab.h>
-#include <url.h>
+#include <common/error.h>
+#include <libaegis/input/curl.h>
+#include <common/mem.h>
+#include <common/nstring.h>
+#include <libaegis/option.h>
+#include <libaegis/os.h>
+#include <common/page.h>
+#include <libaegis/sub.h>
+#include <common/itab.h>
+#include <libaegis/url.h>
 
 #ifdef HAVE_LIBCURL
 

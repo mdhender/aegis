@@ -1,6 +1,6 @@
 //
 //      aegis - project change supervisor
-//      Copyright (C) 1991-1999, 2001-2005 Peter Miller;
+//      Copyright (C) 1991-1999, 2001-2006 Peter Miller;
 //      All rights reserved.
 //
 //      This program is free software; you can redistribute it and/or modify
@@ -20,35 +20,35 @@
 // MANIFEST: functions for implementing integrate begin undo
 //
 
-#include <ac/stdio.h>
-#include <ac/stdlib.h>
-#include <ac/string.h>
-#include <ac/sys/types.h>
+#include <common/ac/stdio.h>
+#include <common/ac/stdlib.h>
+#include <common/ac/string.h>
+#include <common/ac/sys/types.h>
 #include <sys/stat.h>
 
-#include <aeibu.h>
-#include <ael/change/by_state.h>
-#include <arglex2.h>
-#include <arglex/change.h>
-#include <arglex/project.h>
-#include <commit.h>
-#include <change.h>
-#include <change/file.h>
-#include <dir.h>
-#include <file.h>
-#include <help.h>
-#include <lock.h>
-#include <log.h>
-#include <progname.h>
-#include <os.h>
-#include <project.h>
-#include <project/history.h>
-#include <quit.h>
-#include <rss.h>
-#include <sub.h>
-#include <trace.h>
-#include <undo.h>
-#include <user.h>
+#include <aegis/aeibu.h>
+#include <libaegis/ael/change/by_state.h>
+#include <libaegis/arglex2.h>
+#include <libaegis/arglex/change.h>
+#include <libaegis/arglex/project.h>
+#include <libaegis/commit.h>
+#include <libaegis/change.h>
+#include <libaegis/change/file.h>
+#include <libaegis/dir.h>
+#include <libaegis/file.h>
+#include <libaegis/help.h>
+#include <libaegis/lock.h>
+#include <libaegis/log.h>
+#include <common/progname.h>
+#include <libaegis/os.h>
+#include <libaegis/project.h>
+#include <libaegis/project/history.h>
+#include <common/quit.h>
+#include <libaegis/rss.h>
+#include <libaegis/sub.h>
+#include <common/trace.h>
+#include <libaegis/undo.h>
+#include <libaegis/user.h>
 
 
 static void
@@ -206,7 +206,7 @@ integrate_begin_undo_main(void)
         project_name = user_default_project();
     pp = project_alloc(project_name);
     str_free(project_name);
-    project_bind_existing(pp);
+    pp->bind_existing();
 
     //
     // locate user data
@@ -224,7 +224,7 @@ integrate_begin_undo_main(void)
     //
     // lock the change for writing
     //
-    project_pstate_lock_prepare(pp);
+    pp->pstate_lock_prepare();
     change_cstate_lock_prepare(cp);
     user_ustate_lock_prepare(up);
     lock_take();
@@ -322,7 +322,7 @@ integrate_begin_undo_main(void)
     //
     change_cstate_write(cp);
     user_ustate_write(up);
-    project_pstate_write(pp);
+    pp->pstate_write();
     str_free(dir);
     commit();
     lock_release();

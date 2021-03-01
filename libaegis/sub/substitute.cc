@@ -20,13 +20,13 @@
 // MANIFEST: functions to manipulate substitutes
 //
 
-#include <nstring.h>
-#include <regula_expre.h>
-#include <sub.h>
-#include <sub/substitute.h>
-#include <trace.h>
-#include <wstr/list.h>
-#include <wstring.h>
+#include <common/nstring.h>
+#include <common/regula_expre.h>
+#include <libaegis/sub.h>
+#include <libaegis/sub/substitute.h>
+#include <common/trace.h>
+#include <common/wstr/list.h>
+#include <common/wstring.h>
 
 
 wstring_ty *

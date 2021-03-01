@@ -1,6 +1,6 @@
 .\"
 .\"	aegis - project change supervisor
-.\"	Copyright (C) 2005 Peter Miller;
+.\"	Copyright (C) 2005, 2006 Peter Miller;
 .\"	All rights reserved.
 .\"
 .\"	This program is free software; you can redistribute it and/or modify
@@ -19,14 +19,495 @@
 .\"
 .\" MANIFEST: document describing new 4.21 features
 .\"
-.\" you can create the initial cut of this file using the
-.\"	aereport -f bl/bl/lib/report/chan_so.rpt -p aegis.4 -c 21 -unf
-.\" command, and then editing it to be more appropriate.
-.\"
-.\" .PP
-.\" .if n *
-.\" .if t \(bu
-.\" .\" Change NN
+.\" ------------------------------------------------------------------------
+.\" BUG FIXES:
+.PP
+.if n *
+.if t \(bu
+.\" Change 218
+A bug has been fixed in the \fIaeclean\fP(1) command,
+it now correctly resets the change build and test times.
+.PP
+.if n *
+.if t \(bu
+.\" Change 216
+A bug has been fixed in writing of tar and cpio data, in cases where
+there was one byte too much padding.
+.PP
+.if n *
+.if t \(bu
+.\" Change 411
+A bug has been fixed in the \fIaeintegratq\fP(1) command,
+it no longer ignores change number zero.
+.PP
+.if n *
+.if t \(bu
+.\" Change 201
+A bug has been fixed in the \fIaepromptcmd\fP(1) comand, it now
+understands that when the build command is "exit 0" then no build is
+required.
+.PP
+.if n *
+.if t \(bu
+.\" Change 161
+The \fIaede\fP(1) comand now runs the
+\fIreview_\%pass_\%notify_\%command\fP (instead of the
+\fIdevelop_\%end_\%notify_\%command\fP) for projects configured to skip
+the \fIbeing reviewed\fP state.
+.PP
+.if n *
+.if t \(bu
+.\" Change 133
+A bug has been fixed in the \fIaeannotate\fP(1) command, it no longer
+uses the wrong timestamp when creating histories for completed branches.
+.PP
+.if n *
+.if t \(bu
+.\" Change 550
+A bug in the \fIaed\fP(1) command has been fixed, it no longer reports a
+bug when trying to merge a file that has been renamed.
+.PP
+.if n *
+.if t \(bu
+.\" Change 406
+A bug has been fixed in the \fIaet\fP(1) command, it now correctly
+handles multiple architectures being reported for batch test results.
+.PP
+.if n *
+.if t \(bu
+.\" Change 407
+A bug has been fixed in the \fIaet -regression\fP command, the
+\fIbatch_\%test_\%command\fP now correctly handles multiple
+architectures in the results.
+.PP
+.if n *
+.if t \(bu
+.\" Change 112
+The notification scripts distributed with Aegis have been fixed, they now
+correctly substitute recipients' email addresses.
+.PP
+.if n *
+.if t \(bu
+.\" Change 113
+A bug has been fixed in the \fIaediff\fP(1) command, the \fI\-change\fP
+option is now ablew to cope with degenerate forms of the delta name in
+cases like \fIaediff -change D001\fP and similar.
+.PP
+.if n *
+.if t \(bu
+.\" Change 92
+A bug has been fixed in the \fIaenc\fP(1) command, it now takes more
+notice of project testing default settings.
+.PP
+.if n *
+.if t \(bu
+.\" Change 160
+A bug has been fixed in the \fIaeget\fP(1) interface, the adjective for
+the alternate listing link at the bottom of the Integration Histogram
+pages has been inverted.
+.PP
+.if n *
+.if t \(bu
+.\" Change 135
+A bug has been fixed in the \fIaeget\fP(1) command, is is now always
+possible to see the error produced by a script when the \fInoerror\fP
+modifier is specified.
+.PP
+.if n *
+.if t \(bu
+.\" Change 22
+A bug has been fixed in the \fIaeget\fP(1) web interface, it now
+provides the correct links to the more and less detailed file history
+pages.
+.PP
+.if n *
+.if t \(bu
+.\" Change 67
+The \fIaeget\fP(1) web interface no longer emits broken links to removed
+source files.
+.PP
+.if n *
+.if t \(bu
+.\" Change 56
+A bug has been fixed in the \fIaenbr\fP(1) command, the
+\fIprotect_\%database\fP project attribute is now correctly inherited
+from the parent branch.
+.PP
+.if n *
+.if t \(bu
+.\" Change 51
+A bug has been fixed the the RSS feed, where HTML special
+characters were not rendered correctly.
+.PP
+.if n *
+.if t \(bu
+.\" Change 31, 37
+A bug has been fixed in the \fIaeipass\fP(1) command, it no longer
+fails if the \fIhistory_\%create_\%command\fP was not set, it uses the
+\fIhistory_\%put_\%command\fP instead, as it is supposed to.
+.PP
+.if n *
+.if t \(bu
+.\" Change 70
+A bug has been fixed in the \fIaedist \-send\fP command, it no longer
+attempts to include the source of removed files.
+.PP
+.if n *
+.if t \(bu
+.\" Change 126
+A bug has been fixed in the \fIaedist\fP(1) command, it no longer
+segfaults when compiled with DEBUG defined.
+.PP
+.if n *
+.if t \(bu
+.\" Change 99
+A bug has been fixed in the \fIaedist -replay\fP command,
+it no longer downloads change sets more than once.
+.PP
+.if n *
+.if t \(bu
+.\" Change 86
+A bug has been fixed in the \fIaedist \-send\fP command, it no longer
+obtains the wrong version of the project files when building patches for
+files which have been renamed.
+.PP
+.if n *
+.if t \(bu
+.\" Change 78
+A bug has been fixed in the \fIaedist\fP(1) command,
+no longer attempts to include the source of removed files.
+.PP
+.if n *
+.if t \(bu
+.\" Change 38
+A bug has been fixed in the \fIaedist \-pending\fP command,
+it now resolves project aliases.
+.PP
+.if n *
+.if t \(bu
+.\" Change 28
+A bug has been fixed in the \fIaedist\fP(1) command,
+it no longer segfaults on IRIX.
+.PP
+.if n *
+.if t \(bu
+.\" Change 560
+A bug was fixed which caused the development_directory of a branch to
+be recorded as an absolute path in the Aegis meta-data, rather than
+relative to the home of the project.  This problem make it difficult to
+move a project to a different location in the filesystem.
+.\" ------------------------------------------------------------------------
+.\" ENHANCEMENTS:
+.PP
+.if n *
+.if t \(bu
+.\" Change 223, 231
+There is a new open source project example on the web site, which allows
+tarballs to be unpacked and turned into an Aegis project in less than 30
+minutes.
+.PP
+.if n *
+.if t \(bu
+.\" Change 179, 189, 192, 199, 233
+There is a new \fIaefinish\fP(1) command which may be used to read the
+state of a change set and then run all of the Aegis commands necessary
+to to end development.  See \fIaefinish\fP(1) for more information.
+.PP
+.if n *
+.if t \(bu
+.\" Change 229
+The \fIaexml\fP(1) command now understands ".bz" output file suffix, in
+addition to the ".gz" suffix it already understood.  The man page
+has been updated to cover the \-output opion.
+.PP
+.if n *
+.if t \(bu
+.\" Change 227
+The \fIaerevml -send\fP command is now able to produce bzip2 compressed output.
+.PP
+.if n *
+.if t \(bu
+.\" Change 225
+The restrictions on project alias names have been eased.  It is now
+possible to have any alias name you like, so long as it doesn't
+contain any shell special characters.
+.PP
+.if n *
+.if t \(bu
+.\" Change 183
+It is now possible to set change attributes from the command
+line, without going via an editor.  See \fIaeca\fP(1) for more
+information.
+.PP
+.if n *
+.if t \(bu
+.\" Change 185
+The \fIaetar -send\fP command is now able to produce bzip2 compressed output.
+.PP
+.if n *
+.if t \(bu
+.\" Change 215
+There is an new \fIaetar \-exclude\fP command line option, allowing
+you to exclude files from the tarball being unpacked and used to
+for the change set.  This is typically necessary when a tarball
+includes derived files (e.g. the ./configure script in most open
+source projects).
+.PP
+.if n *
+.if t \(bu
+.\" Change 215
+There is a new \fIaetar \-exclude-auto-tools\fP option, which can be
+used to exclude derived files commonly found in open source projects
+using the GNU Autoconf and GNU Automake tools.
+.PP
+.if n *
+.if t \(bu
+.\" Change 19, 35, 90, 102, 111, 150, 152, 159, 163, 166, 198, 202, 206, 211
+There is a new \fIaede-policy\fP(1) command which may be invoked by
+\fIdevelop_\%end_\%policy_\%command\fP to enforce additional local
+policies.  See \fIaede-policy\fP(1) for more information.
+.PP
+.if n *
+.if t \(bu
+.\" Change 205
+When symlinking files (source or derived) into the development
+directory, the last-modified time of the link is set to the
+last-modified time of the file being linked to, when the underlying
+filesystem supports it.
+.PP
+.if n *
+.if t \(bu
+.\" Change 197
+The \fPaefa\fP(1) command now accepts \fIname\fP\fB=\fP\fIvalue\fP
+attribute assignments on the command line.
+.PP
+.if n *
+.if t \(bu
+.\" Change 191
+The \fIaet\fP(1) command now understands \fIname\fP\fB=\fP\fIvalue\fP
+pairs on the command line, and passes them unchanged to the test
+command.  The \-force option implies a \f[CW]force=1\fP variable setting.
+.PP
+.if n *
+.if t \(bu
+.\" Change 188
+The \fIaepatch -send\fP command is now able to produce bzip2 compressed output.
+.PP
+.if n *
+.if t \(bu
+.\" Change 186
+The \fIaesvt\fP(1) command now uses the \fIbzip2\fP(1) algorithm by
+default.  There is a \fPaesvt -compression-algorithm=gzip\fP option for
+forwards
+compatibility.
+.PP
+.if n *
+.if t \(bu
+.\" Change 162, 171
+There is a new \fIae-repo-ci\fP(1) command which may be used in an
+\fIintegrate_\%pass_\%notify_\%command\fP to do a parallel check-in
+of a change set into a second parallel repository.  It understands
+CVS and SVN at the moment; it is easy to extend to understand more
+repository types.  The old \fIae-cvs-ci\fP(1) script now invokes the
+\fIae-repo-ci\fP(1) command.
+.PP
+.if n *
+.if t \(bu
+.\" Change 58, 588
+The build step of the development process can now be made optional.
+Configuring a \fIbuild_\%command\fP of "exit 0" will tell Aegis your project
+does not need to be built.
+.PP
+.if n *
+.if t \(bu
+.\" Change 210
+The \fIaedist --replay\fP command now adds a compatibility modifier to
+all of the downloads URLs, so that the change set received will
+be compatible with the version of aedist at the receiving end.
+.PP
+.if n *
+.if t \(bu
+.\" Change 203
+The \fIaedist \-send\fP command now accepts a \fI\-no-mime-header\fP
+option, to make it easier to validate the \fIaedist\fP(1) output against
+the real \fIcpio\fP(1) command.
+.PP
+.if n *
+.if t \(bu
+.\" Change 187
+The \fIaedist -send\fP command is now able to produce bzip2 compressed output.
+.PP
+.if n *
+.if t \(bu
+.\" Change 177
+There is a new \fIentire-source-hide\fP file attribute which may be used
+to omit site-specific files from \fIaedist \-send\fP change sets.
+.PP
+.if n *
+.if t \(bu
+.\" Change 572
+The \fIaetar \-remove-path-prefix\fP option now also accepts a numeric
+argument.
+.PP
+.if n *
+.if t \(bu
+.\" Change 139
+The \fIaeannotate\fP(1) command now understands the \fI\-change\fP and
+\fI\-delta\fP options.
+.PP
+.if n *
+.if t \(bu
+.\" Change 138
+The \fIaedb\fP(1) command has been enhanced to check that directory
+permissions above the development directory will be traversable
+by the integrator and the reviewers.
+.PP
+.if n *
+.if t \(bu
+.\" Change 128
+The \fIaecpu\fP(1) comand now understands the \fI\-read-only\fP option
+to mean uncopy all of the insulation files.
+.PP
+.if n *
+.if t \(bu
+.\" Change 121
+There is a new \fIaelock\fP(1) command, which may be used to take
+read-only locks.  This can be useful for backups, and other
+activities outside Aegis' scope which require a constant project
+state to operate correctly.
+.PP
+.if n *
+.if t \(bu
+.\" Change 577
+The \fIaedist\fP command can now perform file merges with better results.
+.PP
+.if n *
+.if t \(bu
+.\" Change 176
+The \fIaedist \-receive\fP command now looks to see if the executing
+user has project admin priviledges, and if so does not cancel testing
+exemptions.
+.PP
+.if n *
+.if t \(bu
+.\" Change 157
+The \fIaedist \-receive\fP command now applies patches using the
+\fIpatch\fP(1) command, rather than doing it less well itself.
+.PP
+.if n *
+.if t \(bu
+.\" Change 50, 101
+The \fIaedist \-replay\fP command now attempts to use the same change
+number as on the remote system.  A bug has been fixed in the way
+it looked for change numbers.
+.PP
+.if n *
+.if t \(bu
+.\" Change 52, 60, 97
+There is a new \fIunchanged_\%file_\%integrate_\%pass_\%policy\fP field
+in the project configuration file, which controls what to do when a
+change set contains an unchanged file at integrate pass time.
+.PP
+.if n *
+.if t \(bu
+.\" Change 91
+It is now possible for developers to edit a change description
+when a change is in the awaiting development state, if the
+project has \fIdevelopers_\%may_\%create_\%changes\fP enabled.
+.PP
+.if n *
+.if t \(bu
+.\" Change 59, 68, 77
+The \fIaed\fP(1) command is now optional.
+Configuring a \fIdiff_\%command\fP of "exit 0" will tell Aegis your project
+does not need to be differenced.
+.PP
+.if n *
+.if t \(bu
+.\" Change 178
+The \fIaeget\fP(1) interface now places HTML anchors in description text
+where it recognizes them.
+.PP
+.if n *
+.if t \(bu
+.\" Change 167
+There is a new \fIaeget:inventory:hide\fP change attribute, which may be
+used to prevent strictly local change sets from being advertised in the
+\fIaeget\fP(1) change set inventory.
+.PP
+.if n *
+.if t \(bu
+.\" Change 89
+The \fIaeget\fP(1) web interface file listings pages now link the edit
+numbers to file versions. When history is available there are also links
+to the previous verion, and the arrow is linked to a diff page.
+.PP
+.if n *
+.if t \(bu
+.\" Change 73
+The \fIaeget\fP(1) presentation of file history has been improved to
+highlight renaming of files.
+.PP
+.if n *
+.if t \(bu
+.\" Change 61
+The \fIaeget\fP(1) web interface now has a recursive option on its
+project integration history pages.
+.PP
+.if n *
+.if t \(bu
+.\" Change 53
+The \fIaebuffy\fP(1) command is now able to run the \fItkaer\fP(1)
+command from more states, and it now accepts 'q' to quit.  The display
+of changes with double quotes (") in their brief description has been
+improved.
+.\" ------------------------------------------------------------------------
+.\" BUILD PROBLEMS:
+.PP
+.if n *
+.if t \(bu
+.\" Change 11, 81, 209, 540
+A build problem with libcurl not being present has been fixed.
+.PP
+.if n *
+.if t \(bu
+.\" Change 208
+A bug has been fixed which caused errors when Aegis was compiled
+with g++ 4.1
+.PP
+.if n *
+.if t \(bu
+.\" Change 106
+A build problem has been fixed on Solaris.
+.PP
+.if n *
+.if t \(bu
+.\" Change 98
+A build problem related to \fIbison\fP(1) using \fIlibintl\fP(3) has
+been fixed.
+.PP
+.if n *
+.if t \(bu
+.\" Change 76
+The \f[CW]./configure\fP script has been improved to correctly detect
+installation of the OSSP UUID library.
+.PP
+.if n *
+.if t \(bu
+.\" Change 29, 30
+A build problem on HP/UX has been fixed.
+.PP
+.if n *
+.if t \(bu
+.\" Change 18
+A build problem on MacOS X has been fixed.
+.PP
+.if n *
+.if t \(bu
+.\" Change 16
+A build problem has been fixed where libraries required by the
+\f[CW]./configure\fP script are located under \f[CW]/usr/local/lib\fP or some
+other non-standard place.
 .\" ------------------------------------------------------------------------
 .\" Place new text above this line.
 .SS Version 4.21 (10-Nov-2005)

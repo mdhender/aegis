@@ -1,6 +1,6 @@
 //
 //	aegis - project change supervisor
-//	Copyright (C) 2003, 2004 Peter Miller;
+//	Copyright (C) 2003-2005 Peter Miller;
 //	All rights reserved.
 //
 //	This program is free software; you can redistribute it and/or modify
@@ -20,12 +20,12 @@
 // MANIFEST: functions to manipulate configureds
 //
 
-#include <ac/stdio.h>
+#include <common/ac/stdio.h>
 
-#include <configured.h>
-#include <libdir.h>
-#include <str.h>
-#include <version_stmp.h>
+#include <aegis/configured.h>
+#include <common/libdir.h>
+#include <common/str.h>
+#include <common/version_stmp.h>
 
 
 static void
@@ -53,7 +53,7 @@ void
 configured(void)
 {
     //
-    // The ``aegis --configured'' option is used to the ./configure script
+    // The "aegis --configured" option is used to the ./configure script
     // to look for an existing Aegis installation, and to replicate its
     // configuration settings.
     //

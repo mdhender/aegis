@@ -1,6 +1,6 @@
 //
 //	aegis - project change supervisor
-//	Copyright (C) 2003-2005 Peter Miller;
+//	Copyright (C) 2003-2006 Peter Miller;
 //	All rights reserved.
 //
 //	This program is free software; you can redistribute it and/or modify
@@ -20,14 +20,14 @@
 // MANIFEST: functions to manipulate aedists
 //
 
-#include <ac/string.h>
+#include <common/ac/string.h>
 
-#include <change.h>
-#include <get/change/aedist.h>
-#include <get/command.h>
-#include <libdir.h>
-#include <project.h>
-#include <str_list.h>
+#include <libaegis/change.h>
+#include <aeget/get/change/aedist.h>
+#include <aeget/get/command.h>
+#include <common/libdir.h>
+#include <libaegis/project.h>
+#include <common/str_list.h>
 
 
 void
@@ -81,7 +81,7 @@ get_change_aerevml(change_ty *cp, string_ty *fn, string_list_ty *modifier)
 	    "%s/aerevml -send %s%s -p %s -c %ld "
 		"-content-transfer-encoding=none "
 		"-mime-header "
-		"-no-description-header\n",
+		"-no-description-header",
 	    configured_bindir(),
 	    (entire_source ? "-entire-source" : ""),
 	    (compatibility ? compatibility->str_text : ""),

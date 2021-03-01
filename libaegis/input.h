@@ -1,6 +1,6 @@
 //
 //	aegis - project change supervisor
-//	Copyright (C) 1999, 2002, 2004, 2005 Peter Miller;
+//	Copyright (C) 1999, 2002, 2004-2006 Peter Miller;
 //	All rights reserved.
 //
 //	This program is free software; you can redistribute it and/or modify
@@ -23,8 +23,10 @@
 #ifndef LIBAEGIS_INPUT_H
 #define LIBAEGIS_INPUT_H
 
-#include <nstring.h>
-#include <main.h>
+#include <common/nstring.h>
+#include <common/main.h>
+
+class input; // forward
 
 /**
   * The input_ty abstract class represent a generic input source.
@@ -137,11 +139,11 @@ public:
     virtual long length() = 0;
 
     /**
-      * The getc method is used to get the next character from
+      * The getch method is used to get the next character from
       * the input.  Returns a value<=0 at end-of-file.
       */
     int
-    getc()
+    getch()
     {
 	if (buffer_position < buffer_end)
 	    return *buffer_position++;
@@ -150,7 +152,7 @@ public:
 
     /**
       * The ungetc method is used to push back a character of input.
-      * Think of it as undoing the effects of the getc method.
+      * Think of it as undoing the effects of the getch method.
       */
     void
     ungetc(int c)
@@ -174,7 +176,7 @@ public:
     int
     peek()
     {
-	int c = getc();
+	int c = getch();
 	ungetc(c);
 	return c;
     }
@@ -189,13 +191,19 @@ public:
       * The pushback_transfer method is used by input filter classes'
       * destructors to return unused buffeered input.
       */
-    void pushback_transfer(input_ty *from);
+    void pushback_transfer(input &from);
 
     /**
       * The pullback_transfer method is used by input filter classes'
       * destructors to return unused buffeered input.
       */
     void pullback_transfer(input_ty *to);
+
+    /**
+      * The pullback_transfer method is used by input filter classes'
+      * destructors to return unused buffeered input.
+      */
+    void pullback_transfer(input &to);
 
     /**
       * The unread method may be used to reverse the effects of the read
@@ -223,6 +231,10 @@ public:
       * precise.
       */
     virtual bool is_remote() const;
+
+    void reference_count_up();
+    void reference_count_down();
+    bool reference_count_valid() const { return (reference_count >= 1); }
 
 protected:
     /**
@@ -263,6 +275,8 @@ protected:
     void ungetc_complicated(int c);
 
 private:
+    long reference_count;
+
     /**
       * The buffer instance variable is used to remember the base of
       * a dynamically allocated array used to buffer the data for
@@ -300,14 +314,14 @@ input_name(input_ty *ip)
 inline DEPRECATED void
 input_delete(input_ty *ip)
 {
-    delete ip;
+    ip->reference_count_down();
 }
 
 
 inline DEPRECATED int
 input_getc(input_ty *ip)
 {
-    return ip->getc();
+    return ip->getch();
 }
 
 
@@ -350,6 +364,119 @@ struct output_ty; // existence
   * @param op
   *     The output to be written.
   */
-void input_to_output(input_ty *ip, output_ty *op);
+void input_to_output(input &ip, output_ty *op);
+
+#define input_to_output use_operator_left_instead@
+
+
+/**
+  * The input class is a so-called smart pointer, which automatically
+  * keeps track of input usage, and deletes the instance once the last
+  * consumer has let it go.
+  */
+class input
+{
+    friend class input_ty;
+
+public:
+    /**
+      * The destructor.
+      *
+      * @note
+      *     This destructor is not virtual.
+      *     DO NOT derive from this class.
+      */
+    ~input();
+
+    /**
+      * The default constructor.
+      *
+      * This is dangerous.  The reference will be NULL, so if you try to
+      * dereference it the code will segfault.
+      */
+    input();
+
+    /**
+      * The constructor.
+      *
+      * @param arg
+      *     The input stream to be managed.
+      *     Its reference count will NOT be incrimented, it is assumed
+      *     you are giving the "dumb" pointer to this "smart pointer" to
+      *     manage.
+      */
+    input(input_ty *arg);
+
+    /**
+      * The copy constructor.
+      */
+    input(const input &arg);
+
+    /**
+      * The assignment operator.
+      */
+    input &operator=(const input &arg);
+
+#if 0
+    /**
+      * The assignment operator.
+      *
+      * @param arg
+      *     The input stream to be managed.  Its reference count will
+      *     NOT be incrimented, it is assumed you are giving the "dumb"
+      *     pointer to this "smart pointer" to manage.
+      */
+    input &operator=(input *arg);
+#endif
+
+    /**
+      * The member operator.
+      *
+      * This is why it's called a "smart pointer" when it is actually
+      * neither.  Because we return a pointer to the referenced input_ty
+      * object, this class presents what appears to be the same
+      * interface as input_ty to the interface user.
+      */
+    input_ty *operator->() { return ref; }
+
+    /**
+      * The member operator.
+      *
+      * This is why it's called a "smart pointer" when it is actually
+      * neither.  Because we return a pointer to the referenced input_ty
+      * object, this class presents what appears to be the same
+      * interface as input_ty to the interface user.
+      */
+    const input_ty *operator->() const { return ref; }
+
+    /**
+      * The close method may be used to delete (actually, decriment
+      * the reference count and conditionally delete) the managed
+      * input_ty object.  Acess to this smart pointer will hereafter get
+      * segfaults until another input is assigned to it.
+      */
+    void close();
+
+    /**
+      * The is_open method may be used to determine if this "smart
+      * pointer" is actuallyt pointing at something.  This is an input
+      * source so the open/closed metaphore works for us.
+      */
+    bool is_open() const { return (ref != 0); }
+
+    /**
+      * The valid method is used (when debugging) to determine if this
+      * object is in a valid state.
+      */
+    bool valid() const;
+
+private:
+    /**
+      * The ref instance variable is used to remember the location of
+      * the dynamically allocated input object.
+      */
+    input_ty *ref;
+};
+
 
 #endif // LIBAEGIS_INPUT_H

@@ -1,6 +1,6 @@
 //
 //	aegis - project change supervisor
-//	Copyright (C) 2004 Peter Miller;
+//	Copyright (C) 2004, 2005 Peter Miller;
 //	All rights reserved.
 //
 //	This program is free software; you can redistribute it and/or modify
@@ -20,9 +20,9 @@
 // MANIFEST: functions to manipulate curls
 //
 
-#include <main.h>
-#include <error.h>              // for assert
-#include <ac/curl/curl.h>
+#include <common/main.h>
+#include <common/error.h>              // for assert
+#include <common/ac/curl/curl.h>
 
 
 #ifdef HAVE_CURL_CURL_H

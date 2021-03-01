@@ -341,7 +341,7 @@ in the development directory.
 .if n *
 .if t \(bu
 .\" Change 506
-A bug has been fixed in \fIaemv\fP91) which failed to check the new name
+A bug has been fixed in \fIaemv\fP(1) which failed to check the new name
 against the filename charset, \fIetc\fP.
 .\" ------------------------------------------------------------------------
 .\" Place new text above this line.

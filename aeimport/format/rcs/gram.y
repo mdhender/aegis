@@ -1,6 +1,6 @@
 /*
  *      aegis - project change supervisor
- *      Copyright (C) 2001-2004 Peter Miller;
+ *      Copyright (C) 2001-2005 Peter Miller;
  *      All rights reserved.
  *
  *      This program is free software; you can redistribute it and/or modify
@@ -22,16 +22,16 @@
 
 %{
 
-#include <ac/stdlib.h>
+#include <common/ac/stdlib.h>
 
-#include <error.h>
-#include <format/rcs/gram.h>
-#include <format/rcs/lex.h>
-#include <format/version_list.h>
-#include <gettime.h>
-#include <help.h>
-#include <str_list.h>
-#include <symtab.h>
+#include <common/error.h>
+#include <aeimport/format/rcs/gram.h>
+#include <aeimport/format/rcs/lex.h>
+#include <aeimport/format/version_list.h>
+#include <common/gettime.h>
+#include <libaegis/help.h>
+#include <common/str_list.h>
+#include <common/symtab.h>
 
 %}
 
@@ -149,7 +149,7 @@ find(string_ty *edit)
     rp = (format_version_ty *)symtab_query(stp, edit);
     if (!rp)
     {
-        rp = format_version_new();
+        rp = new format_version_ty();
         symtab_assign(stp, edit, rp);
         rp->edit = str_copy(edit);
         rp->filename_physical = str_copy(pfn);

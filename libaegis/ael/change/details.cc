@@ -1,6 +1,6 @@
 //
 //	aegis - project change supervisor
-//	Copyright (C) 1999, 2001-2005 Peter Miller;
+//	Copyright (C) 1999, 2001-2006 Peter Miller;
 //	All rights reserved.
 //
 //	This program is free software; you can redistribute it and/or modify
@@ -20,28 +20,28 @@
 // MANIFEST: functions to manipulate detailss
 //
 
-#include <ael/change/details.h>
-#include <ael/column_width.h>
-#include <ael/formeditnum.h>
-#include <aer/func/now.h>
-#include <change.h>
-#include <change/file.h>
-#include <col.h>
-#include <error.h> // for assert
-#include <now.h>
-#include <option.h>
-#include <output.h>
-#include <project.h>
-#include <project/file.h>
-#include <project/history.h>
-#include <str.h>
-#include <str_list.h>
-#include <trace.h>
-#include <user.h>
+#include <libaegis/ael/change/details.h>
+#include <libaegis/ael/column_width.h>
+#include <libaegis/ael/formeditnum.h>
+#include <libaegis/aer/func/now.h>
+#include <libaegis/change.h>
+#include <libaegis/change/file.h>
+#include <libaegis/col.h>
+#include <common/error.h> // for assert
+#include <common/now.h>
+#include <libaegis/option.h>
+#include <libaegis/output.h>
+#include <libaegis/project.h>
+#include <libaegis/project/file.h>
+#include <libaegis/project/history.h>
+#include <common/str.h>
+#include <common/str_list.h>
+#include <common/trace.h>
+#include <libaegis/user.h>
 
 
 static void
-showtime(output_ty *fp, time_t when, int exempt)
+showtime(output_ty *fp, time_t when, bool exempt)
 {
     if (when)
     {
@@ -254,7 +254,7 @@ list_change_details_columns::list(change_ty *cp, bool recurse)
 	//
 	// list the sub changes
 	//
-	project_ty *sub_pp = project_bind_branch(cp->pp, cp);
+	project_ty *sub_pp = cp->pp->bind_branch(cp);
 	for (size_t j = 0;; ++j)
 	{
 	    long sub_cn;
@@ -290,7 +290,10 @@ list_change_details_columns::list(change_ty *cp, bool recurse)
 	(cstate_data->architecture->length == 1 ? "" : "S")
     );
     col_eoln(colp);
-    body_col->fputs("This change must build and test in");
+    body_col->fputs("This change must ");
+    if (change_build_required(cp))
+	body_col->fputs("build and ");
+    body_col->fputs("test in");
     if (cstate_data->architecture->length > 1)
 	body_col->fputs(" each of");
     body_col->fputs(" the");
@@ -353,7 +356,7 @@ list_change_details_columns::list(change_ty *cp, bool recurse)
 	    done.push_back(tp->variant);
 	    if (tp->node)
 		host_col->fputs(tp->node);
-	    showtime(build_col, tp->build_time, 0);
+	    showtime(build_col, tp->build_time, !change_build_required(cp));
 	    showtime(test_col, tp->test_time, cstate_data->test_exempt);
 	    showtime
 	    (
@@ -380,10 +383,10 @@ list_change_details_columns::list(change_ty *cp, bool recurse)
 	    done.push_back(tp->variant);
 	    if (tp->node)
 		host_col->fputs(tp->node);
-	    showtime(build_col, tp->build_time, 1);
-	    showtime(test_col, tp->test_time, 1);
-	    showtime(test_bl_col, tp->test_baseline_time, 1);
-	    showtime(test_reg_col, tp->regression_test_time, 1);
+	    showtime(build_col, tp->build_time, true);
+	    showtime(test_col, tp->test_time, true);
+	    showtime(test_bl_col, tp->test_baseline_time, true);
+	    showtime(test_reg_col, tp->regression_test_time, true);
 	    col_eoln(colp);
 	}
 
@@ -394,7 +397,12 @@ list_change_details_columns::list(change_ty *cp, bool recurse)
 	    test_bl_col->fputs("---------\n");
 	    test_reg_col->fputs("---------\n");
 
-	    showtime(build_col, cstate_data->build_time, 0);
+	    showtime
+    	    (
+		build_col,
+		cstate_data->build_time,
+		!change_build_required(cp)
+	    );
 	    showtime
 	    (
 		test_col,
@@ -495,9 +503,8 @@ list_change_details_columns::list(change_ty *cp, bool recurse)
 		fstate_src_ty   *psrc_data;
 
 		//
-		// The current head revision of the
-		// branch may not equal the version
-		// ``originally'' copied.
+                // The current head revision of the branch may not equal
+                // the version "originally" copied.
 		//
 		psrc_data =
 		    project_file_find
@@ -519,7 +526,7 @@ list_change_details_columns::list(change_ty *cp, bool recurse)
 	    if (src_data->edit_origin_new)
 	    {
 		//
-		// The ``cross branch merge'' version.
+		// The "cross branch merge" version.
 		//
 		assert(src_data->edit_origin_new->revision);
 		edit_col->end_of_line();
@@ -656,7 +663,7 @@ list_change_details_columns::list(change_ty *cp, bool recurse)
     //
     if (cstate_data->branch && recurse)
     {
-	project_ty *sub_pp = project_bind_branch(cp->pp, cp);
+	project_ty *sub_pp = cp->pp->bind_branch(cp);
 	for (size_t j = 0;; ++j)
 	{
 	    long sub_cn;
@@ -693,7 +700,7 @@ list_change_details(string_ty *project_name, long change_number,
 	project_name = str_copy(project_name);
     pp = project_alloc(project_name);
     str_free(project_name);
-    project_bind_existing(pp);
+    pp->bind_existing();
 
     //
     // locate user data

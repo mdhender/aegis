@@ -1,6 +1,6 @@
 //
 //	aegis - project change supervisor
-//	Copyright (C) 1999, 2000, 2002, 2004 Peter Miller;
+//	Copyright (C) 1999, 2000, 2002, 2004, 2005 Peter Miller;
 //	All rights reserved.
 //
 //	This program is free software; you can redistribute it and/or modify
@@ -20,13 +20,13 @@
 // MANIFEST: functions to manipulate frees
 //
 
-#include <change.h>
-#include <error.h> // for assert
-#include <mem.h>
-#include <project.h>
-#include <str_list.h>
-#include <symtab.h>
-#include <trace.h>
+#include <libaegis/change.h>
+#include <common/error.h> // for assert
+#include <common/mem.h>
+#include <libaegis/project.h>
+#include <common/str_list.h>
+#include <common/symtab.h>
+#include <common/trace.h>
 
 
 void
@@ -42,33 +42,35 @@ change_free(change_ty *cp)
 	assert(cp->pp);
 	project_free(cp->pp);
 	if (cp->cstate_filename)
-		str_free(cp->cstate_filename);
+	    str_free(cp->cstate_filename);
 	if (cp->fstate_filename)
-		str_free(cp->fstate_filename);
+	    str_free(cp->fstate_filename);
 	if (cp->pfstate_filename)
-		str_free(cp->pfstate_filename);
+	    str_free(cp->pfstate_filename);
 	if (cp->cstate_data)
-		cstate_type.free(cp->cstate_data);
+	    cstate_type.free(cp->cstate_data);
 	if (cp->fstate_data)
-		fstate_type.free(cp->fstate_data);
+	    fstate_type.free(cp->fstate_data);
 	if (cp->fstate_stp)
-		symtab_free(cp->fstate_stp);
+	    symtab_free(cp->fstate_stp);
+	if (cp->fstate_uuid_stp)
+	    symtab_free(cp->fstate_uuid_stp);
 	if (cp->top_path_unresolved)
-		str_free(cp->top_path_unresolved);
+	    str_free(cp->top_path_unresolved);
 	if (cp->top_path_resolved)
-		str_free(cp->top_path_resolved);
+	    str_free(cp->top_path_resolved);
 	if (cp->development_directory_unresolved)
-		str_free(cp->development_directory_unresolved);
+	    str_free(cp->development_directory_unresolved);
 	if (cp->development_directory_resolved)
-		str_free(cp->development_directory_resolved);
+	    str_free(cp->development_directory_resolved);
 	if (cp->integration_directory_unresolved)
-		str_free(cp->integration_directory_unresolved);
+	    str_free(cp->integration_directory_unresolved);
 	if (cp->integration_directory_resolved)
-		str_free(cp->integration_directory_resolved);
+	    str_free(cp->integration_directory_resolved);
 	if (cp->logfile)
-		str_free(cp->logfile);
+	    str_free(cp->logfile);
 	if (cp->pconf_data)
-		pconf_type.free(cp->pconf_data);
+	    pconf_type.free(cp->pconf_data);
 	for (j = 0; j < view_path_MAX; ++j)
 	{
 	    if (cp->file_list[j])

@@ -1,6 +1,6 @@
 //
 //	aegis - project change supervisor
-//	Copyright (C) 1991-1995, 1997, 1999, 2002-2004 Peter Miller;
+//	Copyright (C) 1991-1995, 1997, 1999, 2002-2006 Peter Miller;
 //	All rights reserved.
 //
 //	This program is free software; you can redistribute it and/or modify
@@ -20,19 +20,19 @@
 // MANIFEST: functions for execution trace
 //
 
-#include <ac/ctype.h>
-#include <ac/stdio.h>
-#include <ac/string.h>
-#include <ac/stddef.h>
-#include <ac/stdarg.h>
-#include <ac/time.h>
+#include <common/ac/ctype.h>
+#include <common/ac/stdio.h>
+#include <common/ac/string.h>
+#include <common/ac/stddef.h>
+#include <common/ac/stdarg.h>
+#include <common/ac/time.h>
 
-#include <error.h>
-#include <mem.h>
-#include <progname.h>
-#include <str.h>
-#include <nstring.h>
-#include <trace.h>
+#include <common/error.h>
+#include <common/mem.h>
+#include <common/progname.h>
+#include <common/str.h>
+#include <common/nstring.h>
+#include <common/trace.h>
 
 
 #define INDENT 2
@@ -137,14 +137,12 @@ trace_putchar(int c)
     }
     if (!cp)
     {
-	strlcpy(buffer, progname_get(), sizeof(buffer));
-	cp = buffer + strlen(buffer);
+	cp = strendcpy(buffer, progname_get(), buffer + sizeof(buffer));
 	if (cp > buffer + 6)
 	    cp = buffer + 6;
 	*cp++ = ':';
 	*cp++ = '\t';
-	strlcpy(cp, file_name->str_text, buffer + sizeof(buffer) - cp);
-	cp += strlen(cp);
+	cp = strendcpy(cp, file_name->str_text, buffer + sizeof(buffer));
 	*cp++ = ':';
 	*cp++ = '\t';
 	snprintf(cp, buffer + sizeof(buffer) - cp, "%d:\t", line_number);

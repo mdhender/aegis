@@ -1,6 +1,6 @@
 .\"
 .\"	aegis - project change supervisor
-.\"	Copyright (C) 1997, 1999, 2002, 2003 Peter Miller;
+.\"	Copyright (C) 1997, 1999, 2002, 2003, 2005 Peter Miller;
 .\"	All rights reserved.
 .\"
 .\"	This program is free software; you can redistribute it and/or modify
@@ -125,7 +125,7 @@ will be artificially segmented into two modules, each with its own
 of the module \f(CWMakefile\fPs.
 .LP
 This example is intentionally artificial, and thoroughly so.
-However, all ``modularity'' of all projects is artificial, to some extent.
+However, all \[lq]modularity\[rq] of all projects is artificial, to some extent.
 Consider: for many projects, the linker flattens it all out again,
 right at the end.
 .LP
@@ -220,7 +220,7 @@ When the program is linked \f(CWmain.o\fP and \f(CWparse.o\fP are
 non-trivially incompatible.  That is, the program is
 .I wrong.
 .nh 2 "Traditional Solutions"
-There are three traditional fixes for the above ``glitch.''
+There are three traditional fixes for the above \[lq]glitch.\[rq]
 .nh 3 "Reshuffle"
 The first is to manually tweak the order
 of the modules in the top-level \f(CWMakefile\fP.
@@ -254,7 +254,7 @@ that which
 could have used.
 Until the next dependency is added...
 .LP
-Note that ``\f[CW]make -j\fP'' (parallel build) invalidates many of
+Note that \[lq]\f[CW]make -j\fP\[rq] (parallel build) invalidates many of
 the ordering assumptions implicit in the reshuffle solution, making it
 useless.  And then there are all  of the sub-makes all doing their
 builds in parallel, too.
@@ -306,7 +306,7 @@ All of \f(CWbee\fP will always be rebuilt including \f(CWparse.h\fP,
 and so \f(CWmain.o\fP will always be rebuilt,
 .I "even if everything was self consistent."
 .LP
-Note that ``\f[CW]make -j\fP'' (parallel build) invalidates many of
+Note that \[lq]\f[CW]make -j\fP\[rq] (parallel build) invalidates many of
 the ordering assumptions implicit in the overkill solution, making
 it useless, because all of the sub-makes are all doing their builds
 ("clean" then "all") in parallel, constantly interfering with each other

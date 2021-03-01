@@ -20,9 +20,7 @@
 // MANIFEST: implementation of the rfc822_functor_vers_search class
 //
 
-#pragma implementation "rfc822_functor_version_search"
-
-#include <rfc822/functor/vers_search.h>
+#include <libaegis/rfc822/functor/vers_search.h>
 
 
 rfc822_functor_version_search::~rfc822_functor_version_search()

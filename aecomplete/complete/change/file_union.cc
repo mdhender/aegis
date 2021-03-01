@@ -1,6 +1,6 @@
 //
 //	aegis - project change supervisor
-//	Copyright (C) 2002-2004 Peter Miller;
+//	Copyright (C) 2002-2005 Peter Miller;
 //	All rights reserved.
 //
 //	This program is free software; you can redistribute it and/or modify
@@ -20,19 +20,19 @@
 // MANIFEST: functions to manipulate file_unions
 //
 
-#include <ac/stddef.h>
-#include <ac/sys/types.h>
+#include <common/ac/stddef.h>
+#include <common/ac/sys/types.h>
 #include <sys/stat.h>
 
-#include <change.h>
-#include <change/file.h>
-#include <complete/change/file_union.h>
-#include <complete/private.h>
-#include <dir_stack.h>
-#include <os.h>
-#include <project/file.h>
-#include <shell.h>
-#include <str_list.h>
+#include <libaegis/change.h>
+#include <libaegis/change/file.h>
+#include <aecomplete/complete/change/file_union.h>
+#include <aecomplete/complete/private.h>
+#include <libaegis/dir_stack.h>
+#include <libaegis/os.h>
+#include <libaegis/project/file.h>
+#include <aecomplete/shell.h>
+#include <common/str_list.h>
 
 
 struct complete_change_file_union_ty

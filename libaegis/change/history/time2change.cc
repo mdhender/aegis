@@ -1,6 +1,6 @@
 //
 //	aegis - project change supervisor
-//	Copyright (C) 2002-2004 Peter Miller;
+//	Copyright (C) 2002-2006 Peter Miller;
 //	All rights reserved.
 //
 //	This program is free software; you can redistribute it and/or modify
@@ -20,9 +20,9 @@
 // MANIFEST: functions to manipulate time2changes
 //
 
-#include <change/branch.h>
-#include <error.h> // for assert
-#include <project.h>
+#include <libaegis/change/branch.h>
+#include <common/error.h> // for assert
+#include <libaegis/project.h>
 
 
 long
@@ -33,7 +33,7 @@ change_history_change_by_timestamp(project_ty *pp, time_t when)
     long            j;
     change_ty       *cp;
 
-    cp = project_change_get(pp);
+    cp = pp->change_get();
     cstate_data = change_cstate_get(cp);
     if (!cstate_data->branch)
 	return 0;

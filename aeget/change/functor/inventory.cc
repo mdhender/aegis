@@ -1,6 +1,6 @@
 //
 //	aegis - project change supervisor
-//	Copyright (C) 2004, 2005 Peter Miller;
+//	Copyright (C) 2004-2006 Peter Miller;
 //	All rights reserved.
 //
 //	This program is free software; you can redistribute it and/or modify
@@ -20,27 +20,29 @@
 // MANIFEST: implementation of the change_functor_inventory class
 //
 
-#pragma implementation "change_functor_inventory"
+#include <common/ac/ctype.h>
+#include <common/ac/stdio.h>
+#include <common/ac/string.h>
 
-#include <ac/ctype.h>
-#include <ac/stdio.h>
-#include <ac/string.h>
+#include <common/error.h> // for assert
+#include <common/uuidentifier.h>
+#include <common/version_stmp.h>
+#include <libaegis/attribute.h>
+#include <libaegis/change/attributes.h>
+#include <libaegis/change/branch.h>
+#include <libaegis/change.h>
+#include <libaegis/project.h>
 
-#include <attribute.h>
-#include <change.h>
-#include <change/branch.h>
-#include <change/functor/inventory.h>
-#include <emit/project.h>
-#include <error.h> // for assert
-#include <http.h>
-#include <project.h>
-#include <uuidentifier.h>
+#include <aeget/change/functor/inventory.h>
+#include <aeget/emit/project.h>
+#include <aeget/http.h>
 
 
-change_functor_inventory::change_functor_inventory(bool arg1,
-	project_ty *arg2) :
+change_functor_inventory::change_functor_inventory(bool arg1, project_ty *arg2,
+	bool arg3) :
     change_functor(arg1),
     pp(arg2),
+    include_original_uuid(arg3),
     num(0)
 {
     html_header(pp, 0);
@@ -81,17 +83,29 @@ max_printable(const char *s)
 void
 change_functor_inventory::print_one_line(change_ty *cp, string_ty *uuid)
 {
+    //
+    // If the change's aeget:inventory:hide attribute is true, do not
+    // emit this change set into the inventory listing used by
+    // aedist --missing, et al.
+    //
+    if (change_attributes_find_boolean(cp, "aeget:inventory:hide"))
+	return;
+
     printf("<tr class=\"%s-group\">", (((num++ / 3) & 1) ? "even" : "odd"));
     printf("<td>");
     emit_change_href(cp, "menu");
     html_encode_string(change_version_get(cp));
     printf("</a></td><td><tt>");
-    emit_change_href(cp, "aedist");
+    emit_change_href
+    (
+	cp,
+	nstring::format("aedist+compat=%s", version_stamp()).c_str()
+    );
     html_encode_string(uuid);
     printf("</a></tt></td><td>");
 
     //
-    // We are deliberatly not using emit_change_brief_description to
+    // We are deliberately not using emit_change_brief_description to
     // ensure that this row only ever takes one line, and contains no
     // html anchor.  This makes it simple to parse in aedist --missing
     //
@@ -102,13 +116,14 @@ change_functor_inventory::print_one_line(change_ty *cp, string_ty *uuid)
     printf("</td></tr>\n");
 }
 
+
 void
 change_functor_inventory::operator()(change_ty *cp)
 {
     cstate_ty *cstate_data = change_cstate_get(cp);
     if (cstate_data->uuid)
 	print_one_line(cp, cstate_data->uuid);
-    if (cstate_data->attribute)
+    if (include_original_uuid && cstate_data->attribute)
     {
 	for (size_t j = 0; j < cstate_data->attribute->length; ++j)
 	{
@@ -138,6 +153,19 @@ change_functor_inventory::~change_functor_inventory()
     printf("<tr class=\"even-group\"><td colspan=3>\n");
     printf("Listed %lu change sets.</td></tr>\n", (unsigned long)num);
     printf("</table></div>\n");
+
+    printf("<p>There is also a page containing this list ");
+    if (include_original_uuid)
+    {
+	emit_project_href(pp, "inventory");
+	printf("without");
+    }
+    else
+    {
+	emit_project_href(pp, "inventory+all");
+	printf("with");
+    }
+    printf("</a> the original-uuid attributes.</p>");
 
     printf("<hr>\n");
     printf("A similar report may be obtained from the command line, with\n");

@@ -20,14 +20,14 @@
 // MANIFEST: functions to manipulate outputs through a common API
 //
 
-#include <ac/string.h>
+#include <common/ac/string.h>
 
-#include <error.h> // for assert
-#include <mprintf.h>
-#include <nstring.h>
-#include <output.h>
-#include <page.h>
-#include <trace.h>
+#include <common/error.h> // for assert
+#include <common/mprintf.h>
+#include <common/nstring.h>
+#include <libaegis/output.h>
+#include <common/page.h>
+#include <common/trace.h>
 
 
 output_ty::~output_ty()

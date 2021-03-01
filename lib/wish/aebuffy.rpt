@@ -60,7 +60,7 @@ auto queue;
 queue = { };
 
 auto t, elapsed, prio, denom;
-auto ps, cn, cs, weight, sfx, pfx, state, chwid;
+auto ps, cn, cs, weight, sfx, pfx, state, chwid, cdesc;
 chwid = 6;
 
 while (project_pos < count(project_list))
@@ -151,7 +151,9 @@ while (project_pos < count(project_list))
 	print(sprintf(".frame.blurb insert end \"%-4.4s\"",
 	    abbrev[q.q_state] != "" ? abbrev[q.q_state] : q.q_state));
 	print(sprintf(".frame.blurb insert end \"%6.2f  \"", q.q_elapsed));
-	print(".frame.blurb insert end \"" ##
+
+	cdesc = subst("\"", "\\\\\"", q.q_description);
+	print(".frame.blurb insert end \"" ## split(cdesc, "\n")[0]
 	    quote_tcl(split(q.q_description, "\n")[0]) ## "\\n\"");
 
 	/* Set the background color of the change number only */

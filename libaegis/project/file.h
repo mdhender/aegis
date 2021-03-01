@@ -1,31 +1,33 @@
-/*
- *	aegis - project change supervisor
- *	Copyright (C) 1995-1997, 2002, 2003 Peter Miller;
- *	All rights reserved.
- *
- *	This program is free software; you can redistribute it and/or modify
- *	it under the terms of the GNU General Public License as published by
- *	the Free Software Foundation; either version 2 of the License, or
- *	(at your option) any later version.
- *
- *	This program is distributed in the hope that it will be useful,
- *	but WITHOUT ANY WARRANTY; without even the implied warranty of
- *	MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
- *	GNU General Public License for more details.
- *
- *	You should have received a copy of the GNU General Public License
- *	along with this program; if not, write to the Free Software
- *	Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111, USA.
- *
- * MANIFEST: interface definition for aegis/project/file/...c
- */
+//
+//	aegis - project change supervisor
+//	Copyright (C) 1995-1997, 2002, 2003, 2005, 2006 Peter Miller;
+//	All rights reserved.
+//
+//	This program is free software; you can redistribute it and/or modify
+//	it under the terms of the GNU General Public License as published by
+//	the Free Software Foundation; either version 2 of the License, or
+//	(at your option) any later version.
+//
+//	This program is distributed in the hope that it will be useful,
+//	but WITHOUT ANY WARRANTY; without even the implied warranty of
+//	MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+//	GNU General Public License for more details.
+//
+//	You should have received a copy of the GNU General Public License
+//	along with this program; if not, write to the Free Software
+//	Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111, USA.
+//
+// MANIFEST: interface definition for aegis/project/file/...c
+//
 
 #ifndef AEGIS_PROJECT_FILE_H
 #define AEGIS_PROJECT_FILE_H
 
-#include <project.h>
-#include <fstate.h>
-#include <view_path.h>
+#include <libaegis/fstate.h>
+#include <libaegis/project.h>
+#include <libaegis/view_path.h>
+
+struct cstate_src_ty; // forward
 
 /**
   * The project_file_find function is used to find the state information
@@ -54,13 +56,16 @@ fstate_src_ty *project_file_find(project_ty *pp, string_ty *filename,
   *	The project to search.
   * \param uuid
   *	The UUID of the file to search for.
-  * \param as_view_path
+  * \param vp
   *	If this is true, apply viewpath rules to the file (i.e. if
   *	it is removed, return a null pointer) if false return first
   *	instance found.
   */
-fstate_src_ty *project_file_find_by_uuid(project_ty *pp, string_ty *uuid,
-    view_path_ty as_view_path);
+DEPRECATED inline fstate_src_ty *
+project_file_find_by_uuid(project_ty *pp, string_ty *uuid, view_path_ty vp)
+{
+    return pp->file_find_by_uuid(uuid, vp);
+}
 
 /**
   * The project_file_find_by_meta function is used to find the state
@@ -81,7 +86,92 @@ fstate_src_ty *project_file_find_by_uuid(project_ty *pp, string_ty *uuid,
 fstate_src_ty *project_file_find_by_meta(project_ty *pp, fstate_src_ty *c_src,
     view_path_ty as_view_path);
 
-string_ty *project_file_path(project_ty *, string_ty *);
+/**
+  * The project_file_find function is used to find the state information
+  * of a file within the project, given the corresponding change file's
+  * meta-data.  It will search the immediate branch, and then any
+  * ancestor branches until the file is found.
+  *
+  * \param pp
+  *	The project to search.
+  * \param c_src
+  *     The change file meta-data for which the corresponding project
+  *     file is sought.
+  * \param as_view_path
+  *	If this is true, apply viewpath rules to the file (i.e. if
+  *	it is removed, return a null pointer) if false return first
+  *	instance found.
+  */
+fstate_src_ty *project_file_find(project_ty *pp, cstate_src_ty *c_src,
+    view_path_ty as_view_path);
+
+/**
+  * The project_file_path function is used to obtain the absolute path
+  * to the given project file.
+  *
+  * @param pp
+  *     The project in question.
+  * @param file_name
+  *     The name of the file in question.
+  * @returns
+  *     string containing absolute path of file
+  * @note
+  *     It is a bug to callthis function for a file which does not
+  *     exist, or is not a project source file, or is a removed source
+  *     file.
+  */
+string_ty *project_file_path(project_ty *pp, string_ty *file_name);
+
+/**
+  * The project_file_path function is used to obtain the absolute path
+  * to the given project file.
+  *
+  * @param pp
+  *     The project in question.
+  * @param src
+  *     The file in question.
+  * @returns
+  *     string containing absolute path of file
+  * @note
+  *     It is a bug to callthis function for a file which does not
+  *     exist, or is not a project source file, or is a removed source
+  *     file.
+  */
+string_ty *project_file_path(project_ty *pp, fstate_src_ty *src);
+
+/**
+  * The project_file_path function is used to obtain the absolute path
+  * to the given project file.
+  *
+  * @param pp
+  *     The project in question.
+  * @param src
+  *     The file in question.
+  * @returns
+  *     string containing absolute path of file
+  * @note
+  *     It is a bug to callthis function for a file which does not
+  *     exist, or is not a project source file, or is a removed source
+  *     file.
+  */
+string_ty *project_file_path(project_ty *pp, cstate_src_ty *src);
+
+/**
+  * The project_file_path_by_uuid function is used to obtain the
+  * absolute path to a project file specified by its UUID.
+  *
+  * @param pp
+  *     The project in question.
+  * @param uuid
+  *     The UUID of the file in question.
+  * @returns
+  *     string containing absolute path of file
+  * @note
+  *     It is a bug to callthis function for a file which does not
+  *     exist, or is not a project source file, or is a removed source
+  *     file.
+  */
+string_ty *project_file_path_by_uuid(project_ty *pp, string_ty *src);
 
 /**
   * The project_file_find_fuzzy function is used to find the state
@@ -99,8 +189,12 @@ string_ty *project_file_path(project_ty *, string_ty *);
   *	it is removed, return a null pointer) if false return first
   *	instance found.
   */
-fstate_src_ty *project_file_find_fuzzy(project_ty *pp, string_ty *filename,
-    view_path_ty as_view_path);
+DEPRECATED inline fstate_src_ty *
+project_file_find_fuzzy(project_ty *pp, string_ty *filename,
+    view_path_ty as_view_path)
+{
+    return pp->file_find_fuzzy(filename, as_view_path);
+}
 
 void project_file_directory_query(project_ty *, string_ty *,
     struct string_list_ty *, struct string_list_ty *,
@@ -120,12 +214,15 @@ void project_file_remove(project_ty *, string_ty *);
   * \param as_view_path
   *	If this is false, return all files; if true, ignore removed files.
   */
-fstate_src_ty *project_file_nth(project_ty *pp, size_t n,
-    view_path_ty as_view_path);
+DEPRECATED inline fstate_src_ty *
+project_file_nth(project_ty *pp, size_t n, view_path_ty as_view_path)
+{
+    return pp->file_nth(n, as_view_path);
+}
 
 void project_search_path_get(project_ty *, struct string_list_ty *, int);
 void project_file_shallow(project_ty *, string_ty *, long);
 int project_file_shallow_check(project_ty *, string_ty *);
 string_ty *project_file_version_path(project_ty *, fstate_src_ty *, int *);
 
-#endif /* AEGIS_PROJECT_FILE_H */
+#endif // AEGIS_PROJECT_FILE_H

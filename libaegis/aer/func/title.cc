@@ -1,6 +1,6 @@
 //
 //	aegis - project change supervisor
-//	Copyright (C) 1994-1996, 1999, 2002, 2004 Peter Miller;
+//	Copyright (C) 1994-1996, 1999, 2002, 2004, 2005 Peter Miller;
 //	All rights reserved.
 //
 //	This program is free software; you can redistribute it and/or modify
@@ -20,14 +20,14 @@
 // MANIFEST: functions to implement the builtin title function
 //
 
-#include <aer/expr.h>
-#include <aer/func/print.h>
-#include <aer/func/title.h>
-#include <aer/value/error.h>
-#include <aer/value/string.h>
-#include <aer/value/void.h>
-#include <col.h>
-#include <sub.h>
+#include <libaegis/aer/expr.h>
+#include <libaegis/aer/func/print.h>
+#include <libaegis/aer/func/title.h>
+#include <libaegis/aer/value/error.h>
+#include <libaegis/aer/value/string.h>
+#include <libaegis/aer/value/void.h>
+#include <libaegis/col.h>
+#include <libaegis/sub.h>
 
 
 static int

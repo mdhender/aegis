@@ -1,6 +1,6 @@
 //
 //	aegis - project change supervisor
-//	Copyright (C) 2004, 2005 Peter Miller;
+//	Copyright (C) 2004-2006 Peter Miller;
 //	All rights reserved.
 //
 //	This program is free software; you can redistribute it and/or modify
@@ -89,17 +89,27 @@
 //	S: ok
 //
 
-#include <ac/string.h>
+#include <common/ac/string.h>
 
-#include <module.h>
-#include <request/co.h>
-#include <server.h>
+#include <aecvsserver/module.h>
+#include <aecvsserver/request/co.h>
+#include <aecvsserver/server.h>
 
 
-static void
-run(server_ty *sp, string_ty *fn)
+request_checkout::~request_checkout()
 {
-    module_ty       *mp;
+}
+
+
+request_checkout::request_checkout()
+{
+}
+
+
+void
+request_checkout::run_inner(server_ty *sp, string_ty *fn)
+    const
+{
     size_t          j;
 
     if (server_root_required(sp, "co"))
@@ -150,15 +160,22 @@ run(server_ty *sp, string_ty *fn)
 	return;
     }
 
-    mp = module_find(sp->np->argument_nth(j));
-    module_checkout(mp, sp);
-    module_delete(mp);
+    module mp = module::find(sp->np->argument_nth(j));
+    mp->checkout(sp);
 }
 
 
-const request_ty request_co =
+const char *
+request_checkout::name()
+    const
 {
-    "co",
-    run,
-    1, // reset
-};
+    return "co";
+}
+
+
+bool
+request_checkout::reset()
+    const
+{
+    return true;
+}

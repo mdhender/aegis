@@ -20,11 +20,9 @@
 // MANIFEST: implementation of the process_tail class
 //
 
-#pragma implementation "process_tail"
+#include <common/ac/string.h>
 
-#include <ac/string.h>
-
-#include <process/tail.h>
+#include <aemakefile/process/tail.h>
 
 
 process_tail::~process_tail()

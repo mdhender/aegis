@@ -1,6 +1,6 @@
 #
 # 	aegis - project change supervisor
-# 	Copyright (C) 2002-2005 Peter Miller;
+# 	Copyright (C) 2002-2006 Peter Miller;
 # 	All rights reserved.
 #
 # 	This program is free software; you can redistribute it and/or modify
@@ -28,8 +28,8 @@
 # 	should probably be avoided.
 #
 # 	While Aegis was written by an English speaker, this English
-# 	localization file is necessary, to translate the ``terse
-# 	programmer'' style error messages into something more user
+# 	localization file is necessary, to translate the "terse
+# 	programmer" style error messages into something more user
 # 	friendly.
 #
 # 	Messages which include state names need to leave the state names
@@ -52,7 +52,7 @@
 # -------------------------------------------------------------------------
 #
 msgid	""
-msgstr	"PO-Revision-Date: 2005-11-06\n"
+msgstr	"PO-Revision-Date: 2006-03-02\n"
 	"Last-Translator: Alexey Voinov <voins@voins.program.ru>\n"
 	"MIME-Version: 1.0\n"
 	"Content-Type: text/plain; charset=KOI8-R\n"
@@ -270,9 +270,27 @@ msgid	"$filename modified by history tool"
 msgstr	"исходный файл \"$filename\" был изменён программой хранения "
 	"истории файла"
 
+# TRANSLATION REQUIRED
 #
-# This error message is issued when aet runs a test which returns a ``no
-# result'' exit status.
+# This error message is issued by the aedb command when it finds
+# a problem with the directory permissions above the development
+# directory.  The directories need to be searchable (have the 'x'
+# permission) for the project owner and the reviewers.
+#
+# 	$File_Name	The name of the offending directory.
+# 	$Mode_Change	The additional mode bit required.
+# 	$Mode_Old	The current mode of the directory (optional).
+# 	$Mode_New	The desirable mode of the directory (optional).
+#
+#, fuzzy
+msgid	"$filename needs permissions $mode_change"
+msgstr	"directory \"$filename\" is not traversable, it currently has "
+	"mode $mode_old but is needs at least mode $mode_new, the \"chmod "
+	"$mode_change $filename\" command may be sufficient to fix this"
+
+#
+# This error message is issued when aet runs a test which returns a "no
+# result" exit status.
 #
 # 	$File_Name	The name of the offending file.
 #
@@ -282,8 +300,8 @@ msgstr	"тест \"$filename\" завершился без результата; это могло "
 
 # TRANSLATION REQUIRED
 #
-# This error message is issued when aet runs a test which returns a ``no
-# result'' exit status.
+# This error message is issued when aet runs a test which returns a "no
+# result" exit status.
 #
 # 	$File_Name	The name of the offending file.
 # 	$ARCHitecture	The name of the architecture.
@@ -331,6 +349,18 @@ msgstr	"тест \"$filename\" завершился успешно"
 #, fuzzy
 msgid	"$filename pass, architecture $architecture"
 msgstr	"test \"$filename\" passed on $architecture"
+
+# TRANSLATION_REQUIRED
+#
+# This error message is issued when aede discovers a file in the change
+# that has not been altered.  (Sometimes it is a warning.)
+#
+# 	$File_Name	The offending file.
+#
+#, fuzzy
+msgid	"$filename unchanged"
+msgstr	"the \"$filename\" file has not been changed, it should not be "
+	"included in the change"
 
 # TRANSLATION REQUIRED
 #
@@ -511,6 +541,18 @@ msgstr	"$filename: поле \"$field_name\" искажено"
 
 # TRANSLATION REQUIRED
 #
+# This error message is issued when aede-policy detects a file isung DOS
+# line termination when it must use UNIX line termination.
+#
+# 	$File_Name	The offending file.
+#
+#, fuzzy
+msgid	"$filename: dos line termination"
+msgstr	"the \"$filename\" file uses DOS line termination (CRLF) and it "
+	"should use UNIX line termination (LF)"
+
+# TRANSLATION REQUIRED
+#
 # This warning is issued when an obsolete field is used.
 #
 #      $Name1          The name of the obsolete field.
@@ -530,8 +572,8 @@ msgstr	"$filename: идентификатор группы(GID) этого файла слишком мал "
 	"($number1), он должен быть больше или равен значению переменной "
 	"окружения AEGIS_MIN_GID ($number2).  Скорее всего это результат "
 	"ошибки при резервном копировании и последующем восстановлении "
-	"файлов. Для исправления следует воспользоваться командой ``chgrp "
-	"-R <group> $filename'', с указанием подходящей группы.  "
+	"файлов. Для исправления следует воспользоваться командой \"chgrp "
+	"-R <group> $filename\", с указанием подходящей группы.  "
 	"[Необходимы полномочия администратора(root).]"
 
 #
@@ -571,6 +613,29 @@ msgstr	"найден${pl $n о а} $number серьёзн${plf $n ая ые ых} ошиб${plf "
 
 # TRANSLATION REQUIRED
 #
+# This error message is issued when aede-policy detects a binary file,
+# and you have specified a policy whis disallows such files.
+#
+# 	$File_Name	The offending file name.
+#
+#, fuzzy
+msgid	"$filename: is binary"
+msgstr	"the \"$filename\" file contains binary bytes"
+
+# TRANSLATION REQUIRED
+#
+# This error message is issued when aede-policy detects unprintable
+# (non-ASCII) characters in a file, and you have specified a policy whis
+# disallows such files.
+#
+# 	$File_Name	The offending file name.
+#
+#, fuzzy
+msgid	"$filename: is unprintable"
+msgstr	"the \"$filename\" file contains unprintable characters"
+
+# TRANSLATION REQUIRED
+#
 # This error message is issued by aesvt when the file header within a
 # history file is not in a legal RFC822 format.
 #
@@ -588,6 +653,19 @@ msgstr	"$filename: malformed RFC 822 header line"
 #
 msgid	"$filename: mode is $number1, should be $number2"
 msgstr	"$filename: режим доступа к файлу $number1, а должен быть $number2"
+
+# TRANSLATION REQUIRED
+#
+# This error message is issued by the aede-policy command when a file
+# does not contain and up-to-date copyright notice.
+#
+# 	$File_Name	The name of the offending file.
+# 	$Suggest	A suggested text for the missing notice (optional).
+#
+#, fuzzy
+msgid	"$filename: no current copyright notice"
+msgstr	"$filename: the file does not contain an up-to-date copyright "
+	"notice; a notice of the form \"$suggest\" would be suitable."
 
 #
 # This error message is issued when Aegis is checking a file's owner,
@@ -619,8 +697,8 @@ msgstr	"$filename: идентификатор владельца(UID) этого файла слишком мал "
 	"($number1), он должен быть больше или равен значению переменной "
 	"окружения AEGIS_MIN_UID ($number2).  Скорее всего это результат "
 	"ошибки при резервном копировании и последующем восстановлении "
-	"файлов. Для исправления следует воспользоваться командой ``chown "
-	"-R <user> $filename'', с указанием подходящей группы.  "
+	"файлов. Для исправления следует воспользоваться командой \"chown "
+	"-R <user> $filename\", с указанием подходящей группы.  "
 	"[Необходимы полномочия администратора(root).]"
 
 # TRANSLATION REQUIRED
@@ -1143,7 +1221,7 @@ msgstr	"копирование блока изменений в директорию интеграции"
 #
 # This fatal error message is issued when Aegis determines that the
 # architecture it is currently running on is forbidden by the (5)
-# architecture field of the project ``config'' file.
+# architecture field of the project "aegis.conf" file.
 #
 # 	$Name		The offending architecture name.
 #
@@ -1155,7 +1233,7 @@ msgstr	"архитектура \"$name\" запрещена, команду нельзя выполнить на "
 # This error message is issued when Aegis is unable to determine which
 # architecture it is currently running on.  This means that the
 # architecture does not match any of the architecture patterns specified
-# in the project ``config'' file.
+# in the project "aegis.conf" file.
 #
 # 	$Name		The offending architecture name.
 #
@@ -1166,7 +1244,7 @@ msgstr	"неизвестная архитектура \"$name\""
 # This error message is issued when an architecture appears in the list
 # of architectures the change must apply to, but that architecture name
 # is not present in the project's architecture list in the project
-# ``config'' file.
+# "aegis.conf" file.
 #
 # 	$Name		The name of the offending architecture.
 #
@@ -1200,6 +1278,17 @@ msgstr	"для операции декремента требуется параметр арифметического типа "
 msgid	"arithmetic type required for increment (was given $name)"
 msgstr	"для операции инкремента требуется параметр арифметического типа "
 	"(передано $name)"
+
+# TRANSLATION REQUIRED
+#
+# This fatal error message is issued when a user-supplied string can't
+# be interpreted as an attribute name.
+#
+# 	$Name		The offending string.
+#
+#, fuzzy
+msgid	"attribute $name unknown"
+msgstr	"the attribute \"$name\" does not exist"
 
 #
 # This message is issued when an aeca is successfully completed.
@@ -1333,7 +1422,7 @@ msgstr	"пользователь \"$user\" не может менять атрибуты блока изменений; "
 #
 msgid	"bad ca, unknown architecture"
 msgstr	"атрибут architecture блока изменений содержит варианты не "
-	"перечисленные в файле конфигурации проекта ``config''"
+	"перечисленные в файле конфигурации проекта \"aegis.conf\""
 
 #
 # This error message is issued when a user attempts to set a change's
@@ -1798,7 +1887,7 @@ msgstr	"этот блок изменений находится в стадии '$state', для запуска "
 
 #
 # This error message is issued when a version string is given to aenpr
-# which can't be broken into ``ispunct'' separated number.
+# which can't be broken into "ispunct" separated number.
 #
 # 	$Number		The offending version number.
 #
@@ -1888,7 +1977,7 @@ msgstr	"для выражения ?: требуется логическая величина (передано $name)"
 # 	$Name		The type name of the offending operand.
 #
 msgid	"boolean value required for logical and (was given $name)"
-msgstr	"для операции логического ``and'' требуется параметр логического "
+msgstr	"для операции логического \"and\" требуется параметр логического "
 	"типа (передано $name)"
 
 #
@@ -1897,17 +1986,17 @@ msgstr	"для операции логического ``and'' требуется параметр логического "
 # 	$Name		The type name of the offending operand.
 #
 msgid	"boolean value required for logical or (was given $name)"
-msgstr	"для операции логического ``or'' требуется параметр логического "
+msgstr	"для операции логического \"or\" требуется параметр логического "
 	"типа (передано $name)"
 
 #
-# This error message is issued when the control expression for an ``if''
+# This error message is issued when the control expression for an "if"
 # statement does not evaluate to a boolean.
 #
 # 	$Name		The type name of the offending operand.
 #
 msgid	"boolean value required in if statement (not $name)"
-msgstr	"для оператора ``if'' требуется параметр логического типа "
+msgstr	"для оператора \"if\" требуется параметр логического типа "
 	"(передано $name)"
 
 #
@@ -1940,6 +2029,16 @@ msgstr	"блоки изменений и ветви можно создавать для активных ветвей "
 	"проекта, эта ветвь проекта не находится в стадии 'being "
 	"developed'"
 
+# TRANSLATION REQUIRED
+#
+# This error messages is issued when aede-policy finds a change set in
+# which the brief description is empty, or has not been changed from the
+# default.
+#
+#, fuzzy
+msgid	"brief_description not set"
+msgstr	"the brief description has been not set"
+
 #
 # This error message is issued when aede finds a file which has not been
 # built.
@@ -1963,8 +2062,8 @@ msgid	"build trashed $filename"
 msgstr	"В процессе сборки был изменён исходный файл \"$filename\" Чаще "
 	"всего это означает, что файл теперь является создаваемым, а не "
 	"исходным. В отдельном блоке изменений необходимо изменить "
-	"конфигурацию сборки, или выполнить команду ``aerm $filename'', "
-	"или ``aerm $filename'', а затем ``aenf -build $filename''."
+	"конфигурацию сборки, или выполнить команду \"aerm $filename\", "
+	"или \"aerm $filename\", а затем \"aenf -build $filename\"."
 
 #
 # This error message is issued when copying a file to stdout fails.
@@ -2164,6 +2263,17 @@ msgstr	"команда \"$command\" прервана сигналом $signal (core dumped)"
 msgid	"command line too short"
 msgstr	"слишком короткая командная строка"
 
+# TRANSLATION REQUIRED
+#
+# This fatal error message is issued when an unrecognised compression
+# algorithm name is given on the command line (aedist, aepatch, etc).
+#
+# 	$name		The offending compression algorithm name.
+#
+#, fuzzy
+msgid	"compression algorithm \"$name\" unknown"
+msgstr	"compression algorithm \"$name\" unknown"
+
 #
 # This message is inserted into the top of the project config file
 # automatically created by aeimport.
@@ -2330,6 +2440,16 @@ msgstr	"недопустимый номер дельты $number, это должно быть небольшое "
 msgid	"delta name complete"
 msgstr	"для доступа к дельте $number теперь можно использовать название "
 	"\"$name\""
+
+# TRANSLATION REQUIRED
+#
+# This error messages is issued when aede-policy finds a change set in
+# which the brief description is empty, or has not been changed from the
+# default.
+#
+#, fuzzy
+msgid	"description not set"
+msgstr	"the description field has not been set"
 
 #
 # This progress message is issued when aedb completes successfully.
@@ -2517,7 +2637,7 @@ msgstr	"незавершённые кавычки"
 # 	$Name		The name of the offending environment variable.
 #
 msgid	"environment variable $name not set"
-msgstr	"не установлена переменная окружения ``$name''"
+msgstr	"не установлена переменная окружения \"$name\""
 
 #
 # This fatal error message is issued when the execution of a command
@@ -2827,7 +2947,7 @@ msgstr	"неизвестная категория файлов"
 # 	$name	The offending type name.
 #
 msgid	"file type $name unknown"
-msgstr	"неизвестный тип файла ``$name''"
+msgstr	"неизвестный тип файла \"$name\""
 
 #
 # This error message is a summary issued when one or more change
@@ -2865,22 +2985,22 @@ msgstr	"fingerprint \"$filename\": $errno"
 # This error message is issued when a break statement is seen outside any
 # enclosing loop or switch statement.
 #
-msgid	"floating ``break'' statement"
-msgstr	"оператор ``break'' вне цикла"
+msgid	"floating \"break\" statement"
+msgstr	"оператор \"break\" вне цикла"
 
 #
 # This error message is issued when a continue statement is seen outside
 # any enclosing loop or switch statement.
 #
-msgid	"floating ``continue'' statement"
-msgstr	"оператор ``continue'' вне цикла"
+msgid	"floating \"continue\" statement"
+msgstr	"оператор \"continue\" вне цикла"
 
 #
 # This error message is issued when a return statement is used outside
 # any function.
 #
-msgid	"floating ``return'' statement"
-msgstr	"оператор ``return'' вне функции"
+msgid	"floating \"return\" statement"
+msgstr	"оператор \"return\" вне функции"
 
 #
 # This format string is used when assembling the list of outstanding
@@ -2897,7 +3017,7 @@ msgstr	"для архитектур${pl $n '' ы} $name_list"
 # This error message is issued as a summary when one or more
 # architectures appear in the list of architectures the change must
 # apply to, but are not present in the project's architecture list in
-# the project ``config'' file.
+# the project "aegis.conf" file.
 #
 # 	$Number		The number of unknown architecture(s).
 # 			(Optional)
@@ -3045,7 +3165,7 @@ msgstr	"недопустимое сложение ($name1 + $name2)"
 # 	$Name		The type name of the offending operand.
 #
 msgid	"illegal bit not ($name)"
-msgstr	"для операции побитового ``not'' требуется параметр типа целое "
+msgstr	"для операции побитового \"not\" требуется параметр типа целое "
 	"(передано $name)"
 
 #
@@ -3179,13 +3299,13 @@ msgstr	"недопустимая левая часть присваивания (передано $name), это "
 # 	$Name		The type name of the offending operand.
 #
 msgid	"illegal logical not ($name)"
-msgstr	"для опреации логического ``not'' требуется логический параметр "
+msgstr	"для опреации логического \"not\" требуется логический параметр "
 	"(передано $name)"
 
 #
 # This error message is issued when an illegal lookup is attempted.
-# This occurs both for associative arrays ``e1[e2]'', and also for
-# structures ``e1.e2'' (which are implemented as associative arrays).
+# This occurs both for associative arrays "e1[e2]", and also for
+# structures "e1.e2" (which are implemented as associative arrays).
 #
 # 	$Name1		The type name of the first operand.
 # 	$Name2		The type name of the second operand.
@@ -3336,7 +3456,7 @@ msgstr	"требуется целое в качестве индекса (передано $name)"
 # 	$Name		The type name of the offending operand.
 #
 msgid	"integer value required for bit and (was given $name)"
-msgstr	"для операции побитового ``и'' требуется параметр типа целое "
+msgstr	"для операции побитового \"и\" требуется параметр типа целое "
 	"(передано $name)"
 
 #
@@ -3345,7 +3465,7 @@ msgstr	"для операции побитового ``и'' требуется параметр типа целое "
 # 	$Name		The type name of the offending operand.
 #
 msgid	"integer value required for bit or (was given $name)"
-msgstr	"для операции побитового ``или'' требуется параметр типа целое "
+msgstr	"для операции побитового \"или\" требуется параметр типа целое "
 	"(передано $name)"
 
 #
@@ -3354,7 +3474,7 @@ msgstr	"для операции побитового ``или'' требуется параметр типа целое "
 # 	$Name		The type name of the offending operand.
 #
 msgid	"integer value required for bit xor (was given $name)"
-msgstr	"для операции побитового исключающего ``или'' требуется параметр "
+msgstr	"для операции побитового исключающего \"или\" требуется параметр "
 	"типа целое (передано $name)"
 
 #
@@ -3482,7 +3602,7 @@ msgid	"list $name ambiguous"
 msgstr	"название списка \"$name\" неоднозначно ($name_list)"
 
 #
-# This message is issued when an inappropriate ``in'' is attempted.
+# This message is issued when an inappropriate "in" is attempted.
 #
 # 	$Name		The type name of the offending operand.
 #
@@ -4017,6 +4137,15 @@ msgid	"no branch chown"
 msgstr	"этот блок изменений является ветвью проекта; невозможно изменить "
 	"владельца ветви проекта"
 
+# TRANSLATION REQUIRED
+#
+# This information message is issued when aeb is invoked for a change in
+# a project which is configured to not require builds.
+#
+#, fuzzy
+msgid	"no build required"
+msgstr	"no build is required for changes to this project"
+
 #
 # This error message is issued when a command which requires an explicit
 # change number is not given one.
@@ -4026,7 +4155,7 @@ msgstr	"для этой команды требуется явно указать номер блока изменений"
 
 #
 # This fatal error message is issued when a user attempts to perform a
-# cross branch merge on a change in the ``being integrated'' state.
+# cross branch merge on a change in the "being integrated" state.
 #
 msgid	"no cross branch int merge"
 msgstr	"нельзя выполнить слияние ветви проекта с блоком изменений в "
@@ -4083,6 +4212,16 @@ msgstr	"не было ни одной интеграции, сейчас ещё невозможно присвоить "
 msgid	"no dev dir"
 msgstr	"этот блок изменений находится в стадии '$state', рабочей "
 	"директории не существует"
+
+# TRANSLATION REQUIRED
+#
+# This information message is issued when the aed command is run for a
+# change which is in a project configured not to use aed.
+#
+#, fuzzy
+msgid	"no diff required"
+msgstr	"no \"aegis -diff\" command is required for this change, the "
+	"project has been configured to omit this requirement"
 
 #
 # This error message is issued when an attempt is made to specify a
@@ -4265,7 +4404,7 @@ msgstr	"название отчёта не указано"
 
 #
 # This error message is issued when aet completes unsuccessfully because
-# one or more tests returned a ``no result'' exit code.
+# one or more tests returned a "no result" exit code.
 #
 # 	$Number		The number of tests which failed.
 #
@@ -4661,13 +4800,13 @@ msgstr	"извлечение последний версий файлов для воссоздания базы "
 
 #
 # This verbose message is issued by the aecd command when a change is
-# in the ``awaiting review'' state.  By reminding reviewers to use aerb,
+# in the "awaiting review" state.  By reminding reviewers to use aerb,
 # we make the statistics more meaningful, and also block other reviewes
 # from wasting their time.
 #
 msgid	"remember to use the aerb command"
 msgstr	"Если вы решили рецензировать этот блок изменений используйте "
-	"команду ``aegis -review-begin''. В этом случае другие рецензенты "
+	"команду \"aegis -review-begin\". В этом случае другие рецензенты "
 	"не будут терять время, дублируя вашу работу."
 
 #
@@ -4883,8 +5022,8 @@ msgstr	"параметров быть не должно"
 msgid	"restart integration after upgrade"
 msgstr	"ни один блок изменений не должен быть в стадии $state при "
 	"обновлении Aegis так как некоторые файлы состояния недоступны; "
-	"для возобновления интеграции следует использовать команду``aegis "
-	"-ibu'', а за тем ``aegis -ib''"
+	"для возобновления интеграции следует использовать команду "
+	"\"aegis -ibu\", а за тем \"aegis -ib\""
 
 #
 # This progress message is issued when aerb completes successfully.
@@ -5549,7 +5688,7 @@ msgstr	"требуется значение типа $name"
 # 	$number	The offending version number.
 #
 msgid	"version $number not a branch"
-msgstr	"версия ``$number'' не является ветвью проекта"
+msgstr	"версия \"$number\" не является ветвью проекта"
 
 #
 # This progress message is issued when Aegis is waiting for a lock.
@@ -5566,7 +5705,7 @@ msgstr	"ожидание освобождения блокировки $name"
 #
 msgid	"waiting for baseline read lock"
 msgstr	"ожидание освобождения разделяемой блокировки базы проектаk; это "
-	"происходит из-за работающейкоманды ``aegis -Integrate_PASS''"
+	"происходит из-за работающейкоманды \"aegis -Integrate_PASS\""
 
 #
 # This progress message is issued when Aegis is waiting for a project
@@ -5574,7 +5713,7 @@ msgstr	"ожидание освобождения разделяемой блокировки базы проектаk; это "
 #
 msgid	"waiting for baseline write lock"
 msgstr	"ожидание освобождения исключительной блокировки базы проекта; "
-	"это происходит из-за работающей команды ``aegis -Build''"
+	"это происходит из-за работающей команды \"aegis -Build\""
 
 #
 # This progress message is issued when Aegis is waiting for a global state
@@ -5589,8 +5728,8 @@ msgstr	"ожидание освобождения блокировки индекса размещения проектов"
 #
 msgid	"waiting for history lock"
 msgstr	"ожидание освобождения блокировки истории файла; это происходит "
-	"из-за работающей с другой ветвью проекта команды ``aegis -"
-	"Integrate_PASS''"
+	"из-за работающей с другой ветвью проекта команды \"aegis -"
+	"Integrate_PASS\""
 
 #
 # This progress message is issued when Aegis is waiting for a lock.
@@ -5648,6 +5787,17 @@ msgid	"warning: $filename1 deprecated, use $filename2 file instead"
 msgstr	"Warning: The \"$filename1\" file has been deprecated, it is "
 	"suggested that you use the \"$filename2\" file instead.  See aenf"
 	"(1) for more information."
+
+# TRANSLATION REQUIRED
+#
+# This generic message is used to turn what would otherwise be an error
+# message into a warning message.
+#
+# 	$MeSsaGe	The message to be printed as a warning.
+#
+#, fuzzy
+msgid	"warning: $message"
+msgstr	"предупреждение: $message"
 
 #
 # This warning message is issued when the AEGIS environment is observed.

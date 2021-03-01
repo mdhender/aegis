@@ -1,6 +1,6 @@
 .\"
 .\"	aegis - project change supervisor
-.\"	Copyright (C) 1999, 2001, 2002, 2004 Peter Miller;
+.\"	Copyright (C) 1999, 2001, 2002, 2004, 2005 Peter Miller;
 .\"	All rights reserved.
 .\"
 .\"	This program is free software; you can redistribute it and/or modify
@@ -93,7 +93,7 @@ Bring a work area up-to-date with the repository.
 T};T{
 aem
 .br
-\fI(however, merging (the ``m'' in aem) is required much less often)\fP
+\fI(however, merging (the \[lq]m\[rq] in aem) is required much less often)\fP
 T};T{
 cvs update
 T}

@@ -1,6 +1,6 @@
 //
 //	aegis - project change supervisor
-//	Copyright (C) 2004, 2005 Peter Miller;
+//	Copyright (C) 2004-2006 Peter Miller;
 //	All rights reserved.
 //
 //	This program is free software; you can redistribute it and/or modify
@@ -23,9 +23,11 @@
 #ifndef AE_CVS_SERVER_NET_H
 #define AE_CVS_SERVER_NET_H
 
-#include <directory.h>
-#include <nstring.h>
-#include <str_list.h>
+#include <common/nstring.h>
+#include <common/str_list.h>
+#include <libaegis/input.h>
+
+#include <aecvsserver/directory.h>
 
 enum response_code_ty
 {
@@ -66,6 +68,9 @@ enum response_code_ty
     response_code_MAX // must be last
 };
 
+class output_ty; // forward
+class response; // forward
+
 /**
   * The net_ty class is used to remember the state of a network connection
   * to a client.
@@ -100,7 +105,7 @@ public:
       * The response_queue method is used to enqueue a response to be
       * transmitted at the next response_flush.
       */
-    void response_queue(struct response_ty *rp);
+    void response_queue(response *rp);
 
     /**
       * The response_flush method is used to flush any pending responses
@@ -206,7 +211,16 @@ public:
       */
     void set_updating_verbose(string_ty *);
 
-    struct input_ty *in_crop(long length);
+    /**
+      * The in_crop method is used to create a new input source which
+      * reads the next \a length bytes.
+      *
+      * @param length
+      *     The number of bytes to be consumed.
+      * @returns
+      *     an input stream, use it in the usual way.
+      */
+    input in_crop(long length);
 
     directory_ty *get_curdir() const { return curdir; }
     bool curdir_is_set() const { return (curdir != 0); }
@@ -215,9 +229,9 @@ public:
     string_ty *argument_nth(size_t n) const { return argument_list[n]; }
 
 private:
-    struct input_ty *in;
-    struct output_ty *out;
-    struct output_ty *log_client;
+    input in;
+    output_ty *out;
+    output_ty *log_client;
 
     /**
       * The rooted instance variable is used to remeber whether we have
@@ -236,7 +250,7 @@ private:
     //
     size_t response_queue_length;
     size_t response_queue_max;
-    struct response_ty **response_queue_item;
+    response **response_queue_item;
 
     //
     // The set of directories accumulated by Directory requests until

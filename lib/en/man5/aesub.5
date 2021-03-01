@@ -177,7 +177,7 @@ to be a project source file.
 BINary_DIRectory
 .br
 The absolute path of Aegis' architecture-specific binary (executables)
-directory.  This corresponds to the ``\fI./configure -bindir\fP''
+directory.  This corresponds to the \[lq]\fI./configure -bindir\fP\[rq]
 option when Aegis was built.  This is where most of the Aegis executable
 programs are installed.
 .\" -------------------- C --------------------
@@ -305,7 +305,7 @@ more than once before it can be integrated.
 COMment
 .br
 Inserts exactly nothing; any and all arguments are ignored.
-Another form of comment is ``\f[CW]$#\fP''
+Another form of comment is \[lq]\f[CW]$#\fP\[rq]
 which extends to the end of the current line.
 .TP 8n
 Copyright_Years
@@ -329,7 +329,7 @@ probably need to quote, it as well.
 DATa_DIRectory
 .br
 The absolute path of Aegis' architecture-neutral library directory.
-This corresponds to the ``\fI./configure -datadir\fP'' option
+This corresponds to the \[lq]\fI./configure -datadir\fP\[rq] option
 when Aegis was built.
 This is where most of the scripts included with Aegis are installed.
 .TP 8n
@@ -402,7 +402,7 @@ the last element of the pathname.
 This is similar to the
 .I dirname
 substitution, except that if there are no directory components, it
-returns dot (``.'').
+returns dot (\[lq].\[rq]).
 .TP 8n
 DownCase
 .br
@@ -522,14 +522,14 @@ the string to be measured.
 LIBrary
 .br
 The absolute path of Aegis' library directory.
-This corresponds to the ``\fI./configure -datadir\fP'' option
+This corresponds to the \[lq]\fI./configure -datadir\fP\[rq] option
 when Aegis was built.
 This substitution is deprecated \- please use ${datadir} instead.
 .TP 8n
 LIBrary_DIRectory
 .br
 The absolute path of Aegis' architecture-specific library directory.
-This corresponds to the ``\fI./configure -libdir\fP'' option
+This corresponds to the \[lq]\fI./configure -libdir\fP\[rq] option
 when Aegis was built.
 .\" -------------------- M --------------------
 .\" -------------------- N --------------------
@@ -676,8 +676,8 @@ to the project trunk.
 .TP 8n
 Search_Path_Executable
 The Search_Path_Executable substitution is usually the same as the
-\fPSearch_Path\fP substitution.  However, during an ``aegis \-Test
-\-BaseLine'' command, it contains the baseline as the first element,
+\fPSearch_Path\fP substitution.  However, during an \[lq]aegis \-Test
+\-BaseLine\[rq] command, it contains the baseline as the first element,
 rather then the development directory or the integration directory.
 This is of most use when looking for executables and executable support
 files while running tests.
@@ -718,7 +718,7 @@ match, the second argument is the replacement string.  The third and
 subsequent arguments are modified as specified by the first two arguments.
 The search is not anchored, and the replacement will happen
 as many times as possible.
-Use ``^'' to match the beginning, and ``$'' to match the end.
+Use \[lq]^\[rq] to match the beginning, and \[lq]$\[rq] to match the end.
 .TP 8n
 SUBSTRing
 .br

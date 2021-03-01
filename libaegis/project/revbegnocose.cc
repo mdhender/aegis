@@ -1,6 +1,6 @@
 //
 //	aegis - project change supervisor
-//	Copyright (C) 2001, 2002, 2004 Peter Miller;
+//	Copyright (C) 2001, 2002, 2004-2006 Peter Miller;
 //	All rights reserved.
 //
 //	This program is free software; you can redistribute it and/or modify
@@ -20,9 +20,9 @@
 // MANIFEST: functions to manipulate revbegnocoses
 //
 
-#include <change.h>
-#include <change/branch.h>
-#include <project/history.h>
+#include <libaegis/change.h>
+#include <libaegis/change/branch.h>
+#include <libaegis/project/history.h>
 
 
 void
@@ -30,6 +30,6 @@ project_review_begin_notify_command_set(project_ty *pp, string_ty *value)
 {
     change_ty       *cp;
 
-    cp = project_change_get(pp);
+    cp = pp->change_get();
     change_branch_review_begin_notify_command_set(cp, value);
 }

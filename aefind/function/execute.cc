@@ -20,14 +20,14 @@
 // MANIFEST: functions to manipulate executes
 //
 
-#include <aer/value/boolean.h>
-#include <aer/value/string.h>
-#include <function/execute.h>
-#include <function/needs.h>
-#include <os.h>
-#include <trace.h>
-#include <tree/list.h>
-#include <tree/monadic.h>
+#include <libaegis/aer/value/boolean.h>
+#include <libaegis/aer/value/string.h>
+#include <aefind/function/execute.h>
+#include <aefind/function/needs.h>
+#include <libaegis/os.h>
+#include <common/trace.h>
+#include <aefind/tree/list.h>
+#include <aefind/tree/monadic.h>
 
 
 static rpt_value_ty *

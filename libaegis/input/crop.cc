@@ -1,6 +1,6 @@
 //
 //	aegis - project change supervisor
-//	Copyright (C) 2004, 2005 Peter Miller;
+//	Copyright (C) 2004-2006 Peter Miller;
 //	All rights reserved.
 //
 //	This program is free software; you can redistribute it and/or modify
@@ -20,8 +20,8 @@
 // MANIFEST: functions to manipulate crops
 //
 
-#include <input/crop.h>
-#include <trace.h>
+#include <libaegis/input/crop.h>
+#include <common/trace.h>
 
 
 input_crop::~input_crop()
@@ -29,17 +29,13 @@ input_crop::~input_crop()
     trace(("~input_crop()\n{\n"));
     if (pos < maximum)
 	deeper->skip(maximum - pos);
-    if (delete_on_close)
-	delete deeper;
-    deeper = 0;
     trace(("}\n"));
 }
 
 
-input_crop::input_crop(input_ty *arg1, bool arg2, long arg3) :
+input_crop::input_crop(input &arg1, long arg2) :
     deeper(arg1),
-    delete_on_close(arg2),
-    maximum(arg3),
+    maximum(arg2),
     pos(0)
 {
     trace(("input_crop()\n"));

@@ -20,9 +20,9 @@
 // MANIFEST: functions to filter output to be indented
 //
 
-#include <output/indent.h>
-#include <str.h>
-#include <trace.h>
+#include <libaegis/output/indent.h>
+#include <common/str.h>
+#include <common/trace.h>
 
 
 output_indent_ty::~output_indent_ty()

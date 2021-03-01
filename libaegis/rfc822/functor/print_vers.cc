@@ -20,11 +20,9 @@
 // MANIFEST: functions to impliment the rfc822_functor_print_version class
 //
 
-#pragma implementation "rfc822_functor_print_version"
+#include <common/ac/stdio.h>
 
-#include <ac/stdio.h>
-
-#include <rfc822/functor/print_vers.h>
+#include <libaegis/rfc822/functor/print_vers.h>
 
 
 rfc822_functor_print_version::~rfc822_functor_print_version()

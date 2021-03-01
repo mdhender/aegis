@@ -20,14 +20,14 @@
 // MANIFEST: implementation of the get_icon class
 //
 
-#include <ac/stdio.h>
+#include <common/ac/stdio.h>
 
-#include <file.h>
-#include <http.h>
-#include <libdir.h>
-#include <nstring.h>
-#include <os.h>
-#include <str_list.h>
+#include <libaegis/file.h>
+#include <aeget/http.h>
+#include <common/libdir.h>
+#include <common/nstring.h>
+#include <libaegis/os.h>
+#include <common/str_list.h>
 
 
 void

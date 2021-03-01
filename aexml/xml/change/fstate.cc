@@ -1,6 +1,6 @@
 //
 //	aegis - project change supervisor
-//	Copyright (C) 2003-2005 Peter Miller;
+//	Copyright (C) 2003-2006 Peter Miller;
 //	All rights reserved.
 //
 //	This program is free software; you can redistribute it and/or modify
@@ -20,13 +20,14 @@
 // MANIFEST: functions to manipulate fstates
 //
 
-#include <fstate.h>
-#include <output.h>
-#include <project.h>
-#include <change/file.h>
-#include <trace.h>
-#include <user.h>
-#include <xml/change/fstate.h>
+#include <common/trace.h>
+#include <libaegis/change/file.h>
+#include <libaegis/fstate.h>
+#include <libaegis/output.h>
+#include <libaegis/project.h>
+#include <libaegis/user.h>
+
+#include <aexml/xml/change/fstate.h>
 
 
 void
@@ -49,7 +50,7 @@ xml_change_fstate(struct string_ty *project_name, long change_number,
 	project_name = str_copy(project_name);
     pp = project_alloc(project_name);
     str_free(project_name);
-    project_bind_existing(pp);
+    pp->bind_existing();
 
     //
     // locate user data

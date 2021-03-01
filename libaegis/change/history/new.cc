@@ -1,6 +1,6 @@
 //
 //	aegis - project change supervisor
-//	Copyright (C) 1999, 2001-2004 Peter Miller;
+//	Copyright (C) 1999, 2001-2005 Peter Miller;
 //	All rights reserved.
 //
 //	This program is free software; you can redistribute it and/or modify
@@ -20,11 +20,11 @@
 // MANIFEST: functions to manipulate news
 //
 
-#include <change.h>
-#include <error.h> // for assert
-#include <now.h>
-#include <trace.h>
-#include <user.h>
+#include <libaegis/change.h>
+#include <common/error.h> // for assert
+#include <common/now.h>
+#include <common/trace.h>
+#include <libaegis/user.h>
 
 
 cstate_history_ty *

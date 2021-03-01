@@ -1,7 +1,7 @@
 #!/bin/sh
 #
 #	aegis - project change supervisor
-#	Copyright (C) 1998, 1999, 2001-2003 Peter Miller;
+#	Copyright (C) 1998, 1999, 2001-2003, 2005 Peter Miller;
 #	All rights reserved.
 #
 #	This program is free software; you can redistribute it and/or modify
@@ -21,11 +21,7 @@
 # MANIFEST: shell script to rpm-build
 #
 case $# in
-3)
-	icon=$3
-	;;
 2)
-	icon=
 	;;
 *)
 	echo "Usage: $0 tmp-dir tarball" 1>&2
@@ -57,10 +53,6 @@ cat > $tmp/rpmrc << fubar
 macrofiles: ${mac}:$here/macros
 fubar
 
-#
-# The book says that the icon files need to be in the SOURCES directory.
-# Actually, they need to be in the same directory as the tarball.
-#
 rpmbuild -ta --rcfile /usr/lib/rpm/rpmrc:${tmp}/rpmrc --verbose --verbose $2
 test $? -eq 0 || exit 1
 

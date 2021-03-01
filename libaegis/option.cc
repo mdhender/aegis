@@ -1,6 +1,6 @@
 //
 //	aegis - project change supervisor
-//	Copyright (C) 1991-1995, 1997, 1999, 2002-2004 Peter Miller;
+//	Copyright (C) 1991-1995, 1997, 1999, 2002-2005 Peter Miller;
 //	All rights reserved.
 //
 //	This program is free software; you can redistribute it and/or modify
@@ -20,13 +20,13 @@
 // MANIFEST: functions to manipulate command line options
 //
 
-#include <arglex2.h>
-#include <error.h>	// for assert
-#include <help.h>
-#include <option.h>
-#include <page.h>
-#include <sub.h>
-#include <trace.h>
+#include <libaegis/arglex2.h>
+#include <common/error.h>	// for assert
+#include <libaegis/help.h>
+#include <libaegis/option.h>
+#include <common/page.h>
+#include <libaegis/sub.h>
+#include <common/trace.h>
 
 
 #define DEFAULT_TAB_WIDTH 8

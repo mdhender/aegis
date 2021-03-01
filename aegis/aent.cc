@@ -1,6 +1,6 @@
 //
 //	aegis - project change supervisor
-//	Copyright (C) 1991-2005 Peter Miller;
+//	Copyright (C) 1991-2006 Peter Miller;
 //	All rights reserved.
 //
 //	This program is free software; you can redistribute it and/or modify
@@ -20,37 +20,37 @@
 // MANIFEST: functions to implement new test
 //
 
-#include <ac/stdio.h>
-#include <ac/stdlib.h>
-#include <ac/fcntl.h>
-#include <ac/unistd.h>
+#include <common/ac/stdio.h>
+#include <common/ac/stdlib.h>
+#include <common/ac/fcntl.h>
+#include <common/ac/unistd.h>
 
-#include <ael/project/files.h>
-#include <aent.h>
-#include <arglex/change.h>
-#include <arglex/project.h>
-#include <arglex2.h>
-#include <change/branch.h>
-#include <change/file.h>
-#include <col.h>
-#include <commit.h>
-#include <error.h>
-#include <file.h>
-#include <help.h>
-#include <lock.h>
-#include <log.h>
-#include <os.h>
-#include <progname.h>
-#include <project.h>
-#include <project/file.h>
-#include <project/history.h>
-#include <quit.h>
-#include <str_list.h>
-#include <sub.h>
-#include <trace.h>
-#include <undo.h>
-#include <user.h>
-#include <uuidentifier.h>
+#include <libaegis/ael/project/files.h>
+#include <aegis/aent.h>
+#include <libaegis/arglex/change.h>
+#include <libaegis/arglex/project.h>
+#include <libaegis/arglex2.h>
+#include <libaegis/change/branch.h>
+#include <libaegis/change/file.h>
+#include <libaegis/col.h>
+#include <libaegis/commit.h>
+#include <common/error.h>
+#include <libaegis/file.h>
+#include <libaegis/help.h>
+#include <libaegis/lock.h>
+#include <libaegis/log.h>
+#include <libaegis/os.h>
+#include <common/progname.h>
+#include <libaegis/project.h>
+#include <libaegis/project/file.h>
+#include <libaegis/project/history.h>
+#include <common/quit.h>
+#include <common/str_list.h>
+#include <libaegis/sub.h>
+#include <common/trace.h>
+#include <libaegis/undo.h>
+#include <libaegis/user.h>
+#include <common/uuidentifier.h>
 
 
 static void
@@ -289,7 +289,7 @@ new_test_main(void)
 	project_name = user_default_project();
     pp = project_alloc(project_name);
     str_free(project_name);
-    project_bind_existing(pp);
+    pp->bind_existing();
 
     //
     // locate user data

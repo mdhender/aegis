@@ -23,7 +23,7 @@
 #ifndef AEFIND_DESCEND_H
 #define AEFIND_DESCEND_H
 
-#include <main.h>
+#include <common/main.h>
 
 struct stat; // existence
 struct string_ty; // existence

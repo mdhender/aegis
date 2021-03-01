@@ -1,6 +1,6 @@
 #
 # 	aegis - project change supervisor
-# 	Copyright (C) 1995-2005 Peter Miller;
+# 	Copyright (C) 1995-2006 Peter Miller;
 # 	All rights reserved.
 #
 # 	This program is free software; you can redistribute it and/or modify
@@ -28,8 +28,8 @@
 # 	should probably be avoided.
 #
 # 	While Aegis was written by an English speaker, this English
-# 	localization file is necessary, to translate the ``terse
-# 	programmer'' style error messages into something more user
+# 	localization file is necessary, to translate the "terse
+# 	programmer" style error messages into something more user
 # 	friendly.
 #
 # 	Messages which include state names need to leave the state names
@@ -47,7 +47,7 @@
 # -------------------------------------------------------------------------
 #
 msgid	""
-msgstr	"PO-Revision-Date: 2005-11-06\n"
+msgstr	"PO-Revision-Date: 2006-03-02\n"
 	"MIME-Version: 1.0\n"
 	"Content-Type: text/plain; charset=ascii\n"
 	"Content-Transfer-Encoding: 8bit\n"
@@ -129,11 +129,11 @@ msgstr	"test \"$filename\" on baseline failed (as it should)"
 # passes.  See above for why this is not good.
 #
 # 	$File_Name	The name of the test file.
-#	$ARCHitecture	The name of the architecture.
+# 	$ARCHitecture	The name of the architecture.
 #
 msgid	"$filename baseline pass, architecture $architecture, not good"
 msgstr	"test \"$filename\" on $architecture on baseline passed (it must "
-        "fail)"
+	"fail)"
 
 #
 # This error message is issued when a test run against the baseline
@@ -252,8 +252,24 @@ msgid	"$filename modified by history tool"
 msgstr	"the history tool modified the \"$filename\" source file"
 
 #
-# This error message is issued when aet runs a test which returns a ``no
-# result'' exit status.
+# This error message is issued by the aedb command when it finds
+# a problem with the directory permissions above the development
+# directory.  The directories need to be searchable (have the 'x'
+# permission) for the project owner and the reviewers.
+#
+# 	$File_Name	The name of the offending directory.
+# 	$Mode_Change	The additional mode bit required.
+# 	$Mode_Old	The current mode of the directory (optional).
+# 	$Mode_New	The desirable mode of the directory (optional).
+#
+msgid	"$filename needs permissions $mode_change"
+msgstr	"directory \"$filename\" is not traversable, it currently has "
+	"mode $mode_old but is needs at least mode $mode_new, the \"chmod "
+	"$mode_change $filename\" command may be sufficient to fix this"
+
+#
+# This error message is issued when aet runs a test which returns a "no
+# result" exit status.
 #
 # 	$File_Name	The name of the offending file.
 #
@@ -262,11 +278,11 @@ msgstr	"test \"$filename\" returned no result; some other problem "
 	"prevented the functionality under test from being exercised"
 
 #
-# This error message is issued when aet runs a test which returns a ``no
-# result'' exit status.
+# This error message is issued when aet runs a test which returns a "no
+# result" exit status.
 #
 # 	$File_Name	The name of the offending file.
-#	$ARCHitecture	The name of the architecture.
+# 	$ARCHitecture	The name of the architecture.
 #
 msgid	"$filename no result, architecture $architecture"
 msgstr	"test \"$filename\" on $architecture returned no result; some  "
@@ -304,10 +320,20 @@ msgstr	"test \"$filename\" passed"
 # This progress message is issued when a test against the change passes.
 #
 # 	$File_Name	The name of the test file.
-#	$ARCHitecture	The name of the architecture.
+# 	$ARCHitecture	The name of the architecture.
 #
 msgid	"$filename pass, architecture $architecture"
 msgstr	"test \"$filename\" passed on $architecture"
+
+#
+# This error message is issued when aede discovers a file in the change
+# that has not been altered.  (Sometimes it is a warning.)
+#
+# 	$File_Name	The offending file.
+#
+msgid	"$filename unchanged"
+msgstr	"the \"$filename\" file has not been changed, it should not be "
+	"included in the change"
 
 #
 # This error message is issued when a file named on the command
@@ -478,6 +504,16 @@ msgid	"$filename: corrupted \"$field_name\" field"
 msgstr	"$filename: corrupted \"$field_name\" field"
 
 #
+# This error message is issued when aede-policy detects a file isung DOS
+# line termination when it must use UNIX line termination.
+#
+# 	$File_Name	The offending file.
+#
+msgid	"$filename: dos line termination"
+msgstr	"the \"$filename\" file uses DOS line termination (CRLF) and it "
+	"should use UNIX line termination (LF)"
+
+#
 # This warning is issued when an obsolete field is used.
 #
 #      $Name1          The name of the obsolete field.
@@ -495,7 +531,7 @@ msgid	"$filename: gid $number1 invalid, must be >= $number2"
 msgstr	"$filename: this file's group ID ($number1) is too small, it must "
 	"be greater than or equal to AEGIS_MIN_GID ($number2).  This is "
 	"probably the result of a backup restore problem.  Please use the "
-	"``chgrp -R <group> $filename'' command to fix it, for some "
+	"\"chgrp -R <group> $filename\" command to fix it, for some "
 	"suitable <group> name.  [You will need to be root.]"
 
 #
@@ -532,6 +568,25 @@ msgid	"$filename: has errors"
 msgstr	"$filename: found $number fatal error${plural $number s}"
 
 #
+# This error message is issued when aede-policy detects a binary file,
+# and you have specified a policy whis disallows such files.
+#
+# 	$File_Name	The offending file name.
+#
+msgid	"$filename: is binary"
+msgstr	"the \"$filename\" file contains binary bytes"
+
+#
+# This error message is issued when aede-policy detects unprintable
+# (non-ASCII) characters in a file, and you have specified a policy whis
+# disallows such files.
+#
+# 	$File_Name	The offending file name.
+#
+msgid	"$filename: is unprintable"
+msgstr	"the \"$filename\" file contains unprintable characters"
+
+#
 # This error message is issued by aesvt when the file header within a
 # history file is not in a legal RFC822 format.
 #
@@ -548,6 +603,17 @@ msgstr	"$filename: malformed RFC 822 header line"
 #
 msgid	"$filename: mode is $number1, should be $number2"
 msgstr	"$filename: mode is $number1, should be $number2"
+
+#
+# This error message is issued by the aede-policy command when a file
+# does not contain and up-to-date copyright notice.
+#
+# 	$File_Name	The name of the offending file.
+# 	$Suggest	A suggested text for the missing notice (optional).
+#
+msgid	"$filename: no current copyright notice"
+msgstr	"$filename: the file does not contain an up-to-date copyright "
+	"notice; a notice of the form \"$suggest\" would be suitable."
 
 #
 # This error message is issued when Aegis is checking a file's owner,
@@ -577,7 +643,7 @@ msgid	"$filename: uid $number1 invalid, must be >= $number2"
 msgstr	"$filename: this file's user ID ($number1) is too small, it must "
 	"be greater than or equal to AEGIS_MIN_UID ($number2).  This is "
 	"probably the result of a backup restore problem.  Please use the "
-	"``chown -R <user> $filename'' command to fix it, for some "
+	"\"chown -R <user> $filename\" command to fix it, for some "
 	"suitable <user> name.  [You will need to be root.]"
 
 #
@@ -585,7 +651,7 @@ msgstr	"$filename: this file's user ID ($number1) is too small, it must "
 # the history file already contains a particular version.
 #
 # 	$File_Name	the offending filename
-#	$Number		the offending version number
+# 	$Number		the offending version number
 #
 msgid	"$filename: version $number already exists"
 msgstr	"$filename: version \"$number\" already exists"
@@ -594,8 +660,8 @@ msgstr	"$filename: version \"$number\" already exists"
 # This error message is issued when aesvt -checkin finds an
 # inappropriate user-specified version number.
 #
-#	$File_Name	the history file name
-#	$Number		the offending version number
+# 	$File_Name	the history file name
+# 	$Number		the offending version number
 #
 msgid	"$filename: version $number invalid"
 msgstr	"$filename: version number \"$number\" not appropriate"
@@ -605,7 +671,7 @@ msgstr	"$filename: version number \"$number\" not appropriate"
 # version in the history files.
 #
 # 	$File_Name	The name of the history file.
-#	$Number		the offending version number
+# 	$Number		the offending version number
 #
 msgid	"$filename: version $number not found"
 msgstr	"$filename: version \"$number\" not found"
@@ -1148,6 +1214,15 @@ msgstr	"arithmetic type required for decrement (was given $name)"
 #
 msgid	"arithmetic type required for increment (was given $name)"
 msgstr	"arithmetic type required for increment (was given $name)"
+
+#
+# This fatal error message is issued when a user-supplied string can't
+# be interpreted as an attribute name.
+#
+# 	$Name		The offending attribute name.
+#
+msgid	"attribute $name unknown"
+msgstr	"the attribute \"$name\" does not exist"
 
 #
 # This message is issued when an aeca is successfully completed.
@@ -1730,7 +1805,7 @@ msgstr	"this change is in the '$state' state, it must be in the 'being "
 
 #
 # This error message is issued when a version string is given to aenpr
-# which can't be broken into ``ispunct'' separated number.
+# which can't be broken into "ispunct" separated number.
 #
 # 	$Number		The offending version number.
 #
@@ -1818,7 +1893,7 @@ msgstr	"boolean value required for ?: expression (was given $name)"
 # 	$Name		The type name of the offending operand.
 #
 msgid	"boolean value required for logical and (was given $name)"
-msgstr	"boolean value required for logical ``and'' (was given $name)"
+msgstr	"boolean value required for logical \"and\" (was given $name)"
 
 #
 # This message is issued when an inappropriate || is attempted.
@@ -1826,16 +1901,16 @@ msgstr	"boolean value required for logical ``and'' (was given $name)"
 # 	$Name		The type name of the offending operand.
 #
 msgid	"boolean value required for logical or (was given $name)"
-msgstr	"boolean value required for logical ``or'' (was given $name)"
+msgstr	"boolean value required for logical \"or\" (was given $name)"
 
 #
-# This error message is issued when the control expression for an ``if''
+# This error message is issued when the control expression for an "if"
 # statement does not evaluate to a boolean.
 #
 # 	$Name		The type name of the offending operand.
 #
 msgid	"boolean value required in if statement (not $name)"
-msgstr	"boolean value required in ``if'' statement (was given $name)"
+msgstr	"boolean value required in \"if\" statement (was given $name)"
 
 #
 # This error message is issued when an absurd branch number is given.
@@ -1867,6 +1942,14 @@ msgstr	"you may only create changes and branches on branches which are "
 	"active, this branch is not in the 'being developed' state"
 
 #
+# This error messages is issued when aede-policy finds a change set in
+# which the brief description is empty, or has not been changed from the
+# default.
+#
+msgid	"brief_description not set"
+msgstr	"the brief description has been not set"
+
+#
 # This error message is issued when aede finds a file which has not been
 # built.
 #
@@ -1889,8 +1972,8 @@ msgid	"build trashed $filename"
 msgstr	"The build appears to have modified the \"$filename\" source "
 	"file.  This often occurs when a source files becomes a generated "
 	"file.  In a separate change you need to change the build "
-	"configuration, or ``aerm $filename'', or ``aerm $filename'' and "
-	"then ``aenf -build $filename'' in a following change."
+	"configuration, or \"aerm $filename\", or \"aerm $filename\" and "
+	"then \"aenf -build $filename\" in a following change."
 
 #
 # This error message is issued when copying a file to stdout fails.
@@ -2089,6 +2172,15 @@ msgid	"command line too short"
 msgstr	"command line too short"
 
 #
+# This fatal error message is issued when an unrecognised compression
+# algorithm name is given on the command line (aedist, aepatch, etc).
+#
+# 	$name		The offending compression algorithm name.
+#
+msgid	"compression algorithm \"$name\" unknown"
+msgstr	"compression algorithm \"$name\" unknown"
+
+#
 # This message is inserted into the top of the project configuration file
 # automatically created by aeimport.
 #
@@ -2254,6 +2346,14 @@ msgstr	"delta $number out of range, it must be a small positive number"
 #
 msgid	"delta name complete"
 msgstr	"delta $number may now be referred to as delta \"$name\""
+
+#
+# This error messages is issued when aede-policy finds a change set in
+# which the brief description is empty, or has not been changed from the
+# default.
+#
+msgid	"description not set"
+msgstr	"the description field has not been set"
 
 #
 # This progress message is issued when aedb completes successfully.
@@ -2439,7 +2539,7 @@ msgstr	"end-of-line within string"
 # 	$Name		The name of the offending environment variable.
 #
 msgid	"environment variable $name not set"
-msgstr	"environment variable ``$name'' not set"
+msgstr	"environment variable \"$name\" not set"
 
 #
 # This fatal error message is issued when the execution of a command
@@ -2746,7 +2846,7 @@ msgstr	"file qualifier unknown"
 # 	$name	The offending type name.
 #
 msgid	"file type $name unknown"
-msgstr	"file type ``$name'' unknown"
+msgstr	"file type \"$name\" unknown"
 
 #
 # This error message is a summary issued when one or more change
@@ -2783,22 +2883,22 @@ msgstr	"fingerprint \"$filename\": $errno"
 # This error message is issued when a break statement is seen outside any
 # enclosing loop or switch statement.
 #
-msgid	"floating ``break'' statement"
-msgstr	"floating ``break'' statement"
+msgid	"floating \"break\" statement"
+msgstr	"floating \"break\" statement"
 
 #
 # This error message is issued when a continue statement is seen outside
 # any enclosing loop or switch statement.
 #
-msgid	"floating ``continue'' statement"
-msgstr	"floating ``continue'' statement"
+msgid	"floating \"continue\" statement"
+msgstr	"floating \"continue\" statement"
 
 #
 # This error message is issued when a return statement is used outside
 # any function.
 #
-msgid	"floating ``return'' statement"
-msgstr	"floating ``return'' statement"
+msgid	"floating \"return\" statement"
+msgstr	"floating \"return\" statement"
 
 #
 # This format string is used when assembling the list of outstanding
@@ -2961,7 +3061,7 @@ msgstr	"illegal addition ($name1 + $name2)"
 # 	$Name		The type name of the offending operand.
 #
 msgid	"illegal bit not ($name)"
-msgstr	"integer value required for bit-wise ``not'' (was given $name)"
+msgstr	"integer value required for bit-wise \"not\" (was given $name)"
 
 #
 # This error message is issued when an illegal e!=e is attempted.
@@ -3094,12 +3194,12 @@ msgstr	"illegal left hand side of assignment (was given $name), it must "
 # 	$Name		The type name of the offending operand.
 #
 msgid	"illegal logical not ($name)"
-msgstr	"boolean value required for logical ``not'' (was given $name)"
+msgstr	"boolean value required for logical \"not\" (was given $name)"
 
 #
 # This error message is issued when an illegal lookup is attempted.
-# This occurs both for associative arrays ``e1[e2]'', and also for
-# structures ``e1.e2'' (which are implemented as associative arrays).
+# This occurs both for associative arrays "e1[e2]", and also for
+# structures "e1.e2" (which are implemented as associative arrays).
 #
 # 	$Name1		The type name of the first operand.
 # 	$Name2		The type name of the second operand.
@@ -3247,7 +3347,7 @@ msgstr	"integer index required (was given $name)"
 # 	$Name		The type name of the offending operand.
 #
 msgid	"integer value required for bit and (was given $name)"
-msgstr	"integer value required for bit-wise ``and'' (was given $name)"
+msgstr	"integer value required for bit-wise \"and\" (was given $name)"
 
 #
 # This message is issued when an inappropriate | is attempted.
@@ -3255,7 +3355,7 @@ msgstr	"integer value required for bit-wise ``and'' (was given $name)"
 # 	$Name		The type name of the offending operand.
 #
 msgid	"integer value required for bit or (was given $name)"
-msgstr	"integer value required for bit-wise ``or'' (was given $name)"
+msgstr	"integer value required for bit-wise \"or\" (was given $name)"
 
 #
 # This message is issued when an inappropriate ^ is attempted.
@@ -3263,7 +3363,7 @@ msgstr	"integer value required for bit-wise ``or'' (was given $name)"
 # 	$Name		The type name of the offending operand.
 #
 msgid	"integer value required for bit xor (was given $name)"
-msgstr	"integer value required for bit-wise ``exclusive or'' (was given "
+msgstr	"integer value required for bit-wise \"exclusive or\" (was given "
 	"$name)"
 
 #
@@ -3392,7 +3492,7 @@ msgid	"list $name ambiguous"
 msgstr	"list name \"$name\" is ambiguous ($name_list)"
 
 #
-# This message is issued when an inappropriate ``in'' is attempted.
+# This message is issued when an inappropriate "in" is attempted.
 #
 # 	$Name		The type name of the offending operand.
 #
@@ -3921,6 +4021,13 @@ msgstr	"this change is a branch; it is not possible to change the "
 	"ownership of a branch"
 
 #
+# This information message is issued when aeb is invoked for a change in
+# a project which is configured to not require builds.
+#
+msgid	"no build required"
+msgstr	"no build is required for changes to this project"
+
+#
 # This error message is issued when a command which requires an explicit
 # change number is not given one.
 #
@@ -3929,7 +4036,7 @@ msgstr	"you must give the change number explicitly to this command"
 
 #
 # This fatal error message is issued when a user attempts to perform a
-# cross branch merge on a change in the ``being integrated'' state.
+# cross branch merge on a change in the "being integrated" state.
 #
 msgid	"no cross branch int merge"
 msgstr	"you may not perform a cross branch merge on a change in the "
@@ -3985,6 +4092,14 @@ msgstr	"no integrations have been completed, so it is not yet possible "
 msgid	"no dev dir"
 msgstr	"this change is in the '$state' state, there is no development "
 	"directory"
+
+#
+# This information message is issued when the aed command is run for a
+# change which is in a project configured not to use aed.
+#
+msgid	"no diff required"
+msgstr	"no \"aegis -diff\" command is required for this change, the "
+	"project has been configured to omit this requirement"
 
 #
 # This error message is issued when an attempt is made to specify a
@@ -4156,7 +4271,7 @@ msgstr	"no report name specified"
 
 #
 # This error message is issued when aet completes unsuccessfully because
-# one or more tests returned a ``no result'' exit code.
+# one or more tests returned a "no result" exit code.
 #
 # 	$Number		The number of tests which failed.
 #
@@ -4547,13 +4662,13 @@ msgstr	"checking out head revisions of imported files to reconstruct the "
 
 #
 # This verbose message is issued by the aecd command when a change is
-# in the ``awaiting review'' state.  By reminding reviewers to use aerb,
+# in the "awaiting review" state.  By reminding reviewers to use aerb,
 # we make the statistics more meaningful, and also block other reviewes
 # from wasting their time.
 #
 msgid	"remember to use the aerb command"
-msgstr	"If you are going to review this change, please use the ``aegis -"
-	"review-begin'' command as soon as possible.  This ensures that "
+msgstr	"If you are going to review this change, please use the \"aegis -"
+	"review-begin\" command as soon as possible.  This ensures that "
 	"other reviewers don't waste any of their valuable time."
 
 #
@@ -4767,8 +4882,8 @@ msgstr	"requires zero arguments"
 #
 msgid	"restart integration after upgrade"
 msgstr	"no change should be in the $state state when Aegis is upgraded "
-	"because some file state is not available, please use ``aegis -"
-	"ibu'' and then ``aegis -ib'' on this change to restart the "
+	"because some file state is not available, please use \"aegis -ibu"
+	"\" and then \"aegis -ib\" on this change to restart the "
 	"integration"
 
 #
@@ -5426,7 +5541,7 @@ msgstr	"value of type $name required"
 # 	$number	The offending version number.
 #
 msgid	"version $number not a branch"
-msgstr	"version ``$number'' is not a branch"
+msgstr	"version \"$number\" is not a branch"
 
 #
 # This progress message is issued when Aegis is waiting for a lock.
@@ -5443,7 +5558,7 @@ msgstr	"waiting for $name lock"
 #
 msgid	"waiting for baseline read lock"
 msgstr	"waiting for shared baseline lock; this is because there is an "
-	"``aegis -Integrate_PASS'' command in progress"
+	"\"aegis -Integrate_PASS\" command in progress"
 
 #
 # This progress message is issued when Aegis is waiting for a project
@@ -5451,7 +5566,7 @@ msgstr	"waiting for shared baseline lock; this is because there is an "
 #
 msgid	"waiting for baseline write lock"
 msgstr	"waiting for exclusive baseline lock; this is because there is "
-	"one or more ``aegis -Build'' commands in progress"
+	"one or more \"aegis -Build\" commands in progress"
 
 #
 # This progress message is issued when Aegis is waiting for a global state
@@ -5465,8 +5580,8 @@ msgstr	"waiting for project location index lock"
 # history lock.  This message is issued with a project indicator.
 #
 msgid	"waiting for history lock"
-msgstr	"waiting for history lock; this is because there is an ``aegis -"
-	"Integrate_PASS'' command in progress on another branch"
+msgstr	"waiting for history lock; this is because there is an \"aegis -"
+	"Integrate_PASS\" command in progress on another branch"
 
 #
 # This progress message is issued when Aegis is waiting for a lock.
@@ -5523,6 +5638,15 @@ msgid	"warning: $filename1 deprecated, use $filename2 file instead"
 msgstr	"Warning: The \"$filename1\" file has been deprecated, it is "
 	"suggested that you use the \"$filename2\" file instead.  See aenf"
 	"(1) for more information."
+
+#
+# This generic message is used to turn what would otherwise be an error
+# message into a warning message.
+#
+# 	$MeSsaGe	The message to be printed as a warning.
+#
+msgid	"warning: $message"
+msgstr	"warning: $message"
 
 #
 # This warning message is issued when the AEGIS environment variable is

@@ -1311,7 +1311,7 @@ SUMMARY
 	aemv does not create directory
 
 DESCRIPTION
-	The ``from'' directory is not created by the aemv command,
+	The "from" directory is not created by the aemv command,
 	causing fatal errors when it tries to create the garbage file.
 
 	This change is exempt from testing against the development
@@ -2088,14 +2088,14 @@ SUMMARY
 	locking "deadlock" possible
 
 DESCRIPTION
-	 Christian F. Goetze <c-goetze@u-aizu.ac.jp> writes: ``I
+	 Christian F. Goetze <c-goetze@u-aizu.ac.jp> writes: "I
 	recently had an interesting situation. I was automatically
 	integrating a change in one window, and I tried to pass a
 	review in another window. Both operations happened to be on
 	the same change (because I forgot the -p option in the
 	"aerpass" command). I watched how the message "waiting for
 	change lock" got sent back and forth between the two
-	windows... ''
+	windows... "
 
 	I designed the locking to (theoretically) avoid problems like
 	this. The dining philosophers problem (project lock, change

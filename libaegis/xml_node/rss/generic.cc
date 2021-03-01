@@ -20,11 +20,9 @@
 // MANIFEST: implementation of the xml_node_rss_generic class
 //
 
-#pragma implementation "xml_node_rss_generic"
-
-#include <output.h>
-#include <xml_node/rss/generic.h>
-#include <xmltextread/by_node.h>
+#include <libaegis/output.h>
+#include <libaegis/xml_node/rss/generic.h>
+#include <libaegis/xmltextread/by_node.h>
 
 
 xml_node_rss_generic::~xml_node_rss_generic()

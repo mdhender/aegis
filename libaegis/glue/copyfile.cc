@@ -1,6 +1,6 @@
 //
 //	aegis - project change supervisor
-//	Copyright (C) 2001-2004 Peter Miller;
+//	Copyright (C) 2001-2005 Peter Miller;
 //	All rights reserved.
 //
 //	This program is free software; you can redistribute it and/or modify
@@ -20,14 +20,14 @@
 // MANIFEST: functions to manipulate copyfiles
 //
 
-#include <ac/errno.h>
-#include <ac/fcntl.h>
-#include <ac/stdlib.h>
-#include <ac/unistd.h>
+#include <common/ac/errno.h>
+#include <common/ac/fcntl.h>
+#include <common/ac/stdlib.h>
+#include <common/ac/unistd.h>
 
-#include <glue.h>
-#include <os.h>
-#include <trace.h>
+#include <libaegis/glue.h>
+#include <libaegis/os.h>
+#include <common/trace.h>
 
 
 //

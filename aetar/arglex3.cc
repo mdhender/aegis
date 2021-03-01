@@ -1,6 +1,6 @@
 //
 //	aegis - project change supervisor
-//	Copyright (C) 2002-2004 Peter Miller;
+//	Copyright (C) 2002-2006 Peter Miller;
 //	All rights reserved.
 //
 //	This program is free software; you can redistribute it and/or modify
@@ -20,16 +20,15 @@
 // MANIFEST: functions to manipulate arglex3s
 //
 
-#include <arglex3.h>
+#include <aetar/arglex3.h>
 
 static arglex_table_ty argtab[] =
 {
-    { "-COmpress", arglex_token_compress, },
     { "-Entire_Source", arglex_token_entire_source, },
-    { "-Not_COmpress", arglex_token_compress_not, },
     { "-Not_Entire_Source", arglex_token_entire_source_not, },
-    { "-Not_Trojan", arglex_token_trojan_not, },
     { "-Partial_Source", arglex_token_entire_source_not, },
+    { "-EXCLude", arglex_token_exclude, },
+    { "-Exclude_Auto_Tools", arglex_token_exclude_auto_tools, },
     { "-Include_BUild", arglex_token_include_build, },
     { "-Not_Include_BUild", arglex_token_include_build_not, },
     { "-Add_Path_Prefix", arglex_token_path_prefix_add, },
@@ -37,6 +36,7 @@ static arglex_table_ty argtab[] =
     { "-Receive", arglex_token_receive, },
     { "-Send", arglex_token_send, },
     { "-Trojan", arglex_token_trojan, },
+    { "-Not_Trojan", arglex_token_trojan_not, },
     ARGLEX_END_MARKER
 };
 

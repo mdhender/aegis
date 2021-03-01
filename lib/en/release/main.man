@@ -349,7 +349,7 @@ at the archive site.
 .SS Notify Web
 \(bu) Notify \f[CW]www.freshmeat.net\fP that a new release of Aegis
 is available.
-Search for ``aegis'' as there is already an application record.
+Search for \[lq]aegis\[rq] as there is already an application record.
 .PP
 \(bu Notify \f[CW]www.cmtoday.com\fP that a new release of Aegis is available.
 .PP

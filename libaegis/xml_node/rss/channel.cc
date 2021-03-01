@@ -20,12 +20,10 @@
 // MANIFEST: implementation of the xml_node_rss_channel class
 //
 
-#pragma implementation "xml_node_rss_channel"
-
-#include <output.h>
-#include <rss/item.h>
-#include <xml_node/rss/channel.h>
-#include <xmltextread/by_node.h>
+#include <libaegis/output.h>
+#include <libaegis/rss/item.h>
+#include <libaegis/xml_node/rss/channel.h>
+#include <libaegis/xmltextread/by_node.h>
 
 
 xml_node_rss_channel::~xml_node_rss_channel()

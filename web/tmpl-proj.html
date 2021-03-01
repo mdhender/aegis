@@ -1,0 +1,126 @@
+.\"
+.\"	aegis - project change supervisor
+.\"	Copyright (C) 2001-2003, 2005, 2006 Peter Miller;
+.\"	All rights reserved.
+.\"
+.\"	This program is free software; you can redistribute it and/or modify
+.\"	it under the terms of the GNU General Public License as published by
+.\"	the Free Software Foundation; either version 2 of the License, or
+.\"	(at your option) any later version.
+.\"
+.\"	This program is distributed in the hope that it will be useful,
+.\"	but WITHOUT ANY WARRANTY; without even the implied warranty of
+.\"	MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+.\"	GNU General Public License for more details.
+.\"
+.\"	You should have received a copy of the GNU General Public License
+.\"	along with this program; if not, write to the Free Software
+.\"	Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111, USA.
+.\"
+.\" MANIFEST: input for archive/aegis.html
+.\"
+.de an-p-footer
+..
+.ad l
+.hy 0
+.so version.so
+<html><head>
+.br
+<link rel="icon" href="favicon.ico" type="image/x-icon">
+.br
+<link rel="shortcut icon" href="favicon.ico" type="image/x-icon">
+.br
+<title>Aegis Template projects</title></head>
+<body bgcolor="#ffffff"><h1>
+<img src="aegis.png" align=left>
+<img src="missiku/usr_dir_2.png" align=right>
+<center>Aegis \*(v)<br>Template Projects</center></h1>
+These template projects provide a simple but flexible skeletons
+around which you can build many different projects.  The projects are
+&ldquo;seeded&rdquo; by creating a new project, and then applying
+a pre-packaged change set (part of Aegis' distributed development
+machinery).  Each project links you to a page of instructions for how to
+download the change set and apply it.
+<p><br clear=all>
+<table>
+.br
+<tr><td valign=top align=center><img src="missiku/usr_doc_2.png"><br><p></td>
+<td valign=top>
+    <h2><a
+.nf
+href="example-make-rcs.html">
+.fi
+    <tt>example-make-rcs</tt></a></h2>
+    This template will provide a familiar development environment to
+    long-time Unix coders.  It uses
+    <ul><li>
+    GNU Make for its build tool, and
+    <li>
+    RCS for its history tool.
+    </ul><br><p>
+</td></tr>
+.br
+<tr><td valign=top align=center><img src="missiku/usr_doc_2.png"><br><p></td>
+<td valign=top>
+    <h2><a
+.nf
+href="eg_oss.html">
+.fi
+    Simple GNU Auto Tools Example</a></h2>
+    This template will provide a familiar development environment to
+    Linux OSS developers.  If your project uses a simple GNU Auto Tools
+    configuration, this example has instructions to get you working with
+    your project under Aegis in under 30 minutes.  You will not need to
+    change any of your source files.
+    <br><p>
+</td></tr>
+.br
+<tr><td valign=top align=center><img src="missiku/usr_doc_2.png"><br><p></td>
+<td valign=top>
+    <h2><a
+.nf
+href="example-cook-aesvt.html">
+.fi
+    <tt>example-cook-aesvt</tt></a></h2>
+    This template project provides a clean simple development
+    environment which exploits many of Aegis' features to make
+    developers more productive.  It scales better than the Make-RCS
+    example.
+    <p>
+    This template project uses
+    <ul><li>
+	<a
+.nf
+href="http://www.canb.auug.org.au/~millerp/cook/">
+.fi
+	Cook</a> for its build tool, and
+    <li>
+	<i>aesvt</i>(1) for its history tool.
+	The <i>aesvt</i>(1) program is distributed with Aegis.
+    </ul><br><p>
+</td></tr>
+.br
+<tr><td valign=top align=center><img src="missiku/usr_doc_2.png"><br><p></td>
+<td valign=top>
+    <h2><a
+.nf
+href="example-cook-fhist.html">
+.fi
+    <tt>example-cook-fhist</tt></a></h2>
+    This template project is very similar to the previous one, and it
+    scales just as well.  This template project uses
+    <ul><li>
+	<a
+.nf
+href="http://www.canb.auug.org.au/~millerp/cook/">
+.fi
+	Cook</a> for its build tool, and
+    <li>
+	<a href="http://www.canb.auug.org.au/~millerp/fhist.html">FHist</a>
+	for its history tool.
+    </ul><br><p>
+</td></tr>
+.br
+</table>
+.so footer.so
+</body></html>

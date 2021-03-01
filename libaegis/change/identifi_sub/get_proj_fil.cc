@@ -1,6 +1,6 @@
 //
 //	aegis - project change supervisor
-//	Copyright (C) 2005 Peter Miller;
+//	Copyright (C) 2005, 2006 Peter Miller;
 //	All rights reserved.
 //
 //	This program is free software; you can redistribute it and/or modify
@@ -20,11 +20,11 @@
 // MANIFEST: implementation of the change_identifi_sub_get_proj_fil class
 //
 
-#include <change/identifi_sub.h>
-#include <error.h> // for assert
-#include <nstring/list.h>
-#include <project/file.h>
-#include <project/file/roll_forward.h>
+#include <libaegis/change/identifi_sub.h>
+#include <common/error.h> // for assert
+#include <common/nstring/list.h>
+#include <libaegis/project/file.h>
+#include <libaegis/project/file/roll_forward.h>
 
 
 void
@@ -86,8 +86,7 @@ change_identifier_subset::get_project_file_names(nstring_list &results)
     {
 	for (size_t k = 0;; ++k)
 	{
-	    fstate_src_ty *src_data =
-		project_file_nth(get_pp(), k, view_path_simple);
+	    fstate_src_ty *src_data = get_pp()->file_nth(k, view_path_simple);
 	    if (!src_data)
 		break;
 	    switch (src_data->usage)

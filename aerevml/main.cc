@@ -20,18 +20,18 @@
 // MANIFEST: operating system entry point
 //
 
-#include <ac/signal.h>
+#include <common/ac/signal.h>
 
-#include <arglex3.h>
-#include <env.h>
-#include <help.h>
-#include <language.h>
-#include <os.h>
-#include <quit.h>
-#include <rsrc_limits.h>
-#include <send.h>
-#include <usage.h>
-#include <version.h>
+#include <aerevml/arglex3.h>
+#include <aerevml/send.h>
+#include <aerevml/usage.h>
+#include <common/env.h>
+#include <common/language.h>
+#include <common/quit.h>
+#include <common/rsrc_limits.h>
+#include <libaegis/help.h>
+#include <libaegis/os.h>
+#include <libaegis/version.h>
 
 
 static void

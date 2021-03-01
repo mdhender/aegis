@@ -1,6 +1,6 @@
 //
 //	aegis - project change supervisor
-//	Copyright (C) 2002-2004 Peter Miller;
+//	Copyright (C) 2002-2006 Peter Miller;
 //	All rights reserved.
 //
 //	This program is free software; you can redistribute it and/or modify
@@ -20,12 +20,12 @@
 // MANIFEST: functions to manipulate branchs
 //
 
-#include <change.h>
-#include <change/branch.h>
-#include <complete/private.h>
-#include <complete/project/branch.h>
-#include <project.h>
-#include <shell.h>
+#include <libaegis/change.h>
+#include <libaegis/change/branch.h>
+#include <aecomplete/complete/private.h>
+#include <aecomplete/complete/project/branch.h>
+#include <libaegis/project.h>
+#include <aecomplete/shell.h>
 
 
 struct complete_project_branch_ty
@@ -72,7 +72,7 @@ hunt(project_ty *pp, int all, shell_ty *sh)
     //
     // Now hunt the sub-branches.
     //
-    change_branch_sub_branch_list_get(project_change_get(pp), &list, &len);
+    change_branch_sub_branch_list_get(pp->change_get(), &list, &len);
     for (j = 0; j < len; ++j)
     {
 	change_ty       *cp;
@@ -85,7 +85,7 @@ hunt(project_ty *pp, int all, shell_ty *sh)
 	    change_free(cp);
 	    continue;
 	}
-	bp = project_bind_branch(pp, cp);
+	bp = pp->bind_branch(cp);
 	hunt(bp, all, sh);
 	project_free(bp);
     }
@@ -95,21 +95,16 @@ hunt(project_ty *pp, int all, shell_ty *sh)
 static void
 perform(complete_ty *cp, shell_ty *sh)
 {
-    complete_project_branch_ty *this_thing;
-    project_ty      *pp;
-
     //
     // Locate the trunk.
     //
-    this_thing = (complete_project_branch_ty *)cp;
-    pp = this_thing->pp;
-    while (pp && pp->parent)
-	pp = pp->parent;
+    complete_project_branch_ty *this_thing = (complete_project_branch_ty *)cp;
+    project_ty *pp = this_thing->pp;
 
     //
     // Scan all of the branches outwards from the trunk.
     //
-    hunt(pp, this_thing->all, sh);
+    hunt(pp->trunk_get(), this_thing->all, sh);
 }
 
 

@@ -1,6 +1,6 @@
 //
 //	aegis - project change supervisor
-//	Copyright (C) 2002-2004 Peter Miller;
+//	Copyright (C) 2002-2005 Peter Miller;
 //	All rights reserved.
 //
 //	This program is free software; you can redistribute it and/or modify
@@ -20,13 +20,13 @@
 // MANIFEST: functions to manipulate files
 //
 
-#include <change.h>
-#include <change/file.h>
-#include <complete/change/file.h>
-#include <complete/private.h>
-#include <os.h>
-#include <shell.h>
-#include <str_list.h>
+#include <libaegis/change.h>
+#include <libaegis/change/file.h>
+#include <aecomplete/complete/change/file.h>
+#include <aecomplete/complete/private.h>
+#include <libaegis/os.h>
+#include <aecomplete/shell.h>
+#include <common/str_list.h>
 
 
 struct complete_change_file_ty

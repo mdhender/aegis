@@ -1,6 +1,6 @@
 //
 //	aegis - project change supervisor
-//	Copyright (C) 1991-1995, 1998, 1999, 2001-2004 Peter Miller;
+//	Copyright (C) 1991-1995, 1998, 1999, 2001-2006 Peter Miller;
 //	All rights reserved.
 //
 //	This program is free software; you can redistribute it and/or modify
@@ -20,16 +20,16 @@
 // MANIFEST: functions to parse aegis' data files
 //
 
-#include <ac/time.h>
+#include <common/ac/time.h>
 
-#include <error.h>
-#include <gram.h>
-#include <input.h>
-#include <mem.h>
-#include <meta_lex.h>
-#include <meta_parse.h>
-#include <sub.h>
-#include <trace.h>
+#include <common/error.h>
+#include <libaegis/gram.h>
+#include <libaegis/input.h>
+#include <common/mem.h>
+#include <libaegis/meta_lex.h>
+#include <libaegis/meta_parse.h>
+#include <libaegis/sub.h>
+#include <common/trace.h>
 
 static sem_ty	*sem_root;
 
@@ -88,17 +88,15 @@ parse_env(const char *name, type_ty *type)
 
 
 void *
-parse_input(input_ty *ifp, type_ty *type)
+parse_input(input &ifp, type_ty *type)
 {
-    void	    *addr;
-
-    trace(("parse_input(ifp = %08lX, type = %08lx)\n{\n", (long)ifp,
+    trace(("parse_input(ifp = *%08lX, type = %08lx)\n{\n", (long)&ifp,
 	(long)type));
     lex_open_input(ifp);
     assert(type);
     assert(type->alloc);
     assert(type->struct_parse);
-    addr = type->alloc();
+    void *addr = type->alloc();
     sem_push(type, addr);
 
     trace(("gram_parse()\n{\n"));

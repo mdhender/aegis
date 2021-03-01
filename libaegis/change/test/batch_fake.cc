@@ -1,6 +1,6 @@
 //
 //	aegis - project change supervisor
-//	Copyright (C) 2000-2005 Peter Miller;
+//	Copyright (C) 2000-2006 Peter Miller;
 //	All rights reserved.
 //
 //	This program is free software; you can redistribute it and/or modify
@@ -20,29 +20,31 @@
 // MANIFEST: functions to manipulate batch_fakes
 //
 
-#include <ac/stdio.h>
+#include <common/ac/stdio.h>
 
-#include <change.h>
-#include <change/file.h>
-#include <change/test/batch_fake.h>
-#include <error.h> // for assert
-#include <fstate.h>
-#include <project.h>
-#include <project/file.h>
-#include <str_list.h>
-#include <sub.h>
-#include <trace.h>
-#include <user.h>
+#include <common/error.h> // for assert
+#include <common/nstring/list.h>
+#include <common/str_list.h>
+#include <common/trace.h>
+#include <libaegis/change/file.h>
+#include <libaegis/change.h>
+#include <libaegis/change/test/batch_fake.h>
+#include <libaegis/fstate.h>
+#include <libaegis/project/file.h>
+#include <libaegis/project.h>
+#include <libaegis/sub.h>
+#include <libaegis/user.h>
 
 
 batch_result_list_ty *
 change_test_batch_fake(change_ty *cp, string_list_ty *wlp, user_ty *up,
-    bool baseline_flag, int current, int total, time_t time_limit)
+    bool baseline_flag, int current, int total, time_t time_limit,
+    const nstring_list &variable_assignments)
 {
     size_t	    j;
     string_ty	    *dir;
     int		    (*run_test_command)(change_ty *, user_ty *, string_ty *,
-			string_ty *, int, int);
+			string_ty *, int, int, const nstring_list &vars);
     cstate_ty       *cstate_data;
     batch_result_list_ty *result;
     int		    persevere;
@@ -64,11 +66,11 @@ change_test_batch_fake(change_ty *cp, string_list_ty *wlp, user_ty *up,
     // directory depends on the state of the change
     //
     // During long tests the automounter can unmount the
-    // directory referenced by the ``dir'' variable.
+    // directory referenced by the "dir" variable.
     // To minimize this, it is essential that they are
     // unresolved, and thus always trigger the automounter.
     //
-    dir = project_baseline_path_get(cp->pp, 0);
+    dir = cp->pp->baseline_path_get();
     if (!baseline_flag && !cp->bogus)
     {
 	switch (cstate_data->state)
@@ -158,7 +160,17 @@ change_test_batch_fake(change_ty *cp, string_list_ty *wlp, user_ty *up,
 	//
 	// run the command
 	//
-	exit_status = run_test_command(cp, up, fn_abs, dir, inp, baseline_flag);
+	exit_status =
+	    run_test_command
+	    (
+		cp,
+		up,
+		fn_abs,
+		dir,
+		inp,
+		baseline_flag,
+		variable_assignments
+	    );
 
 	//
 	// remember what happened

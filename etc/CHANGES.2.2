@@ -31,7 +31,7 @@ Change	State		Description
   21	completed	recreating a deleted file fails
   22	completed	allow file name length limit to be configured
   23	completed	pathconf does not work over NFS
-  24	completed	rename ``uname'' things to be ``architecture''
+  24	completed	rename "uname" things to be "architecture"
 			things
   25	completed	automatic guessing of change number broken by
 			patconf changes
@@ -2376,13 +2376,13 @@ NAME
 	Project "aegis.2.2", Delta 31, Change 24.
 
 SUMMARY
-	rename ``uname'' things to be ``architecture'' things
+	rename "uname" things to be "architecture" things
 
 DESCRIPTION
 	1. rename uname to be architecture, in all listings and file
 	formats.  This is more consistent with most existing systems.
-	2. Allow naming of the patterns, to allow more ``user
-	friendly'' names.
+	2. Allow naming of the patterns, to allow more "user
+	friendly" names.
 	3. this change improves fmtgen, in addition to fixing a number
 	of portability problems.
 
@@ -2866,7 +2866,7 @@ SUMMARY
 
 DESCRIPTION
 	Experience has shown that it is unnecessary to force a rebuild
-	of ``build'' type source files at integrate-begin time.
+	of "build" type source files at integrate-begin time.
 
 	This change must pass a full regression test.  This change is
 	exempt from testing against the development directory.	This
@@ -3213,7 +3213,7 @@ SUMMARY
 DESCRIPTION
 	When reporting outstanding architectures in error strings,
 	aegis dumped core.  This has been corrected. Trailing ; on
-	``for (...)'' strikes again!
+	"for (...)" strikes again!
 
 	This change must pass a full regression test.  This change is
 	exempt from testing against the development directory.	This
@@ -4970,8 +4970,8 @@ DESCRIPTION
 	The DEC Alpha is a 64-bit machine - a few problems were
 	revealed:
 	1. in several places the strings.h prototypes were not included
-	2. some dialects have a ``typeof'' reserved word
-	3. the ``basename'' function is in libc on the alpha, so avoid
+	2. some dialects have a "typeof" reserved word
+	3. the "basename" function is in libc on the alpha, so avoid
 	it.
 
 	This change is exempt from testing against the baseline.

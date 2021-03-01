@@ -23,8 +23,8 @@
 #ifndef LIBAEGIS_OUTPUT_BIT_BUCKET_H
 #define LIBAEGIS_OUTPUT_BIT_BUCKET_H
 
-#include <nstring.h>
-#include <output.h>
+#include <common/nstring.h>
+#include <libaegis/output.h>
 
 /**
   * The output_bit_bucket class represents a NULL output stream.  The

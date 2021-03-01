@@ -1,6 +1,6 @@
 //
 //	aegis - project change supervisor
-//	Copyright (C) 2004, 2005 Peter Miller;
+//	Copyright (C) 2004-2006 Peter Miller;
 //	All rights reserved.
 //
 //	This program is free software; you can redistribute it and/or modify
@@ -23,9 +23,7 @@
 #ifndef COMMON_NSTRING_H
 #define COMMON_NSTRING_H
 
-#pragma interface "nstring"
-
-#include <str.h>
+#include <common/str.h>
 
 /**
   * The nstring class is used to represent a reference counted narrow string
@@ -363,6 +361,15 @@ public:
     {
 	return (ref != arg.ref);
     }
+
+    /**
+      * \brief
+      *	quote C meta-characters
+      *
+      * The quote_c method is used to create a new string which
+      * quotes the C meta-characters in the input string.
+      */
+    nstring quote_c() const;
 
     /**
       * \brief

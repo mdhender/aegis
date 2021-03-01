@@ -21,18 +21,18 @@
 //
 
 
-#include <ac/stdio.h>
+#include <common/ac/stdio.h>
 
-#include <arglex2.h>
-#include <help.h>
-#include <output/pager.h>
-#include <output/wrap.h>
-#include <progname.h>
-#include <quit.h>
-#include <sub.h>
-#include <trace.h>
-#include <version.h>
-#include <version_stmp.h>
+#include <libaegis/arglex2.h>
+#include <libaegis/help.h>
+#include <libaegis/output/pager.h>
+#include <libaegis/output/wrap.h>
+#include <common/progname.h>
+#include <common/quit.h>
+#include <libaegis/sub.h>
+#include <common/trace.h>
+#include <libaegis/version.h>
+#include <common/version_stmp.h>
 
 
 void

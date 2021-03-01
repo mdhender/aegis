@@ -1,7 +1,8 @@
 #!/bin/sh
 #
 #	aegis - project change supervisor
-#	Copyright (C) 2005 Walter Franzini;
+#	Copyright (C) 2006 Peter Miller
+#	Copyright (C) 2005, 2006 Walter Franzini;
 #	All rights reserved.
 #
 #	This program is free software; you can redistribute it and/or modify
@@ -57,11 +58,20 @@ if test $? -ne 0 ; then exit 2; fi
 
 if test "$1" != "" ; then bin="$here/$1/bin"; else bin="$here/bin"; fi
 
-#
-# set the path, so that the aegis command that aepatch/aedist invokes
-# is from the same test set as the aepatch/aedist command itself.
-#
-PATH=${bin}:$PATH
+if test "$EXEC_SEARCH_PATH" != ""
+then
+    tpath=
+    hold="$IFS"
+    IFS=":$IFS"
+    for tpath2 in $EXEC_SEARCH_PATH
+    do
+	tpath=${tpath}${tpath2}/${1-.}/bin:
+    done
+    IFS="$hold"
+    PATH=${tpath}${PATH}
+else
+    PATH=${bin}:${PATH}
+fi
 export PATH
 
 pass()
@@ -93,7 +103,7 @@ no_result()
 }
 trap \"no_result\" 1 2 3 15
 
-activity="create test directory 96"
+activity="create test directory 106"
 mkdir $work $work/lib
 if test $? -ne 0 ; then no_result; fi
 chmod 777 $work/lib
@@ -110,16 +120,16 @@ unset LANG
 unset LANGUAGE
 
 #
-# If the C++ compiler is called something other than ``c++'', as
+# If the C++ compiler is called something other than "c++", as
 # discovered by the configure script, create a shell script called
-# ``c++'' which invokes the correct C++ compiler.  Make sure the current
+# "c++" which invokes the correct C++ compiler.  Make sure the current
 # directory is in the path, so that it will be invoked.
 #
-if test "$CXX" != "" -a "$CXX" != "c++"
+if test "$CXX" != "c++"
 then
 	cat >> $work/c++ << fubar
 #!/bin/sh
-exec $CXX \$*
+exec ${CXX-g++} \$*
 fubar
 	if test $? -ne 0 ; then no_result; fi
 	chmod a+rx $work/c++
@@ -127,7 +137,6 @@ fubar
 	PATH=${work}:${PATH}
 	export PATH
 fi
-
 
 #
 # test the aedist functionality
@@ -141,14 +150,14 @@ AEGIS_PROJECT=example ; export AEGIS_PROJECT
 #
 # make a new project
 #
-activity="new project 144"
+activity="new project 153"
 $bin/aegis -npr $AEGIS_PROJECT -vers "" -dir $workproj > log 2>&1
 if test $? -ne 0 ; then cat log; no_result; fi
 
 #
 # change project attributes
 #
-activity="project attributes 151"
+activity="project attributes 160"
 cat > tmp << 'end'
 description = "A bogus project created to test the aemv/merge "
     "functionality.";
@@ -165,7 +174,7 @@ if test $? -ne 0 ; then cat log; no_result; fi
 #
 # add the staff
 #
-activity="staff 168"
+activity="staff 177"
 $bin/aegis -nd $USER > log 2>&1
 if test $? -ne 0 ; then cat log; no_result; fi
 $bin/aegis -nrv $USER > log 2>&1
@@ -175,16 +184,18 @@ if test $? -ne 0 ; then cat log; no_result; fi
 
 # --------------------------------------------------------------------------
 
-activity="new branch 178"
+activity="new branch 187"
 $bin/aegis -nbr -p $AEGIS_PROJECT 10 -v > log 2>&1
 
 AEGIS_PROJECT=${AEGIS_PROJECT}.10
 export AEGIS_PROJECT
 
+# 11111111111111111111111111111111111111111111111111111111111111111111111111
+
 #
 # create a new change
 #
-activity="new change 187"
+activity="new change 198"
 cat > tmp << 'end'
 brief_description = "The first change";
 cause = internal_bug;
@@ -196,14 +207,14 @@ if test $? -ne 0 ; then cat log; no_result; fi
 #
 # begin development of a change
 #
-activity="develop begin 199"
+activity="develop begin 210"
 $bin/aegis -db 1 -dir $workchan > log 2>&1
 if test $? -ne 0 ; then cat log; no_result; fi
 
 #
 # add a new files to the change
 #
-activity="new file 206"
+activity="new file 217"
 $bin/aegis -nf  $workchan/bogus1 -nl \
 	--uuid aaaaaaaa-bbbb-4bbb-8ccc-ccccddddddd1 > log 2>&1
 if test $? -ne 0 ; then cat log; no_result; fi
@@ -227,34 +238,32 @@ end
 if test $? -ne 0 ; then no_result; fi
 
 cat > $workchan/aegis.conf << 'end'
-build_command = "exit 0";
+build_command = "echo build not required";
 link_integration_directory = true;
-history_get_command =
-	"co -u'$e' -p $h,v > $o";
-history_create_command =
-	"ci -f -u -m/dev/null -t/dev/null $i $h,v; rcs -U $h,v";
-history_put_command =
-	"ci -f -u -m/dev/null -t/dev/null $i $h,v; rcs -U $h,v";
-history_query_command =
-	"rlog -r $h,v | awk '/^head:/ {print $$2}'";
+
+history_get_command = "aesvt -check-out -edit ${quote $edit} "
+    "-history ${quote $history} -f ${quote $output}";
+history_put_command = "aesvt -check-in -history ${quote $history} "
+    "-f ${quote $input}";
+history_query_command = "aesvt -query -history ${quote $history}";
+history_content_limitation = binary_capable;
+
 diff_command = "set +e; diff $orig $i > $out; test $$? -le 1";
 merge_command = "exit 1 # $input $output $orig $most_recent";
-patch_diff_command = "set +e; diff -C0 -L $index -L $index $orig $i > $out; \
-test $$? -le 1";
 end
 if test $? -ne 0 ; then no_result; fi
 
 #
 # build the change
 #
-activity="build 250"
+activity="build 259"
 $bin/aegis -build -nl -v > log 2>&1
 if test $? -ne 0 ; then cat log; no_result; fi
 
 #
 # difference the change
 #
-activity="diff 257"
+activity="diff 266"
 $bin/aegis -diff > log 2>&1
 if test $? -ne 0 ; then cat log; no_result; fi
 
@@ -264,39 +273,41 @@ if test $? -ne 0; then cat log; no_result; fi
 #
 # finish development of the change
 #
-activity="develop end 267"
+activity="develop end 276"
 $bin/aegis -de > log 2>&1
 if test $? -ne 0 ; then cat log; no_result; fi
 
 #
 # start integrating
 #
-activity="integrate begin 274"
+activity="integrate begin 283"
 $bin/aegis -ib 1 > log 2>&1
 if test $? -ne 0 ; then cat log; no_result; fi
 
-activity="diff the change 278"
+activity="diff the change 287"
 $bin/aegis -diff 1 -nl -v > log 2>&1
 if test $? -ne 0; then cat log; no_result; fi
 
 #
 # integrate build
 #
-activity="build 285"
+activity="build 294"
 $bin/aegis -b -nl -v > log 2>&1
 if test $? -ne 0 ; then cat log; no_result; fi
 
 #
 # pass the integration
 #
-activity="integrate pass 292"
+activity="integrate pass 301"
 $bin/aegis -intpass -nl > log 2>&1
 if test $? -ne 0 ; then cat log; no_result; fi
+
+# 22222222222222222222222222222222222222222222222222222222222222222222222222
 
 #
 # create a new change
 #
-activity="new change 299"
+activity="new change 310"
 cat > tmp << 'end'
 brief_description = "The second change";
 cause = internal_bug;
@@ -308,11 +319,11 @@ if test $? -ne 0 ; then cat log; no_result; fi
 #
 # begin development of a change
 #
-activity="develop begin 311"
+activity="develop begin 322"
 $bin/aegis -db 2 -dir $workchan > log 2>&1
 if test $? -ne 0 ; then cat log; no_result; fi
 
-activity="modify bogus1 315"
+activity="modify bogus1 326"
 $bin/aegis -cp 2 $workchan/bogus1 -nl > log 2>&1
 if test $? -ne 0; then cat log; no_result; fi
 
@@ -321,7 +332,7 @@ append some text
 EOF
 if test $? -ne 0; then no_result; fi
 
-activity="modify bogus2 324"
+activity="modify bogus2 335"
 $bin/aegis -cp 2 $workchan/bogus2 -nl > log 2>&1
 if test $? -ne 0; then cat log; no_result; fi
 
@@ -334,53 +345,138 @@ if test $? -ne 0; then no_result; fi
 # Copy aegis conf, this will stop aedist -rec before running the
 # merge_command.
 #
-activity="copy aegis.conf 337"
+activity="copy aegis.conf 348"
 $bin/aegis -cp 2 $workchan/aegis.conf -nl > log 2>&1
 if test $? -ne 0; then cat log; no_result; fi
 
-activity="diff the change 341"
+activity="diff the change 352"
 $bin/aegis -diff 2 -nl -v > log 2>&1
 if test $? -ne 0; then cat log; no_result; fi
 
-activity="build the change 345"
+activity="build the change 356"
 $bin/aegis -build 2 -nl -v > log 2>&1
 if test $? -ne 0; then cat log; no_result; fi
 
-activity="set change's UUID 349"
+activity="set change's UUID 360"
 $bin/aegis -change_attr 2 --uuid aaaaaaaa-bbbb-4bbb-8ccc-ccccddddddd6 > log 2>&1
 if test $? -ne 0; then cat log; no_result; fi
 
-activity="develop end 353"
+activity="develop end 364"
 $bin/aegis -dev_end 2 -v > log 2>&1
 if test $? -ne 0; then cat log; no_result; fi
 
-activity="integrate begin 357"
+activity="integrate begin 368"
 $bin/aegis -ibegin 2  -v > log 2>&1
 if test $? -ne 0; then cat log; no_result; fi
 
-activity="diff the change 361"
+activity="diff the change 372"
 $bin/aegis -diff 2 -nl -v > log 2>&1
 if test $? -ne 0; then cat log; no_result; fi
 
-activity="build the change 365"
+activity="build the change 376"
 $bin/aegis -build 2 -nl -v > log 2>&1
 if test $? -ne 0; then cat log; no_result; fi
 
-activity="integrate pass 369"
+activity="integrate pass 380"
 $bin/aegis -ipass 2 -v > log 2>&1
 if test $? -ne 0; then cat log; no_result; fi
 
-activity="send the change 373"
+# 33333333333333333333333333333333333333333333333333333333333333333333333333
+
+#
+# create a new change
+#
+activity="new change 389"
+cat > tmp << 'end'
+brief_description = "The third change";
+cause = internal_bug;
+end
+if test $? -ne 0 ; then no_result; fi
+$bin/aegis -nc 3 -f tmp -p $AEGIS_PROJECT > log 2>&1
+if test $? -ne 0 ; then cat log; no_result; fi
+
+#
+# begin development of a change
+#
+activity="develop begin 401"
+$bin/aegis -db 3 -dir $workchan > log 2>&1
+if test $? -ne 0 ; then cat log; no_result; fi
+
+activity="modify bogus1 405"
+$bin/aegis -cp 3 $workchan/bogus1 -nl > log 2>&1
+if test $? -ne 0; then cat log; no_result; fi
+
+cat > $workchan/bogus1 <<EOF
+the penguin
+crows
+at midnight
+EOF
+if test $? -ne 0; then no_result; fi
+
+activity="modify bogus2 416"
+$bin/aegis -cp 3 $workchan/bogus2 -nl > log 2>&1
+if test $? -ne 0; then cat log; no_result; fi
+
+cat > $workchan/bogus2 <<EOF
+less
+is
+more
+EOF
+if test $? -ne 0; then no_result; fi
+
+#
+# Copy aegis conf, this will stop aedist -rec before running the
+# merge_command.
+#
+activity="copy aegis.conf 431"
+$bin/aegis -cp 3 $workchan/aegis.conf -nl > log 2>&1
+if test $? -ne 0; then cat log; no_result; fi
+
+activity="diff the change 435"
+$bin/aegis -diff 3 -nl -v > log 2>&1
+if test $? -ne 0; then cat log; no_result; fi
+
+activity="build the change 439"
+$bin/aegis -build 3 -nl -v > log 2>&1
+if test $? -ne 0; then cat log; no_result; fi
+
+activity="set change's UUID 443"
+$bin/aegis -change_attr 3 --uuid aaaaaaaa-bbbb-4bbb-8ccc-ccccddddddd7 > log 2>&1
+if test $? -ne 0; then cat log; no_result; fi
+
+activity="develop end 447"
+$bin/aegis -dev_end 3 -v > log 2>&1
+if test $? -ne 0; then cat log; no_result; fi
+
+activity="integrate begin 451"
+$bin/aegis -ibegin 3  -v > log 2>&1
+if test $? -ne 0; then cat log; no_result; fi
+
+activity="diff the change 455"
+$bin/aegis -diff 3 -nl -v > log 2>&1
+if test $? -ne 0; then cat log; no_result; fi
+
+activity="build the change 459"
+$bin/aegis -build 3 -nl -v > log 2>&1
+if test $? -ne 0; then cat log; no_result; fi
+
+activity="integrate pass 463"
+$bin/aegis -ipass 3 -v > log 2>&1
+if test $? -ne 0; then cat log; no_result; fi
+
+# 44444444444444444444444444444444444444444444444444444444444444444444444444
+
+activity="send the change 469"
 $bin/aedist -send -c 2 -ndh -cte=none -nocomp -o c2.ae > log 2>&1
 if test $? -ne 0; then cat log; no_result; fi
 
-activity="test the archive 377"
+activity="test the archive 473"
 mkdir tmp.d > log 2>&1
 if test $? -ne 0; then cat log; no_result; fi
 $bin/test_cpio --extract --change_dir $work/tmp.d --file c2.ae > log 2>&1
 if test $? -ne 0; then cat log; no_result; fi
 
-activity="change-set 383"
+activity="change-set 479"
 cat > ok <<EOF
 brief_description = "The second change";
 description = "The second change";
@@ -441,21 +537,32 @@ if test $? -ne 0; then cat log; fail; fi
 #
 # Receive the change, make the trojan check mandatory.
 #
-activity="receive the change 444"
-$bin/aedist -rec -c 3 -f c2.ae -trojan -ignore-uuid > log 2>&1
+activity="receive the change 540"
+$bin/aedist -rec -c 4 -f c2.ae -trojan -ignore-uuid > log 2>&1
 if test $? -ne 0; then cat log; fail; fi
 
-activity="fstate check 448"
+activity="fstate check 544"
 cat > ok <<EOF
 src =
 [
+	{
+		file_name = "aegis.conf";
+		uuid = "aaaaaaaa-bbbb-4bbb-8ccc-ccccddddddd3";
+		action = modify;
+		edit_origin =
+		{
+			revision = "1";
+			encoding = none;
+		};
+		usage = config;
+	},
 	{
 		file_name = "bogus1";
 		uuid = "aaaaaaaa-bbbb-4bbb-8ccc-ccccddddddd1";
 		action = modify;
 		edit_origin =
 		{
-			revision = "1.1";
+			revision = "1";
 			encoding = none;
 		};
 		usage = source;
@@ -466,7 +573,7 @@ src =
 		action = modify;
 		edit_origin =
 		{
-			revision = "1.1";
+			revision = "1";
 			encoding = none;
 		};
 		usage = source;
@@ -475,7 +582,7 @@ src =
 EOF
 if test $? -ne 0; then no_result; fi
 
-diff ok $workproj/info/change/0/010.branch/0/003.fs
+diff ok $workproj/info/change/0/010.branch/0/004.fs
 if test $? -ne 0; then fail; fi
 
 #

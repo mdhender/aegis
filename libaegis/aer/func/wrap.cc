@@ -1,6 +1,6 @@
 //
 //	aegis - project change supervisor
-//	Copyright (C) 1995, 1996, 1998, 1999, 2002-2004 Peter Miller;
+//	Copyright (C) 1995, 1996, 1998, 1999, 2002-2005 Peter Miller;
 //	All rights reserved.
 //
 //	This program is free software; you can redistribute it and/or modify
@@ -20,16 +20,16 @@
 // MANIFEST: functions to implement the builtin wrap function
 //
 
-#include <ac/ctype.h>
+#include <common/ac/ctype.h>
 
-#include <aer/expr.h>
-#include <aer/func/wrap.h>
-#include <aer/value/error.h>
-#include <aer/value/integer.h>
-#include <aer/value/list.h>
-#include <aer/value/string.h>
-#include <mem.h>
-#include <sub.h>
+#include <libaegis/aer/expr.h>
+#include <libaegis/aer/func/wrap.h>
+#include <libaegis/aer/value/error.h>
+#include <libaegis/aer/value/integer.h>
+#include <libaegis/aer/value/list.h>
+#include <libaegis/aer/value/string.h>
+#include <common/mem.h>
+#include <libaegis/sub.h>
 
 
 static int

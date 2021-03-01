@@ -20,14 +20,14 @@
 // MANIFEST: functions to manipulate dynamic memory
 //
 
-#include <ac/stddef.h>
-#include <ac/string.h>
-#include <ac/stdlib.h>
-#include <ac/errno.h>
-#include <ac/new.h>
+#include <common/ac/stddef.h>
+#include <common/ac/string.h>
+#include <common/ac/stdlib.h>
+#include <common/ac/errno.h>
+#include <common/ac/new.h>
 
-#include <mem.h>
-#include <error.h>
+#include <common/mem.h>
+#include <common/error.h>
 
 
 #ifdef _AIX
@@ -37,7 +37,7 @@
 // malloc does not guarantee that the space is available in swap.
 //
 
-#include <ac/signal.h>
+#include <common/ac/signal.h>
 #include <setjmp.h>
 
 static jmp_buf  aix_bungy;

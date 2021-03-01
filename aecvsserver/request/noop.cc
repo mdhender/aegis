@@ -1,6 +1,6 @@
 //
 //	aegis - project change supervisor
-//	Copyright (C) 2004 Peter Miller;
+//	Copyright (C) 2004-2006 Peter Miller;
 //	All rights reserved.
 //
 //	This program is free software; you can redistribute it and/or modify
@@ -31,20 +31,39 @@
 // Root required: no.
 //
 
-#include <request/noop.h>
-#include <server.h>
+#include <aecvsserver/request/noop.h>
+#include <aecvsserver/server.h>
 
 
-static void
-run(server_ty *sp, string_ty *arg)
+request_noop::~request_noop()
+{
+}
+
+
+request_noop::request_noop()
+{
+}
+
+
+void
+request_noop::run_inner(server_ty *sp, string_ty *arg)
+    const
 {
     server_ok(sp);
 }
 
 
-const request_ty request_noop =
+const char *
+request_noop::name()
+    const
 {
-    "noop",
-    run,
-    1, // reset
-};
+    return "noop";
+}
+
+
+bool
+request_noop::reset()
+    const
+{
+    return true;
+}

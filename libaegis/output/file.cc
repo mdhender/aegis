@@ -1,6 +1,6 @@
 //
 //	aegis - project change supervisor
-//	Copyright (C) 1999, 2001, 2003-2005 Peter Miller;
+//	Copyright (C) 1999, 2001, 2003-2006 Peter Miller;
 //	All rights reserved.
 //
 //	This program is free software; you can redistribute it and/or modify
@@ -20,21 +20,23 @@
 // MANIFEST: functions to deliver output to files
 //
 
-#include <ac/errno.h>
-#include <ac/fcntl.h>
-#include <ac/unistd.h>
+#include <common/ac/errno.h>
+#include <common/ac/fcntl.h>
+#include <common/ac/unistd.h>
 
-#include <glue.h>
-#include <mem.h>
-#include <os.h>
-#include <output/file.h>
-#include <output/stdout.h>
-#include <page.h>
-#include <sub.h>
+#include <common/mem.h>
+#include <common/page.h>
+#include <common/trace.h>
+#include <libaegis/glue.h>
+#include <libaegis/os.h>
+#include <libaegis/output/file.h>
+#include <libaegis/output/stdout.h>
+#include <libaegis/sub.h>
 
 
 output_file::~output_file()
 {
+    trace(("output_file::~output_file(this = %08lX)\n{\n", (long)this));
     //
     // Make sure all buffered data has been passed to our write_inner
     // method.
@@ -52,6 +54,7 @@ output_file::~output_file()
     }
     fd = -1;
     pos = 0;
+    trace(("}\n"));
 }
 
 
@@ -67,6 +70,8 @@ long
 output_file::ftell_inner()
     const
 {
+    trace(("output_file::ftell_inner(this = %08lX) returns %ld", (long)this,
+	(long)pos));
     return pos;
 }
 
@@ -74,6 +79,8 @@ output_file::ftell_inner()
 void
 output_file::write_inner(const void *data, size_t len)
 {
+    trace(("output_file::write_inner(this = %08lX, data = %08lX, %ld)\n{\n",
+	(long)this, (long)data, (long)len));
     if (glue_write(fd, data, len) < 0)
     {
 	int errno_old = errno;
@@ -86,6 +93,8 @@ output_file::write_inner(const void *data, size_t len)
     if (len > 0)
 	bol = (((char *)data)[len - 1] == '\n');
     pos += len;
+    trace(("pos = %ld\n", (long)pos));
+    trace(("}\n"));
 }
 
 
@@ -108,8 +117,11 @@ output_file::page_length()
 void
 output_file::end_of_line_inner()
 {
+    trace(("output_file::end_of_line_inner(this = %08lX)\n{\n", (long)this));
     if (!bol)
 	fputc('\n');
+    trace(("pos = %ld\n", (long)pos));
+    trace(("}\n"));
 }
 
 
@@ -162,6 +174,8 @@ output_file::output_file(const nstring &fn, bool binary) :
     bol(true),
     pos(0)
 {
+    trace(("output_file::output_file(this = %08lX, fn = %s)\n{\n", (long)this,
+	fn.quote_c().c_str()));
     os_become_must_be_active();
     int mode = O_WRONLY | O_CREAT | O_TRUNC | (binary ? O_BINARY : O_TEXT);
     fd = open_with_stale_nfs_retry(fn.c_str(), mode);
@@ -174,6 +188,8 @@ output_file::output_file(const nstring &fn, bool binary) :
 	sc.fatal_intl(i18n("open $filename: $errno"));
 	// NOTREACHED
     }
+    trace(("pos = %ld\n", (long)pos));
+    trace(("}\n"));
 }
 
 

@@ -20,11 +20,11 @@
 // MANIFEST: functions to manipulate wraps
 //
 
-#include <output/wrap.h>
-#include <output/to_wide.h>
-#include <wide_output/expand.h>
-#include <wide_output/wrap.h>
-#include <wide_output/to_narrow.h>
+#include <libaegis/output/wrap.h>
+#include <libaegis/output/to_wide.h>
+#include <libaegis/wide_output/expand.h>
+#include <libaegis/wide_output/wrap.h>
+#include <libaegis/wide_output/to_narrow.h>
 
 
 output_ty *

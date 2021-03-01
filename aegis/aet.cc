@@ -1,6 +1,6 @@
 //
 //	aegis - project change supervisor
-//	Copyright (C) 1991-2005 Peter Miller;
+//	Copyright (C) 1991-2006 Peter Miller;
 //	All rights reserved.
 //
 //	This program is free software; you can redistribute it and/or modify
@@ -20,37 +20,41 @@
 // MANIFEST: functions to implement test
 //
 
-#include <ac/stdio.h>
-#include <ac/stdlib.h>
+#include <common/ac/stdio.h>
+#include <common/ac/stdlib.h>
+#include <common/ac/string.h>
 
-#include <ael/change/files.h>
-#include <aet.h>
-#include <arglex2.h>
-#include <arglex/change.h>
-#include <arglex/project.h>
-#include <change.h>
-#include <change/branch.h>
-#include <change/file.h>
-#include <change/test/run_list.h>
-#include <commit.h>
-#include <error.h>
-#include <help.h>
-#include <lock.h>
-#include <log.h>
-#include <mem.h>
-#include <now.h>
-#include <os.h>
-#include <progname.h>
-#include <project.h>
-#include <project/file.h>
-#include <project/history.h>
-#include <quit.h>
-#include <r250.h>
-#include <str_list.h>
-#include <sub.h>
-#include <symtab.h>
-#include <trace.h>
-#include <user.h>
+#include <common/error.h>
+#include <common/mem.h>
+#include <common/now.h>
+#include <common/nstring/list.h>
+#include <common/progname.h>
+#include <common/quit.h>
+#include <common/r250.h>
+#include <common/str_list.h>
+#include <common/symtab.h>
+#include <common/symtab/template.h>
+#include <common/trace.h>
+#include <libaegis/ael/change/files.h>
+#include <libaegis/arglex2.h>
+#include <libaegis/arglex/change.h>
+#include <libaegis/arglex/project.h>
+#include <libaegis/change/branch.h>
+#include <libaegis/change/file.h>
+#include <libaegis/change.h>
+#include <libaegis/change/test/run_list.h>
+#include <libaegis/commit.h>
+#include <libaegis/help.h>
+#include <libaegis/lock.h>
+#include <libaegis/log.h>
+#include <libaegis/os.h>
+#include <libaegis/project/file.h>
+#include <libaegis/project.h>
+#include <libaegis/project/history.h>
+#include <libaegis/sub.h>
+#include <libaegis/user.h>
+
+#include <aegis/aet.h>
 
 
 static void
@@ -426,6 +430,7 @@ test_main(void)
     suggest_noise = -1;
     progress_flag = -1;
     int suggest_limit = 0;
+    nstring_list variable_assignments;
     while (arglex_token != arglex_token_eoln)
     {
 	switch (arglex_token)
@@ -464,6 +469,7 @@ test_main(void)
 	    if (force)
 		duplicate_option(test_usage);
 	    force = 1;
+	    variable_assignments.push_back("force=1");
 	    break;
 
 	case arglex_token_progress:
@@ -491,12 +497,22 @@ test_main(void)
 	    break;
 
 	case arglex_token_file:
+	    if (arglex() != arglex_token_string)
+		option_needs_dir(arglex_token_directory, test_usage);
+	    goto get_file_names;
+
 	case arglex_token_directory:
 	    if (arglex() != arglex_token_string)
-		test_usage();
-	    // fall through...
+		option_needs_files(arglex_token_file, test_usage);
+	    goto get_file_names;
 
 	case arglex_token_string:
+	    if (strchr(arglex_value.alv_string, '='))
+	    {
+		variable_assignments.push_back(arglex_value.alv_string);
+		break;
+	    }
+    	    get_file_names:
 	    s2 = str_from_c(arglex_value.alv_string);
 	    wl.push_back(s2);
 	    str_free(s2);
@@ -681,7 +697,7 @@ test_main(void)
 	project_name = user_default_project();
     pp = project_alloc(project_name);
     str_free(project_name);
-    project_bind_existing(pp);
+    pp->bind_existing();
 
     //
     // locate user data
@@ -719,7 +735,7 @@ test_main(void)
 	if (!str_equal(change_developer_name(cp), user_name(up)))
 	    change_fatal(cp, 0, i18n("not developer"));
 	if (baseline_flag)
-	    dir = project_baseline_path_get(pp, 0);
+	    dir = pp->baseline_path_get();
 	else
 	{
 	    dir = change_development_directory_get(cp, 0);
@@ -750,7 +766,7 @@ test_main(void)
 	if (!str_equal(change_integrator_name(cp), user_name(up)))
 	    change_fatal(cp, 0, i18n("not integrator"));
 	if (baseline_flag)
-	    dir = project_baseline_path_get(pp, 0);
+	    dir = pp->baseline_path_get();
 	else
 	    dir = change_integration_directory_get(cp, 0);
 	integrating = 1;
@@ -774,7 +790,7 @@ test_main(void)
     // aeipass pre-conditions, you may not name a sub-set on the command
     // line.  This was once a fatal error, but when integrators are
     // acting like second reviewers, it helps if they, like reviewers,
-    // can run additonal tests.
+    // can run additional tests.
     //
     if (integrating && (wl.nstrings || suggest))
     {
@@ -975,7 +991,7 @@ test_main(void)
 	    p_src_data = project_file_find(pp, s2, view_path_extreme);
 	    if (!p_src_data)
 	    {
-		p_src_data = project_file_find_fuzzy(pp, s2, view_path_extreme);
+		p_src_data = pp->file_find_fuzzy(s2, view_path_extreme);
 		if (p_src_data)
 		{
 		    scp = sub_context_new();
@@ -1046,7 +1062,7 @@ test_main(void)
 	    //
 	    for (j = 0;; ++j)
 	    {
-		p_src_data = project_file_nth(pp, j, view_path_extreme);
+		p_src_data = pp->file_nth(j, view_path_extreme);
 		if (!p_src_data)
 		    break;
 
@@ -1251,86 +1267,213 @@ test_main(void)
 	    up,
 	    baseline_flag,
 	    progress_flag,
-	    suggest_limit
+	    suggest_limit,
+	    variable_assignments
 	);
 
     //
     // transcribe the results
     //
     trace(("brlp->length = %d\n", (int)brlp->length));
-    for (j = 0; j < brlp->length; ++j)
+    if (regression_flag)
     {
-	batch_result_ty *rp;
-	fstate_src_ty   *src_data;
+	symtab<long> pass_by_arch;
+	pass_by_arch.set_reaper();
+	symtab<long> total_by_arch;
+	total_by_arch.set_reaper();
+	nstring_list keys;
 
-	rp = &brlp->item[j];
-	trace(("rp->filename = \"%s\"\n", rp->file_name->str_text));
-	trace(("rp->exit_status = %d\n", rp->exit_status));
-	src_data = change_file_find(cp, rp->file_name, view_path_first);
-	if (src_data)
+	//
+	// See the counts by architecture name.
+	// (This was we can whine about unknown architectures.)
+	//
+	pconf_ty *pconf_data = change_pconf_get(cp, 0);
+	for (j = 0; j < pconf_data->architecture->length; ++j)
 	{
-	    switch (rp->exit_status)
+	    pconf_architecture_ty *pca = pconf_data->architecture->list[j];
+	    if (!pca)
+		continue;
+	    if (!pca->name)
+		continue;
+	    nstring key(pca->name);
+	    total_by_arch.assign(key, 0L);
+	    pass_by_arch.assign(key, 0L);
+	    keys.push_back(key);
+	}
+
+	//
+	// If we didn't find any architectures, set the list to the
+	// "unspecified" architecture, which is the Aegis default.
+	//
+	if (keys.empty())
+	{
+	    nstring key = "unspecified";
+	    total_by_arch.assign(key, 0L);
+	    pass_by_arch.assign(key, 0L);
+	    keys.push_back(key);
+	}
+
+	//
+        // We have to track each file for each architecture, to make
+        // sure that we set or reset the time for each architecture
+        // accurately.
+	//
+	for (j = 0; j < brlp->length; ++j)
+	{
+	    batch_result_ty *rp = &brlp->item[j];
+	    if (!rp->architecture)
+		rp->architecture = change_architecture_name(cp, 1);
+	    trace(("rp->filename = \"%s\"\n", rp->file_name->str_text));
+	    trace(("rp->exit_status = %d\n", rp->exit_status));
+	    trace(("rp->architecture = \"%s\"\n", rp->architecture->str_text));
+	    if (!wl.member(rp->file_name))
 	    {
-	    case 0:
-		if (baseline_flag)
-		{
-		    change_file_test_baseline_time_clear
-		    (
-			cp,
-			src_data,
-			rp->architecture
-		    );
-		}
-		else
-		{
-		    change_file_test_time_set
-		    (
-			cp,
-			src_data,
-			when,
-			rp->architecture
-		    );
-		}
-		break;
+		sub_context_ty sc;
+		sc.var_set_string("File_Name", rp->file_name);
+		change_error(cp, &sc, "ignoring file $filename");
+		continue;
+	    }
 
-	    case 1:
-		if (baseline_flag)
-		{
-		    change_file_test_baseline_time_set
-		    (
-			cp,
-			src_data,
-			when,
-			rp->architecture
-		    );
-		}
-		else
-		{
-		    change_file_test_time_clear(cp, src_data, rp->architecture);
-		}
-		break;
+	    nstring key(rp->architecture);
+	    long *p = total_by_arch.query(key);
+	    if (!p)
+	    {
+		sub_context_ty sc;
+		sc.var_set_string("Name", key);
+		change_error(cp, &sc, "ignoring architecture $name");
+		continue;
+	    }
+	    ++*p;
 
-	    default:
-		if (baseline_flag)
-		{
-		    change_file_test_baseline_time_clear
-		    (
-			cp,
-			src_data,
-			rp->architecture
-		    );
-		}
-		else
-		{
-		    change_file_test_time_clear(cp, src_data, rp->architecture);
-		}
-		break;
+	    if (rp->exit_status == 0)
+	    {
+		p = pass_by_arch.query(key);
+		assert(p);
+		if (p)
+		    ++*p;
 	    }
 	}
-	else
+
+	//
+	// for each architecture that has a non-zero total
+	// { if they all passed, we set the reg test time,
+	// otherwise we clear the reg test time }
+	//
+	for (j = 0; j < keys.size(); ++j)
 	{
-	    if (rp->exit_status)
-		change_regression_test_time_set(cp, (time_t)0);
+	    nstring key = keys[j];
+	    long *p = total_by_arch.query(key);
+	    assert(p);
+	    if (p && *p)
+	    {
+		// non-zero total, now wee if they all passed
+		p = pass_by_arch.query(key);
+		assert(p);
+		time_t stamp = 0;
+		if (p && (size_t)*p == wl.size())
+		    stamp = now();
+		change_regression_test_time_set(cp, stamp, key.get_ref());
+	    }
+	}
+    }
+    else
+    {
+	for (j = 0; j < brlp->length; ++j)
+	{
+	    batch_result_ty *rp;
+	    fstate_src_ty   *src_data;
+
+	    rp = &brlp->item[j];
+	    trace(("rp->filename = \"%s\"\n", rp->file_name->str_text));
+	    trace(("rp->exit_status = %d\n", rp->exit_status));
+	    if (rp->architecture)
+	    {
+		trace(("rp->architecture = \"%s\"\n",
+		    rp->architecture->str_text));
+	    }
+	    src_data = change_file_find(cp, rp->file_name, view_path_first);
+	    if (src_data)
+	    {
+		switch (rp->exit_status)
+		{
+		case 0:
+		    if (baseline_flag)
+		    {
+			trace(("mark\n"));
+			change_file_test_baseline_time_clear
+			(
+			    cp,
+			    src_data,
+			    rp->architecture
+			);
+		    }
+		    else
+		    {
+			trace(("mark\n"));
+			change_file_test_time_set
+			(
+			    cp,
+			    src_data,
+			    when,
+			    rp->architecture
+			);
+		    }
+		    break;
+
+		case 1:
+		    if (baseline_flag)
+		    {
+			trace(("mark\n"));
+			change_file_test_baseline_time_set
+			(
+			    cp,
+			    src_data,
+			    when,
+			    rp->architecture
+			);
+		    }
+		    else
+		    {
+			trace(("mark\n"));
+			change_file_test_time_clear
+		       	(
+			    cp,
+			    src_data,
+			    rp->architecture
+			);
+		    }
+		    break;
+
+		default:
+		    if (baseline_flag)
+		    {
+			trace(("mark\n"));
+			change_file_test_baseline_time_clear
+			(
+			    cp,
+			    src_data,
+			    rp->architecture
+			);
+		    }
+		    else
+		    {
+			trace(("mark\n"));
+			change_file_test_time_clear
+			(
+			    cp,
+			    src_data,
+			    rp->architecture
+			);
+		    }
+		    break;
+		}
+	    }
+	    else
+	    {
+		sub_context_ty sc;
+		sc.var_set_string("File_Name", rp->file_name);
+		change_error(cp, &sc, "ignoring $filename");
+	    }
 	}
     }
 
@@ -1387,6 +1530,7 @@ test_independent(void)
     manual_flag = 0;
     progress_flag = -1;
     string_list_ty wl;
+    nstring_list variable_assignments;
     arglex();
     while (arglex_token != arglex_token_eoln)
     {
@@ -1440,9 +1584,14 @@ test_independent(void)
 	case arglex_token_file:
 	    if (arglex() != arglex_token_string)
 		option_needs_files(arglex_token_file, test_usage);
-	    // fall through...
+	    goto get_file_names;
 
 	case arglex_token_string:
+	    if (strchr(arglex_value.alv_string, '='))
+	    {
+		variable_assignments.push_back(arglex_value.alv_string);
+		break;
+	    }
 	    get_file_names:
 	    s2 = str_from_c(arglex_value.alv_string);
 	    wl.push_back(s2);
@@ -1520,7 +1669,7 @@ test_independent(void)
 	project_name = user_default_project();
     pp = project_alloc(project_name);
     str_free(project_name);
-    project_bind_existing(pp);
+    pp->bind_existing();
 
     //
     // locate user data
@@ -1721,7 +1870,7 @@ test_independent(void)
     {
 	for (j = 0;; ++j)
 	{
-	    src_data = project_file_nth(pp, j, view_path_extreme);
+	    src_data = pp->file_nth(j, view_path_extreme);
 	    if (!src_data)
 		break;
 	    switch (src_data->usage)
@@ -1753,7 +1902,17 @@ test_independent(void)
     //
     if (progress_flag < 0)
 	progress_flag = 0;
-    brlp = project_test_run_list(pp, &wl, up, progress_flag, 0);
+    time_t time_limit = 0;
+    brlp =
+	project_test_run_list
+	(
+	    pp,
+	    &wl,
+	    up,
+	    progress_flag,
+	    time_limit,
+	    variable_assignments
+	);
 
     //
     // Release the baseline read lock.

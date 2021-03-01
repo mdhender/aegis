@@ -1,6 +1,6 @@
 //
 //	aegis - project change supervisor
-//	Copyright (C) 2004 Peter Miller;
+//	Copyright (C) 2004, 2005 Peter Miller;
 //	All rights reserved.
 //
 //	This program is free software; you can redistribute it and/or modify
@@ -20,13 +20,13 @@
 // MANIFEST: implementation of the html_text_unquote class
 //
 
-#include <ac/ctype.h>
-#include <ac/stdlib.h>
-#include <ac/string.h>
+#include <common/ac/ctype.h>
+#include <common/ac/stdlib.h>
+#include <common/ac/string.h>
 
-#include <main.h>
-#include <nstring.h>
-#include <nstring/accumulator.h>
+#include <common/main.h>
+#include <common/nstring.h>
+#include <common/nstring/accumulator.h>
 
 
 struct table_t

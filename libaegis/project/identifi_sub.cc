@@ -1,6 +1,6 @@
 //
 //	aegis - project change supervisor
-//	Copyright (C) 2004 Peter Miller;
+//	Copyright (C) 2004, 2005 Peter Miller;
 //	All rights reserved.
 //
 //	This program is free software; you can redistribute it and/or modify
@@ -20,10 +20,8 @@
 // MANIFEST: implementation of the project_identifier_subset class
 //
 
-#pragma implementation "project_identifier_subset"
-
-#include <project/identifi_sub.h>
-#include <trace.h>
+#include <libaegis/project/identifi_sub.h>
+#include <common/trace.h>
 
 
 project_identifier_subset::~project_identifier_subset()

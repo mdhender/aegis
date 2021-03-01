@@ -20,23 +20,21 @@
 // MANIFEST: implementation of the rss_item class
 //
 
-#pragma implementation "rss_item"
+#include <common/ac/string.h>
 
-#include <ac/string.h>
-
-#include <change.h>
-#include <change/branch.h>
-#include <cstate.h>
-#include <error.h> // for assert
-#include <gettime.h>
-#include <io.h>
-#include <now.h>
-#include <output.h>
-#include <project.h>
-#include <rss.h>
-#include <rss/item.h>
-#include <user.h>
-#include <uuidentifier.h>
+#include <common/error.h> // for assert
+#include <common/gettime.h>
+#include <common/now.h>
+#include <common/uuidentifier.h>
+#include <libaegis/change/branch.h>
+#include <libaegis/change.h>
+#include <libaegis/cstate.h>
+#include <libaegis/io.h>
+#include <libaegis/output.h>
+#include <libaegis/project.h>
+#include <libaegis/rss.h>
+#include <libaegis/rss/item.h>
+#include <libaegis/user.h>
 
 
 rss_item::~rss_item()
@@ -253,33 +251,35 @@ rss_item::handle_change(change_ty *cp)
     //
     // Set the <title> from the change's brief_description.
     //
-    handle_title
-    (
+    // See description comment, below, about double encoding.
+    //
+    // FIXME: the amount of text (that 128 you see below) should be
+    // configurable.
+    //
+    nstring tmp =
         nstring::format
         (
             "%s - %s - %s",
             change_version_get(cp)->str_text,
             nstring(cstate_data->brief_description).substring(0, 128).c_str(),
             cstate_state_ename(cstate_data->state)
-	)
-    );
+	);
+    title = tmp.html_quote();
 
     //
     // Set the <description> from the change's long description.
     //
-    // Look for the first paragraph break (two newlines in a row)
-    // for the first 1KB, whichever comes first.
+    // This is made slightly ugly by how the browser is expected to turn
+    // the RSS XML into HTML.  In Mozilla Firefox, for example, the text
+    // is glued into a table cell without any interpretation.  This
+    // means it must be encoded twice: once for the HTML, and a second
+    // time for the XML carrier.
     //
-    description = nstring(cstate_data->description);
-    const char *para = strstr(description.c_str(), "\n\n");
-    size_t desc_len = 1024;
-    if (para)
-    {
-	size_t len = para - description.c_str();
-	if (len < desc_len)
-    	    desc_len = len;
-    }
-    description = description.substring(0, desc_len);
+    // FIXME: the amount of text (that 2000 you see below) should be
+    // configurable.
+    //
+    description =
+	nstring(cstate_data->description).substring(0, 2000).html_quote(true);
 
     //
     // Set the <author> from the change's history

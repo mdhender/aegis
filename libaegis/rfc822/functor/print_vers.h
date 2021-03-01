@@ -23,9 +23,7 @@
 #ifndef LIBAEGIS_RFC822_FUNCTOR_PRINT_VERS_H
 #define LIBAEGIS_RFC822_FUNCTOR_PRINT_VERS_H
 
-#pragma interface "rfc822_functor_print_version"
-
-#include <rfc822/functor.h>
+#include <libaegis/rfc822/functor.h>
 
 /**
   * The rfc822_functor_print_version class is used to represent a simple

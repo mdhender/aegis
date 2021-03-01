@@ -20,15 +20,16 @@
 // MANIFEST: functions to manipulate menus
 //
 
-#include <ac/stdio.h>
+#include <common/ac/stdio.h>
 
-#include <change.h>
-#include <cstate.h>
-#include <get/change/menu.h>
-#include <http.h>
-#include <nstring.h>
-#include <project.h>
-#include <str_list.h>
+#include <common/nstring.h>
+#include <common/str_list.h>
+#include <libaegis/change.h>
+#include <libaegis/cstate.h>
+#include <libaegis/project.h>
+
+#include <aeget/get/change/menu.h>
+#include <aeget/http.h>
 
 
 void
@@ -211,7 +212,7 @@ get_change_menu(change_ty *cp, string_ty *filename, string_list_ty *modifier)
 	printf("File History</a><dd>\n");
 	printf("This item will provide you with a listing of all completed\n");
 	printf("changes which affected the files in this change.  The\n");
-	emit_change_href(cp, "file+history+deatiled");
+	emit_change_href(cp, "file+history+detailed");
 	printf("detailed version</a> can take a long time to generate.\n");
 	printf("<p>\n");
     }

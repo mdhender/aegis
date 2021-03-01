@@ -20,10 +20,10 @@
 // MANIFEST: implementation of the os_basename class
 //
 
-#include <ac/string.h>
-#include <str.h>
-#include <os.h>
-#include <trace.h>
+#include <common/ac/string.h>
+#include <common/str.h>
+#include <libaegis/os.h>
+#include <common/trace.h>
 
 
 string_ty *

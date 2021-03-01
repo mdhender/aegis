@@ -1,6 +1,6 @@
 //
 //	aegis - project change supervisor
-//	Copyright (C) 1999, 2003, 2004 Peter Miller;
+//	Copyright (C) 1999, 2003-2006 Peter Miller;
 //	All rights reserved.
 //
 //	This program is free software; you can redistribute it and/or modify
@@ -20,23 +20,27 @@
 // MANIFEST: functions to manipulate bas_time_sets
 //
 
-#include <change.h>
-#include <change/architecture/find_variant.h>
-#include <error.h> // for assert
+#include <libaegis/change.h>
+#include <libaegis/change/architecture/find_variant.h>
+#include <common/error.h> // for assert
 
 
 void
 change_test_baseline_time_set(change_ty *cp, time_t when)
 {
-    size_t          j, k;
-    cstate_architecture_times_ty *tp;
-    cstate_ty       *cstate_data;
+    change_test_baseline_time_set(cp, change_architecture_name(cp, 1), when);
+}
 
+
+void
+change_test_baseline_time_set(change_ty *cp, string_ty *variant, time_t when)
+{
     //
     // set the test_baseline_time in the architecture variant record
     //
     assert(cp->reference_count >= 1);
-    tp = change_find_architecture_variant(cp);
+    cstate_architecture_times_ty *tp =
+	change_find_architecture_variant(cp, variant);
     tp->test_baseline_time = when;
 
     //
@@ -44,12 +48,13 @@ change_test_baseline_time_set(change_ty *cp, time_t when)
     // figure the oldest time of all variants.
     // if one is missing, then is zero.
     //
-    cstate_data = change_cstate_get(cp);
+    cstate_ty *cstate_data = change_cstate_get(cp);
     cstate_data->test_baseline_time = tp->test_baseline_time;
     if (!when)
 	    return;
-    for (j = 0; j < cstate_data->architecture->length; ++j)
+    for (size_t j = 0; j < cstate_data->architecture->length; ++j)
     {
+	size_t k = 0;
 	for (k = 0; k < cstate_data->architecture_times->length; ++k)
 	{
 	    tp = cstate_data->architecture_times->list[k];

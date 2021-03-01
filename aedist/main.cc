@@ -20,24 +20,25 @@
 // MANIFEST: functions to manipulate mains
 //
 
-#include <ac/stdlib.h>
-#include <ac/signal.h>
+#include <common/ac/stdlib.h>
+#include <common/ac/signal.h>
 
-#include <arglex3.h>
-#include <env.h>
-#include <help.h>
-#include <language.h>
-#include <list.h>
-#include <missing.h>
-#include <os.h>
-#include <pending.h>
-#include <quit.h>
-#include <receive.h>
-#include <replay.h>
-#include <rsrc_limits.h>
-#include <send.h>
-#include <usage.h>
-#include <version.h>
+#include <common/env.h>
+#include <common/language.h>
+#include <common/quit.h>
+#include <common/rsrc_limits.h>
+#include <libaegis/help.h>
+#include <libaegis/os.h>
+#include <libaegis/version.h>
+
+#include <aedist/arglex3.h>
+#include <aedist/list.h>
+#include <aedist/missing.h>
+#include <aedist/pending.h>
+#include <aedist/receive.h>
+#include <aedist/replay.h>
+#include <aedist/send.h>
+#include <aedist/usage.h>
 
 
 static void

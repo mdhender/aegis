@@ -1,6 +1,6 @@
 .\"
 .\"	aegis - project change supervisor
-.\"	Copyright (C) 1996, 1997, 2002 Peter Miller;
+.\"	Copyright (C) 1996, 1997, 2002, 2005 Peter Miller;
 .\"	All rights reserved.
 .\"
 .\"	This program is free software; you can redistribute it and/or modify
@@ -70,7 +70,7 @@ Using Aegis to manage DNS provides a reliable way to add entries to the
 DNS tables, check the tables, and generate the reverse maps.
 It is even generating some NIS+ tables.
 The system is peer reviewed,
-so no ``broken'' changes are able to get into the system tables.
+so no \[lq]broken\[rq] changes are able to get into the system tables.
 The net result is a more reliable service to the users.
 .sp
 Using Aegis to manage the AGSO Web (http:\%//www.agso.gov.au/)
@@ -83,15 +83,16 @@ The publisher in turn may accept it for publication or return it.
 A similar model is available using Aegis when publishing Web pages;
 the publication analogy is deliberate since the work is
 indeed available to the public.
-The ``build'' step which is so central to producing software is used in the Web
+The \[lq]build\[rq] step which is so central to producing software is
+used in the Web
 case to resolve server-side includes,
 to check the HTML for obvious errors,
 and to generate the various indices.
 Some Aegis reports are also used,
 such as the one from which
-the ``What's New'' page (http:\%//www.agso.gov.au/\%whatsnew/)
+the \[lq]What's New\[rq] page (http:\%//www.agso.gov.au/\%whatsnew/)
 is generated.
-The provision by Aegis of individual ``sand pits''
+The provision by Aegis of individual \[lq]sand pits\[rq]
 greatly facilitates concurrent development of Web pages and improves
 productivity.
 In general,
@@ -204,7 +205,7 @@ one will need to merge the other's work with his own.
 This merge is fully supported by Aegis.
 .LP
 The other important feature of using separate development
-directories is that ``half finished'' changes
+directories is that \[lq]half finished\[rq] changes
 are not mistaken for valid input,
 should the DNS server be rebooted during the development of the change.
 Until a change is completed
@@ -256,20 +257,20 @@ a number of problems were discovered which had been in the system for years.
 Yes, these problems could have been discovered with the old root make system,
 but they were not discovered until we decided to us a system specifically
 designed to be maintained by many people,
-and to double check everything before it went ``live'' and
+and to double check everything before it went \[lq]live\[rq] and
 inconvenienced staff.
 .nh 2 "Derived Data"
 We also use the DNS data to generate some of our NIS+ tables.
 Obviously, the NIS+ hosts table needs to be synchronized with the DNS tables,
 and this translation is relatively easy.
 .LP
-We also invented an ``ether'' type,
+We also invented an \[lq]ether\[rq] type,
 which we filter out and don't actually give to \fInamed\fP(8),
 to record Ethernet addresses.
 This information is used to derive the NIS+ ethers table.
 This could have been managed differently, but as it is intimately related
 to the IP address management, we decided to do it here,
-for a sort of ``one stop'' network shop.
+for a sort of \[lq]one stop\[rq] network shop.
 .LP
 The \f(CWhinfo\fP records are
 \fIgrep\fP(1)ed
@@ -295,7 +296,7 @@ a change may not end development.
 .LP
 Once a change ends development it is not immediately installed
 into the baseline.
-It enters a ``being reviewed'' state.
+It enters a \[lq]being reviewed\[rq] state.
 Developers are prevented from reviewing their own work,
 as an obvious conflict of interests.
 Some other authorized review must do so.
@@ -310,7 +311,7 @@ The build is performed again on this copy - mostly as a quick double check,
 though it does not in the Web case, below.
 .LP
 The integrator can also serve as an editor, or a second reviewer if necessary.
-It answers the perennial ``who will watch the watchers'' question.
+It answers the perennial \[lq]who will watch the watchers\[rq] question.
 .LP
 Aegis' notification facility, used at most transition to send email or
 news articles,
@@ -325,7 +326,7 @@ At present, we are averaging 3.5 DNS changes per week,
 a figure not previously available.
 .LP
 The other thing which has changed is that there are no unexplained changes.
-You no longer hear they cry ``Who the smeg did that?'' echoing down
+You no longer hear they cry \[lq]Who the smeg did that?\[rq] echoing down
 the corridor.
 There is never the silent anonymous untrackable
 duel between two administrators undoing and redoing
@@ -370,7 +371,7 @@ are the editor's problem.
 Only the author may alter a change - the peer reviewer and the
 editor only have the power of veto.
 The file system permissions are exploited to ensure that
-there is no ``back door'
+there is no \[lq]back door'
 to this process.
 Even the editor (integrator) does not have write permissions to the baseline.
 All changes to the baseline \fImust\fP traverse the entire change process.
@@ -418,7 +419,7 @@ they will not reach the baseline.
 .nh 2 "Preview and Review"
 Once your Web pages build successfully, it is possible to
 see what the public will see - to preview them.
-We do this by running a specialized web server that ``overlays'' the files
+We do this by running a specialized web server that \[lq]overlays\[rq] the files
 in your development directory over those in the baseline.
 Essentially, this is a simple search path.
 The specialized web server tell you a URL to open to preview
@@ -464,7 +465,7 @@ the versions of the files are checked by Aegis.  If any are out-of-date,
 a 3-way merge may be performed to merge the Web baseline updates with
 the edits in the change.
 .nh 2 "Results"
-The AGSO Web is intended to be a ``publication on demand'' medium.
+The AGSO Web is intended to be a \[lq]publication on demand\[rq] medium.
 As a result, any data the public can see needs to be of publication
 quality already.
 It is then only required for the client to print interesting material
@@ -501,14 +502,14 @@ has been equally successful, and is a model we would happily recommend.
 .IP \(bu
 Miller, P. A.,
 .ft I
-``Aegis Is Only For Software, Isn't It?,''
+\[lq]Aegis Is Only For Software, Isn't It?,\[rq]
 .ft P
 AUUG '96 ACT Summer Conference Papers,
 1996.
 .IP [1]
 Miller, P. A.,
 .ft I
-``Aegis - A Project Change Supervisor,''
+\[lq]Aegis - A Project Change Supervisor,\[rq]
 .ft P
 AUUG '93 Conference Papers,
 1993,
@@ -524,7 +525,7 @@ Aegis User Guide
 .IP [3]
 Mockapetris, P.,
 .ft I
-``Domain Names - Concepts and Facilities'',
+\[lq]Domain Names - Concepts and Facilities\[rq],
 .ft P
 STD 13,
 RFC 1034,
@@ -533,7 +534,7 @@ November 1987.
 .IP [4]
 Mockapetris, P.,
 .ft I
-``Domain Names - Implementation and Specification'',
+\[lq]Domain Names - Implementation and Specification\[rq],
 STD 13,
 RFC 1035,
 USC/Information Sciences Institute,

@@ -1,6 +1,6 @@
 '\" t
 .\"	aegis - project change supervisor
-.\"	Copyright (C) 2001, 2002 Peter Miller;
+.\"	Copyright (C) 2001, 2002, 2005 Peter Miller;
 .\"	All rights reserved.
 .\"
 .\"	This program is free software; you can redistribute it and/or modify
@@ -70,7 +70,7 @@ found in most repositories, and you will want to use \fIaerd\fP(1),
 \fIaerrv\fP(1) and \fIaeri\fP(1) as appropriate to winnow this list.
 .PP
 If only one name is found, the project will be set to
-``\f[CW]developers_may_review = true;\fP'' otherwise it will be false
+\[lq]\f[CW]developers_may_review = true;\fP\[rq] otherwise it will be false
 (see \fIaepattr\fP(5) for more information).  Use \fIaepa\fP(1) to change
 this if you want a different setting.
 .PP
@@ -78,11 +78,11 @@ The project's umask is derived from the current user's umask, but
 modified to guarantee that group members will have access and that only
 the project owner will have write access.  In general, it's best of the
 project is \fInot\fP owned by an account with any other role, as this
-prevents a whole class of ``oops, I thought I was somewhere else'' errors.
+prevents a whole class of \[lq]oops, I thought I was somewhere else\[rq] errors.
 .PP
 The project's history commands (see \fIaepconf\fP(5) for more information)
-are set to those suitable for RCS.  The build command is set to ``exit
-0''; you need to set it to something suitable.  The symbolic link farm
+are set to those suitable for RCS.  The build command is set to \[lq]exit
+0\[rq]; you need to set it to something suitable.  The symbolic link farm
 is turned on.
 .SS Pointer
 The project pointer will be added to the first element of the search
@@ -97,24 +97,25 @@ You may specify the project version in two ways:
 .TP 3n
 1.
 The version number may be implicit in the project name, in which
-case the version numbers will be stripped off.  For example, ``\*(n)
--p example.1.2'' will create a project called ``example'' with branch
+case the version numbers will be stripped off.  For example, \[lq]\*(n)
+-p example.1.2\[rq] will create a project called \[lq]example\[rq] with branch
 number 1 created, and sub-branch 2 of branch 1 created.
 .TP 3n
 2.
 The version number may be stated explicitly, in which case it will be
-subdivided for branch numbers.  For example, ``\*(n) -p example -version
-1.2'' will create a project called ``example'' with branch number 1
+subdivided for branch numbers.  For example, \[lq]\*(n) -p example -version
+1.2\[rq] will create a project called \[lq]example\[rq] with branch number 1
 created, and sub-branch 2 of branch 1 created.
 .PP
 In each case, these branches may be named wherever a project name may
-be given, such as ``-p example.1'' and ``-p example-1.2''.  The actual
+be given, such as \[lq]-p example.1\[rq] and \[lq]-p example-1.2\[rq].
+The actual
 punctuation character is unimportant.
 .PP
 You may have any depth of version numbers you like.  Both methods
 of specifying version numbers may be used, and they will be combined.
 If you want no version numbers at all, use \fB\-version\fP with a single
-dash as the argument, as in ``\f(CW\-version \-\fP''
+dash as the argument, as in \[lq]\f(CW\-version \-\fP\[rq]
 .PP
 If no version number is given, either explicitly or implicitly, version
 1.0 is used.
@@ -122,13 +123,13 @@ If no version number is given, either explicitly or implicitly, version
 .so z_filelocn.so
 .SH THE PROCESS
 Most file version systems do not operate using change sets.  In order
-to import such repositories into \*(N) it is necessary to ``discover''
+to import such repositories into \*(N) it is necessary to \[lq]discover\[rq]
 these change sets.  The following steps are taken:
 .TP 2n
 1.
 The directory (\fIdirpath\fP) given on the command line, and all
 directories below it, are scanned for appropriate files (for example,
-RCS and CVS use files with a ``\f[CW],v\fP'' suffix).
+RCS and CVS use files with a \[lq]\f[CW],v\fP\[rq] suffix).
 These files are read to obtain the file's history.
 .sp 0.3
 If you have been using a non-standard file suffix, \*(n) won't be able
@@ -267,7 +268,7 @@ freeware implementation of SCCS, and it may be found at
 This option may be used to specify the version number
 for the project.
 Version numbers are implemented as branches.
-Use a single dash (``\f(CW\-\fP'') as the argument
+Use a single dash (\[lq]\f(CW\-\fP\[rq]) as the argument
 if you want no version branches created.
 .so o__rules.so
 .so z_exit.so

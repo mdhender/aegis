@@ -1,6 +1,6 @@
 //
 //	aegis - project change supervisor
-//	Copyright (C) 2001-2005 Peter Miller;
+//	Copyright (C) 2001-2006 Peter Miller;
 //	All rights reserved.
 //
 //	This program is free software; you can redistribute it and/or modify
@@ -20,42 +20,46 @@
 // MANIFEST: functions to manipulate sends
 //
 
-#include <ac/ctype.h>
-#include <ac/stdio.h>
-#include <ac/stdlib.h>
-#include <ac/string.h>
+#include <common/ac/ctype.h>
+#include <common/ac/stdio.h>
+#include <common/ac/stdlib.h>
+#include <common/ac/string.h>
 
-#include <arglex3.h>
-#include <arglex/change.h>
-#include <arglex/project.h>
-#include <change.h>
-#include <change/branch.h>
-#include <change/file.h>
-#include <change/signedoffby.h>
-#include <error.h>
-#include <gettime.h>
-#include <help.h>
-#include <input/file.h>
-#include <now.h>
-#include <option.h>
-#include <os.h>
-#include <output/conten_encod.h>
-#include <output/base64.h>
-#include <output/file.h>
-#include <output/gzip.h>
-#include <output/prefix.h>
-#include <output/wrap.h>
-#include <progname.h>
-#include <project/file.h>
-#include <project/file/roll_forward.h>
-#include <project.h>
-#include <project/history.h>
-#include <send.h>
-#include <str.h>
-#include <sub.h>
-#include <trace.h>
-#include <user.h>
-#include <undo.h>
+#include <common/error.h>
+#include <common/gettime.h>
+#include <common/now.h>
+#include <common/progname.h>
+#include <common/str.h>
+#include <common/trace.h>
+#include <common/version_stmp.h>
+#include <libaegis/arglex/change.h>
+#include <libaegis/arglex/project.h>
+#include <libaegis/change/branch.h>
+#include <libaegis/change/file.h>
+#include <libaegis/change.h>
+#include <libaegis/change/signedoffby.h>
+#include <libaegis/compres_algo.h>
+#include <libaegis/help.h>
+#include <libaegis/input/file.h>
+#include <libaegis/option.h>
+#include <libaegis/os.h>
+#include <libaegis/output/base64.h>
+#include <libaegis/output/bzip2.h>
+#include <libaegis/output/conten_encod.h>
+#include <libaegis/output/file.h>
+#include <libaegis/output/gzip.h>
+#include <libaegis/output/prefix.h>
+#include <libaegis/output/wrap.h>
+#include <libaegis/project/file.h>
+#include <libaegis/project/file/roll_forward.h>
+#include <libaegis/project.h>
+#include <libaegis/project/history.h>
+#include <libaegis/sub.h>
+#include <libaegis/undo.h>
+#include <libaegis/user.h>
+
+#include <aepatch/send.h>
+#include <aepatch/arglex3.h>
 
 
 #define NO_TIME_SET ((time_t)(-1))
@@ -118,7 +122,6 @@ patch_send(void)
     int             grandparent;
     int             trunk;
     output_ty       *ofp;
-    input_ty        *ifp;
     project_ty      *pp;
     change_ty       *cp;
     user_ty         *up;
@@ -128,7 +131,6 @@ patch_send(void)
     string_ty       *s2;
     size_t          j;
     content_encoding_t ascii_armor;
-    int             needs_compression;
     string_ty       *dev_null;
     long            delta_number;
     time_t          delta_date;
@@ -143,7 +145,7 @@ patch_send(void)
     trunk = 0;
     output = 0;
     ascii_armor = content_encoding_unset;
-    needs_compression = -1;
+    compression_algorithm_t needs_compression = compression_algorithm_not_set;
     delta_date = NO_TIME_SET;
     delta_number = -1;
     delta_name = 0;
@@ -255,27 +257,65 @@ patch_send(void)
 	    break;
 
 	case arglex_token_compress:
-	    if (needs_compression > 0)
-		duplicate_option(usage);
-	    else if (needs_compression >= 0)
+	    if (needs_compression != compression_algorithm_not_set)
 	    {
-	      compress_yuck:
-		mutually_exclusive_options
-		(
-		    arglex_token_compress,
-		    arglex_token_compress_not,
+		duplicate_option_by_name
+	       	(
+		    arglex_token_compression_algorithm,
 		    usage
 		);
 	    }
-	    needs_compression = 1;
+	    needs_compression = compression_algorithm_unspecified;
 	    break;
 
 	case arglex_token_compress_not:
-	    if (needs_compression == 0)
-		duplicate_option(usage);
-	    else if (needs_compression >= 0)
-		goto compress_yuck;
-	    needs_compression = 0;
+	    if (needs_compression != compression_algorithm_not_set)
+	    {
+		duplicate_option_by_name
+	       	(
+		    arglex_token_compression_algorithm,
+		    usage
+		);
+	    }
+	    needs_compression = compression_algorithm_none;
+	    break;
+
+	case arglex_token_compression_algorithm:
+	    if (arglex() != arglex_token_string)
+	    {
+		option_needs_string(arglex_token_compression_algorithm, usage);
+		// NOTREACHED
+	    }
+	    else
+	    {
+		compression_algorithm_t temp =
+		    compression_algorithm_by_name(arglex_value.alv_string);
+
+		//
+		// We don't complain if the answer is going to be the same,
+		// for compatibility with the old options.
+		//
+		if (temp == needs_compression)
+		    break;
+
+		switch (needs_compression)
+		{
+		case compression_algorithm_not_set:
+		case compression_algorithm_unspecified:
+		    needs_compression = temp;
+		    break;
+
+		case compression_algorithm_none:
+		case compression_algorithm_gzip:
+		case compression_algorithm_bzip2:
+		    duplicate_option_by_name
+		    (
+			arglex_token_compression_algorithm,
+			usage
+		    );
+		    // NOTREACHED
+		}
+	    }
 	    break;
 
 	case arglex_token_delta:
@@ -409,6 +449,7 @@ patch_send(void)
     // capabilities.
     //
     use_meta_data = 1;
+    bool use_bzip2 = true;
     if (compatibility)
     {
 	//
@@ -421,6 +462,12 @@ patch_send(void)
 	// publicly in 4.17
 	//
 	use_meta_data = (strverscmp(compatibility, "4.17") >= 0);
+
+	//
+	// Use the bzip compression algorithm, introduced
+	// in Peter's 4.21.D147, publicly in 4.22
+	//
+	use_bzip2 = (strverscmp(compatibility, "4.22") >= 0);
     }
 
     //
@@ -430,13 +477,13 @@ patch_send(void)
 	project_name = user_default_project();
     pp = project_alloc(project_name);
     str_free(project_name);
-    project_bind_existing(pp);
+    pp->bind_existing();
 
     //
     // locate the other branch
     //
     if (branch)
-	pp = project_find_branch(pp, branch);
+	pp = pp->find_branch(branch);
 
     //
     // locate user data
@@ -539,10 +586,43 @@ patch_send(void)
     os_become_orig();
     if (ascii_armor == content_encoding_unset)
 	ascii_armor = content_encoding_base64;
-    if (ascii_armor != content_encoding_none || !needs_compression)
-	ofp = output_file_text_open(output);
-    else
+    switch (needs_compression)
+    {
+    case compression_algorithm_not_set:
+	if (ascii_armor == content_encoding_none)
+	{
+	    needs_compression = compression_algorithm_none;
+	    break;
+	}
+	// Fall through...
+
+    case compression_algorithm_unspecified:
+	if (use_bzip2)
+	    needs_compression = compression_algorithm_bzip2;
+	else
+	    needs_compression = compression_algorithm_gzip;
+	break;
+
+    case compression_algorithm_none:
+	break;
+
+    case compression_algorithm_gzip:
+	use_bzip2 = false;
+	break;
+
+    case compression_algorithm_bzip2:
+	use_bzip2 = true;
+	break;
+    }
+    if
+    (
+	ascii_armor == content_encoding_none
+    &&
+	needs_compression != compression_algorithm_none
+    )
 	ofp = output_file_binary_open(output);
+    else
+	ofp = output_file_text_open(output);
     ofp->fputs("MIME-Version: 1.0\n");
     ofp->fputs("Content-Type: application/aegis-patch\n");
     content_encoding_header(ofp, ascii_armor);
@@ -561,14 +641,14 @@ patch_send(void)
 	"Content-Name: %s.C%3.3ld.patch%s\n",
 	project_name_get(pp)->str_text,
 	change_number,
-	(needs_compression ? ".gz" : "")
+	compression_algorithm_extension(needs_compression)
     );
     ofp->fprintf
     (
 	"Content-Disposition: attachment; filename=%s.C%3.3ld.patch%s\n",
 	project_name_get(pp)->str_text,
 	change_number,
-	(needs_compression ? ".gz" : "")
+	compression_algorithm_extension(needs_compression)
     );
     ofp->fprintf
     (
@@ -578,8 +658,24 @@ patch_send(void)
     ofp->fprintf("X-Aegis-Change-Number: %ld\n", cp->number);
     ofp->fputc('\n');
     ofp = output_content_encoding(ofp, ascii_armor);
-    if (needs_compression)
+    switch (needs_compression)
+    {
+    case compression_algorithm_none:
+	break;
+
+    case compression_algorithm_not_set:
+    case compression_algorithm_unspecified:
+	assert(0);
+	// Fall through...
+
+    case compression_algorithm_bzip2:
+	ofp = new output_bzip2(ofp, true);
+	break;
+
+    case compression_algorithm_gzip:
 	ofp = new output_gzip(ofp, true);
+	break;
+    }
 
     //
     // Add the change details to the archive.
@@ -689,7 +785,7 @@ patch_send(void)
 	    }
 
 	    //
-	    // Aded the file to the list.
+	    // Add the file to the list.
 	    //
 	    trace(("add \"%s\"\n", src_data->file_name->str_text));
 	    if (!change_set->src)
@@ -722,7 +818,10 @@ patch_send(void)
 	ofp->fputs("# Aegis-Change-Set-Begin\n");
 	t1 = new output_prefix_ty(ofp, false, "# ");
 	t2 = new output_base64_ty(t1, true);
-	t2 = new output_gzip(t2, true);
+	if (use_bzip2)
+	    t2 = new output_bzip2(t2, true);
+	else
+	    t2 = new output_gzip(t2, true);
 	cstate_write(t2, change_set);
 	delete t2;
 	ofp->fputs("# Aegis-Change-Set-End\n#\n");
@@ -781,7 +880,6 @@ patch_send(void)
 	// These names are taken from the substitutions for
 	// the diff_command.  It's historical.
 	//
-	ifp = 0;
 	switch (cstate_data->state)
 	{
 	case cstate_state_awaiting_development:
@@ -990,23 +1088,21 @@ patch_send(void)
 	    os_unlink_errok(input_filename);
 	    str_free(input_filename);
 	}
-	os_become_undo();
 
 	//
 	// Read the diff into the patch output.
 	//
 	trace(("open \"%s\"\n", output_file_name->str_text));
-	os_become_orig();
-	ifp = input_file_open(output_file_name, true);
+	input ifp = input_file_open(output_file_name, true);
+	assert(ifp.is_open());
 	if (ifp->length() != 0)
 	{
 	    ofp->fputs("Index: ");
 	    ofp->fputs(csrc->file_name);
 	    ofp->fputc('\n');
-	    input_to_output(ifp, ofp);
+	    *ofp << ifp;
 	}
-	delete ifp;
-	ifp = 0;
+	ifp.close();
 	os_become_undo();
 	str_free(output_file_name);
     }
@@ -1016,14 +1112,12 @@ patch_send(void)
     //
     os_become_orig();
     os_unlink_errok(output_file_name);
-    os_become_undo();
     str_free(output_file_name);
     str_free(dev_null);
 
     //
     // Mark the end of the patch.
     //
-    os_become_orig();
     delete ofp;
     os_become_undo();
 

@@ -1,6 +1,6 @@
 //
 //	aegis - project change supervisor
-//	Copyright (C) 1999, 2000, 2002-2004 Peter Miller;
+//	Copyright (C) 1999, 2000, 2002-2006 Peter Miller;
 //	All rights reserved.
 //
 //	This program is free software; you can redistribute it and/or modify
@@ -20,12 +20,12 @@
 // MANIFEST: functions to manipulate sources
 //
 
-#include <change/file.h>
-#include <error.h> // for assert
-#include <os.h>
-#include <project.h>
-#include <project/file.h>
-#include <trace.h>
+#include <libaegis/change/file.h>
+#include <common/error.h> // for assert
+#include <libaegis/os.h>
+#include <libaegis/project.h>
+#include <libaegis/project/file.h>
+#include <common/trace.h>
 
 
 string_ty *
@@ -70,9 +70,7 @@ change_file_source(change_ty *cp, string_ty *file_name)
     //
     if (cstate_data->state == cstate_state_being_integrated)
     {
-	change_ty	*pcp;
-
-	pcp = project_change_get(cp->pp);
+	change_ty *pcp = cp->pp->change_get();
 	src = change_file_find(pcp, file_name, view_path_first);
 	if (src && !src->about_to_be_copied_by)
 	{

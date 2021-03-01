@@ -20,15 +20,15 @@
 // MANIFEST: functions to manipulate basename tree nodes
 //
 
-#include <ac/stdio.h>
-#include <ac/string.h>
+#include <common/ac/stdio.h>
+#include <common/ac/string.h>
 
-#include <aer/value/string.h>
-#include <function/basename.h>
-#include <function/needs.h>
-#include <str.h>
-#include <tree/list.h>
-#include <tree/monadic.h>
+#include <libaegis/aer/value/string.h>
+#include <aefind/function/basename.h>
+#include <aefind/function/needs.h>
+#include <common/str.h>
+#include <aefind/tree/list.h>
+#include <aefind/tree/monadic.h>
 
 
 static rpt_value_ty *

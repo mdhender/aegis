@@ -20,10 +20,10 @@
 // MANIFEST: implementation of the change_identifi_sub_get_historia class
 //
 
-#include <change/branch.h>
-#include <change/identifi_sub.h>
-#include <project/file/roll_forward.h>
-#include <trace.h>
+#include <libaegis/change/branch.h>
+#include <libaegis/change/identifi_sub.h>
+#include <libaegis/project/file/roll_forward.h>
+#include <common/trace.h>
 
 
 project_file_roll_forward *

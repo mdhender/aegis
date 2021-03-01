@@ -1,6 +1,6 @@
 //
 //	aegis - project change supervisor
-//	Copyright (C) 2002-2005 Peter Miller;
+//	Copyright (C) 2002-2006 Peter Miller;
 //	All rights reserved.
 //
 //	This program is free software; you can redistribute it and/or modify
@@ -20,11 +20,11 @@
 // MANIFEST: functions to manipulate headers
 //
 
-#include <ac/errno.h>
-#include <ac/string.h>
+#include <common/ac/errno.h>
+#include <common/ac/string.h>
 
-#include <header.h>
-#include <nstring.h>
+#include <aetar/header.h>
+#include <common/nstring.h>
 
 
 static long
@@ -253,7 +253,7 @@ void
 header_uname_set(header_ty *hp, const nstring &arg)
 {
     string_field_set(hp->uname, sizeof(hp->uname), arg);
-    strlcpy(hp->magic, TMAGIC, sizeof(hp->magic));
+    strendcpy(hp->magic, TMAGIC, hp->magic + sizeof(hp->magic));
 }
 
 
@@ -270,7 +270,7 @@ void
 header_gname_set(header_ty *hp, const nstring &arg)
 {
     string_field_set(hp->gname, sizeof(hp->gname), arg);
-    strlcpy(hp->magic, TMAGIC, sizeof(hp->magic));
+    strendcpy(hp->magic, TMAGIC, hp->magic + sizeof(hp->magic));
 }
 
 
@@ -318,7 +318,7 @@ header_checksum_calculate(header_ty *hp)
 }
 
 
-#include <ac/stdio.h>
+#include <common/ac/stdio.h>
 
 
 void

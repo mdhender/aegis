@@ -20,12 +20,12 @@
 // MANIFEST: functions to manipulate constant tree nodes
 //
 
-#include <ac/stdio.h>
+#include <common/ac/stdio.h>
 
-#include <aer/value/string.h>
-#include <str.h>
-#include <tree/constant.h>
-#include <tree/private.h>
+#include <libaegis/aer/value/string.h>
+#include <common/str.h>
+#include <aefind/tree/constant.h>
+#include <aefind/tree/private.h>
 
 
 struct tree_constant_ty

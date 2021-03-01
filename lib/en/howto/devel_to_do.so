@@ -1,6 +1,6 @@
 .\"
 .\"	aegis - project change supervisor
-.\"	Copyright (C) 2000-2002, 2004 Peter Miller;
+.\"	Copyright (C) 2000-2002, 2004, 2005 Peter Miller;
 .\"	All rights reserved.
 .\"
 .\"	This program is free software; you can redistribute it and/or modify
@@ -184,8 +184,8 @@ in the branching chapter, have a section about using sub-branches
 to turn build_command off (or to ignore exit status), and integrate lots
 of teensy tiny bug fixes,
 and then turn it on again.
-In the front, reference the branching chapter in ``how to extend the
-Aegis process''  Can mention extra review steps there, too.
+In the front, reference the branching chapter in \[lq]how to extend the
+Aegis process\[rq]  Can mention extra review steps there, too.
 Submitted: choffman@dvcorp.com, 22 Jun 1999
 .\"
 .\"  Ralf fassel suggests
@@ -225,15 +225,15 @@ Mention binary files in the diff and merge section
 Submitted: PMiller, 31-mar-99
 .\" ------------------------------------------------------------------------
 .IP \(bu 2n
-mention ``rcs -ko'' in the User Guide and put it into the examples
+mention \[lq]rcs -ko\[rq] in the User Guide and put it into the examples
 AND also fhist keywords in the User Guide and put it into the examples.
 and make sure the examples all have hist_{put,create} the same.
 Subject: Ralf Fassel <ralf@akutech.de>, 9 Mar 1999
 .\" ------------------------------------------------------------------------
 .IP \(bu 2n
 worked example,
-``5.2.7 says that the cook file contains all of the above
-commands but my copy doesn't have them ...''  [for config file
+\[lq]5.2.7 says that the cook file contains all of the above
+commands but my copy doesn't have them ...\[rq]  [for config file
 and howto.cook file]
 BUT integration diffs not in the worked example.
 Submitted: Michael McCarty <mmccarty@xinetix.com>, 26-Feb-99
@@ -281,13 +281,13 @@ will retrieve the historical version.
 Submitted: Anoop Kulkarni <anoop@sasi.com>, 22 Dec 1999
 .\" ------------------------------------------------------------------------
 .IP \(bu 2n
-Add a user_change report (just like ``ael user_changes'')
+Add a user_change report (just like \[lq]ael user_changes\[rq])
 which takes a user name, so you can get a list of changes by user.
 Make \fIaeget\fP(1) do this, too.
 Submitted: Ralf Fassel <ralf@akutech.de>, 9 Dec 1999
 .\" ------------------------------------------------------------------------
 .IP \(bu 2n
-Add a outstanding_changes report (just like ``ael outstanding_changes'')
+Add a outstanding_changes report (just like \[lq]ael outstanding_changes\[rq])
 which takes a user name, so you can get a list of outstanding changes by user.
 Make \fIaeget\fP(1) do this, too.
 Submitted: Ralf Fassel <ralf@akutech.de>, 9 Dec 1999
@@ -319,10 +319,10 @@ Don't forget the web reports, too.
 Submitted: Jerry Pendergraft <jerry@endocardial.com> 30 Aug 1999
 .\" ------------------------------------------------------------------------
 .IP \(bu 2n
-Some kind of web report which makes ``train track'' diagrams of file
+Some kind of web report which makes \[lq]train track\[rq] diagrams of file
 branching.
 .IP \(bu 2n
-Some kind of web report which makes ``train track'' diagrams of project
+Some kind of web report which makes \[lq]train track\[rq] diagrams of project
 branching.
 .\" ------------------------------------------------------------------------
 .IP \(bu 2n
@@ -334,7 +334,7 @@ more blurb in the statistics web pages, so they are more self-explaining
 Submitted: Ralf Fassel <ralf@akutech.de>, 13-Oct-98
 .\" ------------------------------------------------------------------------
 .IP \(bu 2n
-Add anew report like ``ael uc'' except that it (optionally) takes a user
+Add anew report like \[lq]ael uc\[rq] except that it (optionally) takes a user
 name as well, to list a particular user's changes.
 .\" ------------------------------------------------------------------------
 .IP \(bu 2n
@@ -487,8 +487,8 @@ so can generate summary of files needing editing.
 Subject: Ralf Fassel <ralf@akutech.de>, 21 Dec 1998
 .\" ------------------------------------------------------------------------
 .IP \(bu 2n
-Create a new aepatch command: ``aepatch -send'' to create "ordinary"
-OpenSource source patches, and ``aepatch -receive'' to turn patches into
+Create a new aepatch command: \[lq]aepatch -send\[rq] to create "ordinary"
+OpenSource source patches, and \[lq]aepatch -receive\[rq] to turn patches into
 an Aegis change - and not necessarily only patches generated with aepatch.
 Yes, intentionally similar to aedist.
 .\" ------------------------------------------------------------------------
@@ -563,12 +563,12 @@ then dots (sometimes).
 .\" ------------------------------------------------------------------------
 .IP \(bu 2n
 * aecp -delta bug
-	``I've been making good use of the "-delta" option of aecp lately.
+	\[lq]I've been making good use of the "-delta" option of aecp lately.
 	But there has been a complication in its use.  Let's say a file
 	was aerm'ed in delta 100.  Let's further say that we are at delta
 	175 and are trying to restore the source code as of delta 75.
 	If I do a "aecp - delta 75 file.c" I'm told that file.c is no
-	longer part of the project.''
+	longer part of the project.\[rq]
 Should aecp -del fake aenf for deleted files in earlier deltas?
 Submitted: markm@endo.com
 .\" ------------------------------------------------------------------------
@@ -580,15 +580,16 @@ Enhance aet to allow reviewers to run tests.
 .\" ------------------------------------------------------------------------
 .IP \(bu 2n
 check library state files on project creation
-	``I was creating a new release from a large project. After copying the
+	\[lq]I was creating a new release from a large project.
+	After copying the
 	baseline and creating hundreds of history files the aenrls failed
 	because the library dir I specified wasn't writable by aegis and no
-	state file was created. Couldn't this be checked first?''
+	state file was created. Couldn't this be checked first?\[rq]
 Submitted: Lloyd Fischer <lloyd@dvcorp.com>
 .\" ------------------------------------------------------------------------
 .IP \(bu 2n
 Add precedence constraints:
-a list of prerequisite changes, which must all be in the ``completed''
+a list of prerequisite changes, which must all be in the \[lq]completed\[rq]
 state before the change may end development.
 Submitted: Christian F. Goetze <c-goetze@u-aizu.ac.jp>
 .\" ------------------------------------------------------------------------
@@ -600,7 +601,7 @@ tells you about the file
 .IP \(bu 2n
 How about "include" support for the config file?
 That way one could also cover architecture specific things by
-``include ${libdir}/${project}.defs'' in the config file.
+\[lq]include ${libdir}/${project}.defs\[rq] in the config file.
 Submitted: Jerry Pendergraft <jerry.pendergraft@endocardial.com>, 7 Sep 2001
 .\" ------------------------------------------------------------------------
 .IP \(bu 2n
@@ -609,7 +610,7 @@ files in the change.
 Submitted: 2001
 .\" ------------------------------------------------------------------------
 .IP \(bu 2n
-Have the ``aeclean -list'' option say what aeclean would do, rather than
+Have the \[lq]aeclean -list\[rq] option say what aeclean would do, rather than
 list the change source files.
 Submitted: 2001
 .\" ------------------------------------------------------------------------
@@ -658,7 +659,7 @@ Submitted: jerry.pendergraft@endocardial.com, 31 Mar 1999
 .IP \(bu 2n
 have aedist -rec accept a -delta option,
 so you can tell it where to apply from.
-Anticipated use is ``-delta 0'' meaning start of branch.
+Anticipated use is \[lq]-delta 0\[rq] meaning start of branch.
 (also a -reg option).
 Submitted: PMiller, 22-mar-99
 .\" ========================================================================

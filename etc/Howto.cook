@@ -1,6 +1,6 @@
 /*
  *	aegis - project change supervisor
- *	Copyright (C) 1991-2005 Peter Miller;
+ *	Copyright (C) 1991-2006 Peter Miller;
  *	All rights reserved.
  *
  *	This program is free software; you can redistribute it and/or modify
@@ -42,21 +42,23 @@ function build_include_search_path =
 {
     local result = ;
     local dir = ;
+    local dir2 = ;
     loop dir = [search_list]
     {
-	result += [addprefix [dir]/ [arg]];
+	loop dir2 = [arg]
+	{
+	    if [in [dir] .] then
+		result += [dir2];
+	    else
+	    {
+		if [in [dir2] . ] then
+		    result += [dir];
+		else
+		    result += [dir]/[dir2];
+	    }
+	}
     }
     return [result];
-}
-
-/*
- * The build_cc_include_search_path function is simular to the
- * build_include_search_path function, except that it adds "-I" to the
- * front of each directory in the list.
- */
-function build_cc_include_search_path =
-{
-    return [addprefix "-I" [build_include_search_path [arg]]];
 }
 
 /*
@@ -75,7 +77,7 @@ set unlink mkdir;
  * You may want to change some of these options.
  * ([debug] must be defined, even if empty, use comments.)
  *
- * Change ``main.h'' to add the DEBUG define.
+ * Change "main.h" to add the DEBUG define.
  * All files reference this file, so this will cause recompilation
  * of all files, both in the change and in the baseline.
  */
@@ -364,7 +366,7 @@ libaegis_lib =
  */
 c_incl_excludes =
 	[fromto common/ac/%0%.h -ex\=%0%.h
-		[match_mask common/ac/%0%.h [source_files]]
+	    [match_mask common/ac/%0%.h [source_files]]
 	];
 
 /*
@@ -507,6 +509,14 @@ if [defined [arch]_cc_include_flags] then
 if [not [defined cc_include_flags]] then
     cc_include_flags = ;
 
+/*
+ * we need to say -I. -I./[arch]
+ *                -Ibl -Ibl/[arch]
+ *                -Iblbl -Iblbl/[arch]
+ * etc, etc.
+ */
+cc_include_flags += [addprefix -I [build_include_search_path . [arch]]];
+
 
 if [defined [arch]_ld_flags] then
     ld_flags = [[arch]_ld_flags];
@@ -521,7 +531,7 @@ if [not [defined ld_flags]] then
  * The g++ include files MUST be first.
  */
 g++_modern = 0;
-if [in [c++] g++] then
+if [in [substring 1 3 [c++]] g++] then
 {
     g++_modern =
 	[collect
@@ -530,18 +540,27 @@ if [in [c++] g++] then
 	    [awk] "'{print ($1 > 2.95)}'"
 	];
 
-    c++_flags += -ansi -Wall
-	-Wshadow -Wpointer-arith -Wwrite-strings
-        /*
-         * The g++ command doesn't have the -Wmissing-declarations
-         * -Wstrict-prototypes -Wmissing-prototypes options, even though
-         * gcc does.  I've registered a bug, maybe they will put it
-         * back.  But, don't hold your breath, they can't seem to
-         * understand just how useful they are.
-	 */
-	;
+    c++_flags =
+	[stringset
+	    [c++_flags]
+	    -ansi -Wall
+	    -Wshadow -Wpointer-arith -Wwrite-strings
+	    /*
+	     * The g++ command doesn't have the -Wmissing-declarations
+	     * -Wstrict-prototypes -Wmissing-prototypes options, even though
+	     * gcc does.  I've registered a bug, maybe they will put it
+	     * back.  But, don't hold your breath, they can't seem to
+	     * understand just how useful they are.
+	     */
+	];
     if [g++_modern] then
-        c++_flags += -fmessage-length\=0; /* this makes vim -q work better */
+    {
+        c++_flags =
+	    [stringset
+		[c++_flags]
+		-fmessage-length\=0 /* this makes vim -q work better */
+	    ];
+    }
 }
 
 /*
@@ -551,7 +570,7 @@ if [in [c++] g++] then
  */
 if [defined baseline] then
   if [in [arch] [primary_arch]] then
-    if [in [c++] g++] then
+    if [in [substring 1 3 [c++]] g++] then
 	c++_flags = [c++_flags] -Werror;
 
 /*
@@ -576,7 +595,7 @@ include_search_list =
 
     if [match %%.gen %2] then
     {
-	if [in [c++] g++] then
+	if [in [substring 1 3 [c++]] g++] then
 	{
 	    /*
 	     * Generated files may have warnings, because we have no
@@ -590,16 +609,13 @@ include_search_list =
     }
 
     local post =;
-    if [in g++ [c++]]
+    if [in g++ [substring 1 3 [c++]]]
 	then post = -o [target];
     else
 	post = "&&" mv %2.o [target];
 
     [c++] [extra]
-	[stringset
-	    [build_cc_include_search_path %1 [include_search_list]]
-	    [cc_include_flags]
-	]
+	[cc_include_flags]
 	-c [resolve %1/%0%2.cc]
         [post];
 }
@@ -622,13 +638,10 @@ include_search_list =
     }
 
     [c++] [extra]
-	[stringset
-	    [build_cc_include_search_path %1 [include_search_list]]
-	    [cc_include_flags]
-	]
+	[cc_include_flags]
 	-c [resolve [arch]/%1/%0%2.cc]
-	['if' [in g++ [c++]] 'then' -o [target]];
-    if [not [in g++ [c++]]] then
+	['if' [in g++ [substring 1 3 [c++]]] 'then' -o [target]];
+    if [not [in g++ [substring 1 3 [c++]]]] then
 	mv %2.o [target];
 }
 
@@ -636,18 +649,20 @@ include_search_list =
     set no-cascade
 {
     c_incl -nc -ns -eia -nrec
-	[stringset
-	    [build_cc_include_search_path %1 [include_search_list]]
-	    [cc_include_flags]
-	]
+	[cc_include_flags]
 	-prefix "'cascade %1/%0%2.cc ='"
 	-suffix "';'"
 	[resolve %1/%0%2.cc]
 	[addprefix -rlp\= [search_list]]
 	-slp [arch] "'[arch]'"
 	-nsri
-	['if' [not [filter common/ac/%%0%% %1/%0%2.cc]]
-	    'then' [c_incl_excludes]]
+        /*
+	 * Generated files may use excluded headers, because we
+         * have no control over the quality of generated code.
+	 */
+        ['if' [not [match %%.gen %2]] 'then'
+            ['if' [not [filter common/ac/%%0%% %1/%0%2.cc]]
+	        'then' [c_incl_excludes]]]
 	-o [target];
 }
 
@@ -655,10 +670,7 @@ include_search_list =
     set no-cascade
 {
     c_incl -nc -ns -eia -nrec
-	[stringset
-	    [build_cc_include_search_path %1 [include_search_list]]
-	    [cc_include_flags]
-	]
+	[cc_include_flags]
 	-prefix "'cascade %1/%0%2.h ='"
 	-suffix "';'"
 	[resolve %1/%0%2.h]
@@ -674,10 +686,7 @@ include_search_list =
     set no-cascade
 {
     c_incl -nc -ns -eia -nrec
-	[stringset
-	    [build_cc_include_search_path %1 [include_search_list]]
-	    [cc_include_flags]
-	]
+	[cc_include_flags]
 	-prefix "'cascade [arch]/%1/%0%2.cc ='"
 	-suffix "';'"
 	[resolve [arch]/%1/%0%2.cc]
@@ -697,10 +706,7 @@ include_search_list =
        	-nc /* no cache */
        	-ns /* no system */
        	-eia /* empty if absent */
-	[stringset
-	    [build_cc_include_search_path %1 [include_search_list]]
-	    [cc_include_flags]
-	]
+	[cc_include_flags]
        	[resolve %1/%0%2.cc]
        	-nsri /* no source relative includes */
        	[prepost "-rlp=" "" [search_list]] /* remove leading path */
@@ -1024,6 +1030,7 @@ ranlib = [find_command ranlib];
 		[ranlib] [target];
 }
 
+set-uid-root-commands = aegis aeimport aelock;
 
 /*
  * build the programs from their objects
@@ -1031,27 +1038,29 @@ ranlib = [find_command ranlib];
 
 [arch]/bin/%: [%_obj]
 {
-	sh [resolve etc/rsrvd_syms.sh] `cat`;
+    sh [resolve etc/rsrvd_syms.sh] `cat`;
 data
 [unsplit "\n" [resolve [%_obj]]]
 dataend
 
-	[c++] [ld_flags] [debug] -o [target] [resolve [%_obj]] [libs]
-		set meter;
+    [c++] -o [target]
+	[stringset [ld_flags] [debug]]
+	[resolve [%_obj]] [libs]
+	    set meter;
 
-	chmod 755 [target];
+    chmod 755 [target];
 
-	/*
-	 * aegis itself must be set-uid-root
-	 */
-	if [in [target] [arch]/bin/aegis [arch]/bin/aeimport] then
-	{
-		if [in [resolve etc/set-uid-root] etc/set-uid-root] then
-		    chmod a+rx etc/set-uid-root;
-		sudo [pathname [resolve etc/set-uid-root]]
-		    [arch] [entryname [target]]
-			set errok;
-	}
+    /*
+     * aegis itself must be set-uid-root
+     */
+    if [in [target] [addprefix [arch]/bin/ [set-uid-root-commands]]] then
+    {
+	if [in [resolve etc/set-uid-root] etc/set-uid-root] then
+	    chmod a+rx etc/set-uid-root;
+	sudo [pathname [resolve etc/set-uid-root]]
+	    [arch] [entryname [target]]
+		set errok;
+    }
 }
 
 
@@ -1080,7 +1089,6 @@ dataend
 	 * need to be recompiled.
 	 */
 	[resolve [arch]/bin/fmtgen]
-		[prepost "-I" "/%1" [search_list]]
 		[addprefix "-I" [search_list]]
 		%1/%0%2.def %1/%0%2.cc %1/%0%2.h;
 }
@@ -1089,10 +1097,7 @@ dataend
 	set no-cascade
 {
 	c_incl -nc -ns -eia -nrec
-	    [stringset
-		[prepost "-I" "/%1" [search_list]]
-		[cc_include_flags]
-	    ]
+	    [cc_include_flags]
 	    -prefix "'cascade %1/%0%2.def ='"
 	    -suffix "';'"
 	    [resolve %1/%0%2.def]
@@ -1107,10 +1112,7 @@ dataend
 %1/%0%2.def,Md: %1/%0%2.def
 {
 	c_incl -nc -ns -eia
-	    [stringset
-		[prepost "-I" "/%1" [search_list]]
-		[cc_include_flags]
-	    ]
+	    [cc_include_flags]
 	    [resolve %1/%0%2.def]
 	    [addprefix -rlp\= [search_list]]
 	    -slp [arch] "'[arch]'"
@@ -1154,13 +1156,10 @@ etc/version.so:
 		] ] ] 'then' shallow]
 {
 	echo \".ds v) [version_short]\" > [target];
-	/*
-	 * This used to be the long version, but it makes the build
-	 * change too often, and provides little information.
-	 *
-	echo \".ds V) [version]\" >> [target];
-	 */
-	echo "'.ds V) \\*(v)'" >> [target];
+	echo [version]
+		| [awk] -F.  "'{o=$2%2; print\".ds o) \"o;"
+		    "print \".ds p) \" $1 \".\" (o ? ($2 - 1) : ($2 + 1)) }'"
+		>> [target];
 	echo [version]
 		| [awk] -F. "'{print \".ds u) \"$1\".\"$2}'"
 		>> [target];

@@ -1,6 +1,6 @@
 //
 //	aegis - project change supervisor
-//	Copyright (C) 1994, 1996, 1997, 2003, 2004 Peter Miller;
+//	Copyright (C) 1994, 1996, 1997, 2003-2005 Peter Miller;
 //	All rights reserved.
 //
 //	This program is free software; you can redistribute it and/or modify
@@ -20,12 +20,12 @@
 // MANIFEST: functions to manipulate real values
 //
 
-#include <aer/value/boolean.h>
-#include <aer/value/integer.h>
-#include <aer/value/real.h>
-#include <aer/value/string.h>
-#include <error.h>
-#include <str.h>
+#include <libaegis/aer/value/boolean.h>
+#include <libaegis/aer/value/integer.h>
+#include <libaegis/aer/value/real.h>
+#include <libaegis/aer/value/string.h>
+#include <common/error.h>
+#include <common/str.h>
 
 
 struct rpt_value_real_ty
@@ -46,7 +46,7 @@ stringize(rpt_value_ty *vp)
 	assert(this_thing->method->type == rpt_value_type_real);
 	if (this_thing->value == 0)
 	{
-		// avoid IEEE ``negative zero'' lunacy
+		// avoid IEEE "negative zero" lunacy
 		s = str_from_c("0");
 	}
 	else

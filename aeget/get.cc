@@ -1,6 +1,6 @@
 //
 //      aegis - project change supervisor
-//      Copyright (C) 2003-2005 Peter Miller;
+//      Copyright (C) 2003-2006 Peter Miller;
 //      All rights reserved.
 //
 //      This program is free software; you can redistribute it and/or modify
@@ -20,20 +20,20 @@
 // MANIFEST: functions to manipulate gets
 //
 
-#include <ac/stdlib.h>
-#include <ac/string.h>
+#include <common/ac/stdlib.h>
+#include <common/ac/string.h>
 
-#include <change.h>
-#include <get.h>
-#include <get/change.h>
-#include <get/icon.h>
-#include <get/project.h>
-#include <get/project/list.h>
-#include <get/rect.h>
-#include <http.h>
-#include <project.h>
-#include <str.h>
-#include <nstring/list.h>
+#include <libaegis/change.h>
+#include <aeget/get.h>
+#include <aeget/get/change.h>
+#include <aeget/get/icon.h>
+#include <aeget/get/project.h>
+#include <aeget/get/project/list.h>
+#include <aeget/get/rect.h>
+#include <aeget/http.h>
+#include <libaegis/project.h>
+#include <common/str.h>
+#include <common/nstring/list.h>
 
 
 static int
@@ -215,7 +215,7 @@ get(void)
         change_ty       *cp;
 
         pp = project_alloc(project_name);
-        project_bind_existing(pp);
+        pp->bind_existing();
 
         cp = change_alloc(pp, change_number);
         change_bind_existing(cp);
@@ -230,7 +230,7 @@ get(void)
     else
     {
         pp = project_alloc(project_name);
-        project_bind_existing(pp);
+        pp->bind_existing();
 
         //
         // From this point, fetch a file from the project.

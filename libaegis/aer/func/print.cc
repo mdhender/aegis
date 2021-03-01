@@ -20,17 +20,17 @@
 // MANIFEST: functions to implement the builtin print function
 //
 
-#include <aer/expr.h>
-#include <aer/func/print.h>
-#include <aer/value/void.h>
-#include <aer/value/error.h>
-#include <aer/value/string.h>
-#include <col.h>
-#include <error.h>
-#include <mem.h>
-#include <os.h>
-#include <output.h>
-#include <sub.h>
+#include <libaegis/aer/expr.h>
+#include <libaegis/aer/func/print.h>
+#include <libaegis/aer/value/void.h>
+#include <libaegis/aer/value/error.h>
+#include <libaegis/aer/value/string.h>
+#include <libaegis/col.h>
+#include <common/error.h>
+#include <common/mem.h>
+#include <libaegis/os.h>
+#include <libaegis/output.h>
+#include <libaegis/sub.h>
 
 
 int		rpt_func_print__ncolumns;

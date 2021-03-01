@@ -1,6 +1,6 @@
 //
 //	aegis - project change supervisor
-//	Copyright (C) 1999, 2001, 2002, 2005 Peter Miller;
+//	Copyright (C) 1999, 2001, 2002, 2005, 2006 Peter Miller;
 //	All rights reserved.
 //
 //	This program is free software; you can redistribute it and/or modify
@@ -23,7 +23,7 @@
 #ifndef LIBAEGIS_INPUT_BASE64_H
 #define LIBAEGIS_INPUT_BASE64_H
 
-#include <input.h>
+#include <libaegis/input.h>
 
 class input_base64:
     public input_ty
@@ -36,8 +36,11 @@ public:
 
     /**
       * The constructor.
+      *
+      * @param deeper
+      *     the data source for this filter.
       */
-    input_base64(input_ty *deeper, bool close_on_close);
+    input_base64(input &deeper);
 
     // See base class for documentation.
     nstring name();
@@ -57,11 +60,15 @@ public:
     // See base class for documentation.
     bool is_remote() const;
 
-    static bool recognise(input_ty *ip);
+    static bool recognise(input &ip);
 
 private:
-    input_ty *deeper;
-    bool close_on_close;
+    /**
+      * The deeper instance variable is used to remember the data source
+      * for this filter.
+      */
+    input deeper;
+
     long pos;
     int residual_bits;
     int residual_value;
@@ -84,8 +91,8 @@ private:
 };
 
 
-inline bool
-input_base64_recognise(input_ty *ip)
+DEPRECATED inline bool
+input_base64_recognise(input &ip)
 {
     return input_base64::recognise(ip);
 }

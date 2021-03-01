@@ -1,6 +1,6 @@
 .\"
 .\"	aegis - project change supervisor
-.\"	Copyright (C) 2001-2003 Peter Miller;
+.\"	Copyright (C) 2001-2003, 2005 Peter Miller;
 .\"	All rights reserved.
 .\"
 .\"	This program is free software; you can redistribute it and/or modify
@@ -23,20 +23,20 @@
 .if n *
 .if t \(bu
 .\" change 57
-There is a new ``\--No-Page-Headers'' option which
+There is a new \[lq]\--No-Page-Headers\[rq] option which
 may be used to suppress page and column headers in listings and reports.
 .PP
 .if n *
 .if t \(bu
 .\" change 56
-There is a new ``aecp \-delta-from-change'' option, allowing the
+There is a new \[lq]aecp \-delta-from-change\[rq] option, allowing the
 specification of a delta number by specifying the number of a
 completed change.
 .PP
 .if n *
 .if t \(bu
 .\" change 55
-The ``aecp -ind -delta'' command now omits files which did not exist at
+The \[lq]aecp -ind -delta\[rq] command now omits files which did not exist at
 the given delta.
 .PP
 .if n *
@@ -67,12 +67,12 @@ The web interface is now able to show you file differences between deltas.
 .if n *
 .if t \(bu
 .\" change 47
-A bug has been fixed in the ``\fIaecp -delta\fP'' command (for all
+A bug has been fixed in the \[lq]\fIaecp -delta\fP\[rq] command (for all
 delta variants).  The problem occurred when you wanted to copy a
 version of the file before the file has been modified by the branch
 (but it wasonly a problem for files modified later in the branch, files
 never modified by the branch were OK).  As a side-effect of the bug fix,
-``\fIaecp -delta\fP'' now goes significantly faster (\fIN\fP times faster,
+\[lq]\fIaecp -delta\fP\[rq] now goes significantly faster (\fIN\fP times faster,
 where \fIN\fP is the number of files you are copying).
 .PP
 .if n *
@@ -107,7 +107,7 @@ A Russian localization of the error messages has been contributed.
 .if n *
 .if t \(bu
 .\" change 36
-A bug has been fixed in the ``aecp -output'' code, which sometimes
+A bug has been fixed in the \[lq]aecp -output\[rq] code, which sometimes
 incorrectly created directories.
 .PP
 .if n *
@@ -147,7 +147,7 @@ history tool had done the damage.)
 .if n *
 .if t \(bu
 .\" change 22
-A bug has been fixed in ``aecpu -unchanged'' in the case where the change
+A bug has been fixed in \[lq]aecpu -unchanged\[rq] in the case where the change
 had no files.  (It tried to uncopy a file called the empty thring.)
 .PP
 .if n *

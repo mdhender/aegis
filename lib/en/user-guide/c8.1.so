@@ -1,6 +1,6 @@
 .\"
 .\"	aegis - project change supervisor
-.\"	Copyright (C) 1993 Peter Miller.
+.\"	Copyright (C) 1993, 2005 Peter Miller.
 .\"	All rights reserved.
 .\"
 .\"	This program is free software; you can redistribute it and/or modify
@@ -21,8 +21,8 @@
 .\"
 .nh 2 "Interfacing"
 .LP
-The build commands are accessed from two fields of the
-project configuration file (\fIconfig\fP).
+The diff command is configured by a field of the
+project configuration file (\fIaegis.conf\fP).
 .nh 3 "diff_command"
 .LP
 This command is used by
@@ -85,3 +85,13 @@ This is usually the name of a change source file.
 An exit status of 0 means successful,
 even of the files differ (and they usually do).
 An exit status which is non-zero means something is wrong.
+.nh 2 "When No Diff is Required"
+.LP
+It is possible to configure a project to omit the diff step as
+unnecessary, by the following setting:
+.E(
+diff_command = "exit 0";
+.E)
+This disables all generation, checking and validation of difference files
+for each change source file.  The merge functions of the \fIaediff\fP(1)
+command are unaffected by this setting.

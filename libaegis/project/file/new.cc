@@ -1,6 +1,6 @@
 //
 //	aegis - project change supervisor
-//	Copyright (C) 1999, 2002-2004 Peter Miller;
+//	Copyright (C) 1999, 2002-2006 Peter Miller;
 //	All rights reserved.
 //
 //	This program is free software; you can redistribute it and/or modify
@@ -20,9 +20,9 @@
 // MANIFEST: functions to manipulate news
 //
 
-#include <change/file.h>
-#include <project/file.h>
-#include <trace.h>
+#include <libaegis/change/file.h>
+#include <libaegis/project/file.h>
+#include <common/trace.h>
 
 
 fstate_src_ty *
@@ -33,7 +33,7 @@ project_file_new(project_ty *pp, string_ty *file_name)
 
     trace(("project_file_new(pp = %8.8lX, file_name = \"%s\")\n{\n",
 	(long)pp, file_name->str_text));
-    cp = project_change_get(pp);
+    cp = pp->change_get();
     src_data = change_file_new(cp, file_name);
     trace(("return %8.8lX;\n", (long)src_data));
     trace(("}\n"));

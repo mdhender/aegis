@@ -20,17 +20,17 @@
 // MANIFEST: wrappers around operating system functions
 //
 
-#include <ac/errno.h>
-#include <ac/unistd.h>
-#include <ac/stddef.h>
-#include <ac/sys/types.h>
+#include <common/ac/errno.h>
+#include <common/ac/unistd.h>
+#include <common/ac/stddef.h>
+#include <common/ac/sys/types.h>
 #include <sys/stat.h>
 
-#include <error.h>
-#include <glue.h>
-#include <os.h>
-#include <sub.h>
-#include <trace.h>
+#include <common/error.h>
+#include <libaegis/glue.h>
+#include <libaegis/os.h>
+#include <libaegis/sub.h>
+#include <common/trace.h>
 
 
 void

@@ -20,16 +20,30 @@
 // MANIFEST: implementation of the rsrc_limits class
 //
 
-#include <ac/stdio.h>
-#include <ac/unistd.h>
-#include <sys/resource.h>
+#include <common/ac/stdio.h>
+#include <common/ac/unistd.h>
+#include <common/ac/sys/resource.h>
 
-#include <rsrc_limits.h>
-#include <config.h>
+#include <common/rsrc_limits.h>
+
+
+//
+// This is a disgusting hack to get around a disgusting hack in glibc's
+// implementation of sys/resource.h
+//
+// Glibc introduces a typedef for the first argument of getrlimit, and in
+// some versions, fails to insulate this against C++ which has stricter
+// enum to int rules than C does.  This results in a compile time error.
+//
+#ifndef __USE_GNU
+typedef int rlimit_resource_ty;
+#else
+typedef __rlimit_resource_t rlimit_resource_ty;
+#endif
 
 
 static void
-adjust_resource(int resource)
+adjust_resource(rlimit_resource_ty resource)
 {
     rlimit r;
     if (getrlimit(resource, &r) >= 0 && r.rlim_cur != r.rlim_max)

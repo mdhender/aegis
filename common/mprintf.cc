@@ -1,6 +1,6 @@
 //
 //	aegis - project change supervisor
-//	Copyright (C) 1991-1994, 1997, 1999, 2002-2004 Peter Miller;
+//	Copyright (C) 1991-1994, 1997, 1999, 2002-2005 Peter Miller;
 //	All rights reserved.
 //
 //	This program is free software; you can redistribute it and/or modify
@@ -20,14 +20,14 @@
 // MANIFEST: functions to printf into memory
 //
 
-#include <ac/errno.h>
-#include <ac/stdio.h>
-#include <ac/stdlib.h>
-#include <ac/string.h>
+#include <common/ac/errno.h>
+#include <common/ac/stdio.h>
+#include <common/ac/stdlib.h>
+#include <common/ac/string.h>
 
-#include <error.h>
-#include <mprintf.h>
-#include <str.h>
+#include <common/error.h>
+#include <common/mprintf.h>
+#include <common/str.h>
 
 //
 // size to grow memory by

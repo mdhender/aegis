@@ -1,7 +1,8 @@
 '\" t
 .\"     aegis - project change supervisor
-.\"     Copyright (C) 2002, 2004, 2005 Peter Miller;
-.\"     All rights reserved.
+.\"     Copyright (C) 2002, 2004-2006 Peter Miller;
+.\"     Copyright (C) 2006 Endocardial Solutions, Inc.
+.\"	All rights reserved.
 .\"
 .\"     This program is free software; you can redistribute it and/or modify
 .\"     it under the terms of the GNU General Public License as published by
@@ -64,6 +65,12 @@ run remote operations via ssh (default rsh)
 \fB\-n\fP
 No action, just tell what would be done.
 .TP 8n
+\fB\-ib\fP \fIs\fP
+Specify (remote) server for ibegin.
+.TP 8n
+\fB\-ip\fP \fIs\fP
+Specify (remote) server for ipass.
+.TP 8n
 \fB\-k\fP
 Keep the scripts and report files.
 .TP 8n
@@ -81,7 +88,7 @@ Minimum, run given changes \fI\-minimum\fP
 Precious, do not \fBIFail\fP changes in \fIlist\fP, just stop.
 .TP 8n
 \fB\-R\fP \fIlist\fP
-Ready , specify order and subset, \fIe.g.\fP \-R 29,45
+Ready, specify order and subset, \fIe.g.\fP \-R 29,45
 .TP 8n
 \fB\-S\fP \fIstage\fP
 Pick up at given stage (diff|build|test|integrate)
@@ -103,25 +110,25 @@ The following options are available for special needs.
 They control the order and disposition of each change
 \fBawaiting_integration\fP in a given project.
 .TP 8n
-\fB-R\fP[eady] \fInumber1,number2...\fP
+\fB\-R\fP[eady] \fInumber1,number2...\fP
 .RS
 This option is used to specify order or subset to
 integrate.  Only those changes listed will be attempted, and in exactly
-the order given. This applies to queue looping if \fB-loop\fP is
+the order given. This applies to queue looping if \fB\-loop\fP is
 given. In particular note unless the list includes future changes,
 future loops will not integrate them.
 .PP
 Useful if a particular change must go in before another for some
 reason.  Or if only integrating one or two changes when several are
 \fBawaiting_integration\fP in the given project.  A single change may
-also be specified with the \fB-c[hange]\fP \fInumber\fP option, which
-is common for other aegis commands.  However the \fB-R\fP option allows
-a list and if given will override any \fB-c\fP given.
+also be specified with the \fB\-c[hange]\fP \fInumber\fP option, which
+is common for other aegis commands.  However the \fB\-R\fP option allows
+a list and if given will override any \fB\-c\fP given.
 .RE
 .TP 8n
-\fB-P\fP[recious] \fInumber1,number2...\fP
+\fB\-P\fP[recious] \fInumber1,number2...\fP
 .TP 8n
-\fB-P\fP[recious] \fBall\fP
+\fB\-P\fP[recious] \fBall\fP
 .RS
 This option is used to specify that a particular change or subset of
 changes should be considered \fBprecious\fP.  It neither implies order
@@ -132,7 +139,7 @@ Note that at least one number (or the keyword \fIall\fP) must be given.
 The concept of \fBprecious\fP means that if the given change were to
 fail anywhere in the integration process, then the process simply
 stops and leaves the problem change in the delta directory.  The
-\fB-IFail\fP would not actually be executed.  This is sometimes useful
+\fB\-IFail\fP would not actually be executed.  This is sometimes useful
 to diagnose a problem which only occurs during integrations.  It is
 also useful if the failure is due to a transient problem such as
 unreliable machines on the network.  In such a case the integration can
@@ -143,31 +150,44 @@ If, on the other hand, a \fBprecious\fP change makes it through the
 integration process successfully, the option has no effect.
 .RE
 .TP 8n
-\fB-M\fP[inimum] \fInumber1,number2...\fP or \fIall\fP
+\fB\-M\fP[inimum] \fInumber1,number2...\fP or \fIall\fP
 Integrate the given change[s] with the \fB\-minimum\fP option.  Such
 changes will be put on the end of the queue so that the last
 integrations of a run will be a minimum.  This feature allows
 practical use of minimum integrations without requiring
 \fB\-minimum\fP on each and every integration.  See the section below
 on \fIMinimum integrations\fP for more information.
-If \fB-loop\fP is given any change[s] specified as minimum will run at
+If \fB\-loop\fP is given any change[s] specified as minimum will run at
 the end of the loop in which they are ready, they will not be pushed
 to the final loop.
+.TP 8n
+\fB\-ib\fP[server] \fIserver-name\fP or ""
+.TP 8n
+\fB\-ip\fP[server] \fIserver-name\fP or ""
+To specify a remote server on which to run \fB\-ibegin\fP or \B\-ipass\fP
+respecively. These options are rarely needed, but may be useful if a
+project is hosted on a different file server and has a large
+baseline. By having the \fB\-ibegin\fP run on that server the network
+traffic would be greatly reduced and for large projects and/or slow
+networks can greatly reduce the time required for \fB\-ibegin\fP.
+The option form of giving an empty name depends on the output of
+\fBdf \-k\fP giving a parseable host name. If that is not true on your
+integration host architecture, you will have to specify the server name.
 .SS Stage Options
 The following options allow [re]starting an integration which has
 already progressed through some stages.  This is useful to deal with
 failed (\fIprecious\fP) integrations, or to finish automatically an
 integration begun by hand.
 .TP 8n
-\fB-S\fP[tage] \fBdiff\fP
+\fB\-S\fP[tage] \fBdiff\fP
 .TP 8n
-\fB-S\fP[tage] \fBbuild\fP
+\fB\-S\fP[tage] \fBbuild\fP
 .TP 8n
-\fB-S\fP[tage] \fBtest\fP
+\fB\-S\fP[tage] \fBtest\fP
 .TP 8n
-\fB-S\fP[tage] \fBintegrate\fP
+\fB\-S\fP[tage] \fBintegrate\fP
 Pick up the integration at the given \fBstage\fP.  Requires
-\fB-c\fP[hange] \fInumber\fP option to specify the change number.
+\fB\-c\fP[hange] \fInumber\fP option to specify the change number.
 .SH Advanced Controls
 The integrator may provide for special situations such as operations
 required after \fB\-Build\fP and before \fB\-Test\fP, or at the end of a
@@ -241,7 +261,8 @@ successful.  Note that this does not mean that no changes failed, only that no
 queue errors occurred.  This hook might be used to invoke another queue
 run on a different project/branch, or possibly even on the same project, if
 other changes may have been ended and/or reviewed while the first run was
-in progress.  These conditions arise quite often with flex time engineers.
+in progress, see also the \fB\-loop\fP option.  These conditions arise
+quite often with flex time engineers.
 Another use of the \fB.end\fP hook is to automatically build a new package
 using the newly integrated project as source.
 .PP
@@ -300,7 +321,7 @@ Another, more transient, reason a to require a minimum integration
 might be when upgrading a third party library, compiler or maybe even
 OS level.  Any of these events would signal the need for a minimum
 integration to ensure everything is rebuilt using the new resources.
-This can be done with minimum overhead using the \fB-M\fP option as
+This can be done with minimum overhead using the \fB\-M\fP option as
 described above.
 .PP
 The cost of a \fBminimum\fP integration varies according to type and
@@ -308,7 +329,7 @@ size of the project.  For very large projects, especially those
 building large numbers of binaries, the cost can be large.  However
 large projects also require significant time to fully populate the
 delta directory.  A minimum integration only copies those files
-under aegis control, skipping all ``produced'' files.  In the case
+under aegis control, skipping all \[lq]produced\[rq] files.  In the case
 where a file upon which everything depends is changed, everything will
 be built anyway so the copy of the already built files is a waste of
 time.  This means that sometimes a minimum can be as cheap as a normal

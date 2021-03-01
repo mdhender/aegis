@@ -20,16 +20,16 @@
 // MANIFEST: functions to manipulate quotes
 //
 
-#include <ac/ctype.h>
-#include <ac/string.h>
+#include <common/ac/ctype.h>
+#include <common/ac/string.h>
 
-#include <aer/expr.h>
-#include <aer/func/quote.h>
-#include <aer/value/error.h>
-#include <aer/value/string.h>
-#include <nstring.h>
-#include <stracc.h>
-#include <sub.h>
+#include <libaegis/aer/expr.h>
+#include <libaegis/aer/func/quote.h>
+#include <libaegis/aer/value/error.h>
+#include <libaegis/aer/value/string.h>
+#include <common/nstring.h>
+#include <common/stracc.h>
+#include <libaegis/sub.h>
 
 
 static int

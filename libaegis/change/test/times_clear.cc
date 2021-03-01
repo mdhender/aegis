@@ -1,6 +1,6 @@
 //
 //	aegis - project change supervisor
-//	Copyright (C) 1999, 2003, 2004 Peter Miller;
+//	Copyright (C) 1999, 2003-2005 Peter Miller;
 //	All rights reserved.
 //
 //	This program is free software; you can redistribute it and/or modify
@@ -20,10 +20,10 @@
 // MANIFEST: functions to manipulate times_clears
 //
 
-#include <change.h>
-#include <change/architecture/find_variant.h>
-#include <error.h> // for assert
-#include <change/file.h>
+#include <libaegis/change.h>
+#include <libaegis/change/architecture/find_variant.h>
+#include <common/error.h> // for assert
+#include <libaegis/change/file.h>
 
 
 //

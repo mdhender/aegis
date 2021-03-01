@@ -1,6 +1,6 @@
 //
 //	aegis - project change supervisor
-//	Copyright (C) 1994-1996, 2002-2004 Peter Miller;
+//	Copyright (C) 1994-1996, 2002-2005 Peter Miller;
 //	All rights reserved.
 //
 //	This program is free software; you can redistribute it and/or modify
@@ -20,17 +20,17 @@
 // MANIFEST: functions to manipulate lookup expressions
 //
 
-#include <aer/expr/constant.h>
-#include <aer/expr/lookup.h>
-#include <aer/lex.h>
-#include <aer/value/error.h>
-#include <aer/value/ref.h>
-#include <aer/value/string.h>
-#include <aer/value/struct.h>
-#include <error.h>
-#include <str.h>
-#include <sub.h>
-#include <trace.h>
+#include <libaegis/aer/expr/constant.h>
+#include <libaegis/aer/expr/lookup.h>
+#include <libaegis/aer/lex.h>
+#include <libaegis/aer/value/error.h>
+#include <libaegis/aer/value/ref.h>
+#include <libaegis/aer/value/string.h>
+#include <libaegis/aer/value/struct.h>
+#include <common/error.h>
+#include <common/str.h>
+#include <libaegis/sub.h>
+#include <common/trace.h>
 
 
 static rpt_value_ty *

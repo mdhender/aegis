@@ -1,6 +1,6 @@
 //
 //	aegis - project change supervisor
-//	Copyright (C) 1999, 2001-2004 Peter Miller;
+//	Copyright (C) 1999, 2001-2006 Peter Miller;
 //	All rights reserved.
 //
 //	This program is free software; you can redistribute it and/or modify
@@ -20,25 +20,25 @@
 // MANIFEST: functions to remove project aliases
 //
 
-#include <ac/stdio.h>
-#include <ac/stdlib.h>
+#include <common/ac/stdio.h>
+#include <common/ac/stdlib.h>
 
-#include <ael/project/aliases.h>
-#include <aerpa.h>
-#include <arglex2.h>
-#include <arglex/project.h>
-#include <commit.h>
-#include <gonzo.h>
-#include <gonzo.h>
-#include <help.h>
-#include <lock.h>
-#include <progname.h>
-#include <project.h>
-#include <project/history.h>
-#include <quit.h>
-#include <sub.h>
-#include <trace.h>
-#include <user.h>
+#include <libaegis/ael/project/aliases.h>
+#include <aegis/aerpa.h>
+#include <libaegis/arglex2.h>
+#include <libaegis/arglex/project.h>
+#include <libaegis/commit.h>
+#include <libaegis/gonzo.h>
+#include <libaegis/gonzo.h>
+#include <libaegis/help.h>
+#include <libaegis/lock.h>
+#include <common/progname.h>
+#include <libaegis/project.h>
+#include <libaegis/project/history.h>
+#include <common/quit.h>
+#include <libaegis/sub.h>
+#include <common/trace.h>
+#include <libaegis/user.h>
 
 
 static void
@@ -131,7 +131,7 @@ project_alias_remove_main(void)
 	project_alias_remove_usage();
     }
     pp = project_alloc(project_name);
-    project_bind_existing(pp);
+    pp->bind_existing();
 
     //
     // locate user data

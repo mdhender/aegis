@@ -20,23 +20,23 @@
 // MANIFEST: implementation of the get_file_diff class
 //
 
-#include <ac/stdio.h>
-#include <ac/string.h>
+#include <common/ac/stdio.h>
+#include <common/ac/string.h>
 
-#include <change/branch.h>
-#include <change/file.h>
-#include <emit/brief_descri.h>
-#include <emit/edit_number.h>
-#include <error.h> // for assert
-#include <get/command.h>
-#include <get/file/diff.h>
-#include <http.h>
-#include <libdir.h>
-#include <project/file/roll_forward.h>
-#include <now.h>
-#include <nstring.h>
-#include <str_list.h>
-#include <zero.h>
+#include <libaegis/change/branch.h>
+#include <libaegis/change/file.h>
+#include <aeget/emit/brief_descri.h>
+#include <aeget/emit/edit_number.h>
+#include <common/error.h> // for assert
+#include <aeget/get/command.h>
+#include <aeget/get/file/diff.h>
+#include <aeget/http.h>
+#include <common/libdir.h>
+#include <libaegis/project/file/roll_forward.h>
+#include <common/now.h>
+#include <common/nstring.h>
+#include <common/str_list.h>
+#include <libaegis/zero.h>
 
 
 #define XRANGE 3
@@ -210,10 +210,24 @@ get_file_diff(change_ty *master_cp, string_ty *filename,
     if (y_last < (2 * YRANGE + 1))
 	y_first = 0;
 
+    printf("<div class=\"information\">\n");
+    printf("There is also a ");
+    if (detailed)
+    {
+	emit_file_href(master_cp, filename, "diff");
+	printf("less");
+    }
+    else
+    {
+	emit_file_href(master_cp, filename, "diff+detailed");
+	printf("more");
+    }
+    printf("</a> detailed version of this listing available.\n");
+    printf("<p>\n");
+
     //
     // Emit table headings.
     //
-    printf("<div class=\"information\">");
     printf("The version numbers along the top and left are\n");
     printf("linked to the change menu of the relevant change\n");
     printf("set.  The edit number in the <strong>Edit</strong>\n");
@@ -307,7 +321,7 @@ get_file_diff(change_ty *master_cp, string_ty *filename,
 	assert(y_fep->src);
 	if (y_fep->src)
 	    emit_file_href(y_fep->cp, y_fep->src->file_name, 0);
-	emit_edit_number(y_fep->cp, y_fep->src);
+	emit_edit_number(y_fep->cp, y_fep->src, &historian);
 	if (y_fep->src)
 	    printf("</a>");
 	printf("</td>\n");
@@ -323,7 +337,21 @@ get_file_diff(change_ty *master_cp, string_ty *filename,
     //
     // There is no sumamry row.
     //
-    printf("</table></div>\n");
+    printf("</table>\n");
+    printf("<p>\n");
+    printf("There is also a ");
+    if (detailed)
+    {
+	emit_file_href(master_cp, filename, "diff");
+	printf("less");
+    }
+    else
+    {
+	emit_file_href(master_cp, filename, "diff+detailed");
+	printf("more");
+    }
+    printf("</a> detailed version of this listing available.\n");
+    printf("</div>\n");
 
     //
     // Emit page footer.

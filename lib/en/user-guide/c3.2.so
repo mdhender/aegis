@@ -1,6 +1,6 @@
 .\"
 .\"	aegis - project change supervisor
-.\"	Copyright (C) 1991-1995, 1998, 2001-2004 Peter Miller;
+.\"	Copyright (C) 1991-1995, 1998, 2001-2005 Peter Miller;
 .\"	All rights reserved.
 .\"
 .\"	This program is free software; you can redistribute it and/or modify
@@ -284,8 +284,8 @@ the use of the ${quote} substitution around all of the files names in
 the commands.
 .LP
 In addition, it is possible to have a much more useful description for
-the \fB\-m\fP option.  For example: ``\f[CW]-m${quote ($version) ${change
-description}}\fP'' inserts the version number and the brief description
+the \fB\-m\fP option.  For example: \[lq]\f[CW]-m${quote ($version) ${change
+description}}\fP\[rq] inserts the version number and the brief description
 into the file's log.  This means that using the \fIrlog\fP(1) command
 will provide quite useful summaries.
 .nh 3 "Binary Files"

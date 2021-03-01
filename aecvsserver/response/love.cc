@@ -1,6 +1,6 @@
 //
 //	aegis - project change supervisor
-//	Copyright (C) 2004, 2005 Peter Miller;
+//	Copyright (C) 2004-2006 Peter Miller;
 //	All rights reserved.
 //
 //	This program is free software; you can redistribute it and/or modify
@@ -23,30 +23,38 @@
 // protocol itself.
 //
 
-#include <output.h>
-#include <response/love.h>
-#include <response/private.h>
+#include <libaegis/output.h>
+#include <aecvsserver/response/love.h>
 
 
-static void
-write(response_ty *rp, output_ty *op)
+response_love::~response_love()
+{
+}
+
+
+response_love::response_love()
+{
+}
+
+
+void
+response_love::write(output_ty *op)
 {
     op->fputs("I LOVE YOU\n");
 }
 
 
-static const response_method_ty vtbl =
+response_code_ty
+response_love::code_get()
+    const
 {
-    sizeof(response_ty),
-    0, // destructor
-    write,
-    response_code_love,
-    1, // flushable
-};
+    return response_code_love;
+}
 
 
-response_ty *
-response_love_new(void)
+bool
+response_love::flushable()
+    const
 {
-    return response_new(&vtbl);
+    return true;
 }

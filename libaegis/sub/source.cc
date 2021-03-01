@@ -1,6 +1,6 @@
 //
 //	aegis - project change supervisor
-//	Copyright (C) 2001, 2003, 2004 Peter Miller;
+//	Copyright (C) 2001, 2003-2006 Peter Miller;
 //	All rights reserved.
 //
 //	This program is free software; you can redistribute it and/or modify
@@ -20,18 +20,18 @@
 // MANIFEST: functions to manipulate sources
 //
 
-#include <arglex.h>
-#include <change.h>
-#include <change/file.h>
-#include <cstate.h>
-#include <os.h>
-#include <project.h>
-#include <project/file.h>
-#include <sub.h>
-#include <sub/source.h>
-#include <str_list.h>
-#include <trace.h>
-#include <wstr/list.h>
+#include <common/arglex.h>
+#include <common/str_list.h>
+#include <common/trace.h>
+#include <common/wstr/list.h>
+#include <libaegis/change/file.h>
+#include <libaegis/change.h>
+#include <libaegis/cstate.h>
+#include <libaegis/os.h>
+#include <libaegis/project/file.h>
+#include <libaegis/project.h>
+#include <libaegis/sub.h>
+#include <libaegis/sub/source.h>
 
 
 //
@@ -86,7 +86,7 @@ sub_source(sub_context_ty *scp, wstring_list_ty *arg)
 	    sub_context_error_set(scp, i18n("not valid in current context"));
 	    goto done;
 	}
-	cp = project_change_get(pp);
+	cp = pp->change_get();
     }
 
     //

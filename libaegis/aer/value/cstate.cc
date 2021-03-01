@@ -1,6 +1,6 @@
 //
 //	aegis - project change supervisor
-//	Copyright (C) 1994-1996, 1999, 2001-2004 Peter Miller;
+//	Copyright (C) 1994-1996, 1999, 2001-2005 Peter Miller;
 //	All rights reserved.
 //
 //	This program is free software; you can redistribute it and/or modify
@@ -20,21 +20,21 @@
 // MANIFEST: functions to manipulate cstate values
 //
 
-#include <aer/value/cstate.h>
-#include <aer/value/error.h>
-#include <aer/value/fstate.h>
-#include <aer/value/integer.h>
-#include <aer/value/list.h>
-#include <aer/value/null.h>
-#include <aer/value/pconf.h>
-#include <aer/value/string.h>
-#include <aer/value/struct.h>
-#include <change.h>
-#include <error.h>
-#include <mem.h>
-#include <project.h>
-#include <sub.h>
-#include <trace.h>
+#include <libaegis/aer/value/cstate.h>
+#include <libaegis/aer/value/error.h>
+#include <libaegis/aer/value/fstate.h>
+#include <libaegis/aer/value/integer.h>
+#include <libaegis/aer/value/list.h>
+#include <libaegis/aer/value/null.h>
+#include <libaegis/aer/value/pconf.h>
+#include <libaegis/aer/value/string.h>
+#include <libaegis/aer/value/struct.h>
+#include <libaegis/change.h>
+#include <common/error.h>
+#include <common/mem.h>
+#include <libaegis/project.h>
+#include <libaegis/sub.h>
+#include <common/trace.h>
 
 
 struct rpt_value_cstate_ty

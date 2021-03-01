@@ -1,6 +1,6 @@
 //
 //	aegis - project change supervisor
-//	Copyright (C) 2004 Peter Miller;
+//	Copyright (C) 2004-2006 Peter Miller;
 //	All rights reserved.
 //
 //	This program is free software; you can redistribute it and/or modify
@@ -20,22 +20,45 @@
 // MANIFEST: functions to manipulate requests
 //
 
-#include <error.h>
-#include <request.h>
-#include <server.h>
+#include <aecvsserver/request.h>
+
+
+request::~request()
+{
+}
+
+
+request::request()
+{
+}
+
+
+bool
+request::reset()
+    const
+{
+    return false;
+}
 
 
 void
-request_run(const request_ty *rp, server_ty *sp, string_ty *arg)
+request::run_inner(server_ty *sp, string_ty *arg)
+    const
 {
-    assert(rp);
-    assert(rp->run);
-    rp->run(sp, arg);
+    // Do nothing.
+}
+
+
+void
+request::run(server_ty *sp, string_ty *arg)
+    const
+{
+    run_inner(sp, arg);
 
     //
-    // Some requests simply accumulate input and aparameters
-    // for other requests.  Others consume them.
+    // Some requests simply accumulate input and aparameters for other
+    // requests.  Others consume them.
     //
-    if (rp->reset)
-	server_accumulator_reset(sp);
+    if (reset())
+         server_accumulator_reset(sp);
 }

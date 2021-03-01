@@ -1,6 +1,6 @@
 //
 //	aegis - project change supervisor
-//	Copyright (C) 1998, 1999, 2002-2004 Peter Miller;
+//	Copyright (C) 1998, 1999, 2002-2005 Peter Miller;
 //	All rights reserved.
 //
 //	This program is free software; you can redistribute it and/or modify
@@ -20,11 +20,9 @@
 // MANIFEST: functions to manipulate real type
 //
 
-#pragma implementation "type_real_ty"
-
-#include <indent.h>
-#include <mem.h>
-#include <type/real.h>
+#include <fmtgen/indent.h>
+#include <common/mem.h>
+#include <fmtgen/type/real.h>
 
 
 type_real_ty::~type_real_ty()

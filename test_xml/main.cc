@@ -1,6 +1,6 @@
 //
 //	aegis - project change supervisor
-//	Copyright (C) 2005 Peter Miller;
+//	Copyright (C) 2005, 2006 Peter Miller;
 //	All rights reserved.
 //
 //	This program is free software; you can redistribute it and/or modify
@@ -20,17 +20,17 @@
 // MANIFEST: implementation of the main class
 //
 
-#include <ac/stdio.h>
+#include <common/ac/stdio.h>
 
-#include <arglex.h>
-#include <error.h>
-#include <input/file.h>
-#include <xmltextread/by_node.h>
-#include <xml_node/dump.h>
-#include <os.h>
-#include <output/file.h>
-#include <progname.h>
-#include <quit.h>
+#include <common/arglex.h>
+#include <common/error.h>
+#include <libaegis/input/file.h>
+#include <libaegis/xmltextread/by_node.h>
+#include <test_xml/xml_node/dump.h>
+#include <libaegis/os.h>
+#include <libaegis/output/file.h>
+#include <common/progname.h>
+#include <common/quit.h>
 
 
 static void
@@ -78,7 +78,7 @@ main(int argc, char **argv)
 	arglex();
     }
     os_become_orig();
-    input_ty *ip = input_file_open(ifn && *ifn ? str_from_c(ifn) : 0);
+    input ip = input_file_open(ifn && *ifn ? str_from_c(ifn) : 0);
     output_ty *op = output_file_text_open(ofn && *ofn ? str_from_c(ofn) : 0);
     xml_text_reader_by_node fubar(ip, false);
     xml_node_dump dumper(op);

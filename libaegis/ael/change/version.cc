@@ -1,6 +1,6 @@
 //
 //	aegis - project change supervisor
-//	Copyright (C) 1999, 2001-2004 Peter Miller;
+//	Copyright (C) 1999, 2001-2006 Peter Miller;
 //	All rights reserved.
 //
 //	This program is free software; you can redistribute it and/or modify
@@ -20,17 +20,17 @@
 // MANIFEST: functions to manipulate versions
 //
 
-#include <ac/stdio.h>
+#include <common/ac/stdio.h>
 
-#include <ael/change/version.h>
-#include <change.h>
-#include <change/branch.h>
-#include <option.h>
-#include <project.h>
-#include <project/history.h>
-#include <str_list.h>
-#include <trace.h>
-#include <user.h>
+#include <libaegis/ael/change/version.h>
+#include <libaegis/change.h>
+#include <libaegis/change/branch.h>
+#include <libaegis/option.h>
+#include <libaegis/project.h>
+#include <libaegis/project/history.h>
+#include <common/str_list.h>
+#include <common/trace.h>
+#include <libaegis/user.h>
 
 
 void
@@ -52,7 +52,7 @@ list_version(string_ty *project_name, long change_number, string_list_ty *args)
 	project_name = str_copy(project_name);
     pp = project_alloc(project_name);
     str_free(project_name);
-    project_bind_existing(pp);
+    pp->bind_existing();
 
     //
     // locate user data

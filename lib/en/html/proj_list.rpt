@@ -1,6 +1,6 @@
 /*
  *	aegis - project change supervisor
- *	Copyright (C) 1997, 1998, 2002, 2003 Peter Miller;
+ *	Copyright (C) 1997, 1998, 2002, 2003, 2005 Peter Miller;
  *	All rights reserved.
  *
  *	This program is free software; you can redistribute it and/or modify
@@ -70,7 +70,7 @@ for (name in sort(keys(project)))
 
 	/*
 	 * Reading the p.state value (it is deferred) may result
-	 * in ``permision denied'' so we need to catch the
+	 * in "permision denied" so we need to catch the
 	 * exception as it goes past.  Use the error as the
 	 * description.
 	 */

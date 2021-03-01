@@ -1,6 +1,6 @@
 //
 //	aegis - project change supervisor
-//	Copyright (C) 1997, 1999, 2003, 2004 Peter Miller;
+//	Copyright (C) 1997, 1999, 2003-2005 Peter Miller;
 //	All rights reserved.
 //
 //	This program is free software; you can redistribute it and/or modify
@@ -20,15 +20,15 @@
 // MANIFEST: functions to manipulate rounds
 //
 
-#include <ac/math.h>
+#include <common/ac/math.h>
 
-#include <aer/expr.h>
-#include <aer/func/round.h>
-#include <aer/value/error.h>
-#include <aer/value/real.h>
-#include <error.h> // for assert
-#include <str.h>
-#include <sub.h>
+#include <libaegis/aer/expr.h>
+#include <libaegis/aer/func/round.h>
+#include <libaegis/aer/value/error.h>
+#include <libaegis/aer/value/real.h>
+#include <common/error.h> // for assert
+#include <common/str.h>
+#include <libaegis/sub.h>
 
 
 static int

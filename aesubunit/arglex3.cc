@@ -20,7 +20,7 @@
 // MANIFEST: implementation of the arglex3 class
 //
 
-#include <arglex3.h>
+#include <aesubunit/arglex3.h>
 
 
 static arglex_table_ty argtab[] =

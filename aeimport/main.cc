@@ -20,18 +20,17 @@
 // MANIFEST: functions to manipulate mains
 //
 
-#include <ac/stdlib.h>
+#include <common/ac/stdlib.h>
 
-#include <arglex3.h>
-#include <env.h>
-#include <import.h>
-#include <language.h>
-#include <log.h>
-#include <os.h>
-#include <quit.h>
-#include <r250.h>
-#include <rsrc_limits.h>
-#include <undo.h>
+#include <aeimport/arglex3.h>
+#include <common/env.h>
+#include <aeimport/import.h>
+#include <common/language.h>
+#include <libaegis/log.h>
+#include <libaegis/os.h>
+#include <common/quit.h>
+#include <common/rsrc_limits.h>
+#include <libaegis/undo.h>
 
 
 //
@@ -51,7 +50,6 @@ int
 main(int argc, char **argv)
 {
     resource_limits_init();
-    r250_init();
     os_become_init();
     arglex3_init(argc, argv);
     env_initialize();

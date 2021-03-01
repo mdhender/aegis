@@ -1,6 +1,6 @@
 //
 //	aegis - project change supervisor
-//	Copyright (C) 1991-1999, 2001-2005 Peter Miller;
+//	Copyright (C) 1991-1999, 2001-2006 Peter Miller;
 //	All rights reserved.
 //
 //	This program is free software; you can redistribute it and/or modify
@@ -20,36 +20,36 @@
 // MANIFEST: functions to implement new release
 //
 
-#include <ac/ctype.h>
-#include <ac/stdio.h>
-#include <ac/string.h>
-#include <ac/sys/types.h>
+#include <common/ac/ctype.h>
+#include <common/ac/stdio.h>
+#include <common/ac/string.h>
+#include <common/ac/sys/types.h>
 #include <sys/stat.h>
 
-#include <ael/project/projects.h>
-#include <aenrls.h>
-#include <arglex2.h>
-#include <change/branch.h>
-#include <change/file.h>
-#include <commit.h>
-#include <dir.h>
-#include <error.h>
-#include <file.h>
-#include <gonzo.h>
-#include <help.h>
-#include <lock.h>
-#include <log.h>
-#include <mem.h>
-#include <os.h>
-#include <progname.h>
-#include <project.h>
-#include <project/file.h>
-#include <project/history.h>
-#include <quit.h>
-#include <sub.h>
-#include <trace.h>
-#include <undo.h>
-#include <user.h>
+#include <libaegis/ael/project/projects.h>
+#include <aegis/aenrls.h>
+#include <libaegis/arglex2.h>
+#include <libaegis/change/branch.h>
+#include <libaegis/change/file.h>
+#include <libaegis/commit.h>
+#include <libaegis/dir.h>
+#include <common/error.h>
+#include <libaegis/file.h>
+#include <libaegis/gonzo.h>
+#include <libaegis/help.h>
+#include <libaegis/lock.h>
+#include <libaegis/log.h>
+#include <common/mem.h>
+#include <libaegis/os.h>
+#include <common/progname.h>
+#include <libaegis/project.h>
+#include <libaegis/project/file.h>
+#include <libaegis/project/history.h>
+#include <common/quit.h>
+#include <libaegis/sub.h>
+#include <common/trace.h>
+#include <libaegis/undo.h>
+#include <libaegis/user.h>
 
 #define GIVEN -1
 #define NOT_GIVEN -2
@@ -336,10 +336,10 @@ new_release_main(void)
     // locate OLD project data
     //
     pp[0] = project_alloc(project_name[0]);
-    project_bind_existing(pp[0]);
-    if (pp[0]->parent)
+    pp[0]->bind_existing();
+    if (!pp[0]->is_a_trunk())
 	goto too_modern;
-    pstate_data[0] = project_pstate_get(pp[0]);
+    pstate_data[0] = pp[0]->pstate_get();
 
     //
     // You may only use this command for old-style (pre branching)
@@ -528,9 +528,8 @@ new_release_main(void)
     // It is a fatal error if the project name already exists.
     //
     pp[1] = project_alloc(project_name[1]);
-    project_bind_new(pp[1]);
-    pp[1]->uid = pp[0]->uid;
-    pp[1]->gid = pp[0]->gid;
+    pp[1]->bind_new();
+    pp[1]->copy_the_owner(pp[0]);
     pup = project_user(pp[0]);
 
     //
@@ -556,27 +555,27 @@ new_release_main(void)
 	project_verbose(pp[1], scp, i18n("proj dir $filename"));
 	sub_context_delete(scp);
     }
-    project_home_path_set(pp[1], home);
+    pp[1]->home_path_set(home);
     str_free(home);
 
     //
     // take the relevant locks
     //
-    project_pstate_lock_prepare(pp[1]);
+    pp[1]->pstate_lock_prepare();
     project_baseline_read_lock_prepare(pp[0]);
     gonzo_gstate_lock_prepare_new();
     lock_take();
-    pstate_data[0] = project_pstate_get(pp[0]);
-    pstate_data[1] = project_pstate_get(pp[1]);
+    pstate_data[0] = pp[0]->pstate_get();
+    pstate_data[1] = pp[1]->pstate_get();
 
     //
     // Create the directory and subdirectories.
     // It is an error if the directories can't be created.
     //
-    home = project_home_path_get(pp[1]);
-    bl = project_baseline_path_get(pp[1], 0);
-    hp = project_history_path_get(pp[1]);
-    ip = project_info_path_get(pp[1]);
+    home = pp[1]->home_path_get();
+    bl = pp[1]->baseline_path_get();
+    hp = pp[1]->history_path_get();
+    ip = pp[1]->info_path_get();
     project_become(pp[1]);
     os_mkdir(home, 02755);
     undo_rmdir_errok(home);
@@ -784,7 +783,7 @@ new_release_main(void)
     chp = change_history_new(cp, up);
     chp->what = cstate_history_what_integrate_begin;
     cstate_data->state = cstate_state_being_integrated;
-    bl = project_baseline_path_get(ppp, 0);
+    bl = ppp->baseline_path_get();
     cstate_data->integration_directory = str_copy(bl);
 
     //
@@ -797,7 +796,7 @@ new_release_main(void)
     // (a) from the original project
     // (b) from the fake change that created the files
     //
-    project_copyright_years_merge(ppp, project_change_get(pp[0]));
+    project_copyright_years_merge(ppp, pp[0]->change_get());
     project_copyright_years_merge(ppp, cp);
 
     //
@@ -809,7 +808,7 @@ new_release_main(void)
 	fstate_src_ty   *p1_src_data;
 	fstate_src_ty   *c_src_data;
 
-	p_src_data = project_file_nth(pp[0], j, view_path_extreme);
+	p_src_data = pp[0]->file_nth(j, view_path_extreme);
 	if (!p_src_data)
 	    break;
 
@@ -859,7 +858,7 @@ new_release_main(void)
     //
     // copy files from old baseline to new baseline
     //
-    info.from = project_baseline_path_get(pp[0], 1);
+    info.from = pp[0]->baseline_path_get(true);
     info.to = bl;
     project_verbose(ppp, 0, i18n("copy baseline"));
     project_become(ppp);
@@ -880,7 +879,7 @@ new_release_main(void)
 	//
 	// find the relevant change src data
 	//
-	src_data = project_file_nth(ppp, j, view_path_extreme);
+	src_data = ppp->file_nth(j, view_path_extreme);
 	if (!src_data)
 	    break;
 
@@ -921,7 +920,7 @@ new_release_main(void)
 	// Don't bother differencing the file for the project
 	// trunk.
 	//
-	if (!ppp->parent)
+	if (ppp->is_a_trunk())
 	{
 	    str_free(path);
 	    continue;
@@ -1013,9 +1012,9 @@ new_release_main(void)
     // AFTER the next branch down has been created, because
     // creating a branch alters the pstate of the one above.
     //
-    project_pstate_write(pp[1]);
+    pp[1]->pstate_write();
     for (j = 0; j < (size_t)new_version_number_length; ++j)
-	project_pstate_write(version_pp[j]);
+	version_pp[j]->pstate_write();
     change_cstate_write(cp);
     gonzo_gstate_write();
 

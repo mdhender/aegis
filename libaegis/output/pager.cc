@@ -20,30 +20,30 @@
 // MANIFEST: functions to pipe output through paginator
 //
 
-#include <ac/errno.h>
-#include <ac/stddef.h>
-#include <ac/stdio.h>
-#include <ac/stdlib.h>
-#include <ac/unistd.h>
-#include <ac/sys/types.h>
+#include <common/ac/errno.h>
+#include <common/ac/stddef.h>
+#include <common/ac/stdio.h>
+#include <common/ac/stdlib.h>
+#include <common/ac/unistd.h>
+#include <common/ac/sys/types.h>
 #include <sys/stat.h> // for umask prototype
 
-#include <arglex2.h>
-#include <env.h>
-#include <error.h>
-#include <help.h>
-#include <option.h>
-#include <os.h>
-#include <output.h>
-#include <output/pager.h>
-#include <output/stdout.h>
-#include <quit.h>
-#include <quit/action/pager.h>
-#include <str.h>
-#include <sub.h>
-#include <trace.h>
-#include <undo.h>
-#include <user.h>
+#include <libaegis/arglex2.h>
+#include <common/env.h>
+#include <common/error.h>
+#include <libaegis/help.h>
+#include <libaegis/option.h>
+#include <libaegis/os.h>
+#include <libaegis/output.h>
+#include <libaegis/output/pager.h>
+#include <libaegis/output/stdout.h>
+#include <common/quit.h>
+#include <libaegis/quit/action/pager.h>
+#include <common/str.h>
+#include <libaegis/sub.h>
+#include <common/trace.h>
+#include <libaegis/undo.h>
+#include <libaegis/user.h>
 
 
 static quit_action_pager cleanup;

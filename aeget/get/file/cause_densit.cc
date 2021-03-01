@@ -1,6 +1,6 @@
 //
 //	aegis - project change supervisor
-//	Copyright (C) 2004 Peter Miller;
+//	Copyright (C) 2004-2006 Peter Miller;
 //	All rights reserved.
 //
 //	This program is free software; you can redistribute it and/or modify
@@ -20,21 +20,22 @@
 // MANIFEST: implementation of the get_file_cause_densit class
 //
 
-#include <ac/stdio.h>
-#include <ac/string.h>
+#include <common/ac/stdio.h>
+#include <common/ac/string.h>
 
-#include <change.h>
-#include <change/file.h>
-#include <cstate.h>
-#include <emit/project.h>
-#include <error.h> // for assert
-#include <get/file/cause_densit.h>
-#include <http.h>
-#include <nstring.h>
-#include <os.h>
-#include <project.h>
-#include <str_list.h>
-#include <symtab.h>
+#include <common/error.h> // for assert
+#include <common/nstring.h>
+#include <common/str_list.h>
+#include <common/symtab.h>
+#include <libaegis/change/file.h>
+#include <libaegis/change.h>
+#include <libaegis/cstate.h>
+#include <libaegis/os.h>
+#include <libaegis/project.h>
+
+#include <aeget/emit/project.h>
+#include <aeget/get/file/cause_densit.h>
+#include <aeget/http.h>
 
 
 static const char *
@@ -160,7 +161,7 @@ get_file_cause_density(change_ty *master_cp, string_ty *filename,
     // Go through the project's changes,
     // remembering the relevant ones.
     //
-    change_ty *pcp = project_change_get(pp);
+    change_ty *pcp = pp->change_get();
     cstate_ty *proj_cstate_data = change_cstate_get(pcp);
     for (size_t j = 0; j < proj_cstate_data->branch->history->length; ++j)
     {

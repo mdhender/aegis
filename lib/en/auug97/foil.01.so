@@ -1,6 +1,6 @@
 .\"
 .\"	aegis - project change supervisor
-.\"	Copyright (C) 1998 Peter Miller;
+.\"	Copyright (C) 1998, 2005 Peter Miller;
 .\"	All rights reserved.
 .\"
 .\"	This program is free software; you can redistribute it and/or modify
@@ -33,8 +33,8 @@ Recursive Make Considered Harmful
 .LP
 .ft I
 .hy 0
-``I returned this otherwise good typing paper to you because someone
-has printed gibberish all over it and put your name at the top.''
+\[lq]I returned this otherwise good typing paper to you because someone
+has printed gibberish all over it and put your name at the top.\[rq]
 .br
 .ft R
 .ps -4
@@ -55,7 +55,7 @@ Many potential reviewers rejected the paper on the title alone
 \(bu
 We use \fImake\fP every day
 .br
-\(sq We \fIab\fPuse it every day (didn't do way I want, again!)
+\(sq We \fIab\fPuse it every day (didn't do what I want, again!)
 .br
 \(sq few know how \fImake\fP works
 .br

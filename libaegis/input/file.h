@@ -1,6 +1,6 @@
 //
 //	aegis - project change supervisor
-//	Copyright (C) 1994, 1999, 2001, 2002, 2005 Peter Miller;
+//	Copyright (C) 1994, 1999, 2001, 2002, 2005, 2006 Peter Miller;
 //	All rights reserved.
 //
 //	This program is free software; you can redistribute it and/or modify
@@ -23,7 +23,7 @@
 #ifndef AEGIS_INPUT_FILE_H
 #define AEGIS_INPUT_FILE_H
 
-#include <input.h>
+#include <libaegis/input.h>
 
 /**
   * The input_file class is used to represent an input stream which is
@@ -113,12 +113,26 @@ private:
   *     not exist.  No warning message will be issued.  Defaults to
   *     false if not specified.
   */
-input_ty *input_file_open(const nstring &fn, bool unlink_on_close = false,
+input input_file_open(const nstring &fn, bool unlink_on_close = false,
     bool empty_if_absent = false);
 
 /**
-  * As above, but soon to be deprecated.
+  * The input_file_open function is used to open thr standatd input, if
+  * the path is "-", or a URL if it looks like a URL, or otherwise an
+  * ordinary file.
+  *
+  * @param path
+  *     The path of the file to be opened.
+  * @param unlink_on_close
+  *     If true, the file is to be unlinked in the destructor.  Defaults
+  *     to false if not specified.
+  * @param empty_if_absent
+  *     If true, the file is to be treated as if it was empty if it does
+  *     not exist.  No warning message will be issued.  Defaults to
+  *     false if not specified.
+  * @note
+  *     This function will soon be deprecated.
   */
-input_ty *input_file_open(struct string_ty *fn, bool unlink_on_close = false);
+input input_file_open(struct string_ty *fn, bool unlink_on_close = false);
 
 #endif // AEGIS_INPUT_FILE_H

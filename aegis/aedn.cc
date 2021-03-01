@@ -1,6 +1,6 @@
 //
 //	aegis - project change supervisor
-//	Copyright (C) 1994-1999, 2001-2005 Peter Miller;
+//	Copyright (C) 1994-1999, 2001-2006 Peter Miller;
 //	All rights reserved.
 //
 //	This program is free software; you can redistribute it and/or modify
@@ -20,30 +20,31 @@
 // MANIFEST: functions to implement the 'aegis -Delta_Name' command
 //
 
-#include <ac/stdio.h>
+#include <common/ac/stdio.h>
 
-#include <aedn.h>
-#include <ael/project/history.h>
-#include <arglex2.h>
-#include <arglex/change.h>
-#include <arglex/project.h>
-#include <change/file.h>
-#include <commit.h>
-#include <error.h>
-#include <gettime.h>
-#include <help.h>
-#include <lock.h>
-#include <pconf.h>
-#include <progname.h>
-#include <project.h>
-#include <project/history.h>
-#include <project/file.h>
-#include <project/file/roll_forward.h>
-#include <quit.h>
-#include <sub.h>
-#include <trace.h>
-#include <user.h>
-#include <zero.h>
+#include <common/error.h>
+#include <common/gettime.h>
+#include <common/progname.h>
+#include <common/quit.h>
+#include <common/trace.h>
+#include <libaegis/ael/project/history.h>
+#include <libaegis/arglex2.h>
+#include <libaegis/arglex/change.h>
+#include <libaegis/arglex/project.h>
+#include <libaegis/change/file.h>
+#include <libaegis/commit.h>
+#include <libaegis/help.h>
+#include <libaegis/lock.h>
+#include <libaegis/pconf.h>
+#include <libaegis/project/file.h>
+#include <libaegis/project/file/roll_forward.h>
+#include <libaegis/project.h>
+#include <libaegis/project/history.h>
+#include <libaegis/sub.h>
+#include <libaegis/user.h>
+#include <libaegis/zero.h>
+
+#include <aegis/aedn.h>
 
 
 static void
@@ -280,7 +281,7 @@ delta_name_main(void)
 	project_name = user_default_project();
     pp = project_alloc(project_name);
     str_free(project_name);
-    project_bind_existing(pp);
+    pp->bind_existing();
 
     //
     // locate user data
@@ -290,7 +291,7 @@ delta_name_main(void)
     //
     // lock the project file
     //
-    project_pstate_lock_prepare(pp);
+    pp->pstate_lock_prepare();
     lock_take();
 
     //
@@ -381,7 +382,7 @@ delta_name_main(void)
 	    fstate_src_ty   *src;
 	    file_event_ty   *fep;
 
-	    src = project_file_nth(pp, j, view_path_simple);
+	    src = pp->file_nth(j, view_path_simple);
 	    if (!src)
 		break;
 	    fep = historian.get_last(src->file_name);
@@ -419,7 +420,7 @@ delta_name_main(void)
     //
     // release the locks
     //
-    project_pstate_write(pp);
+    pp->pstate_write();
     commit();
     lock_release();
 

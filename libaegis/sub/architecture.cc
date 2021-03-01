@@ -1,6 +1,6 @@
 //
 //	aegis - project change supervisor
-//	Copyright (C) 2002-2004 Peter Miller;
+//	Copyright (C) 2002-2006 Peter Miller;
 //	All rights reserved.
 //
 //	This program is free software; you can redistribute it and/or modify
@@ -20,13 +20,13 @@
 // MANIFEST: functions to manipulate architectures
 //
 
-#include <change.h>
-#include <project.h>
-#include <sub/architecture.h>
-#include <sub.h>
-#include <trace.h>
-#include <wstr.h>
-#include <wstr/list.h>
+#include <libaegis/change.h>
+#include <libaegis/project.h>
+#include <libaegis/sub/architecture.h>
+#include <libaegis/sub.h>
+#include <common/trace.h>
+#include <common/wstr.h>
+#include <common/wstr/list.h>
 
 
 //
@@ -81,7 +81,7 @@ sub_architecture(sub_context_ty *scp, wstring_list_ty *arg)
 		result = 0;
 		goto done;
 	    }
-	    cp = project_change_get(pp);
+	    cp = pp->change_get();
 	}
 	result = str_to_wstr(change_architecture_name(cp, 1));
     }

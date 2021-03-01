@@ -23,8 +23,6 @@
 #ifndef LIBAEGIS_UNDO_ITEM_H
 #define LIBAEGIS_UNDO_ITEM_H
 
-#pragma interface "undo_item"
-
 /**
   * The undo_item class is used to represent an abstract undo action to
   * be perfomed in the event of command failure.

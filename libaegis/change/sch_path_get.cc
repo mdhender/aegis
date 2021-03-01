@@ -1,6 +1,6 @@
 //
 //	aegis - project change supervisor
-//	Copyright (C) 1999-2004 Peter Miller;
+//	Copyright (C) 1999-2006 Peter Miller;
 //	All rights reserved.
 //
 //	This program is free software; you can redistribute it and/or modify
@@ -20,27 +20,28 @@
 // MANIFEST: functions to manipulate sch_path_gets
 //
 
-#include <change/branch.h>
-#include <change/file.h>
-#include <error.h>
-#include <project.h>
-#include <project/file.h>
-#include <str_list.h>
+#include <libaegis/change/branch.h>
+#include <libaegis/change/file.h>
+#include <common/error.h>
+#include <libaegis/project.h>
+#include <libaegis/project/file.h>
+#include <common/str_list.h>
 
 
 void
 change_search_path_get(change_ty *cp, string_list_ty *wlp, int resolve)
 {
     cstate_ty       *cstate_data;
-    project_ty      *ppp;
     string_ty       *s;
 
     wlp->clear();
     if (cp->bogus)
     {
-	ppp = cp->pp->parent;
-	if (ppp)
-	    project_search_path_get(ppp, wlp, resolve);
+        // Absolutely no reason given as to why we skip the immediate
+        // project and go on to the ancestors.  If you figure it out,
+        // let me know.  I'm sure I had a good reason at the time.
+	if (!cp->pp->is_a_trunk())
+	    project_search_path_get(cp->pp->parent_get(), wlp, resolve);
 	return;
     }
     cstate_data = change_cstate_get(cp);
@@ -68,9 +69,8 @@ change_search_path_get(change_ty *cp, string_list_ty *wlp, int resolve)
 
     case cstate_state_being_integrated:
 	wlp->push_back(change_integration_directory_get(cp, resolve));
-	ppp = cp->pp->parent;
-	if (ppp)
-	    project_search_path_get(ppp, wlp, resolve);
+	if (!cp->pp->is_a_trunk())
+	    project_search_path_get(cp->pp->parent_get(), wlp, resolve);
 	break;
     }
 }

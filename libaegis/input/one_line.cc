@@ -20,8 +20,8 @@
 // MANIFEST: functions to manipulate one_lines
 //
 
-#include <input.h>
-#include <nstring/accumulator.h>
+#include <libaegis/input.h>
+#include <common/nstring/accumulator.h>
 
 
 bool
@@ -31,7 +31,7 @@ input_ty::one_line(nstring &result)
     line_buffer.clear();
     for (;;)
     {
-	int c = getc();
+	int c = getch();
 	if (c < 0)
 	{
 	    if (line_buffer.empty())

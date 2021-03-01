@@ -38,7 +38,7 @@ then
 else
 	echo ''
 	echo '  The "sccs" program is not in your command search PATH.'
-	echo '  This is test is therefore -assumed- to pass.'
+	echo '  This test is therefore -assumed- to pass.'
 	echo ''
 	exit 0
 fi

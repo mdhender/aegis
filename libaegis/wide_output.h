@@ -1,6 +1,6 @@
 //
 //	aegis - project change supervisor
-//	Copyright (C) 1999-2004 Peter Miller;
+//	Copyright (C) 1999-2005 Peter Miller;
 //	All rights reserved.
 //
 //	This program is free software; you can redistribute it and/or modify
@@ -23,10 +23,10 @@
 #ifndef LIBAEGIS_WIDE_OUTPUT_H
 #define LIBAEGIS_WIDE_OUTPUT_H
 
-#include <main.h>
+#include <common/main.h>
 
-#include <ac/stddef.h>
-#include <ac/wchar.h>
+#include <common/ac/stddef.h>
+#include <common/ac/wchar.h>
 
 struct string_ty; // existence
 struct wstring_ty; // existence

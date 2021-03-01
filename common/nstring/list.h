@@ -1,6 +1,6 @@
 //
 //	aegis - project change supervisor
-//	Copyright (C) 2004, 2005 Peter Miller;
+//	Copyright (C) 2004-2006 Peter Miller;
 //	All rights reserved.
 //
 //	This program is free software; you can redistribute it and/or modify
@@ -23,10 +23,8 @@
 #ifndef COMMON_NSTRING_LIST_H
 #define COMMON_NSTRING_LIST_H
 
-#pragma interface "nstring_list"
-
-#include <nstring.h>
-#include <str_list.h>
+#include <common/nstring.h>
+#include <common/str_list.h>
 
 /**
   * The nstring_list class is used to represent a dynamically sized list
@@ -170,16 +168,16 @@ public:
       * \param sep
       *     The separators between each field.
       * \param ewhite
-      *     If true, get ride of extra whilet space at the beginning and
+      *     If true, get rid of extra white space at the beginning and
       *     end of each field.  Default to false.
       */
-    void split(const nstring &str, const char *sep, bool ewhite = false);
+    void split(const nstring &str, const char *sep = 0, bool ewhite = false);
 
     /**
       * The unsplit method is used to form a single string by gluing all
       * of the string list members together.
       */
-    nstring unsplit(const char *separator) const;
+    nstring unsplit(const char *separator = 0) const;
 
     /**
       * The member method is used to test whether the given narrow
@@ -225,6 +223,15 @@ public:
       *     int; 1 for a match, 0 for no match, -1 for invalid pattern.
       */
     int gmatch_candidate(const nstring &candidate) const;
+
+    /**
+      * The remove method is used to remove a string.  It is not an
+      * error if the string is not present.  This has O(n) behaviour.
+      *
+      * @param arg
+      *     The string value to be removed.
+      */
+    void remove(const nstring &arg);
 
 private:
     /**

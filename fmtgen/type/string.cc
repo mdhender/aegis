@@ -1,6 +1,6 @@
 //
 //	aegis - project change supervisor
-//	Copyright (C) 1991-1994, 1998, 1999, 2002-2004 Peter Miller;
+//	Copyright (C) 1991-1994, 1998, 1999, 2002-2005 Peter Miller;
 //	All rights reserved.
 //
 //	This program is free software; you can redistribute it and/or modify
@@ -20,11 +20,9 @@
 // MANIFEST: functions to manipulate string type
 //
 
-#pragma implementation "type_string_ty"
-
-#include <indent.h>
-#include <mem.h>
-#include <type/string.h>
+#include <fmtgen/indent.h>
+#include <common/mem.h>
+#include <fmtgen/type/string.h>
 
 
 type_string_ty::~type_string_ty()

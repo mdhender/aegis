@@ -1,6 +1,6 @@
 //
 //	aegis - project change supervisor
-//	Copyright (C) 2003-2005 Peter Miller;
+//	Copyright (C) 2003-2006 Peter Miller;
 //	All rights reserved.
 //
 //	This program is free software; you can redistribute it and/or modify
@@ -20,15 +20,17 @@
 // MANIFEST: functions to manipulate downloads
 //
 
-#include <ac/stdio.h>
+#include <common/ac/stdio.h>
 
-#include <change.h>
-#include <cstate.h>
-#include <get/change/download.h>
-#include <http.h>
-#include <project.h>
-#include <str_list.h>
-#include <version_stmp.h>
+#include <common/nstring.h>
+#include <common/str_list.h>
+#include <common/version_stmp.h>
+#include <libaegis/change.h>
+#include <libaegis/cstate.h>
+#include <libaegis/project.h>
+
+#include <aeget/get/change/download.h>
+#include <aeget/http.h>
 
 
 static int
@@ -59,12 +61,22 @@ get_change_download(change_ty *cp, string_ty *fn, string_list_ty *modifier)
     int ok = not_awaiting_development(cp);
 
     printf("<dt>");
-    emit_change_href(cp, "aedist");
+    // By always including the version string, it will keep working the
+    // same way even if they bookmark the link.
+    emit_change_href
+    (
+	cp,
+	nstring::format("aedist+compat=%s", version_stamp()).c_str()
+    );
     printf("aedist</a>");
     if (ok)
     {
 	printf(" (");
-	emit_change_href(cp, "aedist+es");
+	emit_change_href
+	(
+	    cp,
+	    nstring::format("aedist+es+compat=%s", version_stamp()).c_str()
+	);
 	printf("entire source</a>)");
     }
     printf("<dd>\n");
@@ -83,10 +95,19 @@ get_change_download(change_ty *cp, string_ty *fn, string_list_ty *modifier)
     if (ok)
     {
 	printf("<dt>");
-	emit_change_href(cp, "aepatch");
+	// By always including the version string, it will keep working
+	// the same way even if they bookmark the link.
+	emit_change_href
+       	(
+	    cp,
+	    nstring::format("aepatch+compat=%s", version_stamp()).c_str()
+	);
 	printf("patch</a> (");
+	emit_change_href(cp, "aepatch+compat=4.21");
+        printf("pre-4.22</a>)");
 	emit_change_href(cp, "aepatch+compat=4.16");
-        printf("no meta data</a>)<dd>This item allows you to\n");
+        printf("pre-4.16</a>)");
+	printf("<dd>This item allows you to\n");
         printf("download a change set as a conventional patch.  You\n");
         printf("unpack this format using one of the &ldquo;<i>zcat\n");
         printf("| patch -p0</i>&rdquo; or &ldquo;<i>aepatch\n");
@@ -170,6 +191,15 @@ get_change_download(change_ty *cp, string_ty *fn, string_list_ty *modifier)
     {
 	printf(" (");
 	emit_change_href(cp, "aedist+compat=4.18+es");
+	printf("entire source</a>)");
+    }
+    printf(", ");
+    emit_change_href(cp, "aedist+compat=4.21");
+    printf("pre-4.22 aedist</a>");
+    if (ok)
+    {
+	printf(" (");
+	emit_change_href(cp, "aedist+compat=4.21+es");
 	printf("entire source</a>)");
     }
     printf("<dd>\n");

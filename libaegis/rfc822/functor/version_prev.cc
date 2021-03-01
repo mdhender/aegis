@@ -20,9 +20,7 @@
 // MANIFEST: implementation of the rfc822_functor_version_prev class
 //
 
-#pragma implementation "rfc822_functor_version_previous"
-
-#include <rfc822/functor/version_prev.h>
+#include <libaegis/rfc822/functor/version_prev.h>
 
 
 rfc822_functor_version_previous::~rfc822_functor_version_previous()

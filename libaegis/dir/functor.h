@@ -23,8 +23,6 @@
 #ifndef LIBAEGIS_DIR_FUNCTOR_H
 #define LIBAEGIS_DIR_FUNCTOR_H
 
-#pragma interface "dir_functor"
-
 class nstring; // forward
 
 /**

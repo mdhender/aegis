@@ -1,6 +1,6 @@
 //
 //	aegis - project change supervisor
-//	Copyright (C) 1999, 2001-2005 Peter Miller;
+//	Copyright (C) 1999, 2001-2006 Peter Miller;
 //	All rights reserved.
 //
 //	This program is free software; you can redistribute it and/or modify
@@ -20,27 +20,31 @@
 // MANIFEST: functions to manipulate mains
 //
 
-#include <ac/stdio.h>
-#include <ac/stdlib.h>
+#include <common/ac/stdio.h>
+#include <common/ac/stdlib.h>
 
-#include <arglex.h>
-#include <error.h>
-#include <input/base64.h>
-#include <input/crlf.h>
-#include <input/file.h>
-#include <input/quoted_print.h>
-#include <input/uudecode.h>
-#include <os.h>
-#include <output/base64.h>
-#include <output/file.h>
-#include <output/quoted_print.h>
-#include <output/uuencode.h>
-#include <progname.h>
-#include <quit.h>
+#include <common/arglex.h>
+#include <common/error.h>
+#include <common/progname.h>
+#include <common/quit.h>
+#include <libaegis/help.h>
+#include <libaegis/input/base64.h>
+#include <libaegis/input/bunzip2.h>
+#include <libaegis/input/crlf.h>
+#include <libaegis/input/file.h>
+#include <libaegis/input/quoted_print.h>
+#include <libaegis/input/uudecode.h>
+#include <libaegis/os.h>
+#include <libaegis/output/base64.h>
+#include <libaegis/output/bzip2.h>
+#include <libaegis/output/file.h>
+#include <libaegis/output/quoted_print.h>
+#include <libaegis/output/uuencode.h>
 
 
 enum
 {
+    arglex_token_bzip,
     arglex_token_input,
     arglex_token_output,
     arglex_token_quoted_printable,
@@ -51,6 +55,7 @@ enum
 
 static arglex_table_ty argtab[] =
 {
+    { "-BZip", arglex_token_bzip, },
     { "-Quoted_Printable", arglex_token_quoted_printable, },
     { "-Input", arglex_token_input, },
     { "-Output", arglex_token_output, },
@@ -82,7 +87,7 @@ usage(void)
 
 
 static void
-skip_header(input_ty *ifp)
+skip_header(input &ifp)
 {
     if (has_header)
     {
@@ -103,9 +108,9 @@ skip_header(input_ty *ifp)
 
 
 static void
-test_input_base64(string_ty *ifn, string_ty *ofn)
+test_input_bunzip(string_ty *ifn, string_ty *ofn)
 {
-    input_ty *ifp = input_file_open(ifn);
+    input ifp = input_file_open(ifn);
     output_ty *ofp = output_file_text_open(ofn);
 
     skip_header(ifp);
@@ -113,9 +118,25 @@ test_input_base64(string_ty *ifn, string_ty *ofn)
     //
     // filter the rest
     //
-    ifp = new input_base64(ifp, true);
-    input_to_output(ifp, ofp);
-    delete ifp;
+    ifp = new input_bunzip2(ifp);
+    *ofp << ifp;
+    delete ofp;
+}
+
+
+static void
+test_input_base64(string_ty *ifn, string_ty *ofn)
+{
+    input ifp = input_file_open(ifn);
+    output_ty *ofp = output_file_text_open(ofn);
+
+    skip_header(ifp);
+
+    //
+    // filter the rest
+    //
+    ifp = new input_base64(ifp);
+    *ofp << ifp;
     delete ofp;
 }
 
@@ -123,14 +144,13 @@ test_input_base64(string_ty *ifn, string_ty *ofn)
 static void
 test_input_qp(string_ty *ifn, string_ty *ofn)
 {
-    input_ty *ifp = input_file_open(ifn);
+    input ifp = input_file_open(ifn);
     output_ty *ofp = output_file_text_open(ofn);
 
     skip_header(ifp);
 
-    ifp = new input_quoted_printable(ifp, true);
-    input_to_output(ifp, ofp);
-    delete ifp;
+    ifp = new input_quoted_printable(ifp);
+    *ofp << ifp;
     delete ofp;
 }
 
@@ -138,14 +158,13 @@ test_input_qp(string_ty *ifn, string_ty *ofn)
 static void
 test_input_uu(string_ty *ifn, string_ty *ofn)
 {
-    input_ty *ifp = input_file_open(ifn);
+    input ifp = input_file_open(ifn);
     output_ty *ofp = output_file_text_open(ofn);
 
     skip_header(ifp);
 
-    ifp = new input_uudecode(ifp, true);
-    input_to_output(ifp, ofp);
-    delete ifp;
+    ifp = new input_uudecode(ifp);
+    *ofp << ifp;
     delete ofp;
 }
 
@@ -153,8 +172,8 @@ test_input_uu(string_ty *ifn, string_ty *ofn)
 static void
 test_output_base64(string_ty *ifn, string_ty *ofn)
 {
-    input_ty *ifp = input_file_open(ifn);
-    ifp = new input_crlf(ifp, true);
+    input ifp = input_file_open(ifn);
+    ifp = new input_crlf(ifp);
     output_ty *ofp = output_file_text_open(ofn);
     if (has_header)
     {
@@ -163,8 +182,25 @@ test_output_base64(string_ty *ifn, string_ty *ofn)
 	ofp->fputs("\n");
     }
     ofp = new output_base64_ty(ofp, true);
-    input_to_output(ifp, ofp);
-    delete ifp;
+    *ofp << ifp;
+    delete ofp;
+}
+
+
+static void
+test_output_bzip(string_ty *ifn, string_ty *ofn)
+{
+    input ifp = input_file_open(ifn);
+    ifp = new input_crlf(ifp);
+    output_ty *ofp = output_file_text_open(ofn);
+    if (has_header)
+    {
+	ofp->fputs("Content-Type: application/x-aegis-test\n");
+	ofp->fputs("Content-Transfer-Encoding: 8bit\n");
+	ofp->fputs("\n");
+    }
+    ofp = new output_bzip2(ofp, true);
+    *ofp << ifp;
     delete ofp;
 }
 
@@ -172,8 +208,8 @@ test_output_base64(string_ty *ifn, string_ty *ofn)
 static void
 test_output_qp(string_ty *ifn, string_ty *ofn)
 {
-    input_ty *ifp = input_file_open(ifn);
-    ifp = new input_crlf(ifp, true);
+    input ifp = input_file_open(ifn);
+    ifp = new input_crlf(ifp);
     output_ty *ofp = output_file_text_open(ofn);
     if (has_header)
     {
@@ -182,8 +218,7 @@ test_output_qp(string_ty *ifn, string_ty *ofn)
 	ofp->fputs("\n");
     }
     ofp = new output_quoted_printable_ty(ofp, true, false);
-    input_to_output(ifp, ofp);
-    delete ifp;
+    *ofp << ifp;
     delete ofp;
 }
 
@@ -191,8 +226,8 @@ test_output_qp(string_ty *ifn, string_ty *ofn)
 static void
 test_output_uu(string_ty *ifn, string_ty *ofn)
 {
-    input_ty *ifp = input_file_open(ifn);
-    ifp = new input_crlf(ifp, true);
+    input ifp = input_file_open(ifn);
+    ifp = new input_crlf(ifp);
     output_ty *ofp = output_file_text_open(ofn);
     if (has_header)
     {
@@ -201,8 +236,7 @@ test_output_uu(string_ty *ifn, string_ty *ofn)
 	ofp->fputs("\n");
     }
     ofp = new output_uuencode_ty(ofp, true);
-    input_to_output(ifp, ofp);
-    delete ifp;
+    *ofp << ifp;
     delete ofp;
 }
 
@@ -230,7 +264,8 @@ main(int argc, char **argv)
 	switch (arglex_token)
 	{
 	default:
-	    usage();
+	    generic_argument(usage);
+	    continue;
 
         case arglex_token_quoted_printable:
 	    if (func)
@@ -244,6 +279,13 @@ main(int argc, char **argv)
 		usage();
 	    ifunc = test_input_uu;
 	    ofunc = test_output_uu;
+	    break;
+
+        case arglex_token_bzip:
+	    if (func)
+		usage();
+	    ifunc = test_input_bunzip;
+	    ofunc = test_output_bzip;
 	    break;
 
         case arglex_token_stdio:

@@ -1,6 +1,6 @@
 //
 //	aegis - project change supervisor
-//	Copyright (C) 2004 Peter Miller;
+//	Copyright (C) 2004, 2005 Peter Miller;
 //	All rights reserved.
 //
 //	This program is free software; you can redistribute it and/or modify
@@ -20,9 +20,9 @@
 // MANIFEST: implementation of the get_project_file_invento class
 //
 
-#include <change.h>
-#include <get/change/file_invento.h>
-#include <get/project/file_invento.h>
+#include <libaegis/change.h>
+#include <aeget/get/change/file_invento.h>
+#include <aeget/get/project/file_invento.h>
 
 
 void

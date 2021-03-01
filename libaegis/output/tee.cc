@@ -20,7 +20,7 @@
 // MANIFEST: functions to manipulate tees
 //
 
-#include <output/tee.h>
+#include <libaegis/output/tee.h>
 
 
 output_tee_ty::~output_tee_ty()

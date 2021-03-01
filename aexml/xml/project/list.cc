@@ -1,6 +1,6 @@
 //
 //	aegis - project change supervisor
-//	Copyright (C) 2003-2005 Peter Miller;
+//	Copyright (C) 2003-2006 Peter Miller;
 //	All rights reserved.
 //
 //	This program is free software; you can redistribute it and/or modify
@@ -20,18 +20,18 @@
 // MANIFEST: functions to manipulate lists
 //
 
-#include <ac/string.h>
+#include <common/ac/string.h>
 
-#include <ael/change/inappropriat.h>
-#include <ael/project/inappropriat.h>
-#include <gonzo.h>
-#include <io.h>
-#include <output.h>
-#include <project.h>
-#include <project/history.h>
-#include <str_list.h>
-#include <trace.h>
-#include <xml/project/list.h>
+#include <libaegis/ael/change/inappropriat.h>
+#include <libaegis/ael/project/inappropriat.h>
+#include <libaegis/gonzo.h>
+#include <libaegis/io.h>
+#include <libaegis/output.h>
+#include <libaegis/project.h>
+#include <libaegis/project/history.h>
+#include <common/str_list.h>
+#include <common/trace.h>
+#include <aexml/xml/project/list.h>
 
 
 void
@@ -63,7 +63,7 @@ xml_project_list(struct string_ty *project_name, long change_number,
 
 	op->fputs("<gstate_where>\n");
 	pp = project_alloc(name.string[j]);
-	project_bind_existing(pp);
+	pp->bind_existing();
 	string_write_xml(op, "name", project_name_get(pp));
 
 	err = project_is_readable(pp);

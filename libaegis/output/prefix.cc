@@ -20,7 +20,7 @@
 // MANIFEST: functions to manipulate prefixs
 //
 
-#include <output/prefix.h>
+#include <libaegis/output/prefix.h>
 
 
 output_prefix_ty::~output_prefix_ty()

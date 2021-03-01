@@ -1,6 +1,6 @@
 .\"
 .\"	aegis - project change supervisor
-.\"	Copyright (C) 1998 Peter Miller;
+.\"	Copyright (C) 1998, 2005 Peter Miller;
 .\"	All rights reserved.
 .\"
 .\"	This program is free software; you can redistribute it and/or modify
@@ -32,8 +32,8 @@ any Y2K problems.
 Aegis always uses the ANSI C standard \f(CWstrftime\fP function to display
 times and dates.  (This assumes that your vendor has supplied a compliant
 \f(CWstrftime\fP.)  This means that displaying dates does not assume
-fixed field widths, nor will it display the year 2000 as ``100''.
+fixed field widths, nor will it display the year 2000 as \[lq]100\[rq].
 .LP
 \(bu
 There is no user-input of years at any time, so there is no issue
-surrounding ``guessing'' the century.
+surrounding \[lq]guessing\[rq] the century.

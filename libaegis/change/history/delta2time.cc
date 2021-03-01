@@ -1,6 +1,6 @@
 //
 //	aegis - project change supervisor
-//	Copyright (C) 2001-2004 Peter Miller;
+//	Copyright (C) 2001-2006 Peter Miller;
 //	All rights reserved.
 //
 //	This program is free software; you can redistribute it and/or modify
@@ -20,9 +20,9 @@
 // MANIFEST: functions to manipulate delta2times
 //
 
-#include <change/branch.h>
-#include <error.h> // for assert
-#include <project.h>
+#include <libaegis/change/branch.h>
+#include <common/error.h> // for assert
+#include <libaegis/project.h>
 
 
 time_t
@@ -33,7 +33,7 @@ change_history_delta_to_timestamp(project_ty *pp, long delta_number)
 	size_t		j;
 	change_ty	*cp;
 
-	cp = project_change_get(pp);
+	cp = pp->change_get();
 	cstate_data = change_cstate_get(cp);
 	if (!cstate_data->branch)
 		return (time_t)-1;
@@ -41,7 +41,7 @@ change_history_delta_to_timestamp(project_ty *pp, long delta_number)
 	{
 		//
 		// special case, meaning
-		// ``when the branch was created''
+		// "when the branch was created"
 		//
 		if (cstate_data->history && cstate_data->history->length)
 			return cstate_data->history->list[0]->when;

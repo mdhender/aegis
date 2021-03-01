@@ -1,6 +1,6 @@
 //
 //	aegis - project change supervisor
-//	Copyright (C) 2004 Peter Miller;
+//	Copyright (C) 2004, 2005 Peter Miller;
 //	All rights reserved.
 //
 //	This program is free software; you can redistribute it and/or modify
@@ -20,15 +20,13 @@
 // MANIFEST: implementation of the replay_line class
 //
 
-#pragma implementation "replay_line"
+#include <common/ac/ctype.h>
+#include <common/ac/string.h>
 
-#include <ac/ctype.h>
-#include <ac/string.h>
-
-#include <error.h> // for assert
-#include <replay/line.h>
-#include <trace.h>
-#include <uuidentifier.h>
+#include <common/error.h> // for assert
+#include <aedist/replay/line.h>
+#include <common/trace.h>
+#include <common/uuidentifier.h>
 
 
 replay_line::~replay_line()

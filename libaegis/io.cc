@@ -20,15 +20,15 @@
 // MANIFEST: functions to parse and write fundamental data types
 //
 
-#include <ac/ctype.h>
-#include <ac/string.h>
+#include <common/ac/ctype.h>
+#include <common/ac/string.h>
 
-#include <io.h>
-#include <nstring.h>
-#include <output.h>
-#include <sub.h>
-#include <str_list.h>
-#include <zero.h>
+#include <libaegis/io.h>
+#include <common/nstring.h>
+#include <libaegis/output.h>
+#include <libaegis/sub.h>
+#include <common/str_list.h>
+#include <libaegis/zero.h>
 
 
 void

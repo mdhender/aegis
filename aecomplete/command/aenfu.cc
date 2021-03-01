@@ -1,6 +1,6 @@
 //
 //	aegis - project change supervisor
-//	Copyright (C) 2002-2005 Peter Miller;
+//	Copyright (C) 2002-2006 Peter Miller;
 //	All rights reserved.
 //
 //	This program is free software; you can redistribute it and/or modify
@@ -20,18 +20,19 @@
 // MANIFEST: functions to manipulate aenfus
 //
 
-#include <arglex2.h>
-#include <change.h>
-#include <command/aenfu.h>
-#include <command/generic.h>
-#include <command/private.h>
-#include <complete/change/number.h>
-#include <complete/change/file.h>
-#include <complete/project/name.h>
-#include <cstate.h>
-#include <project.h>
-#include <user.h>
-#include <zero.h>
+#include <libaegis/arglex2.h>
+#include <libaegis/change.h>
+#include <libaegis/cstate.h>
+#include <libaegis/project.h>
+#include <libaegis/user.h>
+#include <libaegis/zero.h>
+
+#include <aecomplete/command/aenfu.h>
+#include <aecomplete/command/generic.h>
+#include <aecomplete/command/private.h>
+#include <aecomplete/complete/change/file.h>
+#include <aecomplete/complete/change/number.h>
+#include <aecomplete/complete/project/name.h>
 
 
 static void
@@ -149,7 +150,7 @@ completion_get(command_ty *cmd)
     if (!project_name)
 	project_name = user_default_project();
     pp = project_alloc(project_name);
-    project_bind_existing(pp);
+    pp->bind_existing();
 
     //
     // If we need to complete a change number, we have the project now.

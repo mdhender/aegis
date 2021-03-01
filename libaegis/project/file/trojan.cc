@@ -1,6 +1,6 @@
 //
 //	aegis - project change supervisor
-//	Copyright (C) 1999, 2002-2004 Peter Miller;
+//	Copyright (C) 1999, 2002-2005 Peter Miller;
 //	All rights reserved.
 //
 //	This program is free software; you can redistribute it and/or modify
@@ -20,12 +20,12 @@
 // MANIFEST: functions to check filenames for trojan suspectedness
 //
 
-#include <change.h>
-#include <pconf.h>
-#include <project.h>
-#include <project/file/trojan.h>
-#include <gmatch.h>
-#include <str.h>
+#include <common/gmatch.h>
+#include <common/str.h>
+#include <libaegis/change.h>
+#include <libaegis/pconf.h>
+#include <libaegis/project/file/trojan.h>
+#include <libaegis/project.h>
 
 
 int

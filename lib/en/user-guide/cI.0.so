@@ -1,6 +1,6 @@
 .\"
 .\"	aegis - project change supervisor
-.\"	Copyright (C) 1995, 1998, 2002 Peter Miller;
+.\"	Copyright (C) 1995, 1998, 2002, 2005 Peter Miller;
 .\"	All rights reserved.
 .\"
 .\"	This program is free software; you can redistribute it and/or modify
@@ -36,21 +36,22 @@ messages significantly easier.)
 Localization is the process of translating the error messages and other
 text into various different languages or nationalities.
 This appendix is primarily aimed at localizers of Aegis.
-.nh 2 "The ``.po'' Files"
+.nh 2 "The \[lq].po\[rq] Files"
 .LP
-The ``lib/en/LC_MESSAGES'' directory in the source tree contains the various
+The \[lq]lib/en/LC_MESSAGES\[rq] directory in the source tree contains
+the various
 message files needed to localize Aegis.
-You will find a number of ``.po'' files in this directory,
-which translates ``programmer cryptic'' into English.
+You will find a number of \[lq].po\[rq] files in this directory,
+which translates \[lq]programmer cryptic\[rq] into English.
 You will see that each message has a comment attached,
 describing the message and the context in which it is used.
-Many messages also have ``substitutions'' described,
+Many messages also have \[lq]substitutions\[rq] described,
 which are strings similar to shell variables which may be substituted into
 the message - such as the file name for messages which have
 something to do with a specific file.
 .LP
 The substitution mechanism is the same one as is used for
-the various commands in the project \fIconfig\fP file,
+the various commands in the project \fIaegis.conf\fP file,
 and so all of the substitutions described in \fIaesub\fP(5)
 are available to the translator.
 Note frequent use of the \fIplural\fP substitution,

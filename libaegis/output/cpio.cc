@@ -1,6 +1,6 @@
 //
 //	aegis - project change supervisor
-//	Copyright (C) 1999, 2003-2005 Peter Miller;
+//	Copyright (C) 1999, 2003-2006 Peter Miller;
 //	All rights reserved.
 //
 //	This program is free software; you can redistribute it and/or modify
@@ -20,11 +20,11 @@
 // MANIFEST: functions to output to cpio archivess
 //
 
-#include <error.h>
-#include <output/cpio.h>
-#include <output/cpio_child.h>
-#include <output/cpio_child2.h>
-#include <str.h>
+#include <common/error.h>
+#include <libaegis/output/cpio.h>
+#include <libaegis/output/cpio_child.h>
+#include <libaegis/output/cpio_child2.h>
+#include <common/str.h>
 
 
 output_cpio_ty::~output_cpio_ty()
@@ -95,7 +95,7 @@ output_cpio_ty::child(const nstring &name, long len)
     {
 	//
         // With no length given, we have to use the memory caching
-        // version, which stasheds the data in memory until the end, and
+        // version, which stashes the data in memory until the end, and
         // then we can write it out with the length in the header.
 	//
 	return new output_cpio_child2_ty(deeper, name);

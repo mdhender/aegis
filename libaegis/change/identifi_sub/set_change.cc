@@ -1,6 +1,6 @@
 //
 //	aegis - project change supervisor
-//	Copyright (C) 2004 Peter Miller;
+//	Copyright (C) 2004-2006 Peter Miller;
 //	All rights reserved.
 //
 //	This program is free software; you can redistribute it and/or modify
@@ -20,16 +20,16 @@
 // MANIFEST: implementation of the change_id_set_change class
 //
 
-#include <change.h>
-#include <change/identifi_sub.h>
-#include <error.h> // for assert
-#include <now.h>
-#include <project.h>
-#include <project/history.h>
-#include <project/identifi_sub.h>
-#include <sub.h>
-#include <trace.h>
-#include <user.h>
+#include <libaegis/change.h>
+#include <libaegis/change/identifi_sub.h>
+#include <common/error.h> // for assert
+#include <common/now.h>
+#include <libaegis/project.h>
+#include <libaegis/project/history.h>
+#include <libaegis/project/identifi_sub.h>
+#include <libaegis/sub.h>
+#include <common/trace.h>
+#include <libaegis/user.h>
 
 
 void
@@ -39,7 +39,7 @@ change_identifier_subset::set_change()
     assert(!cp);
     if (baseline)
     {
-	cp = change_copy(project_change_get(pid.get_pp()));
+	cp = change_copy(pid.get_pp()->change_get());
 	trace(("baseline\n"));
 	trace(("}\n"));
 	return;

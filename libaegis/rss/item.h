@@ -23,13 +23,11 @@
 #ifndef LIBAEGIS_RSS_ITEM_H
 #define LIBAEGIS_RSS_ITEM_H
 
-#pragma interface "rss_item"
-
 // Forward declarations
 class change_ty;
 class output_ty;
 
-#include <nstring.h>
+#include <common/nstring.h>
 
 /**
   * The rss_item class is used to represent an Item in an RSS feed.

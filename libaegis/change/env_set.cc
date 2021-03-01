@@ -20,15 +20,15 @@
 // MANIFEST: functions to manipulate env_sets
 //
 
-#include <ac/stdio.h>
-#include <ac/string.h>
+#include <common/ac/stdio.h>
+#include <common/ac/string.h>
 
-#include <change.h>
-#include <change/env_set.h>
-#include <env.h>
-#include <nstring.h>
-#include <project.h>
-#include <sub.h>
+#include <libaegis/change.h>
+#include <libaegis/change/env_set.h>
+#include <common/env.h>
+#include <common/nstring.h>
+#include <libaegis/project.h>
+#include <libaegis/sub.h>
 
 
 void

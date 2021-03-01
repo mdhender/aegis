@@ -1,6 +1,6 @@
 //
 //	aegis - project change supervisor
-//	Copyright (C) 2004 Peter Miller;
+//	Copyright (C) 2004, 2005 Peter Miller;
 //	All rights reserved.
 //
 //	This program is free software; you can redistribute it and/or modify
@@ -20,22 +20,22 @@
 // MANIFEST: implementation of the get_project_progress class
 //
 
-#include <ac/stdio.h>
-#include <ac/string.h>
-#include <ac/stdlib.h>
+#include <common/ac/stdio.h>
+#include <common/ac/string.h>
+#include <common/ac/stdlib.h>
 
-#include <change.h>
-#include <cstate.h>
-#include <error.h> // for assert
-#include <get/project/progress.h>
-#include <emit/project.h>
-#include <http.h>
-#include <project.h>
-#include <project/history.h>
-#include <str_list.h>
-#include <symtab/template.h>
-#include <yyyymmdd_wk.h>
+#include <common/error.h> // for assert
+#include <common/str_list.h>
+#include <common/symtab/template.h>
+#include <common/yyyymmdd_wk.h>
+#include <libaegis/change.h>
+#include <libaegis/cstate.h>
+#include <libaegis/project.h>
+#include <libaegis/project/history.h>
 
+#include <aeget/emit/project.h>
+#include <aeget/get/project/progress.h>
+#include <aeget/http.h>
 
 static const char *const month_name[] =
 {

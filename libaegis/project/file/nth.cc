@@ -1,6 +1,6 @@
 //
 //	aegis - project change supervisor
-//	Copyright (C) 1999, 2002-2004 Peter Miller;
+//	Copyright (C) 1999, 2002-2006 Peter Miller;
 //	All rights reserved.
 //
 //	This program is free software; you can redistribute it and/or modify
@@ -20,36 +20,32 @@
 // MANIFEST: functions to manipulate nths
 //
 
-#include <project/file.h>
-#include <project/file/list_get.h>
-#include <error.h> // for assert
-#include <str_list.h>
-#include <trace.h>
+#include <libaegis/project/file.h>
+#include <common/error.h> // for assert
+#include <common/str_list.h>
+#include <common/trace.h>
 
 
 fstate_src_ty *
-project_file_nth(project_ty *pp, size_t n, view_path_ty as_view_path)
+project_ty::file_nth(size_t n, view_path_ty as_view_path)
 {
-    string_list_ty  *wlp;
-    fstate_src_ty   *src_data;
+    trace(("project_ty::file_nth(this = %8.8lX, n = %ld)\n{\n", (long)this,
+	(long)n));
+    // do not delete wlp, it's cached
+    string_list_ty *wlp = file_list_get(as_view_path);
 
-    trace(("project_file_nth(pp = %8.8lX, n = %ld)\n{\n", (long)pp, (long)n));
-    // do not free wlp, it's cached
-    wlp = project_file_list_get(pp, as_view_path);
-
+    fstate_src_ty *src_data = 0;
     if (n < wlp->nstrings)
     {
 	trace(("%s\n", wlp->string[n]->str_text));
-	src_data = project_file_find(pp, wlp->string[n], as_view_path);
+	src_data = project_file_find(this, wlp->string[n], as_view_path);
 
 	//
-	// If this assert fails, it means thato project_file_list_get and
+	// If this assert fails, it means thato project_ty::file_list_get and
 	// project_file_find are interpreting the view path differently.
 	//
 	assert(src_data);
     }
-    else
-	src_data = 0;
     trace(("return %8.8lX;\n", (long)src_data));
     trace(("}\n"));
     return src_data;

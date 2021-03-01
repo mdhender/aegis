@@ -1,6 +1,6 @@
 //
 //	aegis - project change supervisor
-//	Copyright (C) 1994-1997, 1999, 2003, 2004 Peter Miller;
+//	Copyright (C) 1994-1997, 1999, 2003-2005 Peter Miller;
 //	All rights reserved.
 //
 //	This program is free software; you can redistribute it and/or modify
@@ -20,16 +20,16 @@
 // MANIFEST: functions to implement the builtin now function
 //
 
-#include <aer/expr.h>
-#include <aer/func/now.h>
-#include <aer/value/error.h>
-#include <aer/value/integer.h>
-#include <aer/value/real.h>
-#include <aer/value/time.h>
-#include <error.h>
-#include <now.h>
-#include <sub.h>
-#include <trace.h>
+#include <libaegis/aer/expr.h>
+#include <libaegis/aer/func/now.h>
+#include <libaegis/aer/value/error.h>
+#include <libaegis/aer/value/integer.h>
+#include <libaegis/aer/value/real.h>
+#include <libaegis/aer/value/time.h>
+#include <common/error.h>
+#include <common/now.h>
+#include <libaegis/sub.h>
+#include <common/trace.h>
 
 
 static int

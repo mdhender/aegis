@@ -1,6 +1,6 @@
 //
 //	aegis - project change supervisor
-//	Copyright (C) 2002-2005 Peter Miller;
+//	Copyright (C) 2002-2006 Peter Miller;
 //	All rights reserved.
 //
 //	This program is free software; you can redistribute it and/or modify
@@ -20,33 +20,25 @@
 // MANIFEST: functions to manipulate catenates
 //
 
-#include <error.h>
-#include <input/catenate.h>
-#include <mem.h>
-#include <str.h>
-#include <trace.h>
+#include <common/error.h>
+#include <libaegis/input/catenate.h>
+#include <common/mem.h>
+#include <common/str.h>
+#include <common/trace.h>
 
 
 input_catenate::~input_catenate()
 {
     trace(("input_catenate::~input_catenate()\n{\n"));
     pullback_transfer(deeper[selector]);
-    if (delete_on_close)
-    {
-	for (size_t j = 0; j < ndeeper; ++j)
-	{
-	    delete deeper[j];
-	    deeper[j] = 0;
-	}
-    }
-    delete deeper;
+    delete [] deeper;
     deeper = 0;
     trace(("}\n"));
 }
 
 
-input_catenate::input_catenate(input_ty **arg1, size_t arg2, bool arg3) :
-    deeper(new input_ty * [arg2]),
+input_catenate::input_catenate(input arg1[], size_t arg2, bool arg3) :
+    deeper(new input[arg2]),
     ndeeper(arg2),
     delete_on_close(arg3),
     selector(0),
@@ -68,7 +60,7 @@ input_catenate::read_inner(void *data, size_t len)
     for (;;)
     {
 	assert(selector < ndeeper);
-	input_ty *fp = deeper[selector];
+	input &fp = deeper[selector];
 	nbytes = fp->read(data, len);
 	if (nbytes)
 	    break;
@@ -96,7 +88,7 @@ input_catenate::name()
 {
     trace(("input_catenate::name\n"));
     assert(selector < ndeeper);
-    input_ty *fp = deeper[selector];
+    input &fp = deeper[selector];
     return fp->name();
 }
 
@@ -134,6 +126,6 @@ input_catenate::is_remote()
 {
     trace(("input_catenate::is_remote\n"));
     assert(selector < ndeeper);
-    input_ty *fp = deeper[selector];
+    input &fp = deeper[selector];
     return fp->is_remote();
 }

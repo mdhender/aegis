@@ -1,6 +1,6 @@
 //
 //	aegis - project change supervisor
-//	Copyright (C) 2000-2005 Peter Miller;
+//	Copyright (C) 2000-2006 Peter Miller;
 //	All rights reserved.
 //
 //	This program is free software; you can redistribute it and/or modify
@@ -20,28 +20,30 @@
 // MANIFEST: functions to manipulate batchs
 //
 
-#include <change.h>
-#include <change/env_set.h>
-#include <change/file.h>
-#include <change/test/batch.h>
-#include <change/test/batch_result.h>
-#include <error.h> // for assert
-#include <fstate.h>
-#include <os.h>
-#include <pconf.h>
-#include <project.h>
-#include <project/file.h>
-#include <str_list.h>
-#include <sub.h>
-#include <trace.h>
-#include <tstrslt.h>
-#include <undo.h>
-#include <user.h>
+#include <common/error.h> // for assert
+#include <common/nstring/list.h>
+#include <common/str_list.h>
+#include <common/trace.h>
+#include <libaegis/change/env_set.h>
+#include <libaegis/change/file.h>
+#include <libaegis/change.h>
+#include <libaegis/change/test/batch.h>
+#include <libaegis/change/test/batch_result.h>
+#include <libaegis/fstate.h>
+#include <libaegis/os.h>
+#include <libaegis/pconf.h>
+#include <libaegis/project/file.h>
+#include <libaegis/project.h>
+#include <libaegis/sub.h>
+#include <libaegis/tstrslt.h>
+#include <libaegis/undo.h>
+#include <libaegis/user.h>
 
 
 batch_result_list_ty *
 change_test_batch(change_ty *cp, string_list_ty *wlp, user_ty *up,
-    bool baseline_flag, int current, int total)
+    bool baseline_flag, int current, int total,
+    const nstring_list &variable_assignments)
 {
     sub_context_ty  *scp;
     int		    flags;
@@ -113,6 +115,14 @@ change_test_batch(change_ty *cp, string_list_ty *wlp, user_ty *up,
     sub_var_optional(scp, "Current");
     sub_var_set_long(scp, "Total", total);
     sub_var_optional(scp, "Total");
+
+    // Quote the variable assignments
+    nstring_list var;
+    for (size_t jj = 0; jj < variable_assignments.size(); ++jj)
+	var.push_back(variable_assignments[jj].quote_shell());
+    sub_var_set_string(scp, "VARiables", var.unsplit());
+    sub_var_append_if_unused(scp, "VARiables");
+
     user_become(up);
     undo_unlink_errok(output_file_name);
     user_become_undo();
@@ -158,12 +168,13 @@ change_test_batch(change_ty *cp, string_list_ty *wlp, user_ty *up,
     // directory depends on the state of the change
     //
     // During long tests the automounter can unmount the
-    // directory referenced by the ``dir'' variable.
+    // directory referenced by the "dir" variable.
     // To minimize this, it is essential that they are
     // unresolved, and thus always trigger the automounter.
     //
     trace(("mark\n"));
-    dir = project_baseline_path_get(cp->pp, 0);
+    dir = cp->pp->baseline_path_get();
+    trace(("dir = \"%s\";\n", dir->str_text));
     if (!baseline_flag && !cp->bogus)
     {
 	cstate_ty       *cstate_data;
@@ -179,6 +190,7 @@ change_test_batch(change_ty *cp, string_list_ty *wlp, user_ty *up,
 
 	case cstate_state_being_integrated:
 	    dir = change_integration_directory_get(cp, 0);
+	    trace(("dir = \"%s\";\n", dir->str_text));
 	    break;
 
 	case cstate_state_being_developed:
@@ -186,6 +198,7 @@ change_test_batch(change_ty *cp, string_list_ty *wlp, user_ty *up,
 	case cstate_state_being_reviewed:
 	case cstate_state_awaiting_integration:
 	    dir = change_development_directory_get(cp, 0);
+	    trace(("dir = \"%s\";\n", dir->str_text));
 	    break;
 	}
     }

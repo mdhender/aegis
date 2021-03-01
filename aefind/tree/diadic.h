@@ -1,6 +1,6 @@
 //
 //	aegis - project change supervisor
-//	Copyright (C) 1997, 2002, 2004 Peter Miller;
+//	Copyright (C) 1997, 2002, 2004, 2005 Peter Miller;
 //	All rights reserved.
 //
 //	This program is free software; you can redistribute it and/or modify
@@ -23,7 +23,7 @@
 #ifndef AEFIND_TREE_DIADIC_H
 #define AEFIND_TREE_DIADIC_H
 
-#include <tree/private.h>
+#include <aefind/tree/private.h>
 
 struct tree_diadic_ty
 {

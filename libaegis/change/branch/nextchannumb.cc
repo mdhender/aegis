@@ -1,6 +1,6 @@
 //
 //	aegis - project change supervisor
-//	Copyright (C) 2001, 2003, 2004 Peter Miller;
+//	Copyright (C) 2001, 2003-2005 Peter Miller;
 //	All rights reserved.
 //
 //	This program is free software; you can redistribute it and/or modify
@@ -20,11 +20,11 @@
 // MANIFEST: functions to manipulate nextchannumbs
 //
 
-#include <change/branch.h>
-#include <error.h> // for assert
-#include <interval.h>
-#include <skip_unlucky.h>
-#include <trace.h>
+#include <libaegis/change/branch.h>
+#include <common/error.h> // for assert
+#include <libaegis/interval.h>
+#include <common/skip_unlucky.h>
+#include <common/trace.h>
 
 
 long

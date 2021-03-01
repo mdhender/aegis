@@ -56,7 +56,7 @@ check_it()
 {
 	sed	-e "s|$work|...|g" \
 		-e 's|= [0-9][0-9]*; /.*|= TIME;|' \
-		-e "s/$USER/USER/g" \
+		-e "s/\"$USER\"/\"USER\"/g" \
 		-e 's/19[0-9][0-9]/YYYY/' \
 		-e 's/20[0-9][0-9]/YYYY/' \
 		-e 's/node = ".*"/node = "NODE"/' \

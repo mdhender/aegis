@@ -1,6 +1,6 @@
 .\"
 .\"	aegis - project change supervisor
-.\"	Copyright (C) 2001, 2002 Peter Miller;
+.\"	Copyright (C) 2001, 2002, 2005 Peter Miller;
 .\"	All rights reserved.
 .\"
 .\"	This program is free software; you can redistribute it and/or modify
@@ -41,7 +41,7 @@ These encodings may be abbreviated in the same way as comment line options.
 .RE
 .TP 8n
 \fB\-Ascii_Armor
-This means the same as the ``-cte=base64'' option above.
+This means the same as the \[lq]-cte=base64\[rq] option above.
 .TP 8n
 \fB\-No_Ascii_Armor
-This means the same as the ``-cte=none'' option above.
+This means the same as the \[lq]-cte=none\[rq] option above.

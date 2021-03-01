@@ -1,6 +1,6 @@
 //
 //	aegis - project change supervisor
-//	Copyright (C) 2005 Peter Miller;
+//	Copyright (C) 2005, 2006 Peter Miller;
 //	All rights reserved.
 //
 //	This program is free software; you can redistribute it and/or modify
@@ -20,27 +20,26 @@
 // MANIFEST: operating system entry point
 //
 
-#include <ac/stdio.h>
-#include <ac/stdlib.h>
+#include <common/ac/stdio.h>
+#include <common/ac/stdlib.h>
 
-#include <arglex2.h>
-#include <arglex/change.h>
-#include <arglex/project.h>
-#include <change.h>
-#include <change/file.h>
-#include <env.h>
-#include <fstate.h>
-#include <help.h>
-#include <language.h>
-#include <os.h>
-#include <progname.h>
-#include <project.h>
-#include <quit.h>
-#include <r250.h>
-#include <rsrc_limits.h>
-#include <sub.h>
-#include <user.h>
-#include <version.h>
+#include <common/env.h>
+#include <common/language.h>
+#include <common/progname.h>
+#include <common/quit.h>
+#include <common/rsrc_limits.h>
+#include <libaegis/arglex2.h>
+#include <libaegis/arglex/change.h>
+#include <libaegis/arglex/project.h>
+#include <libaegis/change/file.h>
+#include <libaegis/change.h>
+#include <libaegis/fstate.h>
+#include <libaegis/help.h>
+#include <libaegis/os.h>
+#include <libaegis/project.h>
+#include <libaegis/sub.h>
+#include <libaegis/user.h>
+#include <libaegis/version.h>
 
 
 enum
@@ -149,7 +148,6 @@ int
 main(int argc, char **argv)
 {
     resource_limits_init();
-    r250_init();
     os_become_init_mortal();
     arglex2_init3(argc, argv, argtab);
     env_initialize();
@@ -220,7 +218,7 @@ main(int argc, char **argv)
     project_ty *pp = project_alloc(project_name);
     str_free(project_name);
     project_name = 0;
-    project_bind_existing(pp);
+    pp->bind_existing();
 
     //
     // locate user data

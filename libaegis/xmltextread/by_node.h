@@ -1,6 +1,6 @@
 //
 //	aegis - project change supervisor
-//	Copyright (C) 2005 Peter Miller;
+//	Copyright (C) 2005, 2006 Peter Miller;
 //	All rights reserved.
 //
 //	This program is free software; you can redistribute it and/or modify
@@ -23,10 +23,8 @@
 #ifndef LIBAEGIS_XMLTEXTREAD_BY_NODE_H
 #define LIBAEGIS_XMLTEXTREAD_BY_NODE_H
 
-#pragma interface "xml_text_reader_by_node"
-
-#include <symtab/template.h>
-#include <xmltextread.h>
+#include <common/symtab/template.h>
+#include <libaegis/xmltextread.h>
 
 class xml_node; // forward
 
@@ -46,7 +44,7 @@ public:
     /**
       * The constructor.
       */
-    xml_text_reader_by_node(input_ty *deeper, bool validate = false);
+    xml_text_reader_by_node(input &deeper, bool validate = false);
 
     /**
       * The register_node_handler method is sued to register a node name

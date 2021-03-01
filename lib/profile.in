@@ -1,6 +1,6 @@
 #
 #	aegis - project change supervisor
-#	Copyright (C) 1991-1996, 1999, 2001-2004 Peter Miller;
+#	Copyright (C) 1991-1996, 1999, 2001-2004, 2006 Peter Miller;
 #	All rights reserved.
 #
 #	This program is free software; you can redistribute it and/or modify
@@ -340,7 +340,7 @@ ae_p()
 	export AEGIS_PROJECT
 }
 
-aefinish()
+aeunset()
 {
 	unset -f aeb
 	unset -f ae_c
@@ -359,7 +359,7 @@ aefinish()
 	unset -f aedless
 	unset -f aedmore
 	unset -f aedn
-	unset -f aefinish
+	unset -f aeunset
 	unset -f aeib
 	unset -f aeibu
 	unset -f aeifail

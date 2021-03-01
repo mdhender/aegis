@@ -20,16 +20,15 @@
 // MANIFEST: functions to manipulate mains
 //
 
-#include <ac/stdlib.h>
+#include <common/ac/stdlib.h>
 
-#include <env.h>
-#include <cmdline.h>
-#include <language.h>
-#include <os.h>
-#include <quit.h>
-#include <progname.h>
-#include <r250.h>
-#include <sub.h>
+#include <common/env.h>
+#include <aefind/cmdline.h>
+#include <common/language.h>
+#include <libaegis/os.h>
+#include <common/quit.h>
+#include <common/progname.h>
+#include <libaegis/sub.h>
 
 
 int
@@ -39,7 +38,6 @@ main(int argc, char **argv)
     // initialize everything
     //
     progname_set(argv[0]);
-    r250_init();
     os_become_init_mortal();
     env_initialize();
     language_init();

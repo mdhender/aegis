@@ -1,6 +1,6 @@
 //
 //	aegis - project change supervisor
-//	Copyright (C) 1994, 2004 Peter Miller.
+//	Copyright (C) 1994, 2004, 2005 Peter Miller.
 //	All rights reserved.
 //
 //	This program is free software; you can redistribute it and/or modify
@@ -20,12 +20,12 @@
 // MANIFEST: functions to impliment the builtin eject function
 //
 
-#include <aer/expr.h>
-#include <aer/func/eject.h>
-#include <aer/func/print.h>
-#include <aer/value/void.h>
-#include <col.h>
-#include <error.h> // for assert
+#include <libaegis/aer/expr.h>
+#include <libaegis/aer/func/eject.h>
+#include <libaegis/aer/func/print.h>
+#include <libaegis/aer/value/void.h>
+#include <libaegis/col.h>
+#include <common/error.h> // for assert
 
 static int
 valid(rpt_expr_ty *ep)

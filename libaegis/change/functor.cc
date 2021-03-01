@@ -20,9 +20,8 @@
 // MANIFEST: implementation of the change_functor class
 //
 
-#pragma implementation "change_functor"
-
-#include <change/functor.h>
+#include <libaegis/change/functor.h>
+#include <common/now.h>
 
 
 change_functor::~change_functor()
@@ -52,4 +51,25 @@ change_functor::operator=(const change_functor &arg)
 	include_branches_flag = arg.include_branches_flag;
     }
     return *this;
+}
+
+
+time_t
+change_functor::earliest()
+{
+    return 0;
+}
+
+
+time_t
+change_functor::latest()
+{
+    return now();
+}
+
+
+bool
+change_functor::recurse_branches()
+{
+    return true;
 }

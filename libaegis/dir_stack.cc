@@ -1,6 +1,6 @@
 //
 //	aegis - project change supervisor
-//	Copyright (C) 2002-2004 Peter Miller;
+//	Copyright (C) 2002-2005 Peter Miller;
 //	All rights reserved.
 //
 //	This program is free software; you can redistribute it and/or modify
@@ -20,17 +20,17 @@
 // MANIFEST: functions to manipulate dir_stacks
 //
 
-#include <ac/errno.h>
-#include <ac/sys/types.h>
+#include <common/ac/errno.h>
+#include <common/ac/sys/types.h>
 #include <sys/stat.h>
 
-#include <dir_stack.h>
-#include <error.h>
-#include <glue.h>
-#include <os.h>
-#include <sub.h>
-#include <trace.h>
-#include <str_list.h>
+#include <libaegis/dir_stack.h>
+#include <common/error.h>
+#include <libaegis/glue.h>
+#include <libaegis/os.h>
+#include <libaegis/sub.h>
+#include <common/trace.h>
+#include <common/str_list.h>
 
 
 static string_ty *

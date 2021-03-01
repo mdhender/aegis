@@ -1,6 +1,6 @@
 //
 //	aegis - project change supervisor
-//	Copyright (C) 1999, 2001-2005 Peter Miller;
+//	Copyright (C) 1999, 2001-2006 Peter Miller;
 //	All rights reserved.
 //
 //	This program is free software; you can redistribute it and/or modify
@@ -20,28 +20,27 @@
 // MANIFEST: functions to manipulate lists
 //
 
-#include <ael/column_width.h>
-#include <arglex3.h>
-#include <col.h>
-#include <cstate.h>
-#include <error.h> // for assert
-#include <help.h>
-#include <input/cpio.h>
-#include <list.h>
-#include <open.h>
-#include <os.h>
-#include <output.h>
-#include <str.h>
-#include <str_list.h>
-#include <sub.h>
-#include <usage.h>
+#include <common/error.h> // for assert
+#include <common/str.h>
+#include <common/str_list.h>
+#include <libaegis/ael/column_width.h>
+#include <libaegis/col.h>
+#include <libaegis/cstate.h>
+#include <libaegis/help.h>
+#include <libaegis/input/cpio.h>
+#include <libaegis/os.h>
+#include <libaegis/output.h>
+#include <libaegis/sub.h>
+
+#include <aedist/arglex3.h>
+#include <aedist/list.h>
+#include <aedist/open.h>
+#include <aedist/usage.h>
 
 
 void
 list_main(void)
 {
-    string_ty       *ifn = 0;
-    input_ty        *ifp;
     cstate_ty       *change_set;
     size_t          j;
     string_ty       *ofn = 0;
@@ -53,6 +52,7 @@ list_main(void)
     output_ty       *file_name_col;
     col_ty          *colp;
     arglex();
+    nstring ifn;
     while (arglex_token != arglex_token_eoln)
     {
 	switch (arglex_token)
@@ -62,7 +62,7 @@ list_main(void)
 	    continue;
 
 	case arglex_token_file:
-	    if (ifn)
+	    if (!ifn.empty())
 		duplicate_option(usage);
 	    switch (arglex())
 	    {
@@ -71,11 +71,11 @@ list_main(void)
 		// NOTREACHED
 
 	    case arglex_token_string:
-		ifn = str_from_c(arglex_value.alv_string);
+		ifn = arglex_value.alv_string;
 		break;
 
 	    case arglex_token_stdio:
-		ifn = str_from_c("");
+		ifn = "-";
 		break;
 	    }
 	    break;
@@ -104,7 +104,7 @@ list_main(void)
     //
     // Open the input file and verify the format.
     //
-    string_ty *s = 0;
+    nstring s;
     input_cpio *cpio_p = aedist_open(ifn, &s);
     assert(cpio_p);
     assert(s);
@@ -115,9 +115,7 @@ list_main(void)
     colp = col_open(ofn);
     head_col = col_create(colp, 0, 0, (const char *)0);
     body_col = col_create(colp, INDENT_WIDTH, 0, (const char *)0);
-    col_title(colp, "Distribution Change Set", s->str_text);
-    str_free(s);
-    s = 0;
+    col_title(colp, "Distribution Change Set", s.c_str());
 
     //
     // read the project name from the archive,
@@ -125,8 +123,8 @@ list_main(void)
     //
     os_become_orig();
     nstring archive_name;
-    ifp = cpio_p->child(archive_name);
-    if (!ifp)
+    input ifp = cpio_p->child(archive_name);
+    if (!ifp.is_open())
 	cpio_p->fatal_error("file missing");
     if (archive_name != "etc/project-name")
 	ifp->fatal_error("wrong file");
@@ -135,7 +133,7 @@ list_main(void)
     nstring pname;
     if (!ifp->one_line(pname) || pname.empty())
 	ifp->fatal_error("short file");
-    delete ifp;
+    ifp.close();
     os_become_undo();
 
     head_col->fputs("PROJECT");
@@ -149,13 +147,13 @@ list_main(void)
     os_become_orig();
     archive_name.clear();
     ifp = cpio_p->child(archive_name);
-    if (!ifp)
+    if (!ifp.is_open())
 	cpio_p->fatal_error("file missing");
     if (archive_name == "etc/change-number")
     {
 	nstring chnum;
 	ifp->one_line(chnum);
-	delete ifp;
+	ifp.close();
 	os_become_undo();
 	body_col->fputs(", change ");
 	body_col->fputs(chnum);
@@ -163,7 +161,7 @@ list_main(void)
 	os_become_orig();
 	archive_name.clear();
 	ifp = cpio_p->child(archive_name);
-	if (!ifp)
+	if (!ifp.is_open())
 	    cpio_p->fatal_error("file missing");
     }
     col_eoln(colp);
@@ -174,7 +172,7 @@ list_main(void)
     if (archive_name != "etc/change-set")
 	ifp->fatal_error("wrong file");
     change_set = (cstate_ty *)parse_input(ifp, &cstate_type);
-    ifp = 0; // parse_input input_delete()ed it for us
+    ifp.close();
     os_become_undo();
 
     //

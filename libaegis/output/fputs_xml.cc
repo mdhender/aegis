@@ -20,10 +20,10 @@
 // MANIFEST: implementation of the output_ty::fputs_xml methods
 //
 
-#include <ac/ctype.h>
+#include <common/ac/ctype.h>
 
-#include <nstring.h>
-#include <output.h>
+#include <common/nstring.h>
+#include <libaegis/output.h>
 
 
 static bool

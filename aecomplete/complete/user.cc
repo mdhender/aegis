@@ -1,6 +1,6 @@
 //
 //	aegis - project change supervisor
-//	Copyright (C) 2002-2004 Peter Miller;
+//	Copyright (C) 2002-2005 Peter Miller;
 //	All rights reserved.
 //
 //	This program is free software; you can redistribute it and/or modify
@@ -20,12 +20,12 @@
 // MANIFEST: functions to manipulate users
 //
 
-#include <ac/pwd.h>
+#include <common/ac/pwd.h>
 
-#include <complete/private.h>
-#include <complete/user.h>
-#include <project.h>
-#include <shell.h>
+#include <aecomplete/complete/private.h>
+#include <aecomplete/complete/user.h>
+#include <libaegis/project.h>
+#include <aecomplete/shell.h>
 
 
 struct complete_user_ty

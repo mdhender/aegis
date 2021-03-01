@@ -1,6 +1,6 @@
 //
 //	aegis - project change supervisor
-//	Copyright (C) 2003-2005 Peter Miller;
+//	Copyright (C) 2003-2006 Peter Miller;
 //	All rights reserved.
 //
 //	This program is free software; you can redistribute it and/or modify
@@ -20,17 +20,18 @@
 // MANIFEST: functions to manipulate menus
 //
 
-#include <ac/stdio.h>
+#include <common/ac/stdio.h>
 
-#include <change.h>
-#include <cstate.h>
-#include <emit/project.h>
-#include <get/project/menu.h>
-#include <http.h>
-#include <os.h>
-#include <project.h>
-#include <rss.h>
-#include <str_list.h>
+#include <common/str_list.h>
+#include <libaegis/change.h>
+#include <libaegis/cstate.h>
+#include <libaegis/os.h>
+#include <libaegis/project.h>
+#include <libaegis/rss.h>
+
+#include <aeget/emit/project.h>
+#include <aeget/get/project/menu.h>
+#include <aeget/http.h>
 
 
 void
@@ -49,7 +50,7 @@ get_project_menu(project_ty *pp, string_ty *filename, string_list_ty *modifier)
     emit_project_but1(pp);
     printf("\n</h1>\n");
 
-    cp = project_change_get(pp);
+    cp = pp->change_get();
     cstate_data = change_cstate_get(cp);
 
     if (cstate_data->brief_description)
@@ -105,7 +106,7 @@ get_project_menu(project_ty *pp, string_ty *filename, string_list_ty *modifier)
     printf("Baseline</a><dd>\n");
     printf("This item will provide you with access to the files in\n");
     printf("the project baseline.\n");
-    if (pp->parent)
+    if (!pp->is_a_trunk())
     {
 	printf("The immediate baseline and all ancestor baselines are\n");
 	printf("unioned and presented as a single directory tree.\n");
@@ -124,12 +125,12 @@ get_project_menu(project_ty *pp, string_ty *filename, string_list_ty *modifier)
     printf("transfer format.  It preserves much of the meta-data for\n");
     printf("the project.  You unpack this format using the <i>aedist\n");
     printf("-receive</i> command.\n");
-    if (pp->parent)
+    if (!pp->is_a_trunk())
     {
 	printf("You can also download the branch as a change set, see the ");
-	emit_change_href(project_change_get(pp), "menu");
+	emit_change_href(pp->change_get(), "menu");
 	printf("corresponding change</a>'s ");
-	emit_change_href(project_change_get(pp), "download");
+	emit_change_href(pp->change_get(), "download");
 	printf("download</a> page.\n");
     }
     printf("<p>\n");
@@ -262,12 +263,12 @@ get_project_menu(project_ty *pp, string_ty *filename, string_list_ty *modifier)
     printf("This item will provide you with a listing of the files\n");
     printf("which are the project master source.  Links are provided to\n");
     printf("individual file information.\n");
-    if (pp->parent)
+    if (!pp->is_a_trunk())
     {
 	printf("To view only those files changed by this branch, see the ");
-	emit_change_href(project_change_get(pp), "menu");
+	emit_change_href(pp->change_get(), "menu");
 	printf("corresponding change</a>'s ");
-	emit_change_href(project_change_get(pp), "files");
+	emit_change_href(pp->change_get(), "files");
 	printf("file list</a>.\n");
     }
     printf("<p>\n");

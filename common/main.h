@@ -1,24 +1,24 @@
-/*
- *	aegis - project change supervisor
- *	Copyright (C) 1991-1993, 2002-2004 Peter Miller.
- *	All rights reserved.
- *
- *	This program is free software; you can redistribute it and/or modify
- *	it under the terms of the GNU General Public License as published by
- *	the Free Software Foundation; either version 2 of the License, or
- *	(at your option) any later version.
- *
- *	This program is distributed in the hope that it will be useful,
- *	but WITHOUT ANY WARRANTY; without even the implied warranty of
- *	MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
- *	GNU General Public License for more details.
- *
- *	You should have received a copy of the GNU General Public License
- *	along with this program; if not, write to the Free Software
- *	Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111, USA.
- *
- * MANIFEST: common definitions, including DEBUG define
- */
+//
+//	aegis - project change supervisor
+//	Copyright (C) 1991-1993, 2002-2004, 2006 Peter Miller.
+//	All rights reserved.
+//
+//	This program is free software; you can redistribute it and/or modify
+//	it under the terms of the GNU General Public License as published by
+//	the Free Software Foundation; either version 2 of the License, or
+//	(at your option) any later version.
+//
+//	This program is distributed in the hope that it will be useful,
+//	but WITHOUT ANY WARRANTY; without even the implied warranty of
+//	MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+//	GNU General Public License for more details.
+//
+//	You should have received a copy of the GNU General Public License
+//	along with this program; if not, write to the Free Software
+//	Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111, USA.
+//
+// MANIFEST: common definitions, including DEBUG define
+//
 
 #ifndef MAIN_H
 #define MAIN_H
@@ -28,11 +28,11 @@
   *
   */
 
-/*
- * Generate a syntax error for all C++ keywords that aren't C keywords.
- * This ensures that we won't write C code that can't be complied by a
- * C++ compiler in the future.
- */
+//
+// Generate a syntax error for all C++ keywords that aren't C keywords.
+// This ensures that we won't write C code that can't be complied by a
+// C++ compiler in the future.
+//
 #ifndef __cplusplus
 #define bool		/!/!/
 #define catch		/!/!/
@@ -65,15 +65,15 @@
 #define virtual		/!/!/
 #endif
 
-/*
- * array manipulation
- */
+//
+// array manipulation
+//
 #define SIZEOF(a) (sizeof(a) / sizeof(a[0]))
 #define ENDOF(a) ((a) + SIZEOF(a))
 
-/*
- * Function attributes.
- */
+//
+// Function attributes.
+//
 #ifdef __GNUC__
 #define ATTR_PRINTF(x, y) __attribute__((format(printf, x, y)))
 #define ATTR_VPRINTF(x) __attribute__((format(printf, x, 0)))
@@ -90,11 +90,11 @@
 #define DEPRECATED
 #endif
 
-/*
- * Take the define out of comments to
- * enable the debugging the functionality.
- *
-#define DEBUG
- */
+//
+// Take the define out of comments to
+// enable the debugging the functionality.
+//
+// #define DEBUG
+//
 
-#endif /* MAIN_H */
+#endif // MAIN_H

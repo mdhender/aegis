@@ -1,6 +1,6 @@
 //
 //      aegis - project change supervisor
-//	Copyright (C) 1991-1999, 2001-2005 Peter Miller;
+//	Copyright (C) 1991-1999, 2001-2006 Peter Miller;
 //      All rights reserved.
 //
 //      This program is free software; you can redistribute it and/or modify
@@ -20,39 +20,40 @@
 // MANIFEST: functions to implement new change
 //
 
-#include <ac/stdio.h>
-#include <ac/stdlib.h>
-#include <ac/time.h>
+#include <common/ac/stdio.h>
+#include <common/ac/stdlib.h>
+#include <common/ac/time.h>
 
-#include <aeca.h>
-#include <ael/change/changes.h>
-#include <aenc.h>
-#include <arglex2.h>
-#include <arglex/change.h>
-#include <arglex/project.h>
-#include <cattr.h>
-#include <change.h>
-#include <change/attributes.h>
-#include <change/verbose.h>
-#include <change/branch.h>
-#include <col.h>
-#include <commit.h>
-#include <common.h>
-#include <error.h>
-#include <file.h>
-#include <help.h>
-#include <io.h>
-#include <lock.h>
-#include <os.h>
-#include <progname.h>
-#include <project.h>
-#include <project/history.h>
-#include <quit.h>
-#include <rss.h>
-#include <str_list.h>
-#include <sub.h>
-#include <trace.h>
-#include <user.h>
+#include <common/error.h>
+#include <common/progname.h>
+#include <common/quit.h>
+#include <common/str_list.h>
+#include <common/trace.h>
+#include <libaegis/ael/change/changes.h>
+#include <libaegis/arglex2.h>
+#include <libaegis/arglex/change.h>
+#include <libaegis/arglex/project.h>
+#include <libaegis/cattr.h>
+#include <libaegis/change/attributes.h>
+#include <libaegis/change/branch.h>
+#include <libaegis/change.h>
+#include <libaegis/change/verbose.h>
+#include <libaegis/col.h>
+#include <libaegis/commit.h>
+#include <libaegis/common.h>
+#include <libaegis/file.h>
+#include <libaegis/help.h>
+#include <libaegis/io.h>
+#include <libaegis/lock.h>
+#include <libaegis/os.h>
+#include <libaegis/project.h>
+#include <libaegis/project/history.h>
+#include <libaegis/rss.h>
+#include <libaegis/sub.h>
+#include <libaegis/user.h>
+
+#include <aegis/aeca.h>
+#include <aegis/aenc.h>
 
 
 static void
@@ -347,12 +348,12 @@ new_change_main(void)
         fatal_intl(0, i18n("no project name"));
     pp = project_alloc(project_name);
     str_free(project_name);
-    project_bind_existing(pp);
+    pp->bind_existing();
 
     //
     // make sure this branch of the project is still active
     //
-    if (!change_is_a_branch(project_change_get(pp)))
+    if (!change_is_a_branch(pp->change_get()))
         project_fatal(pp, 0, i18n("branch completed"));
 
     //
@@ -413,7 +414,7 @@ new_change_main(void)
     // Lock the project state file.
     // Block if necessary.
     //
-    project_pstate_lock_prepare(pp);
+    pp->pstate_lock_prepare();
     lock_take();
 
     //
@@ -447,7 +448,7 @@ new_change_main(void)
     {
         //
         // There is no build command.  This means that the project
-        // does not yet have a ``config'' file.  From this,
+        // does not yet have a "config" file.  From this,
         // infer that this is the first change of the project.
         //
         // It has to be the first change because: aeb will fail
@@ -631,7 +632,7 @@ new_change_main(void)
     //
     // Unlock the pstate file.
     //
-    project_pstate_write(pp);
+    pp->pstate_write();
     commit();
     lock_release();
 

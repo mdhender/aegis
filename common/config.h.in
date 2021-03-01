@@ -2,7 +2,7 @@
 
 /*
  *	aegis - project change supervisor
- *	Copyright (C) 1991-2005 Peter Miller;
+ *	Copyright (C) 1991-2006 Peter Miller;
  *	All rights reserved.
  *
  *	This program is free software; you can redistribute it and/or modify
@@ -29,6 +29,9 @@
 /* Set this to be the absolute path of the GNU diff command. */
 #undef CONF_DIFF
 
+/* Set this to be the absolute path of the GNU diff command. */
+#undef CONF_PATCH
+
 /* Set this to be the absolute path of a Perl interpreter. */
 #undef CONF_PERL
 
@@ -39,6 +42,9 @@
 /* Set this to a suitable argument for the getpgrp function to discover the
    process group of the current process. */
 #undef CONF_getpgrp_arg
+
+/* Define to 1 if you have the <bzlib.h> header file. */
+#undef HAVE_BZLIB_H
 
 /* Define to 1 if you have the `clu_info' function. */
 #undef HAVE_CLU_INFO
@@ -54,6 +60,9 @@
 
 /* Define to 1 if you have the `curl_easy_strerror' function. */
 #undef HAVE_CURL_EASY_STRERROR
+
+/* Define to 1 if you have the <curl/multi.h> header file. */
+#undef HAVE_CURL_MULTI_H
 
 /* Define to 1 if you have the `curl_multi_strerror' function. */
 #undef HAVE_CURL_MULTI_STRERROR
@@ -107,6 +116,9 @@
 /* Define this symbol of your system has GNU diff. */
 #undef HAVE_GNU_DIFF
 
+/* Define this symbol of your system has GNU patch. */
+#undef HAVE_GNU_PATCH
+
 /* Define this symbol of your system has the <new> C++ header */
 #undef HAVE_HEADER_NEW
 
@@ -127,6 +139,9 @@
 
 /* Define this symbol of your system has iswprint() AND it works. */
 #undef HAVE_ISWPRINT
+
+/* Define to 1 if you have the `bz2' library (-lbz2). */
+#undef HAVE_LIBBZ2
 
 /* Define to 1 if you have the `clu' library (-lclu). */
 #undef HAVE_LIBCLU
@@ -187,6 +202,9 @@
 
 /* Define to 1 if you support file names longer than 14 characters. */
 #undef HAVE_LONG_FILE_NAMES
+
+/* Define to 1 if you have the `lutime' function. */
+#undef HAVE_LUTIME
 
 /* Define to 1 if you have the `magic_file' function. */
 #undef HAVE_MAGIC_FILE
@@ -275,6 +293,9 @@
 
 /* Define to 1 if you have the `strcasecmp' function. */
 #undef HAVE_STRCASECMP
+
+/* Define to 1 if you have the `strendcpy' function. */
+#undef HAVE_STRENDCPY
 
 /* Define to 1 if you have the `strerror' function. */
 #undef HAVE_STRERROR
@@ -507,6 +528,6 @@
  * the above information, so there is no need for you to edit the file,
  * if you are configuring Aegis manually.
  */
-#include <config.messy.h>
+#include <common/config.messy.h>
 
 #endif /* COMMON_CONFIG_H */

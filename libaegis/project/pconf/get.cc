@@ -1,6 +1,6 @@
 //
 //	aegis - project change supervisor
-//	Copyright (C) 2000, 2002-2004 Peter Miller;
+//	Copyright (C) 2000, 2002-2006 Peter Miller;
 //	All rights reserved.
 //
 //	This program is free software; you can redistribute it and/or modify
@@ -20,9 +20,9 @@
 // MANIFEST: functions to manipulate gets
 //
 
-#include <change.h>
-#include <pconf.h>
-#include <project.h>
+#include <libaegis/change.h>
+#include <libaegis/pconf.h>
+#include <libaegis/project.h>
 
 
 pconf_ty *
@@ -30,6 +30,6 @@ project_pconf_get(project_ty *pp)
 {
     change_ty       *cp;
 
-    cp = project_change_get(pp);
+    cp = pp->change_get();
     return change_pconf_get(cp, 0);
 }

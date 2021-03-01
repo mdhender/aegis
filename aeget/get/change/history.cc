@@ -1,6 +1,6 @@
 //
 //	aegis - project change supervisor
-//	Copyright (C) 2004 Peter Miller;
+//	Copyright (C) 2004, 2005 Peter Miller;
 //	All rights reserved.
 //
 //	This program is free software; you can redistribute it and/or modify
@@ -20,18 +20,19 @@
 // MANIFEST: implementation of the get_change_history class
 //
 
-#include <ac/stdio.h>
+#include <common/ac/stdio.h>
 
-#include <aer/func/now.h> // for working_days
-#include <change.h>
-#include <cstate.h>
-#include <error.h> // for assert
-#include <get/change/history.h>
-#include <http.h>
-#include <now.h>
-#include <project.h>
-#include <symtab.h>
-#include <user.h>
+#include <common/error.h> // for assert
+#include <common/now.h>
+#include <common/symtab.h>
+#include <libaegis/aer/func/now.h> // for working_days
+#include <libaegis/change.h>
+#include <libaegis/cstate.h>
+#include <libaegis/project.h>
+#include <libaegis/user.h>
+
+#include <aeget/get/change/history.h>
+#include <aeget/http.h>
 
 
 static void

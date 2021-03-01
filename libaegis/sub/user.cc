@@ -1,6 +1,6 @@
 //
 //	aegis - project change supervisor
-//	Copyright (C) 1999, 2001, 2003, 2004 Peter Miller;
+//	Copyright (C) 1999, 2001, 2003-2005 Peter Miller;
 //	All rights reserved.
 //
 //	This program is free software; you can redistribute it and/or modify
@@ -20,13 +20,13 @@
 // MANIFEST: functions to manipulate users
 //
 
-#include <sub.h>
-#include <sub/user.h>
-#include <symtab.h>
-#include <trace.h>
-#include <user.h>
-#include <wstr.h>
-#include <wstr/list.h>
+#include <libaegis/sub.h>
+#include <libaegis/sub/user.h>
+#include <common/symtab.h>
+#include <common/trace.h>
+#include <libaegis/user.h>
+#include <common/wstr.h>
+#include <common/wstr/list.h>
 
 
 static string_ty *

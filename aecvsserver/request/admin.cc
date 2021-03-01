@@ -1,6 +1,6 @@
 //
 //	aegis - project change supervisor
-//	Copyright (C) 2004 Peter Miller;
+//	Copyright (C) 2004-2006 Peter Miller;
 //	All rights reserved.
 //
 //	This program is free software; you can redistribute it and/or modify
@@ -53,12 +53,23 @@
 // (with the necessary Directory requests for context).
 //
 
-#include <request/admin.h>
-#include <server.h>
+#include <aecvsserver/request/admin.h>
+#include <aecvsserver/server.h>
 
 
-static void
-run(server_ty *sp, string_ty *arg)
+request_admin::~request_admin()
+{
+}
+
+
+request_admin::request_admin()
+{
+}
+
+
+void
+request_admin::run_inner(server_ty *sp, string_ty *arg)
+    const
 {
     if (server_root_required(sp, "admin"))
 	return;
@@ -72,9 +83,17 @@ run(server_ty *sp, string_ty *arg)
 }
 
 
-const request_ty request_admin =
+const char *
+request_admin::name()
+    const
 {
-    "admin",
-    run,
-    1, // reset
-};
+    return "admin";
+}
+
+
+bool
+request_admin::reset()
+    const
+{
+    return true;
+}

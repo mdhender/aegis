@@ -1,6 +1,6 @@
 //
 //	aegis - project change supervisor
-//	Copyright (C) 1994-1996, 2004 Peter Miller;
+//	Copyright (C) 1994-1996, 2004, 2005 Peter Miller;
 //	All rights reserved.
 //
 //	This program is free software; you can redistribute it and/or modify
@@ -20,8 +20,8 @@
 // MANIFEST: implement missing functions from <stdlib.h>
 //
 
-#include <ac/ctype.h>
-#include <ac/stdlib.h>
+#include <common/ac/ctype.h>
+#include <common/ac/stdlib.h>
 
 
 #ifndef HAVE_MBLEN

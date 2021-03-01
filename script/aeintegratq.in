@@ -3,7 +3,7 @@
 #       aeintegratq - aegis integration manager
 #       Copyright (C) 2005 Peter Miller.
 #
-#       Copyright (C) 1998 - 2004 Endocardial Solutions, Inc.
+#       Copyright (C) 1998-2006 Endocardial Solutions, Inc.
 #       All rights reserved.
 #
 #       This program is free software; you can redistribute it and/or modify
@@ -63,6 +63,7 @@ $TmpDir   = "/var/tmp";
 $SendMail = "/usr/lib/sendmail";
   # Define the preferred integration host
   # the aeib/aeipass take place there and may work better on the file server
+  # the -ib and/or -ip options can specify a remote server if desired.
 $IntegrationHost = "_AEGIS_FILE_SERVER_";
 
 $ProgramName = "aeintegratq";
@@ -78,6 +79,8 @@ $SIG{'QUIT'} = \&cleanup_and_quit;
 $SIG{'TERM'} = \&cleanup_and_quit;
 
 my %Option = (
+              ibserver => undef,
+              ipserver => undef,
 	      Trace => 0,
 	     );
 sub usage
@@ -90,6 +93,10 @@ sub usage
   #  -a run on Any machine (normally only $IntegrationHost)
   #  -s run remote operations via ssh (default rsh)
   #  -n No action - just tell what would be done
+  #  -ib <server> - Specify (remote) server on which ibegin be done
+  #  or -ib ""    - request server be determined as host for project baseline
+  #  -ip <server> - Specify (remote) server on which ipass be done
+  #  or -ip ""    - request server be determined as host for project baseline
   #  -k Keep the scripts and report files
   #  -K Keep the temp file even if integration passes
   #  -l Loop to get more changes if available - stops when nothing done
@@ -111,6 +118,8 @@ GetOptions( \%Option,
     "help",
     "Help",
     "any",
+    "ibserver=s",
+    "ipserver=s",
     "ssh",
     "noaction",
     "keep_scripts",
@@ -124,7 +133,7 @@ GetOptions( \%Option,
     "project=s",
     "Trace=i",
     "verbose",
-    );
+    ) || usage();
 
   # if they asked for help - just do it
 if ( defined($Option{help}) )
@@ -302,8 +311,9 @@ if ( scalar(@Projects) )
 			       scalar(@changes), $project));
 	}
 
-        while(($Q_status == 0) && ($entry = shift(@changes)) )
+        while(($Q_status == 0) && (scalar(@changes)) )
         {
+            my $entry = shift(@changes);
 	    my $flags;
             ($change, $flags) = split(/:/, $entry);
 
@@ -448,10 +458,17 @@ sub integrate_begin
 
         unless( $errors )
         {
-              #
               # run aegis -ib  send errs to $logf
+	      # If option was given for begin server use it.
               #
-            $errors = &system_cmd("$aecmd $flags", $logf);
+	    if( my $server = given_server("ibserver", $project) )
+	    {
+	        $errors = &host_cmd("$aecmd $flags", $server, $logf);
+            }
+	    else       # run command locally
+            {
+	        $errors = &system_cmd("$aecmd $flags", $logf);
+            }
               #
               # If the ib failed there is nothing we can do
               #
@@ -773,8 +790,16 @@ sub pass_integration
         &write_log($log_message);
           #
           # run aegis -ipass
+	  # If option was given for pass server use it.
           #
-        $errors = &system_cmd($aecmd, $ipass_log);
+        if( my $server = given_server("ipserver", $project) )
+	{
+	    $errors = &host_cmd($aecmd, $server, $ipass_log);
+	}
+	else       # run command locally
+        {
+	    $errors = &system_cmd($aecmd, $ipass_log);
+	}
 
         unless ( $errors )
         {
@@ -1542,6 +1567,44 @@ sub hash_option
         warn "$opt requires keyword \"all\" or 1 or more change numbers\n\n";
         &usage;
     }
+}
+
+ # look at options to see if one was given for ibegin or ipass
+sub given_server
+{
+    my($option, $project) = @_;
+    my $server = undef;
+
+      # was the option given at all
+    if( defined($Option{$option}) )
+    {
+	if( $Option{$option} )	# a name was given
+	{
+	    $server = $Option{$option};
+	}
+	else			# empty string given - find the server
+	{
+	    chop(my $baseline = `aesub -p $project -bl \'\${baseline}\'`);
+	    if( open(DF, "df -k $baseline |") )
+	    {
+		while(<DF>)
+		{
+		    if( my( $s ) = m=(\w[^:]+):/\w+= )
+		    {
+			$server = $s;
+		    }
+		    last;
+		}
+		close(DF);
+	    }
+	    else
+	    {
+		warn "Unable to run df for $baseline:$!\n";
+	    }
+	}
+    }
+
+    return $server;
 }
 
 sub preview

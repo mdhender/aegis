@@ -1,6 +1,6 @@
 //
 //	aegis - project change supervisor
-//	Copyright (C) 1999, 2002-2004 Peter Miller;
+//	Copyright (C) 1999, 2002-2005 Peter Miller;
 //	All rights reserved.
 //
 //	This program is free software; you can redistribute it and/or modify
@@ -20,9 +20,9 @@
 // MANIFEST: functions to manipulate inappropriats
 //
 
-#include <ael/change/inappropriat.h>
-#include <arglex2.h>
-#include <sub.h>
+#include <libaegis/ael/change/inappropriat.h>
+#include <libaegis/arglex2.h>
+#include <libaegis/sub.h>
 
 
 void

@@ -1,6 +1,6 @@
 //
 //	aegis - project change supervisor
-//	Copyright (C) 2005 Peter Miller;
+//	Copyright (C) 2005, 2006 Peter Miller;
 //	All rights reserved.
 //
 //	This program is free software; you can redistribute it and/or modify
@@ -20,17 +20,17 @@
 // MANIFEST: implementation of the output_from_input class
 //
 
-#include <input.h>
-#include <output.h>
+#include <libaegis/input.h>
+#include <libaegis/output.h>
 
 
 output_ty &
-operator<<(output_ty &os, input_ty &is)
+operator<<(output_ty &os, input &is)
 {
     for (;;)
     {
 	unsigned char buffer[4096];
-	long n = is.read(buffer, sizeof(buffer));
+	long n = is->read(buffer, sizeof(buffer));
 	if (!n)
 	    break;
 	os.write(buffer, n);

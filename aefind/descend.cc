@@ -20,18 +20,18 @@
 // MANIFEST: functions to walk parallel directory trees
 //
 
-#include <ac/errno.h>
-#include <ac/sys/types.h>
+#include <common/ac/errno.h>
+#include <common/ac/sys/types.h>
 #include <sys/stat.h>
 
-#include <cmdline.h>
-#include <descend.h>
-#include <glue.h>
-#include <os.h>
-#include <str_list.h>
-#include <sub.h>
-#include <trace.h>
-#include <tree.h>
+#include <aefind/cmdline.h>
+#include <aefind/descend.h>
+#include <libaegis/glue.h>
+#include <libaegis/os.h>
+#include <common/str_list.h>
+#include <libaegis/sub.h>
+#include <common/trace.h>
+#include <aefind/tree.h>
 
 
 static string_ty *

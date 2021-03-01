@@ -20,9 +20,9 @@
 // MANIFEST: functions to manipulate cpio_child2s
 //
 
-#include <output/cpio_child.h>
-#include <output/cpio_child2.h>
-#include <output/memory.h>
+#include <libaegis/output/cpio_child.h>
+#include <libaegis/output/cpio_child2.h>
+#include <libaegis/output/memory.h>
 
 
 output_cpio_child2_ty::~output_cpio_child2_ty()

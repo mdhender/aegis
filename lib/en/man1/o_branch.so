@@ -1,6 +1,6 @@
 .\"
 .\"	aegis - project change supervisor
-.\"	Copyright (C) 1996, 1999, 2002 Peter Miller;
+.\"	Copyright (C) 1996, 1999, 2002, 2005 Peter Miller;
 .\"	All rights reserved.
 .\"
 .\"	This program is free software; you can redistribute it and/or modify
@@ -31,4 +31,4 @@ just the branch number suffix.
 \fB\-GrandParent\fP
 This option may be used to specify the grandparent branch (one up from
 the current branch) for the origin file, rather than the baseline.
-(The \-grandparent option is the same as the ``-branch ..'' option.)
+(The \-grandparent option is the same as the \[lq]\-branch ..\[rq] option.)

@@ -1,6 +1,6 @@
 //
 //	aegis - project change supervisor
-//	Copyright (C) 1994, 1999, 2001, 2003-2005 Peter Miller;
+//	Copyright (C) 1994, 1999, 2001, 2003-2006 Peter Miller;
 //	All rights reserved.
 //
 //	This program is free software; you can redistribute it and/or modify
@@ -20,12 +20,12 @@
 // MANIFEST: functions for reading input from environment variables
 //
 
-#include <ac/stdio.h>
-#include <ac/stdlib.h>
-#include <ac/string.h>
+#include <common/ac/stdio.h>
+#include <common/ac/stdlib.h>
+#include <common/ac/string.h>
 
-#include <input/crlf.h>
-#include <input/env.h>
+#include <libaegis/input/crlf.h>
+#include <libaegis/input/env.h>
 
 
 input_env::~input_env()
@@ -49,14 +49,15 @@ input_env::input_env(const nstring &arg) :
 }
 
 
-input_ty *
+input
 input_env_open(const char *name)
 {
     //
     // You need the CRLF filter, otherwise bizzare things happen on
     // DOS (or DOS-like) operating systems.
     //
-    return new input_crlf(new input_env(name), true);
+    input temp(new input_env(name));
+    return new input_crlf(temp);
 }
 
 

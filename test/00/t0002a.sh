@@ -38,6 +38,22 @@ if test $? -ne 0; then exit 2; fi
 
 if test "$1" != "" ; then bin="$here/$1/bin"; else bin="$here/bin"; fi
 
+if test "$EXEC_SEARCH_PATH" != ""
+then
+    tpath=
+    hold="$IFS"
+    IFS=":$IFS"
+    for tpath2 in $EXEC_SEARCH_PATH
+    do
+	tpath=${tpath}${tpath2}/${1-.}/bin:
+    done
+    IFS="$hold"
+    PATH=${tpath}${PATH}
+else
+    PATH=${bin}:${PATH}
+fi
+export PATH
+
 activity="create working directory 41"
 
 no_result()
@@ -118,16 +134,16 @@ cd $work
 if test $? -ne 0 ; then exit 2; fi
 
 #
-# If the C++ compiler is called something other than ``c++'', as
+# If the C++ compiler is called something other than "c++", as
 # discovered by the configure script, create a shell script called
-# ``c++'' which invokes the correct C++ compiler.  Make sure the current
+# "c++" which invokes the correct C++ compiler.  Make sure the current
 # directory is in the path, so that it will be invoked.
 #
-if test "$CXX" != "" -a "$CXX" != "c++"
+if test "$CXX" != "c++"
 then
 	cat >> c++ << fubar
 #!/bin/sh
-exec $CXX \$*
+exec ${CXX=g++} \$*
 fubar
 	if test $? -ne 0 ; then no_result; fi
 	chmod a+rx c++
@@ -407,14 +423,12 @@ if test $? -ne 0 ; then no_result; fi
 cat > $workchan/aegis.conf << 'end'
 build_command = "rm -f foo; c++ -o foo -D'VERSION=\"$v\"' main.cc";
 
-history_get_command =
-	"co -u'$e' -p $h,v > $o";
-history_create_command =
-	"ci -f -u -m/dev/null -t/dev/null $i $h,v; rcs -U $h,v";
-history_put_command =
-	"ci -f -u -m/dev/null -t/dev/null $i $h,v; rcs -U $h,v";
-history_query_command =
-	"rlog -r $h,v | awk '/^head:/ {print $$2}'";
+history_get_command = "aesvt -check-out -edit ${quote $edit} "
+    "-history ${quote $history} -f ${quote $output}";
+history_put_command = "aesvt -check-in -history ${quote $history} "
+    "-f ${quote $input}";
+history_query_command = "aesvt -query -history ${quote $history}";
+history_content_limitation = binary_capable;
 
 diff_command = "set +e; diff $orig $i > $out; test $$? -le 1";
 
@@ -946,7 +960,7 @@ src =
 		action = create;
 		edit =
 		{
-			revision = "1.1";
+			revision = "1";
 			encoding = none;
 		};
 		usage = config;
@@ -957,7 +971,7 @@ src =
 		action = create;
 		edit =
 		{
-			revision = "1.1";
+			revision = "1";
 			encoding = none;
 		};
 		usage = source;
@@ -968,7 +982,7 @@ src =
 		action = create;
 		edit =
 		{
-			revision = "1.1";
+			revision = "1";
 			encoding = none;
 		};
 		usage = test;
@@ -1077,9 +1091,9 @@ if test $? -ne 0 ; then fail; fi
 $bin/aegis -cp -l -unf -lib $worklib -p foo > test.out
 if test $? -ne 0 ; then fail; fi
 cat > ok << 'fubar'
-config 1.1 aegis.conf
-source 1.1 main.cc
-test 1.1 test/00/t0001a.sh
+config 1 aegis.conf
+source 1 main.cc
+test 1 test/00/t0001a.sh
 fubar
 if test $? -ne 0 ; then no_result; fi
 check_it test.out ok
@@ -1346,12 +1360,12 @@ src =
 		action = modify;
 		edit =
 		{
-			revision = "1.2";
+			revision = "2";
 			encoding = none;
 		};
 		edit_origin =
 		{
-			revision = "1.1";
+			revision = "1";
 			encoding = none;
 		};
 		usage = source;
@@ -1362,7 +1376,7 @@ src =
 		action = create;
 		edit =
 		{
-			revision = "1.1";
+			revision = "1";
 			encoding = none;
 		};
 		usage = test;
@@ -1482,12 +1496,12 @@ src =
 		action = create;
 		edit =
 		{
-			revision = "1.1";
+			revision = "1";
 			encoding = none;
 		};
 		edit_origin =
 		{
-			revision = "1.1";
+			revision = "1";
 			encoding = none;
 		};
 		usage = config;
@@ -1504,12 +1518,12 @@ src =
 		action = create;
 		edit =
 		{
-			revision = "1.2";
+			revision = "2";
 			encoding = none;
 		};
 		edit_origin =
 		{
-			revision = "1.2";
+			revision = "2";
 			encoding = none;
 		};
 		usage = source;
@@ -1531,12 +1545,12 @@ src =
 		action = create;
 		edit =
 		{
-			revision = "1.1";
+			revision = "1";
 			encoding = none;
 		};
 		edit_origin =
 		{
-			revision = "1.1";
+			revision = "1";
 			encoding = none;
 		};
 		usage = test;
@@ -1560,12 +1574,12 @@ src =
 		action = create;
 		edit =
 		{
-			revision = "1.1";
+			revision = "1";
 			encoding = none;
 		};
 		edit_origin =
 		{
-			revision = "1.1";
+			revision = "1";
 			encoding = none;
 		};
 		usage = test;

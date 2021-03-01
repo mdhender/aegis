@@ -20,9 +20,9 @@
 // MANIFEST: functions to output to tar archivess
 //
 
-#include <error.h>
-#include <output/tar.h>
-#include <output/tar_child.h>
+#include <common/error.h>
+#include <aetar/output/tar.h>
+#include <aetar/output/tar_child.h>
 
 
 output_tar_ty::~output_tar_ty()

@@ -1,6 +1,6 @@
 .\"
 .\"	aegis - project change supervisor
-.\"	Copyright (C) 1999, 2003, 2004 Peter Miller;
+.\"	Copyright (C) 1999, 2003-2005 Peter Miller;
 .\"	All rights reserved.
 .\"
 .\"	This program is free software; you can redistribute it and/or modify
@@ -29,13 +29,13 @@ now find it more often.
 .PP
 .if n *
 .if t \(bu
-The ``\fIaedist -receive\fP'' command has been enhanced to be more robust
+The \[lq]\fIaedist -receive\fP\[rq] command has been enhanced to be more robust
 about change sets without headers (some browsers \fIgenerously\fP strip
 them all off.
 .PP
 .if n *
 .if t \(bu
-A bug has been fixed in the ``\fIaedist -receive\fP'' command which
+A bug has been fixed in the \[lq]\fIaedist -receive\fP\[rq] command which
 sometimes caused decompression failures.  An unfortunate interaction with
 the Windows NT support caused CRLF sequences in the compressed data to
 be mangled in some cases.

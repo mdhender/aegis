@@ -1,6 +1,6 @@
 .\"
 .\"	aegis - project change supervisor
-.\"	Copyright (C) 2001 Peter Miller;
+.\"	Copyright (C) 2001, 2005 Peter Miller;
 .\"	All rights reserved.
 .\"
 .\"	This program is free software; you can redistribute it and/or modify
@@ -32,7 +32,7 @@ for how)
 you may use a delta name instead of a delta number.
 It is an error if the delta specified does not exist.
 Delta numbers start from 1 and increase;
-delta 0 is a special case meaning ``when the branch started''.
+delta 0 is a special case meaning \[lq]when the branch started\[rq].
 .TP 8n
 \fB-DELta_Date\fP \fIstring\fP
 .br

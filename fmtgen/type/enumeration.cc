@@ -20,12 +20,10 @@
 // MANIFEST: enumerated types functions generation
 //
 
-#pragma implementation "type_enumeration_ty"
-
-#include <indent.h>
-#include <mem.h>
-#include <parse.h>
-#include <type/enumeration.h>
+#include <fmtgen/indent.h>
+#include <common/mem.h>
+#include <fmtgen/parse.h>
+#include <fmtgen/type/enumeration.h>
 
 
 type_enumeration_ty::~type_enumeration_ty()

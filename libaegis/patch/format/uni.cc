@@ -20,13 +20,13 @@
 // MANIFEST: functions to manipulate unis
 //
 
-#include <ac/string.h>
+#include <common/ac/string.h>
 
-#include <error.h>
-#include <patch.h>
-#include <patch/context.h>
-#include <patch/format/uni.h>
-#include <trace.h>
+#include <common/error.h>
+#include <libaegis/patch.h>
+#include <libaegis/patch/context.h>
+#include <libaegis/patch/format/uni.h>
+#include <common/trace.h>
 
 
 static int

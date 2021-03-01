@@ -1,6 +1,6 @@
 '\" t
 .\"	aegis - project change supervisor
-.\"	Copyright (C) 1996 Peter Miller;
+.\"	Copyright (C) 1996, 2005 Peter Miller;
 .\"	All rights reserved.
 .\"
 .\"	This program is free software; you can redistribute it and/or modify
@@ -31,7 +31,7 @@ It is organised as one directory for each localization.
 .PP
 Each localization name,
 each directory names,
-may be anything that GNU Gettext's ``finddomain''
+may be anything that GNU Gettext's \[lq]finddomain\[rq]
 function understands.
 Here is a brief overview:
 .RS
@@ -64,7 +64,7 @@ Please do
 use the proposed 3-letter ISO 639/2 codes until it is ratified.
 .SS Territory Name
 The language identifier is mandatory, all other parts are
-optional.  Usually ``territory'' means country, so please the
+optional.  Usually \[lq]territory\[rq] means country, so please the
 the ISO 3166 2-letter country code.  (e.g. en_us :-)
 .PP
 You can find the list at

@@ -1,6 +1,6 @@
 //
 //	aegis - project change supervisor
-//	Copyright (C) 2004 Peter Miller;
+//	Copyright (C) 2004, 2005 Peter Miller;
 //	All rights reserved.
 //
 //	This program is free software; you can redistribute it and/or modify
@@ -20,14 +20,14 @@
 // MANIFEST: implementation of the emit_brief_descri class
 //
 
-#include <ac/ctype.h>
-#include <ac/stdio.h>
+#include <common/ac/ctype.h>
+#include <common/ac/stdio.h>
 
-#include <change.h>
-#include <emit/brief_descri.h>
-#include <http.h>
-#include <str.h>
-#include <nstring.h>
+#include <libaegis/change.h>
+#include <aeget/emit/brief_descri.h>
+#include <aeget/http.h>
+#include <common/str.h>
+#include <common/nstring.h>
 
 
 void

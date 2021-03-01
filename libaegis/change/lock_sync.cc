@@ -1,6 +1,6 @@
 //
 //	aegis - project change supervisor
-//	Copyright (C) 1999, 2004 Peter Miller;
+//	Copyright (C) 1999, 2004, 2005 Peter Miller;
 //	All rights reserved.
 //
 //	This program is free software; you can redistribute it and/or modify
@@ -20,11 +20,11 @@
 // MANIFEST: functions to manipulate lock_syncs
 //
 
-#include <change.h>
-#include <change/lock_sync.h>
-#include <lock.h>
-#include <str_list.h>
-#include <symtab.h>
+#include <libaegis/change.h>
+#include <libaegis/change/lock_sync.h>
+#include <libaegis/lock.h>
+#include <common/str_list.h>
+#include <common/symtab.h>
 
 
 void
@@ -56,6 +56,11 @@ change_lock_sync_forced(change_ty *cp)
     {
 	symtab_free(cp->fstate_stp);
 	cp->fstate_stp = 0;
+    }
+    if (cp->fstate_uuid_stp)
+    {
+	symtab_free(cp->fstate_uuid_stp);
+	cp->fstate_uuid_stp = 0;
     }
 
     for (j = 0; j < view_path_MAX; ++j)

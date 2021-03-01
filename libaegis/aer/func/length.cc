@@ -1,6 +1,6 @@
 //
 //	aegis - project change supervisor
-//	Copyright (C) 1995, 1996, 1999, 2003, 2004 Peter Miller;
+//	Copyright (C) 1995, 1996, 1999, 2003-2005 Peter Miller;
 //	All rights reserved.
 //
 //	This program is free software; you can redistribute it and/or modify
@@ -20,12 +20,12 @@
 // MANIFEST: functions to implement the length builtin function
 //
 
-#include <aer/expr.h>
-#include <aer/func/length.h>
-#include <aer/value/error.h>
-#include <aer/value/integer.h>
-#include <aer/value/string.h>
-#include <sub.h>
+#include <libaegis/aer/expr.h>
+#include <libaegis/aer/func/length.h>
+#include <libaegis/aer/value/error.h>
+#include <libaegis/aer/value/integer.h>
+#include <libaegis/aer/value/string.h>
+#include <libaegis/sub.h>
 
 
 static int

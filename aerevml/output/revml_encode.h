@@ -23,9 +23,7 @@
 #ifndef AEREVML_OUTPUT_REVML_ENCODE_H
 #define AEREVML_OUTPUT_REVML_ENCODE_H
 
-#pragma interface "output_revml_encode"
-
-#include <output.h>
+#include <libaegis/output.h>
 
 /**
   * The output_revml_encode class is used to represent an output filter

@@ -1,6 +1,6 @@
 .\"
 .\"	aegis - project change supervisor
-.\"	Copyright (C) 2004 Peter Miller;
+.\"	Copyright (C) 2004, 2005 Peter Miller;
 .\"	All rights reserved.
 .\"
 .\"	This program is free software; you can redistribute it and/or modify
@@ -136,7 +136,7 @@ of the error messages is to be preferred.
 .\" change 106
 The behaviour of the \fIaedeu\fP(1) command has changed slightly.  When
 changes are in the \fIbeing reviewed\fP state, and Aegis has been
-configured to use the \fIawaiting review\fP state, the \fIaedeu\fP91)
+configured to use the \fIawaiting review\fP state, the \fIaedeu\fP(1)
 command will now report an error.  This is so that reviewers don't waste
 their time reviewing changes which have already been returned to the
 \fIbeing developed\fP state.  Think of the change as "belonging" to the

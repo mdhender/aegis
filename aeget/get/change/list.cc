@@ -20,22 +20,23 @@
 // MANIFEST: functions to manipulate lists
 //
 
-#include <ac/stdio.h>
-#include <ac/string.h>
+#include <common/ac/stdio.h>
+#include <common/ac/string.h>
 
-#include <ael/attribu_list.h>
-#include <attribute.h>
-#include <change.h>
-#include <cstate.h>
-#include <get/change/list.h>
-#include <emit/brief_descri.h>
-#include <emit/project.h>
-#include <http.h>
-#include <os.h>
-#include <project.h>
-#include <project/history.h>
-#include <rss.h>
-#include <str_list.h>
+#include <common/str_list.h>
+#include <libaegis/ael/attribu_list.h>
+#include <libaegis/attribute.h>
+#include <libaegis/change.h>
+#include <libaegis/cstate.h>
+#include <libaegis/os.h>
+#include <libaegis/project.h>
+#include <libaegis/project/history.h>
+#include <libaegis/rss.h>
+
+#include <aeget/emit/brief_descri.h>
+#include <aeget/emit/project.h>
+#include <aeget/get/change/list.h>
+#include <aeget/http.h>
 
 
 static int

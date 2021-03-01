@@ -1,6 +1,6 @@
 //
 //	aegis - project change supervisor
-//	Copyright (C) 1999, 2001-2005 Peter Miller;
+//	Copyright (C) 1999, 2001-2006 Peter Miller;
 //	All rights reserved.
 //
 //	This program is free software; you can redistribute it and/or modify
@@ -20,18 +20,18 @@
 // MANIFEST: functions to manipulate get_commands
 //
 
-#include <change.h>
-#include <change/env_set.h>
-#include <error.h> // for assert
-#include <input/base64.h>
-#include <input/file_text.h>
-#include <input/quoted_print.h>
-#include <os.h>
-#include <output/file.h>
-#include <project.h>
-#include <sub.h>
-#include <trace.h>
-#include <user.h>
+#include <libaegis/change.h>
+#include <libaegis/change/env_set.h>
+#include <common/error.h> // for assert
+#include <libaegis/input/base64.h>
+#include <libaegis/input/file_text.h>
+#include <libaegis/input/quoted_print.h>
+#include <libaegis/os.h>
+#include <libaegis/output/file.h>
+#include <libaegis/project.h>
+#include <libaegis/sub.h>
+#include <common/trace.h>
+#include <libaegis/user.h>
 
 
 void
@@ -44,7 +44,6 @@ change_run_history_get_command(change_ty *cp, fstate_src_ty *src,
     string_ty	    *the_command;
     pconf_ty        *pconf_data;
     string_ty	    *name_of_encoded_file;
-    input_ty	    *ip;
     output_ty	    *op;
 
     trace(("change_run_history_get_command(cp = %08lX)\n{\n", (long)cp));
@@ -114,7 +113,7 @@ change_run_history_get_command(change_ty *cp, fstate_src_ty *src,
     // (always output is to /tmp)
     //
     change_env_set(cp, 0);
-    hp = project_history_path_get(cp->pp);
+    hp = cp->pp->history_path_get();
     user_become(up);
     os_execute(the_command, OS_EXEC_FLAG_NO_INPUT | OS_EXEC_FLAG_SILENT, hp);
     user_become_undo();
@@ -131,7 +130,7 @@ change_run_history_get_command(change_ty *cp, fstate_src_ty *src,
     // Decode the file.
     //
     os_become_orig();
-    ip = input_file_text_open(name_of_encoded_file);
+    input ip = input_file_text_open(name_of_encoded_file);
     op = output_file_binary_open(output_file);
     switch (src->edit->encoding)
     {
@@ -140,15 +139,15 @@ change_run_history_get_command(change_ty *cp, fstate_src_ty *src,
 	break;
 
     case history_version_encoding_quoted_printable:
-	ip = new input_quoted_printable(ip, true);
+	ip = new input_quoted_printable(ip);
 	break;
 
     case history_version_encoding_base64:
-	ip = new input_base64(ip, true);
+	ip = new input_base64(ip);
 	break;
     }
-    input_to_output(ip, op);
-    delete ip;
+    *op << ip;
+    ip.close();
     delete op;
     os_unlink(name_of_encoded_file);
     os_become_undo();

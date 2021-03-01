@@ -20,16 +20,16 @@
 // MANIFEST: functions to manipulate logical trees
 //
 
-#include <ac/stdio.h>
+#include <common/ac/stdio.h>
 
-#include <aer/value/boolean.h>
-#include <aer/value/error.h>
-#include <str.h>
-#include <sub.h>
-#include <tree/constant.h>
-#include <tree/diadic.h>
-#include <tree/logical.h>
-#include <tree/monadic.h>
+#include <libaegis/aer/value/boolean.h>
+#include <libaegis/aer/value/error.h>
+#include <common/str.h>
+#include <libaegis/sub.h>
+#include <aefind/tree/constant.h>
+#include <aefind/tree/diadic.h>
+#include <aefind/tree/logical.h>
+#include <aefind/tree/monadic.h>
 
 
 static rpt_value_ty *

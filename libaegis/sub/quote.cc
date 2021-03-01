@@ -1,6 +1,6 @@
 //
 //	aegis - project change supervisor
-//	Copyright (C) 1998, 2003, 2004 Peter Miller;
+//	Copyright (C) 1998, 2003-2005 Peter Miller;
 //	All rights reserved.
 //
 //	This program is free software; you can redistribute it and/or modify
@@ -20,10 +20,10 @@
 // MANIFEST: functions to implement the quote substitution
 //
 
-#include <sub.h>
-#include <sub/quote.h>
-#include <trace.h>
-#include <wstr/list.h>
+#include <libaegis/sub.h>
+#include <libaegis/sub/quote.h>
+#include <common/trace.h>
+#include <common/wstr/list.h>
 
 
 wstring_ty *

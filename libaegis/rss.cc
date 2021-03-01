@@ -20,15 +20,15 @@
 // MANIFEST: implementation of the rss class
 //
 
-#include <ac/string.h>
+#include <common/ac/string.h>
 
-#include <change.h>
-#include <pconf.h>
-#include <project.h>
-#include <rss.h>
-#include <rss/feed.h>
-#include <rss/item.h>
-#include <trace.h>
+#include <common/trace.h>
+#include <libaegis/change.h>
+#include <libaegis/pconf.h>
+#include <libaegis/project.h>
+#include <libaegis/rss/feed.h>
+#include <libaegis/rss.h>
+#include <libaegis/rss/item.h>
 
 
 const nstring rss_script_name_placeholder("@@SCRIPTNAME@@");
@@ -207,8 +207,11 @@ rss_add_item(const nstring &filename, project_ty *pp, change_ty *cp)
     // Make sure we don't ever have too many elements.
     // Write the file back out.
     //
+    // FIXME: the number of items in the feed (the 20 you see below)
+    // needs to be configurable.
+    //
     feed.parse();
-    while (feed.size() > 10)
+    while (feed.size() > 20)
 	delete feed.pop_back();
     feed.print();
     trace(("}\n"));

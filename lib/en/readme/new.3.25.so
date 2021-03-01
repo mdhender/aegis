@@ -1,6 +1,6 @@
 .\"
 .\"	aegis - project change supervisor
-.\"	Copyright (C) 2001, 2003 Peter Miller;
+.\"	Copyright (C) 2001, 2003, 2005 Peter Miller;
 .\"	All rights reserved.
 .\"
 .\"	This program is free software; you can redistribute it and/or modify
@@ -133,7 +133,7 @@ This may be used in scripts which access the history tool's files directly.
 .\" change 12
 There is a new \fIchange_\%file_\%undo_\%command\fP field of the project
 \fIconfig\fP file.  It is similar to the \fIchange_\%file_\%command\fP
-field (it defaults to it if unset), but is executed by all of the ``undo''
+field (it defaults to it if unset), but is executed by all of the \[lq]undo\[rq]
 file commands.
 .PP
 .if n *

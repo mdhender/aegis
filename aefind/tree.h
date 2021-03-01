@@ -23,7 +23,7 @@
 #ifndef AEFIND_TREE_H
 #define AEFIND_TREE_H
 
-#include <main.h>
+#include <common/main.h>
 
 struct string_ty; // existence
 struct stat; // existence

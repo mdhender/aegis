@@ -1120,7 +1120,7 @@ SUMMARY
 	cope with absent config file
 
 DESCRIPTION
-	When a project does not have a ``config'' file, the aegis -
+	When a project does not have a "config" file, the aegis -
 	build command dumps core.  This was because a (false)
 	assumption was made about the presence of this file.
 
@@ -1531,7 +1531,7 @@ SUMMARY
 
 DESCRIPTION
 	Many SVR4 flavours of unix have a bug in sys/types.h where
-	they define an enum tag of ``boolean'', clearly breaking the
+	they define an enum tag of "boolean", clearly breaking the
 	ANSI C rules (adopted by POSIX) which say that system names
 	must be _* or *_t and no others.     Sigh.
 
@@ -1723,7 +1723,7 @@ SUMMARY
 DESCRIPTION
 	1. Add unformatted variants of existing listings, to
 	facilitate doing things with shell scripts.
-	2. Add the skeleton of a ``wish'' script to give aegis a GUI
+	2. Add the skeleton of a "wish" script to give aegis a GUI
 	interface.  Very little is functional, as yet.
 
 	My thanks to David Robison <david@hccw.com> for these

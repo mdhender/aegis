@@ -23,7 +23,7 @@
 #ifndef LIBAEGIS_OUTPUT_MEMORY_H
 #define LIBAEGIS_OUTPUT_MEMORY_H
 
-#include <output.h>
+#include <libaegis/output.h>
 
 /**
   * The output_memory_ty class is used to represent an output stream

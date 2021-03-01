@@ -1,6 +1,6 @@
 //
 //	aegis - project change supervisor
-//	Copyright (C) 2002-2004 Peter Miller;
+//	Copyright (C) 2002-2006 Peter Miller;
 //	All rights reserved.
 //
 //	This program is free software; you can redistribute it and/or modify
@@ -20,16 +20,16 @@
 // MANIFEST: functions to manipulate version_paths
 //
 
-#include <change.h>
-#include <change/file.h>
-#include <error.h>
-#include <fstate.h>
-#include <os.h>
-#include <project.h>
-#include <project/file.h>
-#include <trace.h>
-#include <undo.h>
-#include <user.h>
+#include <common/error.h>
+#include <common/trace.h>
+#include <libaegis/change/file.h>
+#include <libaegis/change.h>
+#include <libaegis/fstate.h>
+#include <libaegis/os.h>
+#include <libaegis/project/file.h>
+#include <libaegis/project.h>
+#include <libaegis/undo.h>
+#include <libaegis/user.h>
 
 
 string_ty *
@@ -53,9 +53,9 @@ project_file_version_path(project_ty *pp, fstate_src_ty *src, int *unlink_p)
     trace(("rev \"%s\"\n", ed->revision->str_text));
     if (unlink_p)
 	*unlink_p = 0;
-    for (ppp = pp; ppp; ppp = ppp->parent)
+    for (ppp = pp; ppp; ppp = (ppp->is_a_trunk() ? 0 : ppp->parent_get()))
     {
-	cp = project_change_get(ppp);
+	cp = ppp->change_get();
         if (change_is_completed(cp))
 	    continue;
 	old_src = change_file_find(cp, src->file_name, view_path_first);
@@ -122,7 +122,7 @@ project_file_version_path(project_ty *pp, fstate_src_ty *src, int *unlink_p)
     reconstruct->edit = history_version_copy(ed);
     change_file_copy_basic_attributes(reconstruct, src);
 
-    cp = project_change_get(pp);
+    cp = pp->change_get();
     change_run_history_get_command
     (
 	cp,

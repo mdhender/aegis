@@ -20,15 +20,13 @@
 // MANIFEST: implementation of the url class
 //
 
-#pragma implementation "url"
+#include <common/ac/stdlib.h>
+#include <common/ac/string.h>
 
-#include <ac/stdlib.h>
-#include <ac/string.h>
-
-#include <error.h> // for assert
-#include <os.h>
-#include <trace.h>
-#include <url.h>
+#include <common/error.h> // for assert
+#include <libaegis/os.h>
+#include <common/trace.h>
+#include <libaegis/url.h>
 
 
 url::~url()

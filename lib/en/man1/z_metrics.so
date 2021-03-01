@@ -1,6 +1,6 @@
 .\"
 .\"	aegis - project change supervisor
-.\"	Copyright (C) 1998 Peter Miller;
+.\"	Copyright (C) 1998, 2005 Peter Miller;
 .\"	All rights reserved.
 .\"
 .\"	This program is free software; you can redistribute it and/or modify
@@ -29,7 +29,7 @@ the integration build will create a metrics file for each of the source
 files the change.  These metrics files must be in the format specified
 by \fIaemetrics\fP(5).
 .PP
-The name of the metrics file defaults to ``\fIfilename\fP\fB,S\fP'',
+The name of the metrics file defaults to \[lq]\fIfilename\fP\fB,S\fP\[rq],
 however it may be varied, by setting the \fImetrics_\%filename_\%pattern\fP
 field of the project \fIconfig\fP file.  See \fIaepconf\fP(5) for more
 information.

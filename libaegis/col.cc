@@ -20,21 +20,21 @@
 // MANIFEST: functions for columnized output
 //
 
-#include <col.h>
-#include <col/pretty.h>
-#include <col/private.h>
-#include <col/unformatted.h>
-#include <error.h> // for assert
-#include <mem.h>
-#include <option.h>
-#include <os.h>
-#include <output.h>
-#include <output/file.h>
-#include <output/pager.h>
-#include <output/to_wide.h>
-#include <trace.h>
-#include <wide_output.h>
-#include <wide_output/to_narrow.h>
+#include <libaegis/col.h>
+#include <libaegis/col/pretty.h>
+#include <libaegis/col/private.h>
+#include <libaegis/col/unformatted.h>
+#include <common/error.h> // for assert
+#include <common/mem.h>
+#include <libaegis/option.h>
+#include <libaegis/os.h>
+#include <libaegis/output.h>
+#include <libaegis/output/file.h>
+#include <libaegis/output/pager.h>
+#include <libaegis/output/to_wide.h>
+#include <common/trace.h>
+#include <libaegis/wide_output.h>
+#include <libaegis/wide_output/to_narrow.h>
 
 
 //

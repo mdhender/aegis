@@ -1,6 +1,6 @@
 //
 //	aegis - project change supervisor
-//	Copyright (C) 1999, 2002, 2004 Peter Miller;
+//	Copyright (C) 1999, 2002, 2004, 2005 Peter Miller;
 //	All rights reserved.
 //
 //	This program is free software; you can redistribute it and/or modify
@@ -23,7 +23,7 @@
 #ifndef LIBAEGIS_WIDE_OUTPUT_COLUMN_H
 #define LIBAEGIS_WIDE_OUTPUT_COLUMN_H
 
-#include <wide_output.h>
+#include <libaegis/wide_output.h>
 
 struct column_row_ty
 {

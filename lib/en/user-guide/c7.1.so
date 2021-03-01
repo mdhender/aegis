@@ -1,6 +1,6 @@
 .\"
 .\"	aegis - project change supervisor
-.\"	Copyright (C) 1991-1993, 1998, 2001, 2002, 2004 Peter Miller;
+.\"	Copyright (C) 1991-1993, 1998, 2001, 2002, 2004, 2005 Peter Miller;
 .\"	All rights reserved.
 .\"
 .\"	This program is free software; you can redistribute it and/or modify
@@ -862,19 +862,19 @@ Note that there are 3 kinds of tests
 .IP 1. 2m
 If a change contains a new test or a test which is being modified,
 this test must pass against the code compiled and linked in the change.
-This is simply referred to as a ``test''.
+This is simply referred to as a \[lq]test\[rq].
 Changes may be granted an exemption from such tests.
 .IP 2. 2m
 If a change contains a new test and the change is a bug fix,
 this test must \fIfail\fP against the old code in the baseline.
 This is to confirm that the bug has been fixed.
-This is referred to as a ``baseline test''.
+This is referred to as a \[lq]baseline test\[rq].
 Changes may be granted an exemption from such tests.
 .IP 3. 2m
 Tests which already exist in the baseline may be run against the code
 compiled and linked in the change.  These tests must pass.  This is
 to confirm that the project has not regressed, which is why these tests
-are referred to as ``regression tests''.
+are referred to as \[lq]regression tests\[rq].
 Changes may be granted an exemption from such tests.
 .LP
 A successful develop end command results in the change advancing from

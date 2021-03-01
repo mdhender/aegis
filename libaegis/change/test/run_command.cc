@@ -1,6 +1,6 @@
 //
 //	aegis - project change supervisor
-//	Copyright (C) 1999, 2000, 2003, 2004 Peter Miller;
+//	Copyright (C) 1999, 2000, 2003-2006 Peter Miller;
 //	All rights reserved.
 //
 //	This program is free software; you can redistribute it and/or modify
@@ -20,21 +20,23 @@
 // MANIFEST: functions to manipulate run_commands
 //
 
-#include <ac/stdio.h>
+#include <common/ac/stdio.h>
 
-#include <change.h>
-#include <change/env_set.h>
-#include <error.h> // for assert
-#include <os.h>
-#include <project/file.h>
-#include <str_list.h>
-#include <sub.h>
-#include <user.h>
+#include <common/error.h> // for assert
+#include <common/nstring/list.h>
+#include <common/str_list.h>
+#include <libaegis/change/env_set.h>
+#include <libaegis/change.h>
+#include <libaegis/os.h>
+#include <libaegis/project/file.h>
+#include <libaegis/sub.h>
+#include <libaegis/user.h>
 
 
 static int
 run_test_command(change_ty *cp, user_ty *up, string_ty *filename,
-    string_ty *dir, int inp, string_ty *the_command, int bl)
+    string_ty *dir, int inp, string_ty *the_command, int bl,
+    const nstring_list &variable_assignments)
 {
     sub_context_ty  *scp;
     int             flags;
@@ -43,6 +45,13 @@ run_test_command(change_ty *cp, user_ty *up, string_ty *filename,
     assert(cp->reference_count >= 1);
     scp = sub_context_new();
     sub_var_set_string(scp, "File_Name", filename);
+
+    // Quote the variable assignments
+    nstring_list var;
+    for (size_t jj = 0; jj < variable_assignments.size(); ++jj)
+	var.push_back(variable_assignments[jj].quote_shell());
+    sub_var_set_string(scp, "VARiables", var.unsplit());
+    sub_var_append_if_unused(scp, "VARiables");
 
     if (bl && !cp->bogus)
     {
@@ -70,7 +79,7 @@ run_test_command(change_ty *cp, user_ty *up, string_ty *filename,
 
 int
 change_run_test_command(change_ty *cp, user_ty *up, string_ty *filename,
-    string_ty *dir, int inp, int bl)
+    string_ty *dir, int inp, int bl, const nstring_list &variable_assignments)
 {
     pconf_ty        *pconf_data;
     string_ty       *the_command;
@@ -80,13 +89,25 @@ change_run_test_command(change_ty *cp, user_ty *up, string_ty *filename,
     assert(pconf_data);
     the_command = pconf_data->test_command;
     assert(the_command);
-    return run_test_command(cp, up, filename, dir, inp, the_command, bl);
+    return
+	run_test_command
+	(
+	    cp,
+	    up,
+	    filename,
+	    dir,
+	    inp,
+	    the_command,
+	    bl,
+	    variable_assignments
+	);
 }
 
 
 int
 change_run_development_test_command(change_ty *cp, user_ty *up,
-    string_ty *filename, string_ty *dir, int inp, int bl)
+    string_ty *filename, string_ty *dir, int inp, int bl,
+    const nstring_list &variable_assignments)
 {
     pconf_ty        *pconf_data;
     string_ty       *the_command;
@@ -96,5 +117,16 @@ change_run_development_test_command(change_ty *cp, user_ty *up,
     assert(pconf_data);
     the_command = pconf_data->development_test_command;
     assert(the_command);
-    return run_test_command(cp, up, filename, dir, inp, the_command, bl);
+    return
+	run_test_command
+	(
+	    cp,
+	    up,
+	    filename,
+	    dir,
+	    inp,
+	    the_command,
+	    bl,
+	    variable_assignments
+	);
 }

@@ -20,18 +20,18 @@
 // MANIFEST: functions to walk directory trees
 //
 
-#include <ac/errno.h>
-#include <ac/sys/types.h>
+#include <common/ac/errno.h>
+#include <common/ac/sys/types.h>
 #include <sys/stat.h>
 
-#include <dir.h>
-#include <dir/functor/callback.h>
-#include <error.h>
-#include <glue.h>
-#include <os.h>
-#include <sub.h>
-#include <trace.h>
-#include <nstring/list.h>
+#include <libaegis/dir.h>
+#include <libaegis/dir/functor/callback.h>
+#include <common/error.h>
+#include <libaegis/glue.h>
+#include <libaegis/os.h>
+#include <libaegis/sub.h>
+#include <common/trace.h>
+#include <common/nstring/list.h>
 
 
 void

@@ -1,6 +1,6 @@
 //
 //	aegis - project change supervisor
-//	Copyright (C) 1999, 2001-2004 Peter Miller;
+//	Copyright (C) 1999, 2001-2006 Peter Miller;
 //	All rights reserved.
 //
 //	This program is free software; you can redistribute it and/or modify
@@ -20,9 +20,9 @@
 // MANIFEST: functions to manipulate sets
 //
 
-#include <change/file.h>
-#include <error.h> // for assert
-#include <trace.h>
+#include <libaegis/change/file.h>
+#include <common/error.h> // for assert
+#include <common/trace.h>
 
 
 void
@@ -38,9 +38,11 @@ change_file_test_time_set(change_ty *cp, fstate_src_ty *src_data, time_t when,
     // Find the appropriate architecture record;
     // create a new one if necessary.
     //
-    trace(("change_file_test_time_set(cp = %08lX)\n{\n", (long)cp));
+    trace(("change_file_test_time_set(cp = %08lX, src_data = %08lX, "
+	"when = %ld)\n{\n", (long)cp, (long)src_data, (long)when));
     if (!variant)
 	variant = change_architecture_name(cp, 1);
+    trace(("variant = \"%s\"\n", variant->str_text));
     if (!src_data->architecture_times)
     {
 	src_data->architecture_times =
@@ -51,6 +53,7 @@ change_file_test_time_set(change_ty *cp, fstate_src_ty *src_data, time_t when,
     for (j = 0; j < atlp->length; ++j)
     {
 	atp = atlp->list[j];
+	assert(atp->variant);
 	if
 	(
 	    // bug if not set
@@ -65,6 +68,7 @@ change_file_test_time_set(change_ty *cp, fstate_src_ty *src_data, time_t when,
 	fstate_src_architecture_times_ty **addr;
 	type_ty		*type_p;
 
+	trace(("new variant\n"));
 	addr =
 	    (fstate_src_architecture_times_ty **)
 	    fstate_src_architecture_times_list_type.list_parse(atlp, &type_p);
@@ -113,7 +117,7 @@ change_file_test_time_set(change_ty *cp, fstate_src_ty *src_data, time_t when,
 		if (src_data->deleted_by)
 		    continue;
 
-		// shoudl be file_action_transparent
+		// should be file_action_transparent
 		assert(!src_data->about_to_be_created_by);
 		if (src_data->about_to_be_created_by)
 		    continue;
@@ -137,6 +141,7 @@ change_file_test_time_set(change_ty *cp, fstate_src_ty *src_data, time_t when,
 	for (k = 0; k < atlp->length; ++k)
 	{
 	    atp = atlp->list[k];
+	    assert(atp->variant);
 	    if
 	    (
 	       	// bug if not set
@@ -161,6 +166,7 @@ change_file_test_time_set(change_ty *cp, fstate_src_ty *src_data, time_t when,
     //
     // set the change test time
     //
-    change_test_time_set(cp, when);
+    trace_time(when);
+    change_test_time_set(cp, variant, when);
     trace(("}\n"));
 }

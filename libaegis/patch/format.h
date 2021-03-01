@@ -1,6 +1,6 @@
 //
 //	aegis - project change supervisor
-//	Copyright (C) 2001-2004 Peter Miller;
+//	Copyright (C) 2001-2005 Peter Miller;
 //	All rights reserved.
 //
 //	This program is free software; you can redistribute it and/or modify
@@ -23,7 +23,7 @@
 #ifndef LIBAEGIS_PATCH_FORMAT_H
 #define LIBAEGIS_PATCH_FORMAT_H
 
-#include <patch.h>
+#include <libaegis/patch.h>
 
 struct patch_context_ty; // forward
 

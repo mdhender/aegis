@@ -1,6 +1,6 @@
 //
 //	aegis - project change supervisor
-//	Copyright (C) 1999, 2002-2004 Peter Miller;
+//	Copyright (C) 1999, 2002-2006 Peter Miller;
 //	All rights reserved.
 //
 //	This program is free software; you can redistribute it and/or modify
@@ -20,12 +20,12 @@
 // MANIFEST: functions to manipulate querys
 //
 
-#include <change/file.h>
-#include <error.h> // for assert
-#include <os/isa/path_prefix.h>
-#include <project/file.h>
-#include <str_list.h>
-#include <trace.h>
+#include <libaegis/change/file.h>
+#include <common/error.h> // for assert
+#include <libaegis/os/isa/path_prefix.h>
+#include <libaegis/project/file.h>
+#include <common/str_list.h>
+#include <common/trace.h>
 
 
 void
@@ -45,7 +45,7 @@ project_file_directory_query(project_ty *pp, string_ty *file_name,
     {
 	fstate_src_ty   *src_data;
 
-	src_data = project_file_nth(pp, j, as_view_path);
+	src_data = pp->file_nth(j, as_view_path);
 	if (!src_data)
 	    break;
 	switch (src_data->usage)

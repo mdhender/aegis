@@ -1,6 +1,6 @@
 //
 //	aegis - project change supervisor
-//	Copyright (C) 2003, 2004 Peter Miller;
+//	Copyright (C) 2003-2005 Peter Miller;
 //	All rights reserved.
 //
 //	This program is free software; you can redistribute it and/or modify
@@ -20,9 +20,9 @@
 // MANIFEST: functions to manipulate end_withs
 //
 
-#include <ac/string.h>
+#include <common/ac/string.h>
 
-#include <end_with.h>
+#include <aemeasure/end_with.h>
 
 
 static int

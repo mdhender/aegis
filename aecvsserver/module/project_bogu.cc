@@ -1,6 +1,6 @@
 //
 //	aegis - project change supervisor
-//	Copyright (C) 2004 Peter Miller;
+//	Copyright (C) 2004-2006 Peter Miller;
 //	All rights reserved.
 //
 //	This program is free software; you can redistribute it and/or modify
@@ -20,122 +20,94 @@
 // MANIFEST: functions to manipulate project_bogus
 //
 
-#include <file_info.h>
-#include <input.h>
-#include <module/private.h>
-#include <module/project_bogu.h>
-#include <server.h>
+#include <aecvsserver/file_info.h>
+#include <libaegis/input.h>
+#include <aecvsserver/module/project_bogu.h>
+#include <aecvsserver/server.h>
 
 
-struct module_project_bogus_ty
+module_project_bogus::~module_project_bogus()
 {
-    module_ty       inherited;
-    string_ty       *name;
-};
-
-
-static void
-destructor(module_ty *mp)
-{
-    module_project_bogus_ty *mpbp;
-
-    mpbp = (module_project_bogus_ty *)mp;
-    str_free(mpbp->name);
-    mpbp->name = 0;
+    str_free(projname);
+    projname = 0;
 }
 
 
-static void
-groan(module_ty *mp, server_ty *sp, const char *caption)
+module_project_bogus::module_project_bogus(string_ty *arg) :
+    projname(str_copy(arg))
 {
-    module_project_bogus_ty *mpbp;
+}
 
-    mpbp = (module_project_bogus_ty *)mp;
+
+void
+module_project_bogus::groan(server_ty *sp, const char *caption)
+{
     server_error
     (
 	sp,
 	"%s: project \"%s\": no such project",
 	caption,
-	mpbp->name->str_text
+	projname->str_text
     );
 }
 
 
-static void
-modified(module_ty *mp, server_ty *sp, string_ty *file_name, file_info_ty *fip,
-    input_ty *ip)
+void
+module_project_bogus::modified(server_ty *sp, string_ty *file_name,
+    file_info_ty *fip, input &ip)
 {
-    groan(mp, sp, "Modified");
+    groan(sp, "Modified");
 }
 
 
-static string_ty *
-canonical_name(module_ty *mp)
+string_ty *
+module_project_bogus::calculate_canonical_name()
+    const
 {
     // FIXME: memory leak
     return str_from_c("no such project");
 }
 
 
-static int
-update(module_ty *mp, server_ty *sp, string_ty *client_side,
-    string_ty *server_side, module_options_ty *opt)
+bool
+module_project_bogus::update(server_ty *sp, string_ty *client_side,
+    string_ty *server_side, const options &opt)
 {
-    groan(mp, sp, "update");
-    return 0;
+    groan(sp, "update");
+    return false;
 }
 
 
-static int
-checkin(module_ty *mp, server_ty *sp, string_ty *client_side,
+bool
+module_project_bogus::checkin(server_ty *sp, string_ty *client_side,
     string_ty *server_side)
 {
-    groan(mp, sp, "ci");
+    groan(sp, "ci");
+    return false;
+}
+
+
+bool
+module_project_bogus::add(server_ty *sp, string_ty *client_side,
+    string_ty *server_side, const options &opt)
+{
+    groan(sp, "add");
+    return false;
+}
+
+
+bool
+module_project_bogus::remove(server_ty *sp, string_ty *client_side,
+    string_ty *server_side, const options &opt)
+{
+    groan(sp, "remove");
     return 0;
 }
 
 
-static int
-add(module_ty *mp, server_ty *sp, string_ty *client_side,
-    string_ty *server_side, module_options_ty *opt)
+bool
+module_project_bogus::is_bogus()
+    const
 {
-    groan(mp, sp, "add");
-    return 0;
-}
-
-
-static int
-remove(module_ty *mp, server_ty *sp, string_ty *client_side,
-    string_ty *server_side, module_options_ty *opt)
-{
-    groan(mp, sp, "remove");
-    return 0;
-}
-
-
-static const module_method_ty vtbl =
-{
-    sizeof(module_project_bogus_ty),
-    destructor,
-    modified,
-    canonical_name,
-    update,
-    checkin,
-    add,
-    remove,
-    1, // bogus
-    "project bogus"
-};
-
-
-module_ty *
-module_project_bogus_new(string_ty *name)
-{
-    module_ty       *mp;
-    module_project_bogus_ty *mpbp;
-
-    mp = module_new(&vtbl);
-    mpbp = (module_project_bogus_ty *)mp;
-    mpbp->name = str_copy(name);
-    return mp;
+    return true;
 }

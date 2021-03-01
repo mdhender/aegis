@@ -1,6 +1,6 @@
 //
 //	aegis - project change supervisor
-//	Copyright (C) 1994, 1996, 2004 Peter Miller;
+//	Copyright (C) 1994, 1996, 2004, 2005 Peter Miller;
 //	All rights reserved.
 //
 //	This program is free software; you can redistribute it and/or modify
@@ -20,11 +20,11 @@
 // MANIFEST: functions to implement the builtin count function
 //
 
-#include <aer/expr.h>
-#include <aer/func/count.h>
-#include <aer/value.h>
-#include <aer/value/error.h>
-#include <error.h>
+#include <libaegis/aer/expr.h>
+#include <libaegis/aer/func/count.h>
+#include <libaegis/aer/value.h>
+#include <libaegis/aer/value/error.h>
+#include <common/error.h>
 
 
 static int

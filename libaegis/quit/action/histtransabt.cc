@@ -1,6 +1,6 @@
 //
 //	aegis - project change supervisor
-//	Copyright (C) 2004 Peter Miller;
+//	Copyright (C) 2004, 2005 Peter Miller;
 //	All rights reserved.
 //
 //	This program is free software; you can redistribute it and/or modify
@@ -20,10 +20,8 @@
 // MANIFEST: implementation of the quit_action_history_transaction_abort class
 //
 
-#pragma implementation "quit_action_history_transaction_abort"
-
-#include <change.h>
-#include <quit/action/histtransabt.h>
+#include <libaegis/change.h>
+#include <libaegis/quit/action/histtransabt.h>
 
 
 quit_action_history_transaction_abort::~quit_action_history_transaction_abort()

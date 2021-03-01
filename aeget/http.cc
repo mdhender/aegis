@@ -1,6 +1,6 @@
 //
 //      aegis - project change supervisor
-//      Copyright (C) 2003-2005 Peter Miller;
+//      Copyright (C) 2003-2006 Peter Miller;
 //      All rights reserved.
 //
 //      This program is free software; you can redistribute it and/or modify
@@ -20,26 +20,26 @@
 // MANIFEST: functions to manipulate https
 //
 
-#include <ac/ctype.h>
-#include <ac/errno.h>
-#include <ac/stdarg.h>
-#include <ac/stdio.h>
-#include <ac/stdlib.h>
-#include <ac/string.h>
-#include <ac/time.h>
+#include <common/ac/ctype.h>
+#include <common/ac/errno.h>
+#include <common/ac/stdarg.h>
+#include <common/ac/stdio.h>
+#include <common/ac/stdlib.h>
+#include <common/ac/string.h>
+#include <common/ac/time.h>
 
-#include <change.h>
-#include <emit/project.h>
-#include <error.h>
-#include <http.h>
-#include <now.h>
-#include <nstring.h>
-#include <os.h>
-#include <project.h>
-#include <progname.h>
-#include <str.h>
-#include <str_list.h>
-#include <version_stmp.h>
+#include <libaegis/change.h>
+#include <aeget/emit/project.h>
+#include <common/error.h>
+#include <aeget/http.h>
+#include <common/now.h>
+#include <common/nstring.h>
+#include <libaegis/os.h>
+#include <libaegis/project.h>
+#include <common/progname.h>
+#include <common/str.h>
+#include <common/str_list.h>
+#include <common/version_stmp.h>
 
 
 bool http_fatal_noerror;
@@ -151,7 +151,7 @@ emit_project_attribute(project_ty *pp, change_ty *cp, const char *cname)
     if (!pp && cp)
         pp = cp->pp;
     if (pp && (!cp || cp->bogus))
-        cp = project_change_get(pp);
+        cp = pp->change_get();
     if (!cp)
         return;
     pconf_ty *pconf_data = change_pconf_get(cp, 0);
@@ -208,8 +208,8 @@ emit_project_stylesheet(project_ty *pp)
     // it should silently ignore it.  2. Style sheets who's media is not
     // "screen" will be ignored.  Fortunately we can use (2) to get around (1).
     //
-    if (pp && pp->parent)
-        emit_project_stylesheet(pp->parent);
+    if (pp && !pp->is_a_trunk())
+        emit_project_stylesheet(pp->parent_get());
     else
     {
         printf("<style type=\"text/css\">\n"

@@ -1,6 +1,6 @@
 //
 //	aegis - project change supervisor
-//	Copyright (C) 2004, 2005 Peter Miller;
+//	Copyright (C) 2004-2006 Peter Miller;
 //	All rights reserved.
 //
 //	This program is free software; you can redistribute it and/or modify
@@ -20,18 +20,18 @@
 // MANIFEST: implementation of the change_id_file_revision class
 //
 
-#include <change.h>
-#include <change/branch.h>
-#include <change/file.h>
-#include <change/functor.h>
-#include <change/identifi_sub.h>
-#include <cstate.h>
-#include <error.h> // for assert
-#include <project/file.h>
-#include <project/file/roll_forward.h>
-#include <project/identifi_sub.h>
-#include <sub.h>
-#include <trace.h>
+#include <common/error.h> // for assert
+#include <common/trace.h>
+#include <libaegis/change/branch.h>
+#include <libaegis/change/file.h>
+#include <libaegis/change/functor.h>
+#include <libaegis/change.h>
+#include <libaegis/change/identifi_sub.h>
+#include <libaegis/cstate.h>
+#include <libaegis/project/file.h>
+#include <libaegis/project/file/roll_forward.h>
+#include <libaegis/project/identifi_sub.h>
+#include <libaegis/sub.h>
 
 
 file_revision
@@ -93,9 +93,8 @@ change_identifier_subset::get_file_revision(const nstring &filename,
 	    if (!src)
 	    {
 		src =
-		    project_file_find_fuzzy
+		    pid.get_pp()->file_find_fuzzy
 		    (
-			pid.get_pp(),
 			filename.get_ref(),
 			view_path_extreme
 		    );

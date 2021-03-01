@@ -1,6 +1,6 @@
 //
 //	aegis - project change supervisor
-//	Copyright (C) 2001-2005 Peter Miller;
+//	Copyright (C) 2001-2006 Peter Miller;
 //	All rights reserved.
 //
 //	This program is free software; you can redistribute it and/or modify
@@ -173,23 +173,19 @@
 //		; Appendix B as "mail-safe".
 //
 
-#include <ac/string.h>
+#include <common/ac/string.h>
 
-#include <input/quoted_print.h>
-#include <mem.h>
+#include <libaegis/input/quoted_print.h>
+#include <common/mem.h>
 
 
 input_quoted_printable::~input_quoted_printable()
 {
-    if (close_on_close)
-	delete deeper;
-    deeper = 0;
 }
 
 
-input_quoted_printable::input_quoted_printable(input_ty *arg1, bool arg2) :
-    deeper(arg1),
-    close_on_close(arg2),
+input_quoted_printable::input_quoted_printable(input &arg) :
+    deeper(arg),
     eof(false),
     pos(0)
 {
@@ -245,7 +241,7 @@ input_quoted_printable::read_inner(void *data, size_t len)
     next_char:
     while (cp < end)
     {
-	int c = deeper->getc();
+	int c = deeper->getch();
 	if (c < 0)
 	{
 	    eof = true;
@@ -280,7 +276,7 @@ input_quoted_printable::read_inner(void *data, size_t len)
 		//
 		// See what comes next.
 		//
-		c = deeper->getc();
+		c = deeper->getch();
 		if (c < 0)
 		    break;
 		if (c == '\n')
@@ -345,14 +341,14 @@ input_quoted_printable::read_inner(void *data, size_t len)
 	//
 	// Except for trailing white space; that we ignore.
 	//
-	c = deeper->getc();
+	c = deeper->getch();
 	if (c < 0)
 	    break;
 	if (c == ' ' || c == '\t')
 	{
 	    for (;;)
 	    {
-		c = deeper->getc();
+		c = deeper->getch();
 		if (c == '\n')
 		    break;
 		if (c != ' ' && c != '\t')
@@ -370,7 +366,7 @@ input_quoted_printable::read_inner(void *data, size_t len)
 	    deeper->fatal_error("quoted printable: invalid hex character");
 	    // NOTREACHED
 	}
-	c = deeper->getc();
+	c = deeper->getch();
 	int n2 = hex(c);
 	if (n2 < 0)
 	{

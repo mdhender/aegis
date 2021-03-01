@@ -1,6 +1,6 @@
 //
 //	aegis - project change supervisor
-//	Copyright (C) 1991-1999, 2001-2005 Peter Miller;
+//	Copyright (C) 1991-1999, 2001-2006 Peter Miller;
 //	All rights reserved.
 //
 //	This program is free software; you can redistribute it and/or modify
@@ -20,33 +20,33 @@
 // MANIFEST: functions to implement review pass undo
 //
 
-#include <ac/stdio.h>
-#include <ac/stdlib.h>
-#include <ac/sys/types.h>
+#include <common/ac/stdio.h>
+#include <common/ac/stdlib.h>
+#include <common/ac/sys/types.h>
 #include <sys/stat.h>
 
-#include <ael/change/by_state.h>
-#include <aerpu.h>
-#include <arglex2.h>
-#include <arglex/change.h>
-#include <arglex/project.h>
-#include <change.h>
-#include <commit.h>
-#include <dir.h>
-#include <error.h> // for assert
-#include <file.h>
-#include <help.h>
-#include <lock.h>
-#include <mem.h>
-#include <os.h>
-#include <progname.h>
-#include <project.h>
-#include <quit.h>
-#include <rss.h>
-#include <sub.h>
-#include <trace.h>
-#include <undo.h>
-#include <user.h>
+#include <libaegis/ael/change/by_state.h>
+#include <aegis/aerpu.h>
+#include <libaegis/arglex2.h>
+#include <libaegis/arglex/change.h>
+#include <libaegis/arglex/project.h>
+#include <libaegis/change.h>
+#include <libaegis/commit.h>
+#include <libaegis/dir.h>
+#include <common/error.h> // for assert
+#include <libaegis/file.h>
+#include <libaegis/help.h>
+#include <libaegis/lock.h>
+#include <common/mem.h>
+#include <libaegis/os.h>
+#include <common/progname.h>
+#include <libaegis/project.h>
+#include <common/quit.h>
+#include <libaegis/rss.h>
+#include <libaegis/sub.h>
+#include <common/trace.h>
+#include <libaegis/undo.h>
+#include <libaegis/user.h>
 
 
 static void
@@ -196,7 +196,7 @@ review_pass_undo_main(void)
 	project_name = user_default_project();
     pp = project_alloc(project_name);
     str_free(project_name);
-    project_bind_existing(pp);
+    pp->bind_existing();
 
     //
     // locate user data

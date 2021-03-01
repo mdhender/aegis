@@ -20,19 +20,19 @@
 // MANIFEST: functions to impliment the builtin columns function
 //
 
-#include <aer/expr.h>
-#include <aer/func/columns.h>
-#include <aer/func/print.h>
-#include <aer/value/integer.h>
-#include <aer/value/real.h>
-#include <aer/value/string.h>
-#include <aer/value/struct.h>
-#include <aer/value/void.h>
-#include <col.h>
-#include <error.h> // for assert
-#include <mem.h>
-#include <str.h>
-#include <output.h>
+#include <libaegis/aer/expr.h>
+#include <libaegis/aer/func/columns.h>
+#include <libaegis/aer/func/print.h>
+#include <libaegis/aer/value/integer.h>
+#include <libaegis/aer/value/real.h>
+#include <libaegis/aer/value/string.h>
+#include <libaegis/aer/value/struct.h>
+#include <libaegis/aer/value/void.h>
+#include <libaegis/col.h>
+#include <common/error.h> // for assert
+#include <common/mem.h>
+#include <common/str.h>
+#include <libaegis/output.h>
 
 
 static int

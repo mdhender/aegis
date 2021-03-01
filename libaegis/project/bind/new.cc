@@ -1,6 +1,6 @@
 //
 //	aegis - project change supervisor
-//	Copyright (C) 2004 Peter Miller;
+//	Copyright (C) 2004-2006 Peter Miller;
 //	All rights reserved.
 //
 //	This program is free software; you can redistribute it and/or modify
@@ -20,18 +20,18 @@
 // MANIFEST: functions to manipulate news
 //
 
-#include <change/branch.h>
-#include <error.h> // for assert
-#include <gonzo.h>
-#include <os.h>
-#include <project/history.h>
-#include <trace.h>
-#include <sub.h>
-#include <user.h>
+#include <libaegis/change/branch.h>
+#include <common/error.h> // for assert
+#include <libaegis/gonzo.h>
+#include <libaegis/os.h>
+#include <libaegis/project/history.h>
+#include <common/trace.h>
+#include <libaegis/sub.h>
+#include <libaegis/user.h>
 
 
 void
-project_bind_new(project_ty *pp)
+project_ty::bind_new()
 {
     int		    um;
     user_ty	    *up;
@@ -40,13 +40,13 @@ project_bind_new(project_ty *pp)
     //
     // make sure does not already exist
     //
-    trace(("project_bind_new()\n{\n"));
-    if (gonzo_project_home_path_from_name(pp->name))
+    trace(("project_ty::bind_new()\n{\n"));
+    if (gonzo_project_home_path_from_name(name))
     {
 	sub_context_ty	*scp;
 
 	scp = sub_context_new();
-	sub_var_set_string(scp, "Name", pp->name);
+	sub_var_set_string(scp, "Name", name);
 	fatal_intl(scp, i18n("project $name exists"));
 	// NOTREACHED
 	sub_context_delete(scp);
@@ -55,28 +55,28 @@ project_bind_new(project_ty *pp)
     //
     // allocate data structures
     //
-    assert(!pp->pstate_data);
-    assert(!pp->pstate_path);
-    pp->is_a_new_file = 1;
-    pp->pstate_data = (pstate_ty *)pstate_type.alloc();
-    pp->pstate_data->next_test_number = 1;
-    os_become_orig_query(&pp->uid, &pp->gid, &um);
+    assert(!pstate_data);
+    assert(!pstate_path);
+    is_a_new_file = true;
+    pstate_data = (pstate_ty *)pstate_type.alloc();
+    pstate_data->next_test_number = 1;
+    os_become_orig_query(&uid, &gid, &um);
 
-    pp->pcp = change_alloc(pp, TRUNK_CHANGE_NUMBER);
-    change_bind_new(pp->pcp);
-    change_branch_new(pp->pcp);
-    project_umask_set(pp, um);
+    pcp = change_alloc(this, TRUNK_CHANGE_NUMBER);
+    change_bind_new(pcp);
+    change_branch_new(pcp);
+    project_umask_set(this, um);
 
     //
     // The new change is in the 'being developed'
     // state, and will be forever.
     //
-    up = user_executing(pp);
-    h = change_history_new(pp->pcp, up);
+    up = user_executing(this);
+    h = change_history_new(pcp, up);
     h->what = cstate_history_what_new_change;
-    h = change_history_new(pp->pcp, up);
+    h = change_history_new(pcp, up);
     h->what = cstate_history_what_develop_begin;
     user_free(up);
-    pp->pcp->cstate_data->state = cstate_state_being_developed;
+    pcp->cstate_data->state = cstate_state_being_developed;
     trace(("}\n"));
 }

@@ -1,6 +1,6 @@
 //
 //	aegis - project change supervisor
-//	Copyright (C) 2004 Peter Miller;
+//	Copyright (C) 2004, 2005 Peter Miller;
 //	All rights reserved.
 //
 //	This program is free software; you can redistribute it and/or modify
@@ -23,9 +23,7 @@
 #ifndef AEMAKEFILE_PROCESS_BODY_H
 #define AEMAKEFILE_PROCESS_BODY_H
 
-#pragma interface "process_body"
-
-#include <process.h>
+#include <aemakefile/process.h>
 
 /**
   * The process_body class is used to represent the processing in the

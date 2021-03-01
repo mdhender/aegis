@@ -1,6 +1,6 @@
 //
 //	aegis - project change supervisor
-//	Copyright (C) 2005 Peter Miller;
+//	Copyright (C) 2005, 2006 Peter Miller;
 //	All rights reserved.
 //
 //	This program is free software; you can redistribute it and/or modify
@@ -22,8 +22,6 @@
 
 #ifndef LIBAEGIS_XMLTEXTREAD_H
 #define LIBAEGIS_XMLTEXTREAD_H
-
-#pragma interface "xml_text_reader"
 
 #include <libxml/xmlreader.h>
 #include <libxml/xmlversion.h>
@@ -52,7 +50,7 @@ enum xmlReaderTypes
 };
 #endif
 
-struct input_ty; // forward
+#include <libaegis/input.h>
 
 /**
   * The xml_text_reader class is used to represent an XML stream reader.
@@ -69,7 +67,7 @@ public:
     /**
       * The constructor.
       */
-    xml_text_reader(input_ty *deeper, bool validate = false);
+    xml_text_reader(input &deeper, bool validate = false);
 
     /**
       * The parse method is used to parse the given file.  Each element
@@ -177,7 +175,7 @@ private:
       * The deeper instance variable is used to remember the deeper
       * input stream which the XML parser will use to obtain its input.
       */
-    input_ty *deeper;
+    input deeper;
 
     /**
       * The reader instance variable is used to remember the location of

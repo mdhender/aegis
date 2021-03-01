@@ -1,6 +1,6 @@
 //
 //	aegis - project change supervisor
-//	Copyright (C) 2002-2004 Peter Miller;
+//	Copyright (C) 2002-2006 Peter Miller;
 //	All rights reserved.
 //
 //	This program is free software; you can redistribute it and/or modify
@@ -20,14 +20,14 @@
 // MANIFEST: functions to manipulate aenrvs
 //
 
-#include <arglex2.h>
-#include <command/aenrv.h>
-#include <command/generic.h>
-#include <command/private.h>
-#include <complete/project/name.h>
-#include <complete/user/reviewer.h>
-#include <project.h>
-#include <user.h>
+#include <libaegis/arglex2.h>
+#include <aecomplete/command/aenrv.h>
+#include <aecomplete/command/generic.h>
+#include <aecomplete/command/private.h>
+#include <aecomplete/complete/project/name.h>
+#include <aecomplete/complete/user/reviewer.h>
+#include <libaegis/project.h>
+#include <libaegis/user.h>
 
 
 static void
@@ -103,7 +103,7 @@ completion_get(command_ty *cmd)
     if (!project_name)
 	project_name = user_default_project();
     pp = project_alloc(project_name);
-    project_bind_existing(pp);
+    pp->bind_existing();
 
     //
     // We are going to complete a user name.

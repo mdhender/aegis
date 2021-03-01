@@ -20,22 +20,22 @@
 // MANIFEST: functions to manipulate read_writes
 //
 
-#include <ac/stddef.h>
-#include <ac/sys/types.h>
+#include <common/ac/stddef.h>
+#include <common/ac/sys/types.h>
 #include <sys/stat.h>
 
-#include <cstate.h>
-#include <change.h>
-#include <change/branch.h>
-#include <change/develop_direct/read_write.h>
-#include <change/file.h>
-#include <dir.h>
-#include <os.h>
-#include <project/file.h>
-#include <project/history.h>
-#include <sub.h>
-#include <undo.h>
-#include <user.h>
+#include <libaegis/change/branch.h>
+#include <libaegis/change/develop_direct/read_write.h>
+#include <libaegis/change/file.h>
+#include <libaegis/change.h>
+#include <libaegis/cstate.h>
+#include <libaegis/dir.h>
+#include <libaegis/os.h>
+#include <libaegis/project/file.h>
+#include <libaegis/project/history.h>
+#include <libaegis/sub.h>
+#include <libaegis/undo.h>
+#include <libaegis/user.h>
 
 
 struct auxilliary

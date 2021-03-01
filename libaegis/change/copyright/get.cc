@@ -1,6 +1,6 @@
 //
 //	aegis - project change supervisor
-//	Copyright (C) 2001, 2003, 2004 Peter Miller;
+//	Copyright (C) 2001, 2003-2006 Peter Miller;
 //	All rights reserved.
 //
 //	This program is free software; you can redistribute it and/or modify
@@ -20,14 +20,14 @@
 // MANIFEST: functions to manipulate gets
 //
 
-#include <ac/stdlib.h>
+#include <common/ac/stdlib.h>
 
-#include <change/branch.h>
-#include <error.h>
-#include <project.h>
+#include <libaegis/change/branch.h>
+#include <common/error.h>
+#include <libaegis/project.h>
 
 
-static void
+void
 change_copyright_years_slurp(change_ty *cp, int *a, int amax, int *alen_p)
 {
     size_t          j, k;
@@ -71,8 +71,6 @@ change_copyright_years_cmp(const void *va, const void *vb)
 void
 change_copyright_years_get(change_ty *cp, int *a, int amax, int *alen_p)
 {
-    project_ty      *pp;
-
     //
     // Get the years specific to this change.
     //
@@ -84,16 +82,7 @@ change_copyright_years_get(change_ty *cp, int *a, int amax, int *alen_p)
     // Walk up the list of ancestors until we get to the trunk
     // extracting the years specific to each branch.
     //
-    for (pp = cp->pp; pp; pp = pp->parent)
-    {
-	change_copyright_years_slurp
-	(
-	    project_change_get(pp),
-	    a,
-	    amax,
-	    alen_p
-	);
-    }
+    cp->pp->copyright_years_slurp(a, amax, alen_p);
 
     //
     // sort the years into ascending order

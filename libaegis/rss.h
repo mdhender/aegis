@@ -23,7 +23,7 @@
 #ifndef LIBAEGIS_RSS_H
 #define LIBAEGIS_RSS_H
 
-#include <nstring.h>
+#include <common/nstring.h>
 
 struct project_ty; // forward
 

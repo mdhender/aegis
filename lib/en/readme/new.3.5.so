@@ -1,6 +1,6 @@
 .\"
 .\"	aegis - project change supervisor
-.\"	Copyright (C) 1998, 2003 Peter Miller;
+.\"	Copyright (C) 1998, 2003, 2005 Peter Miller;
 .\"	All rights reserved.
 .\"
 .\"	This program is free software; you can redistribute it and/or modify
@@ -25,7 +25,7 @@
 The \fIdiff3_command\fP field of the project \fIconfig\fP file has
 been replaced by a \fImerge_command\fP field.  It works exactly the
 same way, but Aegis moves the files around first, so that the output
-replaces the change source file.  This results in fewer ``lost'' merges.
+replaces the change source file.  This results in fewer \[lq]lost\[rq] merges.
 Those of you who have been hacking the \fIdiff3_command\fP to move the
 files around will need to take the moves \fBout\fP when you rename the
 \fIdiff3_command\fP field to be the new \fImerge_command\fP field.
@@ -42,7 +42,7 @@ getting gibberish (C escapes) in the output.
 There is a new \fIshell_safe_filenames\fP field in the project
 \fIconfig\fP file.  This field controls whether filenames are required
 to be free of shell special characters.  This field defaults to true if
-not set, so if you are using any ``interesting'' filenames, you may need
+not set, so if you are using any \[lq]interesting\[rq] filenames, you may need
 to explicitly set this field to false.
 (You still can't use spaces or international characters in filenames.)
 .PP
@@ -64,7 +64,7 @@ to be omitted.
 .PP
 .if n *
 .if t \(bu
-A bug which prevented the ``aeb -minimum'' option from working in any
+A bug which prevented the \[lq]aeb -minimum\[rq] option from working in any
 non-trivial case has been fixed.
 .\" ---------------------------------------------------------------------------
 .\" Place new text above this line.

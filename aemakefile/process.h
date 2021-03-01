@@ -1,6 +1,6 @@
 //
 //	aegis - project change supervisor
-//	Copyright (C) 2004 Peter Miller;
+//	Copyright (C) 2004, 2005 Peter Miller;
 //	All rights reserved.
 //
 //	This program is free software; you can redistribute it and/or modify
@@ -23,10 +23,8 @@
 #ifndef AEMAKEFILE_PROCESS_H
 #define AEMAKEFILE_PROCESS_H
 
-#pragma interface "process"
-
-#include <printer.h>
-#include <nstring/list.h>
+#include <aemakefile/printer.h>
+#include <common/nstring/list.h>
 
 /**
   * The process class is used to represent

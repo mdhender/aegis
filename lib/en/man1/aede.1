@@ -1,6 +1,6 @@
 '\" tp
 .\"	aegis - project change supervisor
-.\"	Copyright (C) 1991-1994, 1997-1999, 2001, 2002, 2004, 2005 Peter Miller;
+.\"	Copyright (C) 1991-1994, 1997-1999, 2001, 2002, 2004-2006 Peter Miller;
 .\"	All rights reserved.
 .\"
 .\"	This program is free software; you can redistribute it and/or modify
@@ -65,7 +65,7 @@ an '\*(n) -Test' command
 since the last successful build,
 unless the change has a
 .I test_exempt
-attribute.
+attribute, or the build command is \f[CW]"exit 0"\fP.
 This command checks that you have successfully completed
 an '\*(n) -Test -BaseLine' command,
 unless the change has a
@@ -163,6 +163,11 @@ On successful completion of the command, the
 \fIdevelop_\%end_\%notify_\%command\fP field of the project attributes
 file is run, if set.  See \fIaepa\fP(1) and \fIaepattr\fP(5) for more
 information.
+.PP
+If your project has configured the \fIdevelop_\%end_\%action\fP in the
+project confifuration file to \fIgoto_\%awaiting_\%integration\fP then
+the \fIreview_\%pass_\%notify_\%command\fP in the project attributes
+file is run instead, if set.
 .SH OPTIONS
 The following options are understood:
 .so o_change.so
@@ -232,6 +237,9 @@ difference a change
 .TP 8n
 .IR aedb (1)
 begin development of a change
+.TP 8n
+.IR aede-policy (1)
+validate change set is ready to end
 .TP 8n
 .IR aedeu (1)
 recall a change for further development

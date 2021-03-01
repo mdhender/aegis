@@ -1,6 +1,6 @@
 //
 //	aegis - project change supervisor
-//	Copyright (C) 2004 Peter Miller;
+//	Copyright (C) 2004-2006 Peter Miller;
 //	All rights reserved.
 //
 //	This program is free software; you can redistribute it and/or modify
@@ -20,14 +20,14 @@
 // MANIFEST: functions to manipulate list_gets
 //
 
-#include <change/branch.h>
-#include <change/file/list_get.h>
-#include <error.h> // for assert
-#include <str_list.h>
-#include <project.h>
-#include <symtab.h>
-#include <symtab_iter.h>
-#include <trace.h>
+#include <libaegis/change/branch.h>
+#include <libaegis/change/file/list_get.h>
+#include <common/error.h> // for assert
+#include <common/str_list.h>
+#include <libaegis/project.h>
+#include <common/symtab.h>
+#include <common/symtab_iter.h>
+#include <common/trace.h>
 
 
 string_list_ty *
@@ -174,7 +174,7 @@ change_file_list_get(change_ty *cp, view_path_ty as_view_path)
 		break;
 	    if (cp2->number == TRUNK_CHANGE_NUMBER)
 		break;
-	    cp2 = project_change_get(cp2->pp);
+	    cp2 = cp2->pp->change_get();
 	    top_level = 0;
 	}
 

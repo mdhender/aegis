@@ -1,6 +1,6 @@
 //
 //	aegis - project change supervisor
-//	Copyright (C) 1995, 2002-2004 Peter Miller;
+//	Copyright (C) 1995, 2002-2005 Peter Miller;
 //	All rights reserved.
 //
 //	This program is free software; you can redistribute it and/or modify
@@ -23,9 +23,7 @@
 #ifndef COMMON_WSTR_LIST_H
 #define COMMON_WSTR_LIST_H
 
-#pragma interface "wstring_list_ty"
-
-#include <wstr.h>
+#include <common/wstr.h>
 
 /** \addtogroup WStringList
   * \brief Lists of wide char strings

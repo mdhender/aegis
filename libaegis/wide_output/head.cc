@@ -1,6 +1,6 @@
 //
 //	aegis - project change supervisor
-//	Copyright (C) 1999-2001, 2003, 2004 Peter Miller;
+//	Copyright (C) 1999-2001, 2003-2005 Peter Miller;
 //	All rights reserved.
 //
 //	This program is free software; you can redistribute it and/or modify
@@ -23,10 +23,10 @@
 // a stream, and discard the rest.  It is similar to the head(1) command.
 //
 
-#include <str.h>
-#include <wide_output/head.h>
-#include <wide_output/private.h>
-#include <trace.h>
+#include <common/str.h>
+#include <libaegis/wide_output/head.h>
+#include <libaegis/wide_output/private.h>
+#include <common/trace.h>
 
 
 struct wide_output_head_ty

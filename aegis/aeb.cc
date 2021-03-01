@@ -1,6 +1,6 @@
 //
 //	aegis - project change supervisor
-//	Copyright (C) 1991-2005 Peter Miller;
+//	Copyright (C) 1991-2006 Peter Miller;
 //	All rights reserved.
 //
 //	This program is free software; you can redistribute it and/or modify
@@ -20,36 +20,36 @@
 // MANIFEST: functions to perform development and integration builds
 //
 
-#include <ac/errno.h>
-#include <ac/libintl.h>
-#include <ac/stdio.h>
-#include <ac/stdlib.h>
-#include <ac/string.h>
-#include <ac/time.h>
+#include <common/ac/errno.h>
+#include <common/ac/libintl.h>
+#include <common/ac/stdio.h>
+#include <common/ac/stdlib.h>
+#include <common/ac/string.h>
+#include <common/ac/time.h>
 
-#include <aeb.h>
-#include <ael/change/by_state.h>
-#include <arglex2.h>
-#include <arglex/change.h>
-#include <arglex/project.h>
-#include <col.h>
-#include <commit.h>
-#include <change.h>
-#include <change/branch.h>
-#include <change/file.h>
-#include <change/identifier.h>
-#include <error.h>
-#include <help.h>
-#include <lock.h>
-#include <log.h>
-#include <os.h>
-#include <progname.h>
-#include <project.h>
-#include <quit.h>
-#include <sub.h>
-#include <trace.h>
-#include <user.h>
-#include <str_list.h>
+#include <aegis/aeb.h>
+#include <libaegis/ael/change/by_state.h>
+#include <libaegis/arglex2.h>
+#include <libaegis/arglex/change.h>
+#include <libaegis/arglex/project.h>
+#include <libaegis/col.h>
+#include <libaegis/commit.h>
+#include <libaegis/change.h>
+#include <libaegis/change/branch.h>
+#include <libaegis/change/file.h>
+#include <libaegis/change/identifier.h>
+#include <common/error.h>
+#include <libaegis/help.h>
+#include <libaegis/lock.h>
+#include <libaegis/log.h>
+#include <libaegis/os.h>
+#include <common/progname.h>
+#include <libaegis/project.h>
+#include <common/quit.h>
+#include <libaegis/sub.h>
+#include <common/trace.h>
+#include <libaegis/user.h>
+#include <common/str_list.h>
 
 
 //
@@ -248,7 +248,8 @@ build_main(void)
 
     //
     // Extract the appropriate row of the change table.
-    // It is an error if the change is not in the in-development state.
+    // It is an error if the change is not in one of the being_developed
+    //     or being_integrated states.
     // It is an error if the change is not assigned to the current user.
     // It is an error if the change has no files assigned.
     //
@@ -329,6 +330,16 @@ build_main(void)
 	lock_take();
     }
     cstate_data = change_cstate_get(cid.get_cp());
+
+    //
+    // If no build is required, we stop here.
+    // Note that this is *after* the symlinks have been repaired.
+    //
+    if (!change_build_required(cid.get_cp()))
+    {
+	change_verbose(cid.get_cp(), 0, i18n("no build required"));
+	quit(0);
+    }
 
     //
     // Resolve relative filenames into project filenames.

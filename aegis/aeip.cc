@@ -1,6 +1,6 @@
 //
 //      aegis - project change supervisor
-//      Copyright (C) 1991-2005 Peter Miller;
+//      Copyright (C) 1991-2006 Peter Miller;
 //      All rights reserved.
 //
 //      This program is free software; you can redistribute it and/or modify
@@ -20,48 +20,50 @@
 // MANIFEST: functions for implementing integrate pass
 //
 
-#include <ac/errno.h>
-#include <ac/stdio.h>
-#include <ac/stdlib.h>
-#include <ac/string.h>
-#include <ac/sys/types.h>
+#include <common/ac/errno.h>
+#include <common/ac/stdio.h>
+#include <common/ac/stdlib.h>
+#include <common/ac/string.h>
+#include <common/ac/sys/types.h>
 #include <sys/stat.h>
-#include <ac/unistd.h>
+#include <common/ac/unistd.h>
 
-#include <aeip.h>
-#include <ael/change/by_state.h>
-#include <arglex2.h>
-#include <arglex/change.h>
-#include <arglex/project.h>
-#include <commit.h>
-#include <change/branch.h>
-#include <change/file.h>
-#include <change/pfs.h>
-#include <dir.h>
-#include <env.h>
-#include <error.h>
-#include <file.h>
-#include <glue.h>
-#include <help.h>
-#include <lock.h>
-#include <log.h>
-#include <metrics.h>
-#include <mem.h>
-#include <now.h>
-#include <progname.h>
-#include <os.h>
-#include <project.h>
-#include <project/file.h>
-#include <project/history.h>
-#include <quit/action/histtransabt.h>
-#include <rss.h>
-#include <str_list.h>
-#include <quit.h>
-#include <sub.h>
-#include <trace.h>
-#include <undo.h>
-#include <user.h>
-#include <uuidentifier.h>
+#include <common/env.h>
+#include <common/error.h>
+#include <common/mem.h>
+#include <common/now.h>
+#include <common/progname.h>
+#include <common/quit.h>
+#include <common/str_list.h>
+#include <common/trace.h>
+#include <common/uuidentifier.h>
+#include <libaegis/ael/change/by_state.h>
+#include <libaegis/arglex2.h>
+#include <libaegis/arglex/change.h>
+#include <libaegis/arglex/project.h>
+#include <libaegis/change/branch.h>
+#include <libaegis/change/file.h>
+#include <libaegis/change/pfs.h>
+#include <libaegis/commit.h>
+#include <libaegis/dir.h>
+#include <libaegis/file.h>
+#include <libaegis/glue.h>
+#include <libaegis/help.h>
+#include <libaegis/lock.h>
+#include <libaegis/log.h>
+#include <libaegis/metrics.h>
+#include <libaegis/os.h>
+#include <libaegis/project/file.h>
+#include <libaegis/project.h>
+#include <libaegis/project/history.h>
+#include <libaegis/quit/action/histtransabt.h>
+#include <libaegis/rss.h>
+#include <libaegis/sub.h>
+#include <libaegis/undo.h>
+#include <libaegis/user.h>
+
+#include <aegis/aeip.h>
+
 
 #define MTIME_BLURB 0
 
@@ -351,7 +353,6 @@ integrate_pass_main(void)
     cstate_ty       *p_cstate_data;
     time_map_list_ty tml;
     time_t          time_final;
-    pconf_ty        *pconf_data;
 
     trace(("integrate_pass_main()\n{\n"));
     arglex();
@@ -426,7 +427,7 @@ integrate_pass_main(void)
         project_name = user_default_project();
     pp = project_alloc(project_name);
     str_free(project_name);
-    project_bind_existing(pp);
+    pp->bind_existing();
 
     //
     // locate user data
@@ -452,7 +453,7 @@ integrate_pass_main(void)
     // And a lock on the history files, so that no aeip can trash
     // another's history files.
     //
-    project_pstate_lock_prepare(pp);
+    pp->pstate_lock_prepare();
     change_cstate_lock_prepare(cp);
     user_ustate_lock_prepare(up);
     project_baseline_write_lock_prepare(pp);
@@ -521,13 +522,14 @@ integrate_pass_main(void)
 
     //
     // Walk the change files, making sure
-    //      1. the change has been diffed (except for the lowest b.l.)
+    //      1. the change has been diffed (except for the trunk's baseline)
     //      2. parent files are copied into the change
     //      3. test times are transferred
     //      4. The fingerprint is still correct.
     //
-    pcp = project_change_get(pp);
+    pcp = pp->change_get();
     diff_whine = 0;
+    pconf_ty *pconf_data = change_pconf_get(cp, 0);
     for (j = 0;; ++j)
     {
         fstate_src_ty   *c_src_data;
@@ -541,52 +543,106 @@ integrate_pass_main(void)
             break;
         trace(("file_name = \"%s\"\n", c_src_data->file_name->str_text));
 
+	//
+	// Check for unchanged files.
+	//
+	switch (pconf_data->unchanged_file_integrate_pass_policy)
+	{
+	case pconf_unchanged_file_integrate_pass_policy_ignore:
+	    // Don't look for unchanged files.
+	    break;
+
+	case pconf_unchanged_file_integrate_pass_policy_warning:
+	    if (change_file_unchanged(cp, c_src_data, up))
+	    {
+		//
+                // Warn about unchanged files in the change set, but
+                // leave them in the change set.
+		//
+		sub_context_ty sc;
+		sc.var_set_string("File_Name", c_src_data->file_name);
+		change_warning(cp, &sc, i18n("$filename unchanged"));
+	    }
+	    break;
+
+	case pconf_unchanged_file_integrate_pass_policy_remove:
+	    if (change_file_unchanged(cp, c_src_data, up))
+	    {
+		//
+		// Silently remove unchanged files from the change set.
+		// UNLESS that would leave the change with no files at all.
+		//
+		if (j != 0 || change_file_nth(cp, 1, view_path_first))
+		{
+		    change_file_remove(cp, c_src_data->file_name);
+		    --j;
+		    continue;
+		}
+	    }
+	    break;
+	}
+
         //
         // check the the file has been differenced
         //
-        if (!diff_whine)
-        {
-            switch (c_src_data->action)
-            {
-            case file_action_remove:
-                if
-                (
-                    c_src_data->move
-                &&
-                    change_file_find(cp, c_src_data->move, view_path_first)
-                )
-                    break;
-                // fall through...
+	if (!diff_whine)
+	{
+	    if (change_diff_required(cp))
+	    {
+		bool diff_required = true;
+		switch (c_src_data->action)
+		{
+		case file_action_remove:
+		    if
+		    (
+			c_src_data->move
+		    &&
+			change_file_find(cp, c_src_data->move, view_path_first)
+		    )
+		    {
+			diff_required = false;
+			break;
+		    }
+		    // fall through...
 
-            case file_action_create:
-            case file_action_modify:
+		case file_action_create:
+		case file_action_modify:
 #ifndef DEBUG
-            default:
+		default:
 #endif
-                if
-                (
-                    pp->parent
-                &&
-                    c_src_data->usage != file_usage_build
-                &&
-                    (
-                        !c_src_data->idiff_file_fp
-                    ||
-                        !c_src_data->idiff_file_fp->youngest
-                    )
-                )
-                {
-                    change_error(cp, 0, i18n("diff required"));
-                    ++nerr;
-                    ++diff_whine;
-                }
-                break;
+		    if (pp->is_a_trunk())
+		    {
+			diff_required = false;
+			break;
+		    }
+		    if (c_src_data->usage == file_usage_build)
+		    {
+			diff_required = false;
+			break;
+		    }
 
-            case file_action_insulate:
-            case file_action_transparent:
-                break;
-            }
-        }
+		    if
+		    (
+			c_src_data->idiff_file_fp
+		    &&
+			c_src_data->idiff_file_fp->youngest
+		    )
+			diff_required = false;
+		    break;
+
+		case file_action_insulate:
+		case file_action_transparent:
+		    diff_required = false;
+		    break;
+		}
+		if (diff_required)
+		{
+		    change_error(cp, 0, i18n("diff required"));
+		    ++nerr;
+		    ++diff_whine;
+		}
+	    }
+	}
 
         //
         // For each change file that is acting on a project file
@@ -1111,7 +1167,7 @@ integrate_pass_main(void)
     // It is an error if the change has no current baseline test pass.
     // It is an error if the change has no current regression test pass.
     //
-    if (!cstate_data->build_time)
+    if (change_build_required(cp) && !cstate_data->build_time)
     {
         sub_context_ty  *scp;
 
@@ -1214,7 +1270,11 @@ integrate_pass_main(void)
         (cstate_architecture_times_list_ty *)
         cstate_architecture_times_list_type.alloc();
     if (!cstate_data->architecture_times)
-        this_is_a_bug();
+    {
+	cstate_data->architecture_times =
+	    (cstate_architecture_times_list_ty *)
+	    cstate_architecture_times_list_type.alloc();
+    }
     for (j = 0; j < cstate_data->architecture_times->length; ++j)
     {
         cstate_architecture_times_ty *catp;
@@ -1230,7 +1290,7 @@ integrate_pass_main(void)
                 p_cstate_data->architecture_times,
                 &type_p
             );
-        assert(type_p==&cstate_architecture_times_type);
+        assert(type_p == &cstate_architecture_times_type);
         patp =
             (cstate_architecture_times_ty *)
             cstate_architecture_times_type.alloc();
@@ -1259,7 +1319,7 @@ integrate_pass_main(void)
         change_fatal(cp, 0, i18n("leave dev dir"));
     if (os_below_dir(id, cwd))
         change_fatal(cp, 0, i18n("leave int dir"));
-    if (os_below_dir(project_baseline_path_get(pp, 1), cwd))
+    if (os_below_dir(pp->baseline_path_get(true), cwd))
         project_fatal(pp, 0, i18n("leave baseline"));
 
     //
@@ -1288,7 +1348,7 @@ integrate_pass_main(void)
         fstate_src_ty   *c_src_data;
         fstate_src_ty   *p_src_data;
 
-        p_src_data = project_file_nth(pp, j, view_path_extreme);
+        p_src_data = pp->file_nth(j, view_path_extreme);
         if (!p_src_data)
             break;
         switch (p_src_data->usage)
@@ -1668,14 +1728,14 @@ integrate_pass_main(void)
         case file_action_create:
         case file_action_modify:
         case file_action_insulate:
-            if (pp->parent)
+            if (!pp->is_a_trunk())
             {
                 fstate_src_ty   *pp_src_data;
 
                 pp_src_data =
                     project_file_find
                     (
-                        pp->parent,
+                        pp->parent_get(),
                         c_src_data->file_name,
                         view_path_none
                     );
@@ -1703,7 +1763,7 @@ integrate_pass_main(void)
         // the parent's files will appear to be out of date,
         // even though they can not be.
         //
-        if (!pp->parent)
+        if (pp->is_a_trunk())
         {
             assert(p_src_data->edit);
             assert(p_src_data->edit->revision);
@@ -1727,14 +1787,13 @@ integrate_pass_main(void)
     quit_unregister(aborter);
     change_run_history_transaction_end_command(cp);
 
-    pconf_data = change_pconf_get(cp, 0);
     if (pconf_data->history_label_command)
     {
         //
         // The above code changed the project file list,
         // so we need to clear out the cache before the following will work.
         //
-        project_file_list_invalidate(pp);
+        pp->file_list_invalidate();
 
         //
         // For all the project's files, label the history.
@@ -1747,7 +1806,7 @@ integrate_pass_main(void)
         {
             fstate_src_ty   *src_data;
 
-            src_data = project_file_nth(cp->pp, j, view_path_extreme);
+            src_data = cp->pp->file_nth(j, view_path_extreme);
             if (!src_data)
                 break;
             change_run_history_label_command
@@ -1812,13 +1871,13 @@ integrate_pass_main(void)
         str_format
         (
             "%s.D%3.3ld",
-            project_baseline_path_get(pp, 1)->str_text,
+            pp->baseline_path_get(true)->str_text,
             cstate_data->delta_number - 1
         );
     new_baseline = change_integration_directory_get(cp, 1);
     project_become(pp);
-    commit_rename(project_baseline_path_get(pp, 1), old_baseline);
-    commit_rename(new_baseline, project_baseline_path_get(pp, 1));
+    commit_rename(pp->baseline_path_get(true), old_baseline);
+    commit_rename(new_baseline, pp->baseline_path_get(true));
     commit_symlink(str_from_c("baseline"), new_baseline); // relative!
     commit_rmdir_tree_bg(old_baseline);
     project_become_undo();
@@ -1868,16 +1927,15 @@ integrate_pass_main(void)
 #if MTIME_BLURB
         if (tml.len > 0)
         {
-            char                buf1[30];
-            char                buf2[30];
-
-            strlcpy(buf1, ctime(&tml.list[0].old), sizeof(buf1));
-            strlcpy(buf2, ctime(&tml.list[tml.len - 1].old), sizeof(buf2));
+            char b1[30];
+            strendcpy(b1, ctime(&tml.list[0].old), b1 + sizeof(b1));
+            char b2[30];
+            strendcpy(b2, ctime(&tml.list[tml.len - 1].old), b2 + sizeof(b2));
             error_raw
             (
                 "original times range from %.24s to %.24s = %d seconds",
-                buf1,
-                buf2,
+                b1,
+                b2,
                 (int)(1 + tml.list[tml.len - 1].old - tml.list[0].old)
             );
         }
@@ -1891,16 +1949,15 @@ integrate_pass_main(void)
 #if MTIME_BLURB
         if (tml.len > 0)
         {
-            char                buf1[30];
-            char                buf2[30];
-
-            strlcpy(buf1, ctime(&tml.list[0].becomes), sizeof(buf1));
-            strlcpy(buf2, ctime(&tml.list[tml.len - 1].becomes), sizeof(buf2));
+            char b1[30];
+            strendcpy(b1, ctime(&tml.list[0].becomes), b1 + sizeof(b1));
+            char b2[30];
+            strendcpy(b2, ctime(&tml.list[tml.len-1].becomes), b2 + sizeof(b2));
             error_raw
             (
                 "adjusted times range from %.24s to %.24s = %d seconds",
-                buf1,
-                buf2,
+                b1,
+                b2,
                 (int)(1 + tml.list[tml.len - 1].becomes - tml.list[0].becomes)
             );
         }
@@ -1978,7 +2035,7 @@ integrate_pass_main(void)
     //
     change_cstate_write(cp);
     user_ustate_write(up);
-    project_pstate_write(pp);
+    pp->pstate_write();
     change_pfs_write(cp); // must be after project_pstate_write
     change_verbose(cp, 0, i18n("discard old directories"));
     commit();

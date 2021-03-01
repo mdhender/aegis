@@ -1,6 +1,6 @@
 //
 //	aegis - project change supervisor
-//	Copyright (C) 1999, 2002-2004 Peter Miller;
+//	Copyright (C) 1999, 2002-2006 Peter Miller;
 //	All rights reserved.
 //
 //	This program is free software; you can redistribute it and/or modify
@@ -20,13 +20,13 @@
 // MANIFEST: functions to manipulate finds
 //
 
-#include <change/branch.h>
-#include <change/file.h>
-#include <error.h> // for assert
-#include <nstring.h>
-#include <project.h>
-#include <symtab.h>
-#include <trace.h>
+#include <libaegis/change/branch.h>
+#include <libaegis/change/file.h>
+#include <common/error.h> // for assert
+#include <common/nstring.h>
+#include <libaegis/project.h>
+#include <common/symtab.h>
+#include <common/trace.h>
 
 
 fstate_src_ty *
@@ -146,7 +146,7 @@ change_file_find(change_ty *cp, const nstring &file_name,
 	    break;
 	if (cp->number == TRUNK_CHANGE_NUMBER)
 	    break;
-	cp = project_change_get(cp->pp);
+	cp = cp->pp->change_get();
 	top_level = 0;
     }
 

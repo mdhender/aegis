@@ -1,6 +1,6 @@
 //
 //	aegis - project change supervisor
-//	Copyright (C) 2001-2005 Peter Miller;
+//	Copyright (C) 2001-2006 Peter Miller;
 //	All rights reserved.
 //
 //	This program is free software; you can redistribute it and/or modify
@@ -20,21 +20,19 @@
 // MANIFEST: functions to manipulate roll_forwards
 //
 
-#pragma implementation "project_file_roll_forward"
-
-#include <change.h>
-#include <change/branch.h>
-#include <change/file.h>
-#include <change/list.h>
-#include <cstate.h>
-#include <error.h> // for assert
-#include <mem.h>
-#include <now.h>
-#include <project/file/roll_forward.h>
-#include <str_list.h>
-#include <sub.h>
-#include <trace.h>
-#include <zero.h>
+#include <common/error.h> // for assert
+#include <common/mem.h>
+#include <common/now.h>
+#include <common/str_list.h>
+#include <common/trace.h>
+#include <libaegis/change/branch.h>
+#include <libaegis/change/file.h>
+#include <libaegis/change.h>
+#include <libaegis/change/list.h>
+#include <libaegis/cstate.h>
+#include <libaegis/project/file/roll_forward.h>
+#include <libaegis/sub.h>
+#include <libaegis/zero.h>
 
 
 project_file_roll_forward::~project_file_roll_forward()
@@ -172,7 +170,7 @@ change_list_get(project_ty *pp, time_t limit)
     trace(("project \"%s\"\n", project_name_get(pp)->str_text));
     clp = new change_list_ty();
 
-    pcp = project_change_get(pp);
+    pcp = pp->change_get();
     cstate_data = change_cstate_get(pcp);
     bp = cstate_data->branch;
     assert(bp);
@@ -341,9 +339,7 @@ playback_when(playback_ty *pbp)
 	return time_max();
     if (pbp->position >= pbp->clp->length)
     {
-	change_ty       *cp;
-
-	cp = project_change_get(pbp->pp);
+	change_ty *cp = pbp->pp->change_get();
 	return change_completion_timestamp(cp);
     }
     return change_completion_timestamp(pbp->clp->item[pbp->position]);
@@ -433,7 +429,7 @@ playback_list_recinit(playback_list_ty *pblp, time_t limit, project_ty *pp)
 {
     trace(("playback_list_recinit(pblp = %08lX, limit = %ld \"%.24s\", "
 	"pp = %08lX)\n{\n", (long)pblp, (long)limit, ctime(&limit), (long)pp));
-    while (pp->parent)
+    while (!pp->is_a_trunk())
     {
 	change_ty       *cp;
 
@@ -448,9 +444,9 @@ playback_list_recinit(playback_list_ty *pblp, time_t limit, project_ty *pp)
 	// time stamp after the time limit, and so they, too, need to
 	// be added to this list.
 	//
-	cp = project_change_get(pp);
+	cp = pp->change_get();
 	walk_these_branches.append(cp);
-	pp = pp->parent;
+	pp = pp->parent_get();
     }
     playback_list_push(pblp, limit, pp);
     trace(("}\n"));
@@ -469,7 +465,7 @@ playback_trace_real(const char *file, int line, playback_ty *pbp)
     trace_printf("playback %08lX = { ", (long)pbp);
     if (pbp->position >= pbp->clp->length)
     {
-	cp = project_change_get(pbp->pp);
+	cp = pbp->pp->change_get();
 	trace_printf("project \"%s\" END\n",
 	    project_name_get(pbp->pp)->str_text);
     }
@@ -560,7 +556,7 @@ branch_start_time(project_ty *pp)
     cstate_ty       *cstate_data;
     cstate_history_ty *hp;
 
-    cp = project_change_get(pp);
+    cp = pp->change_get();
     cstate_data = change_cstate_get(cp);
     if (!cstate_data)
 	return 1;
@@ -578,7 +574,7 @@ branch_start_time(project_ty *pp)
 static int
 branch_is_completed(project_ty *pp)
 {
-    return change_is_completed(project_change_get(pp));
+    return change_is_completed(pp->change_get());
 }
 
 
@@ -589,7 +585,7 @@ branch_finish_time(project_ty *pp)
     cstate_ty       *cstate_data;
     cstate_history_ty *hp;
 
-    cp = project_change_get(pp);
+    cp = pp->change_get();
     cstate_data = change_cstate_get(cp);
     if (!cstate_data)
     {
@@ -709,9 +705,7 @@ project_file_roll_forward::recapitulate(project_ty *pp, time_t limit,
 		    walk_these_branches.member_p(cp)
 		)
 		{
-		    project_ty      *pp2;
-
-		    pp2 = project_bind_branch(cp->pp, cp);
+		    project_ty *pp2 = cp->pp->bind_branch(cp);
 		    playback_list_push(&stack, limit, pp2);
 		}
 
@@ -1102,6 +1096,30 @@ project_file_roll_forward::get(fstate_src_ty *src)
 	}
     }
 #endif
+    trace(("return %08lX\n", (long)result));
+    trace(("}\n"));
+    return result;
+}
+
+
+static string_ty *
+uuid_or_filename(cstate_src_ty *src)
+{
+    assert(src);
+    assert(src->file_name);
+    return (src->uuid ? src->uuid : src->file_name);
+}
+
+
+file_event_list_ty *
+project_file_roll_forward::get(cstate_src_ty *src)
+{
+    trace(("project_file_roll_forward::get(%08lX)\n{\n", (long)src));
+    trace(("src->file_name = \"%s\";\n", src->file_name->str_text));
+    string_ty *uuid = uuid_or_filename(src);
+    trace(("uuid = \"%s\";\n", uuid->str_text));
+    assert(!uuid_to_felp.empty());
+    file_event_list_ty *result = uuid_to_felp.query(uuid);
     trace(("return %08lX\n", (long)result));
     trace(("}\n"));
     return result;

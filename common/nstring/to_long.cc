@@ -20,9 +20,9 @@
 // MANIFEST: implementation of the nstring_to_long class
 //
 
-#include <ac/stdlib.h>
+#include <common/ac/stdlib.h>
 
-#include <nstring.h>
+#include <common/nstring.h>
 
 
 long

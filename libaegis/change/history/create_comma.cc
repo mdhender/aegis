@@ -1,6 +1,6 @@
 //
 //	aegis - project change supervisor
-//	Copyright (C) 1999-2005 Peter Miller;
+//	Copyright (C) 1999-2006 Peter Miller;
 //	All rights reserved.
 //
 //	This program is free software; you can redistribute it and/or modify
@@ -20,16 +20,16 @@
 // MANIFEST: functions to manipulate create_commas
 //
 
-#include <change.h>
-#include <change/env_set.h>
-#include <change/file.h>
-#include <change/history/encode.h>
-#include <error.h>
-#include <os.h>
-#include <project.h>
-#include <str.h>
-#include <sub.h>
-#include <trace.h>
+#include <libaegis/change.h>
+#include <libaegis/change/env_set.h>
+#include <libaegis/change/file.h>
+#include <libaegis/change/history/encode.h>
+#include <common/error.h>
+#include <libaegis/os.h>
+#include <libaegis/project.h>
+#include <common/str.h>
+#include <libaegis/sub.h>
+#include <common/trace.h>
 
 
 void
@@ -46,8 +46,8 @@ change_run_history_create_command(change_ty *cp, fstate_src_ty *src)
     string_ty       *hfnr;
 
     //
-    // Create a new history.  Only ever executed in the ``being
-    // integrated'' state.  Current directory will be set to the
+    // Create a new history.  Only ever executed in the "being
+    // integrated" state.  Current directory will be set to the
     // base of the history tree.  All of the substitutions described
     // in aesub(5) are avaliable.  In addition:
     //
@@ -91,7 +91,7 @@ change_run_history_create_command(change_ty *cp, fstate_src_ty *src)
     // Get the path of the history file.
     //
     trace(("mark\n"));
-    hp = project_history_path_get(cp->pp);
+    hp = cp->pp->history_path_get();
     hfn = project_history_filename_get(cp->pp, src);
     sub_var_set_string(scp, "History", hfn);
     hfnr = os_below_dir(hp, hfn);

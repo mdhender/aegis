@@ -20,13 +20,13 @@
 // MANIFEST: functions to manipulate defaults
 //
 
-#include <cattr.h>
-#include <change/attributes.h>
-#include <error.h>
-#include <pconf.h>
-#include <project.h>
-#include <project/history.h>
-#include <trace.h>
+#include <common/error.h>
+#include <common/trace.h>
+#include <libaegis/cattr.h>
+#include <libaegis/change/attributes.h>
+#include <libaegis/pconf.h>
+#include <libaegis/project.h>
+#include <libaegis/project/history.h>
 
 
 void
@@ -51,20 +51,6 @@ change_attributes_default(cattr_ty *a, project_ty *pp, pconf_ty *pc)
 	    a->test_baseline_exempt = true;
 	    a->mask |= cattr_test_baseline_exempt_mask;
 	}
-	if (!(a->mask & cattr_regression_test_exempt_mask))
-	{
-	    a->regression_test_exempt = false;
-	    a->mask |= cattr_regression_test_exempt_mask;
-	}
-    }
-    else
-    {
-	if (!(a->mask & cattr_regression_test_exempt_mask))
-	{
-	    a->regression_test_exempt =
-		project_default_test_regression_exemption_get(pp);
-	    a->mask |= cattr_regression_test_exempt_mask;
-	}
     }
     if (!(a->mask & cattr_test_exempt_mask))
     {
@@ -74,13 +60,13 @@ change_attributes_default(cattr_ty *a, project_ty *pp, pconf_ty *pc)
     if (!(a->mask & cattr_test_baseline_exempt_mask))
     {
 	a->test_baseline_exempt =
-            project_default_test_exemption_get(pp);
+	    project_default_test_exemption_get(pp);
 	a->mask |= cattr_test_baseline_exempt_mask;
     }
     if (!(a->mask & cattr_regression_test_exempt_mask))
     {
 	a->regression_test_exempt =
-            project_default_test_regression_exemption_get(pp);
+	    project_default_test_regression_exemption_get(pp);
 	a->mask |= cattr_regression_test_exempt_mask;
     }
 

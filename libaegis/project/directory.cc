@@ -1,6 +1,6 @@
 //
 //	aegis - project change supervisor
-//	Copyright (C) 2003, 2004 Peter Miller;
+//	Copyright (C) 2003-2006 Peter Miller;
 //	All rights reserved.
 //
 //	This program is free software; you can redistribute it and/or modify
@@ -20,23 +20,18 @@
 // MANIFEST: functions to manipulate directorys
 //
 
-#include <change.h>
-#include <project.h>
-#include <project/directory.h>
+#include <libaegis/change.h>
+#include <libaegis/project.h>
+#include <libaegis/project/directory.h>
 
 
 string_ty *
 project_directory_get(project_ty *pp, int resolve)
 {
-    for (;;)
-    {
-	change_ty	*cp;
-
-	if (!pp->parent)
-	    return project_baseline_path_get(pp, resolve);
-	cp = project_change_get(pp);
-	if (change_is_being_developed(cp))
-	    return project_baseline_path_get(pp, resolve);
-	pp = pp->parent;
-    }
+    if (pp->is_a_trunk())
+	return pp->baseline_path_get(resolve);
+    change_ty *cp = pp->change_get();
+    if (change_is_being_developed(cp))
+	return pp->baseline_path_get(resolve);
+    return project_directory_get(pp->parent_get(), resolve);
 }

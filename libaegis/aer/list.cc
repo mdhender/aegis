@@ -20,24 +20,24 @@
 // MANIFEST: functions to manipulate report lists
 //
 
-#include <ac/errno.h>
-#include <ac/stdio.h>
-#include <ac/stdlib.h>
-#include <ac/string.h>
+#include <common/ac/errno.h>
+#include <common/ac/stdio.h>
+#include <common/ac/stdlib.h>
+#include <common/ac/string.h>
 
-#include <aer/list.h>
-#include <arglex2.h>
-#include <col.h>
-#include <dir.h>
-#include <error.h>
-#include <gonzo.h>
-#include <help.h>
-#include <mem.h>
-#include <os.h>
-#include <output.h>
-#include <rptidx.h>
-#include <trace.h>
-#include <str_list.h>
+#include <common/error.h>
+#include <common/mem.h>
+#include <common/str_list.h>
+#include <common/trace.h>
+#include <libaegis/aer/list.h>
+#include <libaegis/arglex2.h>
+#include <libaegis/col.h>
+#include <libaegis/dir.h>
+#include <libaegis/gonzo.h>
+#include <libaegis/help.h>
+#include <libaegis/os.h>
+#include <libaegis/output.h>
+#include <libaegis/rptidx.h>
 
 
 static void

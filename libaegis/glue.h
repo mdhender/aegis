@@ -1,6 +1,6 @@
 //
 //	aegis - project change supervisor
-//	Copyright (C) 1993, 1994, 1999, 2002, 2004, 2005 Peter Miller;
+//	Copyright (C) 1993, 1994, 1999, 2002, 2004-2006 Peter Miller;
 //	All rights reserved.
 //
 //	This program is free software; you can redistribute it and/or modify
@@ -23,10 +23,10 @@
 #ifndef AEGIS_GLUE_H
 #define AEGIS_GLUE_H
 
-#include <ac/stdio.h>
+#include <common/ac/stdio.h>
 
-#include <main.h>
-#include <config.h>
+#include <common/main.h>
+#include <common/config.h>
 
 struct stat;
 struct utimbuf;
@@ -141,6 +141,7 @@ int glue_symlink(char *name1, char *name2);
 int glue_ungetc(int, FILE *);
 int glue_unlink(char *path);
 int glue_utime(char *path, struct utimbuf *);
+int glue_lutime(char *path, struct utimbuf *);
 int glue_write(int fd, const void *data, long len);
 int glue_fwrite(char *, long, long, FILE *);
 
@@ -187,6 +188,7 @@ int glue_fwrite(char *, long, long, FILE *);
 #define	glue_ungetc	ungetc
 #define	glue_unlink	unlink
 #define	glue_utime	utime
+#define	glue_lutime	lutime
 #define	glue_write	::write
 #define	glue_fwrite	fwrite
 

@@ -1,6 +1,6 @@
 //
 //	aegis - project change supervisor
-//	Copyright (C) 1995, 2002-2004 Peter Miller;
+//	Copyright (C) 1995, 2002-2005 Peter Miller;
 //	All rights reserved.
 //
 //	This program is free software; you can redistribute it and/or modify
@@ -20,12 +20,10 @@
 // MANIFEST: functions to manipulate lists of wide strings
 //
 
-#pragma implementation "wstring_list_ty"
+#include <common/ac/string.h>
 
-#include <ac/string.h>
-
-#include <wstr/list.h>
-#include <error.h>
+#include <common/wstr/list.h>
+#include <common/error.h>
 
 
 wstring_list_ty::~wstring_list_ty()

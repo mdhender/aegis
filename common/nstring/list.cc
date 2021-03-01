@@ -1,6 +1,6 @@
 //
 //	aegis - project change supervisor
-//	Copyright (C) 2004 Peter Miller;
+//	Copyright (C) 2004, 2005 Peter Miller;
 //	All rights reserved.
 //
 //	This program is free software; you can redistribute it and/or modify
@@ -20,9 +20,7 @@
 // MANIFEST: implementation of the nstring_list class
 //
 
-#pragma implementation "nstring_list"
-
-#include <nstring/list.h>
+#include <common/nstring/list.h>
 
 
 nstring_list &

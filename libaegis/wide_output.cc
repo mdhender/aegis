@@ -20,14 +20,14 @@
 // MANIFEST: functions to manipulate wchar_t output through a common API
 //
 
-#include <ac/string.h>
+#include <common/ac/string.h>
 
-#include <error.h> // for assert
-#include <mem.h>
-#include <str.h>
-#include <trace.h>
-#include <wide_output/private.h>
-#include <wstr.h>
+#include <common/error.h> // for assert
+#include <common/mem.h>
+#include <common/str.h>
+#include <common/trace.h>
+#include <libaegis/wide_output/private.h>
+#include <common/wstr.h>
 
 
 void

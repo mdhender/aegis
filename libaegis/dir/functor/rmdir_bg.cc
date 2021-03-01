@@ -20,16 +20,14 @@
 // MANIFEST: implementation of the dir_functor_rmdir_bg class
 //
 
-#pragma implementation "dir_functor_rmdir_bg"
-
-#include <ac/errno.h>
-#include <ac/stddef.h>
-#include <ac/sys/types.h>
+#include <common/ac/errno.h>
+#include <common/ac/stddef.h>
+#include <common/ac/sys/types.h>
 #include <sys/stat.h>
 
-#include <dir/functor/rmdir_bg.h>
-#include <nstring.h>
-#include <sub.h>
+#include <libaegis/dir/functor/rmdir_bg.h>
+#include <common/nstring.h>
+#include <libaegis/sub.h>
 
 
 dir_functor_rmdir_bg::~dir_functor_rmdir_bg()

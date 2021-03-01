@@ -1,6 +1,6 @@
 /*
  *	aegis - project change supervisor
- *	Copyright (C) 1997, 1998, 2002, 2003 Peter Miller;
+ *	Copyright (C) 1997, 1998, 2002, 2003, 2005 Peter Miller;
  *	All rights reserved.
  *
  *	This program is free software; you can redistribute it and/or modify
@@ -89,7 +89,7 @@ for (j = 1; j < count(prj_name_parts); j++)
     long_project_name ##= ".<a href=\"" ## href ## "\" >"
     	## quote_html(prj_name_parts[j]) ## "</a>";
 };
-long_project_name = "``" ## long_project_name ## "'',<br>";
+long_project_name = "&ldquo;" ## long_project_name ## "&rdquo;,<br>";
 /* HTTP limits lines to 510 characters */
 for (j in wrap(long_project_name, 510))
     print(j);

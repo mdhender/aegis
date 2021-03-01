@@ -20,8 +20,8 @@
 // MANIFEST: functions to manipulate read_stricts
 //
 
-#include <input.h>
-#include <str.h>
+#include <libaegis/input.h>
+#include <common/str.h>
 
 
 bool

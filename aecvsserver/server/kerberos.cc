@@ -1,6 +1,6 @@
 //
 //	aegis - project change supervisor
-//	Copyright (C) 2004 Peter Miller;
+//	Copyright (C) 2004, 2005 Peter Miller;
 //	All rights reserved.
 //
 //	This program is free software; you can redistribute it and/or modify
@@ -20,9 +20,9 @@
 // MANIFEST: functions to manipulate kerbeross
 //
 
-#include <response/error.h>
-#include <server/kerberos.h>
-#include <server/private.h>
+#include <aecvsserver/response/error.h>
+#include <aecvsserver/server/kerberos.h>
+#include <aecvsserver/server/private.h>
 
 
 static void

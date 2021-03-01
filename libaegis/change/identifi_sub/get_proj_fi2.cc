@@ -20,9 +20,9 @@
 // MANIFEST: implementation of the change_identifi_sub_get_proj_fi2 class
 //
 
-#include <change/identifi_sub.h>
-#include <project/file.h>
-#include <project/file/roll_forward.h>
+#include <libaegis/change/identifi_sub.h>
+#include <libaegis/project/file.h>
+#include <libaegis/project/file/roll_forward.h>
 
 
 fstate_src_ty *

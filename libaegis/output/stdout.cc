@@ -1,6 +1,6 @@
 //
 //	aegis - project change supervisor
-//	Copyright (C) 1999, 2003-2005 Peter Miller;
+//	Copyright (C) 1999, 2003-2006 Peter Miller;
 //	All rights reserved.
 //
 //	This program is free software; you can redistribute it and/or modify
@@ -20,17 +20,18 @@
 // MANIFEST: functions to deliver output to stdout
 //
 
-#include <ac/errno.h>
-#include <ac/stddef.h>
-#include <ac/stdio.h>
-#include <ac/unistd.h>
-#include <ac/sys/types.h>
+#include <common/ac/errno.h>
+#include <common/ac/stddef.h>
+#include <common/ac/stdio.h>
+#include <common/ac/unistd.h>
+#include <common/ac/sys/types.h>
 #include <sys/stat.h>
 
-#include <nstring.h>
-#include <output/stdout.h>
-#include <page.h>
-#include <sub.h>
+#include <common/nstring.h>
+#include <common/page.h>
+#include <common/trace.h>
+#include <libaegis/output/stdout.h>
+#include <libaegis/sub.h>
 
 
 static nstring
@@ -48,17 +49,21 @@ standard_output_name(void)
 
 output_stdout::~output_stdout()
 {
+    trace(("output_stdout::~output_stdout(this = %08lX)\n{\n", (long)this));
     //
     // Make sure all buffered data has been passed to our write_inner
     // method.
     //
     flush();
+    trace(("}\n"));
 }
 
 
 output_stdout::output_stdout() :
-    bol(true)
+    bol(true),
+    pos(0)
 {
+    trace(("output_stdout::output_stdout(this = %08lX)\n", (long)this));
 }
 
 
@@ -74,13 +79,17 @@ long
 output_stdout::ftell_inner()
     const
 {
-    return lseek(fileno(stdout), 0L, SEEK_CUR);
+    trace(("output_stdout::ftell_inner(this = %08lX) returns %ld\n", (long)this,
+	pos));
+    return pos;
 }
 
 
 void
 output_stdout::write_inner(const void *data, size_t len)
 {
+    trace(("output_stdout::write_inner(this = %08lX, data = %08lX, "
+	"len = %ld)\n{\n", (long)this, (long)data, (long)len));
     if (::write(fileno(stdout), data, len) < 0)
     {
 	    int errno_old = errno;
@@ -92,6 +101,9 @@ output_stdout::write_inner(const void *data, size_t len)
     }
     if (len > 0)
 	bol = (((const char *)data)[len - 1] == '\n');
+    pos += len;
+    trace(("pos = %ld\n", pos));
+    trace(("}\n"));
 }
 
 
@@ -120,8 +132,11 @@ output_stdout::page_length()
 void
 output_stdout::end_of_line_inner()
 {
+    trace(("output_stdout::end_of_line_inner(this = %08lX)\n{\n", (long)this));
     if (!bol)
 	fputc('\n');
+    trace(("pos = %ld\n", pos));
+    trace(("}\n"));
 }
 
 

@@ -1,6 +1,6 @@
 //
 //	aegis - project change supervisor
-//	Copyright (C) 1991-1995, 1997-1999, 2001-2004 Peter Miller;
+//	Copyright (C) 1991-1995, 1997-1999, 2001-2005 Peter Miller;
 //	All rights reserved.
 //
 //	This program is free software; you can redistribute it and/or modify
@@ -20,16 +20,16 @@
 // MANIFEST: lexical analysis of command line arguments
 //
 
-#include <ac/stddef.h>
-#include <ac/string.h>
-#include <ac/ctype.h>
+#include <common/ac/stddef.h>
+#include <common/ac/string.h>
+#include <common/ac/ctype.h>
 
-#include <arglex.h>
-#include <error.h>
-#include <mem.h>
-#include <progname.h>
-#include <str.h>
-#include <trace.h>
+#include <common/arglex.h>
+#include <common/error.h>
+#include <common/mem.h>
+#include <common/progname.h>
+#include <common/str.h>
+#include <common/trace.h>
 
 static arglex_table_ty table[] =
 {
@@ -305,7 +305,7 @@ arglex(void)
 	incomplete--;
 
 	//
-	// The ``--'' option means the rest of the arguments on
+	// The "--" option means the rest of the arguments on
 	// the command line are only strings.
 	//
 	if (strings_only_mode)
@@ -516,7 +516,7 @@ arglex_prefetch(int *list, int list_len)
 	    continue;
 
 	//
-	// The ``--'' option means the rest of the arguments on
+	// The "--" option means the rest of the arguments on
 	// the command line are only strings.
 	//
 	actual = argv[j];

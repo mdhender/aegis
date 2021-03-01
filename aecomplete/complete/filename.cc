@@ -20,16 +20,16 @@
 // MANIFEST: functions to manipulate filenames
 //
 
-#include <ac/stddef.h>
-#include <ac/sys/types.h>
+#include <common/ac/stddef.h>
+#include <common/ac/sys/types.h>
 #include <sys/stat.h>
 
-#include <complete/filename.h>
-#include <complete/private.h>
-#include <glue.h>
-#include <os.h>
-#include <str_list.h>
-#include <shell.h>
+#include <aecomplete/complete/filename.h>
+#include <aecomplete/complete/private.h>
+#include <libaegis/glue.h>
+#include <libaegis/os.h>
+#include <common/str_list.h>
+#include <aecomplete/shell.h>
 
 
 struct complete_filename_ty

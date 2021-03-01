@@ -1,6 +1,6 @@
 //
 //	aegis - project change supervisor
-//	Copyright (C) 1999, 2001-2005 Peter Miller;
+//	Copyright (C) 1999, 2001-2006 Peter Miller;
 //	All rights reserved.
 //
 //	This program is free software; you can redistribute it and/or modify
@@ -20,18 +20,18 @@
 // MANIFEST: functions to manipulate mains
 //
 
-#include <ac/stdio.h>
-#include <ac/stdlib.h>
+#include <common/ac/stdio.h>
+#include <common/ac/stdlib.h>
 
-#include <arglex.h>
-#include <error.h>
-#include <input/crlf.h>
-#include <input/file.h>
-#include <input/gunzip.h>
-#include <os.h>
-#include <output/file.h>
-#include <output/gzip.h>
-#include <progname.h>
+#include <common/arglex.h>
+#include <common/error.h>
+#include <libaegis/input/crlf.h>
+#include <libaegis/input/file.h>
+#include <libaegis/input/gunzip.h>
+#include <libaegis/os.h>
+#include <libaegis/output/file.h>
+#include <libaegis/output/gzip.h>
+#include <common/progname.h>
 
 
 enum
@@ -64,11 +64,10 @@ static void
 test_input(string_ty *ifn, string_ty *ofn)
 {
     os_become_orig();
-    input_ty *ifp = input_file_open(ifn);
+    input ifp = input_file_open(ifn);
     ifp = input_gunzip_open(ifp);
     output_ty *ofp = output_file_binary_open(ofn);
-    input_to_output(ifp, ofp);
-    delete ifp;
+    *ofp << ifp;
     delete ofp;
 }
 
@@ -77,12 +76,11 @@ static void
 test_output(string_ty *ifn, string_ty *ofn)
 {
     os_become_orig();
-    input_ty *ifp = input_file_open(ifn);
-    ifp = new input_crlf(ifp, true);
+    input ifp = input_file_open(ifn);
+    ifp = new input_crlf(ifp);
     output_ty *ofp = output_file_text_open(ofn);
     ofp = new output_gzip(ofp, true);
-    input_to_output(ifp, ofp);
-    delete ifp;
+    *ofp << ifp;
     delete ofp;
 }
 

@@ -20,20 +20,19 @@
 // MANIFEST: operating system entry point
 //
 
-#include <ac/stdio.h>
-#include <ac/stdlib.h>
+#include <common/ac/stdio.h>
+#include <common/ac/stdlib.h>
 
-#include <arglex2.h>
-#include <env.h>
-#include <help.h>
-#include <language.h>
-#include <os.h>
-#include <progname.h>
-#include <quit.h>
-#include <r250.h>
-#include <rect.h>
-#include <sub.h>
-#include <version.h>
+#include <libaegis/arglex2.h>
+#include <common/env.h>
+#include <libaegis/help.h>
+#include <common/language.h>
+#include <libaegis/os.h>
+#include <common/progname.h>
+#include <common/quit.h>
+#include <aeget/rect.h>
+#include <libaegis/sub.h>
+#include <libaegis/version.h>
 
 
 enum
@@ -142,7 +141,6 @@ main(int argc, char **argv)
     int		    r, g, b;
     const char      *label;
 
-    r250_init();
     os_become_init_mortal();
     arglex2_init3(argc, argv, argtab);
     env_initialize();

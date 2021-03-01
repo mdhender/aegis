@@ -1,6 +1,6 @@
 //
 //	aegis - project change supervisor
-//	Copyright (C) 2001, 2002, 2004 Peter Miller;
+//	Copyright (C) 2001, 2002, 2004, 2005 Peter Miller;
 //	All rights reserved.
 //
 //	This program is free software; you can redistribute it and/or modify
@@ -20,16 +20,17 @@
 // MANIFEST: functions to manipulate stacks
 //
 
-#include <change.h>
-#include <change/file.h>
-#include <cstate.h>
-#include <error.h>
-#include <os.h>
-#include <project.h>
-#include <project/file.h>
-#include <stack.h>
-#include <str_list.h>
-#include <sub.h>
+#include <common/error.h>
+#include <common/str_list.h>
+#include <libaegis/change/file.h>
+#include <libaegis/change.h>
+#include <libaegis/cstate.h>
+#include <libaegis/os.h>
+#include <libaegis/project/file.h>
+#include <libaegis/project.h>
+#include <libaegis/sub.h>
+
+#include <aels/stack.h>
 
 
 static	string_list_ty	*stack;

@@ -1,6 +1,6 @@
 //
 //	aegis - project change supervisor
-//	Copyright (C) 2002-2004 Peter Miller;
+//	Copyright (C) 2002-2006 Peter Miller;
 //	All rights reserved.
 //
 //	This program is free software; you can redistribute it and/or modify
@@ -20,14 +20,14 @@
 // MANIFEST: functions to manipulate files
 //
 
-#include <change/file.h>
-#include <change.h>
-#include <complete/private.h>
-#include <complete/project/file.h>
-#include <os.h>
-#include <project/file.h>
-#include <shell.h>
-#include <str_list.h>
+#include <libaegis/change/file.h>
+#include <libaegis/change.h>
+#include <aecomplete/complete/private.h>
+#include <aecomplete/complete/project/file.h>
+#include <libaegis/os.h>
+#include <libaegis/project/file.h>
+#include <aecomplete/shell.h>
+#include <common/str_list.h>
 
 
 struct complete_project_file_ty
@@ -112,7 +112,7 @@ perform(complete_ty *cp, shell_ty *sh)
 	fstate_src_ty   *src;
 	string_ty       *relfn;
 
-	src = project_file_nth(this_thing->cp->pp, j, view_path_simple);
+	src = this_thing->cp->pp->file_nth(j, view_path_simple);
 	if (!src)
 	    break;
 

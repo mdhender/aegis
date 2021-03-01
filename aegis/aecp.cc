@@ -1,6 +1,6 @@
 //
 //	aegis - project change supervisor
-//	Copyright (C) 1991-1999, 2001-2005 Peter Miller;
+//	Copyright (C) 1991-1999, 2001-2006 Peter Miller;
 //	All rights reserved.
 //
 //	This program is free software; you can redistribute it and/or modify
@@ -20,38 +20,38 @@
 // MANIFEST: functions to implement copy file
 //
 
-#include <ac/stdio.h>
-#include <ac/stdlib.h>
-#include <ac/unistd.h>
-#include <ac/libintl.h>
+#include <common/ac/stdio.h>
+#include <common/ac/stdlib.h>
+#include <common/ac/unistd.h>
+#include <common/ac/libintl.h>
 
-#include <aecp.h>
-#include <ael/project/files.h>
-#include <arglex2.h>
-#include <arglex/change.h>
-#include <arglex/project.h>
-#include <commit.h>
-#include <change/branch.h>
-#include <change/file.h>
-#include <error.h>
-#include <file.h>
-#include <gettime.h>
-#include <help.h>
-#include <lock.h>
-#include <log.h>
-#include <now.h>
-#include <os.h>
-#include <progname.h>
-#include <project.h>
-#include <project/file.h>
-#include <project/file/roll_forward.h>
-#include <project/history.h>
-#include <quit.h>
-#include <sub.h>
-#include <trace.h>
-#include <undo.h>
-#include <user.h>
-#include <str_list.h>
+#include <aegis/aecp.h>
+#include <libaegis/ael/project/files.h>
+#include <libaegis/arglex2.h>
+#include <libaegis/arglex/change.h>
+#include <libaegis/arglex/project.h>
+#include <libaegis/commit.h>
+#include <libaegis/change/branch.h>
+#include <libaegis/change/file.h>
+#include <common/error.h>
+#include <libaegis/file.h>
+#include <common/gettime.h>
+#include <libaegis/help.h>
+#include <libaegis/lock.h>
+#include <libaegis/log.h>
+#include <common/now.h>
+#include <libaegis/os.h>
+#include <common/progname.h>
+#include <libaegis/project.h>
+#include <libaegis/project/file.h>
+#include <libaegis/project/file/roll_forward.h>
+#include <libaegis/project/history.h>
+#include <common/quit.h>
+#include <libaegis/sub.h>
+#include <common/trace.h>
+#include <libaegis/undo.h>
+#include <libaegis/user.h>
+#include <common/str_list.h>
 
 
 static void
@@ -373,15 +373,15 @@ copy_file_independent(void)
 	project_name = user_default_project();
     pp = project_alloc(project_name);
     str_free(project_name);
-    project_bind_existing(pp);
+    pp->bind_existing();
 
     //
     // locate which branch
     //
     if (branch)
-	pp2 = project_find_branch(pp, branch);
+	pp2 = pp->find_branch(branch);
     else
-	pp2 = pp;
+	pp2 = project_copy(pp);
 
     //
     // locate user data
@@ -567,7 +567,7 @@ copy_file_independent(void)
 	    (delta_date == NO_TIME_SET && src_data->deleted_by)
 	)
 	{
-	    src_data = project_file_find_fuzzy(pp2, s1, view_path_extreme);
+	    src_data = pp2->file_find_fuzzy(s1, view_path_extreme);
 	    sub_context_ty sc;
 	    sc.var_set_string("File_Name", s1);
 	    if (src_data)
@@ -1134,15 +1134,15 @@ copy_file_main(void)
 	project_name = user_default_project();
     pp = project_alloc(project_name);
     str_free(project_name);
-    project_bind_existing(pp);
+    pp->bind_existing();
 
     //
     // locate which branch
     //
     if (branch)
-	pp2 = project_find_branch(pp, branch);
+	pp2 = pp->find_branch(branch);
     else
-	pp2 = pp;
+	pp2 = project_copy(pp);
 
     //
     // locate user data
@@ -1547,7 +1547,7 @@ copy_file_main(void)
 	)
 	{
 	    sub_context_ty sc;
-	    src_data = project_file_find_fuzzy(pp2, s1, view_path_extreme);
+	    src_data = pp2->file_find_fuzzy(s1, view_path_extreme);
 	    sc.var_set_string("File_Name", s1);
 	    if (src_data)
 	    {
@@ -1899,7 +1899,7 @@ copy_file_main(void)
 		    {
 			fstate_src_ty   *p_src;
 
-			p_src = project_file_nth(pp2, f_idx, view_path_extreme);
+			p_src = pp2->file_nth(f_idx, view_path_extreme);
 			if (!p_src)
 			    break;
 			switch (p_src->usage)

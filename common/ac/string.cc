@@ -1,6 +1,6 @@
 //
 //	aegis - project change supervisor
-//	Copyright (C) 1994, 1996, 2002-2004 Peter Miller;
+//	Copyright (C) 1994, 1996, 2002-2006 Peter Miller;
 //	All rights reserved.
 //
 //	This program is free software; you can redistribute it and/or modify
@@ -20,9 +20,9 @@
 // MANIFEST: impliment missing functions from <string.h>
 //
 
-#include <ac/stdio.h>
-#include <ac/string.h>
-#include <ac/signal.h>
+#include <common/ac/stdio.h>
+#include <common/ac/string.h>
+#include <common/ac/signal.h>
 
 
 //
@@ -284,7 +284,7 @@ strsignal(int n)
 // Boston, MA 02111-1307, USA.
 //
 
-#include <ac/ctype.h>
+#include <common/ac/ctype.h>
 
 //
 // states:
@@ -446,3 +446,25 @@ strlcat(char *d, const char *s, size_t bufsize)
 }
 
 #endif // !HAVE_STRLCAT
+#ifndef HAVE_STRENDCPY
+
+char *
+strendcpy(char *dst, const char *src, const char *end)
+{
+    if (dst < end)
+    {
+	// leave room for terminating NUL
+	end--;
+	while (dst < end && *src)
+	    *dst++ = *src++;
+	*dst = '\0';
+	if (*src)
+	{
+	    // return end parameter if truncated
+	    dst++;
+	}
+    }
+    return dst;
+}
+
+#endif // !HAVE_STRENDCPY

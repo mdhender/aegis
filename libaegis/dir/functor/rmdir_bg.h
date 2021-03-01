@@ -23,11 +23,9 @@
 #ifndef LIBAEGIS_DIR_FUNCTOR_RMDIR_BG_H
 #define LIBAEGIS_DIR_FUNCTOR_RMDIR_BG_H
 
-#pragma interface "dir_functor_rmdir_bg"
+#include <common/ac/unistd.h>
 
-#include <ac/unistd.h>
-
-#include <dir/functor.h>
+#include <libaegis/dir/functor.h>
 
 /**
   * The dir_functor_rmdir_bg class is used to represent a background

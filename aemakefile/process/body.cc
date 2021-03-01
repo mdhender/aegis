@@ -20,14 +20,12 @@
 // MANIFEST: implementation of the process_body class
 //
 
-#pragma implementation "process_body"
+#include <common/ac/errno.h>
+#include <common/ac/stdio.h>
+#include <common/ac/string.h>
 
-#include <ac/errno.h>
-#include <ac/stdio.h>
-#include <ac/string.h>
-
-#include <error.h>
-#include <process/body.h>
+#include <common/error.h>
+#include <aemakefile/process/body.h>
 
 
 nstring_list process_body::search_path;
@@ -195,8 +193,7 @@ process_body::per_file(const nstring &filename)
 	print << "\n";
 	print << stem << ".gen.$(OBJEXT): " << stem << ".gen.cc " << dep
 	    << "\n";
-	print << "\t$(CXX) -I" << dir << " -Ilibaegis -Icommon $(CXXFLAGS) -c "
-	    << stem << ".gen.cc\n";
+	print << "\t$(CXX) -I. $(CXXFLAGS) -c " << stem << ".gen.cc\n";
 	print << "\tmv " << basename(stem) << ".gen.$(OBJEXT) $@\n";
 #endif
     }
@@ -211,8 +208,7 @@ process_body::per_file(const nstring &filename)
 
 	print << "\n";
 	print << stem << ".$(OBJEXT): " << file << " " << dep << "\n";
-	print << "\t$(CXX) -I" << dir << " -Ilibaegis -Icommon $(CXXFLAGS) -c "
-	    << file << "\n";
+	print << "\t$(CXX) -I. $(CXXFLAGS) -c " << file << "\n";
 	print << "\tmv " << root << ".$(OBJEXT) $@\n";
     }
     else if (file.gmatch("lib/icon2/*.uue"))
@@ -419,7 +415,7 @@ process_body::per_file(const nstring &filename)
 	print << "\n";
 	print << stem << ".cc " << stem << ".h: " << file
 	    << " bin/fmtgen$(EXEEXT) " << dep << "\n";
-	print << "\tbin/fmtgen$(EXEEXT) -I" << dir << " " << file << " "
+	print << "\tbin/fmtgen$(EXEEXT) -I. " << file << " "
 	    << stem << ".cc " << stem << ".h\n";
 
 #if 0
@@ -433,8 +429,7 @@ process_body::per_file(const nstring &filename)
 
 	print << "\n";
 	print << stem << ".$(OBJEXT): " << stem << ".cc " << dep << "\n";
-	print << "\t$(CXX) -I" << dir << " -Ilibaegis -Icommon $(CXXFLAGS) -c "
-	    << stem << ".cc\n";
+	print << "\t$(CXX) -I. $(CXXFLAGS) -c " << stem << ".cc\n";
 	print << "\tmv " << basename(stem) << ".$(OBJEXT) $@\n";
 #endif
     }

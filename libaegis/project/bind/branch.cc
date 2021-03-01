@@ -1,6 +1,6 @@
 //
 //	aegis - project change supervisor
-//	Copyright (C) 2004 Peter Miller;
+//	Copyright (C) 2004-2006 Peter Miller;
 //	All rights reserved.
 //
 //	This program is free software; you can redistribute it and/or modify
@@ -20,52 +20,47 @@
 // MANIFEST: functions to manipulate branchs
 //
 
-#include <change.h>
-#include <error.h> // for assert
-#include <project.h>
-#include <trace.h>
+#include <libaegis/change.h>
+#include <common/error.h> // for assert
+#include <libaegis/project.h>
+#include <common/trace.h>
 
 
 project_ty *
-project_bind_branch(project_ty *ppp, change_ty *cp)
+project_ty::bind_branch(change_ty *cp)
 {
-    string_ty	    *project_name;
-    project_ty	    *pp;
-
-    trace(("project_bind_branch(ppp = %08lX, cp = %8.8lX)\n{\n", (long)ppp,
-	(long)cp));
-    trace(("ppp->name = \"%s\"\n", ppp->name->str_text));
+    assert(cp->pp == this);
+    project_ty *pp = 0;
+    trace(("project_ty::bind_branch(this = %08lX, cp = %08lX)\n{\n",
+	(long)this, (long)cp));
+    trace(("name = \"%s\"\n", name->str_text));
     trace(("cp->number = %ld\n", cp->number));
     if (cp->number == TRUNK_CHANGE_NUMBER)
     {
 	trace(("no need to be clever\n"));
-	assert(!ppp->parent);
-	pp = project_copy(ppp);
+	assert(!parent);
+	pp = project_copy(this);
     }
     else
     {
 	// punctuation?
-	project_name =
+	string_ty *project_name =
 	    str_format
 	    (
 		"%s.%ld",
-		ppp->name->str_text,
+		name->str_text,
 		magic_zero_decode(cp->number)
 	    );
 	trace(("name = \"%s\"\n", project_name->str_text));
 	pp = project_alloc(project_name);
-	pp->parent = project_copy(ppp);
+	pp->parent = project_copy(this);
 	pp->parent_bn = cp->number;
 	pp->pcp = cp;
 	pp->changes_path =
-	    str_format
-	    (
-		"%s.branch",
-		project_change_path_get(ppp, cp->number)->str_text
-	    );
+	    str_format("%s.branch", change_path_get(cp->number)->str_text);
 	trace(("change path = \"%s\"\n", pp->changes_path->str_text));
     }
-    trace(("return %8.8lX;\n", (long)pp));
+    trace(("return %08lX;\n", (long)pp));
     trace(("}\n"));
     return pp;
 }

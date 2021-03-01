@@ -1,6 +1,6 @@
 //
 //	aegis - project change supervisor
-//	Copyright (C) 2005 Peter Miller;
+//	Copyright (C) 2005, 2006 Peter Miller;
 //	All rights reserved.
 //
 //	This program is free software; you can redistribute it and/or modify
@@ -23,9 +23,7 @@
 #ifndef LIBAEGIS_INPUT_SVT_CHECKOUT_H
 #define LIBAEGIS_INPUT_SVT_CHECKOUT_H
 
-#pragma interface "input_svt_checkout"
-
-#include <input.h>
+#include <libaegis/input.h>
 
 /**
   * The input_svt_checkout class is used to represent and input which is
@@ -63,10 +61,10 @@ public:
     long ftell_inner();
 
 private:
-    input_ty *src1_p;
-    input_ty *src2_p;
-    input_ty *src3_p;
-    input_ty *src4_p;
+    input src1_p;
+    input src2_p;
+    input src3_p;
+    input src4_p;
     long pos;
 
     /**

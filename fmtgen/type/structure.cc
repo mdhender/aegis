@@ -20,12 +20,10 @@
 // MANIFEST: functions to manipluate structure types
 //
 
-#pragma implementation "type_structure_ty"
-
-#include <error.h>
-#include <indent.h>
-#include <mem.h>
-#include <type/structure.h>
+#include <common/error.h>
+#include <fmtgen/indent.h>
+#include <common/mem.h>
+#include <fmtgen/type/structure.h>
 
 
 type_structure_ty::~type_structure_ty()

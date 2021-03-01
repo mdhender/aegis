@@ -1,7 +1,7 @@
 #!/bin/sh
 #
 #	aegis - project change supervisor
-#	Copyright (C) 2001-2003, 2005 Peter Miller;
+#	Copyright (C) 2001-2003, 2005, 2006 Peter Miller;
 #	All rights reserved.
 #
 #	This program is free software; you can redistribute it and/or modify
@@ -37,6 +37,22 @@ here=`pwd`
 if test $? -ne 0; then exit 2; fi
 
 if test "$1" != "" ; then bin="$here/$1/bin"; else bin="$here/bin"; fi
+
+if test "$EXEC_SEARCH_PATH" != ""
+then
+    tpath=
+    hold="$IFS"
+    IFS=":$IFS"
+    for tpath2 in $EXEC_SEARCH_PATH
+    do
+	tpath=${tpath}${tpath2}/${1-.}/bin:
+    done
+    IFS="$hold"
+    PATH=${tpath}${PATH}
+else
+    PATH=${bin}:${PATH}
+fi
+export PATH
 
 activity="create working directory 41"
 
@@ -199,14 +215,12 @@ if test $? -ne 0 ; then no_result; fi
 cat > $workchan/aegis.conf << 'end'
 build_command = "exit 0";
 
-history_get_command =
-	"co -u'$e' -p $h,v > $o";
-history_create_command =
-	"ci -f -u -m/dev/null -t/dev/null $i $h,v; rcs -U $h,v";
-history_put_command =
-	"ci -f -u -m/dev/null -t/dev/null $i $h,v; rcs -U $h,v";
-history_query_command =
-	"rlog -r $h,v | awk '/^head:/ {print $$2}'";
+history_get_command = "aesvt -check-out -edit ${quote $edit} "
+    "-history ${quote $history} -f ${quote $output}";
+history_put_command = "aesvt -check-in -history ${quote $history} "
+    "-f ${quote $input}";
+history_query_command = "aesvt -query -history ${quote $history}";
+history_content_limitation = binary_capable;
 
 diff_command = "set +e; diff $orig $i > $out; test $$? -le 1";
 
@@ -257,15 +271,6 @@ copyright_years =
 state = awaiting_review;
 given_test_exemption = true;
 given_regression_test_exemption = true;
-build_time = TIME;
-architecture_times =
-[
-	{
-		variant = "unspecified";
-		node = "NODE";
-		build_time = TIME;
-	},
-];
 development_directory = ".../foo.chan";
 history =
 [
@@ -324,15 +329,6 @@ copyright_years =
 state = being_reviewed;
 given_test_exemption = true;
 given_regression_test_exemption = true;
-build_time = TIME;
-architecture_times =
-[
-	{
-		variant = "unspecified";
-		node = "NODE";
-		build_time = TIME;
-	},
-];
 development_directory = ".../foo.chan";
 history =
 [
@@ -389,15 +385,6 @@ copyright_years =
 state = awaiting_review;
 given_test_exemption = true;
 given_regression_test_exemption = true;
-build_time = TIME;
-architecture_times =
-[
-	{
-		variant = "unspecified";
-		node = "NODE";
-		build_time = TIME;
-	},
-];
 development_directory = ".../foo.chan";
 history =
 [

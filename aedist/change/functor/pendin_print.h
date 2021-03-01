@@ -23,13 +23,11 @@
 #ifndef AEDIST_CHANGE_FUNCTOR_PENDIN_PRINT_H
 #define AEDIST_CHANGE_FUNCTOR_PENDIN_PRINT_H
 
-#pragma interface "change_functor_pending_printer"
-
-#include <change/functor.h>
-#include <change.h>
-#include <project.h>
-#include <symtab/template.h>
-#include <nstring.h>
+#include <libaegis/change/functor.h>
+#include <libaegis/change.h>
+#include <libaegis/project.h>
+#include <common/symtab/template.h>
+#include <common/nstring.h>
 
 struct col_ty;
 struct output_ty;

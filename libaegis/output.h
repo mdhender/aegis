@@ -1,6 +1,6 @@
 //
 //	aegis - project change supervisor
-//	Copyright (C) 1999, 2002-2005 Peter Miller;
+//	Copyright (C) 1999, 2002-2006 Peter Miller;
 //	All rights reserved.
 //
 //	This program is free software; you can redistribute it and/or modify
@@ -23,9 +23,9 @@
 #ifndef LIBAEGIS_OUTPUT_H
 #define LIBAEGIS_OUTPUT_H
 
-#include <ac/stdarg.h>
-#include <ac/stddef.h>
-#include <main.h> // for gcc attributes
+#include <common/ac/stdarg.h>
+#include <common/ac/stddef.h>
+#include <common/main.h> // for gcc attributes
 
 struct string_ty; // forward
 class nstring; // forward
@@ -307,9 +307,10 @@ operator<<(output_ty &os, const nstring &s)
     return os;
 }
 
-class input_ty; // forward
 
-output_ty &operator<<(output_ty &os, input_ty &is);
+class input; // forward
+
+output_ty &operator<<(output_ty &os, input &is);
 
 
 inline DEPRECATED void

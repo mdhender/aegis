@@ -1,6 +1,6 @@
 //
 //	aegis - project change supervisor
-//	Copyright (C) 1991, 1992, 1995, 1997, 2002-2004 Peter Miller;
+//	Copyright (C) 1991, 1992, 1995, 1997, 2002-2005 Peter Miller;
 //	All rights reserved.
 //
 //	This program is free software; you can redistribute it and/or modify
@@ -20,10 +20,10 @@
 // MANIFEST: functions to manipulate intervals
 //
 
-#include <interval.h>
-#include <error.h>
-#include <mem.h>
-#include <trace.h>
+#include <libaegis/interval.h>
+#include <common/error.h>
+#include <common/mem.h>
+#include <common/trace.h>
 
 
 //

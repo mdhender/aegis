@@ -27,7 +27,7 @@
  * aedist for receive.
  */
 
-#include <cattr.def>
+#include <libaegis/cattr.def>
 
 state =
 (
@@ -698,7 +698,7 @@ branch =
 
     /*
      * This controls whether the automatically selected aenc(1) change
-     * numbers ``fill in'' any gaps.  Defaults to true if not set.
+     * numbers "fill in" any gaps.  Defaults to true if not set.
      */
     reuse_change_numbers = boolean;
 

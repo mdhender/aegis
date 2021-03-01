@@ -23,8 +23,8 @@
 #ifndef AEDIST_OUTPUT_CPIO_CHILD_H
 #define AEDIST_OUTPUT_CPIO_CHILD_H
 
-#include <nstring.h>
-#include <output.h>
+#include <common/nstring.h>
+#include <libaegis/output.h>
 
 /**
   * The output_cpio_child_ty class is used to represent a cpio archive

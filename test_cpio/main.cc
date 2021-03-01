@@ -1,5 +1,6 @@
 //
 //	aegis - project change supervisor
+//	Copyright (C) 2006 Peter Miller
 //	Copyright (C) 2005 Walter Franzini;
 //	All rights reserved.
 //
@@ -20,31 +21,32 @@
 // MANIFEST: implementation of the main class
 //
 
-#include <ac/stdio.h>
-#include <ac/stdlib.h>
+#include <common/ac/stdio.h>
+#include <common/ac/stdlib.h>
 
-#include <arglex.h>
-#include <arglex2.h>
-#include <error.h> // for assert
-#include <help.h>
-#include <input.h>
-#include <input/base64.h>
-#include <input/cpio.h>
-#include <input/file.h>
-#include <input/gunzip.h>
-#include <input/uudecode.h>
-#include <nstring.h>
-#include <nstring/list.h>
-#include <os.h>
-#include <output.h>
-#include <output/cpio.h>
-#include <output/file.h>
-#include <progname.h>
-#include <r250.h>
-#include <rfc822header.h>
-#include <sub.h>
-#include <trace.h>
-#include <uuidentifier.h>
+#include <common/arglex.h>
+#include <common/error.h> // for assert
+#include <common/nstring.h>
+#include <common/nstring/list.h>
+#include <common/progname.h>
+#include <common/trace.h>
+#include <common/uuidentifier.h>
+#include <libaegis/arglex2.h>
+#include <libaegis/help.h>
+#include <libaegis/input/base64.h>
+#include <libaegis/input/bunzip2.h>
+#include <libaegis/input/cpio.h>
+#include <libaegis/input/file.h>
+#include <libaegis/input/gunzip.h>
+#include <libaegis/input.h>
+#include <libaegis/input/uudecode.h>
+#include <libaegis/os.h>
+#include <libaegis/output/bit_bucket.h>
+#include <libaegis/output/cpio.h>
+#include <libaegis/output/file.h>
+#include <libaegis/output.h>
+#include <libaegis/rfc822.h>
+#include <libaegis/sub.h>
 
 enum
 {
@@ -64,23 +66,23 @@ static arglex_table_ty argtab[] =
 
 
 static input_cpio *
-input_cpio_mime(input_ty *ifp)
+input_cpio_mime(input &ifp)
 {
-    rfc822_header_ty *hp = rfc822_header_read(ifp);
+    rfc822 hdr;
+    hdr.load(ifp, true);
 
-    nstring s(rfc822_header_query(hp, "mime-version"));
+    nstring s = hdr.get("mime-version");
     if (!s.empty())
     {
-        nstring content_type("application/aegis-change-set");
-        s = nstring(rfc822_header_query(hp, "content-type"));
-        if (s.empty() || s != content_type)
+	s = hdr.get("content-type");
+	if (s != "application/aegis-change-set")
             ifp->fatal_error("wrong content type");
     }
 
     //
     // Deal with the content encoding.
     //
-    s = nstring(rfc822_header_query(hp, "content-transfer-encoding"));
+    s = hdr.get("content-transfer-encoding");
     if (!s.empty())
     {
         static nstring base64("base64");
@@ -95,14 +97,14 @@ input_cpio_mime(input_ty *ifp)
             //
             // The rest of the input is in base64 encoding.
             //
-            ifp = new input_base64(ifp, true);
+            ifp = new input_base64(ifp);
         }
         else if (s == uuencode)
         {
             //
             // The rest of the input is uuencoded.
             //
-            ifp = new input_uudecode(ifp, true);
+            ifp = new input_uudecode(ifp);
         }
         else
         {
@@ -120,9 +122,8 @@ input_cpio_mime(input_ty *ifp)
     // a gzipped cpio archive.
     //
     ifp = input_gunzip_open(ifp);
+    ifp = input_bunzip2_open(ifp);
     input_cpio *cpio_p = new input_cpio(ifp);
-
-    rfc822_header_delete(hp);
     return cpio_p;
 }
 
@@ -160,17 +161,15 @@ cpio_create(const nstring &cwd, const nstring &archive_name,
     os_become_orig();
     ofp = output_file_binary_open(archive_name.get_ref());
     output_cpio_ty *cpio_p = new output_cpio_ty(ofp);
-    input_ty *ifp;
     for (size_t n = 0; n < file_list.size(); ++n)
     {
         nstring abs_path = os_path_join(cwd, file_list[n]);
 
         trace_nstring(file_list[n]);
-        ifp = input_file_open(abs_path);
+        input ifp = input_file_open(abs_path);
         int len = ifp->length();
         ofp = cpio_p->child(file_list[n], len);
-        input_to_output(ifp, ofp);
-        delete ifp;
+        *ofp << ifp;
         delete ofp;
     }
     delete cpio_p;
@@ -183,19 +182,17 @@ static int
 cpio_list(const nstring &, const nstring &archive, const nstring_list &)
 {
     os_become_orig();
-    input_ty *ifp = input_file_open(archive);
+    input ifp = input_file_open(archive);
     input_cpio *cpio_p = input_cpio_mime(ifp);
     for (;;)
     {
 	nstring ofn;
-	ifp = cpio_p->child(ofn);
-	if (!ifp)
+	input ifp2 = cpio_p->child(ofn);
+	if (!ifp2.is_open())
 	    break;
         printf("%s\n", ofn.c_str());
-	char buff[4096];
-        while (ifp->read(buff, sizeof(buff)))
-	    ;
-        delete ifp;
+	output_bit_bucket nowhere;
+	nowhere << ifp2;
     }
     delete cpio_p;
     os_become_undo();
@@ -207,20 +204,19 @@ static int
 cpio_extract(const nstring& root, const nstring& archive, const nstring_list&)
 {
     os_become_orig();
-    input_ty *ifp = input_file_open(archive);
+    input ifp = input_file_open(archive);
     input_cpio *cpio_p = input_cpio_mime(ifp);
     for (;;)
     {
 	nstring ofn;
-	ifp = cpio_p->child(ofn);
-	if (!ifp)
+	input ifp2 = cpio_p->child(ofn);
+	if (!ifp2.is_open())
 	    break;
         nstring abs_path = os_path_join(root, ofn);
         os_mkdir_between(root, ofn, 0755);
         output_ty *ofp = output_file_open(abs_path);
-        input_to_output(ifp, ofp);
+        *ofp << ifp2;
         delete ofp;
-        delete ifp;
     }
     delete cpio_p;
     os_become_undo();
@@ -263,7 +259,6 @@ main(int argc, char **argv)
     int          (*func) (const nstring&, const nstring&, const nstring_list&);
 
     arglex_init(argc, argv, argtab);
-    r250_init();
     arglex();
     os_become_init_mortal();
     func = 0;

@@ -1,6 +1,6 @@
 //
 //      aegis - project change supervisor
-//      Copyright (C) 1999-2001, 2003, 2004 Peter Miller;
+//      Copyright (C) 1999-2001, 2003-2005 Peter Miller;
 //      All rights reserved.
 //
 //      This program is free software; you can redistribute it and/or modify
@@ -20,11 +20,11 @@
 // MANIFEST: functions to manipulate privates
 //
 
-#include <error.h> // for assert
-#include <mem.h>
-#include <page.h>
-#include <trace.h>
-#include <wide_output/private.h>
+#include <common/error.h> // for assert
+#include <common/mem.h>
+#include <common/page.h>
+#include <common/trace.h>
+#include <libaegis/wide_output/private.h>
 
 
 wide_output_ty *

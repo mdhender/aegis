@@ -1,6 +1,6 @@
 //
 //      aegis - project change supervisor
-//      Copyright (C) 1991-1999, 2001-2005 Peter Miller;
+//      Copyright (C) 1991-1999, 2001-2006 Peter Miller;
 //      All rights reserved.
 //
 //      This program is free software; you can redistribute it and/or modify
@@ -20,37 +20,38 @@
 // MANIFEST: functions to implement develop begin
 //
 
-#include <ac/stdio.h>
-#include <ac/stdlib.h>
-#include <ac/string.h>
-#include <ac/time.h>
-#include <ac/sys/types.h>
+#include <common/ac/stdio.h>
+#include <common/ac/stdlib.h>
+#include <common/ac/string.h>
+#include <common/ac/time.h>
+#include <common/ac/sys/types.h>
 #include <sys/stat.h>
 
-#include <aedb.h>
-#include <ael/change/by_state.h>
-#include <arglex2.h>
-#include <arglex/change.h>
-#include <arglex/project.h>
-#include <change.h>
-#include <col.h>
-#include <commit.h>
-#include <common.h>
-#include <dir.h>
-#include <error.h>
-#include <help.h>
-#include <lock.h>
-#include <log.h>
-#include <os.h>
-#include <progname.h>
-#include <project.h>
-#include <project/history.h>
-#include <quit.h>
-#include <rss.h>
-#include <sub.h>
-#include <trace.h>
-#include <undo.h>
-#include <user.h>
+#include <common/error.h>
+#include <common/progname.h>
+#include <common/quit.h>
+#include <common/trace.h>
+#include <libaegis/ael/change/by_state.h>
+#include <libaegis/arglex2.h>
+#include <libaegis/arglex/change.h>
+#include <libaegis/arglex/project.h>
+#include <libaegis/change.h>
+#include <libaegis/col.h>
+#include <libaegis/commit.h>
+#include <libaegis/common.h>
+#include <libaegis/dir.h>
+#include <libaegis/help.h>
+#include <libaegis/lock.h>
+#include <libaegis/log.h>
+#include <libaegis/os.h>
+#include <libaegis/project.h>
+#include <libaegis/project/history.h>
+#include <libaegis/rss.h>
+#include <libaegis/sub.h>
+#include <libaegis/undo.h>
+#include <libaegis/user.h>
+
+#include <aegis/aedb.h>
 
 
 static void
@@ -123,7 +124,6 @@ develop_begin_list(void)
 static void
 develop_begin_main(void)
 {
-    cstate_ty       *cstate_data;
     cstate_history_ty *history_data;
     string_ty       *devdir;
     string_ty       *project_name;
@@ -240,7 +240,7 @@ develop_begin_main(void)
         project_name = user_default_project();
     pp = project_alloc(project_name);
     str_free(project_name);
-    project_bind_existing(pp);
+    pp->bind_existing();
 
     //
     // locate user data
@@ -293,14 +293,13 @@ develop_begin_main(void)
     user_ustate_lock_prepare(up);
     change_cstate_lock_prepare(cp);
     lock_take();
-    cstate_data = change_cstate_get(cp);
 
     //
     // Extract the appropriate row of the change table.
     // It is an error if the change is not in the
     // awaiting_development state.
     //
-    if (cstate_data->state != cstate_state_awaiting_development)
+    if (!change_is_awaiting_development(cp))
         change_fatal(cp, 0, i18n("bad db state"));
     if (!project_developer_query(pp, user_name(up)))
     {
@@ -335,13 +334,25 @@ develop_begin_main(void)
         change_verbose(cp, scp, i18n("development directory \"$filename\""));
         sub_context_delete(scp);
     }
-    change_development_directory_set(cp, devdir);
+    change_development_directory_set(cp, os_canonify_dirname(devdir));
+
+    //
+    // Make sure the development directory is reachangle by the project
+    // owner (used during aeib) and by the reviewers.  We look for
+    // the directory 'x' bits, to make sure it is at least possible
+    // traverse all of the directories in order to reach the development
+    // directory.
+    //
+    project_become(pp);
+    os_check_path_traversable(devdir);
+    project_become_undo();
 
     //
     // Set the change data to reflect the current user
     // as developer and move it to the being_developed state.
     // Append another entry to the change history.
     //
+    cstate_ty *cstate_data = change_cstate_get(cp);
     cstate_data->state = cstate_state_being_developed;
     history_data = change_history_new(cp, up);
     history_data->what = cstate_history_what_develop_begin;

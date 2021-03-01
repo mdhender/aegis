@@ -20,16 +20,16 @@
 // MANIFEST: functions to manipulate templates
 //
 
-#include <change.h>
-#include <change/env_set.h>
-#include <change/file.h>
-#include <error.h> // for assert
-#include <file.h>
-#include <gmatch.h>
-#include <os.h>
-#include <sub.h>
-#include <trace.h>
-#include <user.h>
+#include <libaegis/change.h>
+#include <libaegis/change/env_set.h>
+#include <libaegis/change/file.h>
+#include <common/error.h> // for assert
+#include <libaegis/file.h>
+#include <common/gmatch.h>
+#include <libaegis/os.h>
+#include <libaegis/sub.h>
+#include <common/trace.h>
+#include <libaegis/user.h>
 
 
 static pconf_file_template_ty *

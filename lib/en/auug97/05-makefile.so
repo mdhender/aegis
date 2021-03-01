@@ -1,6 +1,6 @@
 .\"
 .\"	aegis - project change supervisor
-.\"	Copyright (C) 1997, 1998, 2001-2003 Peter Miller;
+.\"	Copyright (C) 1997, 1998, 2001-2003, 2005 Peter Miller;
 .\"	All rights reserved.
 .\"
 .\"	This program is free software; you can redistribute it and/or modify
@@ -29,7 +29,7 @@ the speed at which
 .I make
 can interpret this multitude of files also becomes an issue.
 .LP
-Builds can take ``forever'' for both these reasons: the traditional
+Builds can take \[lq]forever\[rq] for both these reasons: the traditional
 fixes for the separated DAG may be building too much
 .I and
 your \f(CWMakefile\fP may be inefficient.
@@ -57,11 +57,11 @@ lw(2.5i)f(CW).
 OBJ = main.o parse.o
 .TE
 Humans read this as the variable OBJ being assigned two filenames
-``main.o'' and ``parse.o''.
+\[lq]main.o\[rq] and \[lq]parse.o\[rq].
 But
 .I make
 does not see it that way.
-Instead  OBJ is assigned the \fIstring\fP ``main.o parse.o''.
+Instead  OBJ is assigned the \fIstring\fP \[lq]main.o parse.o\[rq].
 It gets worse:
 .TS
 box,center;
@@ -74,7 +74,7 @@ humans expect
 .I make
 to assign two filenames to OBJ, but
 .I make
-actually assigns the string ``$(SRC:.c=.o)''.
+actually assigns the string \[lq]$(SRC:.c=.o)\[rq].
 This is because it is a
 .I macro
 language with deferred evaluation,
@@ -158,7 +158,7 @@ performing the same string manipulations in C or AWK.
 Modern
 .I make
 implementations have an
-immediate evaluation ``\f(CW:=\fP'' assignment operator.
+immediate evaluation \[lq]\f(CW:=\fP\[rq] assignment operator.
 The above example can be re-written as
 .TS
 box,center;
@@ -274,7 +274,7 @@ dependencies: $(SRC)
 Now, even if the project is completely up-do-date,
 the dependencies will be re-built.
 For a large project, this is very wasteful, and can be a major contributor
-to \fImake\fP taking ``forever'' to work out that nothing needs to
+to \fImake\fP taking \[lq]forever\[rq] to work out that nothing needs to
 be done.
 .LP
 There is a second problem, and that is that if any \fIone\fP of the C
@@ -289,9 +289,10 @@ prog: $(SRC)
 .TE
 What is needed, in exact analogy to the C case,
 is to have an intermediate form.
-This is usually given a ``\f(CW.d\fP'' suffix.
+This is usually given a \[lq]\f(CW.d\fP\[rq] suffix.
 By exploiting the fact that more than one file may be named in an include line,
-there is no need to ``link'' all of the ``\f(CW.d\fP'' files together:
+there is no need to \[lq]link\[rq] all of the \[lq]\f(CW.d\fP\[rq] files
+together:
 .TS
 box,center;
 lw(2.5i)f(CW).

@@ -1,6 +1,6 @@
 //
 //	aegis - project change supervisor
-//	Copyright (C) 2003, 2004 Peter Miller;
+//	Copyright (C) 2003-2006 Peter Miller;
 //	All rights reserved.
 //
 //	This program is free software; you can redistribute it and/or modify
@@ -20,20 +20,21 @@
 // MANIFEST: functions to manipulate statisticss
 //
 
-#include <ac/stdio.h>
+#include <common/ac/stdio.h>
 
-#include <aer/func/now.h> // working_days
-#include <change.h>
-#include <change/file.h>
-#include <emit/project.h>
-#include <cstate.h>
-#include <error.h> // for assert
-#include <fstate.h>
-#include <get/project/statistics.h>
-#include <http.h>
-#include <now.h>
-#include <project.h>
-#include <str_list.h>
+#include <common/error.h> // for assert
+#include <common/now.h>
+#include <common/str_list.h>
+#include <libaegis/aer/func/now.h> // working_days
+#include <libaegis/change/file.h>
+#include <libaegis/change.h>
+#include <libaegis/cstate.h>
+#include <libaegis/fstate.h>
+#include <libaegis/project.h>
+
+#include <aeget/emit/project.h>
+#include <aeget/get/project/statistics.h>
+#include <aeget/http.h>
 
 
 void
@@ -87,7 +88,7 @@ get_project_statistics(project_ty *pp, string_ty *fn, string_list_ty *modifier)
     //
     // traverse each change
     //
-    cp = project_change_get(pp);
+    cp = pp->change_get();
     cstate_data = change_cstate_get(cp);
     bp = cstate_data->branch;
     assert(bp);

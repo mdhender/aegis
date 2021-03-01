@@ -1,6 +1,6 @@
 //
 //	aegis - project change supervisor
-//	Copyright (C) 2004, 2005 Peter Miller;
+//	Copyright (C) 2004-2006 Peter Miller;
 //	All rights reserved.
 //
 //	This program is free software; you can redistribute it and/or modify
@@ -206,21 +206,29 @@
 //     to be simple directory name aliases.
 //
 
-#include <ac/string.h>
+#include <common/ac/string.h>
 
-#include <module.h>
-#include <os.h>
-#include <request/update.h>
-#include <server.h>
+#include <aecvsserver/module.h>
+#include <libaegis/os.h>
+#include <aecvsserver/request/update.h>
+#include <aecvsserver/server.h>
 
 
-static void
-run(server_ty *sp, string_ty *fn)
+request_update::~request_update()
 {
-    module_options_ty opt;
+}
+
+
+request_update::request_update()
+{
+}
+
+
+void
+request_update::run_inner(server_ty *sp, string_ty *fn)
+    const
+{
     size_t          j;
-    int             ok;
-    directory_ty    *dp;
 
     if (server_root_required(sp, "update"))
 	return;
@@ -230,7 +238,7 @@ run(server_ty *sp, string_ty *fn)
     //
     // Process the options.
     //
-    module_options_constructor(&opt);
+    module_ty::options opt;
     for (j = 0; j < sp->np->argument_count(); ++j)
     {
 	string_ty *arg = sp->np->argument_nth(j);
@@ -352,12 +360,11 @@ run(server_ty *sp, string_ty *fn)
     // Now process the rest of the arguments.
     // Each is a file or directory to be updated.
     //
-    ok = 1;
-    dp = sp->np->get_curdir();
+    bool ok = true;
+    directory_ty *dp = sp->np->get_curdir();
     for (; j < sp->np->argument_count(); ++j)
     {
 	string_ty       *arg;
-	module_ty       *mp;
 	string_ty       *client_side;
 	string_ty       *server_side;
 
@@ -376,10 +383,9 @@ run(server_ty *sp, string_ty *fn)
 	// in a single command.  This means we have to lookup the module
 	// for every argument.
 	//
-	mp = module_find_trim(server_side);
-	if (!module_update(mp, sp, client_side, server_side, &opt))
-	    ok = 0;
-	module_delete(mp);
+	module mp = module::find_trim(server_side);
+	if (!mp->update(sp, client_side, server_side, opt))
+	    ok = false;
 	str_free(client_side);
 	str_free(server_side);
 
@@ -389,16 +395,23 @@ run(server_ty *sp, string_ty *fn)
 	if (!ok)
 	    break;
     }
-    module_options_destructor(&opt);
 
     if (ok)
 	server_ok(sp);
 }
 
 
-const request_ty request_update =
+const char *
+request_update::name()
+    const
 {
-    "update",
-    run,
-    1, // reset
-};
+    return "update";
+}
+
+
+bool
+request_update::reset()
+    const
+{
+    return true;
+}

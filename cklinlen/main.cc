@@ -1,6 +1,6 @@
 //
 //	aegis - project change supervisor
-//	Copyright (C) 2002-2004 Peter Miller;
+//	Copyright (C) 2002-2005 Peter Miller;
 //	All rights reserved.
 //
 //	This program is free software; you can redistribute it and/or modify
@@ -70,17 +70,24 @@
 //      there are no errors.
 //
 
-#include <ac/stdio.h>
-#include <ac/stdlib.h>
+#include <common/ac/stdio.h>
+#include <common/ac/stdlib.h>
+#include <common/ac/string.h>
 
-#include <arglex.h>
-#include <check.h>
-#include <error.h>
-#include <progname.h>
+#include <common/arglex.h>
+#include <cklinlen/check.h>
+#include <common/error.h>
+#include <common/progname.h>
 
+
+enum
+{
+    arglex_token_from
+};
 
 static arglex_table_ty argtab[] =
 {
+    { "-From", arglex_token_from, },
     ARGLEX_END_MARKER
 };
 
@@ -88,8 +95,38 @@ static arglex_table_ty argtab[] =
 static void
 usage(void)
 {
-    fprintf(stderr, "Usage: %s <filename>...\n", progname_get());
+    const char *prog = progname_get();
+    fprintf(stderr, "Usage: %s <filename>...\n", prog);
+    fprintf(stderr, "       %s -From <filename>\n", prog);
     exit(1);
+}
+
+
+static void
+process(const char *filename)
+{
+    FILE *fp = stdin;
+    if (filename)
+    {
+	fp = fopen(filename, "r");
+	if (!fp)
+	{
+	    perror(filename);
+	    exit(1);
+	}
+    }
+    for (;;)
+    {
+	char buffer[4000];
+	if (!fgets(buffer, sizeof(buffer), fp))
+	    break;
+	size_t len = strlen(buffer);
+	if (len > 0 && buffer[len - 1] == '\n')
+	    buffer[len - 1] = 0;
+	check(buffer);
+    }
+    if (fp != stdin)
+	fclose(fp);
 }
 
 
@@ -97,9 +134,9 @@ int
 main(int argc, char **argv)
 {
     arglex_init(argc, argv, argtab);
-    while (arglex() != arglex_token_eoln)
+    for (;;)
     {
-	switch (arglex_token)
+	switch (arglex())
 	{
 	default:
 	    error_raw
@@ -108,16 +145,35 @@ main(int argc, char **argv)
 		arglex_value.alv_string
 	    );
 	    usage();
+	    // NOTREACHED
 
 	case arglex_token_string:
 	    check(arglex_value.alv_string);
 	    break;
+
+	case arglex_token_from:
+	    switch (arglex())
+	    {
+	    case arglex_token_string:
+		process(arglex_value.alv_string);
+		break;
+
+	    case arglex_token_stdio:
+		process(0);
+		break;
+
+	    default:
+		usage();
+		// NOTREACHED
+	    }
+	    break;
+
+	case arglex_token_eoln:
+	    //
+	    // Report success.
+	    //
+	    exit(0);
+	    return 0;
 	}
     }
-
-    //
-    // Report success.
-    //
-    exit(0);
-    return 0;
 }

@@ -23,7 +23,7 @@
 #ifndef LIBAEGIS_CHANGE_PFS_H
 #define LIBAEGIS_CHANGE_PFS_H
 
-#include <change.h>
+#include <libaegis/change.h>
 
 /**
   * The change_psf_write function is used to cache a copy of the project

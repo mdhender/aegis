@@ -1,6 +1,6 @@
 /*
  *	aegis - project change supervisor
- *	Copyright (C) 1994, 1995, 1996, 2000 Peter Miller;
+ *	Copyright (C) 1994-1996, 2000, 2005 Peter Miller;
  *	All rights reserved.
  *
  *	This program is free software; you can redistribute it and/or modify
@@ -42,7 +42,7 @@ else
 
 		/*
 		 * Reading the p.state value (it is deferred) may result
-		 * in ``permision denied'' so we need to catch the
+		 * in "permision denied" so we need to catch the
 		 * exception as it goes past.  Use the error as the
 		 * description.
 		 */

@@ -1,6 +1,6 @@
 '\" t
 .\"	aegis - project change supervisor
-.\"	Copyright (C) 2005 Peter Miller;
+.\"	Copyright (C) 2005, 2006 Peter Miller;
 .\"	All rights reserved.
 .\"
 .\"	This program is free software; you can redistribute it and/or modify
@@ -79,6 +79,7 @@ This option is used to check a file into the history.
 .TP 8n
 \fB\-CHeck_Out
 This option is used to check-out a file from the history.
+.so o_compress.so
 .TP 8n
 \fB\-List
 This option is used to list the file's history.
@@ -114,7 +115,7 @@ boundary indicators of any kind.  The versions are in descending order,
 from most recent (greatest edit number) to least recent (version number
 one).  To determine where one version stops and the next version starts,
 use the Content-Length field in the header.  The entire history file is
-then compressed using the GNU Zip algorithm (via zlib).  There is no
+then compressed using the bunzip2 algorithm (via libbz2).  There is no
 diff or delta of any kind in the history file.
 .PP
 The advantage of compressing the file is that there is usually a very
@@ -122,11 +123,18 @@ high redundancy between file versions.  For example, if two identical
 versions are checked in (not necessarily sequentially) the second copy
 will compress to only a few bytes.  Unlike \fIdiff\fP(1) style deltas,
 this also copes very will with moving blocks of data within the file.
-The use of GNU Zip formatting means there is also a checksum for the
+The use of bunzip2 formatting means there is also a checksum for the
 whole history file, which allows you to detect bad blocks in the header
 portions; it also means there is a simple way to extract the data from
 a history file even without the \fI\*(n)\fP program, or for testing, or
 because you are curious.
+.PP
+You can actually choose from a number of compression algorithms,
+including GNU Zip and bunzip2, via the \f[CW]\-compression-algorithm\fP
+option.  More copmpresison algoritthms may be added in the future.  The
+best available comression is used, because this results in the most
+compact history files.  Future versions will always be able to access
+the compression used by earlier versions.
 .SS End-To-End Issues
 See also
 Saltzer, J.H. \fIet al\fP (1981) \fIEnd-to-end arguments in system design\fP,

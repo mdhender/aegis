@@ -1,6 +1,6 @@
 //
 //	aegis - project change supervisor
-//	Copyright (C) 2002-2004 Peter Miller;
+//	Copyright (C) 2002-2005 Peter Miller;
 //	All rights reserved.
 //
 //	This program is free software; you can redistribute it and/or modify
@@ -20,9 +20,9 @@
 // MANIFEST: functions to manipulate execute_slrps
 //
 
-#include <file.h>
-#include <os.h>
-#include <trace.h>
+#include <libaegis/file.h>
+#include <libaegis/os.h>
+#include <common/trace.h>
 
 
 string_ty *

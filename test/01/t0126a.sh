@@ -2,6 +2,7 @@
 #
 #	aegis - project change supervisor
 #	Copyright (C) 2003, 2005 Peter Miller;
+#       Copyright (C) 2006 Walter Franzini;
 #	All rights reserved.
 #
 #	This program is free software; you can redistribute it and/or modify
@@ -51,6 +52,22 @@ here=`pwd`
 if test $? -ne 0 ; then exit 2; fi
 
 bin=$here/${1-.}/bin
+
+if test "$EXEC_SEARCH_PATH" != ""
+then
+    tpath=
+    hold="$IFS"
+    IFS=":$IFS"
+    for tpath2 in $EXEC_SEARCH_PATH
+    do
+	tpath=${tpath}${tpath2}/${1-.}/bin:
+    done
+    IFS="$hold"
+    PATH=${tpath}${PATH}
+else
+    PATH=${bin}:${PATH}
+fi
+export PATH
 
 pass()
 {
@@ -110,7 +127,7 @@ export PATH
 #
 # make the directories
 #
-activity="working directory 113"
+activity="working directory 130"
 mkdir $work $work/lib
 if test $? -ne 0 ; then no_result; fi
 chmod 777 $work/lib
@@ -129,14 +146,14 @@ unset LANGUAGE
 #
 # make a new project
 #
-activity="new project 132"
+activity="new project 149"
 $bin/aegis -npr foo -vers "" -dir $workproj > log 2>&1
 if test $? -ne 0 ; then cat log; no_result; fi
 
 #
 # change project attributes
 #
-activity="project attributes 139"
+activity="project attributes 156"
 cat > $tmp << 'end'
 description = "A bogus project created to test the aetar functionality.";
 developer_may_review = true;
@@ -151,7 +168,7 @@ if test $? -ne 0 ; then cat log; no_result; fi
 #
 # add the staff
 #
-activity="staff 154"
+activity="staff 171"
 $bin/aegis -nd $USER > log 2>&1
 if test $? -ne 0 ; then cat log; no_result; fi
 $bin/aegis -nrv $USER > log 2>&1
@@ -166,7 +183,7 @@ AEGIS_PROJECT=foo ; export AEGIS_PROJECT
 #
 # create a new change
 #
-activity="new change 169"
+activity="new change 186"
 cat > $tmp << 'end'
 brief_description = "The first change";
 cause = internal_bug;
@@ -184,7 +201,7 @@ if test $? -ne 0 ; then cat log; no_result; fi
 #
 # add a new files to the change
 #
-activity="new file 187"
+activity="new file 204"
 $bin/aegis -nf $workchan/main.c $workchan/aegis.conf -nl > log 2>&1
 if test $? -ne 0 ; then cat log; no_result; fi
 cat > $workchan/main.c << 'end'
@@ -202,14 +219,14 @@ cat > $workchan/aegis.conf << 'end'
 build_command = "exit 0";
 link_integration_directory = true;
 create_symlinks_before_build = true;
-history_get_command =
-	"co -u'$e' -p $h,v > $o";
-history_create_command =
-	"ci -f -u -m/dev/null -t/dev/null $i $h,v; rcs -U $h,v";
-history_put_command =
-	"ci -f -u -m/dev/null -t/dev/null $i $h,v; rcs -U $h,v";
-history_query_command =
-	"rlog -r $h,v | awk '/^head:/ {print $$2}'";
+
+history_get_command = "aesvt -check-out -edit ${quote $edit} "
+    "-history ${quote $history} -f ${quote $output}";
+history_put_command = "aesvt -check-in -history ${quote $history} "
+    "-f ${quote $input}";
+history_query_command = "aesvt -query -history ${quote $history}";
+history_content_limitation = binary_capable;
+
 diff_command = "set +e; diff $orig $i > $out; test $$? -le 1";
 diff3_command = "(diff3 -e $mr $orig $i | sed -e '/^w$$/d' -e '/^q$$/d'; \
 	echo '1,$$p' ) | ed - $mr > $out";
@@ -220,44 +237,44 @@ if test $? -ne 0 ; then no_result; fi
 #
 # build the change
 #
-activity="build 223"
+activity="build 240"
 $bin/aegis -build -nl -v > log 2>&1
 if test $? -ne 0 ; then cat log; fail; fi
 
 #
 # difference the change
 #
-activity="diff 230"
+activity="diff 247"
 $bin/aegis -diff > log 2>&1
 if test $? -ne 0 ; then cat log; no_result; fi
 
 #
 # develop end
 #
-activity="develop end 237"
+activity="develop end 254"
 $bin/aegis -de 1 > log 2>&1
 if test $? -ne 0 ; then cat log; no_result; fi
 
 #
 # review pass
 #
-activity="review pass 244"
+activity="review pass 261"
 $bin/aegis -rpass 1 > log 2>&1
 if test $? -ne 0 ; then cat log; no_result; fi
 
 #
 # integrate
 #
-activity="integrate begin 251"
+activity="integrate begin 268"
 $bin/aegis -ib 1 > log 2>&1
 if test $? -ne 0 ; then cat log; no_result; fi
-activity="integrate diff 254"
+activity="integrate diff 271"
 $bin/aegis -diff 1 > log 2>&1
 if test $? -ne 0 ; then cat log; no_result; fi
-activity="integrate build 257"
+activity="integrate build 274"
 $bin/aegis -b 1 > log 2>&1
 if test $? -ne 0 ; then cat log; no_result; fi
-activity="integrate pass 260"
+activity="integrate pass 277"
 $bin/aegis -ipass 1 > log 2>&1
 if test $? -ne 0 ; then cat log; no_result; fi
 
@@ -266,7 +283,7 @@ if test $? -ne 0 ; then cat log; no_result; fi
 #
 # create a new change
 #
-activity="new change 269"
+activity="new change 286"
 cat > $tmp << 'end'
 brief_description = "The second change";
 cause = internal_bug;
@@ -284,7 +301,7 @@ if test $? -ne 0 ; then cat log; no_result; fi
 #
 # modify a file
 #
-activity="new file 287"
+activity="new file 304"
 $bin/aegis -cp $workchan/main.c -nl > log 2>&1
 if test $? -ne 0 ; then cat log; no_result; fi
 cat > $workchan/main.c << 'end'
@@ -299,28 +316,28 @@ if test $? -ne 0 ; then no_result; fi
 #
 # build the change
 #
-activity="build 302"
+activity="build 319"
 $bin/aegis -build -nl -v > log 2>&1
 if test $? -ne 0 ; then cat log; fail; fi
 
 #
 # difference the change
 #
-activity="diff 309"
+activity="diff 326"
 $bin/aegis -diff > log 2>&1
 if test $? -ne 0 ; then cat log; no_result; fi
 
 #
 # develop end
 #
-activity="develop end 316"
+activity="develop end 333"
 $bin/aegis -de 2 > log 2>&1
 if test $? -ne 0 ; then cat log; no_result; fi
 
 #
 # review pass
 #
-activity="review pass 323"
+activity="review pass 340"
 $bin/aegis -rpass 2 > log 2>&1
 if test $? -ne 0 ; then cat log; no_result; fi
 
@@ -341,6 +358,30 @@ if test $? -ne 0 ; then cat log; fail; fi
 #
 cmp $workchan/main.c $work/c3dir/main.c
 if test $? -ne 0 ; then fail; fi
+
+activity="send the change 362"
+$bin/aetar -send 2 -o $work/c2.tar -add-path-prefix this/is/a/new/path -nocomp > log 2>&1
+if test $? -ne 0 ; then cat log; fail; fi
+
+#
+# Make sure the tarball is received accurately.
+#
+activity="receive the change 369"
+$bin/aetar -rec -f $work/c2.tar -c 4 -remove-path-prefix 2 -dir $work/c4dir \
+    -trojan > log 2>&1
+if test $? -ne 0 ; then cat log; fail; fi
+
+cat > ok <<EOF
+a/new/path/main.c
+EOF
+if test $? -ne 0 ; then cat log; no_result; fi
+
+$bin/aelcf -c 4 > $work/c4.list 2>&1
+if test $? -ne 0 ; then cat log; no_result; fi
+
+cmp ok $work/c4.list
+if test $? -ne 0 ; then cat log; fail; fi
+
 
 #
 # the things tested in this test, worked

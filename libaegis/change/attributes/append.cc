@@ -20,10 +20,10 @@
 // MANIFEST: implementation of the change_attributes_append class
 //
 
-#include <attribute.h>
-#include <cstate.h>
-#include <change/attributes.h>
-#include <error.h>              // for assert
+#include <common/error.h>              // for assert
+#include <libaegis/attribute.h>
+#include <libaegis/change/attributes.h>
+#include <libaegis/cstate.h>
 
 
 void

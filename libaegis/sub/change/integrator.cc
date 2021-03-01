@@ -1,6 +1,6 @@
 //
 //	aegis - project change supervisor
-//	Copyright (C) 2001, 2003, 2004 Peter Miller;
+//	Copyright (C) 2001, 2003-2005 Peter Miller;
 //	All rights reserved.
 //
 //	This program is free software; you can redistribute it and/or modify
@@ -20,13 +20,13 @@
 // MANIFEST: functions to manipulate integrators
 //
 
-#include <change.h>
-#include <sub.h>
-#include <sub/change/integrator.h>
-#include <sub/user.h>
-#include <trace.h>
-#include <user.h>
-#include <wstr/list.h>
+#include <libaegis/change.h>
+#include <libaegis/sub.h>
+#include <libaegis/sub/change/integrator.h>
+#include <libaegis/sub/user.h>
+#include <common/trace.h>
+#include <libaegis/user.h>
+#include <common/wstr/list.h>
 
 
 //

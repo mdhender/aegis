@@ -1,6 +1,6 @@
 //
 //	aegis - project change supervisor
-//	Copyright (C) 1992-1995, 2002-2004 Peter Miller;
+//	Copyright (C) 1992-1995, 2002-2005 Peter Miller;
 //	All rights reserved.
 //
 //	This program is free software; you can redistribute it and/or modify
@@ -24,20 +24,20 @@
 // Journal of Computational Physics, vol. 40, p. 157 (1981).
 //
 
-#include <ac/stdlib.h>
-#include <ac/unistd.h>
+#include <common/ac/stdlib.h>
+#include <common/ac/unistd.h>
 
-#include <now.h>
-#include <r250.h>
+#include <common/now.h>
+#include <common/r250.h>
 
-static	unsigned long	buf[250];
-static	unsigned long	*pos;
+static unsigned long buf[250];
+static unsigned long *pos;
 
 
 #define rand8() ((rand() >> 7) & 255)
 
 
-void
+static void
 r250_init(void)
 {
     unsigned long   bit;
@@ -85,14 +85,13 @@ r250_init(void)
 unsigned long
 r250(void)
 {
-    unsigned long   result;
-    unsigned long   *other;
-
-    other = pos + 103;
+    if (!pos)
+	r250_init();
+    unsigned long *other = pos + 103;
     if (other >= ENDOF(buf))
 	other -= SIZEOF(buf);
     *pos ^= *other;
-    result = *pos++;
+    unsigned long result = *pos++;
     if (pos >= ENDOF(buf))
 	pos = buf;
     return result;

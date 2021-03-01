@@ -1,6 +1,6 @@
 .\"
 .\"	aegis - project change supervisor
-.\"	Copyright (C) 1998 Peter Miller;
+.\"	Copyright (C) 1998, 2005 Peter Miller;
 .\"	All rights reserved.
 .\"
 .\"	This program is free software; you can redistribute it and/or modify
@@ -59,7 +59,7 @@ Aegis uses a model which encourages; successes.
 It's just academic stuff, isn't it?
 You rarely see these problems in practice, do you?
 .br
-\fBAll\fP the time.  Usually treated as ``one off''
+\fBAll\fP the time.  Usually treated as \[lq]one off\[rq]
 .XP
 \(bu How do I convert my 42M LOC legacy system to use it?
 .br

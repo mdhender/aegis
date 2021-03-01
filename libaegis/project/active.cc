@@ -1,6 +1,6 @@
 //
 //	aegis - project change supervisor
-//	Copyright (C) 1999, 2001-2004 Peter Miller;
+//	Copyright (C) 1999, 2001-2006 Peter Miller;
 //	All rights reserved.
 //
 //	This program is free software; you can redistribute it and/or modify
@@ -20,12 +20,12 @@
 // MANIFEST: functions to manipulate actives
 //
 
-#include <change.h>
-#include <change/branch.h>
-#include <project.h>
-#include <project/active.h>
-#include <project/history.h>
-#include <sub.h>
+#include <libaegis/change.h>
+#include <libaegis/change/branch.h>
+#include <libaegis/project.h>
+#include <libaegis/project/active.h>
+#include <libaegis/project/history.h>
+#include <libaegis/sub.h>
 
 
 int
@@ -48,7 +48,7 @@ project_active(project_ty *pp, int active_branch_ok)
 	change_bind_existing(cp);
 	if (change_is_a_branch(cp))
 	{
-	    p2 = project_bind_branch(pp, change_copy(cp));
+	    p2 = pp->bind_branch(change_copy(cp));
 	    n = project_active(p2, active_branch_ok);
 	    active += n;
 	    project_free(p2);
@@ -126,7 +126,7 @@ project_active_check_branch(change_ty *cp, int brok)
 
     if (!change_is_a_branch(cp))
 	return;
-    pp = project_bind_branch(cp->pp, change_copy(cp));
+    pp = cp->pp->bind_branch(change_copy(cp));
     project_active_check(pp, brok);
     project_free(pp);
 }

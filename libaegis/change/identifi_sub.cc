@@ -1,6 +1,6 @@
 //
 //	aegis - project change supervisor
-//	Copyright (C) 2004 Peter Miller;
+//	Copyright (C) 2004, 2005 Peter Miller;
 //	All rights reserved.
 //
 //	This program is free software; you can redistribute it and/or modify
@@ -20,12 +20,10 @@
 // MANIFEST: implementation of the change_identifi_sub class
 //
 
-#pragma implementation "change_identifier_subset"
-
-#include <change/identifi_sub.h>
-#include <change.h>
-#include <project/file/roll_forward.h>
-#include <trace.h>
+#include <libaegis/change/identifi_sub.h>
+#include <libaegis/change.h>
+#include <libaegis/project/file/roll_forward.h>
+#include <common/trace.h>
 
 
 change_identifier_subset::~change_identifier_subset()

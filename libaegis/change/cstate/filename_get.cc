@@ -1,6 +1,6 @@
 //
 //	aegis - project change supervisor
-//	Copyright (C) 1999, 2003, 2004 Peter Miller;
+//	Copyright (C) 1999, 2003-2006 Peter Miller;
 //	All rights reserved.
 //
 //	This program is free software; you can redistribute it and/or modify
@@ -20,9 +20,9 @@
 // MANIFEST: functions to manipulate filename_gets
 //
 
-#include <change.h>
-#include <error.h> // for assert
-#include <project.h>
+#include <libaegis/change.h>
+#include <common/error.h> // for assert
+#include <libaegis/project.h>
 
 
 string_ty *
@@ -30,6 +30,6 @@ change_cstate_filename_get(change_ty *cp)
 {
     assert(cp->reference_count >= 1);
     if (!cp->cstate_filename)
-       	cp->cstate_filename = project_change_path_get(cp->pp, cp->number);
+       	cp->cstate_filename = cp->pp->change_path_get(cp->number);
     return cp->cstate_filename;
 }

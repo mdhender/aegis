@@ -309,7 +309,7 @@ ac_includes_default="\
 # include <unistd.h>
 #endif"
 
-ac_subst_vars='SHELL PATH_SEPARATOR PACKAGE_NAME PACKAGE_TARNAME PACKAGE_VERSION PACKAGE_STRING PACKAGE_BUGREPORT exec_prefix prefix program_transform_name bindir sbindir libexecdir datadir sysconfdir sharedstatedir localstatedir libdir includedir oldincludedir infodir mandir build_alias host_alias target_alias DEFS ECHO_C ECHO_N ECHO_T LIBS CXX CXXFLAGS LDFLAGS CPPFLAGS ac_ct_CXX EXEEXT OBJEXT CC CFLAGS ac_ct_CC CPP INSTALL_PROGRAM INSTALL_SCRIPT INSTALL_DATA YACC RANLIB ac_ct_RANLIB EGREP CURL_CONFIG XML2_CONFIG STATIC_LIBS MSGFMT MSGCAT GROFF SOELIM AWK MANPATH_PROG LOCALE_PROG LOCALE_GEN_PROG WISH VI_PROG PERL DIFFsimple DIFF GROFF_MS_MACROS GROFF_MM_MACROS SH NLSDIR AEGIS_UID AEGIS_GID po_files HAVE_GROFF PROGRAM_PREFIX PROGRAM_SUFFIX LIBOBJS LTLIBOBJS'
+ac_subst_vars='SHELL PATH_SEPARATOR PACKAGE_NAME PACKAGE_TARNAME PACKAGE_VERSION PACKAGE_STRING PACKAGE_BUGREPORT exec_prefix prefix program_transform_name bindir sbindir libexecdir datadir sysconfdir sharedstatedir localstatedir libdir includedir oldincludedir infodir mandir build_alias host_alias target_alias DEFS ECHO_C ECHO_N ECHO_T LIBS CXX CXXFLAGS LDFLAGS CPPFLAGS ac_ct_CXX EXEEXT OBJEXT CC CFLAGS ac_ct_CC CPP INSTALL_PROGRAM INSTALL_SCRIPT INSTALL_DATA YACC RANLIB ac_ct_RANLIB EGREP CURL_CONFIG XML2_CONFIG STATIC_LIBS MSGFMT MSGCAT GROFF SOELIM AWK MANPATH_PROG LOCALE_PROG LOCALE_GEN_PROG WISH VI_PROG PERL DIFFsimple DIFF PATCHsimple PATCH GROFF_MS_MACROS GROFF_MM_MACROS SH NLSDIR AEGIS_UID AEGIS_GID po_files HAVE_GROFF PROGRAM_PREFIX PROGRAM_SUFFIX LIBOBJS LTLIBOBJS'
 ac_subst_files=''
 
 # Initialize some variables set by options.
@@ -4214,6 +4214,79 @@ _ACEOF
 fi
 
 
+echo "$as_me:$LINENO: checking for BZ2_bzopen in -lbz2" >&5
+echo $ECHO_N "checking for BZ2_bzopen in -lbz2... $ECHO_C" >&6
+if test "${ac_cv_lib_bz2_BZ2_bzopen+set}" = set; then
+  echo $ECHO_N "(cached) $ECHO_C" >&6
+else
+  ac_check_lib_save_LIBS=$LIBS
+LIBS="-lbz2  $LIBS"
+cat >conftest.$ac_ext <<_ACEOF
+/* confdefs.h.  */
+_ACEOF
+cat confdefs.h >>conftest.$ac_ext
+cat >>conftest.$ac_ext <<_ACEOF
+/* end confdefs.h.  */
+
+/* Override any gcc2 internal prototype to avoid an error.  */
+#ifdef __cplusplus
+extern "C"
+#endif
+/* We use char because int might match the return type of a gcc2
+   builtin and then its argument prototype would still apply.  */
+char BZ2_bzopen ();
+int
+main ()
+{
+BZ2_bzopen ();
+  ;
+  return 0;
+}
+_ACEOF
+rm -f conftest.$ac_objext conftest$ac_exeext
+if { (eval echo "$as_me:$LINENO: \"$ac_link\"") >&5
+  (eval $ac_link) 2>conftest.er1
+  ac_status=$?
+  grep -v '^ *+' conftest.er1 >conftest.err
+  rm -f conftest.er1
+  cat conftest.err >&5
+  echo "$as_me:$LINENO: \$? = $ac_status" >&5
+  (exit $ac_status); } &&
+	 { ac_try='test -z "$ac_c_werror_flag"			 || test ! -s conftest.err'
+  { (eval echo "$as_me:$LINENO: \"$ac_try\"") >&5
+  (eval $ac_try) 2>&5
+  ac_status=$?
+  echo "$as_me:$LINENO: \$? = $ac_status" >&5
+  (exit $ac_status); }; } &&
+	 { ac_try='test -s conftest$ac_exeext'
+  { (eval echo "$as_me:$LINENO: \"$ac_try\"") >&5
+  (eval $ac_try) 2>&5
+  ac_status=$?
+  echo "$as_me:$LINENO: \$? = $ac_status" >&5
+  (exit $ac_status); }; }; then
+  ac_cv_lib_bz2_BZ2_bzopen=yes
+else
+  echo "$as_me: failed program was:" >&5
+sed 's/^/| /' conftest.$ac_ext >&5
+
+ac_cv_lib_bz2_BZ2_bzopen=no
+fi
+rm -f conftest.err conftest.$ac_objext \
+      conftest$ac_exeext conftest.$ac_ext
+LIBS=$ac_check_lib_save_LIBS
+fi
+echo "$as_me:$LINENO: result: $ac_cv_lib_bz2_BZ2_bzopen" >&5
+echo "${ECHO_T}$ac_cv_lib_bz2_BZ2_bzopen" >&6
+if test $ac_cv_lib_bz2_BZ2_bzopen = yes; then
+  cat >>confdefs.h <<_ACEOF
+#define HAVE_LIBBZ2 1
+_ACEOF
+
+  LIBS="-lbz2 $LIBS"
+
+fi
+
+
 echo "$as_me:$LINENO: checking for crypt in -lcrypt" >&5
 echo $ECHO_N "checking for crypt in -lcrypt... $ECHO_C" >&6
 if test "${ac_cv_lib_crypt_crypt+set}" = set; then
@@ -5395,6 +5468,106 @@ fi
 echo "$as_me:$LINENO: result: $HAVE_GNU_DIFF" >&5
 echo "${ECHO_T}$HAVE_GNU_DIFF" >&6
 
+for ac_prog in gpatch patch
+do
+  # Extract the first word of "$ac_prog", so it can be a program name with args.
+set dummy $ac_prog; ac_word=$2
+echo "$as_me:$LINENO: checking for $ac_word" >&5
+echo $ECHO_N "checking for $ac_word... $ECHO_C" >&6
+if test "${ac_cv_prog_PATCHsimple+set}" = set; then
+  echo $ECHO_N "(cached) $ECHO_C" >&6
+else
+  if test -n "$PATCHsimple"; then
+  ac_cv_prog_PATCHsimple="$PATCHsimple" # Let the user override the test.
+else
+as_save_IFS=$IFS; IFS=$PATH_SEPARATOR
+for as_dir in $PATH
+do
+  IFS=$as_save_IFS
+  test -z "$as_dir" && as_dir=.
+  for ac_exec_ext in '' $ac_executable_extensions; do
+  if $as_executable_p "$as_dir/$ac_word$ac_exec_ext"; then
+    ac_cv_prog_PATCHsimple="$ac_prog"
+    echo "$as_me:$LINENO: found $as_dir/$ac_word$ac_exec_ext" >&5
+    break 2
+  fi
+done
+done
+
+fi
+fi
+PATCHsimple=$ac_cv_prog_PATCHsimple
+if test -n "$PATCHsimple"; then
+  echo "$as_me:$LINENO: result: $PATCHsimple" >&5
+echo "${ECHO_T}$PATCHsimple" >&6
+else
+  echo "$as_me:$LINENO: result: no" >&5
+echo "${ECHO_T}no" >&6
+fi
+
+  test -n "$PATCHsimple" && break
+done
+
+# Extract the first word of "$PATCHsimple", so it can be a program name with args.
+set dummy $PATCHsimple; ac_word=$2
+echo "$as_me:$LINENO: checking for $ac_word" >&5
+echo $ECHO_N "checking for $ac_word... $ECHO_C" >&6
+if test "${ac_cv_path_PATCH+set}" = set; then
+  echo $ECHO_N "(cached) $ECHO_C" >&6
+else
+  case $PATCH in
+  [\\/]* | ?:[\\/]*)
+  ac_cv_path_PATCH="$PATCH" # Let the user override the test with a path.
+  ;;
+  *)
+  as_save_IFS=$IFS; IFS=$PATH_SEPARATOR
+for as_dir in $PATH
+do
+  IFS=$as_save_IFS
+  test -z "$as_dir" && as_dir=.
+  for ac_exec_ext in '' $ac_executable_extensions; do
+  if $as_executable_p "$as_dir/$ac_word$ac_exec_ext"; then
+    ac_cv_path_PATCH="$as_dir/$ac_word$ac_exec_ext"
+    echo "$as_me:$LINENO: found $as_dir/$ac_word$ac_exec_ext" >&5
+    break 2
+  fi
+done
+done
+
+  test -z "$ac_cv_path_PATCH" && ac_cv_path_PATCH="/usr/local/bin/$PATCHsimple"
+  ;;
+esac
+fi
+PATCH=$ac_cv_path_PATCH
+
+if test -n "$PATCH"; then
+  echo "$as_me:$LINENO: result: $PATCH" >&5
+echo "${ECHO_T}$PATCH" >&6
+else
+  echo "$as_me:$LINENO: result: no" >&5
+echo "${ECHO_T}no" >&6
+fi
+
+
+cat >>confdefs.h <<_ACEOF
+#define CONF_PATCH "$PATCH"
+_ACEOF
+
+echo "$as_me:$LINENO: checking for GNU patch" >&5
+echo $ECHO_N "checking for GNU patch... $ECHO_C" >&6
+HAVE_GNU_PATCH=no
+if $PATCH -f -s < /dev/null > conftest.out 2>&1
+then
+
+cat >>confdefs.h <<\_ACEOF
+#define HAVE_GNU_PATCH 1
+_ACEOF
+
+    HAVE_GNU_PATCH=yes
+fi
+echo "$as_me:$LINENO: result: $HAVE_GNU_PATCH" >&5
+echo "${ECHO_T}$HAVE_GNU_PATCH" >&6
+
 echo "$as_me:$LINENO: checking for $GROFF -ms macros" >&5
 echo $ECHO_N "checking for $GROFF -ms macros... $ECHO_C" >&6
 if test `echo ' ' | groff -mgs 2> /dev/null | wc -l` -gt 0
@@ -5657,11 +5830,14 @@ fi
 
 
 
-for ac_header in crypt.h curl/curl.h dce/rpc.h dce/uuid.h fcntl.h      \
-        iso646.h libgettext.h libintl.h limits.h locale.h magic.h      \
-        memory.h mntent.h new.h regex.h rxposix.h shadow.h stddef.h    \
-        stdlib.h string.h sys/clu.h sys/ioctl.h sys/prctl.h sys/uuid.h \
-        unistd.h uuid.h uuid/uuid.h wchar.h wctype.h widec.h zlib.h    \
+
+
+for ac_header in bzlib.h crypt.h curl/curl.h curl/multi.h dce/rpc.h    \
+        dce/uuid.h fcntl.h iso646.h libgettext.h libintl.h limits.h    \
+        locale.h magic.h memory.h mntent.h new.h regex.h rxposix.h     \
+        shadow.h stddef.h stdlib.h string.h sys/clu.h sys/ioctl.h      \
+        sys/prctl.h sys/uuid.h unistd.h uuid.h uuid/uuid.h wchar.h     \
+        wctype.h widec.h zlib.h                                        \
 
 do
 as_ac_Header=`echo "ac_cv_header_$ac_header" | $as_tr_sh`
@@ -6595,15 +6771,18 @@ fi
 
 
 
+
+
 for ac_func in clu_info crypt curl_easy_strerror curl_multi_strerror   \
         getpgrp igetspnam initgroups gettext gettimeofday iswctype     \
-        magic_file mbrtowc pathconf prctl regcomp rpc_string_free      \
-        seteuid setlocale setresuid setreuid sighold sigrelse          \
-        sigprocmask snprintf strcasecmp strlcat strlcpy strncasecmp    \
-        strerror strftime strsignal strtoul strverscmp symlink         \
-        tcgetpgrp uuid_create uuid_export uuid_generate uuid_hash      \
-        uuid_load uuid_make uuid_to_string uuid_unparse vsnprintf      \
-        wcrtomb wcslen wcswidth wcwidth xmlReaderForIO                 \
+        lutime magic_file mbrtowc pathconf prctl regcomp               \
+        rpc_string_free seteuid setlocale setresuid setreuid sighold   \
+        sigrelse sigprocmask snprintf strcasecmp strendcpy strlcat     \
+        strlcpy strncasecmp strerror strftime strsignal strtoul        \
+        strverscmp symlink tcgetpgrp uuid_create uuid_export           \
+        uuid_generate uuid_hash uuid_load uuid_make uuid_to_string     \
+        uuid_unparse vsnprintf wcrtomb wcslen wcswidth wcwidth         \
+        xmlReaderForIO                                                 \
 
 do
 as_ac_var=`echo "ac_cv_func_$ac_func" | $as_tr_sh`
@@ -7591,7 +7770,7 @@ echo $ECHO_N "checking for owner of aegis library files... $ECHO_C" >&6
     if test "$OSTYPE" != "cygwin32" -a "$OSTYPE" != "cygwin" ; then
     if test -f ${sharedstatedir}/lockfile -o -f ${libdir}/lockfile ; then
 	cat > conftest.$ac_ext << 'EOF'
-#line 7594 "configure"
+#line 7773 "configure"
 #include <sys/types.h>
 #include <sys/stat.h>
 main(ac,av)int ac; char **av;{struct stat st;
@@ -7631,31 +7810,50 @@ if test "$ac_cv_lib_z_main" != "yes" -o "$ac_cv_header_zlib_h" != "yes"
 then
   echo "$as_me:$LINENO: result:
 	You need to install the GNU zlib compression
-	library, and then re-run this install script.
+	library, and then re-run this configure script.
 	Remember to use \`\`rm config.cache'' before you do." >&5
 echo "${ECHO_T}
 	You need to install the GNU zlib compression
-	library, and then re-run this install script.
+	library, and then re-run this configure script.
 	Remember to use \`\`rm config.cache'' before you do." >&6
+fi
+
+if test "$ac_cv_lib_curl_curl_multi_perform" != "yes" -o \
+    "$ac_cv_header_curl_curl_h" != "yes"
+then
+  echo "$as_me:$LINENO: result:
+        You may wish to install the Curl library, used to access
+        remote files.  Don't Panic: this library is optional, nothing
+        will break, but you will not be able to use all of aedist's
+        functions.  If you choose to install the Curl library, first
+        use \`\`rm config.cache'', and then re-run this configure
+        script." >&5
+echo "${ECHO_T}
+        You may wish to install the Curl library, used to access
+        remote files.  Don't Panic: this library is optional, nothing
+        will break, but you will not be able to use all of aedist's
+        functions.  If you choose to install the Curl library, first
+        use \`\`rm config.cache'', and then re-run this configure
+        script." >&6
 fi
 
 UUID_ok=no
 if test "$ac_cv_func_uuid_generate" = "yes" \
     -a "$ac_cv_func_uuid_unparse" = "yes"
 then
-    UUID_ok=yes
-fi
-if test "$ac_cv_func_uuid_create" = "yes" \
-    -a "$ac_sv_func_uuid_make" = "yes" \
-    -a "$ac_sv_func_uuid_export" = "yes"
-then
-    UUID_ok=yes
-fi
-if test "$ac_cv_func_uuid_create" = "yes" \
-    -a "$ac_sv_func_uuid_to_string" = "yes"
-then
-    UUID_ok=yes
-fi
+     UUID_ok=yes
+ fi
+ if test "$ac_cv_func_uuid_create" = "yes" \
+    -a "$ac_cv_func_uuid_make" = "yes" \
+    -a "$ac_cv_func_uuid_export" = "yes"
+ then
+     UUID_ok=yes
+ fi
+ if test "$ac_cv_func_uuid_create" = "yes" \
+    -a "$ac_cv_func_uuid_to_string" = "yes"
+ then
+     UUID_ok=yes
+ fi
 if test "$UUID_ok" != "yes"
 then
   echo "$as_me:$LINENO: result:
@@ -8413,6 +8611,8 @@ s,@VI_PROG@,$VI_PROG,;t t
 s,@PERL@,$PERL,;t t
 s,@DIFFsimple@,$DIFFsimple,;t t
 s,@DIFF@,$DIFF,;t t
+s,@PATCHsimple@,$PATCHsimple,;t t
+s,@PATCH@,$PATCH,;t t
 s,@GROFF_MS_MACROS@,$GROFF_MS_MACROS,;t t
 s,@GROFF_MM_MACROS@,$GROFF_MM_MACROS,;t t
 s,@SH@,$SH,;t t

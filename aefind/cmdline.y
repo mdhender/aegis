@@ -1,6 +1,6 @@
 /*
  *	aegis - project change supervisor
- *	Copyright (C) 1997-1999, 2001-2005 Peter Miller;
+ *	Copyright (C) 1997-1999, 2001-2006 Peter Miller;
  *	All rights reserved.
  *
  *	This program is free software; you can redistribute it and/or modify
@@ -22,49 +22,49 @@
 
 %{
 
-#include <ac/stdio.h>
-#include <ac/stdlib.h>
+#include <common/ac/stdio.h>
+#include <common/ac/stdlib.h>
 
-#include <aer/value/boolean.h>
-#include <aer/value/error.h>
-#include <aer/value/integer.h>
-#include <aer/value/real.h>
-#include <aer/value/string.h>
-#include <arglex2.h>
-#include <change.h>
-#include <change/file.h>
-#include <cmdline.h>
-#include <descend.h>
-#include <error.h> // for assert
-#include <function.h>
-#include <function/execute.h>
-#include <gonzo.h>
-#include <help.h>
-#include <lex.h>
-#include <os.h>
-#include <progname.h>
-#include <project.h>
-#include <project/file.h>
-#include <quit.h>
-#include <shorthand/name.h>
-#include <shorthand/path.h>
-#include <shorthand/print.h>
-#include <shorthand/stat.h>
-#include <str_list.h>
-#include <sub.h>
-#include <trace.h>
-#include <tree.h>
-#include <tree/arithmetic.h>
-#include <tree/bitwise.h>
-#include <tree/constant.h>
-#include <tree/list.h>
-#include <tree/logical.h>
-#include <tree/match.h>
-#include <tree/now.h>
-#include <tree/relative.h>
-#include <tree/this.h>
-#include <user.h>
-#include <version.h>
+#include <libaegis/aer/value/boolean.h>
+#include <libaegis/aer/value/error.h>
+#include <libaegis/aer/value/integer.h>
+#include <libaegis/aer/value/real.h>
+#include <libaegis/aer/value/string.h>
+#include <libaegis/arglex2.h>
+#include <libaegis/change.h>
+#include <libaegis/change/file.h>
+#include <aefind/cmdline.h>
+#include <aefind/descend.h>
+#include <common/error.h> // for assert
+#include <aefind/function.h>
+#include <aefind/function/execute.h>
+#include <libaegis/gonzo.h>
+#include <libaegis/help.h>
+#include <aefind/lex.h>
+#include <libaegis/os.h>
+#include <common/progname.h>
+#include <libaegis/project.h>
+#include <libaegis/project/file.h>
+#include <common/quit.h>
+#include <aefind/shorthand/name.h>
+#include <aefind/shorthand/path.h>
+#include <aefind/shorthand/print.h>
+#include <aefind/shorthand/stat.h>
+#include <common/str_list.h>
+#include <libaegis/sub.h>
+#include <common/trace.h>
+#include <aefind/tree.h>
+#include <aefind/tree/arithmetic.h>
+#include <aefind/tree/bitwise.h>
+#include <aefind/tree/constant.h>
+#include <aefind/tree/list.h>
+#include <aefind/tree/logical.h>
+#include <aefind/tree/match.h>
+#include <aefind/tree/now.h>
+#include <aefind/tree/relative.h>
+#include <aefind/tree/this.h>
+#include <libaegis/user.h>
+#include <libaegis/version.h>
 
 #ifdef DEBUG
 #define YYDEBUG 1
@@ -379,7 +379,7 @@ cmdline_grammar(int argc, char **argv)
        	project_name = user_default_project();
     pp = project_alloc(project_name);
     str_free(project_name);
-    project_bind_existing(pp);
+    pp->bind_existing();
 
     stack = new string_list_ty();
     if (baseline)

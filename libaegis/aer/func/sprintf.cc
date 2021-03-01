@@ -20,18 +20,18 @@
 // MANIFEST: functions to implement the builtin sprintf function
 //
 
-#include <ac/stdio.h>
-#include <ac/string.h>
+#include <common/ac/stdio.h>
+#include <common/ac/string.h>
 
-#include <aer/expr.h>
-#include <aer/func/sprintf.h>
-#include <aer/value/error.h>
-#include <aer/value/integer.h>
-#include <aer/value/real.h>
-#include <aer/value/string.h>
-#include <error.h>
-#include <mem.h>
-#include <sub.h>
+#include <libaegis/aer/expr.h>
+#include <libaegis/aer/func/sprintf.h>
+#include <libaegis/aer/value/error.h>
+#include <libaegis/aer/value/integer.h>
+#include <libaegis/aer/value/real.h>
+#include <libaegis/aer/value/string.h>
+#include <common/error.h>
+#include <common/mem.h>
+#include <libaegis/sub.h>
 
 //
 // size to grow memory by

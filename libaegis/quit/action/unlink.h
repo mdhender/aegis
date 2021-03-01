@@ -23,10 +23,8 @@
 #ifndef LIBAEGIS_QUIT_ACTION_UNLINK_H
 #define LIBAEGIS_QUIT_ACTION_UNLINK_H
 
-#pragma interface "quit_action_unlink"
-
-#include <nstring.h>
-#include <quit/action.h>
+#include <common/nstring.h>
+#include <common/quit/action.h>
 
 /**
   * The quit_action_unlink class is used to represent an unlink action

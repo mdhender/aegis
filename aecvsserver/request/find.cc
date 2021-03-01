@@ -1,6 +1,6 @@
 //
 //	aegis - project change supervisor
-//	Copyright (C) 2004 Peter Miller;
+//	Copyright (C) 2004-2006 Peter Miller;
 //	All rights reserved.
 //
 //	This program is free software; you can redistribute it and/or modify
@@ -20,129 +20,126 @@
 // MANIFEST: functions to manipulate finds
 //
 
-#include <request/add.h>
-#include <request/admin.h>
-#include <request/argument.h>
-#include <request/argumentx.h>
-#include <request/ci.h>
-#include <request/co.h>
-#include <request/directory.h>
-#include <request/entry.h>
-#include <request/expand_modul.h>
-#include <request/global_optio.h>
-#include <request/init.h>
-#include <request/is_modified.h>
-#include <request/modified.h>
-#include <request/noop.h>
-#include <request/questionable.h>
-#include <request/remove.h>
-#include <request/repository.h>
-#include <request/root.h>
-#include <request/set.h>
-#include <request/unchanged.h>
-#include <request/update.h>
-#include <request/useunchanged.h>
-#include <request/unknown.h>
-#include <request/valid_respon.h>
-#include <request/version.h>
-#include <response/valid_reques.h>
-#include <server.h>
-#include <symtab.h>
+#include <common/symtab.h>
+
+#include <aecvsserver/request/add.h>
+#include <aecvsserver/request/admin.h>
+#include <aecvsserver/request/argument.h>
+#include <aecvsserver/request/argumentx.h>
+#include <aecvsserver/request/ci.h>
+#include <aecvsserver/request/co.h>
+#include <aecvsserver/request/directory.h>
+#include <aecvsserver/request/entry.h>
+#include <aecvsserver/request/expand_modul.h>
+#include <aecvsserver/request/global_optio.h>
+#include <aecvsserver/request/init.h>
+#include <aecvsserver/request/is_modified.h>
+#include <aecvsserver/request/modified.h>
+#include <aecvsserver/request/noop.h>
+#include <aecvsserver/request/questionable.h>
+#include <aecvsserver/request/remove.h>
+#include <aecvsserver/request/repository.h>
+#include <aecvsserver/request/root.h>
+#include <aecvsserver/request/set.h>
+#include <aecvsserver/request/unchanged.h>
+#include <aecvsserver/request/update.h>
+#include <aecvsserver/request/useunchanged.h>
+#include <aecvsserver/request/unknown.h>
+#include <aecvsserver/request/valid_reques.h>
+#include <aecvsserver/request/valid_respon.h>
+#include <aecvsserver/request/version.h>
+#include <aecvsserver/server.h>
 
 
-static void valid_requests_run(server_ty *, string_ty *);
+static request_add add;
+static request_admin admin;
+static request_argument argument;
+static request_argumentx argumentx;
+static request_checkin ci;
+static request_checkout co;
+static request_directory directory;
+static request_entry entry;
+static request_expand_modules expand_modules;
+static request_global_option global_option;
+static request_init init;
+static request_is_modified is_modified;
+static request_modified modified;
+static request_noop noop;
+static request_questionable questionable;
+static request_remove remove;
+static request_repository repository;
+static request_root root;
+static request_set set;
+static request_unchanged unchanged;
+static request_update update;
+static request_useunchanged useunchanged;
+static request_valid_requests valid_requests;
+static request_valid_responses valid_responses;
+static request_version version;
 
-
-static request_ty request_valid_requests =
+static const request *const table[] =
 {
-    "valid-requests",
-    valid_requests_run,
-    1, // reset
+    &add,
+    &admin,
+    &argument,
+    &argumentx,
+    &ci,
+    &co,
+    &directory,
+    &entry,
+    &expand_modules,
+    &global_option,
+    &init,
+    &is_modified,
+    &modified,
+    &noop,
+    &questionable,
+    &remove,
+    &repository,
+    &root,
+    &set,
+    &unchanged,
+    &update,
+    &useunchanged,
+    &valid_requests,
+    &valid_responses,
+    &version,
 };
 
-static const request_ty *const table[] =
-{
-    &request_add,
-    &request_admin,
-    &request_argument,
-    &request_argumentx,
-    &request_ci,
-    &request_co,
-    &request_directory,
-    &request_entry,
-    &request_expand_modules,
-    &request_global_option,
-    &request_init,
-    &request_is_modified,
-    &request_modified,
-    &request_noop,
-    &request_questionable,
-    &request_remove,
-    &request_repository,
-    &request_root,
-    &request_set,
-    &request_unchanged,
-    &request_update,
-    &request_useunchanged,
-    &request_valid_requests,
-    &request_valid_responses,
-    &request_version,
-};
 
-
-const request_ty *
-request_find(string_ty *name)
+const request *
+request::find(string_ty *name)
 {
-    const request_ty *rp;
     static symtab_ty *stp;
-
     if (!stp)
     {
-	const request_ty *const *tpp;
-
 	stp = symtab_alloc(SIZEOF(table));
-	for (tpp = table; tpp < ENDOF(table); ++tpp)
+	for (const request *const *tpp = table; tpp < ENDOF(table); ++tpp)
 	{
-	    const request_ty *tp;
-	    string_ty       *key;
-
-	    tp = *tpp;
-	    key = str_from_c(tp->name);
-	    symtab_assign(stp, key, (void *)tp);
+	    const request *rp = *tpp;
+	    string_ty *key = str_from_c(rp->name());
+	    symtab_assign(stp, key, (void *)rp);
 	    str_free(key);
 	}
     }
-    rp = (request_ty *)symtab_query(stp, name);
+    const request *rp = (const request *)symtab_query(stp, name);
     if (!rp)
-	rp = request_unknown(name->str_text);
+    {
+	rp = new request_unknown(name);
+	symtab_assign(stp, name, (void *)rp);
+    }
     return rp;
 }
 
 
-//
-// Ask the server to send back a "Valid-requests" response,
-// listing all the requests this server understands.
-//
-// Response expected: yes.
-// Root required: no.
-//
-
-static void
-valid_requests_run(server_ty *sp, string_ty *arg)
+void
+request::get_list(string_list_ty &result)
 {
-    string_list_ty  wl;
-    const request_ty *const *tpp;
-
-    for (tpp = table; tpp < ENDOF(table); ++tpp)
+    for (const request *const *tpp = table; tpp < ENDOF(table); ++tpp)
     {
-	const request_ty *tp;
-	string_ty       *key;
-
-	tp = *tpp;
-	key = str_from_c(tp->name);
-	wl.push_back(key);
+	const request *rp = *tpp;
+	string_ty *key = str_from_c(rp->name());
+	result.push_back(key);
 	str_free(key);
     }
-    server_response_queue(sp, response_valid_requests_new(&wl));
-    server_ok(sp);
 }

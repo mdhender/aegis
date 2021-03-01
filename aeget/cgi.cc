@@ -1,6 +1,6 @@
 //
 //	aegis - project change supervisor
-//	Copyright (C) 2003, 2004 Peter Miller;
+//	Copyright (C) 2003-2005 Peter Miller;
 //	All rights reserved.
 //
 //	This program is free software; you can redistribute it and/or modify
@@ -20,12 +20,12 @@
 // MANIFEST: functions to manipulate cgis
 //
 
-#include <ac/string.h>
+#include <common/ac/string.h>
 
-#include <cgi.h>
-#include <forkandwatch.h>
-#include <get.h>
-#include <http.h>
+#include <aeget/cgi.h>
+#include <aeget/forkandwatch.h>
+#include <aeget/get.h>
+#include <aeget/http.h>
 
 
 struct table_t

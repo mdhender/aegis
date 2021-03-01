@@ -1,6 +1,6 @@
 //
 //	aegis - project change supervisor
-//	Copyright (C) 2004, 2005 Peter Miller;
+//	Copyright (C) 2004-2006 Peter Miller;
 //	All rights reserved.
 //
 //	This program is free software; you can redistribute it and/or modify
@@ -20,25 +20,25 @@
 // MANIFEST: functions to manipulate passwords
 //
 
-#include <ac/crypt.h>
-#include <ac/errno.h>
-#include <ac/grp.h>
-#include <ac/pwd.h>
-#include <ac/shadow.h>
-#include <ac/string.h>
-#include <ac/unistd.h>
-#include <ac/sys/types.h>
+#include <common/ac/crypt.h>
+#include <common/ac/errno.h>
+#include <common/ac/grp.h>
+#include <common/ac/pwd.h>
+#include <common/ac/shadow.h>
+#include <common/ac/string.h>
+#include <common/ac/unistd.h>
+#include <common/ac/sys/types.h>
 #include <sys/stat.h> // for umask
 
-#include <env.h>
-#include <os.h>
-#include <response/error.h>
-#include <response/hate.h>
-#include <response/love.h>
-#include <server/password.h>
-#include <server/private.h>
-#include <server/simple.h>
-#include <scramble.h>
+#include <common/env.h>
+#include <libaegis/os.h>
+#include <aecvsserver/response/error.h>
+#include <aecvsserver/response/hate.h>
+#include <aecvsserver/response/love.h>
+#include <aecvsserver/server/password.h>
+#include <aecvsserver/server/private.h>
+#include <aecvsserver/server/simple.h>
+#include <aecvsserver/scramble.h>
 
 
 struct server_password_ty
@@ -167,7 +167,7 @@ run(server_ty *sp)
 	protocol_failure:
 	server_e(sp, "authentication protocol error");
 	auth_failure:
-	server_response_queue(sp, response_hate_new());
+	server_response_queue(sp, new response_hate());
 	server_response_flush(sp);
 	return;
     }
@@ -232,7 +232,7 @@ run(server_ty *sp)
     //
     // Report success.
     //
-    server_response_queue(sp, response_love_new());
+    server_response_queue(sp, new response_love());
     server_response_flush(sp);
 
     if (!verify)

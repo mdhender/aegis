@@ -73,7 +73,7 @@ This is the default.
 .TP 8n
 .B \-No_Resolve
 This option may be used to request that filenames be base relative names,
-relative to the root of the ``stacked'' directory tree.
+relative to the root of the \[lq]stacked\[rq] directory tree.
 .TP 8n
 .B \-Verbose
 This option may be used to request that the expression be printed
@@ -105,8 +105,8 @@ being considered.
 .TP 8n
 \fInumber\fP
 Numbers may be specified directly, for use with other tests and operators.
-In the style of C, they may be hexadecimal with a ``0x'' prefix, octal
-with a ``0'' prefix, or decimal otherwise.
+In the style of C, they may be hexadecimal with a \[lq]0x\[rq] prefix, octal
+with a \[lq]0\[rq] prefix, or decimal otherwise.
 .TP 8n
 \fIstring\fP
 Strings may be specified directly, for use with other tests and operators.
@@ -337,7 +337,7 @@ It takes one argument.
 .TP 8n
 execute
 This function may be used to execute a command.  The arguments are
-assembled into the command to be executed.  Use the special ``{}''
+assembled into the command to be executed.  Use the special \[lq]{}\[rq]
 argument to insert the name of the current file.  The function returns
 true of the command's exist status is zero.  All following arguments to
 find are taken to  be  arguments  to  the command until an argument
@@ -394,7 +394,7 @@ If a relative operator is given (<, <=, ==, !=, > or >=)
 a relative comparison will be made, rather than the implicit equality test.
 This is \fInot\fP identical to the similar \fIfind\fP(1) test.
 This is shorthand for
-the ``( now - atime ( {+} )) / 60 \fIrelative-operator\fP \fInumber\fP''
+the \[lq]( now - atime ( {+} )) / 60 \fIrelative-operator\fP \fInumber\fP\[rq]
 expression.
 .TP 8n
 \fB\-Access_Time\fP [ \fIrelative-operator\fP ] \fInumber\fP
@@ -404,7 +404,8 @@ If a relative operator is given (<, <=, ==, !=, > or >=)
 a relative comparison will be made, rather than the implicit equality test.
 This is \fInot\fP identical to the similar \fIfind\fP(1) test.
 This is shorthand for
-the ``( now - atime ( {+} )) / 86400 \fIrelative-operator\fP \fInumber\fP''
+the \[lq]( now - atime ( {+} )) / 86400 \fIrelative-operator\fP
+\fInumber\fP\[rq]
 expression.
 .TP 8n
 \fB\-Change_Minutes\fP \fInumber\fP
@@ -414,7 +415,7 @@ If a relative operator is given (<, <=, ==, !=, > or >=)
 a relative comparison will be made, rather than the implicit equality test.
 This is \fInot\fP identical to the similar \fIfind\fP(1) test.
 This is shorthand for
-the ``( now - ctime ( {+} )) / 60 \fIrelative-operator\fP \fInumber\fP''
+the \[lq]( now - ctime ( {+} )) / 60 \fIrelative-operator\fP \fInumber\fP\[rq]
 expression.
 .TP 8n
 \fB\-Change_Time\fP \fInumber\fP
@@ -424,7 +425,8 @@ If a relative operator is given (<, <=, ==, !=, > or >=)
 a relative comparison will be made, rather than the implicit equality test.
 This is \fInot\fP identical to the similar \fIfind\fP(1) test.
 This is shorthand for
-the ``( now - ctime ( {+} )) / 86400 \fIrelative-operator\fP \fInumber\fP''
+the \[lq]( now - ctime ( {+} )) / 86400 \fIrelative-operator\fP
+\fInumber\fP\[rq]
 expression.
 .TP 8n
 \fB\-Modify_Minutes\fP \fInumber\fP
@@ -434,7 +436,7 @@ If a relative operator is given (<, <=, ==, !=, > or >=)
 a relative comparison will be made, rather than the implicit equality test.
 This is \fInot\fP identical to the similar \fIfind\fP(1) test.
 This is shorthand for
-the ``( now - mtime ( {+} )) / 60 \fIrelative-operator\fP \fInumber\fP''
+the \[lq]( now - mtime ( {+} )) / 60 \fIrelative-operator\fP \fInumber\fP\[rq]
 expression.
 .TP 8n
 \fB\-Modify_Time\fP \fInumber\fP
@@ -444,28 +446,29 @@ If a relative operator is given (<, <=, ==, !=, > or >=)
 a relative comparison will be made, rather than the implicit equality test.
 This is \fInot\fP identical to the similar \fIfind\fP(1) test.
 This is shorthand for
-the ``( now - mtime ( {+} )) / 86400 \fIrelative-operator\fP \fInumber\fP''
+the \[lq]( now - mtime ( {+} )) / 86400 \fIrelative-operator\fP
+\fInumber\fP\[rq]
 expression.
 .TP 8n
 \fB\-Newer\fP \fIfilename\fP
 True if the current file was modified after the given file.
 This is shorthand for
-the ``mtime ( {+} ) > mtime ( \fIfilename\fP )''
+the \[lq]mtime ( {+} ) > mtime ( \fIfilename\fP )\[rq]
 expression.
 .TP 8n
 \fB-Name\fP \fIpattern\fP
 Base of file name (the path with the leading directories removed)
 matches shell pattern \fIpattern\fP.
-This is short-hand for the ``\fIpattern\fP ~ basename ( {} )'' expression.
+This is short-hand for the \[lq]\fIpattern\fP ~ basename ( {} )\[rq] expression.
 .TP 8n
 \fB-PAth\fP \fIpattern\fP
 File name matches shell pattern \fIpattern\fP.
 Note that the file name if affected by the \fB\-resolve\fP option.
-This is short-hand for the ``\fIpattern\fP ~ {}'' expression.
+This is short-hand for the \[lq]\fIpattern\fP ~ {}\[rq] expression.
 .TP 8n
 \fB\-Type\fP \fIstring\fP
 The file type matches the type given.
-This is shorthand for the ``type ( {} ) == \fIstring\fP'' expression.
+This is shorthand for the \[lq]type ( {} ) == \fIstring\fP\[rq] expression.
 Type names are matched similar to options:
 .TS
 center;
@@ -484,10 +487,11 @@ Socket	The file is a UNIX domain socket.
 This will print the full file name on the standard output,
 followed by a newline.
 The \fB-Resolve\fP option will affect what is printed.
-This is short-hand for the ``print ( {} )'' expression.
+This is short-hand for the \[lq]print ( {} )\[rq] expression.
 .TP 8n
 \fB\-execute\fP \fIstring\fP... \fB;\fP
 The may be used to execute a command.
-This is short-hand for the ``execute ( \fIstring\fP \fB:\fP ... )'' expression.
+This is short-hand for the \[lq]execute ( \fIstring\fP \fB:\fP ...
+)\[rq] expression.
 .so z_exit.so
 .so z_cr.so

@@ -20,11 +20,11 @@
 // MANIFEST: implementation of the change_run_deve_end_pol class
 //
 
-#include <change.h>
-#include <error.h> // for assert
-#include <os.h>
-#include <sub.h>
-#include <user.h>
+#include <libaegis/change.h>
+#include <common/error.h> // for assert
+#include <libaegis/os.h>
+#include <libaegis/sub.h>
+#include <libaegis/user.h>
 
 
 void

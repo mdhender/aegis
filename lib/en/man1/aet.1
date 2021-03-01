@@ -1,6 +1,6 @@
 '\" t
 .\"	aegis - project change supervisor
-.\"	Copyright (C) 1991-1993, 1996-2000, 2002, 2004, 2005 Peter Miller;
+.\"	Copyright (C) 1991-1993, 1996-2000, 2002, 2004-2006 Peter Miller;
 .\"	All rights reserved.
 .\"
 .\"	This program is free software; you can redistribute it and/or modify
@@ -28,18 +28,22 @@
 .B \*(n)
 .B -Test
 [
-.IR file-name ...
-][
 .IR option ...
+][
+\fIname\fP\fB=\fP\fIvalue\fP
+][
+.IR file-name ...
 ]
 .br
 .B \*(n)
 .B -Test
 .B -INDependent
 [
-.IR file-name ...
-][
 .IR option ...
+][
+\fIname\fP\fB=\fP\fIvalue\fP
+][
+.IR file-name ...
 ]
 .br
 .B \*(n)
@@ -80,6 +84,27 @@ if the test previously failed,
 if the test file has changed,
 if there has been a build,
 and for each architecture.
+.SS name=value
+You can add \fIname\fP\fB=\fP\fIvalue\fP pairs to the command line,
+these will be passed unchanged to the test command.
+Usually on the end of the command line, but this can be changed in the
+project configuration file.
+.PP
+The \fB\-force\fP option results in an implicit \f[CW]force=1\fP
+variable being added to the list of variable assignments, and thus
+added to the end of the command.  This is of most use when using the
+\fIbatch_\%test_\%command\fP filed of the project configuration file.
+.PP
+This may initially look like a development process end-run,
+allowing test scripts to be written so that they
+give all the right answers without actually doing anything.
+You have always been able to do this with environment variables,
+so this isn't anything new.
+.PP
+It is possible to get all of the variable assignments to turn into
+environment variables by putting \f[CW]$var\fP at the \fIstart\fP of the
+command, before the name of the shell, rather than at the default
+location at the end of the command.
 .so z_intuit.so
 .so z_test_rtnl.so
 .SH "TEST COMMAND CONFIGURATION"
@@ -134,7 +159,7 @@ paths to search when looking for executable support files (library files
 and sub-commands).
 .PP
 Most of the time \fI$Search_Path_Executable\fP are exactly the same.
-However, during ``aegis -t -bl'' they will be different, with
+However, during \[lq]aegis -t -bl\[rq] they will be different, with
 \fI$Seach_Path\fP starting at the development directory (the test
 being run) and \fI$Seach_Path_Executable\fP starting at the baseline
 (the executable being run).
@@ -166,8 +191,8 @@ files in the
 .I /tmp
 directory.
 .PP
-Actually, any exit code other than 0 or 1 will be interpreted as ``no
-result''.  However, always using 0, 1 or 2 means that if a new result
+Actually, any exit code other than 0 or 1 will be interpreted as \[lq]no
+result\[rq].  However, always using 0, 1 or 2 means that if a new result
 code is required by a later release of \*(n), your existing tests will
 continue to work.
 .so z_test_corr.so
@@ -224,7 +249,7 @@ suppressed.  This is the default.
 .TP 8n
 \fB-SUGgest\fP [ \fInumber\fP ]
 .br
-The ``\fI\*(n) -Integrate_Pass\fP'' command collects test
+The \[lq]\fI\*(n) -Integrate_Pass\fP\[rq] command collects test
 correlation statistics when changes are integrated.
 This option may be used to request that \*(n) suggest
 which tests should be run, using these testing correlations.

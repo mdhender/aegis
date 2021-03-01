@@ -1,6 +1,7 @@
 #
 # 	aegis - project change supervisor
 # 	Copyright (C) 2003 Free Software Foundation, Inc.
+# 	Copyright (C) 2005, 2006 Peter Miller
 #
 # Mesajele în limba românã pentru aegis.
 #
@@ -31,7 +32,7 @@
 # -------------------------------------------------------------------------
 #
 msgid	""
-msgstr	"PO-Revision-Date: 2005-11-06\n"
+msgstr	"PO-Revision-Date: 2006-03-02\n"
 	"Last-Translator: Laurentiu Buzdugan <buzdugan@voyager.net>\n"
 	"Language-Team: Romanian <translation-team-ro@lists.sourceforge."
 	"net>\n"
@@ -279,10 +280,28 @@ msgstr	"file \"$filename\" was out of date and has been merged with the "
 msgid	"$filename modified by history tool"
 msgstr	"the history tool modified the \"$filename\" source file"
 
+# TRANSLATION REQUIRED
+#
+# This error message is issued by the aedb command when it finds
+# a problem with the directory permissions above the development
+# directory.  The directories need to be searchable (have the 'x'
+# permission) for the project owner and the reviewers.
+#
+# 	$File_Name	The name of the offending directory.
+# 	$Mode_Change	The additional mode bit required.
+# 	$Mode_Old	The current mode of the directory (optional).
+# 	$Mode_New	The desirable mode of the directory (optional).
+#
+#, fuzzy
+msgid	"$filename needs permissions $mode_change"
+msgstr	"directory \"$filename\" is not traversable, it currently has "
+	"mode $mode_old but is needs at least mode $mode_new, the \"chmod "
+	"$mode_change $filename\" command may be sufficient to fix this"
+
 #
 # TRANSLATION REQUIRED
-# This error message is issued when aet runs a test which returns a ``no
-# result'' exit status.
+# This error message is issued when aet runs a test which returns a "no
+# result" exit status.
 #
 # 	$File_Name	The name of the offending file.
 #
@@ -293,8 +312,8 @@ msgstr	"test \"$filename\" returned no result; some other problem "
 
 # TRANSLATION REQUIRED
 #
-# This error message is issued when aet runs a test which returns a ``no
-# result'' exit status.
+# This error message is issued when aet runs a test which returns a "no
+# result" exit status.
 #
 # 	$File_Name	The name of the offending file.
 # 	$ARCHitecture	The name of the architecture.
@@ -348,6 +367,18 @@ msgstr	"test \"$filename\" passed"
 #, fuzzy
 msgid	"$filename pass, architecture $architecture"
 msgstr	"test \"$filename\" passed on $architecture"
+
+# TRANSLATION_REQUIRED
+#
+# This error message is issued when aede discovers a file in the change
+# that has not been altered.  (Sometimes it is a warning.)
+#
+# 	$File_Name	The offending file.
+#
+#, fuzzy
+msgid	"$filename unchanged"
+msgstr	"the \"$filename\" file has not been changed, it should not be "
+	"included in the change"
 
 #
 # TRANSLATION REQUIRED
@@ -547,6 +578,18 @@ msgstr	"$filename: corrupted \"$field_name\" field"
 
 # TRANSLATION REQUIRED
 #
+# This error message is issued when aede-policy detects a file isung DOS
+# line termination when it must use UNIX line termination.
+#
+# 	$File_Name	The offending file.
+#
+#, fuzzy
+msgid	"$filename: dos line termination"
+msgstr	"the \"$filename\" file uses DOS line termination (CRLF) and it "
+	"should use UNIX line termination (LF)"
+
+# TRANSLATION REQUIRED
+#
 # This warning is issued when an obsolete field is used.
 #
 #      $Name1          The name of the obsolete field.
@@ -567,7 +610,7 @@ msgid	"$filename: gid $number1 invalid, must be >= $number2"
 msgstr	"$filename: this file's group ID ($number1) is too small, it must "
 	"be greater than or equal to AEGIS_MIN_GID ($number2).  This is "
 	"probably the result of a backup restore problem.  Please use the "
-	"``chgrp -R <group> $filename'' command to fix it, for some "
+	"\"chgrp -R <group> $filename\" command to fix it, for some "
 	"suitable <group> name.  [You will need to be root.]"
 
 #
@@ -611,6 +654,29 @@ msgstr	"$filename: found $number fatal error${plural $number s}"
 
 # TRANSLATION REQUIRED
 #
+# This error message is issued when aede-policy detects a binary file,
+# and you have specified a policy whis disallows such files.
+#
+# 	$File_Name	The offending file name.
+#
+#, fuzzy
+msgid	"$filename: is binary"
+msgstr	"the \"$filename\" file contains binary bytes"
+
+# TRANSLATION REQUIRED
+#
+# This error message is issued when aede-policy detects unprintable
+# (non-ASCII) characters in a file, and you have specified a policy whis
+# disallows such files.
+#
+# 	$File_Name	The offending file name.
+#
+#, fuzzy
+msgid	"$filename: is unprintable"
+msgstr	"the \"$filename\" file contains unprintable characters"
+
+# TRANSLATION REQUIRED
+#
 # This error message is issued by aesvt when the file header within a
 # history file is not in a legal RFC822 format.
 #
@@ -630,6 +696,19 @@ msgstr	"$filename: malformed RFC 822 header line"
 #, fuzzy
 msgid	"$filename: mode is $number1, should be $number2"
 msgstr	"$filename: mode is $number1, should be $number2"
+
+# TRANSLATION REQUIRED
+#
+# This error message is issued by the aede-policy command when a file
+# does not contain and up-to-date copyright notice.
+#
+# 	$File_Name	The name of the offending file.
+# 	$Suggest	A suggested text for the missing notice (optional).
+#
+#, fuzzy
+msgid	"$filename: no current copyright notice"
+msgstr	"$filename: the file does not contain an up-to-date copyright "
+	"notice; a notice of the form \"$suggest\" would be suitable."
 
 #
 # TRANSLATION REQUIRED
@@ -665,7 +744,7 @@ msgid	"$filename: uid $number1 invalid, must be >= $number2"
 msgstr	"$filename: this file's user ID ($number1) is too small, it must "
 	"be greater than or equal to AEGIS_MIN_UID ($number2).  This is "
 	"probably the result of a backup restore problem.  Please use the "
-	"``chown -R <user> $filename'' command to fix it, for some "
+	"\"chown -R <user> $filename\" command to fix it, for some "
 	"suitable <user> name.  [You will need to be root.]"
 
 # TRANSLATION REQUIRED
@@ -1080,7 +1159,7 @@ msgstr	"$value1 ** $value2: $errno"
 #
 #, fuzzy
 msgid	"-TRace needs DEBUG"
-msgstr	"Warning: the -TRace option is only effective when Aegis is "
+msgstr	"Avertisment: the -TRace option is only effective when Aegis is "
 	"compiled using the DEBUG define in the common/main.h include "
 	"file."
 
@@ -1263,7 +1342,7 @@ msgstr	"applying the change to the integration directory"
 # TRANSLATION REQUIRED
 # This fatal error message is issued when Aegis determines that the
 # architecture it is currently running on is forbidden by the (5)
-# architecture field of the project ``config'' file.
+# architecture field of the project "aegis.conf" file.
 #
 # 	$Name		The offending architecture name.
 #
@@ -1277,7 +1356,7 @@ msgstr	"architecture \"$name\" forbidden, you may not perform this "
 # This error message is issued when Aegis is unable to determine which
 # architecture it is currently running on.  This means that the
 # architecture does not match any of the architecture patterns specified
-# in the project ``config'' file.
+# in the project "aegis.conf" file.
 #
 # 	$Name		The offending architecture name.
 #
@@ -1290,14 +1369,14 @@ msgstr	"architecture \"$name\" unknown"
 # This error message is issued when an architecture appears in the list
 # of architectures the change must apply to, but that architecture name
 # is not present in the project's architecture list in the project
-# ``config'' file.
+# "aegis.conf" file.
 #
 # 	$Name		The name of the offending architecture.
 #
 #, fuzzy
 msgid	"architecture \"$name\" unlisted"
 msgstr	"architecture \"$name\" appears in the change attributes, but is "
-	"not listed in the project ``config'' file"
+	"not listed in the project \"aegis.conf\" file"
 
 #
 # TRANSLATION REQUIRED
@@ -1330,6 +1409,17 @@ msgstr	"arithmetic type required for decrement (was given $name)"
 #, fuzzy
 msgid	"arithmetic type required for increment (was given $name)"
 msgstr	"arithmetic type required for increment (was given $name)"
+
+# TRANSLATION REQUIRED
+#
+# This fatal error message is issued when a user-supplied string can't
+# be interpreted as an attribute name.
+#
+# 	$Name		The offending string.
+#
+#, fuzzy
+msgid	"attribute $name unknown"
+msgstr	"the attribute \"$name\" does not exist"
 
 #
 # This message is issued when an aeca is successfully completed.
@@ -1491,7 +1581,7 @@ msgstr	"user \"$user\" may not modify the change's attributes; "
 #, fuzzy
 msgid	"bad ca, unknown architecture"
 msgstr	"architecture contains variations not listed in the project "
-	"``config'' file"
+	"\"aegis.conf\" file"
 
 #
 # TRANSLATION REQUIRED
@@ -2047,7 +2137,7 @@ msgstr	"this change is in the '$state' state, it must be in the 'being "
 #
 # TRANSLATION REQUIRED
 # This error message is issued when a version string is given to aenpr
-# which can't be broken into ``ispunct'' separated number.
+# which can't be broken into "ispunct" separated number.
 #
 # 	$Number		The offending version number.
 #
@@ -2153,7 +2243,7 @@ msgstr	"boolean value required for ?: expression (was given $name)"
 #
 #, fuzzy
 msgid	"boolean value required for logical and (was given $name)"
-msgstr	"boolean value required for logical ``and'' (was given $name)"
+msgstr	"boolean value required for logical \"and\" (was given $name)"
 
 #
 # TRANSLATION REQUIRED
@@ -2163,18 +2253,18 @@ msgstr	"boolean value required for logical ``and'' (was given $name)"
 #
 #, fuzzy
 msgid	"boolean value required for logical or (was given $name)"
-msgstr	"boolean value required for logical ``or'' (was given $name)"
+msgstr	"boolean value required for logical \"or\" (was given $name)"
 
 #
 # TRANSLATION REQUIRED
-# This error message is issued when the control expression for an ``if''
+# This error message is issued when the control expression for an "if"
 # statement does not evaluate to a boolean.
 #
 # 	$Name		The type name of the offending operand.
 #
 #, fuzzy
 msgid	"boolean value required in if statement (not $name)"
-msgstr	"boolean value required in ``if'' statement (was given $name)"
+msgstr	"boolean value required in \"if\" statement (was given $name)"
 
 #
 # TRANSLATION REQUIRED
@@ -2211,6 +2301,16 @@ msgid	"branch completed"
 msgstr	"you may only create changes and branches on branches which are "
 	"active, this branch is not in the 'being developed' state"
 
+# TRANSLATION REQUIRED
+#
+# This error messages is issued when aede-policy finds a change set in
+# which the brief description is empty, or has not been changed from the
+# default.
+#
+#, fuzzy
+msgid	"brief_description not set"
+msgstr	"the brief description has been not set"
+
 #
 # TRANSLATION REQUIRED
 # This error message is issued when aede finds a file which has not been
@@ -2238,8 +2338,8 @@ msgid	"build trashed $filename"
 msgstr	"The build appears to have modified the \"$filename\" source "
 	"file.  This often occurs when a source files becomes a generated "
 	"file.  In a separate change you need to change the build "
-	"configuration, or ``aerm $filename'', or ``aerm $filename'' and "
-	"then ``aenf -build $filename'' in a following change."
+	"configuration, or \"aerm $filename\", or \"aerm $filename\" and "
+	"then \"aenf -build $filename\" in a following change."
 
 #
 # This error message is issued when copying a file to stdout fails.
@@ -2469,6 +2569,17 @@ msgstr	"command \"$command\" terminated by $signal (core dumped)"
 msgid	"command line too short"
 msgstr	"command line too short"
 
+# TRANSLATION REQUIRED
+#
+# This fatal error message is issued when an unrecognised compression
+# algorithm name is given on the command line (aedist, aepatch, etc).
+#
+# 	$name		The offending compression algorithm name.
+#
+#, fuzzy
+msgid	"compression algorithm \"$name\" unknown"
+msgstr	"compression algorithm \"$name\" unknown"
+
 #
 # TRANSLATION REQUIRED
 # This message is inserted into the top of the project config file
@@ -2663,6 +2774,16 @@ msgstr	"diferenþa $number în afara domeniului, acesta trebuie sã fie un "
 #, fuzzy
 msgid	"delta name complete"
 msgstr	"delta $number may now be referred to as delta \"$name\""
+
+# TRANSLATION REQUIRED
+#
+# This error messages is issued when aede-policy finds a change set in
+# which the brief description is empty, or has not been changed from the
+# default.
+#
+#, fuzzy
+msgid	"description not set"
+msgstr	"the description field has not been set"
 
 #
 # TRANSLATION REQUIRED
@@ -2894,7 +3015,7 @@ msgstr	"end-of-line within string"
 #
 #, fuzzy
 msgid	"environment variable $name not set"
-msgstr	"environment variable ``$name'' not set"
+msgstr	"environment variable \"$name\" not set"
 
 #
 # This fatal error message is issued when the execution of a command
@@ -2985,7 +3106,7 @@ msgstr	"fcntl(\"$filename\", F_SETLKW, $arg): $errno"
 #
 #, fuzzy
 msgid	"few candidate tests"
-msgstr	"warning: there are only $number1 suitable tests, however you "
+msgstr	"Avertisment: there are only $number1 suitable tests, however you "
 	"have asked for $number2 tests to be suggested; all $number1 "
 	"tests will be used"
 
@@ -3249,7 +3370,7 @@ msgstr	"file qualifier unknown"
 #
 #, fuzzy
 msgid	"file type $name unknown"
-msgstr	"file type ``$name'' unknown"
+msgstr	"file type \"$name\" unknown"
 
 #
 # TRANSLATION REQUIRED
@@ -3294,8 +3415,8 @@ msgstr	"fingerprint \"$filename\": $errno"
 # enclosing loop or switch statement.
 #
 #, fuzzy
-msgid	"floating ``break'' statement"
-msgstr	"floating ``break'' statement"
+msgid	"floating \"break\" statement"
+msgstr	"floating \"break\" statement"
 
 #
 # TRANSLATION REQUIRED
@@ -3303,8 +3424,8 @@ msgstr	"floating ``break'' statement"
 # any enclosing loop or switch statement.
 #
 #, fuzzy
-msgid	"floating ``continue'' statement"
-msgstr	"floating ``continue'' statement"
+msgid	"floating \"continue\" statement"
+msgstr	"floating \"continue\" statement"
 
 #
 # TRANSLATION REQUIRED
@@ -3312,8 +3433,8 @@ msgstr	"floating ``continue'' statement"
 # any function.
 #
 #, fuzzy
-msgid	"floating ``return'' statement"
-msgstr	"floating ``return'' statement"
+msgid	"floating \"return\" statement"
+msgstr	"floating \"return\" statement"
 
 #
 # TRANSLATION REQUIRED
@@ -3333,7 +3454,7 @@ msgstr	"for the $name_list architecture${plural $number s}"
 # This error message is issued as a summary when one or more
 # architectures appear in the list of architectures the change must
 # apply to, but are not present in the project's architecture list in
-# the project ``config'' file.
+# the project "aegis.conf" file.
 #
 # 	$Number		The number of unknown architecture(s).
 # 			(Optional)
@@ -3342,7 +3463,7 @@ msgstr	"for the $name_list architecture${plural $number s}"
 msgid	"found unlisted architectures"
 msgstr	"found $number unlisted architecture${plural $number s}, edit the "
 	"change attributes to remove ${plural $number them it} or edit "
-	"the project ``config'' file to add ${plural $number them it}"
+	"the project \"aegis.conf\" file to add ${plural $number them it}"
 
 #
 # This error message is issued when a function which requires exactly
@@ -3508,7 +3629,7 @@ msgstr	"illegal addition ($name1 + $name2)"
 #
 #, fuzzy
 msgid	"illegal bit not ($name)"
-msgstr	"integer value required for bit-wise ``not'' (was given $name)"
+msgstr	"integer value required for bit-wise \"not\" (was given $name)"
 
 #
 # TRANSLATION REQUIRED
@@ -3671,13 +3792,13 @@ msgstr	"illegal left hand side of assignment (was given $name), it must "
 #
 #, fuzzy
 msgid	"illegal logical not ($name)"
-msgstr	"boolean value required for logical ``not'' (was given $name)"
+msgstr	"boolean value required for logical \"not\" (was given $name)"
 
 #
 # TRANSLATION REQUIRED
 # This error message is issued when an illegal lookup is attempted.
-# This occurs both for associative arrays ``e1[e2]'', and also for
-# structures ``e1.e2'' (which are implemented as associative arrays).
+# This occurs both for associative arrays "e1[e2]", and also for
+# structures "e1.e2" (which are implemented as associative arrays).
 #
 # 	$Name1		The type name of the first operand.
 # 	$Name2		The type name of the second operand.
@@ -3857,7 +3978,7 @@ msgstr	"integer index required (was given $name)"
 #
 #, fuzzy
 msgid	"integer value required for bit and (was given $name)"
-msgstr	"integer value required for bit-wise ``and'' (was given $name)"
+msgstr	"integer value required for bit-wise \"and\" (was given $name)"
 
 #
 # TRANSLATION REQUIRED
@@ -3867,7 +3988,7 @@ msgstr	"integer value required for bit-wise ``and'' (was given $name)"
 #
 #, fuzzy
 msgid	"integer value required for bit or (was given $name)"
-msgstr	"integer value required for bit-wise ``or'' (was given $name)"
+msgstr	"integer value required for bit-wise \"or\" (was given $name)"
 
 #
 # TRANSLATION REQUIRED
@@ -3877,7 +3998,7 @@ msgstr	"integer value required for bit-wise ``or'' (was given $name)"
 #
 #, fuzzy
 msgid	"integer value required for bit xor (was given $name)"
-msgstr	"integer value required for bit-wise ``exclusive or'' (was given "
+msgstr	"integer value required for bit-wise \"exclusive or\" (was given "
 	"$name)"
 
 #
@@ -4035,7 +4156,7 @@ msgstr	"list name \"$name\" is ambiguous ($name_list)"
 
 #
 # TRANSLATION REQUIRED
-# This message is issued when an inappropriate ``in'' is attempted.
+# This message is issued when an inappropriate "in" is attempted.
 #
 # 	$Name		The type name of the offending operand.
 #
@@ -4678,6 +4799,15 @@ msgid	"no branch chown"
 msgstr	"this change is a branch; it is not possible to change the "
 	"ownership of a branch"
 
+# TRANSLATION REQUIRED
+#
+# This information message is issued when aeb is invoked for a change in
+# a project which is configured to not require builds.
+#
+#, fuzzy
+msgid	"no build required"
+msgstr	"no build is required for changes to this project"
+
 #
 # This error message is issued when a command which requires an explicit
 # change number is not given one.
@@ -4685,10 +4815,10 @@ msgstr	"this change is a branch; it is not possible to change the "
 msgid	"no change number"
 msgstr	"trebuie sa daþi numãrul explicit pentru aceastã comandã"
 
-#
 # TRANSLATION REQUIRED
+#
 # This fatal error message is issued when a user attempts to perform a
-# cross branch merge on a change in the ``being integrated'' state.
+# cross branch merge on a change in the "being integrated" state.
 #
 #, fuzzy
 msgid	"no cross branch int merge"
@@ -4757,6 +4887,16 @@ msgstr	"no integrations have been completed, so it is not yet possible "
 msgid	"no dev dir"
 msgstr	"this change is in the '$state' state, there is no development "
 	"directory"
+
+# TRANSLATION REQUIRED
+#
+# This information message is issued when the aed command is run for a
+# change which is in a project configured not to use aed.
+#
+#, fuzzy
+msgid	"no diff required"
+msgstr	"no \"aegis -diff\" command is required for this change, the "
+	"project has been configured to omit this requirement"
 
 #
 # TRANSLATION REQUIRED
@@ -4960,7 +5100,7 @@ msgstr	"nume raport nespecificat"
 #
 # TRANSLATION REQUIRED
 # This error message is issued when aet completes unsuccessfully because
-# one or more tests returned a ``no result'' exit code.
+# one or more tests returned a "no result" exit code.
 #
 # 	$Number		The number of tests which failed.
 #
@@ -5426,14 +5566,14 @@ msgstr	"checking out head revisions of imported files to reconstruct the "
 #
 # TRANSLATION REQUIRED
 # This verbose message is issued by the aecd command when a change is
-# in the ``awaiting review'' state.  By reminding reviewers to use aerb,
+# in the "awaiting review" state.  By reminding reviewers to use aerb,
 # we make the statistics more meaningful, and also block other reviewes
 # from wasting their time.
 #
 #, fuzzy
 msgid	"remember to use the aerb command"
-msgstr	"If you are going to review this change, please use the ``aegis -"
-	"review-begin'' command as soon as possible.  This ensures that "
+msgstr	"If you are going to review this change, please use the \"aegis -"
+	"review-begin\" command as soon as possible.  This ensures that "
 	"other reviewers don't waste any of their valuable time."
 
 #
@@ -5683,8 +5823,8 @@ msgstr	"nu cere nici un argument"
 #, fuzzy
 msgid	"restart integration after upgrade"
 msgstr	"no change should be in the $state state when Aegis is upgraded "
-	"because some file state is not available, please use ``aegis -"
-	"ibu'' and then ``aegis -ib'' on this change to restart the "
+	"because some file state is not available, please use \"aegis -ibu"
+	"\" and then \"aegis -ib\" on this change to restart the "
 	"integration"
 
 #
@@ -6086,8 +6226,8 @@ msgstr	"the throw statement requires string argument (was given $name)"
 #
 #, fuzzy
 msgid	"time $number after branch"
-msgstr	"warning: the time \"$number\" is after the branch finished, this "
-	"is not meaningful when recreating the contents of the branch"
+msgstr	"Avertisment: the time \"$number\" is after the branch finished, "
+	"this is not meaningful when recreating the contents of the branch"
 
 #
 # TRANSLATION REQUIRED
@@ -6099,8 +6239,8 @@ msgstr	"warning: the time \"$number\" is after the branch finished, this "
 #
 #, fuzzy
 msgid	"time $number before branch"
-msgstr	"warning: the time \"$number\" is before the branch started, this "
-	"is not meaningful when recreating the contents of the branch"
+msgstr	"Avertisment: the time \"$number\" is before the branch started, "
+	"this is not meaningful when recreating the contents of the branch"
 
 #
 # TRANSLATION REQUIRED
@@ -6469,7 +6609,7 @@ msgstr	"value of type $name required"
 #
 #, fuzzy
 msgid	"version $number not a branch"
-msgstr	"version ``$number'' is not a branch"
+msgstr	"version \"$number\" is not a branch"
 
 #
 # TRANSLATION REQUIRED
@@ -6490,7 +6630,7 @@ msgstr	"waiting for $name lock"
 #, fuzzy
 msgid	"waiting for baseline read lock"
 msgstr	"waiting for shared baseline lock; this is because there is an "
-	"``aegis -Integrate_PASS'' command in progress"
+	"\"aegis -Integrate_PASS\" command in progress"
 
 #
 # TRANSLATION REQUIRED
@@ -6500,7 +6640,7 @@ msgstr	"waiting for shared baseline lock; this is because there is an "
 #, fuzzy
 msgid	"waiting for baseline write lock"
 msgstr	"waiting for exclusive baseline lock; this is because there is "
-	"one or more ``aegis -Build'' commands in progress"
+	"one or more \"aegis -Build\" commands in progress"
 
 #
 # TRANSLATION REQUIRED
@@ -6518,8 +6658,8 @@ msgstr	"waiting for project location index lock"
 #
 #, fuzzy
 msgid	"waiting for history lock"
-msgstr	"waiting for history lock; this is because there is an ``aegis -"
-	"Integrate_PASS'' command in progress on another branch"
+msgstr	"waiting for history lock; this is because there is an \"aegis -"
+	"Integrate_PASS\" command in progress on another branch"
 
 #
 # TRANSLATION REQUIRED
@@ -6541,7 +6681,7 @@ msgstr	"waiting for lock"
 #
 #, fuzzy
 msgid	"warning: $filename in baseline, copying"
-msgstr	"warning: file \"$filename\" already exists in the project, "
+msgstr	"Avertisment: file \"$filename\" already exists in the project, "
 	"action automatically changed from \"create\" to \"modify\""
 
 #
@@ -6554,7 +6694,8 @@ msgstr	"warning: file \"$filename\" already exists in the project, "
 #
 #, fuzzy
 msgid	"warning: $filename modified by history tool"
-msgstr	"warning: the history tool modified the \"$filename\" source file"
+msgstr	"Avertisment: the history tool modified the \"$filename\" source "
+	"file"
 
 #
 # TRANSLATION REQUIRED
@@ -6567,9 +6708,9 @@ msgstr	"warning: the history tool modified the \"$filename\" source file"
 #
 #, fuzzy
 msgid	"warning: $filename patch not used"
-msgstr	"warning: the patch for \"$filename\" could not be used, so the "
-	"full incoming source for this file has been used; you may need "
-	"to resolve conflicts manually"
+msgstr	"Avertisment: the patch for \"$filename\" could not be used, so "
+	"the full incoming source for this file has been used; you may "
+	"need to resolve conflicts manually"
 
 #
 # TRANSLATION REQUIRED
@@ -6583,9 +6724,20 @@ msgstr	"warning: the patch for \"$filename\" could not be used, so the "
 #
 #, fuzzy
 msgid	"warning: $filename1 deprecated, use $filename2 file instead"
-msgstr	"Warning: The \"$filename1\" file has been deprecated, it is "
+msgstr	"Avertisment: The \"$filename1\" file has been deprecated, it is "
 	"suggested that you use the \"$filename2\" file instead.  See aenf"
 	"(1) for more information."
+
+# TRANSLATION REQUIRED
+#
+# This generic message is used to turn what would otherwise be an error
+# message into a warning message.
+#
+# 	$MeSsaGe	The message to be printed as a warning.
+#
+#, fuzzy
+msgid	"warning: $message"
+msgstr	"Avertisment: $message"
 
 #
 # TRANSLATION REQUIRED
@@ -6598,8 +6750,8 @@ msgstr	"Warning: The \"$filename1\" file has been deprecated, it is "
 #
 #, fuzzy
 msgid	"warning: $name1 is obsolete, use $name2 environment variable"
-msgstr	"warning: the $name1 environment variable is obsolete, please use "
-	"$name2 instead"
+msgstr	"Avertisment: the $name1 environment variable is obsolete, please "
+	"use $name2 instead"
 
 #
 # TRANSLATION REQUIRED
@@ -6610,8 +6762,8 @@ msgstr	"warning: the $name1 environment variable is obsolete, please use "
 #
 #, fuzzy
 msgid	"warning: $name1 obsolete, use $name2 option"
-msgstr	"warning: the $name1 option is obsolete, please the $name2 option "
-	"in future"
+msgstr	"Avertisment: the $name1 option is obsolete, please the $name2 "
+	"option in future"
 
 #
 # TRANSLATION REQUIRED
@@ -6622,7 +6774,7 @@ msgstr	"warning: the $name1 option is obsolete, please the $name2 option "
 #
 #, fuzzy
 msgid	"warning: chmod(\"$filename\", $arg): $errno"
-msgstr	"warning: chmod(\"$filename\", $arg): $errno"
+msgstr	"Avertisment: chmod(\"$filename\", $arg): $errno"
 
 #
 # TRANSLATION REQUIRED
@@ -6634,7 +6786,7 @@ msgstr	"warning: chmod(\"$filename\", $arg): $errno"
 #
 #, fuzzy
 msgid	"warning: command \"$command\" exit status $number"
-msgstr	"warning: command \"$command\" exit status $number"
+msgstr	"Avertisment: command \"$command\" exit status $number"
 
 #
 # TRANSLATION REQUIRED
@@ -6647,8 +6799,8 @@ msgstr	"warning: command \"$command\" exit status $number"
 #
 #, fuzzy
 msgid	"warning: diffable files"
-msgstr	"warning: there ${plural $number 'are $number files which need' "
-	"'is a file which needs' } to be differenced"
+msgstr	"Avertisment: there ${plural $number 'are $number files which "
+	"need' 'is a file which needs' } to be differenced"
 
 #
 # TRANSLATION REQUIRED
@@ -6658,8 +6810,8 @@ msgstr	"warning: there ${plural $number 'are $number files which need' "
 #, fuzzy
 msgid	"warning: expression has no side effects, assuming you meant -"
 	"PRint"
-msgstr	"warning: expression has no side effects, assuming you meant to -"
-	"PRint files matching the given expression"
+msgstr	"Avertisment: expression has no side effects, assuming you meant "
+	"to -PRint files matching the given expression"
 
 #
 # TRANSLATION REQUIRED
@@ -6670,7 +6822,7 @@ msgstr	"warning: expression has no side effects, assuming you meant to -"
 #
 #, fuzzy
 msgid	"warning: file \"$filename\" needs diff"
-msgstr	"warning: file \"$filename\" needs to be differenced"
+msgstr	"Avertisment: file \"$filename\" needs to be differenced"
 
 #
 # TRANSLATION REQUIRED
@@ -6681,7 +6833,7 @@ msgstr	"warning: file \"$filename\" needs to be differenced"
 #
 #, fuzzy
 msgid	"warning: file \"$filename\" needs merge"
-msgstr	"warning: file \"$filename\" needs to be merged"
+msgstr	"Avertisment: file \"$filename\" needs to be merged"
 
 #
 # TRANSLATION REQUIRED
@@ -6694,8 +6846,8 @@ msgstr	"warning: file \"$filename\" needs to be merged"
 #
 #, fuzzy
 msgid	"warning: file times in future"
-msgstr	"warning: file modification times extend $number second${plural "
-	"$number s} into the future"
+msgstr	"Avertisment: file modification times extend $number second"
+	"${plural $number s} into the future"
 
 #
 # TRANSLATION REQUIRED
@@ -6708,7 +6860,7 @@ msgstr	"warning: file modification times extend $number second${plural "
 #
 #, fuzzy
 msgid	"warning: files modified by history tool"
-msgstr	"warning: The history tool modified $number source ${plural "
+msgstr	"Avertisment: The history tool modified $number source ${plural "
 	"$number files file}.  The source ${plural $number files file} in "
 	"the repository now no longer ${plural $number match matches} the "
 	"object ${plural $number files file} in the repository.  The "
@@ -6726,8 +6878,8 @@ msgstr	"warning: The history tool modified $number source ${plural "
 #
 #, fuzzy
 msgid	"warning: mergable files"
-msgstr	"warning: there ${plural $number 'are $number files which need' "
-	"'is a file which needs' } merging"
+msgstr	"Avertisment: there ${plural $number 'are $number files which "
+	"need' 'is a file which needs' } merging"
 
 #
 # TRANSLATION REQUIRED
@@ -6740,8 +6892,8 @@ msgstr	"warning: there ${plural $number 'are $number files which need' "
 #
 #, fuzzy
 msgid	"warning: no $filename in baseline, creating"
-msgstr	"warning: file \"$filename\" is no longer in the baseline, action "
-	"automatically changed from \"modify\" to \"create\""
+msgstr	"Avertisment: file \"$filename\" is no longer in the baseline, "
+	"action automatically changed from \"modify\" to \"create\""
 
 #
 # TRANSLATION REQUIRED
@@ -6753,7 +6905,7 @@ msgstr	"warning: file \"$filename\" is no longer in the baseline, action "
 #
 #, fuzzy
 msgid	"warning: no $name1, assuming $name2"
-msgstr	"warning: no $name1 specified, assuming $name2 desired"
+msgstr	"Avertisment: no $name1 specified, assuming $name2 desired"
 
 #
 # TRANSLATION REQUIRED
@@ -6762,7 +6914,7 @@ msgstr	"warning: no $name1 specified, assuming $name2 desired"
 #
 #, fuzzy
 msgid	"warning: no chown"
-msgstr	"warning: no need to change owner, already being developed by "
+msgstr	"Avertisment: no need to change owner, already being developed by "
 	"user \"$developer\", a new development directory will be "
 	"constructed"
 
@@ -6773,9 +6925,9 @@ msgstr	"warning: no need to change owner, already being developed by "
 #
 #, fuzzy
 msgid	"warning: potential trojan, proceeding anyway"
-msgstr	"Warning: This change contains files which could host a Trojan "
-	"horse attack.  Because you specified the --no-trojan option, the "
-	"development will proceed despite this."
+msgstr	"Avertisment: This change contains files which could host a "
+	"Trojan horse attack.  Because you specified the --no-trojan "
+	"option, the development will proceed despite this."
 
 #
 # TRANSLATION REQUIRED
@@ -6784,8 +6936,8 @@ msgstr	"Warning: This change contains files which could host a Trojan "
 #
 #, fuzzy
 msgid	"warning: potential trojan, review before completing development"
-msgstr	"Warning: This change contains files which could host a Trojan "
-	"horse attack.  You should review it before building it or "
+msgstr	"Avertisment: This change contains files which could host a "
+	"Trojan horse attack.  You should review it before building it or "
 	"testing it or completing development.  This change remains in "
 	"the being_developed state."
 
@@ -6797,7 +6949,7 @@ msgstr	"Warning: This change contains files which could host a Trojan "
 #
 #, fuzzy
 msgid	"warning: rmdir $filename: $errno"
-msgstr	"warning: rmdir \"$filename\": $errno"
+msgstr	"Avertisment: rmdir \"$filename\": $errno"
 
 #
 # TRANSLATION REQUIRED
@@ -6807,7 +6959,7 @@ msgstr	"warning: rmdir \"$filename\": $errno"
 #
 #, fuzzy
 msgid	"warning: setgid $arg: $errno"
-msgstr	"warning: setgid $arg: $errno"
+msgstr	"Avertisment: setgid $arg: $errno"
 
 #
 # TRANSLATION REQUIRED
@@ -6817,7 +6969,7 @@ msgstr	"warning: setgid $arg: $errno"
 #
 #, fuzzy
 msgid	"warning: stat $filename: $errno"
-msgstr	"warning: stat \"$filename\": $errno"
+msgstr	"Avertisment: stat \"$filename\": $errno"
 
 #
 # TRANSLATION REQUIRED
@@ -6825,9 +6977,10 @@ msgstr	"warning: stat \"$filename\": $errno"
 #
 #, fuzzy
 msgid	"warning: test mode"
-msgstr	"Warning: This copy is running in \"test\" mode.  It has reduced "
-	"capabilities due to reduced privileges.  This mode is provided "
-	"solely for testing, and is not a recommended operating mode."
+msgstr	"Avertisment: This copy is running in \"test\" mode.  It has "
+	"reduced capabilities due to reduced privileges.  This mode is "
+	"provided solely for testing, and is not a recommended operating "
+	"mode."
 
 #
 # TRANSLATION REQUIRED
@@ -6837,7 +6990,7 @@ msgstr	"Warning: This copy is running in \"test\" mode.  It has reduced "
 #
 #, fuzzy
 msgid	"warning: unlink $filename: $errno"
-msgstr	"warning: unlink \"$filename\": $errno"
+msgstr	"Avertisment: unlink \"$filename\": $errno"
 
 #
 # TRANSLATION REQUIRED
@@ -6850,7 +7003,7 @@ msgstr	"warning: unlink \"$filename\": $errno"
 #
 #, fuzzy
 msgid	"warning: use $name option"
-msgstr	"warning: please use the $name option when specifying an "
+msgstr	"Avertisment: please use the $name option when specifying an "
 	"attributes file, the unadorned form is now obsolescent"
 
 #
@@ -6861,7 +7014,7 @@ msgstr	"warning: please use the $name option when specifying an "
 #
 #, fuzzy
 msgid	"warning: utime $filename: $errno"
-msgstr	"warning: utime \"$filename\": $errno"
+msgstr	"Avertisment: utime \"$filename\": $errno"
 
 #
 # TRANSLATION REQUIRED

@@ -1,6 +1,6 @@
 //
 //	aegis - project change supervisor
-//	Copyright (C) 1996, 2002-2004 Peter Miller;
+//	Copyright (C) 1996, 2002-2005 Peter Miller;
 //	All rights reserved.
 //
 //	This program is free software; you can redistribute it and/or modify
@@ -20,12 +20,12 @@
 // MANIFEST: functions to manipulate exprs
 //
 
-#include <sub.h>
-#include <sub/expr.h>
-#include <sub/expr_gram.h>
-#include <str.h>
-#include <trace.h>
-#include <wstr/list.h>
+#include <libaegis/sub.h>
+#include <libaegis/sub/expr.h>
+#include <libaegis/sub/expr_gram.h>
+#include <common/str.h>
+#include <common/trace.h>
+#include <common/wstr/list.h>
 
 
 wstring_ty *

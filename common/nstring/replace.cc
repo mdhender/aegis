@@ -20,10 +20,10 @@
 // MANIFEST: implementation of the nstring::replace method
 //
 
-#include <ac/string.h>
+#include <common/ac/string.h>
 
-#include <nstring.h>
-#include <nstring/accumulator.h>
+#include <common/nstring.h>
+#include <common/nstring/accumulator.h>
 
 
 nstring

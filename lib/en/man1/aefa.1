@@ -1,6 +1,6 @@
 '\" t
 .\"	aegis - project change supervisor
-.\"	Copyright (C) 2004 Peter Miller;
+.\"	Copyright (C) 2004, 2006 Peter Miller;
 .\"	All rights reserved.
 .\"
 .\"	This program is free software; you can redistribute it and/or modify
@@ -44,6 +44,14 @@
 .br
 .B \*(n)
 .B -File_ATtributes
+[
+.IR option ...
+]
+\fIname\fP\fB=\fP\fIvalue\fP
+.I filename
+.br
+.B \*(n)
+.B -File_ATtributes
 .B -Help
 .SH DESCRIPTION
 The
@@ -58,6 +66,45 @@ variant is suitable for use as input at a later time.
 See
 .IR aefattr (5)
 for a description of the file format.
+.PP
+Attribute names are not case sensitive.  File attributes with a name
+starting with an upper case letter will appear in \fIael\fP(1) and
+\fIaeget\fP(1) listings, while those starting with a lower case letter
+will not.
+.SS Shorthand
+If you are only setting the values of unique attributes, it is possible
+to do this from the command line, using the \fIname\fP\fB=\fP\fIvalue\fP
+form.
+.PP
+Note that this usage will replace the first attribute with the given name.  If
+there is more than one attribute of that name, the second and subsequent
+attributes are unchanged.  If there is no attribute of the given name,
+it will be appended.
+.PP
+You may set more than one attribute at a time, provided that
+their names are unique.  Attribute names are not case sensitive.
+.SS Known Attribute Names
+While many of the anticipated uses of file attributes are to allow
+projects to attach their own specialized data to individual files, Aegis
+also uses some attributes for its own purposes (and arguably, should
+always have done so to maximize forwards compatibility across Aegis
+upgrades).
+.TP 8n
+content-type
+This is taken directly from the MIME definition of Content-Type.
+It remembers what sort of file this is.  It is anticipated that a
+\fIdiff\fP tool, for example, could make use of this attribute to
+provide format-specific file difference listings.  Some change set
+interchange formats are capable of carrying this information.
+.TP 8n
+entire-source-hide
+boolean.  If true, this file is not included by the \fIaedist \-entire-source\fP
+flag.  The \fIaetar\fP and \fIaerevml\fP commands work similarly.
+Think of it as a "local only" flag.
+.TP 8n
+foreign-copyright
+boolean.  If true, this file will not be checked by the
+\fIaede-policy\fP(1) \f[CW]copyright\fP validation.
 .SH OPTIONS
 The following options are understood:
 .so o_baserel.so

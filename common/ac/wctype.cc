@@ -1,6 +1,6 @@
 //
 //	aegis - project change supervisor
-//	Copyright (C) 1996, 1998, 2004 Peter Miller;
+//	Copyright (C) 1996, 1998, 2004, 2005 Peter Miller;
 //	All rights reserved.
 //
 //	This program is free software; you can redistribute it and/or modify
@@ -20,9 +20,9 @@
 // MANIFEST: impliment missing frinction from <wctype.h>
 //
 
-#include <ac/stddef.h>
-#include <ac/ctype.h>
-#include <ac/wctype.h>
+#include <common/ac/stddef.h>
+#include <common/ac/ctype.h>
+#include <common/ac/wctype.h>
 
 
 #ifndef HAVE_ISWPRINT

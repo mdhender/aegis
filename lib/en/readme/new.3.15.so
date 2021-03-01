@@ -1,6 +1,6 @@
 .\"
 .\"	aegis - project change supervisor
-.\"	Copyright (C) 1999, 2003 Peter Miller;
+.\"	Copyright (C) 1999, 2003, 2005 Peter Miller;
 .\"	All rights reserved.
 .\"
 .\"	This program is free software; you can redistribute it and/or modify
@@ -44,13 +44,13 @@ tried to build an unbuildable change.
 .if n *
 .if t \(bu
 There is a new \fI\-No-WhiteOut\fP option for the \fIaerm\fP(1) and
-\fIaemv\fP(1) commands, letting you suppress the ``whiteout'' files,
+\fIaemv\fP(1) commands, letting you suppress the \[lq]whiteout\[rq] files,
 along with some explanation in the man page about why they are there.
 See \fIaerm\fP(1) for more information.
 .PP
 .if n *
 .if t \(bu
-The default value of the ``\fImaximum_\%filename_\%length\fP'' field
+The default value of the \[lq]\fImaximum_\%filename_\%length\fP\[rq] field
 of the project \fIconfig\fP file has been raised from 14 to 255.
 If your project depends on the old default value, you will need to set
 it explicitly.

@@ -58,7 +58,7 @@ Change	State		Description
   50	completed	fix generated Makefile
   51	completed	fix some test problems
   52	completed	back compat install
-  53	completed	document a few dependencies in the ``BUILDING''
+  53	completed	document a few dependencies in the "BUILDING"
 			file
   54	completed	update release instructions
 
@@ -73,7 +73,7 @@ Change	State		Description
   56	completed	bug in aenfu
   57	completed	aegis -list version gives SIGSEGV
   58	completed	fix some messages
-  59	completed	add the ``state'' substitution
+  59	completed	add the "state" substitution
   60	completed	aede on branch
   61	completed	add wrapper around Makefile test run
   62	completed	partial builds append the files in the wrong
@@ -176,9 +176,9 @@ Change	State		Description
  149	completed	improve directory error messages
  150	completed	fix project list bug
  151	completed	aecpu does not like -ro files
- 152	completed	tests can return ``no result''
- 153	completed	modify tests and templates to give ``no_
-			result''
+ 152	completed	tests can return "no result"
+ 153	completed	modify tests and templates to give "no_
+			result"
  156	completed	install problems
  158	completed	incorporate comments into make article
  161	completed	solaris bugs
@@ -1035,7 +1035,7 @@ DESCRIPTION
 	There is a correlation between creating or modifying a file and
 	the tests which are created or modified at the same time. This
 	change adds the ability to track this correlation, and use it
-	to have aet suggest tests. E.g. ``aet -suggest 10'' would run
+	to have aet suggest tests. E.g. "aet -suggest 10" would run
 	10 tests at random, with the choice biased by the files present
 	in the change.	Each run would have a different set of tests,
 	when there is a choice.
@@ -1119,7 +1119,7 @@ DESCRIPTION
 	The file names were kept in the same files as the change state.
 	For large projects or large changes, this has an impact on
 	performance of the commands which do not alter file state.
-	This change factors out change file state into an ``fstate''
+	This change factors out change file state into an "fstate"
 	file, and only read it in as required.
 
 	This change is exempt from testing against the development
@@ -1231,7 +1231,7 @@ DESCRIPTION
 	[Essential for aede on long transactions.]
 
 	Also check for architecture names at build time and develop end
-	time, to fix the mysterious ``you must build again'' problem.
+	time, to fix the mysterious "you must build again" problem.
 
 	This change must pass a full regression test.  This change is
 	exempt from testing against the baseline.
@@ -1477,7 +1477,7 @@ SUMMARY
 	branch and trunk options
 
 DESCRIPTION
-	This change adds the ``-BRanch'' and ``-TRunk'' options to the
+	This change adds the "-BRanch" and "-TRunk" options to the
 	aecp and aed commands, so it is possible to distinguish which
 	baseline is being referered to when differencing, merging and
 	copying files.
@@ -1641,8 +1641,8 @@ DESCRIPTION
 	also facilitates customizing messages by site.
 
 	All error messages have been identified, usually using the
-	``i18n'' keyword; and English message catalogue has been
-	created, to translate ``programmer cryptic'' into English.
+	"i18n" keyword; and English message catalogue has been
+	created, to translate "programmer cryptic" into English.
 	This initial portion concentrates on the required substitution
 	functionality, and its side-effects into aegis/change.c and
 	aegis/project.c.  Other necessary modifications are deferred to
@@ -2470,9 +2470,9 @@ SUMMARY
 DESCRIPTION
 	This change causes aeipass to touch all of the necessary files
 	to ensure that development builds will be suitably invalidated
-	by the integrate pass.	Because ``dumb'' touching would result
+	by the integrate pass.	Because "dumb" touching would result
 	in huge builds in the development directories (and for the next
-	integration) the file modify times are ``compressed'' to be one
+	integration) the file modify times are "compressed" to be one
 	second apart from the time aeipass obtained the baseline lock,
 	but still preserve the ordering.
 
@@ -2483,7 +2483,7 @@ DESCRIPTION
 	include file, for example, results in thousands of compiled .o
 	files, but only takes a few seconds to update history, forcing
 	aegis to touch some files an hour into the future. Cook 1.9 has
-	an extra cookbook setting ``time-adjust-back'' which also helps
+	an extra cookbook setting "time-adjust-back" which also helps
 	in this case, by setting file times to be one second younger
 	than the youngest ingredient.  In the include file example,
 	this would mean that the .o files would not be touched into the
@@ -4602,7 +4602,7 @@ SUMMARY
 	add aencu alias
 
 DESCRIPTION
-	This change adds the ``aencu'' alias to the cshrc and profile
+	This change adds the "aencu" alias to the cshrc and profile
 
 	This change is exempt from testing against the development
 	directory.  This change is exempt from testing against the
@@ -5069,11 +5069,11 @@ NAME
 	Project "aegis.3.0", Delta 20, Change 53.
 
 SUMMARY
-	document a few dependencies in the ``BUILDING'' file
+	document a few dependencies in the "BUILDING" file
 
 DESCRIPTION
 	This change documents the need for several programs in the
-	``BUILDING'' file
+	"BUILDING" file
 
 	This change is exempt from testing against the development
 	directory.  This change is exempt from testing against the
@@ -5413,10 +5413,10 @@ NAME
 	Project "aegis.3.0", Delta 25, Change 59.
 
 SUMMARY
-	add the ``state'' substitution
+	add the "state" substitution
 
 DESCRIPTION
-	This change adds the ``state'' substitution - the name of the
+	This change adds the "state" substitution - the name of the
 	state a change is currently in.
 
 	This change is exempt from testing against the baseline.
@@ -7308,7 +7308,7 @@ SUMMARY
 
 DESCRIPTION
 	This change modified aeipass to search for the source of files
-	wehn updating history.	This is because ``build'' files may be
+	wehn updating history.	This is because "build" files may be
 	-up-to-date in some deeper baseline, yet need to be checked in
 	to the history.
 
@@ -7762,7 +7762,7 @@ SUMMARY
 DESCRIPTION
 	This change adds the change_file_source function, to obtain the
 	path of a source file.	Thsi function is used when looking for
-	the project ``config'' file, and also by the $source
+	the project "config" file, and also by the $source
 	substitution.
 
 	This change is exempt from testing against the development
@@ -9371,8 +9371,8 @@ SUMMARY
 	cope with pathconf eccentricities
 
 DESCRIPTION
-	This change improves Aegis' use of pathconf to cope with ``I
-	don't know'' resonses.
+	This change improves Aegis' use of pathconf to cope with "I
+	don't know" resonses.
 
 	This change must pass a full regression test.  This change is
 	exempt from testing against the development directory.	This
@@ -10535,7 +10535,7 @@ SUMMARY
 
 DESCRIPTION
 	Change the tests so that they use the CC defined by the
-	``configure'' script.  This is important on systems like
+	"configure" script.  This is important on systems like
 	Solaris, where the C compiler is unbundled from the operating
 	system.
 
@@ -10675,7 +10675,7 @@ SUMMARY
 	project file listing to include movement information
 
 DESCRIPTION
-	This change makes the ``ael pf'' and `1ael cf'' listings more
+	This change makes the "ael pf" and `1ael cf" listings more
 	symmetric, by including file movement information.
 
 	This change is exempt from testing against the development
@@ -11605,7 +11605,7 @@ SUMMARY
 DESCRIPTION
 	1. This change adds the -edit_background option to all commands
 	which accept -edit.	 This allows piping commands into the
-	editing process (if EDITOR is set to ``ed'' for example).  My
+	editing process (if EDITOR is set to "ed" for example).  My
 	thanks to Alain Williams <addw@dodge.com> for this suggestion.
 	2. This change improves much of the option handling, making the
 	error responses more consistent.
@@ -12026,8 +12026,8 @@ SUMMARY
 	improve directory error messages
 
 DESCRIPTION
-	for changes capable of giving ``directory ... contains no
-	relevant files'' error messages, make sure the empty string is
+	for changes capable of giving "directory ... contains no
+	relevant files" error messages, make sure the empty string is
 	translated into dot (.) or it looks like a bug
 
 	This change is exempt from testing against the development
@@ -12089,7 +12089,7 @@ SUMMARY
 	fix project list bug
 
 DESCRIPTION
-	This change fixes a bug introduced by the previous ``ael p''
+	This change fixes a bug introduced by the previous "ael p"
 	change, which was meant to make project listings go faster, but
 	which broke them altogether.
 
@@ -12232,13 +12232,13 @@ NAME
 	Project "aegis.3.0", Delta 110, Change 152.
 
 SUMMARY
-	tests can return ``no result''
+	tests can return "no result"
 
 DESCRIPTION
 	This change adds to the return codes a test may return. As
 	before, success is zero (0), however failure is now defined as
-	exactly one (1) and any other return code means ``no result''.
-	The intention of a ``no result'' code is to indicate that some
+	exactly one (1) and any other return code means "no result".
+	The intention of a "no result" code is to indicate that some
 	aspect of the test infrastructure failed, rather than the
 	specific functionality under test.
 
@@ -12306,10 +12306,10 @@ NAME
 	Project "aegis.3.0", Delta 130, Change 153.
 
 SUMMARY
-	modify tests and templates to give ``no_result''
+	modify tests and templates to give "no_result"
 
 DESCRIPTION
-	modify tests and templates to give ``no_result''
+	modify tests and templates to give "no_result"
 
 	This change is exempt from testing against the baseline.
 
@@ -13042,7 +13042,7 @@ SUMMARY
 
 DESCRIPTION
 	This change fixes a problem where reports can sometimes print
-	``-0'' on IEEE floating point systems.
+	"-0" on IEEE floating point systems.
 
 	My thanks to Michael D Henderson
 	<philosophers@worldnet.att.net> for reporting this problem.
@@ -13754,7 +13754,7 @@ SUMMARY
 	whiteout deleted files
 
 DESCRIPTION
-	This change introduces additional ``whiteout'' of deleted
+	This change introduces additional "whiteout" of deleted
 	files, which improves aecp behaviour, and many error messages.
 
 

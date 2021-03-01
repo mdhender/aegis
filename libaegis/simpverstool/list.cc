@@ -1,6 +1,6 @@
 //
 //	aegis - project change supervisor
-//	Copyright (C) 2005 Peter Miller;
+//	Copyright (C) 2005, 2006 Peter Miller;
 //	All rights reserved.
 //
 //	This program is free software; you can redistribute it and/or modify
@@ -20,23 +20,25 @@
 // MANIFEST: implementation of the simpverstool_list class
 //
 
-#include <ac/stdio.h>
+#include <common/ac/stdio.h>
 
-#include <input/file.h>
-#include <input/gunzip.h>
-#include <input/crop.h>
-#include <output/bit_bucket.h>
-#include <rfc822/functor.h>
-#include <simpverstool.h>
+#include <libaegis/input/bunzip2.h>
+#include <libaegis/input/file.h>
+#include <libaegis/input/gunzip.h>
+#include <libaegis/input/crop.h>
+#include <libaegis/output/bit_bucket.h>
+#include <libaegis/rfc822/functor.h>
+#include <libaegis/simpverstool.h>
 
 
 bool
 simple_version_tool::list(rfc822_functor &arg)
 {
-    input_file in_u(history_file_name, false, true);
-    if (in_u.length() == 0)
+    input in_u = new input_file(history_file_name, false, true);
+    if (in_u->length() == 0)
 	return true;
-    input_gunzip in(&in_u, false);
+    input temp = input_gunzip_open(in_u);
+    input in = input_bunzip2_open(temp);
     for (;;)
     {
 	//
@@ -62,13 +64,14 @@ simple_version_tool::list(rfc822_functor &arg)
 	//
 	long content_length = header.get_long("content-length");
 	output_bit_bucket bit_bucket;
-	input_crop in2(&in, false, content_length);
+	input in2 = new input_crop(in, content_length);
 	bit_bucket << in2;
+	in2.close();
 
 	//
 	// If there is no more input, we are done.
 	//
-	if (in.at_end())
+	if (in->at_end())
 	    break;
     }
     return true;

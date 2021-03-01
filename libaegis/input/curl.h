@@ -1,6 +1,6 @@
 //
 //	aegis - project change supervisor
-//	Copyright (C) 2003, 2005 Peter Miller;
+//	Copyright (C) 2003, 2005, 2006 Peter Miller;
 //	All rights reserved.
 //
 //	This program is free software; you can redistribute it and/or modify
@@ -23,9 +23,11 @@
 #ifndef LIBAEGIS_INPUT_CURL_H
 #define LIBAEGIS_INPUT_CURL_H
 
-#include <ac/curl/curl.h>
+#include <common/ac/curl/curl.h>
 
-#include <input.h>
+#include <libaegis/input.h>
+
+#ifdef HAVE_LIBCURL
 
 /**
   * The input_curl class is used to represent an input obtained via
@@ -151,4 +153,5 @@ input_curl_looks_likely(struct string_ty *fn)
     return input_curl::looks_likely(nstring(fn));
 }
 
+#endif // HAVE_LIBCURL
 #endif // LIBAEGIS_INPUT_CURL_H

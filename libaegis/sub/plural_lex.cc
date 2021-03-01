@@ -1,6 +1,6 @@
 //
 //	aegis - project change supervisor
-//	Copyright (C) 2002, 2004 Peter Miller;
+//	Copyright (C) 2002, 2004, 2005 Peter Miller;
 //	All rights reserved.
 //
 //	This program is free software; you can redistribute it and/or modify
@@ -20,12 +20,12 @@
 // MANIFEST: functions to manipulate plural_lexs
 //
 
-#include <ac/string.h>
+#include <common/ac/string.h>
 
-#include <str.h>
-#include <stracc.h>
-#include <sub/plural_lex.h>
-#include <sub/plural_gram.gen.h>
+#include <common/str.h>
+#include <common/stracc.h>
+#include <libaegis/sub/plural_lex.h>
+#include <libaegis/sub/plural_gram.gen.h>
 
 
 static string_ty *text;

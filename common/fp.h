@@ -1,6 +1,6 @@
 //
 //	cook - file construction tool
-//	Copyright (C) 1994, 2003, 2004 Peter Miller.
+//	Copyright (C) 1994, 2003-2005 Peter Miller.
 //	All rights reserved.
 //
 //	This program is free software; you can redistribute it and/or modify
@@ -23,7 +23,7 @@
 #ifndef COMMON_FP_H
 #define COMMON_FP_H
 
-#include <ac/stddef.h>
+#include <common/ac/stddef.h>
 
 /** \addtogroup Fingerprint
   * \brief Fingerprint types and functions

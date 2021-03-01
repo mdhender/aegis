@@ -1,6 +1,6 @@
 //
 //	aegis - project change supervisor
-//	Copyright (C) 1997-2005 Peter Miller;
+//	Copyright (C) 1997-2006 Peter Miller;
 //	All rights reserved.
 //
 //	This program is free software; you can redistribute it and/or modify
@@ -20,7 +20,7 @@
 // MANIFEST: functions to manipulate command line arguments
 //
 
-#include <arglex2.h>
+#include <libaegis/arglex2.h>
 
 
 static arglex_table_ty argtab[] =
@@ -40,6 +40,10 @@ static arglex_table_ty argtab[] =
     { "-CLEan", arglex_token_clean, },
     { "-CLOne", arglex_token_clone, },
     { "-COMMent", arglex_token_reason, },
+    { "-COMPATibility", arglex_token_compatibility, },
+    { "-COMPress", arglex_token_compress, },
+    { "-Not_COmpress", arglex_token_compress_not, },
+    { "-Compression_Algorithm", arglex_token_compression_algorithm, },
     { "-CONFIGured", arglex_token_configured, },
     { "-Not_CONFIGured", arglex_token_configured_not, },
     { "-CoPy_file", arglex_token_copy_file, },
@@ -87,6 +91,8 @@ static arglex_table_ty argtab[] =
     { "-Merge_Automatic", arglex_token_merge_automatic, },
     { "-Merge_Not", arglex_token_merge_not, },
     { "-Merge_Only", arglex_token_merge_only, },
+    { "-Mime_Header", arglex_token_mime_header, },
+    { "-Not_Mime_Header", arglex_token_mime_header_not, },
     { "-MINImum", arglex_token_minimum, },
     { "-MINOr", arglex_token_minor, },
     { "-MoVe_file", arglex_token_move_file, },

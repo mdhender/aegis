@@ -1,6 +1,6 @@
 //
 //	aegis - project change supervisor
-//	Copyright (C) 2004 Peter Miller;
+//	Copyright (C) 2004, 2005 Peter Miller;
 //	All rights reserved.
 //
 //	This program is free software; you can redistribute it and/or modify
@@ -23,8 +23,8 @@
 #ifndef COMMON_QUIT_H
 #define COMMON_QUIT_H
 
-#include <main.h>
-#include <quit/action.h>
+#include <common/main.h>
+#include <common/quit/action.h>
 
 /**
   * The quit_register function is used to register a quit_action to be

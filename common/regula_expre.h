@@ -23,10 +23,8 @@
 #ifndef COMMON_REGULA_EXPRE_H
 #define COMMON_REGULA_EXPRE_H
 
-#pragma interface "regular_expression"
-
-#include <ac/regex.h>
-#include <nstring.h>
+#include <common/ac/regex.h>
+#include <common/nstring.h>
 
 /**
   * The regular_expression class is used to represent the state of a

@@ -1,0 +1,172 @@
+.\"
+.\"	aegis - project change supervisor
+.\"	Copyright (C) 2006 Peter Miller;
+.\"	All rights reserved.
+.\"
+.\"	This program is free software; you can redistribute it and/or modify
+.\"	it under the terms of the GNU General Public License as published by
+.\"	the Free Software Foundation; either version 2 of the License, or
+.\"	(at your option) any later version.
+.\"
+.\"	This program is distributed in the hope that it will be useful,
+.\"	but WITHOUT ANY WARRANTY; without even the implied warranty of
+.\"	MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+.\"	GNU General Public License for more details.
+.\"
+.\"	You should have received a copy of the GNU General Public License
+.\"	along with this program; if not, write to the Free Software
+.\"	Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111, USA.
+.\"
+.\" MANIFEST: input for archive/aegis.html
+.\"
+.de an-p-footer
+..
+.ad l
+.hy 0
+.so version.so
+<html><head>
+.br
+<link rel="icon" href="../favicon.ico" type="image/x-icon">
+.br
+<link rel="shortcut icon" href="../favicon.ico" type="image/x-icon">
+.br
+<title>Aegis \*(v)</title></head>
+<body bgcolor="#ffffff"><h1>
+<img src="../aegis.png" align=left>
+<img src="../missiku/world_2.png" align=right>
+<center>Aegis \*(v)<br>
+A Condensed Feature List</center></h1>
+Aegis is a transaction-based software configuration management system.
+It provides a framework within which
+a team of developers may work on many changes to a
+program independently, and Aegis coordinates integrating
+these changes back into the master source of the program,
+with as little disruption as possible.
+<br><p><br clear=all>
+.br
+<p align=center>
+<b>aegis</b>, <i>n.</i> a protection or defence
+[L, from Gk <i>aeg&iacute;s</i> the shield of Zeus]
+</p>
+.br
+<table>
+
+<tr><td valign=top width="50%"><ul><li>
+Aegis supports large teams and large projects.
+</ul></td><td valign=top width="50%"><ul><li>
+Each project is a separate repository, with separately configurable
+policies.
+</ul></td></tr>
+
+.br
+<tr><td valign=top width="50%"><ul><li>
+Aegis supports change sets and atomic commits.
+</ul></td><td valign=top rowspan=3><ul><li>
+Aegis support a development process which ensures that change sets
+wont stop the project &ldquo;working&rdquo; when they are integrated
+into the project baseline.
+<i>Working</i> includes requiring that change sets build successfully, and
+(optionally) that they include <i>and pass</i> tests.  It can also support
+code reviews of change sets, in a variety of styles.
+</ul></td></tr>
+
+.br
+<tr><td valign=top width="50%"><ul><li>
+Aegis is designed around incremental development.  It records these
+increments as file change sets, and can reproduce any historical
+increment.
+</ul></td></tr>
+
+.br
+<tr><td valign=top width="50%"><ul><li>
+Aegis is designed for repository security
+(availability, integrity and confidentiality).
+</ul></td></tr>
+
+.br
+<tr><td valign=top width="50%"><ul><li>
+Aegis supports distributed repositories.
+</ul></td><td valign=top rowspan=2><ul><li>
+Aegis supports both push and pull distribution models, and many
+distribution topologies.  Aegis' normal development process is used to
+validate received transactions before accepting them.
+</ul></td></tr>
+
+.br
+<tr><td valign=top width="50%"><ul><li>
+Aegis supports multiple repositories.
+</ul></td></tr>
+
+.br
+<tr><td valign=top width="50%"><ul><li>
+Aegis supports multiple lines of development.
+</ul></td><td valign=top rowspan=3><ul><li>
+Aegis supports long transactions, also known as &ldquo;branches&rdquo;
+or &ldquo;lines of development&rdquo;.  This allows appropriately
+created changes to be treated as if they were projects, and thus to
+have changes made to them.  This allows a hierarchy of changes within
+changes, to any desired depth.
+</ul></td></tr>
+
+.br
+<tr><td valign=top width="50%"><ul><li>
+Aegis supports multiple simultaneous active branches.
+</ul></td></tr>
+
+.br
+<tr><td valign=top width="50%"><ul><li>
+Aegis supports branching to any depth.
+</ul></td></tr>
+
+.br
+<tr><td valign=top width="50%"><ul><li>
+Aegis is mature software - it was first released in 1991.
+</ul></td><td valign=top rowspan=3><ul><li>
+The error messages of Aegis have been
+<a href="translate.html">internationalized</a>.  This means
+that error messages can be in your native language, if a translation has
+been provided.
+More translations are welcome.
+</ul></td></tr>
+
+.br
+<tr><td valign=top width="50%"><ul><li>
+Aegis now has users all around the world.
+</ul></td></tr>
+
+.br
+<tr><td valign=top width="50%"><ul><li>
+Aegis is actively being maintained and enhanced.
+</ul></td></tr>
+
+.br
+<tr><td valign=top width="50%"><ul><li>
+Aegis is easy to use.
+It <i>is</i> big, it <i>does</i> have a lot of functionality,
+but the essential process can be learned in less than a day.
+</ul></td><td valign=top width="50%"><ul><li>
+The Aegis development model is very versatile.
+It is suitable for a huge range of projects and teams.
+</ul></td></tr>
+
+.br
+<tr><td valign=top width="50%"><ul><li>
+There is a script-based reporting facility, allowing many custom reports
+to be generated from the Aegis database.  There are also many report
+scripts distributed with Aegis.
+</ul></td><td valign=top width="50%"><ul><li>
+There is an intranet <a href="webiface.html">Web interface</a>, which is
+installed automatically when the install script discovers a web server.
+This interface allows browsing of much of the Aegis meta-data, of all
+publicly accessible projects.
+</ul></td></tr>
+
+.br
+<tr><td valign=top colspan=2><ul><li>
+Aegis runs on almost any flavor of UNIX.
+Self configuring using a script generated by GNU Autoconf.
+</ul></td></tr>
+
+</table>
+.so footer2.so
+</body></html>

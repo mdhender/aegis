@@ -1,6 +1,6 @@
 //
 //	aegis - project change supervisor
-//	Copyright (C) 1994, 1995, 1998, 1999, 2001, 2003-2005 Peter Miller;
+//	Copyright (C) 1994, 1995, 1998, 1999, 2001, 2003-2006 Peter Miller;
 //	All rights reserved.
 //
 //	This program is free software; you can redistribute it and/or modify
@@ -20,24 +20,27 @@
 // MANIFEST: functions for reading input from files
 //
 
-#include <ac/errno.h>
-#include <ac/fcntl.h>
-#include <ac/unistd.h>
+#include <common/ac/errno.h>
+#include <common/ac/fcntl.h>
+#include <common/ac/unistd.h>
 
-#include <ac/sys/types.h>
+#include <common/ac/sys/types.h>
 #include <sys/socket.h>
 
-#include <glue.h>
-#include <input/curl.h>
-#include <input/file.h>
-#include <input/stdin.h>
-#include <os.h>
-#include <sub.h>
-#include <url.h>
+#include <common/error.h> // for assert
+#include <common/trace.h>
+#include <libaegis/glue.h>
+#include <libaegis/input/curl.h>
+#include <libaegis/input/file.h>
+#include <libaegis/input/stdin.h>
+#include <libaegis/os.h>
+#include <libaegis/sub.h>
+#include <libaegis/url.h>
 
 
 input_file::~input_file()
 {
+    trace(("input_file::~input_file()\n{\n"));
     if (fd >= 0)
     {
 	if (glue_close(fd))
@@ -56,12 +59,15 @@ input_file::~input_file()
 
 	fd = -1;
     }
+    trace(("}\n"));
 }
 
 
 static int
 open_with_stale_nfs_retry(const char *path, int mode)
 {
+    trace(("open_with_stale_nfs_retry(path = \"%s\", mode = %d)\n{\n", path,
+	mode));
     //
     // Try to open the file.
     //
@@ -91,6 +97,8 @@ open_with_stale_nfs_retry(const char *path, int mode)
     // Return the result, both success and failure.
     // Errors are handled elsewhere.
     //
+    trace(("return %d\n", fd));
+    trace(("}\n"));
     return fd;
 }
 
@@ -101,12 +109,19 @@ input_file::input_file(const nstring &arg1, bool arg2, bool empty_if_absent) :
     unlink_on_close_flag(arg2),
     pos(0)
 {
+    trace(("input_file::input_file(\"%s\")\n{\n", arg1.c_str()));
     os_become_must_be_active();
-    fd = open_with_stale_nfs_retry(path.c_str(), O_RDONLY);
+    int mode = O_RDONLY;
+#if defined(__CYGWIN__) || defined(__CYGWIN32__)
+    // I'm not sure whether MacOsX uses \r or \n in its native text
+    // files, so I'm reluctant to always use the O_BINARY mode bit.
+    mode |= O_BINARY;
+#endif
+    fd = open_with_stale_nfs_retry(path.c_str(), mode);
     if (fd < 0)
     {
 	int errno_old = errno;
-	if (errno_old != ENOENT)
+	if (!empty_if_absent || errno_old != ENOENT)
 	{
 	    sub_context_ty sc(__FILE__, __LINE__);
 	    sc.errno_setx(errno_old);
@@ -115,12 +130,15 @@ input_file::input_file(const nstring &arg1, bool arg2, bool empty_if_absent) :
 	    // NOTREACHED
 	}
     }
+    trace(("}\n"));
 }
 
 
 long
 input_file::read_inner(void *data, size_t len)
 {
+    trace(("input_file::read_inner()\n"));
+    assert(reference_count_valid());
     os_become_must_be_active();
     if (len == 0)
 	return 0;
@@ -144,6 +162,7 @@ input_file::read_inner(void *data, size_t len)
 long
 input_file::ftell_inner()
 {
+    assert(reference_count_valid());
     return pos;
 }
 
@@ -151,6 +170,7 @@ input_file::ftell_inner()
 nstring
 input_file::name()
 {
+    assert(reference_count_valid());
     return path;
 }
 
@@ -158,6 +178,7 @@ input_file::name()
 long
 input_file::length()
 {
+    assert(reference_count_valid());
     if (fd < 0)
 	return 0;
     return os_file_size(path.get_ref());
@@ -167,6 +188,7 @@ input_file::length()
 void
 input_file::keepalive()
 {
+    assert(reference_count_valid());
     if (fd >= 0)
     {
 	int on = 1;
@@ -179,11 +201,12 @@ input_file::keepalive()
 void
 input_file::unlink_on_close()
 {
+    assert(reference_count_valid());
     unlink_on_close_flag = true;
 }
 
 
-input_ty *
+input
 input_file_open(const nstring &fn, bool unlink_on_close, bool empty_if_absent)
 {
     os_become_must_be_active();
@@ -195,7 +218,7 @@ input_file_open(const nstring &fn, bool unlink_on_close, bool empty_if_absent)
 }
 
 
-input_ty *
+input
 input_file_open(string_ty *fn, bool unlink_on_close)
 {
     return input_file_open(nstring(fn), unlink_on_close);

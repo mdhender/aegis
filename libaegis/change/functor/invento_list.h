@@ -23,9 +23,7 @@
 #ifndef LIBAEGIS_CHANGE_FUNCTOR_INVENTO_LIST_H
 #define LIBAEGIS_CHANGE_FUNCTOR_INVENTO_LIST_H
 
-#pragma interface "change_functor_inventory_list"
-
-#include <change/functor.h>
+#include <libaegis/change/functor.h>
 
 struct col_ty; // forward
 struct output_ty; // forward

@@ -1,6 +1,6 @@
 .\"
 .\"	aegis - project change supervisor
-.\"	Copyright (C) 1999, 2001, 2002, 2004 Peter Miller;
+.\"	Copyright (C) 1999, 2001, 2002, 2004, 2005 Peter Miller;
 .\"	All rights reserved.
 .\"
 .\"	This program is free software; you can redistribute it and/or modify
@@ -45,7 +45,7 @@ Read through all of the steps first.
 .IP \(bu 2n
 You may want to read the \fIaenpr\fP(1) man page for more information.
 .IP \(bu 2n
-The command ``\fIaenpr \fPname\fP -version -\fP'' will create the
+The command \[lq]\fIaenpr \fPname\fP -version -\fP\[rq] will create the
 project with no branches.  This will automatically make you (that is,
 the executing user) the project administrator and the project owner.
 The \fIumask\fP is remembered, too.
@@ -71,7 +71,8 @@ the same thing, to avoid confusion.  Log in as this user to execute the
 initial project creation commands; once completed \fBno one\fP will ever
 login to this account again.
 .IP \(bu 2n
-Add the staff to the project: the ``\fIaena \fP\f[CW]your-normal-login\fP''
+Add the staff to the project: the \[lq]\fIaena
+\fP\f[CW]your-normal-login\fP\[rq]
 command adds your normal account as a project administrator.  You need
 this if you are using a special project account, so that your normal
 self can administer the project.
@@ -80,12 +81,12 @@ At this point, log out of the special project account.
 Ask the system administrator to permanently disable it.
 .IP \(bu 2n
 Add the rest of the staff:
-the ``\fIaend \fP\f[CW]your-login\fP'' command makes you a developer,
-the ``\fIaenrv \fP\f[CW]your-login\fP'' command makes you a reviewer and
-the ``\fIaeni \fP\f[CW]your-login\fP'' command makes you an integrator.
+the \[lq]\fIaend \fP\f[CW]your-login\fP\[rq] command makes you a developer,
+the \[lq]\fIaenrv \fP\f[CW]your-login\fP\[rq] command makes you a reviewer and
+the \[lq]\fIaeni \fP\f[CW]your-login\fP\[rq] command makes you an integrator.
 .IP \(bu 2n
 You need to edit the project attributes next.
-The ``\fIaepa -edit\fP'' command does this.
+The \[lq]\fIaepa -edit\fP\[rq] command does this.
 You will be placed into a text editor,
 and will see something similar to this:
 .E(
@@ -111,8 +112,8 @@ Don't forget the closing double-quote \fIand\fP semicolon.
 Create the first branch now.
 They inherit all staff and attributes at creation time,
 which is why we worked on the trunk project first.
-The command ``\fIaenbr \fP\f[CW]name\fP\fI 1\fP'' followed by
-followed by ``\fIaenbr \fP\f[CW]name\fP\fI.1 0\fP'' will give you a
+The command \[lq]\fIaenbr \fP\f[CW]name\fP\fI 1\fP\[rq] followed by
+followed by \[lq]\fIaenbr \fP\f[CW]name\fP\fI.1 0\fP\[rq] will give you a
 branch called \fIname\fP.1.0 for use wherever Aegis wants a project name.
 (See the branching chapter of the User Guide for more information.)
 .nh 2 "Two User Project"
@@ -192,9 +193,9 @@ the project will not show up in the global project list
 if you have set AEGIS_PATH to include private projects.
 .LP
 There are two ways to make sure that you are creating a global
-project.  Either ``\fIunset AEGIS_PATH\fP'' immediately before
-using the ``\fIaenpr\fP'' command, or use the ``\f[CW]--library\fP
-\fI/usr/local/com/aegis\fP'' option of the \fIaenpr\fP command.
+project.  Either \[lq]\fIunset AEGIS_PATH\fP\[rq] immediately before
+using the \[lq]\fIaenpr\fP\[rq] command, or use the \[lq]\f[CW]--library\fP
+\fI/usr/local/com/aegis\fP\[rq] option of the \fIaenpr\fP command.
 .nh 3 "Web Visibility"
 .LP
 If you have a Web server, you make like to install the Aegis web interface.
@@ -228,7 +229,7 @@ Development chapter of the User Guide).
 .IP 3. 3n
 The owner of the project is taken from the owner of the project directory
 tree, so this is what needs to be changed.  Go to the root of the project
-tree - the directory which appears in the ``\fIael projects\fP'' listing.
+tree - the directory which appears in the \[lq]\fIael projects\fP\[rq] listing.
 This isn't the trunk baseline, but the directory above it (you will see
 \fIinfo\fP, \fIhistory\fP and \fIbaseline\fP sub-directories).
 .IP 4. 3n

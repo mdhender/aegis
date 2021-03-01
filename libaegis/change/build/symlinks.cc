@@ -1,6 +1,6 @@
 //
 //	aegis - project change supervisor
-//	Copyright (C) 1999, 2001-2005 Peter Miller;
+//	Copyright (C) 1999, 2001-2006 Peter Miller;
 //	All rights reserved.
 //
 //	This program is free software; you can redistribute it and/or modify
@@ -20,24 +20,24 @@
 // MANIFEST: functions to manipulate symlinks
 //
 
-#include <ac/errno.h>
-#include <ac/unistd.h>
+#include <common/ac/errno.h>
+#include <common/ac/unistd.h>
 #include <sys/stat.h>
 
-#include <change.h>
-#include <change/file.h>
-#include <dir_stack.h>
-#include <error.h>	// for assert
-#include <file.h>
-#include <glue.h>
-#include <nstring.h>
-#include <os.h>
-#include <project.h>
-#include <project/file.h>
-#include <sub.h>
-#include <symtab/template.h>
-#include <trace.h>
-#include <user.h>
+#include <libaegis/change.h>
+#include <libaegis/change/file.h>
+#include <libaegis/dir_stack.h>
+#include <common/error.h>	// for assert
+#include <libaegis/file.h>
+#include <libaegis/glue.h>
+#include <common/nstring.h>
+#include <libaegis/os.h>
+#include <libaegis/project.h>
+#include <libaegis/project/file.h>
+#include <libaegis/sub.h>
+#include <common/symtab/template.h>
+#include <common/trace.h>
+#include <libaegis/user.h>
 
 
 struct slink_info_ty
@@ -211,7 +211,23 @@ try_to_make_symbolic_link_to_baseline(const nstring &dst, const nstring &src)
     os_become_must_be_active();
     int err = glue_symlink(src.c_str(), dst.c_str());
     if (err == 0)
+    {
+#ifdef HAVE_LUTIMES
+        //
+        // If possible, set the mtime of the symlink.  It appears that
+        // GNU make looks at symlink mod times when figuring out what to
+        // build.  Sigh.
+        //
+        // Ignore any error returned, it doesn't matter if it cant be
+        // set correctly.
+	//
+	struct utimes utb;
+	utb.actime =  os_mtime_actual(src.get_ref());
+	utb.modtime = utb.actime;
+	glue_lutime(&utb, dst.c_str());
+#endif
 	return true;
+    }
     int errno_old = errno;
     switch (errno_old)
     {
@@ -314,18 +330,6 @@ os_lstat(const nstring &path, struct stat &st)
 
 
 static bool
-change_is_being_integrated(change_ty *cp)
-{
-    if (cp->bogus)
-	return 0;
-    cstate_ty *cstate_data = change_cstate_get(cp);
-    assert(cstate_data);
-    if (!cstate_data)
-	return 0;
-    return (cstate_data->state == cstate_state_being_integrated);
-}
-
-static bool
 is_an_aegis_symlink(string_ty *path_rel, string_list_ty *stack, int start)
 {
     trace(("is_an_aegis_symlink(\"%s\", stack, %d)\n{\n",
@@ -415,7 +419,7 @@ maintain(void *p, dir_stack_walk_message_t msg, string_ty *path_rel,
     user_become_undo();
     fstate_src_ty *c_src = change_file_find(cp, path_rel, view_path_first);
     project_ty *pp = cp->pp;
-    project_ty *ppp = pp->parent;
+    project_ty *ppp = (pp->is_a_trunk() ? 0 : pp->parent_get());
     if (change_is_being_integrated(cp))
     {
 	if (!c_src)
@@ -423,14 +427,15 @@ maintain(void *p, dir_stack_walk_message_t msg, string_ty *path_rel,
 	    c_src =
 		change_file_find
 		(
-		    project_change_get(pp),
+		    pp->change_get(),
 		    path_rel,
 		    view_path_first
 		);
 	}
 	pp = ppp;
     }
-    fstate_src_ty *p_src = project_file_find(pp, path_rel, view_path_simple);
+    fstate_src_ty *p_src =
+	(pp ? project_file_find(pp, path_rel, view_path_simple) : 0);
     user_become(sip->up);
 
     switch (msg)
@@ -1081,18 +1086,18 @@ unmaintain(void *p, dir_stack_walk_message_t msg,
 	    user_become_undo();
 	    if (change_is_being_integrated(sip->cp))
 	    {
-		change_ty *branch_p = project_change_get(sip->cp->pp);
+		change_ty *branch_p = sip->cp->pp->change_get();
 		if (change_file_find(branch_p, path, view_path_first))
 		{
 		    user_become(sip->up);
 		    break;
 		}
-		pp = pp->parent;
-		if (!pp)
+		if (pp->is_a_trunk())
 		{
 		    user_become(sip->up);
 		    break;
 		}
+		pp = pp->parent_get();
 	    }
 	    fstate_src_ty *p_src =
 		project_file_find(pp, path, view_path_simple);
@@ -1116,7 +1121,7 @@ change_remove_symlinks_to_baseline(change_ty *cp, user_ty *up,
 {
     slink_info_ty   si;
 
-    if (change_is_being_integrated(cp) && !cp->pp->parent)
+    if (change_is_being_integrated(cp) && cp->pp->is_a_trunk())
 	return;
     if
     (

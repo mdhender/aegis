@@ -20,9 +20,9 @@
 // MANIFEST: functions to manipulate file_modes
 //
 
-#include <ac/ctype.h>
+#include <common/ac/ctype.h>
 
-#include <server.h>
+#include <aecvsserver/server.h>
 
 
 //

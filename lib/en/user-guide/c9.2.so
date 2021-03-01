@@ -1,6 +1,6 @@
 .\"
 .\"	aegis - project change supervisor
-.\"	Copyright (C) 1999, 2002 Peter Miller;
+.\"	Copyright (C) 1999, 2002, 2005 Peter Miller;
 .\"	All rights reserved.
 .\"
 .\"	This program is free software; you can redistribute it and/or modify
@@ -67,9 +67,10 @@ Create a new change on the out-of-date branch
 Use a simple \fIaecp\fP command to copy the out-of-date files.
 (Do \fInot\fP use any \fI--branch\fP or \fI--delta\fP options.)
 .IP \(sq 3n
-Use the ``\fIaed --merge-only --grandparent\fP'' command to perform the merge.
+Use the \[lq]\fIaed --merge-only --grandparent\fP\[rq] command to
+perform the merge.
 .sp 0.5
-At this point, if you use the ``\fIael cf\fP'' command, you will notice
+At this point, if you use the \[lq]\fIael cf\fP\[rq] command, you will notice
 that this file is tagged in the listing with the new branch edit origin,
 to be used during \fIaeipass\fP.  If it isn't, you have made a mistake.
 .IP \(sq 3n
@@ -102,7 +103,7 @@ mended by exactly the same alternatives.
 .LP
 If you created a branch to insulate the work being done on the branch
 from other activities in the project, it follows that when such build
-problems occurred, you would use an ``\fIaecp -delta'' command to
+problems occurred, you would use an \[lq]\fIaecp -delta\[rq] command to
 continue insulating.
 .LP
 This action defers the labour of merging until towards the end of the
@@ -118,4 +119,4 @@ often with a number of small delays and less schedule impact.
 .nh 4 "Mix 'n' Match"
 .LP
 Of course, we usually have both these motives, and some more
-besides, so the answer is usually ``it depends''.
+besides, so the answer is usually \[lq]it depends\[rq].

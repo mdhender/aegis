@@ -1,6 +1,6 @@
 //
 //	aegis - project change supervisor
-//	Copyright (C) 2001-2004 Peter Miller;
+//	Copyright (C) 2001-2006 Peter Miller;
 //	All rights reserved.
 //
 //	This program is free software; you can redistribute it and/or modify
@@ -20,11 +20,11 @@
 // MANIFEST: functions to manipulate histo_direcs
 //
 
-#include <project.h>
-#include <sub.h>
-#include <sub/histo_direc.h>
-#include <trace.h>
-#include <wstr/list.h>
+#include <libaegis/project.h>
+#include <libaegis/sub.h>
+#include <libaegis/sub/histo_direc.h>
+#include <common/trace.h>
+#include <common/wstr/list.h>
 
 
 //
@@ -69,7 +69,7 @@ sub_history_directory(sub_context_ty *scp, wstring_list_ty *arg)
 	goto done;
     }
 
-    result = str_to_wstr(project_history_path_get(pp));
+    result = str_to_wstr(pp->history_path_get());
 
     done:
     trace(("return %8.8lX;\n", (long)result));

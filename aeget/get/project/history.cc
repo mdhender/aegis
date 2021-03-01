@@ -1,6 +1,6 @@
 //
 //	aegis - project change supervisor
-//	Copyright (C) 2004 Peter Miller;
+//	Copyright (C) 2004-2006 Peter Miller;
 //	All rights reserved.
 //
 //	This program is free software; you can redistribute it and/or modify
@@ -20,17 +20,18 @@
 // MANIFEST: implementation of the get_project_history class
 //
 
-#include <ac/stdio.h>
+#include <common/ac/stdio.h>
 
-#include <change.h>
-#include <change/branch.h>
-#include <cstate.h>
-#include <emit/brief_descri.h>
-#include <emit/project.h>
-#include <error.h> // for assert
-#include <get/project/history.h>
-#include <http.h>
-#include <project.h>
+#include <common/error.h> // for assert
+#include <libaegis/change/branch.h>
+#include <libaegis/change.h>
+#include <libaegis/cstate.h>
+#include <libaegis/project.h>
+
+#include <aeget/emit/brief_descri.h>
+#include <aeget/emit/project.h>
+#include <aeget/get/project/history.h>
+#include <aeget/http.h>
 
 
 void
@@ -63,7 +64,7 @@ get_project_history(project_ty *pp, string_ty *fn, string_list_ty *modifier_p)
     //
     // Emit the project history.
     //
-    change_ty *pcp = project_change_get(pp);
+    change_ty *pcp = pp->change_get();
     cstate_ty *proj_cstate_data = change_cstate_get(pcp);
     assert(proj_cstate_data->branch);
     if (!proj_cstate_data->branch->history)

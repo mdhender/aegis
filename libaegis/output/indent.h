@@ -23,7 +23,7 @@
 #ifndef LIBAEGIS_OUTPUT_INDENT_H
 #define LIBAEGIS_OUTPUT_INDENT_H
 
-#include <output.h>
+#include <libaegis/output.h>
 
 /**
   * The output_indent_ty class is used to represent an output stream

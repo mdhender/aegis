@@ -1,0 +1,76 @@
+'\" t
+.\"	aegis - project change supervisor
+.\"	Copyright (C) 2006 Peter Miller;
+.\"	All rights reserved.
+.\"
+.\"	This program is free software; you can redistribute it and/or modify
+.\"	it under the terms of the GNU General Public License as published by
+.\"	the Free Software Foundation; either version 2 of the License, or
+.\"	(at your option) any later version.
+.\"
+.\"	This program is distributed in the hope that it will be useful,
+.\"	but WITHOUT ANY WARRANTY; without even the implied warranty of
+.\"	MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+.\"	GNU General Public License for more details.
+.\"
+.\"	You should have received a copy of the GNU General Public License
+.\"	along with this program; if not, write to the Free Software
+.\"	Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111, USA.
+.\"
+.\" MANIFEST: manual page describing the lib/en/man1/aelock command.
+.\"
+.so z_name.so
+.ds n) aelock
+.TH "\*(n)" 1 \*(N) "Reference Manual" ""
+.SH NAME
+aelock \- take a lock while a command runs
+.XX "aelock(1)" "take a lock while a command runs"
+.SH SYNOPSIS
+.B aelock
+[
+.IR option \&...
+]
+.IR command
+.br
+.B \*(n)
+.B -Help
+.br
+.B \*(n)
+.B -VERSion
+.SH DESCRIPTION
+The \fI\*(n)"\fP command is used to take a project lock while a command
+runs.  This may be used to ensure that the project state is stable while
+it is being backed up.
+.PP
+The named command is looked for as an attribute called
+\f[CW]aelist-\fP\fIcommand\fP withinn the \fIproject_\&specific\fP field
+of the project configuration file.
+.PP
+The command is then passed through the usual \fIaesub\fP(5)
+substitutions before being executed.  The command is executed as the
+project owner.  If the command returns with a non-zero exit status, the
+\fI\*(n)\fP(1) command will return an exit status
+of one.
+.SS Security Issues
+This command is a potential security problem.  Because it takes a
+read-only lock of all active branches and changes in a project, from the
+trunk down, misuse of this command is a potential denial of service
+attack.  Thus, this command is limited to project administrators only.
+.PP
+This command could have been designed to take an arbitrary command to
+execute, like \fIsudo\fP(1), but this would have granted users, even
+project administrators, more privileges than usual.  For this reason,
+the command is held in a source controlled, fully reviewed project
+configuration file, and is simply indicated by name.
+.PP
+The command is run as the project owner, not the executing user.  It
+has full write access (that's the way Unix permissions work).  Like
+\fIaeb\fP(1), this means it can wreak havoc on the project baseline and
+meta-data.  Use with extreme care.
+.SH OPTIONS
+The following options are understood:
+.so o_project.so
+.so o_help.so
+.so o__rules.so
+.so z_exit.so
+.so z_cr.so

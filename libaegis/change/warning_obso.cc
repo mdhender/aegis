@@ -20,8 +20,8 @@
 // MANIFEST: implementation of the change_warning_obso class
 //
 
-#include <change.h>
-#include <sub.h>
+#include <libaegis/change.h>
+#include <libaegis/sub.h>
 
 
 void

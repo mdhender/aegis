@@ -1,6 +1,7 @@
 //
 //      aegis - project change supervisor
 //      Copyright (C) 2005 Matthew Lee;
+//      Copyright (C) 2006 Peter Miller;
 //      All rights reserved.
 //
 //      This program is free software; you can redistribute it and/or modify
@@ -20,27 +21,25 @@
 // MANIFEST: implementation of the rss_feed class
 //
 
-#pragma implementation "rss_feed"
-
-#include <change.h>
-#include <error.h> // for assert
-#include <file.h>
-#include <gettime.h>
-#include <input/file.h>
-#include <io.h>
-#include <now.h>
-#include <nstring.h>
-#include <os.h>
-#include <output/file.h>
-#include <progname.h>
-#include <project.h>
-#include <rss.h>
-#include <rss/feed.h>
-#include <rss/item.h>
-#include <trace.h>
-#include <version_stmp.h>
-#include <xmltextread/by_node.h>
-#include <xml_node.h>
+#include <libaegis/change.h>
+#include <common/error.h> // for assert
+#include <libaegis/file.h>
+#include <common/gettime.h>
+#include <libaegis/input/file.h>
+#include <libaegis/io.h>
+#include <common/now.h>
+#include <common/nstring.h>
+#include <libaegis/os.h>
+#include <libaegis/output/file.h>
+#include <common/progname.h>
+#include <libaegis/project.h>
+#include <libaegis/rss.h>
+#include <libaegis/rss/feed.h>
+#include <libaegis/rss/item.h>
+#include <common/trace.h>
+#include <common/version_stmp.h>
+#include <libaegis/xmltextread/by_node.h>
+#include <libaegis/xml_node.h>
 
 
 rss_feed::~rss_feed()
@@ -361,7 +360,7 @@ rss_feed::parse()
 	trace(("}\n"));
 	return;
     }
-    input_ty *ip = new input_file(filename);
+    input ip = new input_file(filename);
 
     //
     // Create the XML file reader, but don't read the file yet.
@@ -403,15 +402,7 @@ rss_feed::parse()
     // the rest.
     //
     reader.parse();
-
-    //
-    // DO NOT
-    //     delete ip;
-    // because the xml_text_reader destructor will do it for us (and
-    // will segfault if it has been deleted already).
-    //
-    ip = 0;
-
+    ip.close();
     project_become_undo();
     trace(("}\n"));
 }

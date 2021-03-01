@@ -1,6 +1,6 @@
 //
 //	aegis - project change supervisor
-//	Copyright (C) 1999, 2001, 2003-2005 Peter Miller;
+//	Copyright (C) 1999, 2001, 2003-2006 Peter Miller;
 //	All rights reserved.
 //
 //	This program is free software; you can redistribute it and/or modify
@@ -20,17 +20,17 @@
 // MANIFEST: functions to manipulate historys
 //
 
-#include <ael/change/history.h>
-#include <ael/column_width.h>
-#include <aer/func/now.h>
-#include <change.h>
-#include <col.h>
-#include <error.h> // for assert
-#include <output.h>
-#include <project.h>
-#include <str_list.h>
-#include <trace.h>
-#include <user.h>
+#include <libaegis/ael/change/history.h>
+#include <libaegis/ael/column_width.h>
+#include <libaegis/aer/func/now.h>
+#include <libaegis/change.h>
+#include <libaegis/col.h>
+#include <common/error.h> // for assert
+#include <libaegis/output.h>
+#include <libaegis/project.h>
+#include <common/str_list.h>
+#include <common/trace.h>
+#include <libaegis/user.h>
 
 
 void
@@ -60,7 +60,7 @@ list_change_history(string_ty *project_name, long change_number,
 	    project_name = str_copy(project_name);
     pp = project_alloc(project_name);
     str_free(project_name);
-    project_bind_existing(pp);
+    pp->bind_existing();
 
     //
     // locate user data

@@ -1,6 +1,6 @@
 //
 //	aegis - project change supervisor
-//	Copyright (C) 2005 Peter Miller;
+//	Copyright (C) 2005, 2006 Peter Miller;
 //	All rights reserved.
 //
 //	This program is free software; you can redistribute it and/or modify
@@ -20,14 +20,14 @@
 // MANIFEST: implementation of the sub_history_path class
 //
 
-#include <change.h>
-#include <change/file.h>
-#include <fstate.h>
-#include <project.h>
-#include <sub.h>
-#include <sub/history_path.h>
-#include <trace.h>
-#include <wstring/list.h>
+#include <common/trace.h>
+#include <common/wstring/list.h>
+#include <libaegis/change/file.h>
+#include <libaegis/change.h>
+#include <libaegis/fstate.h>
+#include <libaegis/project.h>
+#include <libaegis/sub.h>
+#include <libaegis/sub/history_path.h>
 
 
 wstring_ty *
@@ -49,7 +49,7 @@ sub_history_path(sub_context_ty *scp, wstring_list_ty *arg)
 	    trace(("}\n"));
 	    return 0;
 	}
-	cp = project_change_get(pp);
+	cp = pp->change_get();
     }
 
     //

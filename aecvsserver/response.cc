@@ -1,6 +1,6 @@
 //
 //	aegis - project change supervisor
-//	Copyright (C) 2004, 2005 Peter Miller;
+//	Copyright (C) 2004-2006 Peter Miller;
 //	All rights reserved.
 //
 //	This program is free software; you can redistribute it and/or modify
@@ -20,49 +20,27 @@
 // MANIFEST: functions to manipulate responses
 //
 
-#include <error.h> // for assert
-#include <mem.h>
-#include <output.h>
-#include <response.h>
-#include <response/private.h>
+#include <common/error.h> // for assert
+#include <common/mem.h>
+#include <libaegis/output.h>
+#include <aecvsserver/response.h>
 
 
-void
-response_delete(response_ty *rp)
+response::~response()
 {
-    assert(rp);
-    assert(rp->vptr);
-    if (rp->vptr->destructor)
-	rp->vptr->destructor(rp);
-    mem_free(rp);
 }
 
 
-void
-response_write(response_ty *rp, output_ty *op)
+response::response()
 {
-    assert(rp);
-    assert(rp->vptr);
-    assert(rp->vptr->write);
-    rp->vptr->write(rp, op);
 }
 
 
-response_code_ty
-response_code_get(response_ty *rp)
+bool
+response::flushable()
+    const
 {
-    assert(rp);
-    assert(rp->vptr);
-    return rp->vptr->code;
-}
-
-
-int
-response_flushable(response_ty *rp)
-{
-    assert(rp);
-    assert(rp->vptr);
-    return rp->vptr->flushable;
+    return false;
 }
 
 

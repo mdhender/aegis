@@ -1,6 +1,6 @@
 //
 //	aegis - project change supervisor
-//	Copyright (C) 1993-1995, 1998, 2003, 2004 Peter Miller;
+//	Copyright (C) 1993-1995, 1998, 2003-2005 Peter Miller;
 //	All rights reserved.
 //
 //	This program is free software; you can redistribute it and/or modify
@@ -20,14 +20,14 @@
 // MANIFEST: functions to manipulate unames
 //
 
-#include <ac/ctype.h>
-#include <ac/errno.h>
+#include <common/ac/ctype.h>
+#include <common/ac/errno.h>
 
 #include <sys/utsname.h>
 
-#include <sub.h>
-#include <trace.h>
-#include <uname.h>
+#include <libaegis/sub.h>
+#include <common/trace.h>
+#include <libaegis/uname.h>
 
 static string_ty *uname_variant;
 static string_ty *uname_node;

@@ -1,6 +1,6 @@
 //
 //	aegis - project change supervisor
-//	Copyright (C) 1991-1997, 1999, 2001-2005 Peter Miller;
+//	Copyright (C) 1991-1997, 1999, 2001-2006 Peter Miller;
 //	All rights reserved.
 //
 //	This program is free software; you can redistribute it and/or modify
@@ -28,12 +28,13 @@
   * \ingroup AegisLibrary
   * @{
   */
-#include <ac/time.h>
+#include <common/ac/time.h>
 
-#include <main.h>
-#include <nstring.h>
+#include <common/main.h>
+#include <common/nstring.h>
 
-struct string_list_ty; // forward
+class string_list_ty; // forward
+class nstring_list; // forward
 
 #define OS_EXEC_FLAG_NO_INPUT 0
 #define OS_EXEC_FLAG_INPUT 1
@@ -726,11 +727,79 @@ void os_setuid(int id);
   */
 void os_setgid(int id);
 
+/**
+  * The os_execute function i sused to execute a command.  It is
+  * expected that you have already called os_become to set the user the
+  * command is to be executed as.
+  *
+  * This function does not return if the command returns a non-zero exit
+  * status.
+  *
+  * @param cmd
+  *     The command to be executed.
+  * @param flags
+  *     specific conditions to run the command
+  * @param dir
+  *     The current directory to execute the command from.
+  */
 void os_execute(string_ty *cmd, int flags, string_ty *dir);
+
+/**
+  * The os_execute function i sused to execute a command.  It is
+  * expected that you have already called os_become to set the user the
+  * command is to be executed as.
+  *
+  * This function does not return if the command returns a non-zero exit
+  * status.
+  *
+  * @param cmd
+  *     The command to be executed.
+  * @param flags
+  *     specific conditions to run the command
+  * @param dir
+  *     The current directory to execute the command from.
+  */
+void os_execute(const nstring &cmd, int flags, const nstring &dir);
+
 int os_execute_retcode(string_ty *cmd, int flags, string_ty *dir);
 string_ty *os_execute_slurp(string_ty *cmd, int flags, string_ty *dir);
+
+/**
+  * The os_xargs function is used to run a command with command line
+  * arguments supplied by a list of strings.  It will break it into
+  * chunks if necessary.  This is analogous to the unix xargs(1)
+  * command.
+  *
+  * @param the_command
+  *     The command to be executed.  Additional arguments are expected
+  *     to have been quoted appropriately already.
+  * @param the_list
+  *     The arguments to the command.  They will be quoted to protect
+  *     shell special characters if necessary.
+  * @param dir
+  *     The directory the command is to be run in.
+  */
 void os_xargs(string_ty *the_command, struct string_list_ty *the_list,
     string_ty *dir);
+
+/**
+  * The os_xargs function is used to run a command with command line
+  * arguments supplied by a list of strings.  It will break it into
+  * chunks if necessary.  This is analogous to the unix xargs(1)
+  * command.
+  *
+  * @param the_command
+  *     The command to be executed.  Additional arguments are expected
+  *     to have been quoted appropriately already.
+  * @param the_list
+  *     The arguments to the command.  They will be quoted to protect
+  *     shell special characters if necessary.
+  * @param dir
+  *     The directory the command is to be run in.
+  */
+void os_xargs(const nstring &the_command, const nstring_list &the_list,
+    const nstring &dir);
+
 long os_file_size(string_ty *);
 void os_mtime_range(string_ty *, time_t *, time_t *);
 time_t os_mtime_actual(string_ty *);
@@ -1008,6 +1077,42 @@ nstring os_magic_file(const nstring &filename);
   *     E.g. most source files will be "text/plain; charset=us-ascii"
   */
 nstring os_magic_file(string_ty *filename);
+
+/**
+  * The os_canonify_dirname function is used transform a directory
+  * name in canonical form (without the trailing slash).   This is for
+  * compatibility and will eventually disappear.
+  *
+  * @param dirname
+  *     The name of the directory to be canonified.
+  * @returns
+  *     A string with the canonified name of the directory.
+  */
+string_ty* os_canonify_dirname(string_ty *dirname);
+
+/**
+  * The os_canonify_dirname function is used transform a directory
+  * name in canonical form (without the trailing slash).
+  *
+  * @param dirname
+  *     The name of the directory to be canonified.
+  * @returns
+  *     A string with the canonified name of the directory.
+  */
+nstring os_canonify_dirname(const nstring &dirname);
+
+/**
+  * The os_check_path_traversable function is used to check that a path,
+  * consisting entirely of existing directories, is traversable (has
+  * directory 'x' permissions) by the current user.
+  *
+  * @param path
+  *     The directory path to walk and check.
+  * @note
+  *     This function does not return if any problem is found; instead
+  *     it prints a fatal error message and exits.
+  */
+void os_check_path_traversable(string_ty *path);
 
 /** @} */
 #endif // OS_H

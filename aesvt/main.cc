@@ -1,6 +1,6 @@
 //
 //	aegis - project change supervisor
-//	Copyright (C) 2005 Peter Miller;
+//	Copyright (C) 2005, 2006 Peter Miller;
 //	All rights reserved.
 //
 //	This program is free software; you can redistribute it and/or modify
@@ -20,25 +20,24 @@
 // MANIFEST: implementation of the main class
 //
 
-#include <ac/stdio.h>
-#include <ac/string.h>
+#include <common/ac/stdio.h>
+#include <common/ac/string.h>
 
-#include <arglex2.h>
-#include <env.h>
-#include <error.h> // HACK
-#include <help.h>
-#include <language.h>
-#include <nstring.h>
-#include <os.h>
-#include <progname.h>
-#include <quit.h>
-#include <r250.h>
-#include <rfc822.h>
-#include <rfc822/functor/list_meta.h>
-#include <rfc822/functor/print_vers.h>
-#include <simpverstool.h>
-#include <sub.h>
-#include <version.h>
+#include <common/env.h>
+#include <common/language.h>
+#include <common/nstring.h>
+#include <common/progname.h>
+#include <common/quit.h>
+#include <libaegis/arglex2.h>
+#include <libaegis/compres_algo.h>
+#include <libaegis/help.h>
+#include <libaegis/os.h>
+#include <libaegis/rfc822/functor/list_meta.h>
+#include <libaegis/rfc822/functor/print_vers.h>
+#include <libaegis/rfc822.h>
+#include <libaegis/simpverstool.h>
+#include <libaegis/sub.h>
+#include <libaegis/version.h>
 
 enum
 {
@@ -126,7 +125,6 @@ get_file_name(int tname)
 int
 main(int argc, char **argv)
 {
-    r250_init();
     os_become_init_mortal();
     arglex2_init3(argc, argv, argtab);
     env_initialize();
@@ -159,6 +157,7 @@ main(int argc, char **argv)
     action_t action = action_unset;
     bool verbose = false;
     rfc822 meta_data;
+    compression_algorithm_t compression = compression_algorithm_not_set;
     while (arglex_token != arglex_token_eoln)
     {
 	switch (arglex_token)
@@ -224,6 +223,27 @@ main(int argc, char **argv)
 	    }
 	    break;
 
+	case arglex_token_compression_algorithm:
+	    if (arglex() != arglex_token_string)
+	    {
+		option_needs_string(arglex_token_compression_algorithm, usage);
+		// NOTREACHED
+	    }
+	    else
+	    {
+		if (compression != compression_algorithm_not_set)
+		{
+		    duplicate_option_by_name
+		    (
+			arglex_token_compression_algorithm,
+			usage
+		    );
+		}
+		compression =
+		    compression_algorithm_by_name(arglex_value.alv_string);
+	    }
+	    break;
+
 	default:
 	    bad_argument(usage);
 	    // NOTREACHED
@@ -240,7 +260,7 @@ main(int argc, char **argv)
     //
     // Create an instance of the tool.
     //
-    simple_version_tool archive(history_name);
+    simple_version_tool archive(history_name, compression);
 
     //
     // Perform the appropriate action, based on the command line options

@@ -89,7 +89,12 @@ configure: aegis.conf.d/site.conf etc/configure.ac install-sh
  * The install-sh script can come from a huge range of places, depending
  * on what distribution you have installed (or whether you built it from
  * the tarball).
+ *
+ * Setting the install-sh variable make cook print the intended error
+ * message instead of a syntax error when the install-sh script does
+ * not exists.
  */
+install-sh = ;
 loop install-sh-maybe =
     /usr/share/autoconf/install-sh
     [glob /usr/share/automake*/install-sh]
@@ -103,7 +108,7 @@ loop install-sh-maybe =
     }
 }
 if [not [install-sh]] then
-    fail "Can't locate the ``install-sh'' script from GNU automake";
+    fail "Can't locate the \"install-sh\" script from GNU automake";
 
 install-sh: [install-sh]
 {
@@ -117,12 +122,20 @@ install-sh: [install-sh]
 		ln -s [resolve install-sh] install-sh
 			set clearstat;
 
+	local flags =;
+	if [defined [arch]_c++_flags] then
+	    flags += CXXFLAGS\=[quote [unsplit " " [[arch]_c++_flags]]];
+	else if [defined c++_flags] then
+	    flags += CXXFLAGS\=[quote [unsplit " " [c++_flags]]];
+
+	if [defined [arch]_ld_flags] then
+	    flags += LDFLAGS\=[quote [unsplit " " [[arch]_ld_flags]]];
+	else if [defined ld_flags] then
+	    flags += LDFLAGS\=[quote [unsplit " " [ld_flags]]];
+
 	[unsplit " "
 	    CXX\=[quote [unsplit " " [c++]]]
-	    /*
-	    CXXFLAGS\=[quote [unsplit " " [c++_flags]]]
-	    LDFLAGS\=[quote [unsplit " " [ld_flags]]]
-	    */
+	    [unsplit " " [flags]]
 
 	    [pathname [resolve configure]] --cache-file\=/dev/null --verbose
 	    --no-create --srcdir\=. --sysconfdir\=/etc

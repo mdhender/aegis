@@ -23,7 +23,7 @@
 #ifndef AEDIFF_ARGLEX3_H
 #define AEDIFF_ARGLEX3_H
 
-#include <arglex2.h>
+#include <libaegis/arglex2.h>
 
 enum
 {

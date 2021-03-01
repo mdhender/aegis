@@ -20,9 +20,7 @@
 // MANIFEST: implementation of the xml_node class
 //
 
-#pragma implementation "xml_node"
-
-#include <xml_node.h>
+#include <libaegis/xml_node.h>
 
 
 xml_node::~xml_node()

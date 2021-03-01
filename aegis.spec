@@ -5,11 +5,11 @@
 #
 Summary: project change supervisor
 Name: aegis
-Version: 4.21
+Version: 4.22
 Release: 1
 Copyright: GPL
 Group: Development/Version Control
-Source: http://www.canb.auug.org.au/~millerp/aegis-4.21.tar.gz
+Source: http://www.canb.auug.org.au/~millerp/aegis-4.22.tar.gz
 URL: http://www.canb.auug.org.au/~millerp/aegis.html
 BuildRoot: /tmp/aegis-build-root
 Icon: aegis.xpm
@@ -88,16 +88,20 @@ make RPM_BUILD_ROOT=$RPM_BUILD_ROOT install
 %attr(0755,root,bin) %dir /usr/lib/aegis/ru
 %attr(0755,root,bin) %dir /usr/lib/aegis/ru/LC_MESSAGES
 %attr(0755,root,bin) %dir /usr/share/aegis/wish
+%attr(0755,root,bin) /usr/bin/ae-repo-ci
 %attr(0755,root,bin) /usr/bin/aeannotate
 %attr(0755,root,bin) /usr/bin/aecomplete
 %attr(0755,root,bin) /usr/bin/aecvsserver
+%attr(0755,root,bin) /usr/bin/aede-policy
 %attr(0755,root,bin) /usr/bin/aediff
 %attr(0755,root,bin) /usr/bin/aedist
 %attr(0755,root,bin) /usr/bin/aefind
+%attr(0755,root,bin) /usr/bin/aefinish
 %attr(0755,root,bin) /usr/bin/aeget
 %attr(4755,root,bin) /usr/bin/aegis
 %attr(4755,root,bin) /usr/bin/aeimport
 %attr(0755,root,bin) /usr/bin/aelcf
+%attr(0755,root,bin) /usr/bin/aelock
 %attr(0755,root,bin) /usr/bin/aelpf
 %attr(0755,root,bin) /usr/bin/aels
 %attr(0755,root,bin) /usr/bin/aemeasure
@@ -159,9 +163,12 @@ make RPM_BUILD_ROOT=$RPM_BUILD_ROOT install
 %attr(0644,root,bin) /usr/share/aegis/config.example/cook
 %attr(0644,root,bin) /usr/share/aegis/config.example/diff
 %attr(0644,root,bin) /usr/share/aegis/config.example/diff3
+%attr(0644,root,bin) /usr/share/aegis/config.example/diff_not
 %attr(0644,root,bin) /usr/share/aegis/config.example/fhist
+%attr(0644,root,bin) /usr/share/aegis/config.example/gnu_diff
 %attr(0644,root,bin) /usr/share/aegis/config.example/make
 %attr(0644,root,bin) /usr/share/aegis/config.example/makefile
+%attr(0644,root,bin) /usr/share/aegis/config.example/merge
 %attr(0644,root,bin) /usr/share/aegis/config.example/rcs
 %attr(0644,root,bin) /usr/share/aegis/config.example/sccs
 %attr(0644,root,bin) /usr/lib/aegis/de/LC_MESSAGES/aegis.mo
@@ -195,6 +202,8 @@ make RPM_BUILD_ROOT=$RPM_BUILD_ROOT install
 %attr(0644,root,bin) /usr/share/aegis/en/html/proj_stats.rpt
 %attr(0644,root,bin) /usr/share/aegis/en/man1/ae-cvs-ci.1*
 %attr(0644,root,bin) /usr/man/man1/ae-cvs-ci.1*
+%attr(0644,root,bin) /usr/share/aegis/en/man1/ae-repo-ci.1*
+%attr(0644,root,bin) /usr/man/man1/ae-repo-ci.1*
 %attr(0644,root,bin) /usr/share/aegis/en/man1/ae-sccs-put.1*
 %attr(0644,root,bin) /usr/man/man1/ae-sccs-put.1*
 %attr(0644,root,bin) /usr/share/aegis/en/man1/ae_c.1*
@@ -233,6 +242,8 @@ make RPM_BUILD_ROOT=$RPM_BUILD_ROOT install
 %attr(0644,root,bin) /usr/man/man1/aedb.1*
 %attr(0644,root,bin) /usr/share/aegis/en/man1/aedbu.1*
 %attr(0644,root,bin) /usr/man/man1/aedbu.1*
+%attr(0644,root,bin) /usr/share/aegis/en/man1/aede-policy.1*
+%attr(0644,root,bin) /usr/man/man1/aede-policy.1*
 %attr(0644,root,bin) /usr/share/aegis/en/man1/aede.1*
 %attr(0644,root,bin) /usr/man/man1/aede.1*
 %attr(0644,root,bin) /usr/share/aegis/en/man1/aedeu.1*
@@ -249,6 +260,8 @@ make RPM_BUILD_ROOT=$RPM_BUILD_ROOT install
 %attr(0644,root,bin) /usr/man/man1/aefa.1*
 %attr(0644,root,bin) /usr/share/aegis/en/man1/aefind.1*
 %attr(0644,root,bin) /usr/man/man1/aefind.1*
+%attr(0644,root,bin) /usr/share/aegis/en/man1/aefinish.1*
+%attr(0644,root,bin) /usr/man/man1/aefinish.1*
 %attr(0644,root,bin) /usr/share/aegis/en/man1/aefp.1*
 %attr(0644,root,bin) /usr/man/man1/aefp.1*
 %attr(0644,root,bin) /usr/share/aegis/en/man1/aeget.1*
@@ -275,6 +288,8 @@ make RPM_BUILD_ROOT=$RPM_BUILD_ROOT install
 %attr(0644,root,bin) /usr/man/man1/aelcf.1*
 %attr(0644,root,bin) /usr/share/aegis/en/man1/aelic.1*
 %attr(0644,root,bin) /usr/man/man1/aelic.1*
+%attr(0644,root,bin) /usr/share/aegis/en/man1/aelock.1*
+%attr(0644,root,bin) /usr/man/man1/aelock.1*
 %attr(0644,root,bin) /usr/share/aegis/en/man1/aelpf.1*
 %attr(0644,root,bin) /usr/man/man1/aelpf.1*
 %attr(0644,root,bin) /usr/share/aegis/en/man1/aels.1*

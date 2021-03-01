@@ -1,6 +1,6 @@
 //
 //	aegis - project change supervisor
-//	Copyright (C) 2001-2004 Peter Miller;
+//	Copyright (C) 2001-2005 Peter Miller;
 //	All rights reserved.
 //
 //	This program is free software; you can redistribute it and/or modify
@@ -20,21 +20,21 @@
 // MANIFEST: functions to manipulate changes
 //
 
-#include <ac/ctype.h>
-#include <ac/time.h>
+#include <common/ac/ctype.h>
+#include <common/ac/time.h>
 
-#include <change/attributes.h>
-#include <change/branch.h>
-#include <cstate.h>
-#include <error.h> // for assert
-#include <language.h>
-#include <str.h>
-#include <sub.h>
-#include <sub/change/number.h>
-#include <symtab.h>
-#include <trace.h>
-#include <wstr.h>
-#include <wstr/list.h>
+#include <common/error.h> // for assert
+#include <common/language.h>
+#include <common/str.h>
+#include <common/symtab.h>
+#include <common/trace.h>
+#include <common/wstr.h>
+#include <common/wstr/list.h>
+#include <libaegis/change/attributes.h>
+#include <libaegis/change/branch.h>
+#include <libaegis/cstate.h>
+#include <libaegis/sub/change/number.h>
+#include <libaegis/sub.h>
 
 
 #define ONE_OR_MORE (-1)

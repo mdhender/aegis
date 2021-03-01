@@ -53,11 +53,20 @@ if test $? -ne 0 ; then exit 2; fi
 
 if test "$1" != "" ; then bin="$here/$1/bin"; else bin="$here/bin"; fi
 
-#
-# set the path, so that the aegis command that aepatch/aedist invokes
-# is from the same test set as the aepatch/aedist command itself.
-#
-PATH=${bin}:$PATH
+if test "$EXEC_SEARCH_PATH" != ""
+then
+    tpath=
+    hold="$IFS"
+    IFS=":$IFS"
+    for tpath2 in $EXEC_SEARCH_PATH
+    do
+	tpath=${tpath}${tpath2}/${1-.}/bin:
+    done
+    IFS="$hold"
+    PATH=${tpath}${PATH}
+else
+    PATH=${bin}:${PATH}
+fi
 export PATH
 
 pass()
@@ -107,16 +116,16 @@ unset LANG
 unset LANGUAGE
 
 #
-# If the C++ compiler is called something other than ``c++'', as
+# If the C++ compiler is called something other than "c++", as
 # discovered by the configure script, create a shell script called
-# ``c++'' which invokes the correct C++ compiler.  Make sure the current
+# "c++" which invokes the correct C++ compiler.  Make sure the current
 # directory is in the path, so that it will be invoked.
 #
-if test "$CXX" != "" -a "$CXX" != "c++"
+if test "$CXX" != "c++"
 then
 	cat >> $work/c++ << fubar
 #!/bin/sh
-exec $CXX \$*
+exec ${CXX-g++} \$*
 fubar
 	if test $? -ne 0 ; then no_result; fi
 	chmod a+rx $work/c++
@@ -227,14 +236,14 @@ if test $? -ne 0 ; then no_result; fi
 cat > $workchan/aegis.conf << 'end'
 build_command = "exit 0";
 link_integration_directory = true;
-history_get_command =
-	"co -u'$e' -p $h,v > $o";
-history_create_command =
-	"ci -f -u -m/dev/null -t/dev/null $i $h,v; rcs -U $h,v";
-history_put_command =
-	"ci -f -u -m/dev/null -t/dev/null $i $h,v; rcs -U $h,v";
-history_query_command =
-	"rlog -r $h,v | awk '/^head:/ {print $$2}'";
+
+history_get_command = "aesvt -check-out -edit ${quote $edit} "
+    "-history ${quote $history} -f ${quote $output}";
+history_put_command = "aesvt -check-in -history ${quote $history} "
+    "-f ${quote $input}";
+history_query_command = "aesvt -query -history ${quote $history}";
+history_content_limitation = binary_capable;
+
 diff_command = "set +e; $diff $orig $i > $out; test $$? -le 1";
 merge_command = "(diff3 -e $i $orig $mr | sed -e '/^w$$/d' -e '/^q$$/d'; \
 	echo '1,$$p' ) | ed - $i > $out";
@@ -468,7 +477,7 @@ if test $? -ne 0; then no_result; fi
 #
 activity="archive header check 469"
 head -6 $work/c02dev.ae > header.c02dev
-diff $work/header.ok header.c02dev
+diff -b $work/header.ok header.c02dev
 if test $? -ne 0; then fail; fi
 
 activity="output dir create 474"
@@ -486,22 +495,22 @@ if test $? -ne 0; then cat log; no_result; fi
 activity="check the file list 486"
 find $work/c02dev.d -type f -print | sed -e "s!^${work}/c02dev.d!...!g" \
     | sort > $work/file-list.c02dev
-diff $work/file-list.ok $work/file-list.c02dev
+diff -b $work/file-list.ok $work/file-list.c02dev
 if test $? -ne 0; then fail; fi
 
 #
 # Check the metadata
 #
 activity="project-name  495"
-diff $work/project-name.ok $work/c02dev.d/etc/project-name
+diff -b $work/project-name.ok $work/c02dev.d/etc/project-name
 if test $? -ne 0; then fail; fi
 
 activity="change-number 499"
-diff $work/change-number.ok $work/c02dev.d/etc/change-number
+diff -b $work/change-number.ok $work/c02dev.d/etc/change-number
 if test $? -ne 0; then fail; fi
 
 activity="change-set  503"
-diff $work/change-set.ok $work/c02dev.d/etc/change-set
+diff -b $work/change-set.ok $work/c02dev.d/etc/change-set
 if test $? -ne 0; then fail; fi
 
 #
@@ -512,9 +521,9 @@ if test $? -ne 0; then fail; fi
 # Check the src/ dir
 #
 activity="check the src/ dir content 514"
-diff $work/c02dev.d/src/bogus3 $workproj/baseline/bogus3
+diff -b $work/c02dev.d/src/bogus3 $workproj/baseline/bogus3
 if test $? -ne 0; then fail; fi
-diff $work/c02dev.d/src/bogus4 $workproj/baseline/bogus4
+diff -b $work/c02dev.d/src/bogus4 $workproj/baseline/bogus4
 if test $? -ne 0; then fail; fi
 
 #
@@ -522,7 +531,7 @@ if test $? -ne 0; then fail; fi
 #
 activity="archive header check 523"
 head -6 $work/c02dev.ae > header.c02dev
-diff $work/header.ok header.c02dev
+diff -b $work/header.ok header.c02dev
 if test $? -ne 0; then fail; fi
 
 activity="output dir create 528"
@@ -541,22 +550,22 @@ activity="check the file list 540"
 find $work/c02.d -type f -print | sed -e "s!^${work}/c02.d!...!g" \
     | sort > $work/file-list.c02
 if test $? -ne 0; then no_result; fi
-diff $work/file-list.ok $work/file-list.c02
+diff -b $work/file-list.ok $work/file-list.c02
 if test $? -ne 0; then fail; fi
 
 #
 # Check the metadata
 #
 activity="etc/project-name 550"
-diff $work/project-name.ok $work/c02.d/etc/project-name
+diff -b $work/project-name.ok $work/c02.d/etc/project-name
 if test $? -ne 0; then fail; fi
 
 activity="etc/change-number  554"
-diff $work/change-number.ok $work/c02.d/etc/change-number
+diff -b $work/change-number.ok $work/c02.d/etc/change-number
 if test $? -ne 0; then fail; fi
 
 activity="etc/change-set 558"
-diff $work/change-set.ok $work/c02.d/etc/change-set
+diff -b $work/change-set.ok $work/c02.d/etc/change-set
 if test $? -ne 0; then fail; fi
 
 #
@@ -568,9 +577,9 @@ activity="check the patch/ dir 565"
 # Check the src/ dir
 #
 activity="check the src/ dir content 570"
-diff $work/c02.d/src/bogus3 $workproj/baseline/bogus3
+diff -b $work/c02.d/src/bogus3 $workproj/baseline/bogus3
 if test $? -ne 0; then fail; fi
-diff $work/c02.d/src/bogus4 $workproj/baseline/bogus4
+diff -b $work/c02.d/src/bogus4 $workproj/baseline/bogus4
 if test $? -ne 0; then fail; fi
 
 #

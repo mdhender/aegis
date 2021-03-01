@@ -1,6 +1,6 @@
 //
 //	aegis - project change supervisor
-//	Copyright (C) 2002-2004 Peter Miller;
+//	Copyright (C) 2002-2005 Peter Miller;
 //	All rights reserved.
 //
 //	This program is free software; you can redistribute it and/or modify
@@ -20,58 +20,58 @@
 // MANIFEST: functions to manipulate commands
 //
 
-#include <ac/string.h>
+#include <common/ac/string.h>
 
-#include <command/aeb.h>
-#include <command/aeca.h>
-#include <command/aecd.h>
-#include <command/ae_c.h>
-#include <command/aechown.h>
-#include <command/aeclean.h>
-#include <command/aecp.h>
-#include <command/aecpu.h>
-#include <command/aed.h>
-#include <command/aedb.h>
-#include <command/aedbu.h>
-#include <command/aede.h>
-#include <command/aedeu.h>
-#include <command/aedn.h>
-#include <command/aefa.h>
-#include <command/aegis.h>
-#include <command/aeib.h>
-#include <command/aeibu.h>
-#include <command/aeifail.h>
-#include <command/aeipass.h>
-#include <command/aemt.h>
-#include <command/aemtu.h>
-#include <command/aena.h>
-#include <command/aencu.h>
-#include <command/aend.h>
-#include <command/aenf.h>
-#include <command/aenfu.h>
-#include <command/aeni.h>
-#include <command/aenrv.h>
-#include <command/aentu.h>
-#include <command/aepa.h>
-#include <command/ae_p.h>
-#include <command/aera.h>
-#include <command/aerb.h>
-#include <command/aerbu.h>
-#include <command/aerd.h>
-#include <command/aerfail.h>
-#include <command/aeri.h>
-#include <command/aerm.h>
-#include <command/aermu.h>
-#include <command/aerpass.h>
-#include <command/aerpu.h>
-#include <command/aerrv.h>
-#include <command/aet.h>
-#include <command.h>
-#include <command/private.h>
-#include <command/unknown.h>
-#include <complete.h>
-#include <error.h> // for assert
-#include <symtab.h>
+#include <aecomplete/command/aeb.h>
+#include <aecomplete/command/aeca.h>
+#include <aecomplete/command/aecd.h>
+#include <aecomplete/command/ae_c.h>
+#include <aecomplete/command/aechown.h>
+#include <aecomplete/command/aeclean.h>
+#include <aecomplete/command/aecp.h>
+#include <aecomplete/command/aecpu.h>
+#include <aecomplete/command/aed.h>
+#include <aecomplete/command/aedb.h>
+#include <aecomplete/command/aedbu.h>
+#include <aecomplete/command/aede.h>
+#include <aecomplete/command/aedeu.h>
+#include <aecomplete/command/aedn.h>
+#include <aecomplete/command/aefa.h>
+#include <aecomplete/command/aegis.h>
+#include <aecomplete/command/aeib.h>
+#include <aecomplete/command/aeibu.h>
+#include <aecomplete/command/aeifail.h>
+#include <aecomplete/command/aeipass.h>
+#include <aecomplete/command/aemt.h>
+#include <aecomplete/command/aemtu.h>
+#include <aecomplete/command/aena.h>
+#include <aecomplete/command/aencu.h>
+#include <aecomplete/command/aend.h>
+#include <aecomplete/command/aenf.h>
+#include <aecomplete/command/aenfu.h>
+#include <aecomplete/command/aeni.h>
+#include <aecomplete/command/aenrv.h>
+#include <aecomplete/command/aentu.h>
+#include <aecomplete/command/aepa.h>
+#include <aecomplete/command/ae_p.h>
+#include <aecomplete/command/aera.h>
+#include <aecomplete/command/aerb.h>
+#include <aecomplete/command/aerbu.h>
+#include <aecomplete/command/aerd.h>
+#include <aecomplete/command/aerfail.h>
+#include <aecomplete/command/aeri.h>
+#include <aecomplete/command/aerm.h>
+#include <aecomplete/command/aermu.h>
+#include <aecomplete/command/aerpass.h>
+#include <aecomplete/command/aerpu.h>
+#include <aecomplete/command/aerrv.h>
+#include <aecomplete/command/aet.h>
+#include <aecomplete/command.h>
+#include <aecomplete/command/private.h>
+#include <aecomplete/command/unknown.h>
+#include <aecomplete/complete.h>
+#include <common/error.h> // for assert
+#include <common/symtab.h>
 
 
 typedef command_ty *(*funcptr)(void);

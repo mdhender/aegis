@@ -1,6 +1,6 @@
 //
 //	aegis - project change supervisor
-//	Copyright (C) 1999, 2002-2004 Peter Miller;
+//	Copyright (C) 1999, 2002-2006 Peter Miller;
 //	All rights reserved.
 //
 //	This program is free software; you can redistribute it and/or modify
@@ -20,14 +20,14 @@
 // MANIFEST: functions to manipulate projects
 //
 
-#include <project.h>
-#include <project/history.h>
-#include <sub.h>
-#include <sub/project.h>
-#include <symtab.h>
-#include <trace.h>
-#include <wstr.h>
-#include <wstr/list.h>
+#include <libaegis/project.h>
+#include <libaegis/project/history.h>
+#include <libaegis/sub.h>
+#include <libaegis/sub/project.h>
+#include <common/symtab.h>
+#include <common/trace.h>
+#include <common/wstr.h>
+#include <common/wstr/list.h>
 
 typedef string_ty *(*func_ptr)(project_ty *);
 struct table_ty
@@ -40,18 +40,14 @@ struct table_ty
 static string_ty *
 trunk_name_get(project_ty *pp)
 {
-    while (pp->parent)
-	pp = pp->parent;
-    return project_name_get(pp);
+    return project_name_get(pp->trunk_get());
 }
 
 
 static string_ty *
 trunk_description_get(project_ty *pp)
 {
-    while (pp->parent)
-	pp = pp->parent;
-    return project_description_get(pp);
+    return project_description_get(pp->trunk_get());
 }
 
 

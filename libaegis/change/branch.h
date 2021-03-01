@@ -1,6 +1,6 @@
 //
 //	aegis - project change supervisor
-//	Copyright (C) 1995-1999, 2001, 2002, 2004, 2005 Peter Miller;
+//	Copyright (C) 1995-1999, 2001, 2002, 2004-2006 Peter Miller;
 //	All rights reserved.
 //
 //	This program is free software; you can redistribute it and/or modify
@@ -23,7 +23,7 @@
 #ifndef AEGIS_CHANGE_BRANCH_H
 #define AEGIS_CHANGE_BRANCH_H
 
-#include <change.h>
+#include <libaegis/change.h>
 
 struct string_list_ty; // forward
 struct change_list_ty; // forward
@@ -49,6 +49,8 @@ long change_branch_next_delta_number(change_ty *);
 void change_copyright_years_now(change_ty *);
 void change_copyright_year_append(change_ty *, int);
 void change_copyright_years_merge(change_ty *, change_ty *);
+void change_copyright_years_slurp(change_ty *cp, int *ary, int ary_len_max,
+	int *ary_len);
 void change_copyright_years_get(change_ty *cp, int *ary, int ary_len_max,
 	int *ary_len);
 void change_branch_history_new(change_ty *cp, long dn, long cn);

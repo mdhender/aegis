@@ -1,7 +1,7 @@
 #!/bin/sh
 #
 #	aegis - project change supervisor
-#	Copyright (C) 1997, 1998, 2005 Peter Miller;
+#	Copyright (C) 1997, 1998, 2005, 2006 Peter Miller;
 #	All rights reserved.
 #
 #	This program is free software; you can redistribute it and/or modify
@@ -48,6 +48,22 @@ here=`pwd`
 if test $? -ne 0 ; then exit 2; fi
 
 bin=$here/${1-.}/bin
+
+if test "$EXEC_SEARCH_PATH" != ""
+then
+    tpath=
+    hold="$IFS"
+    IFS=":$IFS"
+    for tpath2 in $EXEC_SEARCH_PATH
+    do
+	tpath=${tpath}${tpath2}/${1-.}/bin:
+    done
+    IFS="$hold"
+    PATH=${tpath}${PATH}
+else
+    PATH=${bin}:${PATH}
+fi
+export PATH
 
 pass()
 {
@@ -158,14 +174,12 @@ if test $? -ne 0 ; then cat log; no_result; fi
 cat > $workchan/aegis.conf << 'fubar'
 build_command = "exit 0";
 
-history_get_command =
-	"co -u'$e' -p $h,v > $o";
-history_create_command =
-	"ci -f -u -m/dev/null -t/dev/null $i $h,v; rcs -U $h,v";
-history_put_command =
-	"ci -f -u -m/dev/null -t/dev/null $i $h,v; rcs -U $h,v";
-history_query_command =
-	"rlog -r $h,v | awk '/^head:/ {print $$2}'";
+history_get_command = "aesvt -check-out -edit ${quote $edit} "
+    "-history ${quote $history} -f ${quote $output}";
+history_put_command = "aesvt -check-in -history ${quote $history} "
+    "-f ${quote $input}";
+history_query_command = "aesvt -query -history ${quote $history}";
+history_content_limitation = binary_capable;
 
 diff_command = "set +e; diff $orig $i > $out; test $$? -le 1";
 
@@ -299,7 +313,7 @@ diff $workproj/branch.4/baseline/second $workchan/second
 if test $? -ne 0 ; then fail; fi
 
 # symlinks to ,D file should not be present
-test -L $workproj/branch.4/baseline/second,D && fail
+test -h $workproj/branch.4/baseline/second,D && fail
 
 #
 # Only definite negatives are possible.

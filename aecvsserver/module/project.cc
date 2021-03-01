@@ -1,6 +1,6 @@
 //
 //	aegis - project change supervisor
-//	Copyright (C) 2004, 2005 Peter Miller;
+//	Copyright (C) 2004-2006 Peter Miller;
 //	All rights reserved.
 //
 //	This program is free software; you can redistribute it and/or modify
@@ -20,107 +20,90 @@
 // MANIFEST: functions to manipulate projects
 //
 
-#include <error.h> // for assert
-#include <file_info.h>
-#include <input/file.h>
-#include <module/private.h>
-#include <module/project.h>
-#include <module/project_bogu.h>
-#include <response/created.h>
-#include <response/clear_sticky.h>
-#include <response/clearstatdir.h>
-#include <response/update_exist.h>
-#include <os.h>
-#include <project/file.h>
-#include <project/history.h>
-#include <server.h>
-#include <symtab.h>
+#include <common/error.h> // for assert
+#include <aecvsserver/file_info.h>
+#include <libaegis/input/file.h>
+#include <aecvsserver/module/project.h>
+#include <aecvsserver/module/project_bogu.h>
+#include <aecvsserver/response/created.h>
+#include <aecvsserver/response/clear_sticky.h>
+#include <aecvsserver/response/clearstatdir.h>
+#include <aecvsserver/response/update_exist.h>
+#include <libaegis/os.h>
+#include <libaegis/project/file.h>
+#include <libaegis/project/history.h>
+#include <aecvsserver/server.h>
+#include <common/symtab.h>
 
 
-struct module_project_ty
+module_project::~module_project()
 {
-    module_ty       inherited;
-    project_ty      *pp;
-};
-
-
-static void
-destructor(module_ty *mp)
-{
-    module_project_ty *mpp;
-
-    mpp = (module_project_ty *)mp;
-    project_free(mpp->pp);
-    mpp->pp = 0;
+    project_free(pp);
+    pp = 0;
 }
 
 
-static void
-groan(module_ty *mp, server_ty *sp, const char *request_name)
+module_project::module_project(project_ty *arg) :
+    pp(arg)
 {
-    module_project_ty *mpp;
+}
 
-    mpp = (module_project_ty *)mp;
+
+void
+module_project::groan(server_ty *sp, const char *request_name)
+{
     server_error
     (
 	sp,
 	"%s: project \"%s\": you may not alter project files directly, you "
 	    "must use an Aegis change instead, and the corresponding module",
 	request_name,
-	project_name_get(mpp->pp)->str_text
+	project_name_get(pp)->str_text
     );
 }
 
 
-static void
-modified(module_ty *mp, server_ty *sp, string_ty *file_name, file_info_ty *fip,
-    input_ty *ip)
+void
+module_project::modified(server_ty *sp, string_ty *file_name, file_info_ty *fip,
+    input &ip)
 {
     //
     // It is an error to try to write a project file.
     //
-    groan(mp, sp, "Modified");
+    groan(sp, "Modified");
 }
 
 
-static string_ty *
-name(module_ty *mp)
+string_ty *
+module_project::calculate_canonical_name()
+    const
 {
-    module_project_ty *mpp;
-
-    mpp = (module_project_ty *)mp;
-    return project_name_get(mpp->pp);
+    return project_name_get(pp);
 }
 
 
-static int
-update(module_ty *mp, server_ty *sp, string_ty *client_side_0,
-    string_ty *server_side_0, module_options_ty *opt)
+bool
+module_project::update(server_ty *sp, string_ty *client_side_0,
+    string_ty *server_side_0, const options &opt)
 {
-    module_project_ty *mpp;
-    size_t          j;
-
-    mpp = (module_project_ty *)mp;
-
     //
     // Form a list of files by unioning the source files of the project
     // and all the ancestor branches together.
     //
     // For each of these files, send information about their contents.
     //
-    for (j = 0; ; ++j)
+    for (size_t j = 0; ; ++j)
     {
 	fstate_src_ty   *src;
 	string_ty       *client_side;
 	string_ty       *server_side;
 	string_ty       *path;
 	int             need_to_unlink;
-	input_ty        *ip;
 	int             mode;
 	string_ty       *version;
 	file_info_ty    *fip;
 
-	src = project_file_nth(mpp->pp, j, view_path_extreme);
+	src = pp->file_nth(j, view_path_extreme);
 	if (!src)
 	    break;
 	switch (src->usage)
@@ -152,8 +135,8 @@ update(module_ty *mp, server_ty *sp, string_ty *client_side_0,
 	//
         // Make sure the client creates the directories for us.
 	//
-	server_side = os_path_cat(module_name(mp), src->file_name);
-	if (!is_update_prefix(server_side_0, server_side, opt->d))
+	server_side = os_path_cat(name(), src->file_name);
+	if (!is_update_prefix(server_side_0, server_side, opt.d))
 	{
 	    //
 	    // don't create files which are not under one of the
@@ -173,9 +156,9 @@ update(module_ty *mp, server_ty *sp, string_ty *client_side_0,
 	//
 	// Determine where to get the file from.
 	//
-	path = project_file_version_path(mpp->pp, src, &need_to_unlink);
+	path = project_file_version_path(pp, src, &need_to_unlink);
 	os_become_orig();
-	ip = input_file_open(path, need_to_unlink);
+	input ip = input_file_open(path, need_to_unlink);
 	os_become_undo();
 	str_free(path);
 
@@ -185,7 +168,7 @@ update(module_ty *mp, server_ty *sp, string_ty *client_side_0,
 	mode = 0666;
 	if (src->executable)
 	    mode |= 0111;
-	mode &= ~project_umask_get(mpp->pp);
+	mode &= ~project_umask_get(pp);
 
 	//
 	// Determine the version string to send to the client.
@@ -226,7 +209,7 @@ update(module_ty *mp, server_ty *sp, string_ty *client_side_0,
 	    server_response_queue
 	    (
 		sp,
-		response_created_new
+		new response_created
 		(
 		    client_side,
 		    server_side,
@@ -260,7 +243,7 @@ update(module_ty *mp, server_ty *sp, string_ty *client_side_0,
 	    server_response_queue
 	    (
 		sp,
-		response_update_existing_new
+		new response_update_existing
 		(
 		    client_side,
 		    server_side,
@@ -273,69 +256,51 @@ update(module_ty *mp, server_ty *sp, string_ty *client_side_0,
 	str_free(server_side);
 	str_free(client_side);
 	str_free(version);
+
+	os_become_orig();
+	ip.close();
+	os_become_undo();
     }
-    return 1;
+    return true;
 }
 
 
-static int
-checkin(module_ty *mp, server_ty *sp, string_ty *client_side,
+bool
+module_project::checkin(server_ty *sp, string_ty *client_side,
     string_ty *server_side)
 {
-    groan(mp, sp, "ci");
-    return 0;
+    groan(sp, "ci");
+    return false;
 }
 
 
-static int
-add(module_ty *mp, server_ty *sp, string_ty *client_side_0,
-    string_ty *server_side_0, module_options_ty *opt)
+bool
+module_project::add(server_ty *sp, string_ty *client_side_0,
+    string_ty *server_side_0, const options &opt)
 {
-    groan(mp, sp, "add");
-    return 0;
+    groan(sp, "add");
+    return false;
 }
 
 
-static int
-remove(module_ty *mp, server_ty *sp, string_ty *client_side_0,
-    string_ty *server_side_0, module_options_ty *opt)
+bool
+module_project::remove(server_ty *sp, string_ty *client_side_0,
+    string_ty *server_side_0, const options &opt)
 {
-    groan(mp, sp, "remove");
-    return 0;
+    groan(sp, "remove");
+    return false;
 }
-
-
-static const module_method_ty vtbl =
-{
-    sizeof(module_project_ty),
-    destructor,
-    modified,
-    name,
-    update,
-    checkin,
-    add,
-    remove,
-    0, // not bogus
-    "project"
-};
 
 
 module_ty *
 module_project_new(string_ty *project_name)
 {
-    project_ty      *pp;
-    module_ty       *mp;
-    module_project_ty *mpp;
-
-    pp = project_alloc(project_name);
-    if (!project_bind_existing_errok(pp))
+    project_ty *pp = project_alloc(project_name);
+    if (!pp->bind_existing_errok())
     {
 	project_free(pp);
-	return module_project_bogus_new(project_name);
+	return new module_project_bogus(project_name);
     }
 
-    mp = module_new(&vtbl);
-    mpp = (module_project_ty *)mp;
-    mpp->pp = pp;
-    return mp;
+    return new module_project(pp);
 }

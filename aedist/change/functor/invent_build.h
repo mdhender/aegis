@@ -23,12 +23,10 @@
 #ifndef AEDIST_CHANGE_FUNCTOR_INVENT_BUILD_H
 #define AEDIST_CHANGE_FUNCTOR_INVENT_BUILD_H
 
-#pragma interface "change_functor_invent_build"
-
-#include <change/functor.h>
-#include <project.h>
-#include <change.h>
-#include <symtab/template.h>
+#include <libaegis/change/functor.h>
+#include <libaegis/project.h>
+#include <libaegis/change.h>
+#include <common/symtab/template.h>
 
 /**
   * The change_functor_invent_build class is used to represent

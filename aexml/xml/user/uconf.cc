@@ -1,6 +1,6 @@
 //
 //	aegis - project change supervisor
-//	Copyright (C) 2003, 2004 Peter Miller;
+//	Copyright (C) 2003-2005 Peter Miller;
 //	All rights reserved.
 //
 //	This program is free software; you can redistribute it and/or modify
@@ -20,12 +20,12 @@
 // MANIFEST: functions to manipulate uconfs
 //
 
-#include <ael/change/inappropriat.h>
-#include <ael/project/inappropriat.h>
-#include <output.h>
-#include <trace.h>
-#include <user.h>
-#include <xml/user/uconf.h>
+#include <libaegis/ael/change/inappropriat.h>
+#include <libaegis/ael/project/inappropriat.h>
+#include <libaegis/output.h>
+#include <common/trace.h>
+#include <libaegis/user.h>
+#include <aexml/xml/user/uconf.h>
 
 
 void

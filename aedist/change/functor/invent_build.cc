@@ -20,14 +20,12 @@
 // MANIFEST: implementation of the change_functor_invent_build class
 //
 
-#pragma implementation "change_functor_invent_build"
+#include <common/ac/string.h>
 
-#include <ac/string.h>
-
-#include <error.h>              // for assert
-#include <change/functor/invent_build.h>
-#include <uuidentifier.h>
-#include <trace.h>
+#include <common/error.h>              // for assert
+#include <aedist/change/functor/invent_build.h>
+#include <common/uuidentifier.h>
+#include <common/trace.h>
 
 change_functor_inventory_builder::~change_functor_inventory_builder()
 {

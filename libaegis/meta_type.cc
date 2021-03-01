@@ -1,6 +1,6 @@
 //
 //      aegis - project change supervisor
-//      Copyright (C) 1991-1994, 1996, 2002-2004 Peter Miller;
+//      Copyright (C) 1991-1994, 1996, 2002-2005 Peter Miller;
 //      All rights reserved.
 //
 //      This program is free software; you can redistribute it and/or modify
@@ -20,19 +20,19 @@
 // MANIFEST: functions to manipulate types in aegis' data files
 //
 
-#include <aer/expr/name.h>
-#include <aer/value/boolean.h>
-#include <aer/value/enum.h>
-#include <aer/value/integer.h>
-#include <aer/value/real.h>
-#include <aer/value/string.h>
-#include <aer/value/struct.h>
-#include <aer/value/time.h>
-#include <error.h>
-#include <fstrcmp.h>
-#include <trace.h>
-#include <meta_type.h>
-#include <zero.h>
+#include <libaegis/aer/expr/name.h>
+#include <libaegis/aer/value/boolean.h>
+#include <libaegis/aer/value/enum.h>
+#include <libaegis/aer/value/integer.h>
+#include <libaegis/aer/value/real.h>
+#include <libaegis/aer/value/string.h>
+#include <libaegis/aer/value/struct.h>
+#include <libaegis/aer/value/time.h>
+#include <common/error.h>
+#include <common/fstrcmp.h>
+#include <common/trace.h>
+#include <libaegis/meta_type.h>
+#include <libaegis/zero.h>
 
 
 static const char *boolean_s[] =

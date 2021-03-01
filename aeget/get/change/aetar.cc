@@ -1,6 +1,6 @@
 //
 //	aegis - project change supervisor
-//	Copyright (C) 2003-2005 Peter Miller;
+//	Copyright (C) 2003-2006 Peter Miller;
 //	All rights reserved.
 //
 //	This program is free software; you can redistribute it and/or modify
@@ -20,20 +20,21 @@
 // MANIFEST: functions to manipulate aetars
 //
 
-#include <ac/ctype.h>
-#include <ac/stdio.h>
-#include <ac/string.h>
+#include <common/ac/ctype.h>
+#include <common/ac/stdio.h>
+#include <common/ac/string.h>
 
-#include <change.h>
-#include <change/branch.h>
-#include <cstate.h>
-#include <get/change/aetar.h>
-#include <get/command.h>
-#include <libdir.h>
-#include <nstring.h>
-#include <project.h>
-#include <project/history.h>
-#include <str_list.h>
+#include <common/libdir.h>
+#include <common/nstring.h>
+#include <common/str_list.h>
+#include <libaegis/change/branch.h>
+#include <libaegis/change.h>
+#include <libaegis/cstate.h>
+#include <libaegis/project.h>
+#include <libaegis/project/history.h>
+
+#include <aeget/get/change/aetar.h>
+#include <aeget/get/command.h>
 
 
 static int
@@ -84,7 +85,6 @@ fixup(const char *s)
 	*bp++ = c;
     }
     return nstring(buffer, bp - buffer);
-
 }
 
 
@@ -97,6 +97,7 @@ get_change_aetar(change_ty *cp, string_ty *fn, string_list_ty *modifier)
     bool entire_source = false;
     bool noprefix = false;
     nstring prefix;
+    nstring compatibility;
     for (size_t j = 0; j < modifier->nstrings; ++j)
     {
 	const char *s = modifier->string[j]->str_text;
@@ -109,15 +110,21 @@ get_change_aetar(change_ty *cp, string_ty *fn, string_list_ty *modifier)
 	    prefix = fixup(s + 7);
 	    noprefix = true; // so can specify empty prefix
 	}
+	if (0 == memcmp(s, "compat=", 7))
+	{
+	    //
+	    // We need to quote the argument in case Bad People
+	    // put semicolons and other naughty things in it.
+	    //
+	    compatibility = " -compat=%s" + nstring(s + 7).quote_shell();
+	}
     }
     if (prefix.empty() && !noprefix)
     {
 	//
 	// default the prefix
 	//
-	project_ty *pp = cp->pp;
-	while (pp->parent)
-	    pp = pp->parent;
+	project_ty *pp = cp->pp->trunk_get();
 	nstring proj = fixup(project_name_get(pp)->str_text);
 	nstring rev(change_version_get(cp));
 	prefix = proj + "." + rev;
@@ -132,12 +139,13 @@ get_change_aetar(change_ty *cp, string_ty *fn, string_list_ty *modifier)
     nstring command =
 	nstring::format
 	(
-	    "%s/aetar -send %s%s -p %s -c %ld\n",
+	    "%s/aetar -send %s%s -p %s -c %ld%s",
 	    configured_bindir(),
 	    (entire_source ? "-es" : ""),
 	    prefix.c_str(),
 	    quoted_project.c_str(),
-	    magic_zero_decode(cp->number)
+	    magic_zero_decode(cp->number),
+	    compatibility.c_str()
 	);
 
     //

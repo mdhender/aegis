@@ -1,6 +1,6 @@
 //
 //	aegis - project change supervisor
-//	Copyright (C) 2002, 2005 Peter Miller;
+//	Copyright (C) 2002, 2005, 2006 Peter Miller;
 //	All rights reserved.
 //
 //	This program is free software; you can redistribute it and/or modify
@@ -23,7 +23,7 @@
 #ifndef AETAR_INPUT_TAR_H
 #define AETAR_INPUT_TAR_H
 
-#include <input.h>
+#include <libaegis/input.h>
 
 /**
   * The input_tar class is used to represent a tar archive.
@@ -39,13 +39,16 @@ public:
 
     /**
       * The constructor.
+      *
+      * @param deeper
+      *     the data sourec for this filter.
       */
-    input_tar(input_ty *deeper);
+    input_tar(input &deeper);
 
     /**
       * The child method is used to obtain the next archive element.
       */
-    input_ty *child(nstring &archive_name);
+    input child(nstring &archive_name);
 
     // See base class for documentation.
     nstring name();
@@ -60,7 +63,11 @@ public:
     long ftell_inner();
 
 private:
-    input_ty *deeper;
+    /**
+      * The depeer instance variable is used to remember the data sourec
+      * for this filter.
+      */
+    input deeper;
 
     nstring read_data_as_string(size_t hsize);
     void padding();

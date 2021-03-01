@@ -20,10 +20,10 @@
 // MANIFEST: implementation of the adler32 class
 //
 
-#include <ac/zlib.h>
+#include <common/ac/zlib.h>
 
-#include <adler32.h>
-#include <input/file.h>
+#include <libaegis/adler32.h>
+#include <libaegis/input/file.h>
 
 
 unsigned long

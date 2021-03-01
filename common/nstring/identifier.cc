@@ -20,10 +20,10 @@
 // MANIFEST: implementation of the nstring::identifier method
 //
 
-#include <ac/ctype.h>
+#include <common/ac/ctype.h>
 
-#include <nstring.h>
-#include <nstring/accumulator.h>
+#include <common/nstring.h>
+#include <common/nstring/accumulator.h>
 
 
 nstring

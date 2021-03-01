@@ -20,25 +20,25 @@
 // MANIFEST: functions to manipulate changes
 //
 
-#include <ac/stdio.h>
-#include <ac/string.h>
+#include <common/ac/stdio.h>
+#include <common/ac/string.h>
 
-#include <change.h>
-#include <get/change.h>
-#include <get/change/aedist.h>
-#include <get/change/aepatch.h>
-#include <get/change/aerevml.h>
-#include <get/change/aetar.h>
-#include <get/change/download.h>
-#include <get/change/file_invento.h>
-#include <get/change/files.h>
-#include <get/change/history.h>
-#include <get/change/menu.h>
-#include <get/file.h>
-#include <get/project.h>
-#include <http.h>
-#include <project.h>
-#include <str_list.h>
+#include <libaegis/change.h>
+#include <aeget/get/change.h>
+#include <aeget/get/change/aedist.h>
+#include <aeget/get/change/aepatch.h>
+#include <aeget/get/change/aerevml.h>
+#include <aeget/get/change/aetar.h>
+#include <aeget/get/change/download.h>
+#include <aeget/get/change/file_invento.h>
+#include <aeget/get/change/files.h>
+#include <aeget/get/change/history.h>
+#include <aeget/get/change/menu.h>
+#include <aeget/get/file.h>
+#include <aeget/get/project.h>
+#include <aeget/http.h>
+#include <libaegis/project.h>
+#include <common/str_list.h>
 
 
 static void

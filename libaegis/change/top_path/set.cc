@@ -1,6 +1,6 @@
 //
 //	aegis - project change supervisor
-//	Copyright (C) 2000, 2002-2004 Peter Miller;
+//	Copyright (C) 2000, 2002-2006 Peter Miller;
 //	All rights reserved.
 //
 //	This program is free software; you can redistribute it and/or modify
@@ -20,17 +20,23 @@
 // MANIFEST: functions to manipulate sets
 //
 
-#include <arglex2.h>
-#include <change.h>
-#include <error.h> // for assert
-#include <os.h>
-#include <project.h>
-#include <sub.h>
-#include <trace.h>
+#include <common/error.h> // for assert
+#include <common/trace.h>
+#include <libaegis/arglex2.h>
+#include <libaegis/change.h>
+#include <libaegis/os.h>
+#include <libaegis/project.h>
+#include <libaegis/sub.h>
 
 
 void
 change_top_path_set(change_ty *cp, string_ty *s)
+{
+    change_top_path_set(cp, nstring(s));
+}
+
+void
+change_top_path_set(change_ty *cp, const nstring  &s)
 {
     cstate_ty       *cstate_data;
 
@@ -46,7 +52,7 @@ change_top_path_set(change_ty *cp, string_ty *s)
     // cstate_data->development_directory is unresolved
     //
     trace(("change_top_path_set(cp = %08lX, s = \"%s\")\n{\n",
-	(long)cp, s->str_text));
+	(long)cp, s.c_str()));
 
     // May only be applied to new branches
     // assert(change_was_a_branch(cp));
@@ -66,8 +72,8 @@ change_top_path_set(change_ty *cp, string_ty *s)
 	// NOTREACHED
 	sub_context_delete(scp);
     }
-    assert(s->str_text[0] == '/');
-    cp->top_path_unresolved = str_copy(s);
+    assert(s[0] == '/');
+    cp->top_path_unresolved = str_copy(s.get_ref());
     cp->development_directory_resolved = 0;
 
     //
@@ -78,21 +84,15 @@ change_top_path_set(change_ty *cp, string_ty *s)
     cstate_data = change_cstate_get(cp);
     if (!cstate_data->development_directory)
     {
-	string_ty	*dir;
+	nstring         dir;
+        nstring         home = nstring(project_Home_path_get(cp->pp));
 
-	dir = os_below_dir(project_Home_path_get(cp->pp), s);
-	if (dir)
-	{
-	    if (!dir->str_length)
-	    {
-		str_free(dir);
-		dir = str_from_c(".");
-	    }
-	    cstate_data->development_directory = str_copy(dir);
-	}
+	dir = os_below_dir(os_canonify_dirname(home), s);
+        trace_nstring(dir);
+	if (!dir.empty())
+	    cstate_data->development_directory = str_copy(dir.get_ref());
 	else
-	    cstate_data->development_directory = str_copy(s);
-	str_free(dir);
+	    cstate_data->development_directory = str_copy(s.get_ref());
     }
     trace(("}\n"));
 }

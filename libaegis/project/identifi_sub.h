@@ -23,8 +23,6 @@
 #ifndef LIBAEGIS_PROJECT_IDENTIFI_SUB_H
 #define LIBAEGIS_PROJECT_IDENTIFI_SUB_H
 
-#pragma interface "project_identifier_subset"
-
 struct project_ty; // forward
 struct string_ty; // forward
 struct user_ty; // forward

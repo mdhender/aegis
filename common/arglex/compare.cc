@@ -1,6 +1,6 @@
 //
 //	aegis - project change supervisor
-//	Copyright (C) 2004 Peter Miller;
+//	Copyright (C) 2004, 2005 Peter Miller;
 //	All rights reserved.
 //
 //	This program is free software; you can redistribute it and/or modify
@@ -20,10 +20,10 @@
 // MANIFEST: implementation of the arglex_compare class
 //
 
-#include <ac/ctype.h>
+#include <common/ac/ctype.h>
 
-#include <arglex.h>
-#include <trace.h>
+#include <common/arglex.h>
+#include <common/trace.h>
 
 
 bool

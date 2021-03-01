@@ -1,6 +1,6 @@
 //
 //	aegis - project change supervisor
-//	Copyright (C) 2002-2004 Peter Miller;
+//	Copyright (C) 2002-2005 Peter Miller;
 //	All rights reserved.
 //
 //	This program is free software; you can redistribute it and/or modify
@@ -20,14 +20,14 @@
 // MANIFEST: functions to manipulate dates
 //
 
-#include <ac/time.h>
+#include <common/ac/time.h>
 
-#include <language.h>
-#include <sub.h>
-#include <sub/date.h>
-#include <trace.h>
-#include <wstr.h>
-#include <wstr/list.h>
+#include <common/language.h>
+#include <libaegis/sub.h>
+#include <libaegis/sub/date.h>
+#include <common/trace.h>
+#include <common/wstr.h>
+#include <common/wstr/list.h>
 
 
 //

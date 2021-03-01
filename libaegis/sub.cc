@@ -1,6 +1,6 @@
 //
 //	aegis - project change supervisor
-//	Copyright (C) 1991-2005 Peter Miller;
+//	Copyright (C) 1991-2006 Peter Miller;
 //	All rights reserved.
 //
 //	This program is free software; you can redistribute it and/or modify
@@ -20,107 +20,106 @@
 // MANIFEST: functions to perform command substitutions
 //
 
-#pragma implementation "sub_context_ty"
+#include <common/ac/errno.h>
+#include <common/ac/stdio.h>
+#include <common/ac/stddef.h>
+#include <common/ac/stdlib.h>
+#include <common/ac/libintl.h>
+#include <common/ac/limits.h>
+#include <common/ac/string.h>
+#include <common/ac/wchar.h>
+#include <common/ac/wctype.h>
+#include <common/ac/grp.h>
+#include <common/ac/pwd.h>
 
-#include <ac/errno.h>
-#include <ac/stdio.h>
-#include <ac/stddef.h>
-#include <ac/stdlib.h>
-#include <ac/libintl.h>
-#include <ac/limits.h>
-#include <ac/string.h>
-#include <ac/wchar.h>
-#include <ac/wctype.h>
-#include <ac/grp.h>
-#include <ac/pwd.h>
-
-#include <arglex.h>
-#include <change.h>
-#include <change/branch.h>
-#include <change/file.h>
-#include <collect.h>
-#include <error.h>
-#include <file.h>
-#include <gonzo.h>
-#include <language.h>
-#include <mem.h>
-#include <option.h>
-#include <os.h>
-#include <page.h>
-#include <progname.h>
-#include <project.h>
-#include <project/file.h>
-#include <project/history.h>
-#include <quit.h>
-#include <str_list.h>
-#include <sub.h>
-#include <sub/addpathsuffi.h>
-#include <sub/architecture.h>
-#include <sub/base_relativ.h>
-#include <sub/basename.h>
-#include <sub/binary_direc.h>
-#include <sub/capitalize.h>
-#include <sub/change/attribute.h>
-#include <sub/change/delta.h>
-#include <sub/change/develo_direc.h>
-#include <sub/change/developer.h>
-#include <sub/change/develop_list.h>
-#include <sub/change/files.h>
-#include <sub/change/integr_direc.h>
-#include <sub/change/integrator.h>
-#include <sub/change/number.h>
-#include <sub/change/reviewer.h>
-#include <sub/change/reviewr_list.h>
-#include <sub/change/state.h>
-#include <sub/change/version.h>
-#include <sub/comment.h>
-#include <sub/common_direc.h>
-#include <sub/copyri_years.h>
-#include <sub/data_directo.h>
-#include <sub/date.h>
-#include <sub/diff.h>
-#include <sub/dirname.h>
-#include <sub/dirname_rel.h>
-#include <sub/dollar.h>
-#include <sub/downcase.h>
-#include <sub/email_addres.h>
-#include <sub/expr.h>
-#include <sub/getenv.h>
-#include <sub/histo_direc.h>
-#include <sub/history_path.h>
-#include <sub/identifier.h>
-#include <sub/left.h>
-#include <sub/length.h>
-#include <sub/librar_direc.h>
-#include <sub/namemax.h>
-#include <sub/perl.h>
-#include <sub/plural.h>
-#include <sub/plural_forms.h>
-#include <sub/project.h>
-#include <sub/project/adminis_list.h>
-#include <sub/project/baseline.h>
-#include <sub/project/develop_list.h>
-#include <sub/project/integra_list.h>
-#include <sub/project/reviewe_list.h>
-#include <sub/project/specific.h>
-#include <sub/quote.h>
-#include <sub/read_file.h>
-#include <sub/right.h>
-#include <sub/search_path.h>
-#include <sub/shell.h>
-#include <sub/source.h>
-#include <sub/split.h>
-#include <sub/substitute.h>
-#include <sub/substr.h>
-#include <sub/switch.h>
-#include <sub/trim_directo.h>
-#include <sub/trim_extensi.h>
-#include <sub/unsplit.h>
-#include <sub/upcase.h>
-#include <sub/user.h>
-#include <sub/zero_pad.h>
-#include <trace.h>
-#include <wstr/list.h>
+#include <common/arglex.h>
+#include <common/error.h>
+#include <common/language.h>
+#include <common/mem.h>
+#include <common/page.h>
+#include <common/progname.h>
+#include <common/quit.h>
+#include <common/str_list.h>
+#include <common/trace.h>
+#include <common/wstr/list.h>
+#include <libaegis/change.h>
+#include <libaegis/change/branch.h>
+#include <libaegis/change/file.h>
+#include <libaegis/collect.h>
+#include <libaegis/file.h>
+#include <libaegis/gonzo.h>
+#include <libaegis/option.h>
+#include <libaegis/os.h>
+#include <libaegis/project.h>
+#include <libaegis/project/file.h>
+#include <libaegis/project/history.h>
+#include <libaegis/sub.h>
+#include <libaegis/sub/addpathsuffi.h>
+#include <libaegis/sub/architecture.h>
+#include <libaegis/sub/base_relativ.h>
+#include <libaegis/sub/basename.h>
+#include <libaegis/sub/binary_direc.h>
+#include <libaegis/sub/capitalize.h>
+#include <libaegis/sub/change/attribute.h>
+#include <libaegis/sub/change/delta.h>
+#include <libaegis/sub/change/develo_direc.h>
+#include <libaegis/sub/change/develop_list.h>
+#include <libaegis/sub/change/developer.h>
+#include <libaegis/sub/change/files.h>
+#include <libaegis/sub/change/integr_direc.h>
+#include <libaegis/sub/change/integrator.h>
+#include <libaegis/sub/change/number.h>
+#include <libaegis/sub/change/reviewer.h>
+#include <libaegis/sub/change/reviewr_list.h>
+#include <libaegis/sub/change/state.h>
+#include <libaegis/sub/change/version.h>
+#include <libaegis/sub/comment.h>
+#include <libaegis/sub/common_direc.h>
+#include <libaegis/sub/copyri_owner.h>
+#include <libaegis/sub/copyri_years.h>
+#include <libaegis/sub/data_directo.h>
+#include <libaegis/sub/date.h>
+#include <libaegis/sub/diff.h>
+#include <libaegis/sub/dirname.h>
+#include <libaegis/sub/dirname_rel.h>
+#include <libaegis/sub/dollar.h>
+#include <libaegis/sub/downcase.h>
+#include <libaegis/sub/email_addres.h>
+#include <libaegis/sub/expr.h>
+#include <libaegis/sub/getenv.h>
+#include <libaegis/sub/histo_direc.h>
+#include <libaegis/sub/history_path.h>
+#include <libaegis/sub/identifier.h>
+#include <libaegis/sub/left.h>
+#include <libaegis/sub/length.h>
+#include <libaegis/sub/librar_direc.h>
+#include <libaegis/sub/namemax.h>
+#include <libaegis/sub/perl.h>
+#include <libaegis/sub/plural.h>
+#include <libaegis/sub/plural_forms.h>
+#include <libaegis/sub/project.h>
+#include <libaegis/sub/project/adminis_list.h>
+#include <libaegis/sub/project/baseline.h>
+#include <libaegis/sub/project/develop_list.h>
+#include <libaegis/sub/project/integra_list.h>
+#include <libaegis/sub/project/reviewe_list.h>
+#include <libaegis/sub/project/specific.h>
+#include <libaegis/sub/quote.h>
+#include <libaegis/sub/read_file.h>
+#include <libaegis/sub/right.h>
+#include <libaegis/sub/search_path.h>
+#include <libaegis/sub/shell.h>
+#include <libaegis/sub/source.h>
+#include <libaegis/sub/split.h>
+#include <libaegis/sub/substitute.h>
+#include <libaegis/sub/substr.h>
+#include <libaegis/sub/switch.h>
+#include <libaegis/sub/trim_directo.h>
+#include <libaegis/sub/trim_extensi.h>
+#include <libaegis/sub/unsplit.h>
+#include <libaegis/sub/upcase.h>
+#include <libaegis/sub/user.h>
+#include <libaegis/sub/zero_pad.h>
 
 
 enum getc_type
@@ -267,93 +266,94 @@ sub_errno(sub_context_ty *scp, wstring_list_ty *arg)
 
 static sub_table_ty table[] =
 {
-    {"$", sub_dollar, },
-    {"#", sub_comment, },
-    {"Add_Path_Suffix", sub_add_path_suffix, },
-    {"Administrator_List", sub_administrator_list, },
-    {"ARCHitecture", sub_architecture, },
-    {"BaseLine", sub_baseline, },
-    {"Basename", sub_basename, },
-    {"BAse_RElative", sub_base_relative, },
-    {"BINary_DIRectory", sub_binary_directory, },
-    {"CAPitalize", sub_capitalize, },
-    {"Change", sub_change_number, },
-    {"Change_Attribute", sub_change_attribute, },
-    {"Change_Developer_List", sub_change_developer_list, },
-    {"Change_Files", sub_change_files, },
-    {"Change_Reviewer_List", sub_change_reviewer_list, },
-    {"Copyright_Years", sub_copyright_years, },
-    {"COMment", sub_comment, },
-    {"COMmon_DIRectory", sub_common_directory, },
-    {"DATa_DIRectory", sub_data_directory, },
-    {"DAte", sub_date, },
-    {"DELta", sub_delta, },
-    {"DEVeloper", sub_developer, },
-    {"DEVeloper_List", sub_developer_list, },
+    { "$", sub_dollar, },
+    { "#", sub_comment, },
+    { "Add_Path_Suffix", sub_add_path_suffix, },
+    { "Administrator_List", sub_administrator_list, },
+    { "ARCHitecture", sub_architecture, },
+    { "BaseLine", sub_baseline, },
+    { "Basename", sub_basename, },
+    { "BAse_RElative", sub_base_relative, },
+    { "BINary_DIRectory", sub_binary_directory, },
+    { "CAPitalize", sub_capitalize, },
+    { "Change", sub_change_number, },
+    { "Change_Attribute", sub_change_attribute, },
+    { "Change_Developer_List", sub_change_developer_list, },
+    { "Change_Files", sub_change_files, },
+    { "Change_Reviewer_List", sub_change_reviewer_list, },
+    { "Copyright_Owner", sub_copyright_owner, },
+    { "Copyright_Years", sub_copyright_years, },
+    { "COMment", sub_comment, },
+    { "COMmon_DIRectory", sub_common_directory, },
+    { "DATa_DIRectory", sub_data_directory, },
+    { "DAte", sub_date, },
+    { "DELta", sub_delta, },
+    { "DEVeloper", sub_developer, },
+    { "DEVeloper_List", sub_developer_list, },
     // Default_Development_Directory
-    {"Development_Directory", sub_development_directory, },
-    {"DIFference", sub_diff, },
-    {"Dirname", sub_dirname, },
-    {"Dirname_RELative", sub_dirname_relative, },
-    {"DownCase", sub_downcase, },
-    {"DOLlar", sub_dollar, },
+    { "Development_Directory", sub_development_directory, },
+    { "DIFference", sub_diff, },
+    { "Dirname", sub_dirname, },
+    { "Dirname_RELative", sub_dirname_relative, },
+    { "DownCase", sub_downcase, },
+    { "DOLlar", sub_dollar, },
     // Edit
-    {"EMail_Address", sub_email_address, },
-    {"ENVironment", sub_getenv, },
-    {"ERrno", sub_errno, },
-    {"EXpression", sub_expression, },
+    { "EMail_Address", sub_email_address, },
+    { "ENVironment", sub_getenv, },
+    { "ERrno", sub_errno, },
+    { "EXpression", sub_expression, },
     // FieLD_List
     // File_List
     // File_Name
-    {"Get_Environment", sub_getenv, },
+    { "Get_Environment", sub_getenv, },
     // Guess
     // History
-    {"History_Directory", sub_history_directory, },
-    {"History_Path", sub_history_path, },
+    { "History_Directory", sub_history_directory, },
+    { "History_Path", sub_history_path, },
     // Input
-    {"IDentifier", sub_identifier, },
-    {"INTegration_Directory", sub_integration_directory, },
-    {"INTegrator", sub_integrator, },
-    {"INTegrator_List", sub_integrator_list, },
-    {"LEFt", sub_left, },
-    {"LENgth", sub_length, },
-    {"LIBrary", sub_data_directory, },
-    {"LIBrary_DIRectory", sub_library_directory, },
+    { "IDentifier", sub_identifier, },
+    { "INTegration_Directory", sub_integration_directory, },
+    { "INTegrator", sub_integrator, },
+    { "INTegrator_List", sub_integrator_list, },
+    { "LEFt", sub_left, },
+    { "LENgth", sub_length, },
+    { "LIBrary", sub_data_directory, },
+    { "LIBrary_DIRectory", sub_library_directory, },
     // MAgic
     // MeSsaGe
     // Most_Recent
-    {"Name_Maximum", sub_namemax, },
+    { "Name_Maximum", sub_namemax, },
     // Number
     // Output
     // ORiginal
-    {"PERL", sub_perl, },
-    {"PLural", sub_plural, },
-    {"PLural_Forms", sub_plural_forms, },
-    {"Project", sub_project, },
-    {"Project_Specific", sub_project_specific, },
-    {"QUote", sub_quote, },
-    {"Read_File", sub_read_file, true, },
-    {"Read_File_Simple", sub_read_file, },
-    {"Reviewer", sub_reviewer, },
-    {"Reviewer_List", sub_reviewer_list, },
-    {"RIght", sub_right, },
-    {"Search_Path", sub_search_path, },
-    {"Search_Path_Executable", sub_search_path, },
-    {"SHell", sub_shell, },
-    {"Source", sub_source, },
-    {"SPLit", sub_split, },
-    {"STate", sub_state, },
-    {"SUBSTitute", sub_substitute, },
-    {"SUBSTRing", sub_substr, },
-    {"SWitch", sub_switch, },
-    {"Trim_DIRectory", sub_trim_directory, },
-    {"Trim_EXTension", sub_trim_extension, },
-    {"UName", sub_architecture, }, // undocumented
-    {"UNSplit", sub_unsplit, },
-    {"UpCase", sub_upcase, },
-    {"USer", sub_user, },
-    {"Version", sub_version, },
-    {"Zero_Pad", sub_zero_pad, },
+    { "PERL", sub_perl, },
+    { "PLural", sub_plural, },
+    { "PLural_Forms", sub_plural_forms, },
+    { "Project", sub_project, },
+    { "Project_Specific", sub_project_specific, },
+    { "QUote", sub_quote, },
+    { "Read_File", sub_read_file, true, },
+    { "Read_File_Simple", sub_read_file, },
+    { "Reviewer", sub_reviewer, },
+    { "Reviewer_List", sub_reviewer_list, },
+    { "RIght", sub_right, },
+    { "Search_Path", sub_search_path, },
+    { "Search_Path_Executable", sub_search_path, },
+    { "SHell", sub_shell, },
+    { "Source", sub_source, },
+    { "SPLit", sub_split, },
+    { "STate", sub_state, },
+    { "SUBSTitute", sub_substitute, },
+    { "SUBSTRing", sub_substr, },
+    { "SWitch", sub_switch, },
+    { "Trim_DIRectory", sub_trim_directory, },
+    { "Trim_EXTension", sub_trim_extension, },
+    { "UName", sub_architecture, }, // undocumented
+    { "UNSplit", sub_unsplit, },
+    { "UpCase", sub_upcase, },
+    { "USer", sub_user, },
+    { "Version", sub_version, },
+    { "Zero_Pad", sub_zero_pad, },
 };
 
 
@@ -1299,9 +1299,7 @@ wrap(const wchar_t *s)
 {
     const char      *progname;
     int		    page_width;
-    char	    tmp[(MAX_PAGE_WIDTH + 2) * MB_LEN_MAX];
     int		    first_line;
-    char	    *tp;
     int		    nbytes;
     static int	    progname_width;
     int		    midway;
@@ -1404,7 +1402,7 @@ wrap(const wchar_t *s)
 		nbytes = 4;
 
 		//
-		// The wctomb state will be ``error'',
+		// The wctomb state will be "error",
 		// so reset it and brave the worst.  No
 		// need to reset the wctomb state, it is
 		// not broken.
@@ -1479,14 +1477,15 @@ wrap(const wchar_t *s)
 	//
 	// print the line
 	//
+	char tmp[(MAX_PAGE_WIDTH + 2) * MB_LEN_MAX];
+	char *tp = tmp;
 	if (first_line)
 	{
-	    strlcpy(tmp, progname, sizeof(tmp));
-	    strlcat(tmp, ": ", sizeof(tmp));
+	    tp = strendcpy(tp, progname, tmp + sizeof(tmp));
+	    tp = strendcpy(tp, ": ", tmp + sizeof(tmp));
 	}
 	else
-	    strlcpy(tmp, "\t", sizeof(tmp));
-	tp = tmp + strlen(tmp);
+	    tp = strendcpy(tp, "\t", tmp + sizeof(tmp));
 
 	//
 	// Turn the input into a multi bytes chacacters.
@@ -1525,7 +1524,7 @@ wrap(const wchar_t *s)
 		tp[3] = '0' + (c & 7);
 
 		//
-		// The wctomb state will be ``error'',
+		// The wctomb state will be "error",
 		// so reset it and brave the worst.  No
 		// need to reset the wctomb state, it is
 		// not broken.

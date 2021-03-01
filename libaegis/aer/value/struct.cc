@@ -1,6 +1,6 @@
 //
 //	aegis - project change supervisor
-//	Copyright (C) 1994-1996, 1999, 2002-2004 Peter Miller;
+//	Copyright (C) 1994-1996, 1999, 2002-2005 Peter Miller;
 //	All rights reserved.
 //
 //	This program is free software; you can redistribute it and/or modify
@@ -20,18 +20,18 @@
 // MANIFEST: functions to manipulate struct values
 //
 
-#include <aer/pos.h>
-#include <aer/value/error.h>
-#include <aer/value/integer.h>
-#include <aer/value/list.h>
-#include <aer/value/null.h>
-#include <aer/value/ref.h>
-#include <aer/value/string.h>
-#include <aer/value/struct.h>
-#include <error.h>
-#include <sub.h>
-#include <symtab.h>
-#include <trace.h>
+#include <libaegis/aer/pos.h>
+#include <libaegis/aer/value/error.h>
+#include <libaegis/aer/value/integer.h>
+#include <libaegis/aer/value/list.h>
+#include <libaegis/aer/value/null.h>
+#include <libaegis/aer/value/ref.h>
+#include <libaegis/aer/value/string.h>
+#include <libaegis/aer/value/struct.h>
+#include <common/error.h>
+#include <libaegis/sub.h>
+#include <common/symtab.h>
+#include <common/trace.h>
 
 
 struct rpt_value_struct_ty

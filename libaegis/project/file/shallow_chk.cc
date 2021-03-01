@@ -1,6 +1,6 @@
 //
 //	aegis - project change supervisor
-//	Copyright (C) 1999, 2002-2004 Peter Miller;
+//	Copyright (C) 1999, 2002-2006 Peter Miller;
 //	All rights reserved.
 //
 //	This program is free software; you can redistribute it and/or modify
@@ -20,10 +20,10 @@
 // MANIFEST: functions to manipulate shallow_chks
 //
 
-#include <change.h>
-#include <change/file.h>
-#include <project/file.h>
-#include <trace.h>
+#include <libaegis/change.h>
+#include <libaegis/change/file.h>
+#include <libaegis/project/file.h>
+#include <common/trace.h>
 
 
 //
@@ -43,7 +43,7 @@ project_file_shallow_check(project_ty *pp, string_ty *file_name)
     //
     trace(("project_file_shallow_check(pp = %08lX, file_name = \"%s\")\n{\n",
 	(long)pp, file_name->str_text));
-    if (!pp->parent)
+    if (pp->is_a_trunk())
     {
 	trace(("shallowing \"%s\" no grandparent\n", file_name->str_text));
 	trace(("return 1;\n}\n"));
@@ -54,7 +54,7 @@ project_file_shallow_check(project_ty *pp, string_ty *file_name)
     // Look for the file in the project.
     // If it is there, nothing more needs to be done.
     //
-    pcp = project_change_get(pp);
+    pcp = pp->change_get();
     src_data = change_file_find(pcp, file_name, view_path_first);
     if (src_data)
     {

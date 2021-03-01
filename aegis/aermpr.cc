@@ -1,6 +1,6 @@
 //
 //	aegis - project change supervisor
-//	Copyright (C) 1993-1999, 2001-2004 Peter Miller;
+//	Copyright (C) 1993-1999, 2001-2006 Peter Miller;
 //	All rights reserved.
 //
 //	This program is free software; you can redistribute it and/or modify
@@ -20,26 +20,26 @@
 // MANIFEST: functions to implement remove project
 //
 
-#include <ac/stdio.h>
+#include <common/ac/stdio.h>
 
-#include <ael/project/projects.h>
-#include <aermpr.h>
-#include <arglex2.h>
-#include <arglex/project.h>
-#include <change.h>
-#include <commit.h>
-#include <gonzo.h>
-#include <help.h>
-#include <lock.h>
-#include <os.h>
-#include <progname.h>
-#include <project.h>
-#include <project/active.h>
-#include <project/history.h>
-#include <quit.h>
-#include <sub.h>
-#include <trace.h>
-#include <user.h>
+#include <libaegis/ael/project/projects.h>
+#include <aegis/aermpr.h>
+#include <libaegis/arglex2.h>
+#include <libaegis/arglex/project.h>
+#include <libaegis/change.h>
+#include <libaegis/commit.h>
+#include <libaegis/gonzo.h>
+#include <libaegis/help.h>
+#include <libaegis/lock.h>
+#include <libaegis/os.h>
+#include <common/progname.h>
+#include <libaegis/project.h>
+#include <libaegis/project/active.h>
+#include <libaegis/project/history.h>
+#include <common/quit.h>
+#include <libaegis/sub.h>
+#include <common/trace.h>
+#include <libaegis/user.h>
 
 
 static void
@@ -128,13 +128,13 @@ remove_project_main(void)
 	remove_project_usage();
     }
     pp = project_alloc(project_name);
-    project_bind_existing(pp);
+    pp->bind_existing();
 
     //
     // Make sure it is a top-level project we are talking about,
     // not merely a branch.
     //
-    if (pp->parent)
+    if (!pp->is_a_trunk())
 	project_fatal(pp, 0, i18n("use aenbru instead"));
 
     //
@@ -148,7 +148,7 @@ remove_project_main(void)
     // see if the user already deleted it
     //
     os_become_orig();
-    still_exists = os_exists(project_pstate_path_get(pp));
+    still_exists = os_exists(pp->pstate_path_get());
     os_become_undo();
 
     //
@@ -159,7 +159,7 @@ remove_project_main(void)
     //
     // lock the project
     //
-    project_pstate_lock_prepare(pp);
+    pp->pstate_lock_prepare();
     gonzo_gstate_lock_prepare_new();
     lock_take();
 
@@ -192,11 +192,11 @@ remove_project_main(void)
     //
     // remove the project directory
     //
-    if (user_delete_file_query(up, project_home_path_get(pp), 1))
+    if (user_delete_file_query(up, pp->home_path_get(), 1))
     {
 	project_verbose(pp, 0, i18n("remove project directory"));
 	project_become(pp);
-	commit_rmdir_tree_errok(project_home_path_get(pp));
+	commit_rmdir_tree_errok(pp->home_path_get());
 	project_become_undo();
     }
 

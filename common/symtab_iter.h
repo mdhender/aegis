@@ -1,6 +1,6 @@
 //
 //	aegis - project change supervisor
-//	Copyright (C) 2001, 2004 Peter Miller;
+//	Copyright (C) 2001, 2004, 2005 Peter Miller;
 //	All rights reserved.
 //
 //	This program is free software; you can redistribute it and/or modify
@@ -23,7 +23,7 @@
 #ifndef COMMON_SYMTAB_ITER_H
 #define COMMON_SYMTAB_ITER_H
 
-#include <symtab.h>
+#include <common/symtab.h>
 
 /**
   * The symtab_iterator class is used to iterate across all rows in a

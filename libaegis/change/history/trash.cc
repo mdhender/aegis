@@ -1,6 +1,6 @@
 //
 //	aegis - project change supervisor
-//	Copyright (C) 1999, 2001-2004 Peter Miller;
+//	Copyright (C) 1999, 2001-2005 Peter Miller;
 //	All rights reserved.
 //
 //	This program is free software; you can redistribute it and/or modify
@@ -20,9 +20,9 @@
 // MANIFEST: functions to manipulate trashs
 //
 
-#include <change.h>
-#include <str_list.h>
-#include <sub.h>
+#include <libaegis/change.h>
+#include <common/str_list.h>
+#include <libaegis/sub.h>
 
 
 //

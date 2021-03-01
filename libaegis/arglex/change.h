@@ -1,29 +1,29 @@
-/*
- *	aegis - project change supervisor
- *	Copyright (C) 2003 Peter Miller;
- *	All rights reserved.
- *
- *	This program is free software; you can redistribute it and/or modify
- *	it under the terms of the GNU General Public License as published by
- *	the Free Software Foundation; either version 2 of the License, or
- *	(at your option) any later version.
- *
- *	This program is distributed in the hope that it will be useful,
- *	but WITHOUT ANY WARRANTY; without even the implied warranty of
- *	MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
- *	GNU General Public License for more details.
- *
- *	You should have received a copy of the GNU General Public License
- *	along with this program; if not, write to the Free Software
- *	Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111, USA.
- *
- * MANIFEST: interface definition for libaegis/arglex/change.c
- */
+//
+//	aegis - project change supervisor
+//	Copyright (C) 2003, 2005, 2006 Peter Miller;
+//	All rights reserved.
+//
+//	This program is free software; you can redistribute it and/or modify
+//	it under the terms of the GNU General Public License as published by
+//	the Free Software Foundation; either version 2 of the License, or
+//	(at your option) any later version.
+//
+//	This program is distributed in the hope that it will be useful,
+//	but WITHOUT ANY WARRANTY; without even the implied warranty of
+//	MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+//	GNU General Public License for more details.
+//
+//	You should have received a copy of the GNU General Public License
+//	along with this program; if not, write to the Free Software
+//	Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111, USA.
+//
+// MANIFEST: interface definition for libaegis/arglex/change.c
+//
 
 #ifndef LIBAEGIS_ARGLEX_CHANGE_H
 #define LIBAEGIS_ARGLEX_CHANGE_H
 
-#include <str.h>
+#include <common/str.h>
 
 /**
   * The arglex_parse_change function is used to parse a change number,
@@ -64,4 +64,4 @@ void arglex_parse_branch(string_ty **project_name_p, long *change_number_p,
 void arglex_parse_change_with_branch(string_ty **project_name_p,
     long *change_number, const char **branch_p, void (*usage)(void));
 
-#endif /* LIBAEGIS_ARGLEX_CHANGE_H */
+#endif // LIBAEGIS_ARGLEX_CHANGE_H

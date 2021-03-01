@@ -1,6 +1,6 @@
 //
 //	aegis - project change supervisor
-//	Copyright (C) 2001-2005 Peter Miller;
+//	Copyright (C) 2001-2006 Peter Miller;
 //	All rights reserved.
 //
 //	This program is free software; you can redistribute it and/or modify
@@ -20,18 +20,18 @@
 // MANIFEST: functions to manipulate reads
 //
 
-#include <ac/string.h>
+#include <common/ac/string.h>
 
-#include <common.h>
-#include <error.h> // assert
-#include <input.h>
-#include <patch.h>
-#include <patch/context.h>
-#include <patch/format/context.h>
-#include <patch/format/diff.h>
-#include <patch/format/uni.h>
-#include <patch/list.h>
-#include <trace.h>
+#include <libaegis/common.h>
+#include <common/error.h> // assert
+#include <libaegis/input.h>
+#include <libaegis/patch.h>
+#include <libaegis/patch/context.h>
+#include <libaegis/patch/format/context.h>
+#include <libaegis/patch/format/diff.h>
+#include <libaegis/patch/format/uni.h>
+#include <libaegis/patch/list.h>
+#include <common/trace.h>
 
 static patch_format_ty *format[] =
 {
@@ -41,13 +41,13 @@ static patch_format_ty *format[] =
 };
 
 patch_list_ty *
-patch_read(input_ty *input, int required)
+patch_read(input &ip, int required)
 {
     patch_list_ty   *result;
     patch_context_ty *context;
 
-    trace(("patch_read(input = %08lX)\n{\n", (long)input));
-    context = patch_context_new(input);
+    trace(("patch_read()\n{\n"));
+    context = patch_context_new(ip);
     result = patch_list_new();
     string_list_ty garbage;
     for (;;)
@@ -166,7 +166,7 @@ patch_read(input_ty *input, int required)
 	    pp->usage = file_usage_test;
     }
     if (required && result->length == 0)
-	input->fatal_error("no patch found");
+	ip->fatal_error("no patch found");
 
     //
     // clean up and go home

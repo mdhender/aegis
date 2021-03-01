@@ -23,10 +23,8 @@
 #ifndef LIBAEGIS_DIR_FUNCTOR_CALLBACK_H
 #define LIBAEGIS_DIR_FUNCTOR_CALLBACK_H
 
-#pragma interface "dir_functor_callback"
-
-#include <dir.h>
-#include <dir/functor.h>
+#include <libaegis/dir.h>
+#include <libaegis/dir/functor.h>
 
 /**
   * The dir_functor_callback class is used to represent a backwards

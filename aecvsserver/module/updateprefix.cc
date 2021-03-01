@@ -1,6 +1,6 @@
 //
 //	aegis - project change supervisor
-//	Copyright (C) 2004 Peter Miller;
+//	Copyright (C) 2004-2006 Peter Miller;
 //	All rights reserved.
 //
 //	This program is free software; you can redistribute it and/or modify
@@ -20,18 +20,16 @@
 // MANIFEST: functions to manipulate updateprefixs
 //
 
-#include <ac/string.h>
+#include <common/ac/string.h>
 
-#include <module.h>
+#include <aecvsserver/module.h>
 
 
-int
-is_update_prefix(string_ty *above, string_ty *below, int deep)
+bool
+is_update_prefix(string_ty *above, string_ty *below, bool deep)
 {
-    const char      *cp;
-
     if (str_equal(below, above))
-	return 1;
+	return true;
     if
     (
 	below->str_length < above->str_length
@@ -40,13 +38,13 @@ is_update_prefix(string_ty *above, string_ty *below, int deep)
     ||
 	0 != memcmp(below->str_text, above->str_text, above->str_length)
     )
-	return 0;
+	return false;
     if (deep)
-	return 1;
-    cp = below->str_text + above->str_length + 1;
+	return true;
+    const char *cp = below->str_text + above->str_length + 1;
     while (*cp == '/')
 	++cp;
     if (!*cp)
-	return 1;
+	return true;
     return (0 == strchr(cp, '/'));
 }

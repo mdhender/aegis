@@ -1,6 +1,6 @@
 .\"
 .\"	aegis - project change supervisor
-.\"	Copyright (C) 1999, 2002 Peter Miller;
+.\"	Copyright (C) 1999, 2002, 2005 Peter Miller;
 .\"	All rights reserved.
 .\"
 .\"	This program is free software; you can redistribute it and/or modify
@@ -20,14 +20,14 @@
 .\" MANIFEST: document describing file whiteout
 .\"
 .SH WHITEOUT
-Aegis provides you with what is often called a ``view path'' which
+Aegis provides you with what is often called a \[lq]view path\[rq] which
 indicates to development tools (compilers, build systems, \fIetc\fP)
 look first in the development directory, then in the branch baseline,
 and so on up to the trunk baseline.
 .PP
 The problem with view paths is that in order to remove files, you
-need some kind of "whiteout" to say ``stop looking, it's been
-removed.''
+need some kind of "whiteout" to say \[lq]stop looking, it's been
+removed.\[rq]
 .PP
 When you user the \fIaerm\fP(1) or \fIaemv\fP(1) commands, this means
 "add information to this change which will remove the file from the
@@ -61,7 +61,7 @@ looking in the file system is hard when the view path is longer that 2
 directories (and Aegis' branching method can make it arbitrarily long); and
 .TP 4m
 (c)
-The whiteout files, and anything else left ``lying around'', will confuse
+The whiteout files, and anything else left \[lq]lying around\[rq], will confuse
 any method which interrogates the file system.
 .PP
 The easiest way to use Aegis' file knowledge is with something like

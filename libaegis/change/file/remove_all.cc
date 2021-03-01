@@ -1,6 +1,6 @@
 //
 //	aegis - project change supervisor
-//	Copyright (C) 1999, 2003, 2004 Peter Miller;
+//	Copyright (C) 1999, 2003-2005 Peter Miller;
 //	All rights reserved.
 //
 //	This program is free software; you can redistribute it and/or modify
@@ -20,28 +20,27 @@
 // MANIFEST: functions to manipulate remove_alls
 //
 
-#include <change/file.h>
-#include <error.h> // for assert
-#include <symtab.h>
-#include <trace.h>
+#include <libaegis/change/file.h>
+#include <common/error.h> // for assert
+#include <common/symtab.h>
+#include <common/trace.h>
 
 
 void
 change_file_remove_all(change_ty *cp)
 {
-	fstate_ty       *fstate_data;
-
-	trace(("change_file_remove_all(cp = %08lX)\n{\n", (long)cp));
-	fstate_data = change_fstate_get(cp);
-	assert(fstate_data->src);
-	assert(cp->fstate_stp);
-	if (fstate_data->src->length)
-	{
-		fstate_src_list_type.free(fstate_data->src);
-		fstate_data->src =
-                    (fstate_src_list_ty *)fstate_src_list_type.alloc();
-	}
-	symtab_free(cp->fstate_stp);
-	cp->fstate_stp = symtab_alloc(0);
-	trace(("}\n"));
+    trace(("change_file_remove_all(cp = %08lX)\n{\n", (long)cp));
+    fstate_ty *fstate_data = change_fstate_get(cp);
+    assert(fstate_data->src);
+    assert(cp->fstate_stp);
+    if (fstate_data->src->length)
+    {
+	fstate_src_list_type.free(fstate_data->src);
+	fstate_data->src = (fstate_src_list_ty *)fstate_src_list_type.alloc();
+    }
+    symtab_free(cp->fstate_stp);
+    cp->fstate_stp = symtab_alloc(0);
+    symtab_free(cp->fstate_uuid_stp);
+    cp->fstate_uuid_stp = symtab_alloc(0);
+    trace(("}\n"));
 }

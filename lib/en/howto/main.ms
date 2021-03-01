@@ -1,6 +1,6 @@
 .\"
 .\"	aegis - project change supervisor
-.\"	Copyright (C) 1999-2004 Peter Miller;
+.\"	Copyright (C) 1999-2005 Peter Miller;
 .\"	All rights reserved.
 .\"
 .\"	This program is free software; you can redistribute it and/or modify
@@ -274,7 +274,7 @@
 .\" Even a few paragraphs will be welcome.
 .\"
 .\" But I have bigger plans... after talking to other folks about your
-.\" suggestions, I plan to have a series for ``mini howto'' pages, on
+.\" suggestions, I plan to have a series for \[lq]mini howto\[rq] pages, on
 .\" small subjects.  You suggestion of using the bullet points from
 .\" the web page is an excellent starting point.
 .\"

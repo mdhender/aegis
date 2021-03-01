@@ -1,6 +1,6 @@
 '\" t
 .\"	aegis - project change supervisor
-.\"	Copyright (C) 1998, 1999, 2002-2004 Peter Miller;
+.\"	Copyright (C) 1998, 1999, 2002-2005 Peter Miller;
 .\"	All rights reserved.
 .\"
 .\"	This program is free software; you can redistribute it and/or modify
@@ -41,12 +41,12 @@
 The
 .I "\*(n) -CLEan"
 command is used to remove all files which are not change source files
-from a development directory.  This can be used to obtain a ``clean''
+from a development directory.  This can be used to obtain a \[lq]clean\[rq]
 development directory before a final build, to ensure that a change is
 ready to end development.
 A new build will be required.
 .PP
-This command is only allowed in the ``\fIbeing developed\fP'' state,
+This command is only allowed in the \[lq]\fIbeing developed\fP\[rq] state,
 and only the change's developer may issue it.  It may not be applied
 to branches.
 .PP
@@ -113,7 +113,7 @@ links are not being used.
 .PP
 This option also says not to remove normal files which occlude project
 source files.  This is a common technique used to temporarily over-ride
-project source files.  The ``\fIaecp -read-only'' command would have
+project source files.  The \[lq]\fIaecp -read-only\[rq] command would have
 been more appropriate.
 .RE
 .so o_project.so

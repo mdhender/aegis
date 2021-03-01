@@ -1,6 +1,6 @@
 //
 //	aegis - project change supervisor
-//	Copyright (C) 2004, 2005 Peter Miller;
+//	Copyright (C) 2004-2006 Peter Miller;
 //	All rights reserved.
 //
 //	This program is free software; you can redistribute it and/or modify
@@ -20,21 +20,21 @@
 // MANIFEST: functions to manipulate nets
 //
 
-#include <ac/stdlib.h>
+#include <common/ac/stdlib.h>
 
-#include <error.h> // for assert
-#include <file_info.h>
-#include <input/stdin.h>
-#include <input/crop.h>
-#include <mem.h>
-#include <net.h>
-#include <os.h>
-#include <output/file.h>
-#include <output/prefix.h>
-#include <output/stdout.h>
-#include <output/tee.h>
-#include <response.h>
-#include <symtab.h>
+#include <common/error.h> // for assert
+#include <aecvsserver/file_info.h>
+#include <libaegis/input/stdin.h>
+#include <libaegis/input/crop.h>
+#include <common/mem.h>
+#include <aecvsserver/net.h>
+#include <libaegis/os.h>
+#include <libaegis/output/file.h>
+#include <libaegis/output/prefix.h>
+#include <libaegis/output/stdout.h>
+#include <libaegis/output/tee.h>
+#include <aecvsserver/response.h>
+#include <common/symtab.h>
 
 
 net_ty::net_ty() :
@@ -73,8 +73,6 @@ net_ty::net_ty() :
 
 net_ty::~net_ty()
 {
-    delete in;
-    in = 0;
     delete out;
     out = 0;
 
@@ -133,15 +131,15 @@ net_ty::printf(const char *fmt, ...)
 
 
 void
-net_ty::response_queue(response_ty *rp)
+net_ty::response_queue(response *rp)
 {
     //
     // Don't bother queueing responses the client has asked us not to send.
     //
-    response_code_ty code = response_code_get(rp);
+    response_code_ty code = rp->code_get();
     if (!response_valid[code])
     {
-	response_delete(rp);
+	delete rp;
 	return;
     }
 
@@ -155,7 +153,7 @@ net_ty::response_queue(response_ty *rp)
 	response_queue_max = 4 + 2 * response_queue_max;
 	nbytes = sizeof(response_queue_item[0]) * response_queue_max;
 	response_queue_item =
-	    (response_ty **)
+	    (response **)
 	    mem_change_size(response_queue_item, nbytes);
     }
 
@@ -167,7 +165,7 @@ net_ty::response_queue(response_ty *rp)
     //
     // Some codes cause an immediate flush.
     //
-    if (response_flushable(rp))
+    if (rp->flushable())
 	response_flush();
 }
 
@@ -180,11 +178,11 @@ net_ty::response_flush()
     //
     for (size_t j = 0; j < response_queue_length; ++j)
     {
-	response_ty     *rp;
+	response     *rp;
 
 	rp = response_queue_item[j];
-	response_write(rp, out);
-	response_delete(rp);
+	rp->write(out);
+	delete rp;
 	if (log_client)
 	    out->flush();
     }
@@ -367,8 +365,8 @@ net_ty::set_updating_verbose(string_ty *s)
 }
 
 
-input_ty *
+input
 net_ty::in_crop(long length)
 {
-    return new input_crop(in, false, length);
+    return new input_crop(in, length);
 }

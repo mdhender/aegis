@@ -1,6 +1,6 @@
 //
 //	aegis - project change supervisor
-//	Copyright (C) 1999, 2002-2004 Peter Miller;
+//	Copyright (C) 1999, 2002-2005 Peter Miller;
 //	All rights reserved.
 //
 //	This program is free software; you can redistribute it and/or modify
@@ -20,14 +20,14 @@
 // MANIFEST: functions to manipulate whiteo_writes
 //
 
-#include <change.h>
-#include <error.h> // for assert
-#include <file.h>
-#include <now.h>
-#include <os.h>
-#include <project/file.h>
-#include <undo.h>
-#include <user.h>
+#include <libaegis/change.h>
+#include <common/error.h> // for assert
+#include <libaegis/file.h>
+#include <common/now.h>
+#include <libaegis/os.h>
+#include <libaegis/project/file.h>
+#include <libaegis/undo.h>
+#include <libaegis/user.h>
 
 
 static bool

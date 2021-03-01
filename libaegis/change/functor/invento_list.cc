@@ -20,20 +20,18 @@
 // MANIFEST: implementation of the change_functor_inventory_list class
 //
 
-#pragma implementation "change_functor_inventory_list"
+#include <common/ac/string.h>
 
-#include <ac/string.h>
-
-#include <ael/column_width.h>
-#include <attribute.h>
-#include <change/branch.h>
-#include <change/functor/invento_list.h>
-#include <col.h>
-#include <error.h> // for assert
-#include <option.h>
-#include <output.h>
-#include <project.h>
-#include <uuidentifier.h>
+#include <libaegis/ael/column_width.h>
+#include <libaegis/attribute.h>
+#include <libaegis/change/branch.h>
+#include <libaegis/change/functor/invento_list.h>
+#include <libaegis/col.h>
+#include <common/error.h> // for assert
+#include <libaegis/option.h>
+#include <libaegis/output.h>
+#include <libaegis/project.h>
+#include <common/uuidentifier.h>
 
 
 change_functor_inventory_list::~change_functor_inventory_list()

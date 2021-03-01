@@ -1,6 +1,6 @@
 //
 //	aegis - project change supervisor
-//	Copyright (C) 2004 Peter Miller;
+//	Copyright (C) 2004, 2005 Peter Miller;
 //	All rights reserved.
 //
 //	This program is free software; you can redistribute it and/or modify
@@ -20,11 +20,11 @@
 // MANIFEST: functions to manipulate build_headers
 //
 
-#include <ac/ctype.h>
+#include <common/ac/ctype.h>
 
-#include <abbreviate.h>
-#include <ael/build_header.h>
-#include <ael/column_width.h>
+#include <common/abbreviate.h>
+#include <libaegis/ael/build_header.h>
+#include <libaegis/ael/column_width.h>
 
 
 string_ty *

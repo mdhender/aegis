@@ -23,9 +23,7 @@
 #ifndef LIBAEGIS_XML_NODE_RSS_TIMEDATE_H
 #define LIBAEGIS_XML_NODE_RSS_TIMEDATE_H
 
-#pragma interface "xml_node_rss_timedate"
-
-#include <xml_node/rss.h>
+#include <libaegis/xml_node/rss.h>
 
 /**
   * The xml_node_rss_timedate class is used to represent a node processing

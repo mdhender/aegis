@@ -20,14 +20,16 @@
 // MANIFEST: implementation of the os_magic_file class
 //
 
-#include <ac/magic.h>
-#include <ac/stdlib.h>
+#include <common/ac/magic.h>
+#include <common/ac/stdlib.h>
 
-#include <env.h>
-#include <os.h>
-#include <sub.h>
-#include <nstring/list.h>
+#include <common/env.h>
+#include <libaegis/os.h>
+#include <libaegis/sub.h>
+#include <common/nstring/list.h>
 
+
+#ifdef SOURCE_FORGE_HACK
 
 static void
 fix_magic_path()
@@ -42,16 +44,20 @@ fix_magic_path()
     files.split(nstring(cp), ":");
     files.push_back_unique("/etc/magic");
     files.push_back_unique("/usr/share/file/magic");
+    files.push_back_unique("/usr/share/misc/magic");
     files.push_back_unique("/usr/share/misc/file/magic");
     env_set("MAGIC", files.unsplit(":").c_str());
-
 }
+
+#endif
 
 
 nstring
 os_magic_file(const nstring &filename)
 {
+#ifdef SOURCE_FORGE_HACK
     fix_magic_path();
+#endif
 
     os_become_must_be_active();
     magic_t cookie = magic_open(MAGIC_MIME | MAGIC_SYMLINK);

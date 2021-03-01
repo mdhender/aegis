@@ -1,6 +1,6 @@
 //
 //	aegis - project change supervisor
-//	Copyright (C) 2003, 2004 Peter Miller;
+//	Copyright (C) 2003-2005 Peter Miller;
 //	All rights reserved.
 //
 //	This program is free software; you can redistribute it and/or modify
@@ -20,23 +20,24 @@
 // MANIFEST: functions to manipulate activitys
 //
 
-#include <ac/stdio.h>
-#include <ac/string.h>
+#include <common/ac/stdio.h>
+#include <common/ac/string.h>
 
-#include <change.h>
-#include <change/file.h>
-#include <change/list.h>
-#include <cstate.h>
-#include <emit/brief_descri.h>
-#include <emit/edit_number.h>
-#include <emit/project.h>
-#include <error.h> // for assert
-#include <get/file/activity.h>
-#include <http.h>
-#include <project.h>
-#include <project/history.h>
-#include <str_list.h>
-#include <symtab.h>
+#include <common/error.h> // for assert
+#include <common/str_list.h>
+#include <common/symtab.h>
+#include <libaegis/change/file.h>
+#include <libaegis/change.h>
+#include <libaegis/change/list.h>
+#include <libaegis/cstate.h>
+#include <libaegis/project.h>
+#include <libaegis/project/history.h>
+
+#include <aeget/emit/brief_descri.h>
+#include <aeget/emit/edit_number.h>
+#include <aeget/emit/project.h>
+#include <aeget/get/file/activity.h>
+#include <aeget/http.h>
 
 
 void
@@ -230,7 +231,7 @@ get_file_activity(change_ty *master_cp, string_ty *filename,
 	    printf("</td><td valign=\"top\">\n");
 	    printf("%s\n", file_usage_ename(src->usage));
 	    printf("</td><td valign=\"top\">\n");
-	    emit_edit_number(cp, src);
+	    emit_edit_number(cp, src, 0);
 	    printf("</td><td valign=\"top\" align=\"right\">\n");
 	    emit_change_href(cp, "menu");
 	    printf("%ld</a>", magic_zero_decode(cp->number));

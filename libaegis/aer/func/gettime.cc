@@ -1,6 +1,6 @@
 //
 //	aegis - project change supervisor
-//	Copyright (C) 1997, 1999, 2004 Peter Miller;
+//	Copyright (C) 1997, 1999, 2004, 2005 Peter Miller;
 //	All rights reserved.
 //
 //	This program is free software; you can redistribute it and/or modify
@@ -20,15 +20,15 @@
 // MANIFEST: functions to implement the builtin gettime function
 //
 
-#include <aer/expr.h>
-#include <aer/func/gettime.h>
-#include <aer/value/error.h>
-#include <aer/value/integer.h>
-#include <aer/value/string.h>
-#include <aer/value/time.h>
-#include <error.h>
-#include <gettime.h>
-#include <sub.h>
+#include <libaegis/aer/expr.h>
+#include <libaegis/aer/func/gettime.h>
+#include <libaegis/aer/value/error.h>
+#include <libaegis/aer/value/integer.h>
+#include <libaegis/aer/value/string.h>
+#include <libaegis/aer/value/time.h>
+#include <common/error.h>
+#include <common/gettime.h>
+#include <libaegis/sub.h>
 
 
 static int

@@ -1,6 +1,6 @@
 //
 //      aegis - project change supervisor
-//      Copyright (C) 2001, 2002, 2004 Peter Miller;
+//      Copyright (C) 2001, 2002, 2004, 2005 Peter Miller;
 //      All rights reserved.
 //
 //      This program is free software; you can redistribute it and/or modify
@@ -20,10 +20,10 @@
 // MANIFEST: functions to manipulate searchs
 //
 
-#include <error.h>
-#include <format/search.h>
-#include <mem.h>
-#include <str_list.h>
+#include <common/error.h>
+#include <aeimport/format/search.h>
+#include <common/mem.h>
+#include <common/str_list.h>
 
 
 format_search_ty *
@@ -53,7 +53,7 @@ format_search_delete(format_search_ty *fsp)
     }
     if (fsp->root)
     {
-        format_version_delete(fsp->root);
+        delete(fsp->root);
         fsp->root = 0;
     }
     mem_free(fsp);
@@ -81,7 +81,7 @@ format_search_validate(format_search_ty *fsp)
 {
     assert(str_validate(fsp->filename_physical));
     assert(str_validate(fsp->filename_logical));
-    format_version_validate(fsp->root);
+    fsp->root->validate();
 }
 
 #endif

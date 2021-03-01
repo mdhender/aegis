@@ -1,6 +1,6 @@
 //
 //	aegis - project change supervisor
-//	Copyright (C) 1991-1994, 1996, 1997, 2003, 2004 Peter Miller;
+//	Copyright (C) 1991-1994, 1996, 1997, 2003-2005 Peter Miller;
 //	All rights reserved.
 //
 //	This program is free software; you can redistribute it and/or modify
@@ -23,9 +23,7 @@
 #ifndef COMMON_STR_LIST_H
 #define COMMON_STR_LIST_H
 
-#pragma interface "string_list_ty"
-
-#include <str.h>
+#include <common/str.h>
 
 /** \addtogroup String_List
   * \brief String Lists

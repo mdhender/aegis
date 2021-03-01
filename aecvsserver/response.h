@@ -1,6 +1,6 @@
 //
 //	aegis - project change supervisor
-//	Copyright (C) 2004 Peter Miller;
+//	Copyright (C) 2004-2006 Peter Miller;
 //	All rights reserved.
 //
 //	This program is free software; you can redistribute it and/or modify
@@ -20,48 +20,70 @@
 // MANIFEST: interface definition for ae-cvs-server/response.c
 //
 
-#ifndef AE_CVS_SERVER_RESPONSE_H
-#define AE_CVS_SERVER_RESPONSE_H
+#ifndef AECVSSERVER_RESPONSE_H
+#define AECVSSERVER_RESPONSE_H
 
-#include <net.h> // for response_code_ty
+#include <aecvsserver/net.h> // for response_code_ty
 
 struct output_ty; // forward
 
 /**
-  * The response_ty class is an abstract base class used to represent
+  * The response class is an abstract base class used to represent
   * a generic response to be sent to the client.
   */
-struct response_ty
+class response
 {
-    const struct response_method_ty *vptr;
+public:
+    /**
+      * The destructor.
+      */
+    virtual ~response();
+
+    /**
+      * The write method is used to write a response to the client.
+      */
+    virtual void write(output_ty *op) = 0;
+
+    /**
+      * The response_code_get is used to get the response code of the response.
+      */
+    virtual response_code_ty code_get() const = 0;
+
+    /**
+      * The flushable method is used to determine if a response should
+      * be flushed or not.
+      */
+    virtual bool flushable() const;
+
+protected:
+    /**
+      * The default constructor.
+      */
+    response();
+
+private:
+
+    /**
+      * The copy constructor.  Do not use.
+      */
+    response(const response &);
+
+    /**
+      * The assignment operator  Do not use.
+      */
+    response &operator=(const response &);
 };
 
-/**
-  * The response_delete function is used to release the respources held
-  * by a response once you are done with it.
-  */
-void response_delete(response_ty *rp);
-
-/**
-  * The response_ty::write method is used to write a response to the client.
-  */
-void response_write(response_ty *rp, struct output_ty *);
-
-/**
-  * The response_code_get is used to get the response code of the response.
-  */
-response_code_ty response_code_get(response_ty *);
-
-/**
-  * The response flushable function is used to determine if a response
-  * should be flushed or not.
-  */
-int response_flushable(response_ty *);
 
 /**
   * The output_mode_string function is used to write a file mode to an
   * ouput stream.
+  *
+  * @param op
+  *     where to write the string
+  * @param mode
+  *     the mode bits to turn into a string.
   */
 void output_mode_string(struct output_ty *op, int mode);
 
-#endif // AE_CVS_SERVER_RESPONSE_H
+#endif // AECVSSERVER_RESPONSE_H

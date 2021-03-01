@@ -1,6 +1,6 @@
 .\"
 .\"	aegis - project change supervisor
-.\"	Copyright (C) 1999, 2002, 2004 Peter Miller;
+.\"	Copyright (C) 1999, 2002, 2004, 2005 Peter Miller;
 .\"	All rights reserved.
 .\"
 .\"	This program is free software; you can redistribute it and/or modify
@@ -88,15 +88,15 @@ The branches only influence each other when they are integrated,
 just as changes only influence each other when they are integrated.
 .LP
 There are times when a branch being integrated into its parent is found
-to be inadequate.  Aegis provides a simple mechanism to ``bounce''
+to be inadequate.  Aegis provides a simple mechanism to \[lq]bounce\[rq]
 a branch integration.  Recall that, for Aegis, branches are the same
-as changes.  Just as you ``develop end'' a change (see \fIaede\fP(1)
+as changes.  Just as you \[lq]develop end\[rq] a change (see \fIaede\fP(1)
 for more information) you also \fIaede\fP a branch when development on
 it is completed.
 .LP
 Once a branch has develop-end (stops being an \fIactive\fP branch),
 it is reviewed as a normal change, and integrated as a normal change.
-If integration failed, it returns to ``being developed'' and becomes
+If integration failed, it returns to \[lq]being developed\[rq] and becomes
 an active branch once again, until the next \fIaede\fP.  As you can
 see, it is as easy to bounce a branch integration as it is to bounce a
 change integration.
@@ -130,7 +130,7 @@ being anything to you want - see the \fItest_command\fP field in
 integration tests can be automated, it makes sense to preserve them in
 the repository \- they are some of the most valuable regression tests
 for developers, because they describe correct behavior outside the
-\&``box'' the developer usually works in.
+\&\[lq]box\[rq] the developer usually works in.
 .nh 3 "The Next Cycle"
 .LP
 Once you have a fully-integrated product, what happens on the next

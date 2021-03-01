@@ -1,6 +1,6 @@
 //
 //	aegis - project change supervisor
-//	Copyright (C) 1991-1995, 1998, 1999, 2001-2004 Peter Miller;
+//	Copyright (C) 1991-1995, 1998, 1999, 2001-2005 Peter Miller;
 //	All rights reserved.
 //
 //	This program is free software; you can redistribute it and/or modify
@@ -28,12 +28,12 @@
 // a pointer test, and thus very fast.
 //
 
-#include <ac/stdlib.h>
-#include <ac/string.h>
+#include <common/ac/stdlib.h>
+#include <common/ac/string.h>
 
-#include <error.h>
-#include <mem.h>
-#include <str.h>
+#include <common/error.h>
+#include <common/mem.h>
+#include <common/str.h>
 
 
 //

@@ -1,6 +1,6 @@
 //
 //	aegis - project change supervisor
-//	Copyright (C) 2000-2004 Peter Miller;
+//	Copyright (C) 2000-2005 Peter Miller;
 //	All rights reserved.
 //
 //	This program is free software; you can redistribute it and/or modify
@@ -20,17 +20,17 @@
 // MANIFEST: functions to manipulate uconf values
 //
 
-#include <aer/value/error.h>
-#include <aer/value/integer.h>
-#include <aer/value/list.h>
-#include <aer/value/string.h>
-#include <aer/value/struct.h>
-#include <aer/value/uconf.h>
-#include <getpw_cache.h>
-#include <os.h>
-#include <sub.h>
-#include <trace.h>
-#include <user.h>
+#include <libaegis/aer/value/error.h>
+#include <libaegis/aer/value/integer.h>
+#include <libaegis/aer/value/list.h>
+#include <libaegis/aer/value/string.h>
+#include <libaegis/aer/value/struct.h>
+#include <libaegis/aer/value/uconf.h>
+#include <libaegis/getpw_cache.h>
+#include <libaegis/os.h>
+#include <libaegis/sub.h>
+#include <common/trace.h>
+#include <libaegis/user.h>
 
 
 static rpt_value_ty *

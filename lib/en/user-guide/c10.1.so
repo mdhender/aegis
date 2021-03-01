@@ -1,6 +1,6 @@
 .\"
 .\"	aegis - project change supervisor
-.\"	Copyright (C) 1999, 2002 Peter Miller;
+.\"	Copyright (C) 1999, 2002, 2005 Peter Miller;
 .\"	All rights reserved.
 .\"
 .\"	This program is free software; you can redistribute it and/or modify
@@ -47,7 +47,7 @@ developers, but it isn't reviewed and integrated, so beware.
 It is more usual to send a change which has been completed.  In this case
 the version of the file which was committed is sent.  If necessary, the
 history files will be consulted to reconstruct this information.  See the
-\&``\fIAutomatic Send\fP'' section, below, for more discussion of this.
+\&\[lq]\fIAutomatic Send\fP\[rq] section, below, for more discussion of this.
 .LP
 There are many options for customizing the e-mail message sent to
 \&\f(CWjoe.blow@example.com\fP, see \fIaedist\fP(1) for more information.
@@ -67,7 +67,7 @@ This can be a very large change set, because it is all files of the project.
 There are times when remote developers are not interested in a
 blow-by-blow update of your repository.  Instead they want to have
 updates from time to time.  In order to send them the current state of
-your active development branch, in this example ``\fIexample.4.2\fP'',
+your active development branch, in this example \[lq]\fIexample.4.2\fP\[rq],
 you would use a command of the form
 .E(
 \f(CB%\fP aedist -send -p example.4 -c 2 | \e
@@ -76,7 +76,7 @@ you would use a command of the form
 .E)
 Notice how the correspondence between branches and change sets is
 exploited.  The baseline of a branch is the development directory of the
-``super change'' is represents.
+\[lq]super change\[rq] is represents.
 .LP
 Branch change sets like this are smaller than whole baselines, because
 they include only the files altered by this branch, rather then the
@@ -142,9 +142,9 @@ need the same pathname for the project directory, just the same project
 name.
 .LP
 Once you have this project created, request the remote repository send
-you a ``baseline'' change, as described above.  Once you have received
+you a \[lq]baseline\[rq] change, as described above.  Once you have received
 this, and it is integrated successfully, you are ready to receive and
-apply change sets.  This is an inherently ``pull'' activity, as the
+apply change sets.  This is an inherently \[lq]pull\[rq] activity, as the
 source may never have heard of you before.  The initial baseline may
 arrive by e-mail, or floppy disk, or you may retrieve it from the web,
 it all depends how the project is being managed.

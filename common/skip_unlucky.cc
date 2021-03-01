@@ -1,6 +1,6 @@
 //
 //	aegis - project change supervisor
-//	Copyright (C) 1999, 2004 Peter Miller;
+//	Copyright (C) 1999, 2004, 2005 Peter Miller;
 //	All rights reserved.
 //
 //	This program is free software; you can redistribute it and/or modify
@@ -20,7 +20,7 @@
 // MANIFEST: functions to skip unlucky numbers
 //
 
-#include <skip_unlucky.h>
+#include <common/skip_unlucky.h>
 
 
 long
@@ -37,11 +37,11 @@ skip_unlucky(long n)
     //
     // Christian tradition: the number of the devil.
     //
-    if (n == 666)
+    if (n == 666 || n == 69)
 	++n;
 
     //
-    // Eastern tradition: the number ``4'' can sound like ``death''
+    // Eastern tradition: the number "4" can sound like "death"
     // if slightly mis-pronounced.
     //
     for (mult = 1; mult < n; mult *= 10)

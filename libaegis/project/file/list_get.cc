@@ -1,6 +1,6 @@
 //
 //	aegis - project change supervisor
-//	Copyright (C) 1999, 2001-2004 Peter Miller;
+//	Copyright (C) 1999, 2001-2006 Peter Miller;
 //	All rights reserved.
 //
 //	This program is free software; you can redistribute it and/or modify
@@ -20,20 +20,19 @@
 // MANIFEST: functions to manipulate list_gets
 //
 
-#include <change/file.h>
-#include <error.h> // for assert
-#include <project/file.h>
-#include <project/file/list_get.h>
-#include <str_list.h>
-#include <symtab_iter.h>
-#include <trace.h>
+#include <libaegis/change/file.h>
+#include <common/error.h> // for assert
+#include <libaegis/project/file.h>
+#include <common/str_list.h>
+#include <common/symtab_iter.h>
+#include <common/trace.h>
 
 
 string_list_ty *
-project_file_list_get(project_ty *pp, view_path_ty as_view_path)
+project_ty::file_list_get(view_path_ty as_view_path)
 {
-    trace(("project_file_list_get(pp = %8.8lX, as_view_path = %s)\n{\n",
-	(long)pp, view_path_ename(as_view_path)));
+    trace(("project_ty::file_list_get(this = %8.8lX, as_view_path = %s)\n{\n",
+	(long)this, view_path_ename(as_view_path)));
 #ifdef DEBUG
     switch (as_view_path)
     {
@@ -48,7 +47,7 @@ project_file_list_get(project_ty *pp, view_path_ty as_view_path)
 	break;
     }
 #endif
-    if (!pp->file_list[as_view_path])
+    if (!file_list[as_view_path])
     {
 	project_ty	*ppp;
 	change_ty	*cp;
@@ -71,10 +70,10 @@ project_file_list_get(project_ty *pp, view_path_ty as_view_path)
 	symtab_ty *tmp = new symtab_ty(100);
 	trace(("tmp = %08lX\n", (long)tmp));
 	assert(tmp->valid());
-	for (ppp = pp; ppp; ppp = ppp->parent)
+	for (ppp = this; ppp; ppp = (ppp->is_a_trunk() ? 0 : ppp->parent_get()))
 	{
 	    trace(("project \"%s\"\n", project_name_get(ppp)->str_text));
-	    cp = project_change_get(ppp);
+	    cp = ppp->change_get();
 	    trace(("mark\n"));
 	    for (j = 0; ; ++j)
 	    {
@@ -167,7 +166,7 @@ project_file_list_get(project_ty *pp, view_path_ty as_view_path)
 
 	//
 	// Walk the symbol table to build the file name list.
-	// This has O(1) query times.
+	// This has O(n) running time.
 	//
 	trace(("tmp = %08lX\n", (long)tmp));
 	assert(tmp->valid());
@@ -231,9 +230,9 @@ project_file_list_get(project_ty *pp, view_path_ty as_view_path)
 	// of files.
 	//
 	wlp->sort();
-	pp->file_list[as_view_path] = wlp;
+	file_list[as_view_path] = wlp;
     }
-    trace(("return %8.8lX;\n", (long)pp->file_list[as_view_path]));
+    trace(("return %8.8lX;\n", (long)file_list[as_view_path]));
     trace(("}\n"));
-    return pp->file_list[as_view_path];
+    return file_list[as_view_path];
 }

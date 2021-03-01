@@ -20,24 +20,24 @@
 // MANIFEST: functions to manipulate files
 //
 
-#include <ac/stdio.h>
-#include <ac/string.h>
+#include <common/ac/stdio.h>
+#include <common/ac/string.h>
 
-#include <change.h>
-#include <get/change.h>
-#include <get/change/file_invento.h>
-#include <get/file.h>
-#include <get/file/activity.h>
-#include <get/file/cause_densit.h>
-#include <get/file/contents.h>
-#include <get/file/diff.h>
-#include <get/file/history.h>
-#include <get/file/menu.h>
-#include <get/file/metrics.h>
-#include <get/project.h>
-#include <http.h>
-#include <project.h>
-#include <str_list.h>
+#include <libaegis/change.h>
+#include <aeget/get/change.h>
+#include <aeget/get/change/file_invento.h>
+#include <aeget/get/file.h>
+#include <aeget/get/file/activity.h>
+#include <aeget/get/file/cause_densit.h>
+#include <aeget/get/file/contents.h>
+#include <aeget/get/file/diff.h>
+#include <aeget/get/file/history.h>
+#include <aeget/get/file/menu.h>
+#include <aeget/get/file/metrics.h>
+#include <aeget/get/project.h>
+#include <aeget/http.h>
+#include <libaegis/project.h>
+#include <common/str_list.h>
 
 
 static void

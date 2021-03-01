@@ -20,13 +20,13 @@
 // MANIFEST: functions to manipulate contexts
 //
 
-#include <ac/string.h>
+#include <common/ac/string.h>
 
-#include <error.h>
-#include <patch.h>
-#include <patch/context.h>
-#include <patch/format/context.h>
-#include <trace.h>
+#include <common/error.h>
+#include <libaegis/patch.h>
+#include <libaegis/patch/context.h>
+#include <libaegis/patch/format/context.h>
+#include <common/trace.h>
 
 static string_ty *star15;
 

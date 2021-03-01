@@ -1,6 +1,6 @@
 //
 //	aegis - project change supervisor
-//	Copyright (C) 2004 Peter Miller;
+//	Copyright (C) 2004, 2005 Peter Miller;
 //	All rights reserved.
 //
 //	This program is free software; you can redistribute it and/or modify
@@ -23,10 +23,8 @@
 #ifndef LIBAEGIS_UNDO_ITEM_RMDIR_ERROK_H
 #define LIBAEGIS_UNDO_ITEM_RMDIR_ERROK_H
 
-#pragma interface "undo_item_rmdir_errok"
-
-#include <nstring.h>
-#include <undo/item.h>
+#include <common/nstring.h>
+#include <libaegis/undo/item.h>
 
 /**
   * The undo_item_rmdir_errok class is used to represent a recursive

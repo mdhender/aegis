@@ -23,7 +23,7 @@
 #ifndef LIBAEGIS_DIR_H
 #define LIBAEGIS_DIR_H
 
-#include <nstring.h>
+#include <common/nstring.h>
 
 class dir_functor; // forward
 

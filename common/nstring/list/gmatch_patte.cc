@@ -20,8 +20,8 @@
 // MANIFEST: implementation of the nstring_list::gmatch_pattern method
 //
 
-#include <gmatch.h>
-#include <nstring/list.h>
+#include <common/gmatch.h>
+#include <common/nstring/list.h>
 
 
 int

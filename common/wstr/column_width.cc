@@ -1,6 +1,6 @@
 //
 //	aegis - project change supervisor
-//	Copyright (C) 1999, 2004 Peter Miller;
+//	Copyright (C) 1999, 2004, 2005 Peter Miller;
 //	All rights reserved.
 //
 //	This program is free software; you can redistribute it and/or modify
@@ -20,9 +20,9 @@
 // MANIFEST: functions to calculate printable column width
 //
 
-#include <ac/wchar.h>
+#include <common/ac/wchar.h>
 
-#include <wstr.h>
+#include <common/wstr.h>
 
 
 int

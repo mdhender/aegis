@@ -1,6 +1,6 @@
 //
 //	aegis - project change supervisor
-//	Copyright (C) 2002-2005 Peter Miller;
+//	Copyright (C) 2002-2006 Peter Miller;
 //	All rights reserved.
 //
 //	This program is free software; you can redistribute it and/or modify
@@ -20,21 +20,21 @@
 // MANIFEST: functions to manipulate aecps
 //
 
-#include <arglex2.h>
-#include <change.h>
-#include <command/aecp.h>
-#include <command/generic.h>
-#include <command/private.h>
-#include <complete/nil.h>
-#include <complete/change/number.h>
-#include <complete/project/branch.h>
-#include <complete/project/delta.h>
-#include <complete/project/file.h>
-#include <complete/project/name.h>
-#include <project.h>
-#include <project/history.h>
-#include <user.h>
-#include <zero.h>
+#include <libaegis/arglex2.h>
+#include <libaegis/change.h>
+#include <aecomplete/command/aecp.h>
+#include <aecomplete/command/generic.h>
+#include <aecomplete/command/private.h>
+#include <aecomplete/complete/nil.h>
+#include <aecomplete/complete/change/number.h>
+#include <aecomplete/complete/project/branch.h>
+#include <aecomplete/complete/project/delta.h>
+#include <aecomplete/complete/project/file.h>
+#include <aecomplete/complete/project/name.h>
+#include <libaegis/project.h>
+#include <libaegis/project/history.h>
+#include <libaegis/user.h>
+#include <libaegis/zero.h>
 
 
 static void
@@ -244,7 +244,7 @@ completion_get(command_ty *cmd)
     if (!project_name)
 	project_name = user_default_project();
     pp = project_alloc(project_name);
-    project_bind_existing(pp);
+    pp->bind_existing();
 
     //
     // If we need to complete a change number, we have the project now.
@@ -274,7 +274,7 @@ completion_get(command_ty *cmd)
     if (incomplete_delta)
     {
 	if (branch)
-	    pp = project_find_branch(pp, branch);
+	    pp = pp->find_branch(branch);
 	return complete_project_delta(pp);
     }
 

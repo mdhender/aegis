@@ -1,6 +1,6 @@
 //
 //	aegis - project change supervisor
-//	Copyright (C) 2003, 2004 Peter Miller;
+//	Copyright (C) 2003-2005 Peter Miller;
 //	All rights reserved.
 //
 //	This program is free software; you can redistribute it and/or modify
@@ -20,8 +20,8 @@
 // MANIFEST: functions to manipulate set_charstars
 //
 
-#include <nstring.h>
-#include <sub.h>
+#include <common/nstring.h>
+#include <libaegis/sub.h>
 
 
 void

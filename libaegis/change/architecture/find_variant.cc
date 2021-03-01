@@ -1,6 +1,6 @@
 //
 //	aegis - project change supervisor
-//	Copyright (C) 1999, 2003, 2004 Peter Miller;
+//	Copyright (C) 1999, 2003-2006 Peter Miller;
 //	All rights reserved.
 //
 //	This program is free software; you can redistribute it and/or modify
@@ -20,30 +20,35 @@
 // MANIFEST: functions to manipulate find_variants
 //
 
-#include <change/architecture/find_variant.h>
-#include <error.h> // for assert
-#include <trace.h>
-#include <uname.h>
+#include <libaegis/change/architecture/find_variant.h>
+#include <common/error.h> // for assert
+#include <common/trace.h>
+#include <libaegis/uname.h>
 
 
 cstate_architecture_times_ty *
 change_find_architecture_variant(change_ty *cp)
 {
-    string_ty       *an;
-    cstate_architecture_times_ty *tp;
+    string_ty *variant = change_architecture_name(cp, 1);
+    return change_find_architecture_variant(cp, variant);
+}
 
+
+cstate_architecture_times_ty *
+change_find_architecture_variant(change_ty *cp, string_ty *an)
+{
     //
     // find the name of the architecture variant
     //	one of the patterns, not the actual value in architecture
     //
-    trace(("find_architecture_variant(cp = %8.8lX)\n{\n", (long)cp));
+    trace(("change_find_architecture_variant(cp = %8.8lX, an = \"%s\")\n{\n",
+	(long)cp, an->str_text));
     assert(cp->reference_count >= 1);
-    an = change_architecture_name(cp, 1);
 
     //
     // find this variant in the times list
     //
-    tp = change_architecture_times_find(cp, an);
+    cstate_architecture_times_ty *tp = change_architecture_times_find(cp, an);
 
     //
     // adjust the node

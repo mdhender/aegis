@@ -1,6 +1,6 @@
 //
 //	aegis - project change supervisor
-//	Copyright (C) 2002-2004 Peter Miller;
+//	Copyright (C) 2002-2005 Peter Miller;
 //	All rights reserved.
 //
 //	This program is free software; you can redistribute it and/or modify
@@ -20,10 +20,10 @@
 // MANIFEST: functions to manipulate ae_ps
 //
 
-#include <command/ae_p.h>
-#include <command/private.h>
-#include <complete/project/name.h>
-#include <complete/project/name.h>
+#include <aecomplete/command/ae_p.h>
+#include <aecomplete/command/private.h>
+#include <aecomplete/complete/project/name.h>
+#include <aecomplete/complete/project/name.h>
 
 
 static void

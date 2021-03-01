@@ -20,12 +20,10 @@
 // MANIFEST: implementation of the rfc822_functor_list_meta class
 //
 
-#pragma implementation "rfc822_functor_list_meta"
+#include <common/ac/stdio.h>
 
-#include <ac/stdio.h>
-
-#include <nstring/list.h>
-#include <rfc822/functor/list_meta.h>
+#include <common/nstring/list.h>
+#include <libaegis/rfc822/functor/list_meta.h>
 
 
 rfc822_functor_list_meta::~rfc822_functor_list_meta()

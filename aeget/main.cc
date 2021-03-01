@@ -20,17 +20,16 @@
 // MANIFEST: functions to manipulate mains
 //
 
-#include <ac/stdlib.h>
+#include <common/ac/stdlib.h>
 
-#include <arglex2.h>
-#include <env.h>
-#include <cgi.h>
-#include <http.h>
-#include <language.h>
-#include <os.h>
-#include <quit.h>
-#include <r250.h>
-#include <rsrc_limits.h>
+#include <libaegis/arglex2.h>
+#include <common/env.h>
+#include <aeget/cgi.h>
+#include <aeget/http.h>
+#include <common/language.h>
+#include <libaegis/os.h>
+#include <common/quit.h>
+#include <common/rsrc_limits.h>
 
 
 int
@@ -39,7 +38,6 @@ main(int argc, char **argv)
     //
     // Initialize everything thyat needs it.
     //
-    r250_init();
     os_become_init_mortal();
     arglex2_init(argc, argv);
     env_initialize();

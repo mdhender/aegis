@@ -1,6 +1,6 @@
 '\" t
 .\"	aegis - project change supervisor
-.\"	Copyright (C) 2005 Peter Miller;
+.\"	Copyright (C) 2005, 2006 Peter Miller;
 .\"	All rights reserved.
 .\"
 .\"	This program is free software; you can redistribute it and/or modify
@@ -63,7 +63,7 @@ The mechanism is also designed to allow web-based distribution such as
 .RE
 by the use of appropriate CGI scripts and mailcap entries.
 .PP
-It is possible to support both a ``push'' model and a ``pull'' model
+It is possible to support both a \[lq]push\[rq] model and a \[lq]pull\[rq] model
 using this command.  For suggestions and ideas for various ways to do
 this, see the Aegis Users Guide.
 .\" ------------------------------------------------------------------------
@@ -89,19 +89,8 @@ This option may be used to specify the source of a project,
 rather than a change.
 Implies the \fI\-Entire_Source\fP option, unless over-ridden.
 .so o_change.so
-.TP 8n
-\fB\-COmpress
-This option may be used to specify that the output is to be compressed.
-This is the default.
-.TP 8n
-\fB\-No_COmpress
-This option may be used to specify that the output is not to be compressed.
-.TP 8n
-\fB\-COMPATibility\fP \fIversion-number\fP
-This option may be used to specify the version of \fIaerevml\fP(1) which
-will be \fIreceiving\fP this change set.  This information is used to
-select which features to include in the data, and which to omit.
-By default, the latest feature set will be used.
+.so o_compatibil.so
+.so o_compress.so
 .so o_cte.so
 .so o_delta.so
 .TP 8n
@@ -116,6 +105,7 @@ This option suppresses the description header.
 \fB\-Entire_Source\fP
 This option may be used to send the entire source of the project,
 as well as the change source files.
+.so o_mime_heade.so
 .TP 8n
 \fB\-Partial_Source\fP
 This option may be used to send only source files of a change.
@@ -224,8 +214,8 @@ propagated out yet again, there is the possibility of an exponential
 explosion of redundant change sets being distributed again and again.
 .PP
 To combat this, changes are checked after the files are unpacked, but
-before and build or difference or test is performed.  The ``\fIaecpu
---unchanged\fP'' command is used to exclude all files that the local
+before and build or difference or test is performed.  The \[lq]\fIaecpu
+--unchanged\fP\[rq] command is used to exclude all files that the local
 repository already has in the desired form.  If no change files remain
 after this, the change is dropped entirely (see \&\fIaedbu\fP(1) and
 \&\fIaencu\fP(1)).

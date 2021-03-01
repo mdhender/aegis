@@ -1,7 +1,7 @@
 #!/bin/sh
 #
 #	aegis - project change supervisor
-#	Copyright (C) 1994, 1995, 1996, 1997, 1998, 1999 Peter Miller;
+#	Copyright (C) 1994-1999, 2005 Peter Miller;
 #	All rights reserved.
 #
 #	This program is free software; you can redistribute it and/or modify
@@ -341,7 +341,7 @@ $bin/aegis -report -file test.in > log 2>&1
 if test $? -ne 0 ; then cat log; fail; fi
 
 #
-# test the ``projects variable'' functionality
+# test the "projects variable" functionality
 #
 activity="projects variable 347"
 cat > test.in << 'fubar'

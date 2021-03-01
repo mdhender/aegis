@@ -1,6 +1,6 @@
 //
 //	aegis - project change supervisor
-//	Copyright (C) 1996, 1999, 2004 Peter Miller;
+//	Copyright (C) 1996, 1999, 2004, 2005 Peter Miller;
 //	All rights reserved.
 //
 //	This program is free software; you can redistribute it and/or modify
@@ -20,9 +20,9 @@
 // MANIFEST: impliment missing functions from <wchar.h>
 //
 
-#include <ac/stddef.h>
-#include <ac/stdlib.h>
-#include <ac/wchar.h>
+#include <common/ac/stddef.h>
+#include <common/ac/stdlib.h>
+#include <common/ac/wchar.h>
 
 
 #ifndef HAVE_WCSLEN
@@ -147,8 +147,8 @@ wcslen(const wchar_t *wcs)
 //	have glibc).
 //
 
-#include <ac/wchar.h>
-#include <ac/wctype.h>
+#include <common/ac/wchar.h>
+#include <common/ac/wctype.h>
 
 
 #if !HAVE_WCWIDTH

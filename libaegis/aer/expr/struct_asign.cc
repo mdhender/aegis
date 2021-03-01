@@ -1,6 +1,6 @@
 //
 //	aegis - project change supervisor
-//	Copyright (C) 1994, 1996, 2002-2004 Peter Miller;
+//	Copyright (C) 1994, 1996, 2002-2005 Peter Miller;
 //	All rights reserved.
 //
 //	This program is free software; you can redistribute it and/or modify
@@ -20,11 +20,11 @@
 // MANIFEST: functions to manipulate struct member assignment expressions
 //
 
-#include <aer/expr/struct.h>
-#include <aer/expr/struct_asign.h>
-#include <aer/value/ref.h>
-#include <aer/value/void.h>
-#include <symtab.h>
+#include <libaegis/aer/expr/struct.h>
+#include <libaegis/aer/expr/struct_asign.h>
+#include <libaegis/aer/value/ref.h>
+#include <libaegis/aer/value/void.h>
+#include <common/symtab.h>
 
 
 struct rpt_expr_struct_assign_ty

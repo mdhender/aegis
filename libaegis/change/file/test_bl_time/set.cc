@@ -1,6 +1,6 @@
 //
 //	aegis - project change supervisor
-//	Copyright (C) 1999, 2001-2004 Peter Miller;
+//	Copyright (C) 1999, 2001-2006 Peter Miller;
 //	All rights reserved.
 //
 //	This program is free software; you can redistribute it and/or modify
@@ -20,15 +20,18 @@
 // MANIFEST: functions to manipulate sets
 //
 
-#include <change/file.h>
-#include <error.h> // for assert
+#include <common/error.h> // for assert
+#include <common/trace.h>
+#include <libaegis/change/file.h>
 
 
 void
 change_file_test_baseline_time_set(change_ty *cp, fstate_src_ty *src_data,
     time_t when, string_ty *variant)
 {
-    fstate_src_architecture_times_list_ty *atlp;
+    trace(("change_file_test_baseline_time_set(cp = %08lX, src_data = %08lX, "
+	"when = %ld, variant = \"%s\")\n{\n", (long)cp, (long)src_data,
+	(long)when, variant->str_text));
     fstate_src_architecture_times_ty *atp = 0;
     size_t          j;
     size_t          k;
@@ -39,13 +42,14 @@ change_file_test_baseline_time_set(change_ty *cp, fstate_src_ty *src_data,
     //
     if (!variant)
 	variant = change_architecture_name(cp, 1);
+    trace_string(variant);
     if (!src_data->architecture_times)
     {
 	src_data->architecture_times =
 	    (fstate_src_architecture_times_list_ty *)
     	    fstate_src_architecture_times_list_type.alloc();
     }
-    atlp = src_data->architecture_times;
+    fstate_src_architecture_times_list_ty *atlp = src_data->architecture_times;
     for (j = 0; j < atlp->length; ++j)
     {
 	atp = atlp->list[j];
@@ -156,5 +160,6 @@ change_file_test_baseline_time_set(change_ty *cp, fstate_src_ty *src_data,
     //
     // set the change test time
     //
-    change_test_baseline_time_set(cp, when);
+    change_test_baseline_time_set(cp, variant, when);
+    trace(("}\n"));
 }

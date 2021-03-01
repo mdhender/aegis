@@ -20,16 +20,16 @@
 // MANIFEST: functions to manipulate languages
 //
 
-#include <ac/libintl.h>
-#include <ac/locale.h>
-#include <ac/stdlib.h>
-#include <ac/string.h>
+#include <common/ac/libintl.h>
+#include <common/ac/locale.h>
+#include <common/ac/stdlib.h>
+#include <common/ac/string.h>
 
-#include <env.h>
-#include <error.h>
-#include <language.h>
-#include <libdir.h>
-#include <mem.h>
+#include <common/env.h>
+#include <common/error.h>
+#include <common/language.h>
+#include <common/libdir.h>
+#include <common/mem.h>
 
 #ifdef DEBUG
 

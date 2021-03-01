@@ -1,6 +1,6 @@
 //
 //	aegis - project change supervisor
-//	Copyright (C) 2002-2005 Peter Miller;
+//	Copyright (C) 2002-2006 Peter Miller;
 //	All rights reserved.
 //
 //	This program is free software; you can redistribute it and/or modify
@@ -20,22 +20,20 @@
 // MANIFEST: functions to manipulate tars
 //
 
-#include <error.h> // for assert
-#include <header.h>
-#include <input/crop.h>
-#include <input/tar.h>
-#include <trace.h>
+#include <common/error.h> // for assert
+#include <aetar/header.h>
+#include <libaegis/input/crop.h>
+#include <aetar/input/tar.h>
+#include <common/trace.h>
 
 
 input_tar::~input_tar()
 {
     trace(("~input_tar()\n"));
-    delete deeper;
-    deeper = 0;
 }
 
 
-input_tar::input_tar(input_ty *arg) :
+input_tar::input_tar(input &arg) :
     deeper(arg)
 {
     trace(("input_tar()\n"));
@@ -87,7 +85,7 @@ all_zero(const char *buf, size_t len)
 }
 
 
-input_ty *
+input
 input_tar::child(nstring &archive_name)
 {
     //
@@ -230,17 +228,12 @@ input_tar::child(nstring &archive_name)
 	input_crop *sub = 0;
 	if (asize == hsize)
 	{
-	    sub = new input_crop(deeper, false, hsize);
+	    sub = new input_crop(deeper, hsize);
 	}
 	else
 	{
-	    sub =
-		new input_crop
-		(
-		    new input_crop(deeper, false, asize),
-		    true,
-		    hsize
-		);
+	    input temp = new input_crop(deeper, asize);
+	    sub = new input_crop(temp, hsize);
 	}
 	sub->set_name
        	(

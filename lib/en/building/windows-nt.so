@@ -1,6 +1,6 @@
 .\"
 .\"	aegis - project change supervisor
-.\"	Copyright (C) 1999, 2001, 2002 Peter Miller;
+.\"	Copyright (C) 1999, 2001, 2002, 2005 Peter Miller;
 .\"	All rights reserved.
 .\"
 .\"	This program is free software; you can redistribute it and/or modify
@@ -39,7 +39,7 @@ Compounding this is the fact that many sites want to develop their
 software for both Unix and Windows NT simultaneously.  This means that
 the security of the repository needs to be guaranteed to be handled
 in the same way by both operating systems, otherwise one can act as a
-``back door'' into the repository.  Many sites do not have the same
+\[lq]back door\[rq] into the repository.  Many sites do not have the same
 users and permissions (sourced from the same network register of users)
 on both Unix and Windows NT, making the mapping almost impossible even
 if the security models did actually correspond.
@@ -93,26 +93,26 @@ Windows NT will make the files belong to the wrong user for files on
 \fIsome\fP partitions, like \fI/tmp\fP.  (This took me days to work out!)
 This confuses both Aegis \fIand\fP RCS.
 .PP
-If you get weird ``Permission denied'' errors from amazingly unlikely
+If you get weird \[lq]Permission denied\[rq] errors from amazingly unlikely
 causes, this is probably why.
 .SS Before You Start
 There are several pieces of software you need before you can build Aegis
 on Cygwin.
 .TP 8n
-I'm going to keep mentioning ``your local GNU mirror''.  You can find
+I'm going to keep mentioning \[lq]your local GNU mirror\[rq].  You can find
 GNU at \f[CW]http://www.gnu.org\fP, however you are better off using
 a local mirror, and these are scattered around the globe.  Follow the
-``mirrors'' link on their front page to find your closest mirror.
+\[lq]mirrors\[rq] link on their front page to find your closest mirror.
 Also, it's often a good idea to configure these packages with
-the ``--with-gnu-gettext'' option to their ./configure commands.
+the \[lq]--with-gnu-gettext\[rq] option to their ./configure commands.
 .TP 8n
 \fBDo not use WinZip\fP to unpack the tarball.  It has a nasty habit of
 turning all of the newlines into CRLFs.  This will confuse \fIlots\fP of
 utilities, especially GNU Groff.
-Use the ``\fItar xzf aegis-\*(v).tar.gz\fP'' command from within Cygwin.
+Use the \[lq]\fItar xzf aegis-\*(v).tar.gz\fP\[rq] command from within Cygwin.
 .TP 8n
 Make sure the Cygwin you are using has GNU Groff 1.15 or later
-(use a ``groff -v'' command).  Grab and install the latest from your
+(use a \[lq]groff -v\[rq] command).  Grab and install the latest from your
 local GNU mirror, if it isn't.
 .TP 8n
 util-linux
@@ -196,7 +196,7 @@ Several tests fail because \fIci\fP (RCS 5.7) dumps core
 much too often for my liking.
 .TP 2n
 \(bu
-A couple of tests fail because they don't expect the ``.exe'' extension
+A couple of tests fail because they don't expect the \[lq].exe\[rq] extension
 on executable files.
 .TP 2n
 \(bu
@@ -209,10 +209,10 @@ and the others have good excuses.
 .SS Install
 Installing the software works as usual, though you need to make some
 choices right at the start (I told you to read this all the way through
-first).  If you want to use the ``\fI/usr/local\fP'' prefix (or any other
+first).  If you want to use the \[lq]\fI/usr/local\fP\[rq] prefix (or any other
 install prefix) you mount it right at the start.  For anything other
-than the ``\fI/usr/local\fP'' default prefix, you also needed to give
-a ``\f(CB--prefix=\fP\fIblahblah\fI'' argument to the \fIconfigure\fP
+than the \[lq]\fI/usr/local\fP\[rq] default prefix, you also needed to give
+a \[lq]\f(CB--prefix=\fP\fIblahblah\fI\[rq] argument to the \fIconfigure\fP
 script, right at the start.
 .RS
 .nf

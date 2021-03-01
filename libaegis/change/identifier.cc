@@ -1,6 +1,6 @@
 //
 //	aegis - project change supervisor
-//	Copyright (C) 2004 Peter Miller;
+//	Copyright (C) 2004, 2005 Peter Miller;
 //	All rights reserved.
 //
 //	This program is free software; you can redistribute it and/or modify
@@ -20,12 +20,10 @@
 // MANIFEST: implementation of the change_identifier class
 //
 
-#pragma implementation "change_identifier"
-
-#include <change.h>
-#include <change/identifier.h>
-#include <trace.h>
-#include <user.h>
+#include <libaegis/change.h>
+#include <libaegis/change/identifier.h>
+#include <common/trace.h>
+#include <libaegis/user.h>
 
 
 change_identifier::~change_identifier()

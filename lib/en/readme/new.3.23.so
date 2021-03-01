@@ -1,6 +1,6 @@
 .\"
 .\"	aegis - project change supervisor
-.\"	Copyright (C) 2000, 2001, 2003 Peter Miller;
+.\"	Copyright (C) 2000, 2001, 2003, 2005 Peter Miller;
 .\"	All rights reserved.
 .\"
 .\"	This program is free software; you can redistribute it and/or modify
@@ -78,7 +78,7 @@ use this exclusively).
 The web site now uses PDF files for documentation, rather than gzipped
 PostScript.  This was for lots of reasons, including the fact theat many
 folks couldn't work out how to print them,
-and also IE decompressed them ``for free'' but left the .gz suffix.
+and also IE decompressed them \[lq]for free\[rq] but left the .gz suffix.
 .PP
 .if n *
 .if t \(bu
@@ -89,7 +89,7 @@ email address in various reports.
 .if n *
 .if t \(bu
 .\" change 17
-The ``\fIaecp -delta\fP'' command now adds removed files to the change
+The \[lq]\fIaecp -delta\fP\[rq] command now adds removed files to the change
 as removed files instead of adding them as copied-but-empty files.
 This should make reproducing projects more accurate, but you need to
 use \fIaermu\fP(1) to get rid of them ,rather than \fIaecpu\fP(1).
@@ -97,7 +97,7 @@ use \fIaermu\fP(1) to get rid of them ,rather than \fIaecpu\fP(1).
 .if n *
 .if t \(bu
 .\" change 16
-The \fIaedist\fP program now adds a ``Content-Disposition'' header to
+The \fIaedist\fP program now adds a \[lq]Content-Disposition\[rq] header to
 the files it generates.  This means MIME programs will unpack it into
 a correctly named file more often.
 .PP
@@ -105,9 +105,10 @@ Numerous build problems have been fixed,
 both for Unix and for Cygwin (Windows).
 There have benn some test script improvements, too.
 .PP
-Contributions have started to roll in using the ``aedist'' format.  This is
+Contributions have started to roll in using the \[lq]aedist\[rq] format.
+This is
 very encouraging.  The instructions for how to do this are contained in
-the ``Howto'', in the \fIDeveloper\fP section.
+the \[lq]Howto\[rq], in the \fIDeveloper\fP section.
 .\" ------------------------------------------------------------------------
 .\" Place new text above this line.
 .SS Version 3.23 (29-Oct-2000)

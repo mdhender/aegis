@@ -1,6 +1,6 @@
 //
 //	aegis - project change supervisor
-//	Copyright (C) 1994-1997, 1999, 2002-2004 Peter Miller;
+//	Copyright (C) 1994-1997, 1999, 2002-2006 Peter Miller;
 //	All rights reserved.
 //
 //	This program is free software; you can redistribute it and/or modify
@@ -20,22 +20,22 @@
 // MANIFEST: functions to manipulate pstate values
 //
 
-#include <ac/string.h>
+#include <common/ac/string.h>
 
-#include <aer/pos.h>
-#include <aer/value/cstate.h>
-#include <aer/value/error.h>
-#include <aer/value/fstate.h>
-#include <aer/value/pstate.h>
-#include <aer/value/string.h>
-#include <aer/value/struct.h>
-#include <change.h>
-#include <error.h>
-#include <gonzo.h>
-#include <os.h>
-#include <project.h>
-#include <sub.h>
-#include <trace.h>
+#include <libaegis/aer/pos.h>
+#include <libaegis/aer/value/cstate.h>
+#include <libaegis/aer/value/error.h>
+#include <libaegis/aer/value/fstate.h>
+#include <libaegis/aer/value/pstate.h>
+#include <libaegis/aer/value/string.h>
+#include <libaegis/aer/value/struct.h>
+#include <libaegis/change.h>
+#include <common/error.h>
+#include <libaegis/gonzo.h>
+#include <libaegis/os.h>
+#include <libaegis/project.h>
+#include <libaegis/sub.h>
+#include <common/trace.h>
 
 
 struct rpt_value_pstate_ty
@@ -79,7 +79,7 @@ grab(rpt_value_pstate_ty *this_thing)
     assert(!this_thing->value);
     assert(this_thing->name);
     pp = project_alloc(this_thing->name);
-    project_bind_existing(pp);
+    pp->bind_existing();
 
     //
     // make sure the project state is readable
@@ -92,7 +92,7 @@ grab(rpt_value_pstate_ty *this_thing)
 
 	scp = sub_context_new();
 	sub_errno_setx(scp, err);
-	sub_var_set_string(scp, "File_Name", project_pstate_path_get(pp));
+	sub_var_set_string(scp, "File_Name", pp->pstate_path_get());
 	s = subst_intl(scp, "stat $filename: $errno");
 	sub_context_delete(scp);
 	this_thing->value = rpt_value_error((rpt_pos_ty *)0, s);
@@ -103,7 +103,7 @@ grab(rpt_value_pstate_ty *this_thing)
     //
     // create the result value
     //
-    cp = project_change_get(pp);
+    cp = pp->change_get();
     cstate_data = change_cstate_get(cp);
     this_thing->value = cstate_type.convert(&cstate_data);
     assert(this_thing->value);
@@ -137,10 +137,10 @@ grab(rpt_value_pstate_ty *this_thing)
 	rpt_value_free(vp1);
     }
 
-    if (pp->parent)
+    if (!pp->is_a_trunk())
     {
 	name = str_from_c("parent_name");
-	vp1 = rpt_value_string(project_name_get(pp->parent));
+	vp1 = rpt_value_string(project_name_get(pp->parent_get()));
 	rpt_value_struct__set(this_thing->value, name, vp1);
 	str_free(name);
 	rpt_value_free(vp1);

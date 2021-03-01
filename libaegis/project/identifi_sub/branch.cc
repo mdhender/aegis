@@ -1,6 +1,6 @@
 //
 //	aegis - project change supervisor
-//	Copyright (C) 2004 Peter Miller;
+//	Copyright (C) 2004-2006 Peter Miller;
 //	All rights reserved.
 //
 //	This program is free software; you can redistribute it and/or modify
@@ -20,14 +20,12 @@
 // MANIFEST: implementation of the project_identifier_subset_branch class
 //
 
-#pragma implementation "project_identifier_subset_branch"
-
-#include <arglex2.h>
-#include <error.h>
-#include <help.h>
-#include <project.h>
-#include <project/identifi_sub/branch.h>
-#include <trace.h>
+#include <libaegis/arglex2.h>
+#include <common/error.h>
+#include <libaegis/help.h>
+#include <libaegis/project.h>
+#include <libaegis/project/identifi_sub/branch.h>
+#include <common/trace.h>
 
 
 project_identifier_subset_branch::~project_identifier_subset_branch()
@@ -185,7 +183,7 @@ project_identifier_subset_branch::get_pp()
 	assert(pp_with_branch);
 	if (branch)
 	{
-	    pp_with_branch = project_find_branch(pp_with_branch, branch);
+	    pp_with_branch = pp_with_branch->find_branch(branch);
 	    assert(pp_with_branch);
 	}
     }

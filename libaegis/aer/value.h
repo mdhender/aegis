@@ -1,6 +1,6 @@
 //
 //	aegis - project change supervisor
-//	Copyright (C) 1994, 1996, 2002-2004 Peter Miller;
+//	Copyright (C) 1994, 1996, 2002-2005 Peter Miller;
 //	All rights reserved.
 //
 //	This program is free software; you can redistribute it and/or modify
@@ -23,8 +23,8 @@
 #ifndef AEGIS_AER_VALUE_H
 #define AEGIS_AER_VALUE_H
 
-#include <ac/stddef.h>
-#include <main.h>
+#include <common/ac/stddef.h>
+#include <common/main.h>
 
 struct rpt_value_ty;
 

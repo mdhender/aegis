@@ -1,6 +1,6 @@
 //
 //	aegis - project change supervisor
-//	Copyright (C) 2004 Peter Miller;
+//	Copyright (C) 2004, 2005 Peter Miller;
 //	All rights reserved.
 //
 //	This program is free software; you can redistribute it and/or modify
@@ -20,9 +20,9 @@
 // MANIFEST: functions to manipulate file_infos
 //
 
-#include <file_info.h>
-#include <mem.h>
-#include <str.h>
+#include <aecvsserver/file_info.h>
+#include <common/mem.h>
+#include <common/str.h>
 
 
 file_info_ty *

@@ -1,6 +1,6 @@
 //
 //	aegis - project change supervisor
-//	Copyright (C) 1994, 1996, 2004 Peter Miller;
+//	Copyright (C) 1994, 1996, 2004, 2005 Peter Miller;
 //	All rights reserved.
 //
 //	This program is free software; you can redistribute it and/or modify
@@ -20,7 +20,7 @@
 // MANIFEST: functions to manipulate void values
 //
 
-#include <aer/value/void.h>
+#include <libaegis/aer/value/void.h>
 
 
 static rpt_value_method_ty method =

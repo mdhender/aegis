@@ -23,9 +23,7 @@
 #ifndef LIB_BOOLEAN_H
 #define LIB_BOOLEAN_H
 
-#pragma interface "boolean"
-
-#include <nstring.h>
+#include <common/nstring.h>
 
 
 /**

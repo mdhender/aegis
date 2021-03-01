@@ -1,6 +1,6 @@
 '\" t
 .\"	aegis - project change supervisor
-.\"	Copyright (C) 2003, 2004 Peter Miller;
+.\"	Copyright (C) 2003, 2004, 2006 Peter Miller;
 .\"	All rights reserved.
 .\"
 .\"	This program is free software; you can redistribute it and/or modify
@@ -81,8 +81,12 @@ command line options.
 .SH OPTIONS
 The following options are understood:
 .TP 8n
-.so o_list.so
 .so o_help.so
+.so o_list.so
+.so o_output.so
+If the file name ends with ".gz" it will be compressed with the
+\fIgzip\fP(1) algorithm, if it ends with ".bz" or ".bz2" it will be
+compressed with the \fIbzip2\fP(1) algorithm.
 .so o__rules.so
 .so z_exit.so
 .so z_cr.so

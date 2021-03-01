@@ -1,6 +1,6 @@
 .\"
 .\"	aegis - project change supervisor
-.\"	Copyright (C) 1993, 1994, 2002, 2004 Peter Miller.
+.\"	Copyright (C) 1993, 1994, 2002, 2004, 2006 Peter Miller.
 .\"	All rights reserved.
 .\"
 .\"	This program is free software; you can redistribute it and/or modify
@@ -20,26 +20,47 @@
 .\" MANIFEST: User Guide, The Dependency Maintenance Tool, Requirements
 .nh 2 "Required Features"
 .LP
-When selecting a Dependency Maintenance Tool
-it is important to keep in mind that, ideally, it must be able to
-cope with a hierarchy of parallel source directory trees.
-These trees for a "view path", a list of directories that programs
-search below to find the files of interest.
-.LP
 The heart of any DMT is an \fIinference engine\fP.
 This inference engine accepts a \fIgoal\fP of what you want it to construct
 and a set of \fIrules\fP for how to construct things,
 and attempts to construct what you asked for given the rules you specified.
 This is exactly a description of an expert system,
 and the DMT needs to be an expert system for constructing files.
+Something like PROLOG is probably ideal.
 .LP
-This perspective on what the Aegis program needs from a DMT
-reveals that the old-faithful \fImake\fP(1) distributed
-with so many flavours of
-.UX
-really isn't good enough,
-and that something like PROLOG is probably ideal.
-.nh 3 "Search Lists"
+Aegis is capable of supporting a wide variety of development directory
+styles.  The different development directory styles place different
+demands on the dependency maintenance tool.
+Development directory styles will be described in the next section,
+but here is a quick summary:
+.IP "copy of all sources:"
+This is what CVS does, and what many other VC tool do.  Because you have
+a complete copy of all source files, the dependency maintenance tool
+only needs to be aware of one directory tree.
+.IP "copy of everything:"
+This is a small optimization of the previous case to cut down the
+time required for that first build,because the derived files from the
+integration build can be reused.
+.IP "link all sources"
+The is an optimization of the "copy all sources" case, because linking
+a file is significantly faster than making a copy of a file.  The
+dependency maintenance tool only needs to be aware of one directory
+tree.
+.IP "link everything"
+This is an optimization of the previous case, again reusing derived
+files from the integration build, except that you need to ensure that
+your dependency maintenance tool is configured to remove the derived
+file outputs of each rule before creating them, to avoid corrupting the
+baseline or getting "permission denied" error.
+.IP "view path"
+This is the most efficient development directory style, and it scales
+much better than any of the above, but the dependency maintenance tool
+must be able to cope with a hierarchy of parallel source directory
+trees.  These trees for a "view path", a list of directories that
+programs search below to find the files of interest.
+The \f[CW]vpath\gP statements of GNU Make are almost, but not quite,
+capable of being used in this way.
+.nh 3 "View Paths"
 .LP
 For the union of all files in a project and all files in a change
 (remembering that a change only copies those files it is modifying,

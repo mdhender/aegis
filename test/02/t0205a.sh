@@ -144,7 +144,7 @@ if test $? -ne 0 ; then no_result; fi
 $bin/test_xml test.in test.out 2> LOG
 if test $? -ne 0 ; then cat LOG; fail; fi
 
-diff test.ok test.out
+diff -b test.ok test.out
 if test $? -ne 0 ; then fail; fi
 
 #

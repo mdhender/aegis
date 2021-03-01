@@ -1,6 +1,6 @@
 //
 //	aegis - project change supervisor
-//	Copyright (C) 1991-1994, 1996, 2002, 2004 Peter Miller;
+//	Copyright (C) 1991-1994, 1996, 2002, 2004, 2005 Peter Miller;
 //	All rights reserved.
 //
 //	This program is free software; you can redistribute it and/or modify
@@ -23,7 +23,7 @@
 #ifndef AEGIS_LOG_H
 #define AEGIS_LOG_H
 
-#include <quit/action/log.h>
+#include <libaegis/quit/action/log.h>
 
 enum log_style_ty
 {

@@ -1,6 +1,6 @@
 //
 //	aegis - project change supervisor
-//	Copyright (C) 1994-1996, 1999, 2002-2004 Peter Miller;
+//	Copyright (C) 1994-1996, 1999, 2002-2005 Peter Miller;
 //	All rights reserved.
 //
 //	This program is free software; you can redistribute it and/or modify
@@ -20,21 +20,21 @@
 // MANIFEST: functions to manipulate assign expressions
 //
 
-#include <aer/expr/assign.h>
-#include <aer/expr/bit.h>
-#include <aer/expr/constant.h>
-#include <aer/expr/mul.h>
-#include <aer/expr/plus.h>
-#include <aer/expr/power.h>
-#include <aer/expr/shift.h>
-#include <aer/lex.h>
-#include <aer/value/error.h>
-#include <aer/value/integer.h>
-#include <aer/value/real.h>
-#include <aer/value/ref.h>
-#include <error.h>
-#include <sub.h>
-#include <trace.h>
+#include <libaegis/aer/expr/assign.h>
+#include <libaegis/aer/expr/bit.h>
+#include <libaegis/aer/expr/constant.h>
+#include <libaegis/aer/expr/mul.h>
+#include <libaegis/aer/expr/plus.h>
+#include <libaegis/aer/expr/power.h>
+#include <libaegis/aer/expr/shift.h>
+#include <libaegis/aer/lex.h>
+#include <libaegis/aer/value/error.h>
+#include <libaegis/aer/value/integer.h>
+#include <libaegis/aer/value/real.h>
+#include <libaegis/aer/value/ref.h>
+#include <common/error.h>
+#include <libaegis/sub.h>
+#include <common/trace.h>
 
 
 static rpt_value_ty *
@@ -195,7 +195,7 @@ bin_eval(rpt_expr_ty *(*op)(rpt_expr_ty *, rpt_expr_ty *), rpt_expr_ty *e)
 
     //
     // construct
-    //	lhs = lhs ``op'' rhs
+    //	lhs = lhs "op" rhs
     //
     // Note:
     //	e1 and e2 are separate because one is an lvalue, and
@@ -211,7 +211,7 @@ bin_eval(rpt_expr_ty *(*op)(rpt_expr_ty *, rpt_expr_ty *), rpt_expr_ty *e)
 
     //
     // use the constant expression to build a simple assignment expression
-    //	``op'' is the appropriate binary expression builder
+    // "op" is the appropriate binary expression builder
     //
     e3 = op(e2, e->child[1]);
     rpt_expr_free(e2);

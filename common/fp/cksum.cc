@@ -1,6 +1,6 @@
 //
 //	cook - file construction tool
-//	Copyright (C) 1994, 2003, 2004 Peter Miller.
+//	Copyright (C) 1994, 2003-2005 Peter Miller.
 //	All rights reserved.
 //
 //	This program is free software; you can redistribute it and/or modify
@@ -20,11 +20,11 @@
 // MANIFEST: functions to manipulate POSIX cksum fingerprints
 //
 
-#include <ac/string.h>
+#include <common/ac/string.h>
 
-#include <fp/cksum.h>
-#include <fp/crc32.h>
-#include <fp/len.h>
+#include <common/fp/cksum.h>
+#include <common/fp/crc32.h>
+#include <common/fp/len.h>
 
 struct cksum_ty
 {

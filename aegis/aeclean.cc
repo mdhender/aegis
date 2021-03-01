@@ -1,6 +1,6 @@
 //
 //	aegis - project change supervisor
-//	Copyright (C) 1998-2005 Peter Miller;
+//	Copyright (C) 1998-2006 Peter Miller;
 //	All rights reserved.
 //
 //	This program is free software; you can redistribute it and/or modify
@@ -20,35 +20,35 @@
 // MANIFEST: clean a change development directory
 //
 
-#include <ac/errno.h>
-#include <ac/stdio.h>
-#include <ac/stdlib.h>
-#include <ac/time.h>
-#include <ac/unistd.h>
+#include <common/ac/errno.h>
+#include <common/ac/stdio.h>
+#include <common/ac/stdlib.h>
+#include <common/ac/time.h>
+#include <common/ac/unistd.h>
 
-#include <aeclean.h>
-#include <ael/change/files.h>
-#include <arglex2.h>
-#include <arglex/change.h>
-#include <arglex/project.h>
-#include <change.h>
-#include <change/file.h>
-#include <commit.h>
-#include <dir.h>
-#include <error.h>
-#include <glue.h>
-#include <help.h>
-#include <lock.h>
-#include <log.h>
-#include <now.h>
-#include <os.h>
-#include <progname.h>
-#include <project/file.h>
-#include <quit.h>
-#include <str_list.h>
-#include <sub.h>
-#include <trace.h>
-#include <user.h>
+#include <aegis/aeclean.h>
+#include <libaegis/ael/change/files.h>
+#include <libaegis/arglex2.h>
+#include <libaegis/arglex/change.h>
+#include <libaegis/arglex/project.h>
+#include <libaegis/change.h>
+#include <libaegis/change/file.h>
+#include <libaegis/commit.h>
+#include <libaegis/dir.h>
+#include <common/error.h>
+#include <libaegis/glue.h>
+#include <libaegis/help.h>
+#include <libaegis/lock.h>
+#include <libaegis/log.h>
+#include <common/now.h>
+#include <libaegis/os.h>
+#include <common/progname.h>
+#include <libaegis/project/file.h>
+#include <common/quit.h>
+#include <common/str_list.h>
+#include <libaegis/sub.h>
+#include <common/trace.h>
+#include <libaegis/user.h>
 
 
 static void
@@ -234,6 +234,8 @@ clean_out_the_garbage(void *p, dir_walk_message_ty msg, string_ty *path,
 	    path->str_text[path->str_length - 2] == ','
 	&&
 	    path->str_text[path->str_length - 1] == 'D'
+	&&
+	    change_diff_required(sip->cp)
 	)
 	    break;
 
@@ -412,7 +414,7 @@ clean_main(void)
 	project_name = user_default_project();
     pp = project_alloc(project_name);
     str_free(project_name);
-    project_bind_existing(pp);
+    pp->bind_existing();
 
     //
     // locate user data
@@ -565,7 +567,7 @@ clean_main(void)
 	trace_string(path->str_text);
 
 	//
-	// make sure the change sourec file even exists
+	// make sure the change source file even exists
 	//
 	user_become(up);
 	exists = os_exists(path);
@@ -580,8 +582,6 @@ clean_main(void)
 	    ++diffable_files;
 	    continue;
 	}
-	path_d = str_format("%s,D", path->str_text);
-	trace_string(path_d->str_text);
 
 	//
 	// Check the file's fingerprint.  This will zap
@@ -607,24 +607,30 @@ clean_main(void)
 	//
 	// See if we need to diff the file
 	//
-	user_become(up);
-	ignore = change_fingerprint_same(c_src_data->diff_file_fp, path_d, 0);
-	user_become_undo();
-	if (!ignore)
+	if (change_diff_required(cp))
 	{
-	    scp = sub_context_new();
-	    sub_var_set_string(scp, "File_Name", c_src_data->file_name);
-	    change_verbose
-	    (
-		cp,
-		scp,
-		i18n("warning: file \"$filename\" needs diff")
-	    );
-	    sub_context_delete(scp);
-	    ++diffable_files;
+	    path_d = str_format("%s,D", path->str_text);
+	    trace_string(path_d->str_text);
+	    user_become(up);
+	    ignore =
+		change_fingerprint_same(c_src_data->diff_file_fp, path_d, 0);
+	    user_become_undo();
+	    if (!ignore)
+	    {
+		scp = sub_context_new();
+		sub_var_set_string(scp, "File_Name", c_src_data->file_name);
+		change_verbose
+		(
+		    cp,
+		    scp,
+		    i18n("warning: file \"$filename\" needs diff")
+		);
+		sub_context_delete(scp);
+		++diffable_files;
+	    }
+	    str_free(path_d);
 	}
 	str_free(path);
-	str_free(path_d);
     }
     if (mergeable_files)
     {
@@ -634,7 +640,7 @@ clean_main(void)
 	change_verbose(cp, scp, i18n("warning: mergable files"));
 	sub_context_delete(scp);
     }
-    if (diffable_files)
+    if (diffable_files && change_diff_required(cp))
     {
 	scp = sub_context_new();
 	sub_var_set_long(scp, "Number", diffable_files);
@@ -665,6 +671,16 @@ clean_main(void)
     user_become(up);
     dir_walk(info.dd, clean_out_the_garbage, &info);
     user_become_undo();
+
+    //
+    // Nuke the build time stamps.  This lets aepromptcmd and aefinish
+    // operate correctly, and it surprizes users less, too.
+    //
+    if (change_build_required(cp))
+    {
+	change_build_times_clear(cp);
+	change_test_times_clear(cp);
+    }
 
     //
     // create the symbolic links again, if required

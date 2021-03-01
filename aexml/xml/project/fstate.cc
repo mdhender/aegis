@@ -1,6 +1,6 @@
 //
 //	aegis - project change supervisor
-//	Copyright (C) 2003-2005 Peter Miller;
+//	Copyright (C) 2003-2006 Peter Miller;
 //	All rights reserved.
 //
 //	This program is free software; you can redistribute it and/or modify
@@ -20,14 +20,15 @@
 // MANIFEST: functions to manipulate fstates
 //
 
-#include <ael/change/inappropriat.h>
-#include <fstate.h>
-#include <output.h>
-#include <project.h>
-#include <project/file.h>
-#include <trace.h>
-#include <user.h>
-#include <xml/project/fstate.h>
+#include <common/trace.h>
+#include <libaegis/ael/change/inappropriat.h>
+#include <libaegis/fstate.h>
+#include <libaegis/output.h>
+#include <libaegis/project/file.h>
+#include <libaegis/project.h>
+#include <libaegis/user.h>
+
+#include <aexml/xml/project/fstate.h>
 
 
 void
@@ -50,7 +51,7 @@ xml_project_fstate(struct string_ty *project_name, long change_number,
 	project_name = str_copy(project_name);
     pp = project_alloc(project_name);
     str_free(project_name);
-    project_bind_existing(pp);
+    pp->bind_existing();
 
     //
     // We don't actually use project_fstate_get() because very soon it
@@ -62,7 +63,7 @@ xml_project_fstate(struct string_ty *project_name, long change_number,
     {
 	fstate_src_ty   *src;
 
-	src = project_file_nth(pp, j, view_path_simple);
+	src = pp->file_nth(j, view_path_simple);
 	if (!src)
 	    break;
 	fstate_src_write_xml(op, "fstate_src", src);

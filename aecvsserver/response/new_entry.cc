@@ -1,6 +1,6 @@
 //
 //	aegis - project change supervisor
-//	Copyright (C) 2004, 2005 Peter Miller;
+//	Copyright (C) 2004-2006 Peter Miller;
 //	All rights reserved.
 //
 //	This program is free software; you can redistribute it and/or modify
@@ -37,47 +37,38 @@
 //    same as Checked-in response.
 //
 
-#include <ac/string.h>
+#include <common/ac/string.h>
 
-#include <os.h>
-#include <output.h>
-#include <response/new_entry.h>
-#include <response/private.h>
-#include <server.h>
+#include <libaegis/os.h>
+#include <libaegis/output.h>
+#include <aecvsserver/response/new_entry.h>
+#include <aecvsserver/server.h>
 
 
-struct response_new_entry_ty
+response_new_entry::~response_new_entry()
 {
-    response_ty     inherited;
-    string_ty       *client_side;
-    string_ty       *server_side;
-    int             mode;
-    string_ty       *version;
-};
-
-
-static void
-destructor(response_ty *rp)
-{
-    response_new_entry_ty *rcp;
-
-    rcp = (response_new_entry_ty *)rp;
-    str_free(rcp->client_side);
-    rcp->client_side = 0;
-    str_free(rcp->server_side);
-    rcp->server_side = 0;
-    str_free(rcp->version);
-    rcp->version = 0;
+    str_free(client_side);
+    client_side = 0;
+    str_free(server_side);
+    server_side = 0;
+    str_free(version);
+    version = 0;
 }
 
 
-static void
-write(response_ty *rp, output_ty *op)
+response_new_entry::response_new_entry(string_ty *arg1, string_ty *arg2,
+	int arg3, string_ty *arg4) :
+    client_side(str_copy(arg1)),
+    server_side(str_copy(arg2)),
+    mode(arg3),
+    version(str_copy(arg4))
 {
-    response_new_entry_ty *rcp;
-    string_ty       *short_dir_name;
-    string_ty       *short_file_name;
+}
 
+
+void
+response_new_entry::write(output_ty *op)
+{
     //
     // The output looks something like this...
     //
@@ -86,46 +77,26 @@ write(response_ty *rp, output_ty *op)
     // S: /u/cvsroot/supermunger/mungeall.c
     // S: /mungeall.c/1.1///
     //
-    rcp = (response_new_entry_ty *)rp;
-    short_dir_name = os_dirname_relative(rcp->client_side);
-    short_file_name = os_entryname_relative(rcp->client_side);
+    string_ty *short_dir_name = os_dirname_relative(client_side);
+    string_ty *short_file_name = os_entryname_relative(client_side);
     op->fputs("Mode ");
-    output_mode_string(op, rcp->mode);
+    output_mode_string(op, mode);
     op->fprintf("New-entry %s/\n", short_dir_name->str_text);
-    op->fprintf(ROOT_PATH "/%s\n", rcp->server_side->str_text);
+    op->fprintf(ROOT_PATH "/%s\n", server_side->str_text);
     op->fprintf
     (
 	"/%s/%s///\n",
 	short_file_name->str_text,
-	rcp->version->str_text
+	version->str_text
     );
     str_free(short_dir_name);
     str_free(short_file_name);
 }
 
 
-static const response_method_ty vtbl =
+response_code_ty
+response_new_entry::code_get()
+    const
 {
-    sizeof(response_new_entry_ty),
-    destructor,
-    write,
-    response_code_New_entry,
-    0, // flushable
-};
-
-
-response_ty *
-response_new_entry_new(string_ty *client_side, string_ty *server_side,
-    int mode, string_ty *version)
-{
-    response_ty     *rp;
-    response_new_entry_ty *rcp;
-
-    rp = response_new(&vtbl);
-    rcp = (response_new_entry_ty *)rp;
-    rcp->client_side = str_copy(client_side);
-    rcp->server_side = str_copy(server_side);
-    rcp->mode = mode;
-    rcp->version = str_copy(version);
-    return rp;
+    return response_code_New_entry;
 }

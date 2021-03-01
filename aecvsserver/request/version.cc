@@ -1,6 +1,6 @@
 //
 //	aegis - project change supervisor
-//	Copyright (C) 2004 Peter Miller;
+//	Copyright (C) 2004-2006 Peter Miller;
 //	All rights reserved.
 //
 //	This program is free software; you can redistribute it and/or modify
@@ -28,14 +28,25 @@
 // Root required: no.
 //
 
-#include <output.h>
-#include <request/version.h>
-#include <server.h>
-#include <version_stmp.h>
+#include <libaegis/output.h>
+#include <aecvsserver/request/version.h>
+#include <aecvsserver/server.h>
+#include <common/version_stmp.h>
 
 
-static void
-run(server_ty *sp, string_ty *arg)
+request_version::~request_version()
+{
+}
+
+
+request_version::request_version()
+{
+}
+
+
+void
+request_version::run_inner(server_ty *sp, string_ty *arg)
+    const
 {
     //
     // Does this need some kind of prefix?
@@ -46,9 +57,17 @@ run(server_ty *sp, string_ty *arg)
 }
 
 
-const request_ty request_version =
+const char *
+request_version::name()
+    const
 {
-    "version",
-    run,
-    1, // reset
-};
+    return "version";
+}
+
+
+bool
+request_version::reset()
+    const
+{
+    return true;
+}

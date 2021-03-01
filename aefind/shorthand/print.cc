@@ -1,6 +1,6 @@
 //
 //	aegis - project change supervisor
-//	Copyright (C) 1997, 2002, 2004 Peter Miller;
+//	Copyright (C) 1997, 2002, 2004, 2005 Peter Miller;
 //	All rights reserved.
 //
 //	This program is free software; you can redistribute it and/or modify
@@ -20,11 +20,11 @@
 // MANIFEST: functions to manipulate print nodes
 //
 
-#include <function/print.h>
-#include <shorthand/print.h>
-#include <tree.h>
-#include <tree/list.h>
-#include <tree/this.h>
+#include <aefind/function/print.h>
+#include <aefind/shorthand/print.h>
+#include <aefind/tree.h>
+#include <aefind/tree/list.h>
+#include <aefind/tree/this.h>
 
 
 tree_ty *

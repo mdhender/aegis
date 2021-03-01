@@ -121,8 +121,8 @@ the use of the ${quote} substitution around all of the files names in
 the commands.
 .LP
 In addition, it is possible to store meta-date with each version.
-For example: ``\f[CW]Description=${quote ($version) ${change
-description}}\fP'' inserts the version number and the brief description
+For example: \[lq]\f[CW]Description=${quote ($version) ${change
+description}}\fP\[rq] inserts the version number and the brief description
 into the file's log.  This means that using the \fIaesvt -list\fP option
 will provide quite useful summaries.
 .nh 3 "Binary Files"

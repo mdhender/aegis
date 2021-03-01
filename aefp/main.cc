@@ -1,6 +1,6 @@
 //
 //	aegis - project change supervisor
-//	Copyright (C) 1994, 1995, 1997, 1999, 2002-2004 Peter Miller;
+//	Copyright (C) 1994, 1995, 1997, 1999, 2002-2005 Peter Miller;
 //	All rights reserved.
 //
 //	This program is free software; you can redistribute it and/or modify
@@ -20,19 +20,19 @@
 // MANIFEST: operating system start point, and command line argument parsing
 //
 
-#include <ac/stdio.h>
-#include <ac/stdlib.h>
+#include <common/ac/stdio.h>
+#include <common/ac/stdlib.h>
 
-#include <arglex.h>
-#include <error.h>
-#include <fp/cksum.h>
-#include <fp/cksum.h>
-#include <fp/combined.h>
-#include <fp/ident.h>
-#include <fp/md5.h>
-#include <fp/snefru.h>
-#include <progname.h>
-#include <str_list.h>
+#include <common/arglex.h>
+#include <common/error.h>
+#include <common/fp/cksum.h>
+#include <common/fp/cksum.h>
+#include <common/fp/combined.h>
+#include <common/fp/ident.h>
+#include <common/fp/md5.h>
+#include <common/fp/snefru.h>
+#include <common/progname.h>
+#include <common/str_list.h>
 
 
 enum

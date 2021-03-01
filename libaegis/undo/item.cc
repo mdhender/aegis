@@ -1,6 +1,6 @@
 //
 //	aegis - project change supervisor
-//	Copyright (C) 2004 Peter Miller;
+//	Copyright (C) 2004, 2005 Peter Miller;
 //	All rights reserved.
 //
 //	This program is free software; you can redistribute it and/or modify
@@ -20,11 +20,10 @@
 // MANIFEST: implementation of the undo_item class
 //
 
-#pragma implementation "undo_item"
-
-#include <error.h> // for assert
-#include <os.h>
-#include <undo/item.h>
+#include <common/error.h> // for assert
+#include <libaegis/os.h>
+#include <libaegis/undo/item.h>
+#include <common/trace.h>
 
 
 undo_item::~undo_item()
@@ -39,7 +38,9 @@ undo_item::undo_item() :
 {
     os_become_query(&uid, &gid, &umask);
     assert(uid != 0);
-    assert(gid != 0);
+    trace(("uid = %d\n", uid));
+    // assert(gid != 0);
+    trace(("gid = %d\n", gid));
 }
 
 

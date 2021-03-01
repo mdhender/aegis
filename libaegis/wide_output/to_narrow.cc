@@ -23,17 +23,17 @@
 // stream into a multi-byte encoded "narrow character" output stream.
 //
 
-#include <ac/limits.h>
-#include <ac/stddef.h>
-#include <ac/stdlib.h>
-#include <ac/wchar.h>
-#include <ac/wctype.h>
+#include <common/ac/limits.h>
+#include <common/ac/stddef.h>
+#include <common/ac/stdlib.h>
+#include <common/ac/wchar.h>
+#include <common/ac/wctype.h>
 
-#include <language.h>
-#include <str.h>
-#include <trace.h>
-#include <wide_output/private.h>
-#include <wide_output/to_narrow.h>
+#include <common/language.h>
+#include <common/str.h>
+#include <common/trace.h>
+#include <libaegis/wide_output/private.h>
+#include <libaegis/wide_output/to_narrow.h>
 
 
 struct wide_output_to_narrow_ty

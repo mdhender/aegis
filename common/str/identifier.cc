@@ -1,6 +1,6 @@
 //
 //	aegis - project change supervisor
-//	Copyright (C) 2004 Peter Miller;
+//	Copyright (C) 2004, 2005 Peter Miller;
 //	All rights reserved.
 //
 //	This program is free software; you can redistribute it and/or modify
@@ -20,10 +20,10 @@
 // MANIFEST: functions to manipulate identifiers
 //
 
-#include <ac/ctype.h>
+#include <common/ac/ctype.h>
 
-#include <mem.h>
-#include <str.h>
+#include <common/mem.h>
+#include <common/str.h>
 
 
 string_ty *

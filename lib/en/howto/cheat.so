@@ -1,6 +1,6 @@
 .\"
 .\"	aegis - project change supervisor
-.\"	Copyright (C) 2000, 2002 Peter Miller;
+.\"	Copyright (C) 2000, 2002, 2005 Peter Miller;
 .\"	All rights reserved.
 .\"
 .\"	This program is free software; you can redistribute it and/or modify
@@ -23,16 +23,19 @@
 .LP
 This page is a quick reference into the common Aegis commands.
 .IP \(bu 2n
-Usually, ``\f[CW]man\fP \fIcommand_name\fP'' can be used to get more details
+Usually, \[lq]\f[CW]man\fP \fIcommand_name\fP\[rq] can be used to get
+more details
 on a particular command.
 .IP \(bu 2n
 See also the official Aegis quick reference in the User Guide, page 88.
 .IP \(bu 2n
-The ``\f[CW]-p\fP \fIname\fP'' option is used to specify the project name.
+The \[lq]\f[CW]-p\fP \fIname\fP\[rq] option is used to specify the project name.
 .IP \(bu 2n
-The "``\f[CW]-c\fP \fInumber\fP'' option is used to specify the change number.
+The \[lq]\f[CW]-c\fP \fInumber\fP\[rq] option is used to specify the
+change number.
 .IP \(bu 2n
-The ``\f[CW]-l\fP'' (or ``\f[CW]-List\fP'') option can often be used to
+The \[lq]\f[CW]-l\fP\[rq] (or \[lq]\f[CW]-List\fP\[rq]) option can often
+be used to
 list subjects for the given command (eg. change numbers or projects) or
 simply to list rather than edit (\fIe.g.\fP a file or change attributes).
 .\" ------------------------------------------------------------------------
@@ -101,7 +104,7 @@ all source files you create in a development directory.  If you have
 forgotten to do this, it is highly likely that the integration would
 fail in any case.
 .LP
-If you are importing files from elsewhere, use ``\fIaenf .\fP'' and all
+If you are importing files from elsewhere, use \[lq]\fIaenf .\fP\[rq] and all
 of the files in the directory tree below dot (the current directory)
 will be added to the change (make sure there are no object files when
 you do this).

@@ -20,7 +20,7 @@
 // MANIFEST: functions to manipulate skips
 //
 
-#include <input.h>
+#include <libaegis/input.h>
 
 
 void

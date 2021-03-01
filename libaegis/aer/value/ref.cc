@@ -1,6 +1,6 @@
 //
 //	aegis - project change supervisor
-//	Copyright (C) 1994, 1996, 2003, 2004 Peter Miller;
+//	Copyright (C) 1994, 1996, 2003-2005 Peter Miller;
 //	All rights reserved.
 //
 //	This program is free software; you can redistribute it and/or modify
@@ -20,9 +20,9 @@
 // MANIFEST: functions to manipulate reference values
 //
 
-#include <aer/value/ref.h>
-#include <error.h>
-#include <trace.h>
+#include <libaegis/aer/value/ref.h>
+#include <common/error.h>
+#include <common/trace.h>
 
 
 struct rpt_value_reference_ty

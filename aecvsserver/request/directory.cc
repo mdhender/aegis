@@ -1,6 +1,6 @@
 //
 //	aegis - project change supervisor
-//	Copyright (C) 2004, 2005 Peter Miller;
+//	Copyright (C) 2004-2006 Peter Miller;
 //	All rights reserved.
 //
 //	This program is free software; you can redistribute it and/or modify
@@ -176,16 +176,27 @@
 // the administration files do not yet exist for 'dir3'.
 //
 
-#include <ac/string.h>
+#include <common/ac/string.h>
 
-#include <error.h>
-#include <net.h>
-#include <request/directory.h>
-#include <server.h>
+#include <common/error.h>
+#include <aecvsserver/net.h>
+#include <aecvsserver/request/directory.h>
+#include <aecvsserver/server.h>
 
 
-static void
-run(server_ty *sp, string_ty *client_side)
+request_directory::~request_directory()
+{
+}
+
+
+request_directory::request_directory()
+{
+}
+
+
+void
+request_directory::run_inner(server_ty *sp, string_ty *client_side)
+    const
 {
     static const char root_path[] = ROOT_PATH;
     size_t          root_path_len;
@@ -246,9 +257,17 @@ run(server_ty *sp, string_ty *client_side)
 }
 
 
-const request_ty request_directory =
+const char *
+request_directory::name()
+    const
 {
-    "Directory",
-    run,
-    0, // no reset
-};
+    return "Directory";
+}
+
+
+bool
+request_directory::reset()
+    const
+{
+    return false;
+}

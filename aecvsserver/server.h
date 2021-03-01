@@ -1,6 +1,6 @@
 //
 //	aegis - project change supervisor
-//	Copyright (C) 2004, 2005 Peter Miller;
+//	Copyright (C) 2004-2006 Peter Miller;
 //	All rights reserved.
 //
 //	This program is free software; you can redistribute it and/or modify
@@ -23,10 +23,10 @@
 #ifndef AE_CVS_SERVER_SERVER_H
 #define AE_CVS_SERVER_SERVER_H
 
-#include <nstring.h>
-#include <net.h>
+#include <common/nstring.h>
+#include <aecvsserver/net.h>
 
-struct response_ty; // forward
+class response; // forward
 
 #define ROOT_PATH "/aegis"
 
@@ -57,7 +57,7 @@ void server_delete(server_ty *);
   * The server_response_queue function is used to enqueue a response to
   * be transmaitted at the next server_response_flush().
   */
-void server_response_queue(server_ty *, struct response_ty *);
+void server_response_queue(server_ty *, response *);
 
 /**
   * The server_response_flush function is used to flush any pending
@@ -84,7 +84,7 @@ int server_file_mode_get(server_ty *);
   * input source suitabl for reading the contents of a file from.
   * Use input_delete when you are done with it.
   */
-struct input_ty *server_file_contents_get(server_ty *);
+input server_file_contents_get(server_ty *);
 
 /**
   * The server_error function is used to queue an ok response to

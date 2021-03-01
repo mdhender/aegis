@@ -1,6 +1,6 @@
 //
 //	aegis - project change supervisor
-//	Copyright (C) 1999, 2002-2004 Peter Miller;
+//	Copyright (C) 1999, 2002-2006 Peter Miller;
 //	All rights reserved.
 //
 //	This program is free software; you can redistribute it and/or modify
@@ -20,10 +20,10 @@
 // MANIFEST: functions to manipulate paths
 //
 
-#include <change/file.h>
-#include <error.h>
-#include <project/file.h>
-#include <trace.h>
+#include <libaegis/change/file.h>
+#include <common/error.h>
+#include <libaegis/project/file.h>
+#include <common/trace.h>
 
 
 string_ty *
@@ -33,13 +33,12 @@ project_file_path(project_ty *pp, string_ty *file_name)
 
     trace(("project_file_path(pp = %8.8lX, file_name = \"%s\")\n{\n",
 	    (long)pp, file_name->str_text));
-    for (ppp = pp; ppp; ppp = ppp->parent)
+    for (ppp = pp; ppp; ppp = (ppp->is_a_trunk() ? 0 : ppp->parent_get()))
     {
-	change_ty	*cp;
 	fstate_src_ty   *src_data;
 	string_ty	*result;
 
-	cp = project_change_get(ppp);
+	change_ty *cp = ppp->change_get();
 	src_data = change_file_find(cp, file_name, view_path_first);
 	if (!src_data)
 	    continue;

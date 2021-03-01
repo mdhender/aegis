@@ -1,6 +1,6 @@
 dnl
 dnl	aegis - a project change supervisor
-dnl	Copyright (C) 1994, 1995, 1997-1999, 2001-2005 Peter Miller;
+dnl	Copyright (C) 1994, 1995, 1997-1999, 2001-2006 Peter Miller;
 dnl	All rights reserved.
 dnl
 dnl	This program is free software; you can redistribute it and/or modify
@@ -78,6 +78,7 @@ AC_CHECK_FUNC(setsockopt, ,
 AC_CHECK_LIB(m, main)
 AC_CHECK_LIB(rx, main)
 AC_CHECK_LIB(z, main)
+AC_CHECK_LIB(bz2, BZ2_bzopen)
 AC_CHECK_LIB(crypt, crypt)
 AC_CHECK_LIB(magic, magic_file)
 dnl The -lclu library is for OSF/1 clustering
@@ -266,6 +267,24 @@ fi
 AC_MSG_RESULT([$HAVE_GNU_DIFF])
 
 dnl
+dnl	Find the patch program, and check whether or not it understands
+dnl	the -f and -s options.
+dnl
+AC_CHECK_PROGS(PATCHsimple, gpatch patch)
+AC_PATH_PROG(PATCH, $PATCHsimple, /usr/local/bin/$PATCHsimple)
+AC_DEFINE_UNQUOTED(CONF_PATCH, ["$PATCH"],
+[Set this to be the absolute path of the GNU diff command.])
+AC_MSG_CHECKING([for GNU patch])
+HAVE_GNU_PATCH=no
+if $PATCH -f -s < /dev/null > conftest.out 2>&1
+then
+    AC_DEFINE(HAVE_GNU_PATCH, 1,
+	[Define this symbol of your system has GNU patch.])
+    HAVE_GNU_PATCH=yes
+fi
+AC_MSG_RESULT([$HAVE_GNU_PATCH])
+
+dnl
 dnl	Test if groff takes -ms or -mgs for the macro package.
 dnl
 AC_MSG_CHECKING([for $GROFF -ms macros])
@@ -365,11 +384,12 @@ AC_MSG_RESULT(yes),
 AC_MSG_RESULT(no),
 AC_MSG_RESULT(cross))
 
-AC_CHECK_HEADERS(crypt.h curl/curl.h dce/rpc.h dce/uuid.h fcntl.h      \
-        iso646.h libgettext.h libintl.h limits.h locale.h magic.h      \
-        memory.h mntent.h new.h regex.h rxposix.h shadow.h stddef.h    \
-        stdlib.h string.h sys/clu.h sys/ioctl.h sys/prctl.h sys/uuid.h \
-        unistd.h uuid.h uuid/uuid.h wchar.h wctype.h widec.h zlib.h    \
+AC_CHECK_HEADERS(bzlib.h crypt.h curl/curl.h curl/multi.h dce/rpc.h    \
+        dce/uuid.h fcntl.h iso646.h libgettext.h libintl.h limits.h    \
+        locale.h magic.h memory.h mntent.h new.h regex.h rxposix.h     \
+        shadow.h stddef.h stdlib.h string.h sys/clu.h sys/ioctl.h      \
+        sys/prctl.h sys/uuid.h unistd.h uuid.h uuid/uuid.h wchar.h     \
+        wctype.h widec.h zlib.h                                        \
 	)
 
 #
@@ -392,13 +412,14 @@ AC_C_CONST
 AC_SYS_LONG_FILE_NAMES
 AC_CHECK_FUNCS(clu_info crypt curl_easy_strerror curl_multi_strerror   \
         getpgrp igetspnam initgroups gettext gettimeofday iswctype     \
-        magic_file mbrtowc pathconf prctl regcomp rpc_string_free      \
-        seteuid setlocale setresuid setreuid sighold sigrelse          \
-        sigprocmask snprintf strcasecmp strlcat strlcpy strncasecmp    \
-        strerror strftime strsignal strtoul strverscmp symlink         \
-        tcgetpgrp uuid_create uuid_export uuid_generate uuid_hash      \
-        uuid_load uuid_make uuid_to_string uuid_unparse vsnprintf      \
-        wcrtomb wcslen wcswidth wcwidth xmlReaderForIO                 \
+        lutime magic_file mbrtowc pathconf prctl regcomp               \
+        rpc_string_free seteuid setlocale setresuid setreuid sighold   \
+        sigrelse sigprocmask snprintf strcasecmp strendcpy strlcat     \
+        strlcpy strncasecmp strerror strftime strsignal strtoul        \
+        strverscmp symlink tcgetpgrp uuid_create uuid_export           \
+        uuid_generate uuid_hash uuid_load uuid_make uuid_to_string     \
+        uuid_unparse vsnprintf wcrtomb wcslen wcswidth wcwidth         \
+        xmlReaderForIO                                                 \
 	)
 AC_CHECK_DECLS([crypt],,, [
 #if HAVE_UNISTD_H
@@ -667,8 +688,24 @@ if test "$ac_cv_lib_z_main" != "yes" -o "$ac_cv_header_zlib_h" != "yes"
 then
   AC_MSG_RESULT([
 	You need to install the GNU zlib compression
-	library, and then re-run this install script.
+	library, and then re-run this configure script.
 	Remember to use \`\`rm config.cache'' before you do.])
+fi
+
+dnl
+dnl If the curl/curl.h and -lcurl are not present, remote files are
+dnl inaccessable.
+dnl
+if test "$ac_cv_lib_curl_curl_multi_perform" != "yes" -o \
+    "$ac_cv_header_curl_curl_h" != "yes"
+then
+  AC_MSG_RESULT([
+        You may wish to install the Curl library, used to access
+        remote files.  Don't Panic: this library is optional, nothing
+        will break, but you will not be able to use all of aedist's
+        functions.  If you choose to install the Curl library, first
+        use \`\`rm config.cache'', and then re-run this configure
+        script.])
 fi
 
 dnl
@@ -678,19 +715,19 @@ UUID_ok=no
 if test "$ac_cv_func_uuid_generate" = "yes" \
     -a "$ac_cv_func_uuid_unparse" = "yes"
 then
-    UUID_ok=yes
-fi
-if test "$ac_cv_func_uuid_create" = "yes" \
-    -a "$ac_sv_func_uuid_make" = "yes" \
-    -a "$ac_sv_func_uuid_export" = "yes"
-then
-    UUID_ok=yes
-fi
-if test "$ac_cv_func_uuid_create" = "yes" \
-    -a "$ac_sv_func_uuid_to_string" = "yes"
-then
-    UUID_ok=yes
-fi
+     UUID_ok=yes
+ fi
+ if test "$ac_cv_func_uuid_create" = "yes" \
+    -a "$ac_cv_func_uuid_make" = "yes" \
+    -a "$ac_cv_func_uuid_export" = "yes"
+ then
+     UUID_ok=yes
+ fi
+ if test "$ac_cv_func_uuid_create" = "yes" \
+    -a "$ac_cv_func_uuid_to_string" = "yes"
+ then
+     UUID_ok=yes
+ fi
 if test "$UUID_ok" != "yes"
 then
   AC_MSG_RESULT([
@@ -776,7 +813,7 @@ AC_SUBST(PROGRAM_SUFFIX)
 AH_TOP(
 [/*
  *	aegis - project change supervisor
- *	Copyright (C) 1991-2005 Peter Miller;
+ *	Copyright (C) 1991-2006 Peter Miller;
  *	All rights reserved.
  *
  *	This program is free software; you can redistribute it and/or modify
@@ -841,7 +878,7 @@ AH_BOTTOM(
  * the above information, so there is no need for you to edit the file,
  * if you are configuring Aegis manually.
  */
-#include <config.messy.h>
+#include <common/config.messy.h>
 
 #endif /* COMMON_CONFIG_H */])
 

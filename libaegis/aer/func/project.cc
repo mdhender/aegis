@@ -1,6 +1,6 @@
 //
 //	aegis - project change supervisor
-//	Copyright (C) 1994, 2003, 2004 Peter Miller.
+//	Copyright (C) 1994, 2003-2005 Peter Miller.
 //	All rights reserved.
 //
 //	This program is free software; you can redistribute it and/or modify
@@ -20,13 +20,13 @@
 // MANIFEST: functions to impliment the builtin project function
 //
 
-#include <aer/expr.h>
-#include <aer/func/project.h>
-#include <aer/value/boolean.h>
-#include <aer/value/string.h>
-#include <error.h>
-#include <str.h>
-#include <user.h>
+#include <libaegis/aer/expr.h>
+#include <libaegis/aer/func/project.h>
+#include <libaegis/aer/value/boolean.h>
+#include <libaegis/aer/value/string.h>
+#include <common/error.h>
+#include <common/str.h>
+#include <libaegis/user.h>
 
 
 static string_ty *project_name;

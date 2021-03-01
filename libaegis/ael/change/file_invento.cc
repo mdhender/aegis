@@ -1,6 +1,6 @@
 //
 //	aegis - project change supervisor
-//	Copyright (C) 2004, 2005 Peter Miller;
+//	Copyright (C) 2004-2006 Peter Miller;
 //	All rights reserved.
 //
 //	This program is free software; you can redistribute it and/or modify
@@ -20,17 +20,17 @@
 // MANIFEST: implementation of the ael_change_file_invento class
 //
 
-#include <ael/change/file_invento.h>
-#include <ael/column_width.h>
-#include <change.h>
-#include <change/branch.h>
-#include <change/file.h>
-#include <col.h>
-#include <output.h>
-#include <project.h>
-#include <trace.h>
-#include <user.h>
-#include <zero.h>
+#include <libaegis/ael/change/file_invento.h>
+#include <libaegis/ael/column_width.h>
+#include <libaegis/change.h>
+#include <libaegis/change/branch.h>
+#include <libaegis/change/file.h>
+#include <libaegis/col.h>
+#include <libaegis/output.h>
+#include <libaegis/project.h>
+#include <common/trace.h>
+#include <libaegis/user.h>
+#include <libaegis/zero.h>
 
 
 void
@@ -47,7 +47,7 @@ list_change_file_inventory(string_ty *project_name, long change_number,
 	project_name = str_copy(project_name);
     project_ty *pp = project_alloc(project_name);
     str_free(project_name);
-    project_bind_existing(pp);
+    pp->bind_existing();
 
     //
     // locate user data

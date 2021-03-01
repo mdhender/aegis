@@ -1,6 +1,6 @@
 //
 //	aegis - project change supervisor
-//	Copyright (C) 1999, 2001-2004 Peter Miller;
+//	Copyright (C) 1999, 2001-2005 Peter Miller;
 //	All rights reserved.
 //
 //	This program is free software; you can redistribute it and/or modify
@@ -20,15 +20,15 @@
 // MANIFEST: functions to manipulate reviewe_lists
 //
 
-#include <project/history.h>
-#include <str_list.h>
-#include <sub.h>
-#include <sub/project/reviewe_list.h>
-#include <sub/user.h>
-#include <trace.h>
-#include <user.h>
-#include <wstr.h>
-#include <wstr/list.h>
+#include <libaegis/project/history.h>
+#include <common/str_list.h>
+#include <libaegis/sub.h>
+#include <libaegis/sub/project/reviewe_list.h>
+#include <libaegis/sub/user.h>
+#include <common/trace.h>
+#include <libaegis/user.h>
+#include <common/wstr.h>
+#include <common/wstr/list.h>
 
 
 //

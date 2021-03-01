@@ -20,22 +20,23 @@
 // MANIFEST: functions to manipulate historys
 //
 
-#include <ac/stdio.h>
-#include <ac/string.h>
+#include <common/ac/stdio.h>
+#include <common/ac/string.h>
 
-#include <change.h>
-#include <change/branch.h>
-#include <change/file.h>
-#include <cstate.h>
-#include <emit/brief_descri.h>
-#include <emit/edit_number.h>
-#include <error.h> // for assert
-#include <get/file/history.h>
-#include <http.h>
-#include <project.h>
-#include <project/file/roll_forward.h>
-#include <str_list.h>
-#include <trace.h>
+#include <common/error.h> // for assert
+#include <common/str_list.h>
+#include <common/trace.h>
+#include <libaegis/change/branch.h>
+#include <libaegis/change/file.h>
+#include <libaegis/change.h>
+#include <libaegis/cstate.h>
+#include <libaegis/project/file/roll_forward.h>
+#include <libaegis/project.h>
+
+#include <aeget/emit/brief_descri.h>
+#include <aeget/emit/edit_number.h>
+#include <aeget/get/file/history.h>
+#include <aeget/http.h>
 
 
 void
@@ -75,7 +76,21 @@ get_file_history(change_ty *master_cp, string_ty *a_filename,
     emit_change(master_cp);
     printf(",<br>\nFile History</h1>\n");
 
-    printf("<div class=\"information\"><table align=center>\n");
+    printf("<div class=\"information\">\n");
+    printf("There is also a ");
+    if (detailed)
+    {
+	emit_file_href(master_cp, filename, "file+history");
+	printf("less");
+    }
+    else
+    {
+	emit_file_href(master_cp, filename, "file+history+detailed");
+	printf("more");
+    }
+    printf("</a> detailed version of this listing available.\n");
+    printf("<p>\n");
+    printf("<table align=center>\n");
     printf("<tr class=\"even-group\"><th colspan=3>File Name</th>\n");
     printf("<th>Delta</th><th>Date and Time</th><th>Edit</th>\n");
     printf("<th>Description</th><th>&nbsp;</th></tr>\n");
@@ -98,14 +113,10 @@ get_file_history(change_ty *master_cp, string_ty *a_filename,
 	    continue;
 	++num_files;
 
-	printf("<tr class=\"even-group\"><td colspan=8>\n");
-	emit_file_href(master_cp, the_file_name, "menu");
-	html_encode_string(the_file_name);
-	printf("</td></tr>\n");
-	size_t num = 0;
-
+	size_t num = 5;
 	int usage_track = -1;
 	int action_track = -1;
+	string_ty *file_name_track = 0;
 
 	file_event_list_ty *felp = historian.get(the_file_name);
 	if (felp)
@@ -116,6 +127,24 @@ get_file_history(change_ty *master_cp, string_ty *a_filename,
 		assert(fep->src);
 		if (!fep->src)
 		    continue;
+
+		if (!str_equal(file_name_track, fep->src->file_name))
+		{
+		    file_name_track = fep->src->file_name;
+
+		    const char *html_class =
+			(((num / 3) & 1) ?  "even-group" : "odd-group");
+		    ++num;
+		    printf("<tr class=\"%s\">", html_class);
+
+		    printf("<td colspan=8>\n");
+		    emit_file_href(master_cp, file_name_track, "menu");
+		    html_encode_string(file_name_track);
+		    printf("</a>");
+		    if (k > 0)
+			printf(" <i>(rename)</i>");
+		    printf("</td></tr>\n");
+		}
 
 		const char *html_class =
 		    (((num / 3) & 1) ?  "even-group" : "odd-group");
@@ -159,7 +188,7 @@ get_file_history(change_ty *master_cp, string_ty *a_filename,
 		// change column
 		printf("<td valign=\"top\" align=\"right\">");
 		emit_file_href(fep->cp, fep->src->file_name, 0);
-		emit_edit_number(fep->cp, fep->src);
+		emit_edit_number(fep->cp, fep->src, &historian);
 		printf("</a></td>\n");
 
 		// description column
@@ -235,21 +264,22 @@ get_file_history(change_ty *master_cp, string_ty *a_filename,
     }
     printf("<tr class=\"even-group\"><td colspan=8>");
     printf("Listed %ld file%s.", (long)num_files, (num_files == 1 ? "" : "s"));
-    if (!all && !detailed)
-    {
-	printf("  There is also a ");
-	emit_file_href(master_cp, filename, "history+detailed");
-	printf("detailed</a> version of this listing available.\n");
-    }
     printf("</td></tr>\n");
 
     printf("</table>\n");
-    if (!all && !detailed)
+    printf("<p>\n");
+    printf("There is also a ");
+    if (detailed)
     {
-	printf("<p>\nThere is also a ");
-	emit_file_href(master_cp, filename, "history+detailed");
-	printf("detailed</a> version of this listing available.\n");
+	emit_file_href(master_cp, filename, "file+history");
+	printf("less");
     }
+    else
+    {
+	emit_file_href(master_cp, filename, "file+history+detailed");
+	printf("more");
+    }
+    printf("</a> detailed version of this listing available.\n");
     printf("</div>\n");
     html_footer(pp, master_cp);
     trace(("}\n"));

@@ -1,6 +1,6 @@
 //
 //	aegis - project change supervisor
-//	Copyright (C) 2004 Peter Miller;
+//	Copyright (C) 2004-2006 Peter Miller;
 //	All rights reserved.
 //
 //	This program is free software; you can redistribute it and/or modify
@@ -69,16 +69,27 @@
 // such as Entry and Modified for the files in that directory.
 //
 
-#include <error.h> // for assert
-#include <module.h>
-#include <response/error.h>
-#include <response/module_expan.h>
-#include <request/expand_modul.h>
-#include <server.h>
+#include <common/error.h> // for assert
+#include <aecvsserver/module.h>
+#include <aecvsserver/response/error.h>
+#include <aecvsserver/response/module_expan.h>
+#include <aecvsserver/request/expand_modul.h>
+#include <aecvsserver/server.h>
 
 
-static void
-run(server_ty *sp, string_ty *arg)
+request_expand_modules::~request_expand_modules()
+{
+}
+
+
+request_expand_modules::request_expand_modules()
+{
+}
+
+
+void
+request_expand_modules::run_inner(server_ty *sp, string_ty *arg)
+    const
 {
     size_t         j;
 
@@ -99,24 +110,21 @@ run(server_ty *sp, string_ty *arg)
     }
     for (j = 0; j < sp->np->argument_count(); ++j)
     {
-	string_ty       *name;
-	module_ty       *mp;
-
-	name = sp->np->argument_nth(j);
-	mp = module_find(name);
-	if (module_bogus(mp))
+	string_ty *aname = sp->np->argument_nth(j);
+	module mp = module::find(aname);
+	if (mp->is_bogus())
 	{
-	    response_ty     *rp;
-
-	    rp =
-		response_error_new
+	    response_error *rp =
+		new response_error
 		(
-		    "expand-modules: module \"%s\" unknown",
-		    name->str_text
+		    str_format
+		    (
+			"expand-modules: module \"%s\" unknown",
+			aname->str_text
+		    ),
+		    str_from_c("ENOENT")
 		);
-	    response_error_extra(rp, "ENOENT");
 	    server_response_queue(sp, rp);
-	    module_delete(mp);
 	    return;
 	}
 
@@ -128,17 +136,24 @@ run(server_ty *sp, string_ty *arg)
 	server_response_queue
 	(
 	    sp,
-	    response_module_expansion_new(module_name(mp))
+	    new response_module_expansion(mp->name())
 	);
-	module_delete(mp);
     }
     server_ok(sp);
 }
 
 
-const request_ty request_expand_modules =
+const char *
+request_expand_modules::name()
+    const
 {
-    "expand-modules",
-    run,
-    1, // reset
-};
+    return "expand-modules";
+}
+
+
+bool
+request_expand_modules::reset()
+    const
+{
+    return true;
+}

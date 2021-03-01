@@ -20,8 +20,8 @@
 // MANIFEST: functions to gzip output streams
 //
 
-#include <output/gzip.h>
-#include <sub.h>
+#include <libaegis/output/gzip.h>
+#include <libaegis/sub.h>
 
 
 #ifndef Z_BUFSIZE

@@ -20,16 +20,16 @@
 // MANIFEST: functions to perform lexical analysis
 //
 
-#include <ac/stdarg.h>
-#include <ac/stdio.h>
-#include <ac/stdlib.h>
+#include <common/ac/stdarg.h>
+#include <common/ac/stdio.h>
+#include <common/ac/stdlib.h>
 
-#include <arglex2.h>
-#include <cmdline.gen.h>
-#include <lex.h>
-#include <progname.h>
-#include <trace.h>
-#include <sub.h>
+#include <aefind/cmdline.gen.h>
+#include <aefind/lex.h>
+#include <common/progname.h>
+#include <common/trace.h>
+#include <libaegis/arglex2.h>
+#include <libaegis/sub.h>
 
 static arglex_table_ty argtab[] =
 {

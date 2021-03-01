@@ -1,6 +1,6 @@
 //
 //	aegis - project change supervisor
-//	Copyright (C) 1991-1996, 1998, 1999, 2001-2005 Peter Miller;
+//	Copyright (C) 1991-1996, 1998, 1999, 2001-2006 Peter Miller;
 //	All rights reserved.
 //
 //	This program is free software; you can redistribute it and/or modify
@@ -20,30 +20,36 @@
 // MANIFEST: functions to perform lexical analysis on aegis' data files
 //
 
-#include <ac/ctype.h>
-#include <ac/errno.h>
-#include <ac/stdarg.h>
-#include <ac/stdio.h>
-#include <ac/stdlib.h>
-#include <ac/string.h>
+#include <common/ac/ctype.h>
+#include <common/ac/errno.h>
+#include <common/ac/stdarg.h>
+#include <common/ac/stdio.h>
+#include <common/ac/stdlib.h>
+#include <common/ac/string.h>
 
-#include <error.h> // for assert
-#include <input/crlf.h>
-#include <input/env.h>
-#include <input/file.h>
-#include <input/gunzip.h>
-#include <meta_lex.h>
-#include <mem.h>
-#include <quit.h>
-#include <str.h>
-#include <stracc.h>
-#include <gram.gen.h> // must be after <str.h>
-#include <sub.h>
-#include <trace.h>
-#include <zero.h>
+#include <common/error.h> // for assert
+#include <common/mem.h>
+#include <common/quit.h>
+#include <common/stracc.h>
+#include <common/str.h>
+#include <common/trace.h>
+#include <libaegis/gram.gen.h> // must be after <common/str.h>
+#include <libaegis/input/bunzip2.h>
+#include <libaegis/input/crlf.h>
+#include <libaegis/input/env.h>
+#include <libaegis/input/file.h>
+#include <libaegis/input/gunzip.h>
+#include <libaegis/meta_lex.h>
+#include <libaegis/sub.h>
+#include <libaegis/zero.h>
 
 
-static input_ty *input;
+/**
+  * The source global variable is used to remember the managed input
+  * stream if the currently being parsed meta-data file.
+  */
+static input source;
+
 static int	error_count;
 extern gram_STYPE gram_lval;
 static stracc_t buffer;
@@ -55,7 +61,7 @@ lex_open(string_ty *s)
     //
     // Open the underlying binary file.
     //
-    input_ty *fp = input_file_open(s);
+    input fp = input_file_open(s);
 
     //
     // Decompress the input stream.  If it *isn't* compressed, this
@@ -63,13 +69,14 @@ lex_open(string_ty *s)
     // of the way, and returns the original fp.
     //
     fp = input_gunzip_open(fp);
+    fp = input_bunzip2_open(fp);
 
     //
     // Get rid of CRLF sequences in the input.
     // This happens, for instance, when the file is created on
     // windows nt, but used on Unix.
     //
-    fp = new input_crlf(fp, true);
+    fp = new input_crlf(fp);
 
     //
     // Now that we've completely messed with your mind, parse the
@@ -82,33 +89,35 @@ lex_open(string_ty *s)
 void
 lex_open_env(const char *s)
 {
-    lex_open_input(input_env_open(s));
+    input temp(input_env_open(s));
+    lex_open_input(temp);
 }
 
 
 void
-lex_open_input(input_ty *ifp)
+lex_open_input(input &ifp)
 {
-    input = ifp;
+    assert(!source.is_open());
+    source = ifp;
 }
 
 
 void
 lex_close(void)
 {
+    assert(source.is_open());
     if (error_count)
     {
 	sub_context_ty	*scp;
 
 	scp = sub_context_new();
-	sub_var_set_string(scp, "File_Name", input->name());
+	sub_var_set_string(scp, "File_Name", source->name());
 	sub_var_set_long(scp, "Number", error_count);
 	sub_var_optional(scp, "Number");
 	fatal_intl(scp, i18n("$filename: has errors"));
 	// NOTREACHED
     }
-    delete input;
-    input = 0;
+    source.close();
 }
 
 
@@ -116,7 +125,7 @@ static inline void
 lex_getc_undo(int c)
 {
     if (c >= 0)
-	input->ungetc(c);
+	source->ungetc(c);
 }
 
 
@@ -129,7 +138,7 @@ gram_lex(void)
 
     for (;;)
     {
-	c = input->getc();
+	c = source->getch();
 	switch (c)
 	{
 	case ' ':
@@ -141,14 +150,14 @@ gram_lex(void)
 	case '0':
 	    buffer.clear();
 	    buffer.push_back('0');
-	    c = input->getc();
+	    c = source->getch();
 	    if (c == 'x' || c == 'X')
 	    {
 		buffer.push_back(c);
 		ndigits = 0;
 		for (;;)
 		{
-		    c = input->getc();
+		    c = source->getch();
 		    switch (c)
 		    {
 		    case '0':
@@ -214,7 +223,7 @@ gram_lex(void)
 		case '6':
 		case '7':
 		    buffer.push_back(c);
-		    c = input->getc();
+		    c = source->getch();
 		    continue;
 
 		default:
@@ -240,7 +249,7 @@ gram_lex(void)
 	    for (;;)
 	    {
 		buffer.push_back(c);
-		c = input->getc();
+		c = source->getch();
 		if (c < 0)
 		    break;
 		if (!isdigit((unsigned char)c))
@@ -258,12 +267,12 @@ gram_lex(void)
 	    gram_lval.lv_integer = strtoul(buffer.get_data(), (char **)0, 10);
 	    assert(gram_lval.lv_integer >= 0);
 	    integer_return:
-	    trace(("%s: INTEGER %ld\n", input->name().c_str(),
+	    trace(("%s: INTEGER %ld\n", source->name().c_str(),
 		gram_lval.lv_integer));
 	    return INTEGER;
 
 	case '.':
-	    c = input->getc();
+	    c = source->getch();
 	    if (c < 0 || !isdigit((unsigned char)c))
 	    {
 		lex_getc_undo(c);
@@ -276,7 +285,7 @@ gram_lex(void)
 	    fraction:
 	    for (;;)
 	    {
-		c = input->getc();
+		c = source->getch();
 		if (c < 0 || !isdigit((unsigned char)c))
 		    break;
 		buffer.push_back(c);
@@ -285,16 +294,16 @@ gram_lex(void)
 	    {
 		exponent:
 		buffer.push_back(c);
-		c = input->getc();
+		c = source->getch();
 		if (c == '+' || c == '-')
 		{
 		    buffer.push_back(c);
-		    c = input->getc();
+		    c = source->getch();
 		}
 		ndigits = 0;
 		for (;;)
 		{
-		    c = input->getc();
+		    c = source->getch();
 		    if (c < 0 || !isdigit((unsigned char)c))
 			break;
 		    ++ndigits;
@@ -304,14 +313,14 @@ gram_lex(void)
 		{
 		    gram_error(i18n("malformed exponent"));
 		    gram_lval.lv_real = 0;
-		    trace(("%s: REAL 0\n", input->name().c_str()));
+		    trace(("%s: REAL 0\n", source->name().c_str()));
 		    return REAL;
 		}
 	    }
 	    lex_getc_undo(c);
 	    buffer.push_back('\0');
 	    gram_lval.lv_real = atof(buffer.get_data());
-	    trace(("%s: REAL %g\n", input->name().c_str(),
+	    trace(("%s: REAL %g\n", source->name().c_str(),
 		gram_lval.lv_real));
 	    return REAL;
 
@@ -319,7 +328,7 @@ gram_lex(void)
 	    buffer.clear();
 	    for (;;)
 	    {
-		c = input->getc();
+		c = source->getch();
 		if (c == EOF)
 		{
 		    str_eof:
@@ -335,7 +344,7 @@ gram_lex(void)
 		    break;
 		if (c == '\\')
 		{
-		    c = input->getc();
+		    c = source->getch();
 		    switch (c)
 		    {
 		    default:
@@ -392,7 +401,7 @@ gram_lex(void)
 			    for (n = 0; n < 3; ++n)
 			    {
 				v = v * 8 + c - '0';
-				c = input->getc();
+				c = source->getch();
 				switch (c)
 				{
 				case '0':
@@ -420,7 +429,7 @@ gram_lex(void)
 		    buffer.push_back(c);
 	    }
 	    gram_lval.lv_string = buffer.mkstr();
-	    trace(("%s: STRING \"%s\"\n", input->name().c_str(),
+	    trace(("%s: STRING \"%s\"\n", source->name().c_str(),
 		gram_lval.lv_string->str_text));
 	    return STRING;
 
@@ -428,19 +437,19 @@ gram_lex(void)
 	    buffer.clear();
 	    for (;;)
 	    {
-		c = input->getc();
+		c = source->getch();
 		switch (c)
 		{
 		case EOF:
 		    goto str_eof;
 
 		case '@':
-		    c = input->getc();
+		    c = source->getch();
 		    if (c == EOF)
 			break;
 		    if (c != '@')
 		    {
-			input->ungetc(c);
+			source->ungetc(c);
 			break;
 		    }
 		    // fall through...
@@ -452,7 +461,7 @@ gram_lex(void)
 		break;
 	    }
 	    gram_lval.lv_string = buffer.mkstr();
-	    trace(("%s: STRING \"%s\"\n", input->name().c_str(),
+	    trace(("%s: STRING \"%s\"\n", source->name().c_str(),
 		gram_lval.lv_string->str_text));
 	    return STRING;
 
@@ -513,7 +522,7 @@ gram_lex(void)
 	    for (;;)
 	    {
 		buffer.push_back(c);
-		c = input->getc();
+		c = source->getch();
 		switch (c)
 		{
 		case '0':
@@ -593,7 +602,7 @@ gram_lex(void)
 		goto integer_return;
 	    }
 	    gram_lval.lv_string = buffer.mkstr();
-	    trace(("%s: NAME \"%s\"\n", input->name().c_str(),
+	    trace(("%s: NAME \"%s\"\n", source->name().c_str(),
 		gram_lval.lv_string->str_text));
 	    return NAME;
 
@@ -604,7 +613,7 @@ gram_lex(void)
 	    single_line_comment:
 	    for (;;)
 	    {
-		c = input->getc();
+		c = source->getch();
 		if (c == EOF || c == '\n')
 		    break;
 	    }
@@ -614,7 +623,7 @@ gram_lex(void)
 	    //
 	    // C and C++ style comments
 	    //
-	    c = input->getc();
+	    c = source->getch();
 	    if (c == '/')
 	    {
 		//
@@ -629,14 +638,14 @@ gram_lex(void)
 		// just return the slash.
 		//
 		lex_getc_undo(c);
-		trace(("%s: '/'\n", input->name().c_str()));
+		trace(("%s: '/'\n", source->name().c_str()));
 		return '/';
 	    }
 	    for (;;)
 	    {
 		for (;;)
 		{
-		    c = input->getc();
+		    c = source->getch();
 		    if (c == EOF)
 		    {
 			bad_comment:
@@ -648,7 +657,7 @@ gram_lex(void)
 		}
 		for (;;)
 		{
-		    c = input->getc();
+		    c = source->getch();
 		    if (c == EOF)
 			goto bad_comment;
 		    if (c != '*')
@@ -660,11 +669,11 @@ gram_lex(void)
 	    break;
 
 	case EOF:
-	    trace(("%s: end of file\n", input->name().c_str()));
+	    trace(("%s: end of file\n", source->name().c_str()));
 	    return 0;
 
 	default:
-	    trace(("%s: '%c'\n", input->name().c_str(), c));
+	    trace(("%s: '%c'\n", source->name().c_str(), c));
 	    return c;
 	}
     }
@@ -691,13 +700,13 @@ lex_error(sub_context_ty *scp, const char *s)
 
     // re-use substitution context
     sub_var_set_string(scp, "Message", msg);
-    sub_var_set_string(scp, "File_Name", input->name());
+    sub_var_set_string(scp, "File_Name", source->name());
     error_intl(scp, i18n("$filename: $message"));
     str_free(msg);
     if (++error_count >= 20)
     {
 	// re-use substitution context
-	sub_var_set_string(scp, "File_Name", input->name());
+	sub_var_set_string(scp, "File_Name", source->name());
 	fatal_intl(scp, i18n("$filename: too many errors"));
     }
 
@@ -718,8 +727,8 @@ lex_position(void)
 {
     static string_ty *s;
 
-    if (input)
-	return input->name().get_ref();
+    if (source.is_open())
+	return source->name().get_ref();
     if (!s)
 	s = str_from_c("end-of-input");
     return s;

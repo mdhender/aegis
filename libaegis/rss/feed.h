@@ -23,10 +23,9 @@
 #ifndef LIBAEGIS_RSS_FEED_H
 #define LIBAEGIS_RSS_FEED_H
 
-#pragma interface "rss_feed"
+#include <common/nstring.h>
 
 // Forward declarations
-class nstring;
 class rss_item;
 struct change_ty;
 struct project_ty;

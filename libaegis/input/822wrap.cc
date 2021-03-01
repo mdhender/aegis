@@ -1,6 +1,6 @@
 //
 //	aegis - project change supervisor
-//	Copyright (C) 1999, 2003-2005 Peter Miller;
+//	Copyright (C) 1999, 2003-2006 Peter Miller;
 //	All rights reserved.
 //
 //	This program is free software; you can redistribute it and/or modify
@@ -20,40 +20,42 @@
 // MANIFEST: functions to perfom rfc822 line wrapping
 //
 
-#include <input/822wrap.h>
+#include <common/trace.h>
+#include <libaegis/input/822wrap.h>
 
 
 input_822wrap::~input_822wrap()
 {
+    trace(("input_822wrap::~input_822wrap(this = %08lX)\n{\n", (long)this));
     pullback_transfer(deeper);
-    if (delete_on_delete)
-	delete deeper;
-    deeper = 0;
+    trace(("}\n"));
 }
 
 
-input_822wrap::input_822wrap(input_ty *arg1, bool arg2) :
-    deeper(arg1),
-    delete_on_delete(arg2),
+input_822wrap::input_822wrap(input &arg) :
+    deeper(arg),
     pos(0),
     column(0)
 {
+    trace(("input_822wrap::input_822wrap(this = %08lX)\n{\n", (long)this));
+    trace(("}\n"));
 }
 
 
 long
 input_822wrap::read_inner(void *data, size_t len)
 {
+    trace(("input_822wrap::read_inner(this = %08lX)\n{\n", (long)this));
     unsigned char *cp = (unsigned char *)data;
     unsigned char *end = cp + len;
     while (cp < end)
     {
-	int c = deeper->getc();
+	int c = deeper->getch();
 	if (c < 0)
 	    break;
 	if (c == '\n' && column > 0)
 	{
-	    c = deeper->getc();
+	    c = deeper->getch();
 	    if (c != ' ' && c != '\t')
 	    {
 		if (c >= 0)
@@ -76,6 +78,8 @@ input_822wrap::read_inner(void *data, size_t len)
     }
     size_t nbytes = (cp - (unsigned char *)data);
     pos += nbytes;
+    trace(("return %ld;\n", (long)nbytes));
+    trace(("}\n"));
     return nbytes;
 }
 

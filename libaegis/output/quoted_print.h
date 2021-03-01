@@ -23,7 +23,7 @@
 #ifndef LIBAEGIS_OUTPUT_QUOTED_PRINT_H
 #define LIBAEGIS_OUTPUT_QUOTED_PRINT_H
 
-#include <output.h>
+#include <libaegis/output.h>
 
 class output_quoted_printable_ty:
     public output_ty

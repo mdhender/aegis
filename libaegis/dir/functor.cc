@@ -20,9 +20,7 @@
 // MANIFEST: implementation of the dir_functor class
 //
 
-#pragma implementation "dir_functor"
-
-#include <dir/functor.h>
+#include <libaegis/dir/functor.h>
 
 
 dir_functor::~dir_functor()

@@ -20,7 +20,7 @@
 // MANIFEST: implementation of the change_when_get class
 //
 
-#include <change.h>
+#include <libaegis/change.h>
 
 
 time_t

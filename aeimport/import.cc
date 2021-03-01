@@ -1,6 +1,6 @@
 //
 //	aegis - project change supervisor
-//	Copyright (C) 2001-2005 Peter Miller;
+//	Copyright (C) 2001-2006 Peter Miller;
 //	All rights reserved.
 //
 //	This program is free software; you can redistribute it and/or modify
@@ -20,41 +20,41 @@
 // MANIFEST: functions to manipulate imports
 //
 
-#include <ac/stdio.h>
+#include <common/ac/stdio.h>
 
-#include <ael/project/projects.h>
-#include <arglex3.h>
-#include <arglex/project.h>
-#include <change.h>
-#include <change_set/find.h>
-#include <change_set/list.h>
-#include <commit.h>
-#include <config_file.h>
-#include <error.h>
-#include <file.h>
-#include <format.h>
-#include <format/search_list.h>
-#include <gonzo.h>
-#include <help.h>
-#include <import.h>
-#include <io.h>
-#include <lock.h>
-#include <now.h>
-#include <os.h>
-#include <progname.h>
-#include <project.h>
-#include <project/history.h>
-#include <project/pattr/set.h>
-#include <project/verbose.h>
-#include <quit.h>
-#include <reconstruct.h>
-#include <sub.h>
-#include <synthesize.h>
-#include <trace.h>
-#include <undo.h>
-#include <user.h>
-#include <version.h>
-#include <zero.h>
+#include <libaegis/ael/project/projects.h>
+#include <aeimport/arglex3.h>
+#include <libaegis/arglex/project.h>
+#include <libaegis/change.h>
+#include <aeimport/change_set/find.h>
+#include <aeimport/change_set/list.h>
+#include <libaegis/commit.h>
+#include <aeimport/config_file.h>
+#include <common/error.h>
+#include <libaegis/file.h>
+#include <aeimport/format.h>
+#include <aeimport/format/search_list.h>
+#include <libaegis/gonzo.h>
+#include <libaegis/help.h>
+#include <aeimport/import.h>
+#include <libaegis/io.h>
+#include <libaegis/lock.h>
+#include <common/now.h>
+#include <libaegis/os.h>
+#include <common/progname.h>
+#include <libaegis/project.h>
+#include <libaegis/project/history.h>
+#include <libaegis/project/pattr/set.h>
+#include <libaegis/project/verbose.h>
+#include <common/quit.h>
+#include <aeimport/reconstruct.h>
+#include <libaegis/sub.h>
+#include <aeimport/synthesize.h>
+#include <common/trace.h>
+#include <libaegis/undo.h>
+#include <libaegis/user.h>
+#include <libaegis/version.h>
+#include <libaegis/zero.h>
 
 
 //
@@ -400,7 +400,7 @@ import_main(void)
 	fatal_project_alias_exists(project_name);
     pp = project_alloc(project_name);
     str_free(project_name);
-    project_bind_new(pp);
+    pp->bind_new();
 
     //
     // The user who ran the command is the project administrator.
@@ -446,17 +446,17 @@ import_main(void)
 
 	project_verbose_directory(pp, home);
     }
-    project_home_path_set(pp, home);
+    pp->home_path_set(home);
     str_free(home);
 
     //
     // Create the directory and subdirectories.
     // It is an error if the directories can't be created.
     //
-    home = project_home_path_get(pp);
-    bl = project_baseline_path_get(pp, 0);
-    hp = project_history_path_get(pp);
-    ip = project_info_path_get(pp);
+    home = pp->home_path_get();
+    bl = pp->baseline_path_get();
+    hp = pp->history_path_get();
+    ip = pp->info_path_get();
 
     project_become(pp);
     os_mkdir(home, 02755);
@@ -503,9 +503,9 @@ import_main(void)
     // next branch down is created, because creating a branch alters
     // pstate.
     //
-    project_pstate_write(pp);
+    pp->pstate_write();
     for (j = 0; j < (size_t)version_number_length; ++j)
-	project_pstate_write(version_pp[j]);
+	version_pp[j]->pstate_write();
     gonzo_gstate_write();
 
     //

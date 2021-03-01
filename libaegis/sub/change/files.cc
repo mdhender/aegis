@@ -1,6 +1,6 @@
 //
 //	aegis - project change supervisor
-//	Copyright (C) 2003, 2004 Peter Miller;
+//	Copyright (C) 2003-2005 Peter Miller;
 //	All rights reserved.
 //
 //	This program is free software; you can redistribute it and/or modify
@@ -20,17 +20,17 @@
 // MANIFEST: functions to manipulate filess
 //
 
-#include <ac/string.h>
+#include <common/ac/string.h>
 
-#include <change.h>
-#include <change/file.h>
-#include <common.h>
-#include <str_list.h>
-#include <sub.h>
-#include <sub/change/files.h>
-#include <trace.h>
-#include <wstr.h>
-#include <wstr/list.h>
+#include <libaegis/change.h>
+#include <libaegis/change/file.h>
+#include <libaegis/common.h>
+#include <common/str_list.h>
+#include <libaegis/sub.h>
+#include <libaegis/sub/change/files.h>
+#include <common/trace.h>
+#include <common/wstr.h>
+#include <common/wstr/list.h>
 
 
 //

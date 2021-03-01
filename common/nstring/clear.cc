@@ -1,6 +1,6 @@
 //
 //	aegis - project change supervisor
-//	Copyright (C) 2004 Peter Miller;
+//	Copyright (C) 2004, 2005 Peter Miller;
 //	All rights reserved.
 //
 //	This program is free software; you can redistribute it and/or modify
@@ -20,8 +20,8 @@
 // MANIFEST: implementation of the nstring class
 //
 
-#include <error.h> // for assert
-#include <nstring.h>
+#include <common/error.h> // for assert
+#include <common/nstring.h>
 
 
 void
