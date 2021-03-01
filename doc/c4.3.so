@@ -1,0 +1,51 @@
+.\"
+.\"	aegis - project change supervisor
+.\"	Copyright (C) 1993 Peter Miller.
+.\"	All rights reserved.
+.\"
+.\"	This program is free software; you can redistribute it and/or modify
+.\"	it under the terms of the GNU General Public License as published by
+.\"	the Free Software Foundation; either version 2 of the License, or
+.\"	(at your option) any later version.
+.\"
+.\"	This program is distributed in the hope that it will be useful,
+.\"	but WITHOUT ANY WARRANTY; without even the implied warranty of
+.\"	MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+.\"	GNU General Public License for more details.
+.\"
+.\"	You should have received a copy of the GNU General Public License
+.\"	along with this program; if not, write to the Free Software
+.\"	Foundation, Inc., 675 Mass Ave, Cambridge, MA 02139, USA.
+.\"
+.\" MANIFEST: User Guiide, The Depenency Maintenance Tool, Other Packages
+.\"
+.bp
+.2C
+.nh 2 "Other Packages"
+.LP
+This section briefly discusses other DMTs
+which are known to the author
+and are known to be inadequate.
+.nh 3 "Traditional Make"
+.LP
+The
+.I make (1)
+which comes with most flavors of
+.UX
+is inadequate for both requirements:
+it has no dependency search path,
+and it has no dynamic include file dependecy facility.
+Many also have no ability to include files in the Makefiles,
+and have no ability to collect the output of a shell command.
+.nh 3 "GNU make"
+.LP
+The version of GNU make evaluated in writing this section was 3.62.
+A later version may be more capable.
+.LP
+The GNU make program hase the dependency search path,
+in the form of its
+.I VPATH
+variable,
+but it has no dynamic include file dependency facility.
+It does have the ability to include files in the Makefiles,
+and the ability to collect the output of a shell command.

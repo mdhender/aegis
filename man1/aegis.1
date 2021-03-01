@@ -1,0 +1,452 @@
+.\"
+.\"	aegis - project change supervisor
+.\"	Copyright (C) 1991, 1992, 1993 Peter Miller.
+.\"	All rights reserved.
+.\"
+.\"	This program is free software; you can redistribute it and/or modify
+.\"	it under the terms of the GNU General Public License as published by
+.\"	the Free Software Foundation; either version 2 of the License, or
+.\"	(at your option) any later version.
+.\"
+.\"	This program is distributed in the hope that it will be useful,
+.\"	but WITHOUT ANY WARRANTY; without even the implied warranty of
+.\"	MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+.\"	GNU General Public License for more details.
+.\"
+.\"	You should have received a copy of the GNU General Public License
+.\"	along with this program; if not, write to the Free Software
+.\"	Foundation, Inc., 675 Mass Ave, Cambridge, MA 02139, USA.
+.\"
+.\" MANIFEST: manual entry for aegis
+.\"
+.so z_name.so
+.TH \*(n) 1 \*(N)
+.SH NAME
+\*(n) \- project change supervisor
+.SH SYNOPSIS
+.B \*(n)
+.I function
+[
+.IR option ...
+]
+.br
+.B \*(n)
+.B -Help
+.SH DESCRIPTION
+The
+.I \*(n)
+program is used to
+supervise the development and integration of changes into projects.
+.SH FUNCTIONS
+The following functions are available:
+.TP 8n
+.B -Build
+.br
+The 
+.I "\*(n) -Build"
+command is used to
+build a project.
+See
+.IR aeb (1)
+for more information.
+.TP 8n
+.B -Change_Attributes
+.br
+The 
+.I "\*(n) -Change_Attributes"
+command is used to
+modify the attributes of a change.
+See
+.IR aeca (1)
+for more information.
+.TP 8n
+.B -Change_Directory
+.br
+The 
+.I "\*(n) -Change_Directory"
+command is used to
+change directory.
+See
+.IR aecd (1)
+for more information.
+.TP 8n
+.B -CoPy_file
+.br
+The 
+.I "\*(n) -CoPy_file"
+command is used to
+copy a file into a change.
+See
+.IR aecp (1)
+for more information.
+.TP 8n
+.B -CoPy_file_Undo
+.br
+The 
+.I "\*(n) -Copy_File_Undo"
+command is used to
+remove a copy of a file from a change.
+See
+.IR aecpu (1)
+for more information.
+.TP 8n
+.B -Develop_Begin
+.br
+The 
+.I "\*(n) -Develop_Begin"
+command is used to
+begin development of a change.
+See
+.IR aedb (1)
+for more information.
+.TP 8n
+.B -Develop_Begin_Undo
+.br
+The 
+.I "\*(n) -Develop_Begin_Undo"
+command is used to
+cease development of a change.
+.See
+.IR aedbu (1)
+for more information.
+.TP 8n
+.B -Develop_End
+.br
+The 
+.I "\*(n) -Develop_End"
+command is used to
+complete development of a change.
+See
+.IR aede (1)
+for more information.
+.TP 8n
+.B -Develop_End_Undo
+.br
+The 
+.I "\*(n) -Develop_End_Undo"
+command is used to
+recall a change for further deveopment.
+See
+.IR aedeu (1)
+for more information.
+.TP 8n
+.B -DIFFerence
+.br
+The 
+.I "\*(n) -DIFFerence"
+command is used to
+find differences between development directory and baseline.
+See
+.IR aed (1)
+for more information.
+.so o_help.so
+.TP 8n
+.B -Integrate_Begin
+.br
+The 
+.I "\*(n) -Integrate_Begin"
+command is used to
+being integrating a change.
+See
+.IR aeib (1)
+for more information.
+.TP 8n
+.B -Integrate_Begin_Undo
+.br
+The 
+.I "\*(n) -Integrate_Begin_Undo"
+command is used to
+cease integrating a change.
+See
+.IR aeibu (1)
+for more information.
+.TP 8n
+.B -Integrate_Fail
+.br
+The 
+.I "\*(n) -Integrate_Fail"
+command is used to
+fail a change integration.
+See
+.IR aeif (1)
+for more information.
+.TP 8n
+.B -Integrate_Pass
+.br
+The 
+.I "\*(n) -Integrate_Pass"
+command is used to
+pass a change integration.
+See
+.IR aeip (1)
+for more information.
+.TP 8n
+.B -List
+.br
+The 
+.I "\*(n) -List"
+command is used to
+list interesting things.
+See
+.IR ael (1)
+for more information.
+.TP 8n
+.B -New_Administrator
+.br
+The 
+.I "\*(n) -New_Administrator"
+command is used to
+add new administrators to a project.
+See
+.IR aena (1)
+for more information.
+.TP 8n
+.B -New_Change
+.br
+The 
+.I "\*(n) -New_Change"
+command is used to
+add a new change to a project.
+See
+.IR aenc (1)
+for more information.
+.TP 8n
+.B -New_Change_Undo
+.br
+The 
+.I "\*(n) -New_Change_Undo"
+command is used to
+remove a new change from a project.
+See
+.IR aencu (1)
+for more information.
+.TP 8n
+.B -New_Developer
+.br
+The 
+.I "\*(n) -New_Developer"
+command is used to add
+new developers to a project.
+See
+.IR aend (1)
+for more information.
+.TP 8n
+.B -New_File
+.br
+The 
+.I "\*(n) -New_File"
+command is used to
+add new files to a change.
+See
+.IR aenf (1)
+for more information.
+.TP 8n
+.B -New_File_Undo
+.br
+The 
+.I "\*(n) -New_File_Undo"
+command is used to
+remove new files from a change.
+See
+.IR aenfu (1)
+for more information.
+.TP 8n
+.B -New_Integrator
+.br
+The 
+.I "\*(n) -New_Integrator"
+command is used to
+add new integrators to a project.
+See
+.IR aeni (1)
+for more information.
+.TP 8n
+.B -New_Project
+.br
+The 
+.I "\*(n) -New_Project"
+command is used to
+create a new project to be watched over by \*(n).
+See
+.IR aenp (1)
+for more information.
+.TP 8n
+.B -New_ReLeaSe
+.br
+The 
+.I "\*(n) -New_ReLeaSe"
+command is used to
+create a new project from an existing project.
+See
+.IR aenrls (1)
+for more information.
+.TP 8n
+.B -New_ReViewer
+.br
+The 
+.I "\*(n) -New_ReViewer"
+command is used to
+add new reviewers to a project.
+See
+.IR aenrv (1)
+for more information.
+.TP 8n
+.B -New_Test
+.br
+The 
+.I "\*(n) -New_Test"
+command is used to
+add a new test to a change
+See
+.IR aent (1)
+for more information.
+.TP 8n
+.B -New_Test_Undo
+.br
+The
+.I "\*(n) -New_Test_Undo"
+command is used to
+remove new tests from a change.
+See
+.IR aentu (1)
+for more information.
+.TP 8n
+.B -Project_Attributes
+.br
+The 
+.I "\*(n) -Project_Attributes"
+command is used to
+modify the attributes of a project.
+.TP 8n
+.B -Remove_Administrator
+.br
+The 
+.I "\*(n) -Remove_Administrator"
+command is used to
+remove administrators from a project.
+See
+.IR aera (1)
+for more information.
+.TP 8n
+.B -Remove_Developer
+.br
+The 
+.I "\*(n) -Remove_Developer"
+command is used to
+remove developers from a project.
+See
+.IR aerd (1)
+for more information.
+.TP 8n
+.B -ReMove_file
+.br
+The 
+.I "\*(n) -ReMove_file"
+command is used to
+add files to be deleted to a change.
+See
+.IR aerm (1)
+for more information.
+.TP 8n
+.B -ReMove_file_Undo
+.br
+The 
+.I "\*(n) -Remove_File_Undo"
+command is used to
+remove files to be deleted from a change.
+See
+.IR aermu (1)
+for more information.
+.TP 8n
+.B -Remove_Integrator
+.br
+The 
+.I "\*(n) -Remove_Integrator"
+command is used to
+remove integrators from a project.
+See
+.IR aeri (1)
+for more information.
+.TP 8n
+.B -ReMove_PRoject
+.br
+The 
+.I "\*(n) -ReMove_PRoject"
+command is used to
+remove a project.
+See
+.IR aermpr (1)
+for more information.
+.TP 8n
+.B -Remove_ReViewer
+.br
+The 
+.I "\*(n) -Remove_ReViewer"
+command is used to
+remove reviewers from a project.
+See
+.IR aerrv (1)
+for more information.
+.TP 8n
+.B -Review_Fail
+.br
+The 
+.I "\*(n) -Review_Fail"
+command is used to
+fail a change review.
+See
+.IR aerf (1)
+for more information.
+.TP 8n
+.B -Review_Pass
+.br
+The 
+.I "\*(n) -Review_Pass"
+command is used to
+pass a change review.
+See
+.IR aerp (1)
+for more information.
+.TP 8n
+.B -Review_Pass_Undo
+.br
+The 
+.I "\*(n) -Review_Pass_Undo"
+command is used to
+rescind a change review pass.
+See
+.IR aerpu (1)
+for more information.
+.TP 8n
+.B -Test
+.br
+The 
+.I "\*(n) -Test"
+command is used to
+run tests.
+See
+.IR aet (1)
+for more information.
+.TP 8n
+.B -VERSion
+.br
+The
+.I "\*(n) -VERsion"
+command is used to
+get copyright and version details.
+See
+.IR aev (1)
+for more information.
+.PP
+All function are case insensitive.
+Functions may be abbreviated;
+the abbreviation is the upper case letters.
+Functions must appear as the first command line argument.
+.SH OPTIONS
+The following options are available to all functions.
+These options may appear anywhere on the command line following the function selector.
+.so o_page.so
+.so o_lib.so
+.so o__rules.so
+.so z_exit.so
+.so z_cr.so

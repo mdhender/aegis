@@ -1,0 +1,72 @@
+'\" t
+.\"	aegis - project change supervisor
+.\"	Copyright (C) 1991, 1992, 1993 Peter Miller.
+.\"	All rights reserved.
+.\"
+.\"	This program is free software; you can redistribute it and/or modify
+.\"	it under the terms of the GNU General Public License as published by
+.\"	the Free Software Foundation; either version 2 of the License, or
+.\"	(at your option) any later version.
+.\"
+.\"	This program is distributed in the hope that it will be useful,
+.\"	but WITHOUT ANY WARRANTY; without even the implied warranty of
+.\"	MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+.\"	GNU General Public License for more details.
+.\"
+.\"	You should have received a copy of the GNU General Public License
+.\"	along with this program; if not, write to the Free Software
+.\"	Foundation, Inc., 675 Mass Ave, Cambridge, MA 02139, USA.
+.\"
+.\" MANIFEST: manual entry for 'aegis -New_Administrator' command
+.\"
+.so z_name.so
+.TH "\*(n) -New_Administrator" 1 \*(N)
+.SH NAME
+\*(n) -New_Administrator \- add a new administrator to a project
+.SH SYNOPSIS
+.B \*(n)
+.B -New_Administrator
+.IR user-name ...
+[
+.IR option ...
+]
+.br
+.B \*(n)
+.B -New_Administrator
+.B -List
+[
+.IR option ...
+]
+.br
+.B \*(n)
+.B -New_Administrator
+.B -Help
+.SH DESCRIPTION
+The
+.I \*(n)
+.I -New_Administrator
+command is used to
+add a new administrator to a project.
+.SH OPTIONS
+The following options are understood:
+.so o_help.so
+.so o_list.so
+.so o_project.so
+.so o_terse.so
+.so o_verbose.so
+.so o__rules.so
+.SH RECOMMENDED ALIAS
+The recommended alias for this command is
+.nf
+.ta 8n 16n
+csh%	alias aena '\*(n) -na \e!* -v'
+sh$	aena(){\*(n) -na $* -v}
+.fi
+.SH ERRORS
+It is an error if
+the current user is not an administrator of the project.
+.br
+It is an error if
+any of the named users have a uid of less than 100.
+.so z_exit.so
+.so z_cr.so

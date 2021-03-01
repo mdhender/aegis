@@ -1,0 +1,116 @@
+.\"
+.\"	aegis - project change supervisor
+.\"	Copyright (C) 1991, 1992, 1993 Peter Miller.
+.\"	All rights reserved.
+.\"
+.\"	This program is free software; you can redistribute it and/or modify
+.\"	it under the terms of the GNU General Public License as published by
+.\"	the Free Software Foundation; either version 2 of the License, or
+.\"	(at your option) any later version.
+.\"
+.\"	This program is distributed in the hope that it will be useful,
+.\"	but WITHOUT ANY WARRANTY; without even the implied warranty of
+.\"	MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+.\"	GNU General Public License for more details.
+.\"
+.\"	You should have received a copy of the GNU General Public License
+.\"	along with this program; if not, write to the Free Software
+.\"	Foundation, Inc., 675 Mass Ave, Cambridge, MA 02139, USA.
+.\"
+.\" MANIFEST: User Guide, How Aegis Works, Philosophy
+.\"
+.bp
+.nh 2 "Philosophy"
+.LP
+The philosophy is simple,
+and that makes some of the implemmentation complex.
+.BL
+.LI
+When a change is in the
+.I "being developed"
+state,
+the aegis program is a developer's tool.
+Its purpose is to make it as easy for a developer
+to develop changes as possible.
+.LI
+When a change leaves (or attempts to leave) the
+.I "being developed"
+state,
+the aegis program is protecting the  project baseline,
+and does not exist to make the developer happy.
+.LI
+The aegis program attempts to adhere to the 
+.UX
+minimalist philosophy.
+Least unnecessary output,
+least command line length,
+least dependence on 3rd party tools.
+.LI
+No overlap in functionality of other tools.
+.LE
+.nh 3 "Development"
+.LP
+During the development of a change,
+the aegis program exists to help the developer.
+It helps him navigate around his change and the project,
+it copies file for him,
+and keeps track of the versions.
+It can even tell him what changes he has made.
+.nh 3 "Post Development"
+.LP
+When a change has left the "being developed" state,
+or when it is attempting to leave that state,
+the aegis program ceases to attempt to help the developer
+and proceeds to defend the project baseline.
+The model used by aegis states that "the baseline always works",
+and aegis attempts to guarantee this.
+.nh 3 "Minimalism"
+.LP
+The idea of minimalism is to help the user out.
+It is the intention that the aegis program can work out
+unstated command line options for itself,
+in cases where it is "safe" to do so.
+This means a number of defaulting mechanisms,
+all designed to help the user.
+.nh 3 "Overlap"
+.LP
+It was very tempting while writing the aegis program
+to have it grow and cover 
+source control and dependency maintenance roles.
+Unfortunately,
+this would have meant that the user would have been trapped
+with whatever the aegis program provided,
+and the aegis program is already plenty big.
+To add this functionality would have diverted effort,
+resulting in an inferior result.
+It would also have violated the underlying 
+.UX
+philosophy.
+.nh 3 "Design Goals"
+.LP
+A number of specific ideas molded the shape of the aegis program.
+These include:
+.LP
+The 
+.UX
+philosophy of writing small tools for specific tasks with little
+or no overlap.
+Tools should bve written with the expectation of use in
+pipes or scripts,
+or other combinations.
+.LP
+\(bu Stay out of the way.
+If it is possible to let a project do whatever it
+likes,
+write the code to let it.
+It is not possible to anticipate even
+a fraction of the applications of a software tool.
+.LP
+\(bu People.
+The staff using aegis should be in charge of the development
+process.
+They should not feel that some machine is giving them orders.
+.LP
+\(bu Users aren't psychic.
+Feedback must be clear,
+accurate and appropriate.

@@ -1,0 +1,62 @@
+#
+#	aegis - project change supervisor
+#	Copyright (C) 1991, 1992, 1993 Peter Miller.
+#	All rights reserved.
+#
+#	This program is free software; you can redistribute it and/or modify
+#	it under the terms of the GNU General Public License as published by
+#	the Free Software Foundation; either version 2 of the License, or
+#	(at your option) any later version.
+#
+#	This program is distributed in the hope that it will be useful,
+#	but WITHOUT ANY WARRANTY; without even the implied warranty of
+#	MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+#	GNU General Public License for more details.
+#
+#	You should have received a copy of the GNU General Public License
+#	along with this program; if not, write to the Free Software
+#	Foundation, Inc., 675 Mass Ave, Cambridge, MA 02139, USA.
+#
+# MANIFEST: csh user config for aegis
+#
+setenv AEGIS $HOME/lib/aegis
+alias	aea	'aegis -a \!* -v'
+alias	aeb	'aegis -b \!* -v'
+alias	aeca	'aegis -ca \!* -v'
+alias	aecd	'cd `aegis -cd \!* -v`'
+alias	aecp	'aegis -cp \!* -v'
+alias	aecpu	'aegis -cpu \!* -v'
+alias	aed	'aegis -diff \!* -v'
+alias	aedb	'aegis -db \!* -v'
+alias	aedbu	'aegis -dbu \!* -v'
+alias	aede	'aegis -de \!* -v'
+alias	aedeu	'aegis -deu \!* -v'
+alias	aedless	less `find . -name "*,D" -print | sort`
+alias	aedmore	more `find . -name "*,D" -print | sort`
+alias	aega	'aegis -ga \!* -v'
+alias	aeib	'aegis -ib \!* -v'
+alias	aeibu	'aegis -ibu \!* -v'
+alias	aeifail	'aegis -ifail \!* -v'
+alias	aeipass	'aegis -ipass \!* -v'
+alias	ael	'aegis -l \!* -v'
+alias	aena	'aegis -na \!* -v'
+alias	aenc	'aegis -nc \!* -v'
+alias	aend	'aegis -nd \!* -v'
+alias	aenf	'aegis -nf \!* -v'
+alias	aenfu	'aegis -nfu \!* -v'
+alias	aeni	'aegis -ni \!* -v'
+alias	aenpr	'aegis -npr \!* -v'
+alias	aenrls	'aegis -nrls \!* -v'
+alias	aenrv	'aegis -nrv \!* -v'
+alias	aent	'aegis -nt \!* -v'
+alias	aepa	'aegis -pa \!* -v'
+alias	aera	'aegis -ra \!* -v'
+alias	aerd	'aegis -rd \!* -v'
+alias	aerfail	'aegis -rfail \!* -v'
+alias	aeri	'aegis -ri \!* -v'
+alias	aerm	'aegis -rm \!* -v'
+alias	aermu	'aegis -rmu \!* -v'
+alias	aerpass	'aegis -rpass \!* -v'
+alias	aermpr	'aegis -rmpr \!* -v'
+alias	aerrv	'aegis -rrv \!* -v'
+alias	aet	'aegis -t \!* -v'

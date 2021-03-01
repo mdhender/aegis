@@ -1,0 +1,83 @@
+'\" t
+.\"	aegis - project change supervisor
+.\"	Copyright (C) 1991, 1992, 1993 Peter Miller.
+.\"	All rights reserved.
+.\"
+.\"	This program is free software; you can redistribute it and/or modify
+.\"	it under the terms of the GNU General Public License as published by
+.\"	the Free Software Foundation; either version 2 of the License, or
+.\"	(at your option) any later version.
+.\"
+.\"	This program is distributed in the hope that it will be useful,
+.\"	but WITHOUT ANY WARRANTY; without even the implied warranty of
+.\"	MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+.\"	GNU General Public License for more details.
+.\"
+.\"	You should have received a copy of the GNU General Public License
+.\"	along with this program; if not, write to the Free Software
+.\"	Foundation, Inc., 675 Mass Ave, Cambridge, MA 02139, USA.
+.\"
+.\" MANIFEST: manual entry for 'aegis -New_Change' command
+.\"
+.so z_name.so
+.TH "\*(n) -New_Change" 1 \*(N)
+.SH NAME
+\*(n) -New_Change \- add a new change to a project
+.SH SYNOPSIS
+.B \*(n)
+.B -New_Change
+.I attr-file
+[
+.IR option ...
+]
+.br
+.B \*(n)
+.B -New_Change
+.B -List
+[
+.IR option ...
+]
+.br
+.B \*(n)
+.B -New_Change
+.B -Help
+.SH DESCRIPTION
+The
+.I \*(n)
+.I -New_Change
+command is used to
+add a new change to a project.
+See
+.IR aecattr (5)
+for information on the format of the
+.IR attr-file .
+.PP
+The change is created in the 'awaiting_development' state.
+The change is not assigned to any user.
+The change has no development directory.
+.PP
+It is not possible to choose your own change number.
+.SH OPTIONS
+The following options are understood:
+.so o_help.so
+.so o_list.so
+.so o_project.so
+.so o_terse.so
+.so o_verbose.so
+.so o__rules.so
+.SH RECOMMENDED ALIAS
+The recommended alias for this command is
+.nf
+.ta 8n 16n
+csh%	alias aenc '\*(n) -nc \e!* -v'
+sh$	aenc(){\*(n) -nc $* -v}
+.fi
+.SH ERRORS
+It is an error if
+the current user is not an administrator of the project.
+(In some cases it is possible for developers of a project to create changes,
+see 
+.IR aepattr (5)
+for more information.)
+.so z_exit.so
+.so z_cr.so

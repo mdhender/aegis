@@ -1,0 +1,65 @@
+.\"
+.\"	aegis - project change supervisor
+.\"	Copyright (C) 1991, 1992, 1993 Peter Miller.
+.\"	All rights reserved.
+.\"
+.\"	This program is free software; you can redistribute it and/or modify
+.\"	it under the terms of the GNU General Public License as published by
+.\"	the Free Software Foundation; either version 2 of the License, or
+.\"	(at your option) any later version.
+.\"
+.\"	This program is distributed in the hope that it will be useful,
+.\"	but WITHOUT ANY WARRANTY; without even the implied warranty of
+.\"	MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+.\"	GNU General Public License for more details.
+.\"
+.\"	You should have received a copy of the GNU General Public License
+.\"	along with this program; if not, write to the Free Software
+.\"	Foundation, Inc., 675 Mass Ave, Cambridge, MA 02139, USA.
+.\"
+.\" MANIFEST: User Guide, Introduction, Why use aegis?
+.\"
+.nh 2 "Why use aegis?"
+.LP
+So why should you use the aegis program?
+The aegis program uses a particular model of the development of software
+projects.
+This model has a master source (or baseline) of a project,
+consisteng of several (possibly several hundred) files,
+and a team of developers creating changes to be made to this baseline.
+When a change is complete,
+it is integrated with the baseline,
+to become  the new baseline.
+Each change must be atomic and self-contained,
+no change is allowed to cause the baseline to cease to work.
+"Working" is defined as passing its own tests.
+The tests are considered part of the baseline.
+Aegis provides support for the developer so that an entire copy of
+the baseline need not be taken to change a few files,
+only those files which are to be changed need to be copied.
+.LP
+The win in using the aegis program is that there are
+.I O(n)
+interactions between developers and the baseline.
+Contrast this with a master source which is
+being edited directly by the developers - there is
+.I O(n!)
+interactions between developers - this
+makes adding "just one" more developer a potential disaster.
+.LP
+Another win is that the project baseline always works.
+Always having a working baseline means that a version is always available for
+demonstrations,
+or those "pre-release snapshots" we are always forced to provide.
+.LP
+The above advantages are all very well - for management types.
+Why should Joe Average Programmer use the aegis program?
+Recall that SCCS provides file locking,
+but only for one file at a time.
+The aegis program provides the file locking, atomically, for the set of files
+in the change.
+Recall also that SCCS locks the file the instant you start editing it.
+This makes popular files a project bottleneck.
+The aegis program allows concurrent editing,
+and a resolution mechanism just before the change must be integrated,
+meaning fewer delays for J.A.Programmer.

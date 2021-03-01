@@ -1,0 +1,98 @@
+'\" t
+.\"	aegis - project change supervisor
+.\"	Copyright (C) 1991, 1992, 1993 Peter Miller.
+.\"	All rights reserved.
+.\"
+.\"	This program is free software; you can redistribute it and/or modify
+.\"	it under the terms of the GNU General Public License as published by
+.\"	the Free Software Foundation; either version 2 of the License, or
+.\"	(at your option) any later version.
+.\"
+.\"	This program is distributed in the hope that it will be useful,
+.\"	but WITHOUT ANY WARRANTY; without even the implied warranty of
+.\"	MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+.\"	GNU General Public License for more details.
+.\"
+.\"	You should have received a copy of the GNU General Public License
+.\"	along with this program; if not, write to the Free Software
+.\"	Foundation, Inc., 675 Mass Ave, Cambridge, MA 02139, USA.
+.\"
+.\" MANIFEST: manual entry for the 'aegis -Test' command
+.\"
+.so z_name.so
+.TH "\*(n) -Test" 1 \*(N)
+.SH NAME
+\*(n) -Test \- run tests
+.SH SYNOPSIS
+.B \*(n)
+.B -Test
+[
+.IR file-name ...
+][
+.IR option ...
+]
+.br
+.B \*(n)
+.B -Test
+.B -INDependent
+[
+.IR file-name ...
+][
+.IR option ...
+]
+.br
+.B \*(n)
+.B -Test
+.B -List
+[
+.IR option ...
+]
+.br
+.B \*(n)
+.B -Test
+.B -Help
+.SH DESCRIPTION
+The
+.I \*(n)
+.I -Test
+command is used to
+run tests.
+If no files are named, all relevant tests are run.
+By default both automatic and manual tests are run.
+.so z_intuit.so
+.PP
+Tests are executed by 
+the Bourne shell.
+The current directory will be the top of the appropriate directory tree.
+If tests require temporary files, they should create them in
+.IR /tmp ,
+as a test cannot expect to have write permission
+in the current directory.
+.SH OPTIONS
+The following options are understood:
+.so o_auto.so
+.so o_baselin.so
+.so o_change.so
+.so o_devdir.so
+.so o_help.so
+.so o_list.so
+.so o_manual.so
+.so o_project.so
+.so o_terse.so
+.so o_verbose.so
+.so o__rules.so
+.SH RECOMMENDED ALIAS
+The recommended alias for this command is
+.nf
+.ta 8n 16n
+csh%	alias aet '\*(n) -t \e!* -v'
+sh$	aet(){\*(n) -t $* -v}
+.fi
+.SH ERRORS
+It is an error if
+the change is not in one of the 'being_developed' or 'being_integrated' states.
+.br
+It is an error if
+the change is not assigned to the current user.
+.so z_exit.so
+.so z_cr.so

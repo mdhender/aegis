@@ -1,0 +1,101 @@
+.\"
+.\"	aegis - project change supervisor
+.\"	Copyright (C) 1993 Peter Miller.
+.\"	All rights reserved.
+.\"
+.\"	This program is free software; you can redistribute it and/or modify
+.\"	it under the terms of the GNU General Public License as published by
+.\"	the Free Software Foundation; either version 2 of the License, or
+.\"	(at your option) any later version.
+.\"
+.\"	This program is distributed in the hope that it will be useful,
+.\"	but WITHOUT ANY WARRANTY; without even the implied warranty of
+.\"	MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+.\"	GNU General Public License for more details.
+.\"
+.\"	You should have received a copy of the GNU General Public License
+.\"	along with this program; if not, write to the Free Software
+.\"	Foundation, Inc., 675 Mass Ave, Cambridge, MA 02139, USA.
+.\"
+.\" MANIFEST: User Guide, The Difference Tools, Using diff and diff3
+.\"
+.bp
+.nh 2 "Using diff and diff3"
+.LP
+These two tools are available with most flavours of UNIX,
+but often in a very limited form.
+One severe limitation is the
+.I diff3 (1)
+command,
+which often can only cope with 200 lines of differences.
+The best alternative is to use GNU diff,
+with context differences available,
+and a far more robust diff3.
+.nh 3 "diff_command"
+.LP
+See the earlier
+.I Interfacing
+section for substitution details.
+.LP
+The entry in the
+.I config
+file looks like this:
+.E(
+diff_command =
+        "set +e; diff -c $original $input > $output; test $? -le 1";
+.E)
+.LP
+This needs a little explanation:
+.br
+\(bu
+This command is always executed with the shell's
+.B -e
+option enabled,
+causing the shell to exit on the first error.
+The "set +e" turns this off.
+.br
+\(bu
+The
+.I diff (1)
+command exits with a status of 0 if the files are identical,
+and a status of 1 if they differ.
+Any other status means something horrible happened.
+The "test" command is used to chnage this to the exit status aegis expects.
+.nh 3 "diff3_command"
+.LP
+See the earlier
+.I Interfacing
+section for substitution details.
+.LP
+The entry in the
+.I config
+file looks like this:
+.E(
+diff3_command =
+        "(diff3 -e $MostRecent $original $input | \e
+        sed -e '/^w$$/d' -e '/^q$$/d'; echo '1,$$p' ) | \e
+        ed - $MostRecent > $output";
+.E)
+.LP
+This needs a lot of explanation.
+.br
+\(bu
+The
+.I diff3 (1)
+command is used to produce an edit script that will
+incorporate into $MostRecent,
+all the changes between $original and $input.
+.br
+\(bu
+The
+.I sed (1)
+command is used to remove the "write" and "quit" commands
+from the generated edit script.
+.br
+\(bu
+The
+.I ed (1)
+command is used to apply the generated edit script to
+the $MostRecent file,
+and print the results on the standard output,
+which are redirected into the $output file.

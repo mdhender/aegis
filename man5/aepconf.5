@@ -1,0 +1,286 @@
+'\" t
+.\"	aegis - project change supervisor
+.\"	Copyright (C) 1991, 1992, 1993 Peter Miller.
+.\"	All rights reserved.
+.\"
+.\"	This program is free software; you can redistribute it and/or modify
+.\"	it under the terms of the GNU General Public License as published by
+.\"	the Free Software Foundation; either version 2 of the License, or
+.\"	(at your option) any later version.
+.\"
+.\"	This program is distributed in the hope that it will be useful,
+.\"	but WITHOUT ANY WARRANTY; without even the implied warranty of
+.\"	MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+.\"	GNU General Public License for more details.
+.\"
+.\"	You should have received a copy of the GNU General Public License
+.\"	along with this program; if not, write to the Free Software
+.\"	Foundation, Inc., 675 Mass Ave, Cambridge, MA 02139, USA.
+.\"
+.\" MANIFEST: description of aegis project config file format
+.\"
+.so z_name.so
+.TH aepconf 5 \*(N)
+.SH NAME
+aepconf - \*(n) project configuration file
+.SH SYNOPSIS
+\fIproject\fP\f(CW/baseline/config\fP
+.SH DESCRIPTION
+A project configuration file
+is used to store information about a project.
+This file is under source control,
+and is one of the project's source files.
+Developers may thus modify this file as part of a change.
+.SH CONTENTS
+This file contains the following fields:
+.TP 8n
+build_command = string;
+This field describes how to build the project
+(actually, how to do an integration build).
+This field is mandatory.
+All of the substitutions described by
+.IR aesub (5)
+are available.
+.TP 8n
+development_build_command = string;
+This field describes how to do a development build.
+If this field is absent, it defaults to the above.
+All of the substitutions described by
+.IR aesub (5)
+are available.
+.TP 8n
+change_file_command = string;
+.RS 8n
+This field contains a command to be executed whenever
+a '\*(n) -CoPy_file', '\*(n) -CoPy_file_Undo', '\*(n) -New_File', '\*(n) -New_File_Undo', '\*(n) -ReMove_file'
+or '\*(n) -ReMove_file_Undo'
+command is successful.
+If this field is absent, nothing is done.
+All of the substitutions described by
+.IR aesub (5)
+are available;
+in addition,
+.TP 8n
+${File_List}
+.br
+Space separated list of files named.
+.RE
+.TP 8n
+project_file_command = string;
+.br
+This field contains a command to be executed
+during a development build
+before the
+.I "development build command"
+above, when 
+(a) it is the first build after a develop begin, or
+(b) some other change has been integrated into
+the baseline since the last build.
+If this field is absent, nothing is done.
+All of the substitutions described by
+.IR aesub (5)
+are available.
+.TP 8n
+integrate_begin_command = string;
+This field contains a command to be executed whenever
+a '\*(n) -Integrate_Begin'
+command is successful.
+If this field is absent, nothing is done.
+All of the substitutions described by
+.IR aesub (5)
+are available.
+.TP 8n
+link_integration_directory
+.br
+This flag is true if aegis should link the files from the baseline
+into the integration directory,
+rather than copy them (the default).
+This has risks,
+as the build script (e.g.
+.I Howto.cook
+or
+.IR Makefile ,
+etc)
+must unlink targets before rebuilding them;
+if this is not done the baseline will be corrupted.
+.TP 8n
+history_create_command = string;
+.RS 8n
+This field is used to create a new history.
+The command is always executed as the project owner.
+All of the substitutions described by
+.IR aesub (5)
+are available;
+in addition,
+.TP 8n
+${Input}
+.br
+Absolute path of the source file.
+.TP 8n
+${History}
+.br
+Absolute path of the history file.
+This may need to be reworked with the
+.I Dirname
+and
+.I Basename
+substitutions to yeild a string suitable for the history tool in question.
+.RE
+.TP 8n
+history_get_command = string;
+.RS 8n
+This field is used to get a file from history.
+The command may be executed by developers.
+All of the substitutions described by
+.IR aesub (5)
+are available;
+in addition,
+.TP 8n
+${History}
+.br
+The absolute path of the history file.
+This may need to be reworked with the
+.I Dirname
+and
+.I Basename
+substitutions to yeild a string suitable for the history tool in question.
+.TP 8n
+${Edit}
+.br
+The edit number to be extracted.
+It may be an arbitrary string,
+varying on the particular history tool.
+.TP 8n
+${Output}
+.br
+The absolute path of the destination file.
+.RE
+.TP 8n
+history_put_command = string;
+.RS
+This field is used to add a new change to the history.
+The command is always executed as the project owner.
+All of the substitutions described by
+.IR aesub (5)
+are available;
+in addition,
+.TP 8n
+${Input}
+.br
+The absolute path of the source file.
+.TP 8n
+${History}
+.br
+The absolute path of the history file.
+This may need to be reworked with the
+.I Dirname
+and
+.I Basename
+substitutions to yeild a string suitable for the history tool in question.
+.RE
+.TP 8n
+history_query_command = string;
+.RS 8n
+This field is used to query the topmost edit of a history file.
+Result to be printed on the standard output.
+This command may be executed by developers.
+All of the substitutions described by
+.IR aesub (5)
+are available;
+in addition,
+.TP 8n
+${History}
+.br
+The absolute path of the history file.
+This may need to be reworked with the
+.I Dirname
+and
+.I Basename
+substitutions to yeild a string suitable for the history tool in question.
+.RE
+.TP 8n
+diff_command = string;
+.RS
+This field is used to difference of 2 files.
+The command is always executed by developers.
+All of the substitutions described by
+.IR aesub (5)
+are available;
+in addition,
+.TP 8n
+${ORiginal}
+.br
+The absolute path of the original
+file copied into the change.
+Usually in the baseline,
+but not always.
+.TP 8n
+${Input}
+.br
+The absolute path of the file in the development directory.
+.TP 8n
+${Output}
+.br
+The absolute path of the file in which to write the difference listing.
+.RE
+.TP 8n
+diff3_command = string;
+.RS 8n
+This field is used to difference 3 files.
+The command is always executed by developers.
+All of the substitutions described by
+.IR aesub (5)
+are available;
+in addition,
+.TP 8n
+${ORiginal}
+.br
+The absolute path of the original
+file copied into the change.
+Usually not in the baseline.
+.TP 8n
+${Most_Recent}
+.br
+The absolute path of the competing edit,
+usually in the baseline.
+.TP 8n
+${Input}
+.br
+The absolute path of the file in the development directory.
+.TP 8n
+${Output}
+.br
+The absolute path of the file in which to write the difference listing.
+.RE
+.TP 8n
+file_template = [ { ... } ];
+.br
+The file template is consulted whenver a new file is created,
+by one of the
+.IR aenf (1)
+or
+.IT aent (1)
+commands.
+Each list item has the form:
+.RS
+.TP 8n
+pattern = [ string ];
+The name of the file,
+relative to the development directory.
+Each string is a shell file name pattern;
+see
+.IR sh (1)
+for more information.
+.TP 8n
+body = string;
+What to initialize the body of the file to.
+There are no substitutions.
+.PP
+All of the substitutions described in
+.IR aesub (5)
+are available for the body string.
+In addition, ${File_Name} will be replaced by the name of the new file.
+.RE
+.SH SEE ALSO
+.IR aeb (1)
+.so z_cr.so

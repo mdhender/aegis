@@ -1,0 +1,129 @@
+'\" t
+.\"	aegis - project change supervisor
+.\"	Copyright (C) 1991, 1992, 1993 Peter Miller.
+.\"	All rights reserved.
+.\"
+.\"	This program is free software; you can redistribute it and/or modify
+.\"	it under the terms of the GNU General Public License as published by
+.\"	the Free Software Foundation; either version 2 of the License, or
+.\"	(at your option) any later version.
+.\"
+.\"	This program is distributed in the hope that it will be useful,
+.\"	but WITHOUT ANY WARRANTY; without even the implied warranty of
+.\"	MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+.\"	GNU General Public License for more details.
+.\"
+.\"	You should have received a copy of the GNU General Public License
+.\"	along with this program; if not, write to the Free Software
+.\"	Foundation, Inc., 675 Mass Ave, Cambridge, MA 02139, USA.
+.\"
+.\" MANIFEST: description of aegis project state file format
+.\"
+.so z_name.so
+.TH aepstate 5 \*(N)
+.SH NAME
+aepstate -  project state file
+.SH SYNOPSIS
+\fIproject\fP\f(CW/info/state\fP
+.SH DESCRIPTION
+The
+\fIproject\fP\f(CW/info/state\fP
+file is used to store state information about a project.
+.PP
+This file is maintained by
+.B \*(n)
+and thus should not be edited by humans.
+.SH CONTENTS
+.so aepattr.so
+.TP 8n
+next_change_number = integer;
+Changes are numbered sequentially from one.
+This field records the next unused change number.
+.TP 8n
+next_delta_number = integer;
+Deltas are numbered sequentially from one.
+This field records the next unused delta number.
+.TP 8n
+next_test_number = integer;
+Each test is numbered uniquely.
+The name is of the form
+.I "t[0-9][0-9][0-9][0-9][am].sh"
+('a' for automatic and 'm' for manual.)
+.TP 8n
+src = [ { ... } ];
+This field is a list of files in the project.
+Each list item has the form:
+.RS
+.TP 8n
+file_name = string;
+The name of the file, relative to the baseline.
+.TP 8n
+usage = file_usage;
+What the file is for.
+.TP
+edit_number = string;
+The edit number of the file.
+.TP 8n
+locked_by = integer;
+The change which locked this file.
+.br
+Caveat: this field is redundant,
+you can figure it out by scanning all of he change files.
+Having it here is very conventient,
+even though it means multiple updates.
+.TP 8n
+about_to_be_created_by = integer;
+The change which is about to create this file for the first time.
+Same caveat as above.
+.TP 8n
+deleted_by = integer;
+The change which last deleted this file.
+We never throw them away, becase 
+(a) it may be created again, and more imortant
+(b) we need it to recreate earlier deltas.
+.RE
+.TP
+history = [{ ... }];
+This field contains a history of integrations for the project.
+Updated by each successful '\*(n) -Integrate_Pass' command.
+.RS
+.TP 8n
+delta_number = integer;
+The delta number of the integration.
+.TP 8n
+change_number = integer;
+The number of the change which was integrated.
+.RE
+.TP 8n
+change = [integer];
+The list of changes which have been created to date.
+.TP 8n
+administrator = [string];
+The list of administrators of the project.
+.TP 8n
+developer = [string];
+The list of developers of the project.
+.TP 8n
+reviewer = [string];
+The list of reviewers of the project.
+.TP 8n
+integrator = [string];
+The list of integrators of the project.
+.TP 8n
+currently_integrating_change = integer;
+The change currently being integrated.
+Only one change (within a project) may be integrated at a time.
+Only set when an integration is in progress.
+.TP 8n
+version_major = integer;
+The major version number of this release of the project.
+Always one or more.
+.TP 8n
+version_minor = integer;
+The minor version number of this release of the project.
+Always zero or more.
+.TP 8n
+version_previous = string;
+The version number this project was derived from.
+This is of most use when producing "patch" files.
+.so z_cr.so

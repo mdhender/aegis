@@ -1,0 +1,85 @@
+'\" t
+.\"	aegis - project change supervisor
+.\"	Copyright (C) 1991, 1992, 1993 Peter Miller.
+.\"	All rights reserved.
+.\"
+.\"	This program is free software; you can redistribute it and/or modify
+.\"	it under the terms of the GNU General Public License as published by
+.\"	the Free Software Foundation; either version 2 of the License, or
+.\"	(at your option) any later version.
+.\"
+.\"	This program is distributed in the hope that it will be useful,
+.\"	but WITHOUT ANY WARRANTY; without even the implied warranty of
+.\"	MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+.\"	GNU General Public License for more details.
+.\"
+.\"	You should have received a copy of the GNU General Public License
+.\"	along with this program; if not, write to the Free Software
+.\"	Foundation, Inc., 675 Mass Ave, Cambridge, MA 02139, USA.
+.\"
+.\" MANIFEST: manual entry for 'aegis -DIFFerence' command
+.\"
+.so z_name.so
+.TH "\*(n) -DIFFerence" 1 \*(N)
+.SH NAME
+\*(n) -DIFFerence \- find differences between development directory and baseline
+.SH SYNOPSIS
+.B \*(n)
+.B -DIFFerence
+[
+.IR filename ...
+]
+[
+.IR option ...
+]
+.br
+.B \*(n)
+.B -DIFFerence
+.B -List
+[
+.IR option ...
+]
+.br
+.B \*(n)
+.B -DIFFerence
+.B -Help
+.SH DESCRIPTION
+The
+.I \*(n)
+.I -DIFFerence
+command is used to
+find differences between the development directory and the baseline.
+The differences will be in files with a "\f(CW,D\fP" suffix.
+The command used to perfom the differences is in the
+project config file (see
+.IR aepconf (5)
+for more information).
+.PP
+If no files are named all files in the change,
+which were added to the change using the
+.I "\*(n) -CoPy_file"
+command,
+will be differenced.
+.so z_intuit.so
+.SH OPTIONS
+The following options are understood:
+.so o_anticip.so
+.so o_change.so
+.so o_help.so
+.so o_list.so
+.so o_nolog.so
+.so o_project.so
+.so o_terse.so
+.so o_verbose.so
+.so o__rules.so
+.SH RECOMMENDED ALIAS
+The recommended alias for this command is
+.nf
+.ta 8n 16n
+csh%	alias aed '\*(n) -diff \e!* -v'
+sh$	aed(){\*(n) -diff $* -v}
+.fi
+.SH ERRORS
+It is an error if
+.so z_exit.so
+.so z_cr.so

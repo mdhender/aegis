@@ -1,0 +1,104 @@
+'\" t
+.\"	aegis - project change supervisor
+.\"	Copyright (C) 1991, 1992, 1993 Peter Miller.
+.\"	All rights reserved.
+.\"
+.\"	This program is free software; you can redistribute it and/or modify
+.\"	it under the terms of the GNU General Public License as published by
+.\"	the Free Software Foundation; either version 2 of the License, or
+.\"	(at your option) any later version.
+.\"
+.\"	This program is distributed in the hope that it will be useful,
+.\"	but WITHOUT ANY WARRANTY; without even the implied warranty of
+.\"	MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+.\"	GNU General Public License for more details.
+.\"
+.\"	You should have received a copy of the GNU General Public License
+.\"	along with this program; if not, write to the Free Software
+.\"	Foundation, Inc., 675 Mass Ave, Cambridge, MA 02139, USA.
+.\"
+.\" MANIFEST: manual entry for 'aegis -Develop_End' command
+.\"
+.so z_name.so
+.TH "\*(n) -Develop_End" 1 \*(N)
+.SH NAME
+\*(n) -Develop_End \- complete development of a change
+.SH SYNOPSIS
+.B \*(n)
+.B -Develop_End
+[
+.IR option ...
+]
+.br
+.B \*(n)
+.B -Develop_End
+.B -List
+[
+.IR option ...
+]
+.br
+.B \*(n)
+.B -Develop_End
+.B -Help
+.SH DESCRIPTION
+The
+.I \*(n)
+.I -Develop_End
+command is used to
+notify \*(n) of the completion of the development of a change.
+.PP
+Successful execution of the command advances the change
+from the 'being_developed' state
+to the 'being_reviewed' state.
+.PP
+The ownership of files in the development directory
+is changed to the project owner and group,
+and the files changed to be read-only.
+This prevents accidental alterations of the change's files
+between development and integration.
+.PP
+The change is no longer considered assigned to the current user.
+.SH OPTIONS
+The following options are understood:
+.so o_change.so
+.so o_help.so
+.so o_list.so
+.so o_project.so
+.so o_terse.so
+.so o_verbose.so
+.so o__rules.so
+.SH RECOMMENDED ALIAS
+The recommended alias for this command is
+.nf
+.ta 8n 16n
+csh%	alias aede '\*(n) -de \e!* -v'
+sh$	aede(){\*(n) -de $* -v}
+.fi
+.SH ERRORS
+It is an error if
+the change is not assigned to the current user.
+.br
+It is an error if
+The change is not in the 'being_developed' state.
+.br
+It is an error if
+there has been no successful
+.I "'\*(n) -Build'"
+command since a change file was last edited.
+.br
+It is an error if
+there has been no successful
+.I "'\*(n) -DIFFerence'"
+command since a change file was last edited.
+.br
+It is an error if
+there has been no successful
+.I "'\*(n) -Test'"
+command since a change file was last edited.
+.br
+It is an error if
+there has been no successful
+.I "'\*(n) -Test -BaseLine'"
+command since a change file was last edited.
+.so z_exit.so
+.so z_cr.so

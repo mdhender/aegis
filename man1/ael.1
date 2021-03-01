@@ -1,0 +1,134 @@
+'\" t
+.\"	aegis - project change supervisor
+.\"	Copyright (C) 1991, 1992, 1993 Peter Miller.
+.\"	All rights reserved.
+.\"
+.\"	This program is free software; you can redistribute it and/or modify
+.\"	it under the terms of the GNU General Public License as published by
+.\"	the Free Software Foundation; either version 2 of the License, or
+.\"	(at your option) any later version.
+.\"
+.\"	This program is distributed in the hope that it will be useful,
+.\"	but WITHOUT ANY WARRANTY; without even the implied warranty of
+.\"	MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+.\"	GNU General Public License for more details.
+.\"
+.\"	You should have received a copy of the GNU General Public License
+.\"	along with this program; if not, write to the Free Software
+.\"	Foundation, Inc., 675 Mass Ave, Cambridge, MA 02139, USA.
+.\"
+.\" MANIFEST: manual entry for 'aegis -List' command
+.\"
+.so z_name.so
+.TH "\*(n) -List" 1 \*(N)
+.SH NAME
+\*(n) -List \- list (possibly) interesting things
+.SH SYNOPSIS
+.B \*(n)
+.B -List
+[
+.IR option ...
+]
+.I list-name
+.br
+.B \*(n)
+.B -List
+.B -List
+[
+.IR option ...
+]
+.br
+.B \*(n)
+.B -List
+.B -Help
+.SH DESCRIPTION
+The
+.I \*(n)
+.I -List
+command is used to
+list information.
+There are a number of possible
+.IR list-name s,
+as follows (abbreviations as for command line options):
+.TP 8n
+Administrators
+.br
+List the administrators of a project.
+.TP 8n
+Change_Details
+.br
+List full information about a change
+in large format.
+.TP 8n
+Change_Files
+.br
+List all files in a change.
+.TP 8n
+Change_History
+.br
+List the history of a change.
+.TP 8n
+Changes
+.br
+List the changes of a project.
+.TP 8n
+Developers
+.br
+List the developers of a project.
+.TP 8n
+Integrators
+.br
+List the integrators of a project.
+.TP 8n
+List_List
+.br
+List all lists available.
+.TP 8n
+Project_Files
+.br
+List all files in the baseline of a project.
+.TP 8n
+Project_History
+.br
+List the integration history of a project.
+.TP 8n
+Projects
+.br
+List all projects.
+.TP 8n
+Reviewers
+.br
+List the reviewers of a project.
+.TP 8n
+Users_Changes
+.br
+List of changes owned by the current user.
+.TP 8n
+Version
+.br
+List version of a project or change.
+.PP
+Most of these lists are available from other \*(n) functions.
+Many \*(n) functions provide more specific lists.
+.SH OPTIONS
+The following options are understood:
+.so o_change.so
+.so o_help.so
+.so o_list.so
+.so o_project.so
+.so o_terse.so
+.so o_verbose.so
+.so o_page.so
+.so o__rules.so
+.SH RECOMMENDED ALIAS
+The recommended alias for this command is
+.nf
+.ta 8n 16n
+csh%	alias ael '\*(n) -l \e!* -v'
+sh$	ael(){\*(n) -l $* -v}
+.fi
+.SH ERRORS
+It is an error if
+the list name given is unknown.
+.so z_exit.so
+.so z_cr.so

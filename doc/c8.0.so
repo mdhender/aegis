@@ -1,0 +1,34 @@
+.\"
+.\"	aegis - project change supervisor
+.\"	Copyright (C) 1993 Peter Miller.
+.\"	All rights reserved.
+.\"
+.\"	This program is free software; you can redistribute it and/or modify
+.\"	it under the terms of the GNU General Public License as published by
+.\"	the Free Software Foundation; either version 2 of the License, or
+.\"	(at your option) any later version.
+.\"
+.\"	This program is distributed in the hope that it will be useful,
+.\"	but WITHOUT ANY WARRANTY; without even the implied warranty of
+.\"	MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+.\"	GNU General Public License for more details.
+.\"
+.\"	You should have received a copy of the GNU General Public License
+.\"	along with this program; if not, write to the Free Software
+.\"	Foundation, Inc., 675 Mass Ave, Cambridge, MA 02139, USA.
+.\"
+.\" MANIFEST: User Guide, The Difference Tools
+.\"
+.bp
+.nh 1 "The Difference Tools"
+.LP
+This chapter describes the difference commands in the
+project configuation file.
+Usually these commands are used by the 
+.I "aegis -DIFFerence"
+command when differencing files,
+but they may be used to accomplish some other things.
+.so c8.1.so
+.1C
+.so c8.2.so
+.so c8.3.so

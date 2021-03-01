@@ -1,0 +1,66 @@
+/*	
+ *	aegis - project change supervisor
+ *	Copyright (C) 1991, 1992, 1993 Peter Miller.
+ *	All rights reserved.
+ *	
+ *	This program is free software; you can redistribute it and/or modify
+ *	it under the terms of the GNU General Public License as published by
+ *	the Free Software Foundation; either version 2 of the License, or
+ *	(at your option) any later version.
+ *	
+ *	This program is distributed in the hope that it will be useful,
+ *	but WITHOUT ANY WARRANTY; without even the implied warranty of
+ *	MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ *	GNU General Public License for more details.
+ *	
+ *	You should have received a copy of the GNU General Public License
+ *	along with this program; if not, write to the Free Software
+ *	Foundation, Inc., 675 Mass Ave, Cambridge, MA 02139, USA.
+ *
+ * MANIFEST: enumerations common to many aegis file contents
+ *
+ * If you change this file, don't forget to change
+ *	man5/aecattr.5
+ *	man5/aecstate.5
+ *	man5/aepstate.5
+ */
+
+type boolean = (false, true);
+type change_cause =
+(
+	/*
+	 * The change was created in response to
+         * a bug report
+	 * from outside the development team.
+	 */
+	external_bug,
+
+	/*
+	 * The change was created in response to
+	 * an enhancement request
+	 * from outside the development team.
+	 */
+	external_enhancement,
+
+	/*
+	 * The change was created in response to
+	 * a bug report
+	 * from inside the development team.
+	 */
+	internal_bug,
+
+	/*
+	 * The change was created in response to
+	 * an enhancement request
+	 * from inside the development team.
+	 */
+	internal_enhancement,
+
+	/*
+	 * This cause is where you have a fix to fix a fix;
+	 * tracking these is an interesting quality metric.
+	 */
+	chain
+);
+type file_action = (create, modify, remove);
+type file_usage = (source, test, manual_test);

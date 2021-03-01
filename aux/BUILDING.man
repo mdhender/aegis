@@ -1,0 +1,771 @@
+'\" t
+.\"	aegis - project change supervisor
+.\"	Copyright (C) 1992, 1993 Peter Miller.
+.\"	All rights reserved.
+.\"
+.\"	This program is free software; you can redistribute it and/or modify
+.\"	it under the terms of the GNU General Public License as published by
+.\"	the Free Software Foundation; either version 2 of the License, or
+.\"	(at your option) any later version.
+.\"
+.\"	This program is distributed in the hope that it will be useful,
+.\"	but WITHOUT ANY WARRANTY; without even the implied warranty of
+.\"	MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+.\"	GNU General Public License for more details.
+.\"
+.\"	You should have received a copy of the GNU General Public License
+.\"	along with this program; if not, write to the Free Software
+.\"	Foundation, Inc., 675 Mass Ave, Cambridge, MA 02139, USA.
+.\"
+.\" MANIFEST: source for BUILDING file
+.\"
+.TH build aegis
+.if n .hy 0
+.if n .ad l
+.if n .nr IN 8n
+.SH NAME
+aegis \- project change supervisor
+.br
+.if t .ds C) \(co
+.if n .ds C) (C)
+Copyright \*(C) 1990, 1991, 1992, 1993 Peter Miller.
+.br
+All rights reserved.
+.PP
+The
+.I aegis
+program is distributed under the terms of the
+GNU General Public License.
+See the LICENSE section, below, for more details.
+.PP
+.B aegis
+(ee.j.iz)
+.I n.,
+a protection,
+a defence.
+.SH SPACE REQUIREMENTS
+You will need up to 10MB to unpack and build the
+.I aegis
+program.
+(This is the worst case seen so far,
+most systems have binaries about 60% as big as this,
+6MB is more typical.)
+Your mileage may vary.
+.SH SITE CONFIGURATION
+The file
+.I common/conf.h
+needs to be created to match your site.
+Select an appropriate file from the
+.I conf
+directory.
+The files in this directory are named for the various systems
+encountered to date by the author.
+The file most closely resembling your system should be copied into the
+.I common/conf.h
+file.
+You can copy it or use a symbolic link;
+copying is recommended because you may need to edit.
+.PP
+The
+.I common/conf.h
+file is extensively commented.
+Read the comments and change what you need to.
+Please read this file carefully.
+.PP
+Another file which may require editing is the
+.I Makefile
+file.
+The first few lines contain comments describing what may require changing.
+In general these changes will relate to the name of your favorite
+C compiler,
+and where it keeps its include files.
+.PP
+The top of the
+.I Makefile
+file is arranged as macro definitions,
+with alternatives for each known system in comments.
+Search for your system's name,
+editing the macro definition as required.
+.br
+.ne 1i
+.SH KNOWN SYSTEMS
+This distribution of
+.I aegis
+is known to build on the following systems:
+.TP 8n
+SunOS 4.1
+.br
+The native
+.IR cc (1)
+and also
+.IR gcc (1)
+are known to work for Sun4s.
+The appropriate configuration is contained in the
+.I conf/SunOS-4.1
+file.
+Sun seem to be having chronic problems with locking;
+you may need to get the very latest set of locking patches and apply them.
+.TP 8n
+ConvexOS 10.0
+.br
+The native
+.IR cc (1)
+works just fine.
+The appropriate configuration is contained in the
+.I conf/ConvexOS-10
+file.
+Note that there is no "bin" user on ConvexOS,
+so the owner of
+.I aegis "'"
+library files is "daemon";
+you will need to map user and group "bin" to "daemon"
+in the instructions below.
+.TP 8n
+DG/UX 5.4.1
+.br
+The native
+.IR cc (1)
+works just fine.
+The appropriate configuration is contained in the
+.I conf/dgux-5.4.1
+file.
+.TP 8n
+ULTRIX 4.2
+.br
+It has the seteuid and setegid calls,
+but the shell has no functions!
+Complain to your vendor.
+You will need to change the
+.I SHELL
+macro definition in the
+.I Makefile
+file to use
+.IR sh5 (1)
+instead.
+The appropriate configuration is contained in the
+.I conf/ULTRIX-4.2
+file.
+.TP 8n
+Pyramid SMP DC/OSx 1.0-92b023
+.br
+This system is pretty horrendous.
+Read the file
+.I BUILDpyr
+included in this distribution
+for instruction how to configure
+.IR aegis ,
+then follow the rest of the instructions in this file.
+The appropriate configuration is contained in the
+.I conf/dcosx
+file.
+.TP 8n
+HP-UX A.08.07
+.br
+The author has been advised that the
+.I aegis
+program works on this system.
+Could another person confirm this, please.
+The appropriate configuration is contained in the
+.I conf/hpux-8.07
+file.
+.TP 8n
+SCO 2.4
+.br
+The author has been advised that the
+.I aegis
+program works on this system.
+Could another person confirm this, please.
+The appropriate configuration is contained in the
+.I conf/SCO-2.4
+file.
+.PP
+If the instructions for any of the above systems do not work,
+after you have double-checked everything,
+the author would like to know.
+.SH UNKNOWN SYSTEMS
+Please let the author know of any other systems you get
+.I aegis
+working on,
+and the modifications necessary.
+Please include the differences to the
+.I Makefile
+file,
+and the whole
+.I common/conf.h
+file you used.
+Included any other files you edited or added.
+Include the output of the "uname -rs" command,
+if your flavour of UNIX has such a command.
+.PP
+While the
+.I aegis
+program was developed using gcc,
+this is not the default in the
+.I Makefile
+file.
+The code uses ANSI C features without compromising the ability
+to be compiled on older C compilers.
+Functions mandated by the ANSI C standard are used,
+because many systems provided them, one way or another.
+Please let the author know of any others you think should
+be added to the
+.I common/ansi.c
+file.
+.PP
+You may need to use some ANSI C header files which the
+.I aegis
+code uses,
+but which some systems (as yet) fail to provide.
+You will find lines at the top of the
+.I Makefile
+file similar to
+.RS
+.ft CW
+H = -I/usr/include -Ih
+.ft R
+.RE
+Change this to suit your system and your compiler.
+The "h" directory must be searched last as it is
+intended to suplement your system,
+not replace it.
+.PP
+You will need to check the include files in the "h" directory
+to see that they are suitable for your system.
+You may want to delete any that your system already has.
+.br
+.ne 1i
+.SH BUILDING AEGIS
+All you should need to do is use the
+.RS
+.ft CW
+.nf
+% make
+\fI\&...lots of output...\fP
+%
+.fi
+.ft R
+.RE
+command and wait.
+When this finishes you should see a directory called
+.I bin
+containing two files:
+.I aegis
+and
+.IR fmtgen .
+The
+.I fmtgen
+file is a program used in constructing
+.I aegis
+and is not for general consumption.
+.br
+.ne 1i
+.SH OTHER USEFUL SOFTWARE
+Before describing how to test
+.IR aegis ,
+you may need to grab some other free software,
+because the tests require it in some cases,
+and because it is generally useful in others.
+.TP 8n
+.B cook
+.br
+This is a dependency maintenance tool (DMT).
+An example of a well-known DTM is
+.IR make (1),
+however this old failthfull is not sufficiently capable
+to meet the demands placed on it by the
+.IR aegis
+program, but
+.IR cook
+certainly is.
+The
+.I cook
+package is written by the same author as
+.IR aegis .
+The
+.I cook
+package is necessary for test 11 to pass.
+It is also used in the documentation.
+The
+.I cook
+program may be found at the same archive site as the
+.I aegis
+program,
+and in the same directory.
+The
+.I cook
+program is available under the terms of the GNU General Public License.
+.TP 8n
+RCS
+.br
+This is a source control package,
+and is available from any of the GNU archives.
+The tests use RCS as the history mechanism,
+so it is necessary to have RCS
+for most of the tests to pass.
+.TP 8n
+GNU diff
+.br
+If the
+.IR diff (1)
+utility supplied by your flavor of unix does not have the
+.B -c
+option,
+you will need GNU diff to make patch files,
+if you want to publish software for FTP or on USENET.
+Context differences are also helpful for reviewing changes.
+.TP 8n
+groff
+.br
+This GNU software replaces the
+documentation tools which (sometimes)
+come with UNIX.
+They produce superior error messages,
+and support a wider range of functionality and fonts.
+The
+.I aegis
+User Guide was prepared with groff.
+.TP 8n
+bison
+.br
+This GNU software is a replacement for
+.IR yacc (1).
+Some systems have very sick yaccs,
+and this may be necessary if your system include files
+disagree strongly with your system's yacc.
+The
+.I Makefile
+has bison setup in comments.
+.TP 8n
+fhist
+.br
+This software,
+available under the terms of the GNU General Public License,
+is a set of file history and comparison utilities.
+It was originally written by David I. Bell,
+and is based on the minimal difference algorithm by Eugene W. Myers.
+This copy is enhanced and maintained by the same author as
+.IR aegis ,
+and may be found at the same archive site,
+in the same directory.
+.br
+.ne 1i
+.SH TESTING AEGIS
+The
+.I aegis
+program comes with a test suite.
+To run this test suite, use the command
+.RS
+.ft CW
+.nf
+% make sure
+\fI\&...lots of output...\fP
+Passed All Tests
+%
+.fi
+.ft R
+.RE
+.PP
+The tests take a minute or two each,
+with a few very fast,
+and a couple very slow,
+but it varies greatly depending on your CPU.
+.PP
+The tests assume that the RCS commands "ci", "co", "rlog" and "rcs" are
+somewhere in the command search PATH.
+.PP
+The
+.I test/00/t0011a.sh
+file assumes the
+.IR cook (1)
+command by the author is somewhere in the command search path.
+This test reproduces the example used in Chapter 3 of the User Guide.
+.PP
+If you are using Sun's
+.I tmpfs
+file system as your
+.I /tmp
+directory,
+the tests will fail.
+This is because the
+.I tmpfs
+file system does not support file locking.
+Set the
+.I AEGIS_TMP
+environment variable to somewhere else
+before running the tests.
+Something like
+.RS
+.ft CW
+.nf
+% setenv AEGIS_TMP /usr/tmp
+%
+.fi
+.ft R
+.RE
+is usually sufficient if you are using C shell, or
+.RS
+.ft CW
+.nf
+$ AEGIS_TMP=/usr/tmp
+$ export AEGIS_TMP
+$
+.fi
+.ft R
+.RE
+if you are using Bourne shell.
+Remember,
+this must be done before running the tests.
+.PP
+If the tests fail due to errors complaining of "user too privileged"
+you will need to adjust the
+.I AEGIS_MIN_UID
+define in the
+.I common/conf.h
+file.
+Similarly for "group too privileged",
+although this is rarer.
+This error message will also occur if you run the tests as root:
+the tests must be run as a mortal each time.
+.br
+.ne 1i
+.SH TESTING SET-UID-ROOT
+If the
+.I aegis
+program is not set-uid-root then it runs in "test" mode
+which gives you some confidence that
+.I aegis
+is working before
+being tested again when it is set-uid-root.
+Two pass testing like this means that you need not trust your system
+to a set-uid-root program which is not known to work.
+.PP
+You will need to do a little of the install,
+to create the directory which will contain
+.IR aegis "'"
+lock file.
+.RS
+.ft CW
+.nf
+# mkdir /usr/local/lib/aegis
+# chmod 755 /usr/local/lib/aegis
+# chown bin /usr/local/lib/aegis
+# chgrp bin /usr/local/lib/aegis
+#
+.fi
+.ft R
+.RE
+You will need to change
+.I aegis
+to be set-uid-root.
+This may be done with the following commands:
+.RS
+.ft CW
+.nf
+# chown root bin/aegis
+# chmod u+s bin/aegis
+#
+.fi
+.ft R
+.RE
+Once
+.I aegis
+is set-uid-root,
+it is tested again,
+in the same manner as before.
+.RS
+.nf
+.ft CW
+% make sure
+\fI\&...lots of output...\fP
+Passed All Tests
+%
+.fi
+.ft R
+.RE
+.PP
+You should test
+.I aegis
+as a mortal in both passes,
+rather than as root,
+to be sure the set-uid-root functionality is working correctly.
+.br
+.ne 1i
+.SH INSTALLING AEGIS
+Put the
+.I aegis
+program somewhere where users will automatically pick it up,
+such as in the
+.I /usr/local/bin
+directory.
+Use the command
+.RS
+.ft CW
+.nf
+# cp bin/aegis /usr/local/bin
+#
+.fi
+.ft R
+.RE
+Don't forget to make sure that the copy is set-uid-root,
+some versions of \fIcp\fP do not transfer the set-uid bit of the mode.
+.PP
+The manuals can be installed using the commands
+.RS
+.ft CW
+.nf
+# sh man1/install.sh \fI/usr/local/man/man1\fP
+# sh man5/install.sh \fI/usr/local/man/man5\fP
+#
+.fi
+.ft R
+.RE
+but this is very site specific.
+You can select a different path by changing the last argument.
+.PP
+By default,
+.I aegis
+is configured to use
+.I /usr/local/lib/aegis
+as the place it stores the table containing the mapping
+from project name to project directory,
+and indexes into this table.
+The
+.I aegis
+program also has example
+.I .cshrc
+and
+.I .profile
+files,
+and generic notification scripts.
+These can be copied to this library as follows:
+.RS
+.ft CW
+.nf
+# mkdir /usr/local/lib/aegis
+# chmod 755 /usr/local/lib/aegis
+# chown bin /usr/local/lib/aegis
+# chgrp bin /usr/local/lib/aegis
+# cp lib/* /usr/local/lib/aegis
+# chmod a+r /usr/local/lib/aegis/*
+# chmod a+x /usr/local/lib/aegis/*.sh
+#
+.fi
+.ft R
+.RE
+This is only an example,
+and you may want to place this somewhere else.
+Control of the placement of this directory may be found in the first
+few lines of the
+.I Makefile
+file.
+.PP
+All of the above install can be done automatically,
+using the "\f(CWmake install\fP" command as root.
+Control of the directories used may be found in the first
+few lines of the
+.I Makefile
+file.
+.br
+.ne 1i
+.SH USER CONFIGURATION
+The
+.I aegis
+command is assumed to be in a generally accessable place,
+otherwise users will need to add the relevant directory to their PATH.
+Users should add
+.RS
+.ft CW
+source /usr/local/lib/aegis/cshrc
+.ft R
+.RE
+to the end of their
+.I .cshrc
+file for the recommended aliases.
+There is a
+.I profile
+for users of the Bourne shell
+(it assumes you have a version of the Bourne shell which has functions).
+.PP
+The
+.I /usr/local/lib/aegis/state
+file contains pointers to "system" projects.
+Users may add their own project pointers (to their own projects)
+by putting a search path into the
+.I AEGIS
+environment variable.
+The system part is always automatically appended by
+.IR aegis .
+The default,
+already set by the
+.I /usr/local/lib/\%aegis/cshrc
+file,
+is
+.IR $HOME/lib/aegis .
+Do not create this directory,
+.I aegis
+is finickey and wants to do this itself.
+.PP
+Where projects reside is completely flexible,
+be they system projects or user projects.
+They are not kept under the
+.I /usr/local/lib/aegis
+directory,
+this directory only contains pointers.
+.br
+.ne 1i
+.SH PRINTED MANUALS
+This distribution contains the sources to
+all of the documentation for
+.IR aegis .
+The author used the GNU groff package
+and a postscript printer to prepare the documentation.
+If you do not have this software,
+you will need to substitute commands appropriate to your site.
+.PP
+To print copies of the
+.IR README ,
+.IR BUILDING
+and
+.I ALPHA
+files,
+the following commands may be used
+.RS
+.ft CW
+.nf
+% groff -t -man aux/*.man | lpr
+%
+.fi
+.ft R
+.RE
+This will produce about 12 pages.
+The "-t" flag means preprocess with
+.IR tbl (1).
+.PP
+To print copies of the manual entries,
+the following commands may be used
+.RS
+.ft CW
+.nf
+% cd man1
+% groff -s -t -man *.1 | lpr
+% cd ../man5
+% groff -s -t -man *.5 | lpr
+% cd ..
+%
+.fi
+.ft R
+.RE
+This will produce about 60 pages.
+The "-s" flag means preprocess with
+.IR soelim (1),
+and the "-t" flag means preprocess with
+.IR tbl (1).
+.PP
+To print a copy of the User Guide,
+the following commands may be used
+.RS
+.ft CW
+.nf
+% cd doc
+% groff -s -t -p -ms aegis.ms | lpr
+% cd ..
+%
+.fi
+.ft R
+.RE
+This will produce about 90 pages.
+The "-s" flag means preprocess with
+.IR soelim (1),
+the "-t" flag means preprocess with
+.IR tbl (1),
+and the "-p" flag means preprocess with
+.IR pic (1).
+Alternatively,
+you could get a PostScript copy of the User Guide from the archive site.
+.PP
+Please note the the User Guide is still in the process of being written.
+Some sections of the User Guide are incomplete.
+Feedback on the form and content of this document would be most welcome.
+.br
+.ne 1i
+.SH GETTING HELP
+This is alpha software,
+so things will probably go wrong.
+Thank you for your patience.
+.PP
+If you need assistance with the
+.I aegis
+program,
+please do not hesitate to contact the author at
+.RS
+Peter Miller <pmiller@bmr.gov.au>
+.RE
+Any and all feedback is welcome.
+.PP
+When reporting problems,
+please include the version number
+given by the
+.RS
+.ft CW
+.nf
+% aegis -version
+aegis version \fIa.b.cccc\fP
+\fI\&...\fP
+%
+.fi
+.ft R
+.RE
+command.
+.PP
+In the
+.I common/main.h
+file, the is a define of
+.I DEBUG
+in comments.
+If the comments are removed,
+extensive debugging is turned on.
+This causes some performance loss,
+but performs much run-time checking
+and adds the
+.B -TRace
+command line option.
+.PP
+When the
+.B -TRace
+command line option is followed by one or more file names,
+it turns on execution traces in those source files.
+It is usually best to place this on the end of the command line
+so that names of the files to be traced are not confused
+with other file names or strings on the command line.
+.br
+.ne 1i
+.SH LICENSE
+The
+.I aegis
+program is free software;
+you can redistribute it and/or modify
+it under the terms of the GNU General Public License as published by
+the Free Software Foundation;
+either version 2 of the License,
+or (at your option) any later version.
+.PP
+The
+.I aegis
+program is distributed in the hope that it will be useful,
+but WITHOUT ANY WARRANTY;
+without even the implied warranty of MERCHANTABILITY or
+FITNESS FOR A PARTICULAR PURPOSE.
+See the GNU General Public License for more details.
+.PP
+It should be in the
+.I LICENSE
+file included in this distribution.
+.br
+.ne 1i
+.SH AUTHOR
+.TS
+tab(;);
+l l l.
+Peter Miller;UUCP;uunet!munnari!bmr.gov.au!pmiller
+\f(CW/\e/\e*\fR;Internet;pmiller@bmr.gov.au
+.TE

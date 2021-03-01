@@ -1,0 +1,252 @@
+.\"
+.\"	aegis - project change supervisor
+.\"	Copyright (C) 1991, 1992, 1993 Peter Miller.
+.\"	All rights reserved.
+.\"
+.\"	This program is free software; you can redistribute it and/or modify
+.\"	it under the terms of the GNU General Public License as published by
+.\"	the Free Software Foundation; either version 2 of the License, or
+.\"	(at your option) any later version.
+.\"
+.\"	This program is distributed in the hope that it will be useful,
+.\"	but WITHOUT ANY WARRANTY; without even the implied warranty of
+.\"	MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+.\"	GNU General Public License for more details.
+.\"
+.\"	You should have received a copy of the GNU General Public License
+.\"	along with this program; if not, write to the Free Software
+.\"	Foundation, Inc., 675 Mass Ave, Cambridge, MA 02139, USA.
+.\"
+.\" MANIFEST: User Guide, The Change Development Cycle, The Administrator
+.\"
+.bp
+.nh 2 "The Administrator"
+.LP
+The previous discussion of developers, reviewers and integrators
+has covered many aspects of the production of software using the aegis program.
+The administrator has responsibility for everything they don't,
+but there is very little left.
+.LP
+These responsibilities include:
+.LP
+\(bu access control:
+The administrator adds and removes all categories of user,
+including administrators.
+This is on a per-project basis,
+and has nothing to do with 
+.UX
+user administration.
+This simply nominates which users may do what.
+.LP
+\(bu change creation:
+The administrator adds (and sometimes removes) changes to the system.
+At later stages,
+developers may alter some attributes of the change,
+such as the description,
+to say what they fixed.
+.LP
+\(bu project creation:
+The aegis program does not limit who may create projects,
+but when a project is created the user who created the project
+is set to be the administrator of that project.
+.LP
+All of these things will be examined 
+.nh 3 "The First Change"
+.LP
+Many things need to happen before
+development can begin on
+the first change;
+the projecty must be created,
+the staff but be given access permissions,
+the change must be created.
+.E(
+alex% \f(CBaenpr example -dir /projects/example\fP
+aegis: project "example": project directory "/projects/example"
+aegis: project "example": created
+alex%
+.E)
+Once the project has been created,
+the project attributes are set.
+Alex creates a file called "fred"
+(it could have been called anything)
+and edits it to reflect the desired project attributes.
+It looks like this:
+.E(
+description = "Aegis Documentation Example Project";
+developer_may_review = false;
+developer_may_integrate = false;
+reviewer_may_integrate = false;
+.E)
+Once this file has been created,
+the project  attributes ae set as follows:
+.E(
+alex% \f(CBaepa fred -p example\fP
+aegis: project "example": attributes changed
+alex% \f(CBrm fred\fP
+alex% \f(CBael p\fP
+List of Projects
+
+Project Directory               Description
+------- -----------             -------------
+example /projects/example       Aegis Documentation Example
+                                Project
+alex%
+.E)
+The various staff must be added to the project.
+Developers are the only staff who may actually edit files.
+.E(
+alex% \f(CBaend pat jan sam -p example\fP
+aegis: project "example": user "pat" is now a developer
+aegis: project "example": user "jan" is now a developer
+aegis: project "example": user "sam" is now a developer
+alex%
+.E)
+Reviewers may veto c ahnge.
+There may be overlap between the various categories,
+as show here for Jan:
+.E(
+alex% \f(CBaenr robyn jan -p example\fP
+aegis: project "example": user "robyn" is now a reviewer
+aegis: project "example": user "jan" is now a reviewer
+alex%
+.E)
+The next role we need to fill is an integrator.
+.E(
+alex% \f(CBaeni isa -p example\fP
+aegis: project "example": user "isa" is now an integrator
+alex%
+.E)
+Once the staff have been given access,
+Alex creates the descrfiption of the first change.
+The temporary file name is again "fred",
+and is edited to look like this:
+.E(
+brief_description = "Create initial skeleton.";
+description = "A simple calculator using native \e
+floating point precision.  \e
+The four basic arithmetic operators to be provided, \e
+using conventional infix notation.  \e
+Parentheses and negation also required.";
+cause = internal_enhancement;
+.E)
+Once this description file is created,
+the change is created as follows:
+.E(
+alex% \f(CBaenc ncf -p example\fP
+aegis: project "example": change 1: created
+alex% \f(CBrm fred\fP
+alex%
+.E)
+At this point,
+Alex walks down the hall to Jan's office,
+to ask Jan to develop the first change.
+Jand has had some practice using aegis,
+and can be relied on to do the rest of the project configuarion speedily.
+.nh 3 "The Second Change"
+.LP
+Some time later,
+Alex patiently sits through whining anf grumbing from an
+especially pedantic user.
+The following change description is duly entered:
+.E(
+brief_description = "file names on command line";
+description = "Optional input and output files may be \e
+specified on the command line.";
+cause = internal_bug;
+.E)
+.LP
+The pedantic user wanted to be able to name
+files on the command line,
+rather than use I/O redirection.
+Also,
+having a bug in this example is useful.
+Alex is very systematic,
+and uses his trusty "fred" file again:
+.E(
+alex% \f(CBaenc fred -p example\fP
+aegis: project "example": change 2: created
+alex%
+.E)
+At some point a developer will notice this change
+and start work on it.
+.nh 3 "The Third Change"
+.LP
+Other features are required for the calculator,
+and also for this example.
+The second change adds exponentiation to the calculator,
+and is described as follows:
+.E(
+brief_description = "add powers";
+description = "Enhance the grammar to allow exponentiation.  \e
+No error checking required.";
+cause = internal_enhancement;
+.E)
+.LP
+The old-faithful fred file was used again:
+.E(
+alex% \f(CBaenc fred -p example\fP
+aegis: project "example": change 3: created
+alex%
+.E)
+At some point a developer will notice,
+and this change will be worked on.
+.nh 3 "The Fourth Change"
+.LP
+A fourth change,
+this time adding variables to the calculator
+is added.
+.E(
+brief_description = "add variables";
+description = "Enhance the grammar to allow variables.  \e
+Only single letter variable names are required.";
+cause = internal_enhancement;
+.E)
+.LP
+The old-faithful fred file was used again:
+.E(
+alex% \f(CBaenc fred -p example\fP
+aegis: project "example": change 4: created
+alex%
+.E)
+At some point a developer will notice,
+and this change will be worked on.
+.nh 3 "Administrator Command Summary"
+.LP
+Only a few of the aegis commands available to administrators have
+been used in this example.
+The following table (very tersely) describes the aegis commands most useful to administrators.
+.sp
+.TS
+center,tab(;);
+l l.
+Command;Description
+_
+aeca;set Change Attributes
+ael;List Stuff
+aena;New Administrator
+aenc;New Change
+aencu;New Change Undo
+aend;New Developer
+aeni;New Integrator
+aenpr;New Project
+aenrv;New Reviewer
+aepa;set Project Attributes
+aera;Remove Administrator
+aerd;Remove Developer
+aeri;Remove Integrator
+aerpr;Remove Project
+aerrv;Remove Reviewer
+.TE
+.LP
+You will want to read the manual entries for all of these commands.
+Note that all aegis commands have a
+.I \-Help
+option,
+which will give a result very similar to the
+corresponding
+.I man (1)
+output.
+Most aegis commands also have a
+.I \-List
+option,
+which usually lists interesting context sensitive information.

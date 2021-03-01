@@ -1,0 +1,481 @@
+/*
+ *	aegis - project change supervisor
+ *	Copyright (C) 1991, 1992, 1993 Peter Miller.
+ *	All rights reserved.
+ *
+ *	This program is free software; you can redistribute it and/or modify
+ *	it under the terms of the GNU General Public License as published by
+ *	the Free Software Foundation; either version 2 of the License, or
+ *	(at your option) any later version.
+ *
+ *	This program is distributed in the hope that it will be useful,
+ *	but WITHOUT ANY WARRANTY; without even the implied warranty of
+ *	MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ *	GNU General Public License for more details.
+ *
+ *	You should have received a copy of the GNU General Public License
+ *	along with this program; if not, write to the Free Software
+ *	Foundation, Inc., 675 Mass Ave, Cambridge, MA 02139, USA.
+ *
+ * MANIFEST: instructions to cook(1), how to build project
+ */
+
+
+/*
+ * You may want to change some of these options.
+ * ([debug] must be defined, even if empty, use comments.)
+ *
+ * Change ``main.h'' to add the DEBUG define.
+ * All files reference this file, so this will cause recompilation
+ * of all files, both in the change and in the baseline.
+ */
+debug = /* -g */ ;
+gonzo_flags = -D\'LIB\=\"/usr/local/lib/aegis\"\';
+
+/*
+ * Make sure the [project], [change] and [version] variables are set.
+ */
+#ifndef project
+echo "The [project] variable was not set from the command line." set silent;
+echo "If you want to do a build with is not a development build" set silent;
+echo "or an integration build, use the make command, not cook." set silent;
+fail;
+#endif
+#ifndef change
+echo "The [change] variable was not set from the command line." set silent;
+echo "If you want to do a build with is not a development build" set silent;
+echo "or an integration build, use the make command, not cook." set silent;
+fail;
+#endif
+#ifndef version
+echo "The [version] variable was not set from the command line." set silent;
+echo "If you want to do a build with is not a development build" set silent;
+echo "or an integration build, use the make command, not cook." set silent;
+fail;
+#endif
+
+/*
+ * If this is a development build, the version will be x.y.Czzz,
+ * so look toi see if there is a C in the version string.
+ * Include the baseline in the search path if this is
+ * a development build.
+ */
+if [match_mask %1C%2 [version]] then
+{
+	baseline = [collect aegis -cd -bl -p [project]];
+	search_list = . [baseline];
+}
+
+/*
+ * The source files.
+ * This is given to us by aegis.
+ */
+vs_file = common/patchlevel.h;
+change_files =
+	[collect aegis -l chafil -ter -p [project] -c [change]]
+	[vs_file] doc/version.so
+	;
+project_files =
+	[collect aegis -l profil -ter -p [project] -c [change]]
+	;
+source_files =
+	[sort [stringset [project_files] [change_files]]]
+	;
+common_obj =
+	[fromto common/%.c common/%.o [match_mask common/%.c [source_files]]]
+	;
+aegis_obj =
+	[fromto aegis/%.def aegis/%.o [match_mask aegis/%.def [source_files]]]
+	[fromto aegis/%.y aegis/%.gen.o [match_mask aegis/%.y [source_files]]]
+	[fromto aegis/%.c aegis/%.o [match_mask aegis/%.c [source_files]]]
+	[common_obj]
+	;
+fmtgen_obj =
+	[fromto fmtgen/%.y fmtgen/%.gen.o [match_mask fmtgen/%.y [source_files]]]
+	[fromto fmtgen/%.c fmtgen/%.o [match_mask fmtgen/%.c [source_files]]]
+	[common_obj]
+	;
+fmtgen_obj = [stringset [fmtgen_obj] - [vs_file]];
+
+/*
+ * how to compile C sources
+ */
+cc = cc;
+cc_flags = -O [debug];
+cc_include_flags = ;
+
+/*
+ * this next section is for gcc
+ *	comment it out if you don't have gcc
+ *
+ * The gcc include files MUST be first.
+ */
+cc = gcc;
+cc_include_flags =
+	-I/usr/local/lib/gcc-include
+	[cc_include_flags];
+cc_flags = [cc_flags] -ansi -Wall -Wstrict-prototypes -Wmissing-prototypes;
+
+/*
+ * include files from common
+ */
+cc_include_flags = [cc_include_flags] [prepost "-I" "/common" [search_list]];
+
+/*
+ * Need to look at the ANSI include files which come with aegis,
+ * but only after the system files.
+ * (Since they supplement system files, not replace them.)
+ * /
+cc_include_flags =
+	[cc_include_flags] -I/usr/include [prepost "-I" "/h" [search_list]];
+ */
+
+/*
+ * Build %1/%2.o from %1/%2.c
+ */
+%1/%2.o: %1/%2.c: [collect c_incl -s [stringset [prepost "-I" "/%1"
+	[search_list]] [cc_include_flags]] -eia [resolve %1/%2.c]]
+{
+	if [not [exists %1]] then
+		mkdir %1
+			set clearstat;
+	if [exists [target]] then
+		rm [target]
+			set clearstat;
+	if [defined %2_flags] then
+		extra = [%2_flags];
+	else
+		extra = ;
+	[cc] [stringset [prepost "-I" "/%1" [search_list]] [cc_include_flags]]
+		[cc_flags] [extra] -c [resolve %1/%2.c];
+	mv %2.o %1/%2.o;
+}
+
+
+/*
+ * How to use yacc sources.
+ */
+
+yacc = yacc;
+yacc_flags = ;
+
+%1/%2.gen.c %1/%2.gen.h: %1/%2.y
+{
+	if [not [exists %1]] then
+		mkdir %1
+			set clearstat;
+	if [exists %1/%2.list] then
+		rm %1/%2.list
+			set clearstat;
+	if [exists y.output] then
+		rm y.output
+			set clearstat;
+	if [exists %1/%2.gen.c] then
+		rm %1/%2.gen.c
+			set clearstat;
+	if [exists %1/%2.gen.h] then
+		rm %1/%2.gen.h
+			set clearstat;
+	[yacc] -d [yacc_flags] [resolve %1/%2.y];
+	sed "'s/[yY][yY]/%2_/g'" < y.tab.c > %1/%2.gen.c;
+	rm y.tab.c;
+	sed "'s/[yY][yY]/%2_/g'" < y.tab.h > %1/%2.gen.h;
+	rm y.tab.h;
+	if [exists y.output] then
+		mv y.output %1/%2.list
+			set clearstat;
+}
+
+
+/*
+ * The default recipe
+ */
+all = doc.targets bin/aegis;
+
+/*
+ * Integration builds also make the shar files for distribution.
+ */
+if [defined change] then if [not [defined baseline]] then
+	all = [all] archive/Part01.Z archive/[project].tar.Z
+		archive/[project].patch.Z ;
+
+all: [all]
+{
+	if [not [defined baseline]] then
+	{
+		set silent;
+		echo "Integrator: please do the following:";
+		echo "	chown root bin/aegis";
+		echo "	chmod u+s bin/aegis";
+	}
+}
+
+
+/*
+ * build the programs from their objects
+ */
+
+bin/%: [%_obj]
+{
+	if [not [exists bin]] then
+		mkdir bin
+			set clearstat;
+	if [exists [target]] then
+		rm [target]
+			set clearstat;
+	[cc] -o [target] [resolve [%_obj]];
+
+	chmod og\=u-w [target];
+
+	/*
+	 * aegis itself must be set-uid-root
+	 */
+	if [defined baseline] then
+	if [in [target] bin/aegis] then
+	{
+		su1 sh -c "'chown root "[target]" && chmod u+s "[target]"'"
+			set errok;
+	}
+}
+
+
+/*
+ * building things which require fmtgen to build
+ *
+ * Build %.c and %.h from %.def
+ */
+
+%1/%2.c %1/%2.h: %1/%2.def: bin/fmtgen [collect c_incl -s -eia [prepost "-I"
+	"/%1" [search_list]] [resolve %1/%2.def]]
+{
+	if [not [exists %1]] then
+		mkdir %1
+			set clearstat;
+	if [exists %1/%2.c] then
+		rm %1/%2.c
+			set clearstat;
+	if [exists %1/%2.h] then
+		rm %1/%2.h
+			set clearstat;
+	[resolve bin/fmtgen] [prepost "-I" "/%1" [search_list]]
+		[resolve %1/%2.def] %1/%2.c %1/%2.h;
+}
+
+
+/*
+ * The version stamp is to be updated for every 
+ * integration and development build.
+ */
+
+#ifndef baseline
+
+if [exists [vs_file]] then
+	rm [vs_file]
+		set clearstat;
+
+#endif
+
+if [not [exists [vs_file]]] then
+{
+	if [not [exists [dirname [vs_file]]]] then
+		mkdir [dirname [vs_file]]
+			set clearstat;
+	echo "'#define PATCHLEVEL \""[version]"\"'" > [vs_file]
+		set clearstat;
+}
+
+#ifndef baseline
+
+if [exists doc/version.so] then
+	rm doc/version.so
+		set clearstat;
+
+#endif
+
+if [not [exists doc/version.so]] then
+{
+	if [not [exists doc]] then
+		mkdir doc
+			set clearstat;
+	echo \"[version]\" > doc/version.so
+		set clearstat;
+	cooktime -m 2-Jan-70 doc/version.so;
+}
+
+/*
+ * These recipes are only expected to be exercised in an integration build.
+ * They will work sort-of-OK for a development build, but are incapable
+ * of constructing a useful development build Makefile.
+ */
+
+Makefile: aux/Makefile.sh aux/Makefile.awk [source_files]
+{
+	if [exists Makefile] then
+		rm Makefile
+			set clearstat;
+	sh [resolve aux/Makefile.sh [source_files]]
+		| gawk -f [resolve aux/Makefile.awk] > Makefile;
+}
+
+/*
+ * formatting documents and manual entries
+ */
+doc.targets: cat txt special;
+
+/*
+ * manual entries
+ */
+cat = [fromto man%1/%2.%1 cat%1/%2.%1 [match_mask man%1/%2.%1 [source_files]]];
+cat: [cat];
+
+cat%1/%2.%1: man%1/%2.%1: [collect c_incl -r -eia [prepost "-I" "/man%1"
+	[search_list]] [resolve man%1/%2.%1]]
+{
+	if [not [exists cat%1]] then
+		mkdir cat%1
+			set clearstat;
+	if [exists [target]] then
+		rm [target]
+			set clearstat;
+	roffpp [prepost "-I" "/man%1" [search_list]] [resolve man%1/%2.%1]
+		| groff -Tascii -P-h -t -man > cat%1/%2.%1; 
+}
+
+
+/*
+ * user manuals
+ */
+
+txt = [fromto doc/%.ms doc/%.ps.Z [match_mask doc/%.ms [source_files]]];
+txt: [txt];
+
+doc/%.ps.Z: doc/%.ms: [collect c_incl -r -eia [prepost "-I" "/doc"
+	[search_list]] [resolve doc/%.ms]]
+{
+	if [not [exists doc]] then
+		mkdir doc
+			set clearstat;
+	if [exists [target]] then
+		rm -f [target]
+			set clearstat;
+	roffpp [prepost "-I" "/doc" [search_list]] [resolve doc/%.ms]
+		| groff -p -t -ms | compress > [target];
+}
+
+
+/*
+ * specials
+ */
+
+special = [fromto aux/%.man % [match_mask aux/%.man [source_files]]];
+special: [special];
+
+%: aux/%.man: [collect c_incl -r -eia [prepost "-I" "/aux" [search_list]]
+	[resolve aux/%.man]]
+{
+	if [exists [target]] then
+		rm -f [target]
+			set clearstat;
+	roffpp [prepost "-I" "/aux" [search_list]] [resolve aux/%.man]
+		| groff -Tascii -P-hub -t -man > [target]; 
+}
+
+
+source_file_order =
+	README
+	[sort
+		[stringset
+			Makefile CHANGES MANIFEST [special] [source_files]
+		-
+			README
+		]
+	];
+
+archive/Part01.Z: [source_file_order]
+{
+	if [not [exists archive]] then
+		mkdir archive
+			set clearstat;
+	parts = [glob "archive/Part*"];
+	if [parts] then
+		rm [parts]
+			set clearstat;
+	/* assumes shar.3.49 available */
+	shar -n[project] -a -c -oarchive/Part -L50
+		-s pmiller@bmr.gov.au
+		[resolve [source_file_order]];
+	compress -v archive/Part*;
+}
+
+archive/[project].tar.Z: [source_file_order]
+{
+	if [not [exists archive]] then
+		mkdir archive
+			set clearstat;
+	if [exists [target]] then
+		rm [target]
+			set clearstat;
+	if [exists archive/[project].tar] then
+		rm archive/[project].tar
+			set clearstat;
+	tar cf - [resolve [source_file_order]] | tardy -unu 0 -gnu 0
+	-una Peter -gna Miller -p [project] -ms 0644 -mc 022
+		> archive/[project].tar;
+	compress -v archive/[project].tar;
+}
+
+archive/[project].patch.Z: [source_file_order]
+{
+	if [not [exists archive]] then
+		mkdir archive
+			set clearstat;
+	if [exists [target]] then
+		rm [target]
+			set clearstat;
+	if [exists archive/[project].patch] then
+		rm archive/[project].patch
+			set clearstat;
+	sh [resolve aux/patches.sh] [project] [change]
+		> archive/[project].patch;
+	compress -v archive/[project].patch;
+}
+
+CHANGES: aux/CHANGES.sh [vs_file]
+{
+	if [exists [target]] then
+		rm [target]
+			set clearstat;
+	sh [resolve aux/CHANGES.sh] [project] > [target];
+}
+
+MANIFEST: aux/MANIFEST.sh [vs_file]
+{
+	if [exists [target]] then
+		rm [target]
+			set clearstat;
+	sh [resolve aux/MANIFEST.sh [source_file_order]] > [target];
+}
+
+
+/*
+ * link to the correct common/conf.h file
+ */
+
+#ifndef baseline
+
+if [exists common/conf.h] then
+	rm common/conf.h
+		set clearstat;
+
+#endif
+
+if [not [exists common/conf.h]] then
+{
+	if [not [exists common]] then
+		mkdir common;
+	uname-os = [collect uname -s];
+	uname-rel = [collect uname -r];
+	echo "'#include <../conf/"[uname-os]-[uname-rel]">'" > common/conf.h
+		set clearstat;
+	cooktime -m 2-jan-70 common/conf.h;
+}

@@ -1,0 +1,75 @@
+'\" t
+.\"	aegis - project change supervisor
+.\"	Copyright (C) 1991, 1992, 1993 Peter Miller.
+.\"	All rights reserved.
+.\"
+.\"	This program is free software; you can redistribute it and/or modify
+.\"	it under the terms of the GNU General Public License as published by
+.\"	the Free Software Foundation; either version 2 of the License, or
+.\"	(at your option) any later version.
+.\"
+.\"	This program is distributed in the hope that it will be useful,
+.\"	but WITHOUT ANY WARRANTY; without even the implied warranty of
+.\"	MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+.\"	GNU General Public License for more details.
+.\"
+.\"	You should have received a copy of the GNU General Public License
+.\"	along with this program; if not, write to the Free Software
+.\"	Foundation, Inc., 675 Mass Ave, Cambridge, MA 02139, USA.
+.\"
+.\" MANIFEST: manual entry for the 'aegis -VERSion' command
+.\"
+.so z_name.so
+.TH "\*(n) -VERSion" 1 \*(N)
+.SH NAME
+\*(n) -VERSion \- give version information
+.SH SYNOPSIS
+.B \*(n)
+.B -VERSion
+[
+.IR info-name
+]
+.br
+.B \*(n)
+.B -VERSion
+.B -Help
+.SH DESCRIPTION
+The
+.I \*(n)
+.I -VERSion
+command is used to
+give version information
+and conditions of use.
+.PP
+There are a number of possible
+.IR info-name s,
+as follow (abbreviations as for command line options):
+.TP 8n
+Copyright
+The copyright notice for the \*(n) program.
+Version information will also be printed.
+This is the default.
+.TP 8n
+Redistribution
+Print the conditions of use and redistribution.
+.TP 8n
+Warranty
+Print the limited warranty.
+.SH OPTIONS
+The following options are understood:
+.so o_help.so
+.so o__rules.so
+.SH RECOMMENDED ALIAS
+The recommended alias for this command is
+.nf
+.ta 8n 16n
+csh%	alias aev '\*(n) -vers \e!*'
+sh$	aev(){\*(n) -vers $*}
+.fi
+.SH ERRORS
+It is an error if
+the 
+.I info-name
+given is unknown.
+.so z_exit.so
+.so z_cr.so

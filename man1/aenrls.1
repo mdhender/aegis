@@ -1,0 +1,145 @@
+'\" t
+.\"	aegis - project change supervisor
+.\"	Copyright (C) 1991, 1992, 1993 Peter Miller.
+.\"	All rights reserved.
+.\"
+.\"	This program is free software; you can redistribute it and/or modify
+.\"	it under the terms of the GNU General Public License as published by
+.\"	the Free Software Foundation; either version 2 of the License, or
+.\"	(at your option) any later version.
+.\"
+.\"	This program is distributed in the hope that it will be useful,
+.\"	but WITHOUT ANY WARRANTY; without even the implied warranty of
+.\"	MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+.\"	GNU General Public License for more details.
+.\"
+.\"	You should have received a copy of the GNU General Public License
+.\"	along with this program; if not, write to the Free Software
+.\"	Foundation, Inc., 675 Mass Ave, Cambridge, MA 02139, USA.
+.\"
+.\" MANIFEST: manual entry for 'aegis -New_ReLeaSe' command
+.\"
+.so z_name.so
+.TH "\*(n) -New_ReLeaSe" 1 \*(N)
+.SH NAME
+\*(n) -New_ReLeaSe \- create a new project from an existing project.
+.SH SYNOPSIS
+.B \*(n)
+.B -New_ReLeaSe
+project-name
+[
+.I new-project-name
+][
+.IR option ...
+]
+.br
+.B \*(n)
+.B -New_ReLeaSe
+.B -List
+[
+.IR option ...
+]
+.br
+.B \*(n)
+.B -New_ReLeaSe
+.B -Help
+.SH DESCRIPTION
+The
+.I \*(n)
+.I -New_ReLeaSe
+command is used to
+create a new project from an existing project.
+.PP
+If no 
+.I new-project-name
+is specified,
+it will be derived from the project given as follows:
+any minor version dot suffix will be removed from the name,
+then
+any major version dot suffix will be removed from the name.
+A major version dot suffix will be appended, and then
+a minor version dot suffix will be appended.
+As an example, "foo.1.0" would become "foo.1.1" assuming
+the default minor version incriment,
+and "foo" would become "foo.1.1" assiming the same minor version incriment.
+.PP
+The entire project baseline will be copied.
+The project state will be as if change 1 had already been integrated,
+naming every file (in the old project) as a new file.
+The history files will reflect this.
+No build will be necessary;
+it is assumed that the old baseline was built sucessfully.
+Change numbers will commence at 2,
+as will build numbers.
+Test numbers will commence where the old project left off
+(because all the earlier test numbers were used by the old project).
+.PP
+The default is for the minor version number to be incrimented.
+If the major version number is incrimented or set,
+the minor version number will be set to zero if it is not explicitly given.
+.PP
+The pointer to the new project will be added to the first element
+of the search path,
+or
+.I /usr/local/lib/aegis
+if none is set.
+If this is inappropriate, use the
+.B -LIBrary
+option to explicitly set the desired location.
+See the
+.B -LIBrary
+option for more information.
+.PP
+The project directory,
+under which the project baseline and history and
+state and change data are kept,
+will be created at this time.
+If the 
+.B -DIRectory 
+option is not given,
+the project directory will be created in the
+directory specified by the default_\%project_\%directory field of
+the project user's
+.IR aeuconf (5),
+or if not set
+in project user's home directory;
+in either case with the same name as the project.
+.PP
+All staff will be copied from the old project to the new project
+without change,
+as will all of the project attributes.
+.SH OPTIONS
+The following options are understood:
+.so o_dir.so
+.so o_help.so
+.so o_lib.so
+.so o_list.so
+.so o_major.so
+.so o_minor.so
+.so o_nolog.so
+.so o_terse.so
+.so o_verbose.so
+.so o__rules.so
+.SH RECOMMENDED ALIAS
+The recommended alias for this command is
+.nf
+.ta 8n 16n
+csh%	alias aenrls '\*(n) -nrls \e!* -v'
+sh$	aenrls(){\*(n) -nrls $* -v}
+.fi
+.SH ERRORS
+It is an error if
+the old project named does not exist.
+.PP
+It is an error if
+the old project named has not yet had any changes integrated.
+.PP
+It is an error if
+the old project named has any changes not in the
+.I completed
+state.
+.PP
+It is an error if
+the current user is not an administrator of the old project.
+.so z_exit.so
+.so z_cr.so

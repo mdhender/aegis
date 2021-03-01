@@ -1,0 +1,141 @@
+/*
+ *	aegis - project change supervisor
+ *	Copyright (C) 1992, 1993 Peter Miller.
+ *	All rights reserved.
+ *
+ *	This program is free software; you can redistribute it and/or modify
+ *	it under the terms of the GNU General Public License as published by
+ *	the Free Software Foundation; either version 2 of the License, or
+ *	(at your option) any later version.
+ *
+ *	This program is distributed in the hope that it will be useful,
+ *	but WITHOUT ANY WARRANTY; without even the implied warranty of
+ *	MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ *	GNU General Public License for more details.
+ *
+ *	You should have received a copy of the GNU General Public License
+ *	along with this program; if not, write to the Free Software
+ *	Foundation, Inc., 675 Mass Ave, Cambridge, MA 02139, USA.
+ *
+ * MANIFEST: aegis configuration for dgux 5.4.1
+ */
+
+#ifndef CONF_H
+#define CONF_H
+
+/*
+ * Define this symbol if your system does NOT
+ * have the ANSI C strerror system call, and
+ * does not define strerror in <string.h>.
+ *
+#define CONF_NO_strerror
+ */
+
+/*
+ * Define this symbol if your system does NOT
+ * have the POSIX tcgetpgrp system call.
+ *
+#define CONF_NO_tcgetpgrp
+ */
+
+/*
+ * Define this symbol if your system does NOT
+ * have the stdarg.h include file mandated by ANSI C.
+ */
+#ifndef __STDC__
+#define CONF_NO_stdarg
+#endif
+
+/*
+ * Define one of these symbols to indicate which
+ * universe your UNIX is derived from.
+ * If you have a choice, define both.
+ */
+/* #define BSD */
+#define SYSV
+
+/*
+ * Define this symbol as an appropriate arguemnt to
+ * the getpgrp system call for your system.
+ * Ignore if your system does not have a getpgrp system call.
+ */
+/* #define CONF_getpgrp_arg 0 */
+#define CONF_getpgrp_arg
+
+/*
+ * Suitable user for storing aegis' global files.
+ * The group will be derived from the relevant entry in /etc/passwd.
+ *
+ * Do not confuse this with the fact that aegis must be set-uid-root.
+ * Aegis MUST be set-uid-root to manipulate file ownersips, etc.
+ *
+ * This string defines the owner of aegis' global files, so that aegis
+ * may access them when they are on NFS mounted partitions (when root
+ * is mapped to "nobody").
+ */
+#define AEGIS_USER	"bin"
+
+/*
+ * This defines the file creation mask.  See umask(2) for more information.
+ * Some bits are not available, because aegis is _meant_ to be paranoid.
+ * Owner: always has read, write and search/exec.
+ * Group: always has read and search/exec, so that developers can get at the
+ *	baseline.  There is never group write, because then developers
+ *	could trash the baseline, which is counter-productive.
+ * Others: There is never others write, for the same reason as group.
+ *	Others read and search/execute is configurable.
+ *
+ * The permissions mask in binary looks like
+ *	000 010 X1X
+ * where the Xs may be configured.
+ *
+ * Alternatives for default umask are thus
+ *	027	others get nothing
+ *	026	others can execute the results if they know where they are going
+ *	022	others can see and copy and execute anything
+ *	023	don't do this (why is left as an exersize for the reader)
+ *
+ * Projects have a configurable umask, this is just the default.
+ *	See aepattr(1) for more information.
+ */
+#define DEFAULT_UMASK 026
+
+/*
+ * Define this symbol if your system does NOT have the strftime
+ * function mandated by the ANSI C standard.
+ *
+#define CONF_NO_strftime
+ */
+
+/*
+ * Define this symbol if your system does NOT
+ * have the pw_comment field in struct passwd in <pwd.h>
+ *
+#define CONF_NO_pw_comment
+ */
+
+/*
+ * Define this symbol if your system does NOT
+ * have the seteuid system call.
+ *
+#define CONF_NO_seteuid
+ */
+
+/*
+ * Define this symbol to be the pathname of your shell.
+ * Leave it as a Bourne shell whenever possible.
+ * Some systems have different versions of the Bourne shell,
+ * with and without functions; choose the one *with* functions if so.
+ */
+#define CONF_SHELL "/bin/sh"
+
+/*
+ * These symbols define where non-system user IDs start,
+ * and where non-system group IDs start.
+ * This is mostly to ensure that accounts "root" and "bin"
+ * and "uucp" are not project owners.
+ */
+#define AEGIS_MIN_UID 100
+#define AEGIS_MIN_GID 10
+
+#endif /* CONF_H */

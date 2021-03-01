@@ -1,0 +1,118 @@
+'\" t
+.\"	aegis - project change supervisor
+.\"	Copyright (C) 1991, 1992, 1993 Peter Miller.
+.\"	All rights reserved.
+.\"
+.\"	This program is free software; you can redistribute it and/or modify
+.\"	it under the terms of the GNU General Public License as published by
+.\"	the Free Software Foundation; either version 2 of the License, or
+.\"	(at your option) any later version.
+.\"
+.\"	This program is distributed in the hope that it will be useful,
+.\"	but WITHOUT ANY WARRANTY; without even the implied warranty of
+.\"	MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+.\"	GNU General Public License for more details.
+.\"
+.\"	You should have received a copy of the GNU General Public License
+.\"	along with this program; if not, write to the Free Software
+.\"	Foundation, Inc., 675 Mass Ave, Cambridge, MA 02139, USA.
+.\"
+.\" MANIFEST: manual entry for 'aegis -Integrate_Begin' command
+.\"
+.so z_name.so
+.TH "\*(n) -Integrate_Begin" 1 \*(N)
+.SH NAME
+\*(n) -Integrate_Begin \- begin integrating a change
+.SH SYNOPSIS
+.B \*(n)
+.B -Integrate_Begin
+.I change-number
+[
+.IR option ...
+]
+.br
+.B \*(n)
+.B -Integrate_Begin
+.B -List
+[
+.IR option ...
+]
+.br
+.B \*(n)
+.B -Integrate_Begin
+.B -Help
+.SH DESCRIPTION
+The
+.I \*(n)
+.I -Integrate_Begin
+command is used to
+begin the integration of a change into the baseline of a project.
+.PP
+The change will advance
+from the 'awaiting_integration' state
+to the 'being_integrated' state.
+.PP
+A copy of the baseline is created in an
+.IR "integration directory" 
+and the the files of the change are added to the integration directory;
+time stamps on the files are preserved.
+The 
+.I "'\*(n) -Change_Directory'"
+command may be used to locate this directory.
+The change will be assigned to the current user.
+.PP
+The change will be assigned a delta number.
+Delta numbers are incrimented once for each
+.I "\*(n) -Intgerate_Begin"
+command for the project.
+If an integration is subsequently aborted with either the
+.I "\*(n) -Integrate_Begin_Undo"
+or
+.I "\*(n) -Integrate_FAIL"
+command,
+the delta number will not be re-used.
+.PP
+It is not possible to choose the integration directory,
+as there are many constraints upon it,
+including the fact that it must be
+on the same device as the baseline directory,
+and that many UNIX implementations don't allow renaming
+directories up and down the trees.
+The integration directory will be in the project directory,
+and named for the delta number.
+.SH OPTIONS
+The following options are understood:
+.so o_change.so
+.so o_help.so
+.so o_list.so
+.so o_min.so
+.so o_project.so
+.so o_terse.so
+.so o_verbose.so
+.so o__rules.so
+.SH RECOMMENDED ALIAS
+The recommended alias for this command is
+.nf
+.ta 8n 16n
+csh%	alias aeib '\*(n) -ib \e!* -v'
+sh$	aeib(){\*(n) -ib $* -v}
+.fi
+.SH ERRORS
+It is an error if
+the change is not in the 'awaiting_integration' state.
+.br
+It is an error if
+the current user is not an integrator of the project.
+.br
+It is an error if
+there is an integration in progress for the project.
+.br
+It is an error if
+the current user developed the change and the project is configured to
+disallow developers to integrate their own changes (default).
+.br
+It is an error if
+the current user reviewed the change and the project is configured to
+disallow reviewers to integrate their such changes (default).
+.so z_exit.so
+.so z_cr.so

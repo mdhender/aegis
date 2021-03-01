@@ -1,0 +1,85 @@
+'\" t
+.\"	aegis - project change supervisor
+.\"	Copyright (C) 1991, 1992, 1993 Peter Miller.
+.\"	All rights reserved.
+.\"
+.\"	This program is free software; you can redistribute it and/or modify
+.\"	it under the terms of the GNU General Public License as published by
+.\"	the Free Software Foundation; either version 2 of the License, or
+.\"	(at your option) any later version.
+.\"
+.\"	This program is distributed in the hope that it will be useful,
+.\"	but WITHOUT ANY WARRANTY; without even the implied warranty of
+.\"	MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+.\"	GNU General Public License for more details.
+.\"
+.\"	You should have received a copy of the GNU General Public License
+.\"	along with this program; if not, write to the Free Software
+.\"	Foundation, Inc., 675 Mass Ave, Cambridge, MA 02139, USA.
+.\"
+.\" MANIFEST: manual entry for 'aegis -New_Test_Undo' command
+.\"
+.so z_name.so
+.TH "\*(n) -New_Test_Undo" 1 \*(N)
+.SH NAME
+\*(n) -New_Test_Undo \- remove new tests from a change
+.SH SYNOPSIS
+.B \*(n)
+.B -New_Test_Undo
+.IR file-name ...
+[
+.IR option ...
+]
+.br
+.B \*(n)
+.B -New_Test_Undo
+.B -List
+[
+.IR option ...
+]
+.br
+.B \*(n)
+.B -New_Test_Undo
+.B -Help
+.SH DESCRIPTION
+The
+.I \*(n)
+.I -New_Test_Undo
+command is used to
+remove new tests from a change
+(reverse the actions of the '\*(n) -New_Test' command).
+The file is deleted from the development directory.
+The file names may be relative to the current directory,
+and \*(n) will attemp to intuit the names relative to the
+development directory or the baseline directory.
+.SH OPTIONS
+The following options are understood:
+.so o_change.so
+.so o_help.so
+.so o_keep.so
+.so o_list.so
+.so o_project.so
+.so o_terse.so
+.so o_verbose.so
+.so o__rules.so
+.SH RECOMMENDED ALIAS
+The recommended alias for this command is
+.nf
+.ta 8n 16n
+csh%	alias aentu '\*(n) -ntu \e!$ -v'
+sh$	aentu(){\*(n) -ntu $* -v}
+.fi
+.SH ERRORS
+It is an error if
+the change is not in the 'being_developed' state.
+.br
+It is an error if
+the change is not assigned to the current user.
+.br
+It is an error if
+the file is not in the change.
+.br
+It is an error if
+the file was not added to the change with the '\*(n) -New_Test' command.
+.so z_exit.so
+.so z_cr.so

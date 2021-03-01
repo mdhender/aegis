@@ -1,0 +1,103 @@
+'\" t
+.\"	aegis - project change supervisor
+.\"	Copyright (C) 1991, 1992, 1993 Peter Miller.
+.\"	All rights reserved.
+.\"
+.\"	This program is free software; you can redistribute it and/or modify
+.\"	it under the terms of the GNU General Public License as published by
+.\"	the Free Software Foundation; either version 2 of the License, or
+.\"	(at your option) any later version.
+.\"
+.\"	This program is distributed in the hope that it will be useful,
+.\"	but WITHOUT ANY WARRANTY; without even the implied warranty of
+.\"	MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+.\"	GNU General Public License for more details.
+.\"
+.\"	You should have received a copy of the GNU General Public License
+.\"	along with this program; if not, write to the Free Software
+.\"	Foundation, Inc., 675 Mass Ave, Cambridge, MA 02139, USA.
+.\"
+.\" MANIFEST: manual entry for 'aegis -Build' command
+.\"
+.so z_name.so
+.TH "\*(n) -Build" 1 \*(N)
+.SH NAME
+\*(n) -Build \- build a project
+.SH SYNOPSIS
+.B \*(n)
+.B -Build
+[
+.IR option ...
+]
+.br
+.B \*(n)
+.B -Build
+.B -List
+[
+.IR option ...
+]
+.br
+.B \*(n)
+.B -Build
+.B -Help
+.SH DESCRIPTION
+The
+.I \*(n)
+.I -Build
+command is used to
+build a project.
+The project configuration file is consulted for the appropriate build command,
+and that command is executed
+(see 
+.IR aepconf (5)
+for more information.)
+Output of the command is automatically logged to the
+.I \*(n).log
+file at the root of the development directory tree.
+The build command will be executed with its current directory being
+the root of the development directory,
+irrespective of there the
+.I "\*(n) -Build"
+command was exectuted.
+.PP
+If the change is in the
+.I "being integrated"
+state,
+references to the development directory, above,
+should be read as the integration directory.
+Integration build commands are executed with the user and group
+set to the project's owing user and group.
+That is,
+it is not necessary for an integrator to log in as someone else,
+the project account for instance,
+in order to do an integration.
+.so o_bld_lk.so
+.SH OPTIONS
+The following options are understood:
+.so o_change.so
+.so o_help.so
+.so o_list.so
+.so o_nolog.so
+.so o_project.so
+.so o_terse.so
+.so o_verbose.so
+.so o__rules.so
+.SH RECOMMENDED ALIAS
+The recommended alias for this command is
+.nf
+.ta 8n 16n
+csh%	alias aeb '\*(n) -b \e!* -v'
+sh$	aeb(){\*(n) -b $* -v}
+.fi
+.SH ERRORS
+It is an error if
+the change is not assigned to the curent user.
+.br
+It is an error if
+the change is not in one of the
+.I "being developed"
+or
+.I "being integrated"
+states.
+.so z_exit.so
+.so z_cr.so

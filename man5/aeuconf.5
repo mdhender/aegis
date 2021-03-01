@@ -1,0 +1,68 @@
+'\" t
+.\"	aegis - project change supervisor
+.\"	Copyright (C) 1991, 1992, 1993 Peter Miller.
+.\"	All rights reserved.
+.\"
+.\"	This program is free software; you can redistribute it and/or modify
+.\"	it under the terms of the GNU General Public License as published by
+.\"	the Free Software Foundation; either version 2 of the License, or
+.\"	(at your option) any later version.
+.\"
+.\"	This program is distributed in the hope that it will be useful,
+.\"	but WITHOUT ANY WARRANTY; without even the implied warranty of
+.\"	MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+.\"	GNU General Public License for more details.
+.\"
+.\"	You should have received a copy of the GNU General Public License
+.\"	along with this program; if not, write to the Free Software
+.\"	Foundation, Inc., 675 Mass Ave, Cambridge, MA 02139, USA.
+.\"
+.\" MANIFEST: description of aegis user config file format
+.\"
+.so z_name.so
+.TH aeuconf 5 \*(n)
+.SH NAME
+aeuconf - user configuration file
+.SH SYNOPSIS
+\fI$HOME\f(CW/.\*(n)rc\fR
+.SH DESCTIPTION
+A user configuration file
+is used to hold user defaults.
+This file is created and edited by the user.
+This file is only ever read by \*(n).
+.SH CONTENTS
+The file contains the following fields:
+.TP 8n
+default_development_directory = string;
+.br
+The pathname of where to place new development directories.
+The pathname may be relative,
+in which case it is relative to \fI$HOME\fP.
+The default is the field of the same name in the project attributes,
+or \fI$HOME\fP neither is set.
+.TP 8n
+default_project_directory = string;
+.br
+The pathname of where to place new project directories.
+The pathname may be relative.
+If this path is relative,
+it is relative to \fI$HOME\fP.
+The default is \fI$HOME\fP.
+.TP 8n
+default_project_name = string;
+.br
+The name of a project.
+.TP 8n
+default_change_number = integer;
+.br
+The number of a change.
+.PP
+Please note that the
+.I default_project_name
+field and the
+.I default_change_number
+field
+are unrelated.
+Specifying both does not mean that single change within that single project,
+they have nothing to do with each other.
+.so z_cr.so

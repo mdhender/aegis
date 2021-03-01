@@ -1,0 +1,84 @@
+'\" t
+.\"	aegis - project change supervisor
+.\"	Copyright (C) 1991, 1992, 1993 Peter Miller.
+.\"	All rights reserved.
+.\"
+.\"	This program is free software; you can redistribute it and/or modify
+.\"	it under the terms of the GNU General Public License as published by
+.\"	the Free Software Foundation; either version 2 of the License, or
+.\"	(at your option) any later version.
+.\"
+.\"	This program is distributed in the hope that it will be useful,
+.\"	but WITHOUT ANY WARRANTY; without even the implied warranty of
+.\"	MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+.\"	GNU General Public License for more details.
+.\"
+.\"	You should have received a copy of the GNU General Public License
+.\"	along with this program; if not, write to the Free Software
+.\"	Foundation, Inc., 675 Mass Ave, Cambridge, MA 02139, USA.
+.\"
+.\" MANIFEST: manual entry for the 'aegis -ReMove_file' command
+.\"
+.so z_name.so
+.TH "\*(n) -ReMove_file" 1 \*(N)
+.SH NAME
+\*(n) -ReMove_file \- add files to be deleted to a chasnge
+.SH SYNOPSIS
+.B \*(n)
+.B -ReMove_file
+.IR file-name ...
+[
+.IR option ...
+]
+.br
+.B \*(n)
+.B -ReMove_file
+.B -List
+[
+.IR option ...
+]
+.br
+.B \*(n)
+.B -ReMove_file
+.B -Help
+.SH DESCRIPTION
+The
+.I \*(n)
+.I -ReMove_file
+command is used to
+add files to be deleted to a change.
+.so z_intuit.so
+.PP
+The file will be added to the list of files in the change,
+and will be remoed from the baseline at integration time.
+.SH OPTIONS
+The following options are understood:
+.so o_change.so
+.so o_help.so
+.so o_list.so
+.so o_nolog.so
+.so o_project.so
+.so o_terse.so
+.so o_verbose.so
+.so o__rules.so
+.SH RECOMMENDED ALIAS
+The recommended alias for this command is
+.nf
+.ta 8n 16n
+csh%	alias aerm '\*(n) -rm \e!* -v'
+sh$	aerm(){\*(n) -rm $* -v}
+.fi
+.SH ERRORS
+It is an error if
+the change is not in the 'being_developed' state.
+.br
+It is an error if
+the change is not assigned to the current user.
+.br
+It is an error if
+the filesa does not exist in the baseline.
+.br
+It is an error if
+the file is already part of the change.
+.so z_exit.so
+.so z_cr.so

@@ -1,0 +1,170 @@
+.\"
+.\"	aegis - project change supervisor
+.\"	Copyright (C) 1991, 1992, 1993 Peter Miller.
+.\"	All rights reserved.
+.\"
+.\"	This program is free software; you can redistribute it and/or modify
+.\"	it under the terms of the GNU General Public License as published by
+.\"	the Free Software Foundation; either version 2 of the License, or
+.\"	(at your option) any later version.
+.\"
+.\"	This program is distributed in the hope that it will be useful,
+.\"	but WITHOUT ANY WARRANTY; without even the implied warranty of
+.\"	MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+.\"	GNU General Public License for more details.
+.\"
+.\"	You should have received a copy of the GNU General Public License
+.\"	along with this program; if not, write to the Free Software
+.\"	Foundation, Inc., 675 Mass Ave, Cambridge, MA 02139, USA.
+.\"
+.\" MANIFEST: User Guide,  The History Tool, Using RCS
+.\"
+.bp
+.nh 2 "Using RCS"
+.LP
+The entries for the commands are listed below.
+RCS uses a slightly different model than aegis wants,
+so some manuevering is required.
+The command strings in this section assume that the RCS commands
+.I ci
+and
+.I co
+and
+.I rcs
+and
+.I rlog
+are in the command search PATH,
+but you may like to hard-wire the paths,
+or set PATH at the start of each.
+You should also note that the strings are always handed to
+the Bourne shell to be executed,
+and are set to exit with an error immediately a sub-command fails.
+.LP
+In these commands,
+the RCS file is kept unlocked,
+since only the owner will be checking changes in.
+The RCS functionality for coordinating shared access is not required.
+.LP
+One advantage of using RCS version 5.6 or later is that
+binary files are supported,
+should you want to have binary files in the baseline.
+.nh 3 "history_create_command"
+.LP
+This command is used to create a new project history.
+The command is always executed as the project owner.
+.LP
+The following substitutions are available:
+.DS
+.TS
+tab(;);
+l l.
+${Input};absolute path of the source file
+${History};absolute path of the history file
+.TE
+.DE
+.LP
+The entry in the
+.I "config"
+file looks like this:
+.E(
+history_create_command =
+	"ci -u -t/dev/null $i $h,v; \e
+	rcs -U $h,v";
+.E)
+.LP
+The "ci -u" is so that a copy remains in the baseline.
+The "rcs -U" is necessary to set unstrict locking.
+.nh 3 "history_get_command"
+.LP
+This command is used to get a specific edit back from history.
+The command may be executed by developers.
+.LP
+The following substitutions are available:
+.DS
+.TS
+tab(;);
+l l.
+${History};absolute path of the history file
+${Edit};edit number, as given by history_query_command
+${Output};absolute path of the destination file
+.TE
+.DE
+.LP
+The entry in the
+.I "config"
+file looks like this:
+.E(
+history_get_command =
+	"co -u'$e' -p $h,v > $o";
+.E)
+.LP
+Note that the destination filename will
+.I never
+look anything like the history source filename,
+so the -p is essential.
+.nh 3 "history_put_command"
+.LP
+This command is used to add a new "top-most" entry to the
+history file.
+This command is always executed as the project owner.
+.LP
+The following substitutions are available:
+.DS
+.TS
+tab(;);
+l l.
+${Input};absolute path of source file
+${History};absolute path of history file
+.TE
+.DE
+.LP
+The entry in the
+.I "config"
+file looks like this:
+.E(
+history_put_command =
+	"ci -u -m/dev/null $i $h,v";
+.E)
+.LP
+Note that the source file is left in the baseline.
+.LP
+It is possible that a very cautious approach could be taken,
+and combine history_create_command with history_put_command,
+viz:
+.E(
+history_create_command =
+	"ci -u -m/dev/null -t/dev/null $i $h,v; \e
+	rcs -U $h,v";
+history_put_command =
+	"ci -u -m/dev/null -t/dev/null $i $h,v; \e
+	rcs -U $h,v";
+.E)
+.nh 3 "history_query_command"
+.LP
+This command is used to query what the history mechanism calls the top-most
+edit of a history file.
+The result may be any arbitrary string,
+it need not be anything like a number,
+just so long as it uniquely identifies the edit
+for use by the
+.I history_get_command
+at a later date.
+The edit number is to be printed on the standard output.
+This command may be executed by developers.
+.LP
+The following substitutions are available:
+.DS
+.TS
+tab(;);
+l l.
+${History};absolute path of the history file
+.TE
+.DE
+.LP
+The entry in the
+.I "config"
+file looks like this:
+.E(
+history_query_command =
+	"rlog -r $h,v | awk '/^head:/ {print $$2}'";
+.E)

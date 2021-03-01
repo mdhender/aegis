@@ -1,0 +1,99 @@
+'\" t
+.\"	aegis - project change supervisor
+.\"	Copyright (C) 1991, 1992, 1993 Peter Miller.
+.\"	All rights reserved.
+.\"
+.\"	This program is free software; you can redistribute it and/or modify
+.\"	it under the terms of the GNU General Public License as published by
+.\"	the Free Software Foundation; either version 2 of the License, or
+.\"	(at your option) any later version.
+.\"
+.\"	This program is distributed in the hope that it will be useful,
+.\"	but WITHOUT ANY WARRANTY; without even the implied warranty of
+.\"	MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+.\"	GNU General Public License for more details.
+.\"
+.\"	You should have received a copy of the GNU General Public License
+.\"	along with this program; if not, write to the Free Software
+.\"	Foundation, Inc., 675 Mass Ave, Cambridge, MA 02139, USA.
+.\"
+.\" MANIFEST: manual entry for 'aegis -Develop_Begin' command
+.\"
+.so z_name.so
+.TH "\*(n) -Develop_Begin" 1 \*(N)
+.SH NAME
+\*(n) -Develop_Begin \- begin development of a change
+.SH SYNOPSIS
+.B \*(n)
+.B -Develop_Begin
+.I change-number
+[
+.IR option ...
+]
+.br
+.B \*(n)
+.B -Develop_Begin
+.B -List
+[
+.IR option ...
+]
+.br
+.B \*(n)
+.B -Develop_Begin
+.B -Help
+.SH DESCRIPTION
+The
+.I \*(n)
+.I -Develop_Begin
+command is used to
+commence development of a change.
+.PP
+The development directory for the change will be created automatically;
+below the directory specified in the default_\%development_\%directory field of
+.IR aeuconf (5),
+or if not set
+below the directory specified in the default_\%development_\%directory field of
+.IR aepattr (5),
+or if not set
+below the current user's home directory.
+It is rare to need to know the exact pathname of the development directory,
+as the
+.IR aecd (1)
+command can take you there at any time.
+.PP
+Successful execution of this command will move the
+specified change from the
+.I "awaiting development"
+state to the
+.I "being developed"
+state.
+.SH OPTIONS
+The following options are understood:
+.so o_change.so
+.so o_dir.so
+.so o_help.so
+.so o_list.so
+.so o_project.so
+.so o_terse.so
+.so o_verbose.so
+.so o__rules.so
+.SH RECOMMENDED ALIAS
+The recommended alias for this command is
+.nf
+.ta 8n 16n
+csh%	alias aedb '\*(n) -db \e!* -v'
+sh$	aedb(){\*(n) -db $* -v}
+.fi
+.SH ERRORS
+It is an error if
+the change does not exist.
+.br
+It is an error if
+the change is not in the
+.I "awaiting development"
+state.
+.br
+It is an error if
+the current user is not a developer of the specified project.
+.so z_exit.so
+.so z_cr.so

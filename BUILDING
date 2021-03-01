@@ -1,0 +1,594 @@
+
+
+
+build(aegis)					     build(aegis)
+
+
+NAME
+	aegis -	project	change supervisor
+	Copyright (C) 1990, 1991, 1992,	1993 Peter Miller.
+	All rights reserved.
+
+	The aegis program is distributed under the terms of the
+	GNU General Public License.  See the LICENSE section,
+	below, for more	details.
+
+	aegis (ee.j.iz)	n., a protection, a defence.
+
+SPACE REQUIREMENTS
+	You will need up to 10MB to unpack and build the aegis
+	program.  (This	is the worst case seen so far, most
+	systems	have binaries about 60%	as big as this,	6MB is
+	more typical.)	Your mileage may vary.
+
+SITE CONFIGURATION
+	The file common/conf.h needs to	be created to match your
+	site.  Select an appropriate file from the conf
+	directory.  The	files in this directory	are named for the
+	various	systems	encountered to date by the author.  The
+	file most closely resembling your system should	be copied
+	into the common/conf.h file.  You can copy it or use a
+	symbolic link; copying is recommended because you may
+	need to	edit.
+
+	The common/conf.h file is extensively commented.  Read
+	the comments and change	what you need to.  Please read
+	this file carefully.
+
+	Another	file which may require editing is the Makefile
+	file.  The first few lines contain comments describing
+	what may require changing.  In general these changes will
+	relate to the name of your favorite C compiler,	and where
+	it keeps its include files.
+
+	The top	of the Makefile	file is	arranged as macro
+	definitions, with alternatives for each	known system in
+	comments.  Search for your system's name, editing the
+	macro definition as required.
+
+KNOWN SYSTEMS
+	This distribution of aegis is known to build on	the
+	following systems:
+
+	SunOS 4.1
+		The native cc(1) and also gcc(1) are known to
+		work for Sun4s.	 The appropriate configuration is
+		contained in the conf/SunOS-4.1	file.  Sun seem
+		to be having chronic problems with locking; you
+		may need to get	the very latest	set of locking
+		patches	and apply them.
+
+
+
+
+								1
+
+
+
+
+
+build(aegis)					     build(aegis)
+
+
+	ConvexOS 10.0
+		The native cc(1) works just fine.  The
+		appropriate configuration is contained in the
+		conf/ConvexOS-10 file.	Note that there	is no
+		"bin" user on ConvexOS,	so the owner of	aegis '
+		library	files is "daemon"; you will need to map
+		user and group "bin" to	"daemon" in the
+		instructions below.
+
+	DG/UX 5.4.1
+		The native cc(1) works just fine.  The
+		appropriate configuration is contained in the
+		conf/dgux-5.4.1	file.
+
+	ULTRIX 4.2
+		It has the seteuid and setegid calls, but the
+		shell has no functions!	 Complain to your vendor.
+		You will need to change	the SHELL macro
+		definition in the Makefile file	to use sh5(1)
+		instead.  The appropriate configuration	is
+		contained in the conf/ULTRIX-4.2 file.
+
+	Pyramid	SMP DC/OSx 1.0-92b023
+		This system is pretty horrendous.  Read	the file
+		BUILDpyr included in this distribution for
+		instruction how	to configure aegis, then follow
+		the rest of the	instructions in	this file.  The
+		appropriate configuration is contained in the
+		conf/dcosx file.
+
+	HP-UX A.08.07
+		The author has been advised that the aegis
+		program	works on this system.  Could another
+		person confirm this, please.  The appropriate
+		configuration is contained in the conf/hpux-8.07
+		file.
+
+	SCO 2.4
+		The author has been advised that the aegis
+		program	works on this system.  Could another
+		person confirm this, please.  The appropriate
+		configuration is contained in the conf/SCO-2.4
+		file.
+
+	If the instructions for	any of the above systems do not
+	work, after you	have double-checked everything,	the
+	author would like to know.
+
+UNKNOWN	SYSTEMS
+	Please let the author know of any other	systems	you get
+	aegis working on, and the modifications	necessary.
+	Please include the differences to the Makefile file, and
+	the whole common/conf.h	file you used.	Included any
+	other files you	edited or added.  Include the output of
+
+
+
+								2
+
+
+
+
+
+build(aegis)					     build(aegis)
+
+
+	the "uname -rs"	command, if your flavour of UNIX has such
+	a command.
+
+	While the aegis	program	was developed using gcc, this is
+	not the	default	in the Makefile	file.  The code	uses ANSI
+	C features without compromising	the ability to be
+	compiled on older C compilers.	Functions mandated by the
+	ANSI C standard	are used, because many systems provided
+	them, one way or another.  Please let the author know of
+	any others you think should be added to	the common/ansi.c
+	file.
+
+	You may	need to	use some ANSI C	header files which the
+	aegis code uses, but which some	systems	(as yet) fail to
+	provide.  You will find	lines at the top of the	Makefile
+	file similar to
+		H = -I/usr/include -Ih
+	Change this to suit your system	and your compiler.  The
+	"h" directory must be searched last as it is intended to
+	suplement your system, not replace it.
+
+	You will need to check the include files in the	"h"
+	directory to see that they are suitable	for your system.
+	You may	want to	delete any that	your system already has.
+
+BUILDING AEGIS
+	All you	should need to do is use the
+		% make
+		...lots	of output...
+		%
+	command	and wait.  When	this finishes you should see a
+	directory called bin containing	two files: aegis and
+	fmtgen.	 The fmtgen file is a program used in
+	constructing aegis and is not for general consumption.
+
+OTHER USEFUL SOFTWARE
+	Before describing how to test aegis, you may need to grab
+	some other free	software, because the tests require it in
+	some cases, and	because	it is generally	useful in others.
+
+	cook
+		This is	a dependency maintenance tool (DMT).  An
+		example	of a well-known	DTM is make(1),	however
+		this old failthfull is not sufficiently	capable
+		to meet	the demands placed on it by the	aegis
+		program, but cook certainly is.	 The cook package
+		is written by the same author as aegis.	 The cook
+		package	is necessary for test 11 to pass.  It is
+		also used in the documentation.	 The cook program
+		may be found at	the same archive site as the
+		aegis program, and in the same directory.  The
+		cook program is	available under	the terms of the
+		GNU General Public License.
+
+
+
+
+								3
+
+
+
+
+
+build(aegis)					     build(aegis)
+
+
+	RCS
+		This is	a source control package, and is
+		available from any of the GNU archives.	 The
+		tests use RCS as the history mechanism,	so it is
+		necessary to have RCS for most of the tests to
+		pass.
+
+	GNU diff
+		If the diff(1) utility supplied	by your	flavor of
+		unix does not have the -c option, you will need
+		GNU diff to make patch files, if you want to
+		publish	software for FTP or on USENET.	Context
+		differences are	also helpful for reviewing
+		changes.
+
+	groff
+		This GNU software replaces the documentation
+		tools which (sometimes)	come with UNIX.	 They
+		produce	superior error messages, and support a
+		wider range of functionality and fonts.	 The
+		aegis User Guide was prepared with groff.
+
+	bison
+		This GNU software is a replacement for yacc(1).
+		Some systems have very sick yaccs, and this may
+		be necessary if	your system include files
+		disagree strongly with your system's yacc.  The
+		Makefile has bison setup in comments.
+
+	fhist
+		This software, available under the terms of the
+		GNU General Public License, is a set of	file
+		history	and comparison utilities.  It was
+		originally written by David I. Bell, and is based
+		on the minimal difference algorithm by Eugene W.
+		Myers.	This copy is enhanced and maintained by
+		the same author	as aegis, and may be found at the
+		same archive site, in the same directory.
+
+TESTING	AEGIS
+	The aegis program comes	with a test suite.  To run this
+	test suite, use	the command
+		% make sure
+		...lots	of output...
+		Passed All Tests
+		%
+
+	The tests take a minute	or two each, with a few	very
+	fast, and a couple very	slow, but it varies greatly
+	depending on your CPU.
+
+	The tests assume that the RCS commands "ci", "co", "rlog"
+	and "rcs" are somewhere	in the command search PATH.
+
+
+
+
+								4
+
+
+
+
+
+build(aegis)					     build(aegis)
+
+
+	The test/00/t0011a.sh file assumes the cook(1) command by
+	the author is somewhere	in the command search path.  This
+	test reproduces	the example used in Chapter 3 of the User
+	Guide.
+
+	If you are using Sun's tmpfs file system as your /tmp
+	directory, the tests will fail.	 This is because the
+	tmpfs file system does not support file	locking.  Set the
+	AEGIS_TMP environment variable to somewhere else before
+	running	the tests.  Something like
+		% setenv AEGIS_TMP /usr/tmp
+		%
+	is usually sufficient if you are using C shell,	or
+		$ AEGIS_TMP=/usr/tmp
+		$ export AEGIS_TMP
+		$
+	if you are using Bourne	shell.	Remember, this must be
+	done before running the	tests.
+
+	If the tests fail due to errors	complaining of "user too
+	privileged" you	will need to adjust the	AEGIS_MIN_UID
+	define in the common/conf.h file.  Similarly for "group
+	too privileged", although this is rarer.  This error
+	message	will also occur	if you run the tests as	root: the
+	tests must be run as a mortal each time.
+
+TESTING	SET-UID-ROOT
+	If the aegis program is	not set-uid-root then it runs in
+	"test" mode which gives	you some confidence that aegis is
+	working	before being tested again when it is set-uid-
+	root.  Two pass	testing	like this means	that you need not
+	trust your system to a set-uid-root program which is not
+	known to work.
+
+	You will need to do a little of	the install, to	create
+	the directory which will contain aegis'	lock file.
+		# mkdir	/usr/local/lib/aegis
+		# chmod	755 /usr/local/lib/aegis
+		# chown	bin /usr/local/lib/aegis
+		# chgrp	bin /usr/local/lib/aegis
+		#
+	You will need to change	aegis to be set-uid-root.  This
+	may be done with the following commands:
+		# chown	root bin/aegis
+		# chmod	u+s bin/aegis
+		#
+	Once aegis is set-uid-root, it is tested again,	in the
+	same manner as before.
+		% make sure
+		...lots	of output...
+		Passed All Tests
+		%
+
+	You should test	aegis as a mortal in both passes, rather
+
+
+
+								5
+
+
+
+
+
+build(aegis)					     build(aegis)
+
+
+	than as	root, to be sure the set-uid-root functionality
+	is working correctly.
+
+INSTALLING AEGIS
+	Put the	aegis program somewhere	where users will
+	automatically pick it up, such as in the /usr/local/bin
+	directory.  Use	the command
+		# cp bin/aegis /usr/local/bin
+		#
+	Don't forget to	make sure that the copy	is set-uid-root,
+	some versions of cp do not transfer the	set-uid	bit of
+	the mode.
+
+	The manuals can	be installed using the commands
+		# sh man1/install.sh /usr/local/man/man1
+		# sh man5/install.sh /usr/local/man/man5
+		#
+	but this is very site specific.	 You can select	a
+	different path by changing the last argument.
+
+	By default, aegis is configured	to use
+	/usr/local/lib/aegis as	the place it stores the	table
+	containing the mapping from project name to project
+	directory, and indexes into this table.	 The aegis
+	program	also has example .cshrc	and .profile files, and
+	generic	notification scripts.  These can be copied to
+	this library as	follows:
+		# mkdir	/usr/local/lib/aegis
+		# chmod	755 /usr/local/lib/aegis
+		# chown	bin /usr/local/lib/aegis
+		# chgrp	bin /usr/local/lib/aegis
+		# cp lib/* /usr/local/lib/aegis
+		# chmod	a+r /usr/local/lib/aegis/*
+		# chmod	a+x /usr/local/lib/aegis/*.sh
+		#
+	This is	only an	example, and you may want to place this
+	somewhere else.	 Control of the	placement of this
+	directory may be found in the first few	lines of the
+	Makefile file.
+
+	All of the above install can be	done automatically, using
+	the "make install" command as root.  Control of	the
+	directories used may be	found in the first few lines of
+	the Makefile file.
+
+USER CONFIGURATION
+	The aegis command is assumed to	be in a	generally
+	accessable place, otherwise users will need to add the
+	relevant directory to their PATH.  Users should	add
+		source /usr/local/lib/aegis/cshrc
+	to the end of their .cshrc file	for the	recommended
+	aliases.  There	is a profile for users of the Bourne
+	shell (it assumes you have a version of	the Bourne shell
+	which has functions).
+
+
+
+								6
+
+
+
+
+
+build(aegis)					     build(aegis)
+
+
+	The /usr/local/lib/aegis/state file contains pointers to
+	"system" projects.  Users may add their	own project
+	pointers (to their own projects) by putting a search path
+	into the AEGIS environment variable.  The system part is
+	always automatically appended by aegis.	 The default,
+	already	set by the /usr/local/lib/aegis/cshrc file, is
+	$HOME/lib/aegis.  Do not create	this directory,	aegis is
+	finickey and wants to do this itself.
+
+	Where projects reside is completely flexible, be they
+	system projects	or user	projects.  They	are not	kept
+	under the /usr/local/lib/aegis directory, this directory
+	only contains pointers.
+
+PRINTED	MANUALS
+	This distribution contains the sources to all of the
+	documentation for aegis.  The author used the GNU groff
+	package	and a postscript printer to prepare the
+	documentation.	If you do not have this	software, you
+	will need to substitute	commands appropriate to	your
+	site.
+
+	To print copies	of the README, BUILDING	and ALPHA files,
+	the following commands may be used
+		% groff	-t -man	aux/*.man | lpr
+		%
+	This will produce about	12 pages.  The "-t" flag means
+	preprocess with	tbl(1).
+
+	To print copies	of the manual entries, the following
+	commands may be	used
+		% cd man1
+		% groff	-s -t -man *.1 | lpr
+		% cd ../man5
+		% groff	-s -t -man *.5 | lpr
+		% cd ..
+		%
+	This will produce about	60 pages.  The "-s" flag means
+	preprocess with	soelim(1), and the "-t"	flag means
+	preprocess with	tbl(1).
+
+	To print a copy	of the User Guide, the following commands
+	may be used
+		% cd doc
+		% groff	-s -t -p -ms aegis.ms |	lpr
+		% cd ..
+		%
+	This will produce about	90 pages.  The "-s" flag means
+	preprocess with	soelim(1), the "-t" flag means preprocess
+	with tbl(1), and the "-p" flag means preprocess	with
+	pic(1).	 Alternatively,	you could get a	PostScript copy
+	of the User Guide from the archive site.
+
+	Please note the	the User Guide is still	in the process of
+
+
+
+								7
+
+
+
+
+
+build(aegis)					     build(aegis)
+
+
+	being written.	Some sections of the User Guide	are
+	incomplete.  Feedback on the form and content of this
+	document would be most welcome.
+
+GETTING	HELP
+	This is	alpha software,	so things will probably	go wrong.
+	Thank you for your patience.
+
+	If you need assistance with the	aegis program, please do
+	not hesitate to	contact	the author at
+		Peter Miller <pmiller@bmr.gov.au>
+	Any and	all feedback is	welcome.
+
+	When reporting problems, please	include	the version
+	number given by	the
+		% aegis	-version
+		aegis version a.b.cccc
+		...
+		%
+	command.
+
+	In the common/main.h file, the is a define of DEBUG in
+	comments.  If the comments are removed,	extensive
+	debugging is turned on.	 This causes some performance
+	loss, but performs much	run-time checking and adds the
+	-TRace command line option.
+
+	When the -TRace	command	line option is followed	by one or
+	more file names, it turns on execution traces in those
+	source files.  It is usually best to place this	on the
+	end of the command line	so that	names of the files to be
+	traced are not confused	with other file	names or strings
+	on the command line.
+
+LICENSE
+	The aegis program is free software; you	can redistribute
+	it and/or modify it under the terms of the GNU General
+	Public License as published by the Free	Software
+	Foundation; either version 2 of	the License, or	(at your
+	option)	any later version.
+
+	The aegis program is distributed in the	hope that it will
+	be useful, but WITHOUT ANY WARRANTY; without even the
+	implied	warranty of MERCHANTABILITY or FITNESS FOR A
+	PARTICULAR PURPOSE.  See the GNU General Public	License
+	for more details.
+
+	It should be in	the LICENSE file included in this
+	distribution.
+
+
+
+
+
+
+
+
+								8
+
+
+
+
+
+build(aegis)					     build(aegis)
+
+
+AUTHOR
+	Peter Miller   UUCP	  uunet!munnari!bmr.gov.au!pmiller
+	/\/\*	       Internet	  pmiller@bmr.gov.au
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+								9
+
+

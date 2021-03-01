@@ -1,0 +1,374 @@
+/*
+ *	aegis - project change supervisor
+ *	Copyright (C) 1991, 1992, 1993 Peter Miller.
+ *	All rights reserved.
+ *
+ *	This program is free software; you can redistribute it and/or modify
+ *	it under the terms of the GNU General Public License as published by
+ *	the Free Software Foundation; either version 2 of the License, or
+ *	(at your option) any later version.
+ *
+ *	This program is distributed in the hope that it will be useful,
+ *	but WITHOUT ANY WARRANTY; without even the implied warranty of
+ *	MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ *	GNU General Public License for more details.
+ *
+ *	You should have received a copy of the GNU General Public License
+ *	along with this program; if not, write to the Free Software
+ *	Foundation, Inc., 675 Mass Ave, Cambridge, MA 02139, USA.
+ *
+ * MANIFEST: instructions to aegis, per-project configuration
+ */
+
+/*
+ * how to build the project
+ * mandatory
+ */
+build_command =
+	"cook -b ${source aux/Howto.cook} project=$project \
+change=$change version=$version -nl";
+
+/*
+ * When do -Integrate_Begin, link the baseline to the integration directory,
+ * rather than copying it.  This should be much faster.
+ *
+ * There is a gotcha: all the recipes in Howto.cook must unlink their targets
+ * before re-creating them, otherwise the baseline will be trashed.
+ */
+link_integration_directory = true;
+
+/*
+ * create a new history
+ * always executed as the project owner
+ */
+history_create_command =
+	"fhist ${basename $history} -create -i $input -p ${dirname $history} -r";
+
+/*
+ * get a file from history
+ * may be executed by developers
+ */
+history_get_command =
+	"fhist ${basename $history} -e '$edit' -o $output \
+-p ${dirname $history} -v 0";
+
+/*
+ * add a new change to the history
+ * always executed as the project owner
+ */
+history_put_command =
+	"fhist ${basename $history} -u -i $input -p ${dirname $history} -r";
+
+/*
+ * query the topmost edit of a history file
+ * Result to be printed on stdout.
+ * may be executed by developers
+ */
+history_query_command =
+	"fhist ${basename $history} -l 0 -p ${dirname $history} -q";
+
+/*
+ * difference of 2 files
+ */
+diff_command = "fcomp -w -s $original $input -o $output";
+
+/*
+ * difference of 3 files
+ */
+diff3_command = "fmerge $original $mostrecent $input -o $output -c $input,C";
+
+/*
+ * whenever files are added to or removed from the change,
+ * execute the following command.
+ */
+change_file_command = "rm -f .c_inclrc";
+
+/*
+ * new file templates
+ */
+file_template =
+[
+	{
+		pattern = [ "*.[cyl]" ];
+		body ="\
+/*\n\
+ *	aegis - project change supervisor\n\
+ *	Copyright (C) ${date %Y} Peter Miller.\n\
+ *	All rights reserved.\n\
+ *\n\
+ *	This program is free software; you can redistribute it and/or modify\n\
+ *	it under the terms of the GNU General Public License as published by\n\
+ *	the Free Software Foundation; either version 2 of the License, or\n\
+ *	(at your option) any later version.\n\
+ *\n\
+ *	This program is distributed in the hope that it will be useful,\n\
+ *	but WITHOUT ANY WARRANTY; without even the implied warranty of\n\
+ *	MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the\n\
+ *	GNU General Public License for more details.\n\
+ *\n\
+ *	You should have received a copy of the GNU General Public License\n\
+ *	along with this program; if not, write to the Free Software\n\
+ *	Foundation, Inc., 675 Mass Ave, Cambridge, MA 02139, USA.\n\
+ *\n\
+ * MANIFEST: functions to manipulate ${basename $fn .c}s\n\
+ */\n";
+	},
+	{
+		pattern = [ "*.h" ];
+		body = "\
+/*\n\
+ *	aegis - project change supervisor\n\
+ *	Copyright (C) ${date %Y} Peter Miller.\n\
+ *	All rights reserved.\n\
+ *\n\
+ *	This program is free software; you can redistribute it and/or modify\n\
+ *	it under the terms of the GNU General Public License as published by\n\
+ *	the Free Software Foundation; either version 2 of the License, or\n\
+ *	(at your option) any later version.\n\
+ *\n\
+ *	This program is distributed in the hope that it will be useful,\n\
+ *	but WITHOUT ANY WARRANTY; without even the implied warranty of\n\
+ *	MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the\n\
+ *	GNU General Public License for more details.\n\
+ *\n\
+ *	You should have received a copy of the GNU General Public License\n\
+ *	along with this program; if not, write to the Free Software\n\
+ *	Foundation, Inc., 675 Mass Ave, Cambridge, MA 02139, USA.\n\
+ *\n\
+ * MANIFEST: interface definition for ${basename $fn .h}.c\n\
+ */\n\
+\n\
+#ifndef ${upcase ${id $fn}}\n\
+#define ${upcase ${id $fn}}\n\
+\n\
+#include <main.h>\n\
+\n\
+#endif /* ${upcase ${id $fn}} */\n";
+	},
+	{
+		pattern = [ "test/*/*.sh" ];
+		body = "\
+#! /bin/sh\n\
+#\n\
+#	aegis - project change supervisor\n\
+#	Copyright (C) ${date %Y} Peter Miller.\n\
+#	All rights reserved.\n\
+#\n\
+#	This program is free software; you can redistribute it and/or modify\n\
+#	it under the terms of the GNU General Public License as published by\n\
+#	the Free Software Foundation; either version 2 of the License, or\n\
+#	(at your option) any later version.\n\
+#\n\
+#	This program is distributed in the hope that it will be useful,\n\
+#	but WITHOUT ANY WARRANTY; without even the implied warranty of\n\
+#	MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the\n\
+#	GNU General Public License for more details.\n\
+#\n\
+#	You should have received a copy of the GNU General Public License\n\
+#	along with this program; if not, write to the Free Software\n\
+#	Foundation, Inc., 675 Mass Ave, Cambridge, MA 02139, USA.\n\
+#\n\
+# MANIFEST: Test the ??? functionality\n\
+#\n\
+\n\
+unset AEGIS_PROJECT\n\
+unset AEGIS_CHANGE\n\
+\n\
+work=$${AEGIS_TMP-/tmp}/$$$$\n\
+PAGER=cat\n\
+export PAGER\n\
+\n\
+here=`pwd`\n\
+if test $$? -ne 0 ; then exit 1; fi\n\
+mkdir $$work\n\
+if test $$? -ne 0 ; then exit 1; fi\n\
+\n\
+fail()\n\
+{\n\
+	set +x\n\
+	echo FAILED test of ... 1>&2\n\
+	cd $$here\n\
+	find $$work -type d -user $$USER -exec chmod u+w {} \\;\n\
+	rm -rf $$work\n\
+	exit 1\n\
+}\n\
+pass()\n\
+{\n\
+	set +x\n\
+	echo PASSED 1>&2\n\
+	cd $$here\n\
+	find $$work -type d -user $$USER -exec chmod u+w {} \\;\n\
+	rm -rf $$work\n\
+	exit 0\n\
+}\n\
+trap \"fail\" 1 2 3 15\n\
+\n\
+cd $$work\n\
+if test $$? -ne 0 ; then fail; fi\n\
+\n\
+#\n\
+# put your test here\n\
+#\n\
+$$here/myprog\n\
+if test $$? -ne 0 ; then fail; fi\n\
+\n\
+#\n\
+# Only definite negatives are possible.\n\
+# The functionality exercised by this test appears to work,\n\
+# no other guarantees are made.\n\
+#\n\
+pass\n";
+	},
+	{
+		pattern = [ "*.sh" ];
+		body = "\
+#! /bin/sh\n\
+#\n\
+#	aegis - project change supervisor\n\
+#	Copyright (C) ${date %Y} Peter Miller.\n\
+#	All rights reserved.\n\
+#\n\
+#	This program is free software; you can redistribute it and/or modify\n\
+#	it under the terms of the GNU General Public License as published by\n\
+#	the Free Software Foundation; either version 2 of the License, or\n\
+#	(at your option) any later version.\n\
+#\n\
+#	This program is distributed in the hope that it will be useful,\n\
+#	but WITHOUT ANY WARRANTY; without even the implied warranty of\n\
+#	MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the\n\
+#	GNU General Public License for more details.\n\
+#\n\
+#	You should have received a copy of the GNU General Public License\n\
+#	along with this program; if not, write to the Free Software\n\
+#	Foundation, Inc., 675 Mass Ave, Cambridge, MA 02139, USA.\n\
+#\n\
+# MANIFEST: shell script to manipulate ${basename $fn .sh}s\n\
+#\n\
+\n\
+exit 0\n";
+	},
+	{
+		pattern = [ "*.man", "*.[12345678]" ];
+		body = "\
+'\\\" t\n\
+.\\\"	aegis - project change supervisor\n\
+.\\\"	Copyright (C) ${date %Y} Peter Miller.\n\
+.\\\"	All rights reserved.\n\
+.\\\"\n\
+.\\\"	This program is free software; you can redistribute it and/or modify\n\
+.\\\"	it under the terms of the GNU General Public License as published by\n\
+.\\\"	the Free Software Foundation; either version 2 of the License, or\n\
+.\\\"	(at your option) any later version.\n\
+.\\\"\n\
+.\\\"	This program is distributed in the hope that it will be useful,\n\
+.\\\"	but WITHOUT ANY WARRANTY; without even the implied warranty of\n\
+.\\\"	MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the\n\
+.\\\"	GNU General Public License for more details.\n\
+.\\\"\n\
+.\\\"	You should have received a copy of the GNU General Public License\n\
+.\\\"	along with this program; if not, write to the Free Software\n\
+.\\\"	Foundation, Inc., 675 Mass Ave, Cambridge, MA 02139, USA.\n\
+.\\\"\n\
+.\\\" MANIFEST: manual page describing the ${basename $fn .1} command.\n\
+.\\\"\n\
+.TH aegis 1\n\
+.if n .ad l\n\
+.if n .hy 0\n\
+.SH NAME\n\
+aegis \\- project change supervisor\n\
+.SH SYNOPSIS\n\
+.B aegis\n\
+[\n\
+.IR option \\&...\n\
+]\n\
+.IR filename \\&...\n\
+.br\n\
+.B aegis\n\
+.B -Help\n\
+.br\n\
+.B aegis\n\
+.B -VERSion\n\
+.SH DESCRIPTION\n\
+The\n\
+.I aegis\n\
+program is used to\n\
+.SH OPTIONS\n\
+The following options are understood:\n\
+.TP 8n\n\
+.B -Help\n\
+.br\n\
+Provide some help with using the\n\
+.I aegis\n\
+program.\n\
+.TP 8n\n\
+.B -VERSion\n\
+.br\n\
+Print the version of the\n\
+.I aegis\n\
+program being executed.\n\
+.PP\n\
+All other options will produce a diagnostic error.\n\
+Options may be abbreviated,\n\
+the minimum abbreviation is shown in upper-case.\n\
+Options are case insensitive.\n\
+Options and file names may be mixed arbitrarily on the command line.\n\
+.SH EXIT STATUS\n\
+The\n\
+.I aegis\n\
+program will exit with a status of 1 on any error.\n\
+The\n\
+.I aegis\n\
+program will only exit with a status of 0 if there are no errors.\n\
+.so z_cr.so\n";
+	},
+	{
+		pattern = [ "*.so", "*.ms", "*.me" ];
+		body = "\
+.\\\"\n\
+.\\\"	aegis - project change supervisor\n\
+.\\\"	Copyright (C) ${date %Y} Peter Miller.\n\
+.\\\"	All rights reserved.\n\
+.\\\"\n\
+.\\\"	This program is free software; you can redistribute it and/or modify\n\
+.\\\"	it under the terms of the GNU General Public License as published by\n\
+.\\\"	the Free Software Foundation; either version 2 of the License, or\n\
+.\\\"	(at your option) any later version.\n\
+.\\\"\n\
+.\\\"	This program is distributed in the hope that it will be useful,\n\
+.\\\"	but WITHOUT ANY WARRANTY; without even the implied warranty of\n\
+.\\\"	MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the\n\
+.\\\"	GNU General Public License for more details.\n\
+.\\\"\n\
+.\\\"	You should have received a copy of the GNU General Public License\n\
+.\\\"	along with this program; if not, write to the Free Software\n\
+.\\\"	Foundation, Inc., 675 Mass Ave, Cambridge, MA 02139, USA.\n\
+.\\\"\n\
+.\\\" MANIFEST: document describing ${basename $fn .ms}\n\
+.\\\"\n";
+	},
+	{
+		pattern = [ "*" ];
+		body = "\
+#\n\
+#	aegis - project change supervisor\n\
+#	Copyright (C) ${date %Y} Peter Miller.\n\
+#	All rights reserved.\n\
+#\n\
+#	This program is free software; you can redistribute it and/or modify\n\
+#	it under the terms of the GNU General Public License as published by\n\
+#	the Free Software Foundation; either version 2 of the License, or\n\
+#	(at your option) any later version.\n\
+#\n\
+#	This program is distributed in the hope that it will be useful,\n\
+#	but WITHOUT ANY WARRANTY; without even the implied warranty of\n\
+#	MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the\n\
+#	GNU General Public License for more details.\n\
+#\n\
+#	You should have received a copy of the GNU General Public License\n\
+#	along with this program; if not, write to the Free Software\n\
+#	Foundation, Inc., 675 Mass Ave, Cambridge, MA 02139, USA.\n\
+#\n\
+# MANIFEST: ${basename $fn}\n\
+#\n";
+	}
+];

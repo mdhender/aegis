@@ -1,0 +1,237 @@
+'\" t
+.\"	aegis - project change supervisor
+.\"	Copyright (C) 1991, 1992, 1993 Peter Miller.
+.\"	All rights reserved.
+.\"
+.\"	This program is free software; you can redistribute it and/or modify
+.\"	it under the terms of the GNU General Public License as published by
+.\"	the Free Software Foundation; either version 2 of the License, or
+.\"	(at your option) any later version.
+.\"
+.\"	This program is distributed in the hope that it will be useful,
+.\"	but WITHOUT ANY WARRANTY; without even the implied warranty of
+.\"	MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+.\"	GNU General Public License for more details.
+.\"
+.\"	You should have received a copy of the GNU General Public License
+.\"	along with this program; if not, write to the Free Software
+.\"	Foundation, Inc., 675 Mass Ave, Cambridge, MA 02139, USA.
+.\"
+.\" MANIFEST: description of aegis change state file format
+.\"
+.so z_name.so
+.TH aecstate 5 \*(N)
+.SH NAME
+aecstate \- \*(n) change state file
+.SH SYNOPSIS
+\fIproject\fP\f(CW/info/change/\fP\fI[0-9]\fP\f(CW/\fP\fI[0-9][0-9][0-9]\fP
+.SH DESCRIPTION
+A change state file is used to store information about a change.
+These files are created and maintained by \*(n).
+These files should not be edited by humans.
+These files is owned by the project owner and group.
+.PP
+The change number is at least 3 digits, zero padded if necessary.
+(More digits will be used if a project has a 
+thousand or more changes in any one release,
+although this is rare.)
+The files are spread across a directory tree,
+100 per subdirectory,
+to improve the directory search times,
+and to avoid various systems' directory length limitations.
+.SH CONTENTS
+.so aecattr.so
+.TP 8n
+state = ( ... );
+.br
+This field is used to describe what state the change is in.
+The state determines what operations may be performed on the change.
+.RS 8n
+.TP 8n
+awaiting_development
+.br
+The change has been created,
+but has yet to be worked on.
+.TP 8n
+being_developed
+.br
+The change is being developed.
+.TP 8n
+being_reviewed
+.br
+The change has been developed,
+and is being reviewed.
+(There is no 'awaiting_review' state.)
+.TP 8n
+awaiting_integration
+.br
+The change has passed review,
+and is queued ready for integration.
+.TP 8n
+being_integrated
+.br
+The change is being integrated.
+.TP 8n
+completed
+.br
+The change has been completed and is now
+part of the baseline.
+Changes in this state can not be reversed.
+.RE
+.TP 8n
+delta_number = integer;
+.br
+This field records the delta number for this change.
+It is only present if the change is in one of
+the
+.I being_integrated
+or
+.I completed
+states.
+.TP 8n
+project_file_command_sync = integer;
+.br
+This field records the last change integrated into the project.
+If it disagrees with the project, a 'project_file_command' (from pconf)
+needs to be executed at the next build.
+.TP 8n
+test_time = integer;
+.br
+This field records the time the last successful
+.I "\*(n) -Test"
+command was run.
+It is only present in the
+.I being_developed
+and
+.I being_integrated
+states.
+.TP 8n
+test_baseline_time = integer;
+.br
+This field records the time the last successful
+.I "\*(n) -Test -BaseLine"
+command was run.
+It is only present in the
+.I being_developed
+and
+.I being_integrated
+states.
+.TP 8n
+build_time = integer;
+.br
+This field records the last time the last successful
+.I "\*(n) -Build"
+command was run.
+It is only present in the
+.I being_developed
+and
+.I being_integrated
+states.
+.TP 8n
+development_directory = string;
+.br
+This field is the absolute path of the change's development directory.
+It is only present of the change is in a state
+between
+.I being_developed
+and
+.I being_integrated
+inclusive.
+.TP 8n
+integration_directory = string;
+.br
+This field is the absolute path of the change's integration directory.
+It is only present of the change is in the
+.I being_integrated
+state.
+.TP 8n
+history = [ { ... }, ... ];
+.br
+This field records the history of the change,
+in the form of state transitions.
+The history records have the form
+.RS 8n
+.TP 8n
+when = integer;
+.br
+This field records the time the state transition occured.
+.TP 8n
+what = ( ... );
+.br
+This field records what happened.
+Valid value names echo the various \*(n) functions.
+.TP 8n
+who = string;
+.br
+This field records the user name of the user who caused the state transition.
+.TP 8n
+why = string;
+.br
+This field is optional.
+It is a comment of some sort.
+In the cases of
+.I review_fail
+and
+.IR integrate_fail ,
+this field will contain why the change failed.
+.RE
+.TP 8n
+src = [ { ... }, ... ];
+.br
+This field is a list of all the files in the change.
+The records have the form
+.RS 8n
+.TP 8n
+file_name = string;
+.br
+This file names the file.
+The name is relative to the root of the baseline directory tree.
+.TP 8n
+action = (create, modify, remove);
+.br
+This field describes what is being done with the file.
+.TP 8n
+edit_number = string;
+.br
+This field records the edit number of the file
+when it was added to the change (or updated using the
+.I "\*(n) -DIFFerence"
+command).
+This field is not present for new files.
+.TP 8n
+usage = (source, test, manual_test);
+.br
+This field describes what function the file serves.
+.TP 8n
+diff_time = integer;
+.br
+This field records the last time modified of the change file
+when the last
+.I "\*(n) -DIFFerence"
+command was run.
+It is only present between the
+.I being_developed
+and
+.I being_integrated
+states,
+inclusive.
+It is not present for files which are being deleted.
+This field is used to determine if a difference has been done,
+and if the file has been tampered with before state transitions.
+.TP 8n
+diff_file_time = integer;
+.br
+This field records the last time modified of the difference file
+when the last
+.I "\*(n) -DIFFerence"
+command was run.
+It is only present between the
+.I being_developed
+and
+.I being_integrated
+states,
+inclusive.
+This field is used to determine if a difference has been done,
+and if the difference file has been tampered with before state transitions.
+.RE
+.so z_cr.so

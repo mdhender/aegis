@@ -1,0 +1,101 @@
+'\" t
+.\"	aegis - project change supervisor
+.\"	Copyright (C) 1991, 1992, 1993 Peter Miller.
+.\"	All rights reserved.
+.\"
+.\"	This program is free software; you can redistribute it and/or modify
+.\"	it under the terms of the GNU General Public License as published by
+.\"	the Free Software Foundation; either version 2 of the License, or
+.\"	(at your option) any later version.
+.\"
+.\"	This program is distributed in the hope that it will be useful,
+.\"	but WITHOUT ANY WARRANTY; without even the implied warranty of
+.\"	MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+.\"	GNU General Public License for more details.
+.\"
+.\"	You should have received a copy of the GNU General Public License
+.\"	along with this program; if not, write to the Free Software
+.\"	Foundation, Inc., 675 Mass Ave, Cambridge, MA 02139, USA.
+.\"
+.\" MANIFEST: manual entry for 'aegis -Integrate_Pass' command
+.\"
+.so z_name.so
+.TH "\*(n) -Integrate_Pass" 1 \*(N)
+.SH NAME
+\*(n) -Integrate_Pass \- pass a change integration
+.SH SYNOPSIS
+.B \*(n)
+.B -Integrate_Pass
+[
+.IR option ...
+]
+.br
+.B \*(n)
+.B -Integrate_Pass
+.B -List
+[
+.IR option ...
+]
+.br
+.B \*(n)
+.B -Integrate_Pass
+.B -Help
+.SH DESCRIPTION
+The
+.I \*(n)
+.I -Integrate_Pass
+command is used to
+notify \*(n) that a change has passed integration.
+.PP
+The change is advanced
+from the
+.I "being integrated"
+state to the
+.I "completed"
+state.
+The integration directory is renamed as the baseline directory,
+and the baseline directory is deleted.
+The change is no longer assigned to the current user.
+.so o_bld_lk.so
+.SH OPTIONS
+The following options are understood:
+.so o_change.so
+.so o_help.so
+.so o_list.so
+.so o_nolog.so
+.so o_project.so
+.so o_terse.so
+.so o_verbose.so
+.so o__rules.so
+.SH RECOMMENDED ALIAS
+The recommended alias for this command is
+.nf
+.ta 8n 16n
+csh%	alias aeipass '\*(n) -ipass \e!* -v'
+sh$	aeipass(){\*(n) -ipass $* -v}
+.fi
+.SH ERRORS
+It is an error if
+the change is not assigned to the current user.
+.br
+It is an error if
+The change is not in the
+.I "being integrated"
+state.
+.br
+It is an error if
+there has been no successful
+.I "'\*(n) -Build'"
+command for the integration.
+.br
+It is an error if
+there has been no successful
+.I "'\*(n) -Test'"
+command for the integration.
+.br
+It is an error if
+there has been no successful
+.I "'\*(n) -Test -BaseLine'"
+command for the integration.
+.so z_exit.so
+.so z_cr.so

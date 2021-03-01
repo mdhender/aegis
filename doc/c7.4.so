@@ -1,0 +1,158 @@
+.\"
+.\"	aegis - project change supervisor
+.\"	Copyright (C) 1992, 1993 Peter Miller.
+.\"	All rights reserved.
+.\"
+.\"	This program is free software; you can redistribute it and/or modify
+.\"	it under the terms of the GNU General Public License as published by
+.\"	the Free Software Foundation; either version 2 of the License, or
+.\"	(at your option) any later version.
+.\"
+.\"	This program is distributed in the hope that it will be useful,
+.\"	but WITHOUT ANY WARRANTY; without even the implied warranty of
+.\"	MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+.\"	GNU General Public License for more details.
+.\"
+.\"	You should have received a copy of the GNU General Public License
+.\"	along with this program; if not, write to the Free Software
+.\"	Foundation, Inc., 675 Mass Ave, Cambridge, MA 02139, USA.
+.\"
+.\" MANIFEST: User Guide, How Aegis Works, Further Work
+.\"
+.bp
+.nh 2 "Further Work"
+.LP
+The aegis program is far from finished.
+A number of features are known to lacking,
+and several interesting (but as yet unformed) ideas are lurking.
+.nh 3 "Hetrogeneous Environments"
+.LP
+There is no support at the current time for
+tracking aspects of development in an heterogeneous environment.
+This is in the list of tasks,
+but has a low priority,
+first all the other stuff has to work!
+In time,
+attributes will be added to projects to indicate a set of environments,
+and each change will have to be built and tested in each.
+.LP
+The configuration file the user supplies to the dependency maintenance tool
+will be responsible for figuring out which environment it
+is in and building accordingly.
+It is an operating system requirement
+that the baseline and development directories
+are accessable in each environment (facilities such as RFS or NFS are assumed).
+Note that the baseline will expect to be self-consistent in all
+of the environments simultaneously.
+.LP
+There is no intention of ever providing the facility
+where a given file may have different versions depending on
+the environment,
+but all have the same name\**.
+.FS
+Some other SCM tools provide a repository with this ability.
+.FE
+.nh 3 "Hierarchy of Projects"
+.LP
+It would be nice if there was some way to use 
+one projects as a sort of "super change" to a "super project",
+so that large teams (say 1000 people)
+could work as lots of small teams (say 100 people).
+As a small team gets their chunk ready,
+using the facilities provided to-date by aegis,
+the small team's baseline is treated as a change to be made to the
+large team baseline.
+.LP
+This idea can be extended quite naturally to any depth of layering.
+.LP
+The desired semantics,
+let alone the implementation details,
+can not begin without  more experience to show (and fix) the warts
+on the existing functionality.
+.nh 3 "Code Coverage Tool"
+.LP
+It would be very helpful if a code coverage tool could be used
+to analyze tests included with changes to ensure that the tests
+actually exercised the lines of code changed in the change.
+.LP
+Another use of the code coverage tool would be to select regression tests
+based on the object files recompiled by a change,
+and those regression tests which exercise those files.
+.LP
+While there is freeware C code coverage tool available,
+based on GNU C,
+the interfacing and semantics still need more thought.
+.nh 3 "Branching"
+.LP
+The aegis program does not provide support for branching
+in the history files.
+The semantics of the baseline,
+the source files and their closure,
+would appear to imply that a baseline is required for every leaf
+in the history tree.
+.LP
+Branching is provided in this way with the
+.I "new release"
+functionality.
+An entire new project is derived from an existing project,
+including another baseline.
+The history,
+however,
+is severed from the original project,
+precluding automatic merging by aegis at a later date.
+It also precludes haveing a single change to be applied
+to more than one branch.
+.LP
+Should better semantics become available,
+or a better algorithmic approach,
+this is certainly one area of aegis which could be improved.
+.nh 3 "Virtual File System"
+.LP
+There is almost sufficient information in the aegis data base to create a virtual file system,
+overlaying the development directory atop the baseline\**.
+.FS
+Reminiscent of Sun's TFS,
+but not the same.
+.FE
+This could be implemented similarly to automounters,
+intercepting file system operations by pretending to be an NFS server.
+Many commercial CASE products provide such a facility.
+.LP
+Such a virtual file system has a number of advantages:
+you don't need such a capable DMT, for starters;
+it only needs the dynamic include dependencies,
+and does not need a search path\**.
+.FS
+Discussed in the
+.I "Dependency Maintenance Tool"
+chapter.
+.FE
+Second,
+many horrible and dumb compilers,
+notably FORTRAN and "fourth" GLs,
+don't have adequate include semantics;
+overlaying the two directories make this much easier to deal with\**.
+.FS
+There are other ways,
+discussed in the
+.I "Tips and Traps"
+chapter.
+.FE
+Many graphical tools,
+such as bubble chart drawers, etc,
+when they do actually have include files,
+have no command line specifiable search path.
+.LP
+The disadvantage is that this adds significant complexity
+to an already large program.
+Also,
+implementation is limited to NFS capable systems,
+or would have to be rewritten for a variety of other systems.
+The semantics of interactions between the daemon and other aegis
+commands, while clearly specifiable, are challenging to implement.
+Performance could also be a significant factor.
+.LP
+The question is "is it really necessary?"
+If the job can be done without it,
+does the effort of writing such a beast result
+in significant productivity gains?

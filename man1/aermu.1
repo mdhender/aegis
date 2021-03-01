@@ -1,0 +1,85 @@
+'\" t
+.\"	aegis - project change supervisor
+.\"	Copyright (C) 1991, 1992, 1993 Peter Miller.
+.\"	All rights reserved.
+.\"
+.\"	This program is free software; you can redistribute it and/or modify
+.\"	it under the terms of the GNU General Public License as published by
+.\"	the Free Software Foundation; either version 2 of the License, or
+.\"	(at your option) any later version.
+.\"
+.\"	This program is distributed in the hope that it will be useful,
+.\"	but WITHOUT ANY WARRANTY; without even the implied warranty of
+.\"	MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+.\"	GNU General Public License for more details.
+.\"
+.\"	You should have received a copy of the GNU General Public License
+.\"	along with this program; if not, write to the Free Software
+.\"	Foundation, Inc., 675 Mass Ave, Cambridge, MA 02139, USA.
+.\"
+.\" MANIFEST: manual entry for the 'aegis -ReMove_file_Undo' command
+.\"
+.so z_name.so
+.TH "\*(n) -ReMove_file_Undo" 1 \*(N)
+.SH NAME
+\*(n) -ReMove_file_Undo \- remove files to be deleted from a change.
+.SH SYNOPSIS
+.B \*(n)
+.B -ReMove_file_Undo
+.IR file-name ...
+[
+.IR option ...
+]
+.br
+.B \*(n)
+.B -ReMove_file_Undo
+.B -List
+[
+.IR option ...
+]
+.br
+.B \*(n)
+.B -ReMove_file_Undo
+.B -Help
+.SH DESCRIPTION
+The
+.I \*(n)
+.I -ReMove_file_Undo
+command is used to
+remove filesa to be deleted from a change.
+.so z_intuit.so
+.PP
+The files is removed from the list of files in the change.
+.SH OPTIONS
+The following options are understood:
+.so o_change.so
+.so o_help.so
+.so o_list.so
+.so o_project.so
+.so o_terse.so
+.so o_verbose.so
+.so o__rules.so
+.SH RECOMMENDED ALIAS
+The recommended alias for this command is
+.nf
+.ta 8n 16n
+csh%	alias aermu '\*(n) -rmu \e!* -v'
+sh$	aermu(){\*(n) -rmu $* -v}
+.fi
+.SH ERRORS
+It is an error if
+the change is not in the 'being_developed' state.
+.br
+It is an error if
+the change is not assigned to the current user.
+.br
+It is an error if
+the file is not in the change.
+.br
+It is an error if
+the was not added to the change using the
+.I \*(n)
+.I -ReMove_file
+command.
+.so z_exit.so
+.so z_cr.so

@@ -1,0 +1,78 @@
+.\"
+.\"	aegis - project change supervisor
+.\"	Copyright (C) 1993 Peter Miller.
+.\"	All rights reserved.
+.\"
+.\"	This program is free software; you can redistribute it and/or modify
+.\"	it under the terms of the GNU General Public License as published by
+.\"	the Free Software Foundation; either version 2 of the License, or
+.\"	(at your option) any later version.
+.\"
+.\"	This program is distributed in the hope that it will be useful,
+.\"	but WITHOUT ANY WARRANTY; without even the implied warranty of
+.\"	MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+.\"	GNU General Public License for more details.
+.\"
+.\"	You should have received a copy of the GNU General Public License
+.\"	along with this program; if not, write to the Free Software
+.\"	Foundation, Inc., 675 Mass Ave, Cambridge, MA 02139, USA.
+.\"
+.\" MANIFEST: User Guide, The Difference Tools, Using fhist
+.\"
+.bp
+.nh 2 "Using fhist"
+.LP
+The
+.B fhist
+program by David I. Bell
+also comes with two other utilities,
+.I fcomp
+and
+.I fmerge ,
+which use the same minimal diference algorithm.
+.nh 3 "diff_command"
+.LP
+See the earlier
+.I Interfacing
+section for substitution details.
+.LP
+The entry in the
+.I config
+file looks like this:
+.E(
+diff_command =
+        "fcomp -w $original $input -o $output";
+.E)
+.LP
+The
+.B -w
+option produces an output of the entire file,
+with insertions an deletions marked by "change bars" in the left margin.
+This is superior to context difference,
+as it shows the entire file as context.
+.LP
+For more information,
+see the
+.I fcomp (1)
+manual entry.
+.nh 3 "diff3_command"
+.LP
+See the earlier
+.I Interfacing
+section for substitution details.
+.LP
+The entry in the
+.I config
+file looks like this:
+.E(
+diff3_command =
+        "fmerge $original $MostRecent $input -o $output -c /dev/null";
+.E)
+.LP
+The output of this command is similar to the output of the diff3_command
+in the last section.
+Conflicts are marked in the output.
+For more information,
+see the
+.I fmerge (1)
+manual entry.

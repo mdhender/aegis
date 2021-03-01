@@ -1,0 +1,312 @@
+.\"
+.\"	aegis - project change supervisor
+.\"	Copyright (C) 1991, 1992, 1993 Peter Miller.
+.\"	All rights reserved.
+.\"
+.\"	This program is free software; you can redistribute it and/or modify
+.\"	it under the terms of the GNU General Public License as published by
+.\"	the Free Software Foundation; either version 2 of the License, or
+.\"	(at your option) any later version.
+.\"
+.\"	This program is distributed in the hope that it will be useful,
+.\"	but WITHOUT ANY WARRANTY; without even the implied warranty of
+.\"	MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+.\"	GNU General Public License for more details.
+.\"
+.\"	You should have received a copy of the GNU General Public License
+.\"	along with this program; if not, write to the Free Software
+.\"	Foundation, Inc., 675 Mass Ave, Cambridge, MA 02139, USA.
+.\"
+.\" MANIFEST: User Guide, The Project Attributes
+.\"
+.bp
+.1C
+.nh 1 "The Project Attributes"
+.LP
+The project attributes are manipulated using the
+.I aepa (1)
+command.
+This command reads a project attributes file to set the project attributes.
+This file can be thought of as having several sections,
+each of which will be covered by this chapter.
+You should see the
+.I aepattr (50
+manual entry for more details.
+.nh 2 "Description and Access"
+.LP
+The
+.I description
+field is a string which contains
+a description of the project.
+Large amounts of prose are not required;
+a single line is sufficient.
+.LP
+The
+.I default_development_directory
+field is a string which contains
+the pathname of where to place new development directories.
+The pathname must be absolute.
+This field is only
+consulted if the
+.I uconf (5)
+field of the same name is not set.
+Defaults to
+.I $HOME .
+.LP
+The
+.I umask
+field is an integer which is set to the
+file permission mode mask.
+See
+.I umask (2)
+for more information.
+This value will always be OR'ed with 022,
+because aegis is paranoid.
+.nh 2 "Notification Commands"
+.LP
+The
+.I develop_end_notify_command
+field is a string which contains a command to be used to
+notify that a change requires reviewing.
+All of the substitutions described in
+.I aesub (5)
+are available.
+This field is optional, if it is not specified no notification will be issued.
+This command could also be used to notify other management systems,
+such as progress and defect tracking,
+in addition to notifying users.
+.LP
+The
+.I develop_end_undo_notify_command
+field is a string containing a command used to
+notify that a change has been withdrawn from review
+for further development.
+All of the substitutions described in
+.I aesub (5)
+are available.
+This field is optional, if it is not specified no notification will be issued.
+This command could also be used to notify other management systems,
+such as progress and defect tracking,
+in addition to notifying users.
+.LP
+The
+.I review_pass_notify_command
+field is a string containing the command to
+notify that the review has passed.
+All of the substitutions described in
+.I aesub (5)
+are available.
+This field is optional, if it is not specified no notification will be issued.
+This command could also be used to notify other management systems,
+such as progress and defect tracking,
+in addition to notifying users.
+.LP
+The
+.I review_pass_undo_notify_command
+field is a string comtaining the command to
+notify that a review pass has has been rescinded.
+All of the substitutions described in
+.I aesub (5)
+are available.
+This field is optional, and defaults to the
+.I develop_end_notify_command
+field if not specified.
+If neither is specified, no notification will be issued.
+This command could also be used to notify other management systems,
+such as progress and defect tracking,
+in addition to notifyin users.
+.LP
+The
+.I review_fail_notify_command
+field is a string containing the command to
+notify that the review has failed.
+All of the substitutions described in
+.I aesub (5)
+are available.
+This field is optional, if it is not specified no notification will be issued.
+This command could also be used to notify other management systems,
+such as progress and defect tracking,
+in addition to notifyin users.
+.LP
+The
+.I integrate_pass_notify_command
+field is a string comtaining the command to
+notify that the integration has passed.
+All of the substitutions described in
+.I aesub (5)
+are available.
+This field is optional, if it is not specified no notification will be issued.
+This command could also be used to notify other management systems,
+such as progress and defect tracking,
+in addition to notifying users.
+.LP
+The
+.I integrate_fail_notify_command
+field is a string containg the command to
+notify that the integration has failed.
+All of the substitutions described in
+.I aesub (5)
+are available.
+This field is optional, if it is not specified no notification will be issued.
+This command could also be used to notify other management systems,
+such as progress and defect tracking,
+in addition to notifying users.
+.nh 3 "Notification by email"
+.LP
+The aegis command is distributed with a set of shell scripts to
+perform these notifications by email.
+They are installed into the
+.I /usr/local/lib/aegis
+directory.
+The entries in the project attribute file look like this:
+.E(
+develop_end_notify_command =
+        "sh /usr/local/lib/aegis/de.sh $project $change \e
+        $developer";
+develop_end_undo_notify_command =
+        "sh /usr/local/lib/aegis/deu.sh $project $change \e
+        $developer";
+review_pass_notify_command =
+        "sh /usr/local/lib/aegis/rp.sh $project $change \e
+        $developer $reviewer";
+review_pass_undo_notify_command =
+        "sh /usr/local/lib/aegis/rpu.sh $project $change \e
+        $developer $reviewer";
+review_fail_notify_command =
+        "sh /usr/local/lib/aegis/rf.sh $project $change \e
+        $developer $reviewer";
+integrate_pass_notify_command =
+        "sh /usr/local/lib/aegis/ip.sh $project $change \e
+        $developer $reviewer $integrator";
+integrate_fail_notify_command =
+        "sh /usr/local/lib/aegis/if.sh $project $change \e
+        $developer $reviewer $integrator";
+.E)
+.nh 3 "Notification by USENET"
+.LP
+The aegis command is distributed with a set of shell scripts to
+perform these notifications by USENET.
+They are installed into the
+.I /usr/local/lib/aegis
+directory.
+The entries in the project attribute file look like this:
+.E(
+develop_end_notify_command =
+        "sh /usr/local/lib/aegis/de.inews.sh $p $c alt.$p";
+develop_end_undo_notify_command =
+        "sh /usr/local/lib/aegis/deu.inews.sh $p $c alt.$p";
+review_pass_notify_command =
+        "sh /usr/local/lib/aegis/rp.inews.sh $p $c alt.$p";
+review_pass_undo_notify_command =
+        "sh /usr/local/lib/aegis/rpu.inews.sh $p $c alt.$p";
+review_fail_notify_command =
+        "sh /usr/local/lib/aegis/rf.inews.sh $p $c alt.$p";
+integrate_pass_notify_command =
+        "sh /usr/local/lib/aegis/ip.inews.sh $p $c alt.$p";
+integrate_fail_notify_command =
+        "sh /usr/local/lib/aegis/if.inews.sh $p $c alt.$p";
+.E)
+.LP
+The last argument to each command is the newsgroup to post the article in,
+you may want to use some other group.
+Note that "$p" is an abbreviation for "$project" 
+and "$c" is an abbreviation for "$change".
+.nh 2 "Exemption Controls"
+.LP
+The
+.I developer_may_review
+field is a boolean.
+If this field is true,
+then a developer may review her own change.
+This is probably only a good idea for projects of less than 3 people.
+The idea is for as many people as possible to critically examine a change.
+.LP
+The
+.I developer_may_integrate
+field is a boolean.
+If this field is true,
+then a developer may integrate her own change.
+This is probably only a good idea for projects of less than 3 people.
+The idea is for as many people as possible to critically examine a change.
+.LP
+The
+.I reviewer_may_integrate
+field is a boolean.
+If this field is true,
+then a reviewer may integrate a change she reviewed.
+This is probably only a good idea for projects of less than 3 people.
+The idea is for as many people as possible to critically examine a change.
+.LP
+The
+.I developers_may_create_changes
+field is a boolean.
+This field is true if developers may created changes,
+in addition to administrators.
+This tends to be a very useful thing,
+since developers find most of the bugs.
+.LP
+The
+.I default_test_exemption
+field is a booean.
+This field contains what to do when a change is created with
+no test exemption specified.
+The default is "false", i.e. no testing exemption,
+tests must be provided.
+.LP
+This kind of blanket exemption should only be set when
+a project has absolutely no functionality available from the command line;
+examples include X11 programs.
+The program could possibly be improved by providing access to
+the functionality from the command line,
+thus allowing tests to be written.
+.nh 3 "One Person Projects"
+.LP
+The entries in the project attributes file for a
+one person project look like this:
+.E(
+developer_may_review = true;
+developer_may_integrate = true;
+reviewer_may_integrate = true;
+developers_may_create_changes = true;
+.E)
+.LP
+All of the staff roles
+(administrator, developer, reviewer and integertor)
+are all set to be the same user.
+.nh 3 "Two Person Projects"
+.LP
+A two person project has the opprotunity for each to review the other's work.
+.LP
+The entries in the project attributes file for a
+one person project look like this:
+.E(
+developer_may_review = false.
+developer_may_integrate = true;
+reviewer_may_integrate = true;
+developers_may_create_changes = true;
+.E)
+.LP
+All of the staff roles
+(developer, reviewer and integertor)
+are all set to allow both users.
+.nh 3 "Larger Projects"
+.LP
+Once you have 3 or more staff on a project,
+you can assign all of the rolews to separate people.
+The idea is for the greatest number of eyes to see each change
+and detect falus before they reach the baseline.
+.LP
+The entries in the project attributes file for a
+one person project look like this:
+.E(
+developer_may_review = false.
+developer_may_integrate = false;
+reviewer_may_integrate = false;
+developers_may_create_changes = true;
+.E)
+.LP
+For smaller teams,
+everyone may be a developer.
+As the teams get larger,
+the more experienced staff are often the reviewers,
+rather than everyone.

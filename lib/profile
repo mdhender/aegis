@@ -1,0 +1,183 @@
+#
+#	aegis - project change supervisor
+#	Copyright (C) 1991, 1992, 1993 Peter Miller.
+#	All rights reserved.
+#
+#	This program is free software; you can redistribute it and/or modify
+#	it under the terms of the GNU General Public License as published by
+#	the Free Software Foundation; either version 2 of the License, or
+#	(at your option) any later version.
+#
+#	This program is distributed in the hope that it will be useful,
+#	but WITHOUT ANY WARRANTY; without even the implied warranty of
+#	MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+#	GNU General Public License for more details.
+#
+#	You should have received a copy of the GNU General Public License
+#	along with this program; if not, write to the Free Software
+#	Foundation, Inc., 675 Mass Ave, Cambridge, MA 02139, USA.
+#
+# MANIFEST: Bourne shell user config for aegis
+#
+AEGIS=$HOME/lib/aegis
+export AEGIS
+aea()
+{
+	aegis -a $* -v
+}
+aeb()
+{
+	aegis -b $* -v
+}
+aeca()
+{
+	aegis -ca $* -v
+}
+aecd()
+{
+	cd `aegis -cd $* -v`
+}
+aecp()
+{
+	aegis -cp $* -v
+}
+aecpu()
+{
+	aegis -cpu $* -v
+}
+aed()
+{
+	aegis -diff $* -v
+}
+aedb()
+{
+	aegis -db $* -v
+}
+aedbu()
+{
+	aegis -dbu $* -v
+}
+aede()
+{
+	aegis -de $* -v
+}
+aedeu()
+{
+	aegis -deu $* -v
+}
+aedless()
+{
+	less `find . -name "*,D" -print | sort`
+}
+aedmore()
+{
+	more `find . -name "*,D" -print | sort`
+}
+aega()
+{
+	aegis -ga $* -v
+}
+aeib()
+{
+	aegis -ib $* -v
+}
+aeibu()
+{
+	aegis -ibu $* -v
+}
+aeifail()
+{
+	aegis -ifail $* -v
+}
+aeipass()
+{
+	aegis -ipass $* -v
+}
+ael()
+{
+	aegis -l $* -v
+}
+aena()
+{
+	aegis -na $* -v
+}
+aenc()
+{
+	aegis -nc $* -v
+}
+aend()
+{
+	aegis -nd $* -v
+}
+aenf()
+{
+	aegis -nf $* -v
+}
+aenfu()
+{
+	aegis -nfu $* -v
+}
+aeni()
+{
+	aegis -ni $* -v
+}
+aenpr()
+{
+	aegis -npr $* -v
+}
+aenrls()
+{
+	aegis -nrls $* -v
+}
+aenrv()
+{
+	aegis -nrv $* -v
+}
+aent()
+{
+	aegis -nt $* -v
+}
+aepa()
+{
+	aegis -pa $* -v
+}
+aera()
+{
+	aegis -ra $* -v
+}
+aerd()
+{
+	aegis -rd $* -v
+}
+aerfail()
+{
+	aegis -rfail $* -v
+}
+aeri()
+{
+	aegis -ri $* -v
+}
+aerm()
+{
+	aegis -rm $* -v
+}
+aermu()
+{
+	aegis -rmu $* -v
+}
+aerpass()
+{
+	aegis -rpass $* -v
+}
+aermpr()
+{
+	aegis -rmpr $* -v
+}
+aerrv()
+{
+	aegis -rrv $* -v
+}
+aet()
+{
+	aegis -t $* -v
+}

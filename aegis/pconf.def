@@ -1,0 +1,193 @@
+/*
+ *	aegis - project change supervisor
+ *	Copyright (C) 1991, 1992, 1993 Peter Miller.
+ *	All rights reserved.
+ *
+ *	This program is free software; you can redistribute it and/or modify
+ *	it under the terms of the GNU General Public License as published by
+ *	the Free Software Foundation; either version 2 of the License, or
+ *	(at your option) any later version.
+ *
+ *	This program is distributed in the hope that it will be useful,
+ *	but WITHOUT ANY WARRANTY; without even the implied warranty of
+ *	MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ *	GNU General Public License for more details.
+ *
+ *	You should have received a copy of the GNU General Public License
+ *	along with this program; if not, write to the Free Software
+ *	Foundation, Inc., 675 Mass Ave, Cambridge, MA 02139, USA.
+ *
+ * MANIFEST: project config file contents definition
+ *
+ * this file normally resides at "projdir"/baseline/config
+ *
+ * this file is only ever read by [me], so does not need locking.
+ * Indeed, it is in the baseline, and subject to history.
+ *
+ * if you change this file, don't forget to change
+ *	man5/aepconf.5
+ */
+
+#include <common.def>
+
+/*
+ * how to build the project
+ *	(actually, how to do an integration build)
+ * mandatory
+ *
+ * All of the substitutions described in aesub(5) are available.
+ */
+build_command = string;
+
+/*
+ * how to do a development build
+ * defaults to above
+ *
+ * All of the substitutions described in aesub(5) are available.
+ */
+development_build_command = string;
+
+/*
+ * Executed whenever the files in the change, change.
+ *
+ * All of the substitutions described in aesub(5) are available.
+ * In addition:
+ *
+ * ${File_List}
+ *	 space separated list of files named
+ */
+change_file_command = string;
+
+/*
+ * Executed at development build before 'development_build_command' when 
+ *	(a)	it is the first build after a develop begin, or
+ *	(b)	after some other change has been integrated into the baseline
+ *		since the last build.
+ *
+ * All of the substitutions described in aesub(5) are available.
+ */
+project_file_command = string;
+
+/*
+ * Executed at integrate begin
+ *
+ * All of the substitutions described in aesub(5) are available.
+ */
+integrate_begin_command = string;
+
+/*
+ * This flag is true if aegis should link the files from the baseline
+ * into the integration directory, rther than copy them (the default).
+ * This has risks, as the build script (e.g. Howto.cook or Makefile, etc)
+ * must unlink targets before rebuilding them.
+ */
+link_integration_directory = boolean;
+
+/*
+ * the history commands are pretty dicey to have here,
+ * because a project could be badly broken if these don't work just right!
+ * On the other hand, they need to be changed from time to time.
+ */
+
+/*
+ * create a new history
+ * always executed as the project owner
+ * All of the substitutions described in aesub(5) are available.
+ * In addition:
+ *
+ * ${Input}
+ *	absolute path of the source file
+ *
+ * ${History}
+ *	absolute path of the history file
+ */
+history_create_command = string;
+
+/*
+ * get a file from history
+ * may be executed by developers
+ * All of the substitutions described in aesub(5) are available.
+ * In addition:
+ *
+ * ${History}
+ *	absolute path of the history file
+ *
+ * ${Edit}
+ *	edit number to be extracted (artibrary string)
+ *
+ * ${Output}
+ *	Absolute path of output file.
+ */
+history_get_command = string;
+
+/*
+ * add a new change to the history
+ * always executed as the project owner
+ * All of the substitutions described in aesub(5) are available.
+ * In addition:
+ *
+ * ${Input}
+ *	absolute path of the source file
+ *
+ * ${History}
+ *	absolute path of the history file
+ */
+history_put_command = string;
+
+/*
+ * query the topmost edit of a history file
+ * Result to be printed on stdout.
+ * may be executed by developers
+ * All of the substitutions described in aesub(5) are available.
+ * In addition:
+ *
+ * ${History}
+ *	absolute path of the history file
+ */
+history_query_command = string;
+
+/*
+ * difference of 2 files
+ * All of the substitutions described in aesub(5) are available.
+ * In addition:
+ *
+ * ${ORiginal}
+ *	absolute path of file in baseline (usually)
+ *
+ * ${Input}
+ *	absolute path of file in development directory (usually)
+ *
+ * ${Output}
+ *	Absolute path of output file
+ */
+diff_command = string;
+
+/*
+ * difference of 3 files
+ * All of the substitutions described in aesub(5) are available.
+ * In addition:
+ *
+ * ${ORiginal}
+ *	Absolute path of common ancestor
+ *
+ * ${Most_Recent}
+ *	Absolute path of competing edit, usually in the baseline.
+ *
+ * ${Input}
+ *	absolute path of file in development directory (usually)
+ *
+ * ${Output}
+ *	absolute path of output file
+ */
+diff3_command = string;
+
+/*
+ * new file templates
+ */
+file_template =
+[
+	{
+		pattern = [ string ];
+		body = string;
+	}
+];

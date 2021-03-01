@@ -1,0 +1,448 @@
+'\" t
+.\"	aegis - project change supervisor
+.\"	Copyright (C) 1990, 1991, 1992, 1993 Peter Miller.
+.\"	All rights reserved.
+.\"
+.\"	This program is free software; you can redistribute it and/or modify
+.\"	it under the terms of the GNU General Public License as published by
+.\"	the Free Software Foundation; either version 2 of the License, or
+.\"	(at your option) any later version.
+.\"
+.\"	This program is distributed in the hope that it will be useful,
+.\"	but WITHOUT ANY WARRANTY; without even the implied warranty of
+.\"	MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+.\"	GNU General Public License for more details.
+.\"
+.\"	You should have received a copy of the GNU General Public License
+.\"	along with this program; if not, write to the Free Software
+.\"	Foundation, Inc., 675 Mass Ave, Cambridge, MA 02139, USA.
+.\"
+.\" MANIFEST: source for the README file
+.\"
+.TH readme aegis
+.if n .hy 0
+.if n .ad l
+.if n .nr IN 8n
+.SH NAME
+aegis \- project change supervisor
+.br
+.if t .ds C) \(co
+.if n .ds C) (C)
+Copyright \*(C) 1990, 1991, 1992, 1993 Peter Miller.
+.br
+All rights reserved.
+.PP
+The
+.I aegis
+program is distributed under the terms of the
+GNU General Public License.
+See the LICENSE section, below, for more details.
+.PP
+.B aegis
+(ee.j.iz)
+.I n.,
+a protection,
+a defence.
+.SH DESCRIPTION
+The
+.I aegis
+program is a CASE tool with a difference.
+In the spirit of the UNIX Operating System,
+the
+.I aegis
+program is a small component designed to work with other programs.
+.PP
+Many CASE systems attempt to provide everything,
+from bubble charts to source control to compilers.
+Users are trapped with the components supplied by the CASE system,
+and if you don't like one of the components (it may be too limited,
+for instance), then that is just tough.
+.PP
+In contrast,
+UNIX provides many components of a CASE system \- compilers,
+editors,
+dependency manitenance tools (such as make),
+source control tools (such as RCS).
+You may substitute the tool of your choice
+if you don't like the ones supplied with the system \- gcc, jove, cake,
+to name just a few.
+The
+.I aegis
+program adds to this list with software configuration
+management,
+and true to UNIX philosophy,
+the
+.I aegis
+program does not
+dictate the choice of any of the other tools (although it may stretch them
+to their limits).
+.PP
+Enough hype, what is it that the
+.I aegis
+program does?
+Just what is software configuration management?
+This question is sufficiently broad as to require a book in answer.
+In essence,
+the
+.I aegis
+program is a project change supervisor.
+It provides a
+framework within which a team of developers may work on many changes to a
+program independently,
+and the
+.I aegis
+program coordinates integrating these
+changes back into the master source of the program,
+with as little disruption as possible.
+Resolution of contention for source files,
+a major headache for any project with more than one developer,
+is one of the
+.I aegis
+program's major functions. 
+.PP
+It should be noted that the
+.I aegis
+program is a developer's tool,
+in the same sense as make or RCS are developer's tools.
+It is not a manager's tool \- it
+does not provide progress tracking or manage work allocation.
+.br
+.ne 1i
+.SH BENEFITS
+So why should you use the
+.I aegis
+program?
+.PP
+The
+.I aegis
+program uses a particular model of the development of software
+projects.
+This model has a master source (or baseline) of a project,
+and a team of developers creating changes to be made to this baseline.
+When a change is complete,
+it is integrated with the baseline,
+to become the new baseline.
+Each change must be atomic and self-contained,
+no change is allowed to cause the baseline to cease to work.
+"Working" is defined as passing it's own tests.
+The tests are considered part of the baseline.
+The
+.I aegis
+program provides support for the developer so that an entire copy of
+the baseline need not be taken to change a few files,
+only those files which are to be changed need to be copied.
+.PP
+In order to ensure that changes are unable to
+cause the baseline to cease to work,
+.I aegis
+mandates that changes be accompanied by at least one test,
+and that all such tests be known to complete sucessfully.
+These steadily accumulated tests form an ever increasing
+regression test suite for all later changes.
+There is also a mandatory review stage for each change to the baseline.
+While these requirements may be relaxed per-change or even per-project,
+doing so potentially compromises the "working" definition of the baseline.
+.PP
+The win in using the
+.I aegis
+program is that there are
+.I O(n)
+interactions between
+developers and the baseline.
+Contrast this with a master source which is
+being edited directly by the developers - there are
+.I O(n!)
+interactions between
+developers - this makes adding "just one more" developer a potential disaster.
+.PP
+Another win is that the project baseline always works.
+Always having a working baseline means that a version is always available for
+demonstrations,
+or those "pre-release snapshots" we are always forced to provide.
+.PP
+The above advantages are all very well - for management types.
+Why should Joe Average Programmer use the
+.I aegis
+program?
+Recall that RCS provides file locking,
+but only for one file at a time.
+The
+.I aegis
+program provides the file locking,
+atomically,
+for the set of files in the change.
+Recall also that RCS locks the file the instant you start editing it.
+This makes popular files a project bottleneck.
+The
+.I aegis
+program allows concurrent editing,
+and a resolution mechanism just before the
+change must be integrated,
+meaning fewer delays for J.A.Programmer.
+.br
+.ne 1i
+.SH ALPHA NOTICE
+Please note that this is Alpha software.
+It probably has bugs,
+it is known to have unimplemented features.
+This version is not intended to be the final product.
+For more information,
+see the
+.I ALPHA
+file included in this release.
+.PP
+The reasons the author thinks this software is alpha include:
+.if n *
+.if t \(bu
+it has not clocked enought CPU time,
+.if n *
+.if t \(bu
+it has not been built on enough systems,
+.if n *
+.if t \(bu
+it has not been tested on enough systems,
+.if n *
+.if t \(bu
+the User Guide is not finished.
+However, feedback to date has been very favourable.
+.PP
+This will probably be the last Alpha release.
+The next release will be 2.0,
+and will be a Beta release.
+The problems reported to date are configuration and build problems;
+there are few reports of it failing to function correctly in other cases.
+.br
+.ne 1i
+.SH ARCHIVE SITE
+The latest version of
+.I aegis
+is available by anonymous ftp from:
+.RS
+.TS
+center,tab(;);
+l l s
+l l l.
+Host:;ftp.cse.nau.edu (134.114.64.70)
+Dir:;/pub/Aegis
+File:;aegis.1.4.tar.Z;# the complete source
+File:;aegis.1.4.patch.Z;# patch to take 1.3 to 1.4
+File:;aegis.1.4.ps.Z;# PostScript of the User Guide
+.TE
+.RE
+.PP
+To use anonymous ftp,
+give "anonymous" as the user name (omit the quotes)
+and your email address as the password.
+.PP
+My grateful thanks to Paul Balyoz <pab@ftp.cse.nau.edu>
+for his generosity in providing this archive space.
+.PP
+This directory also contains a few other pieces of software written by me.
+Some are referred to in the
+.I aegis
+documentation.
+Please have a look if you are interested.
+.PP
+For those of you without ftp,
+I recommend the use of an ftp-by-email server.
+Here is a list of a few (there are many more):
+.RS
+.nf
+mail-server@pit-manager.mit.edu
+ftpmail@decwrl.dec.com
+ftpmail@cs.uow.edu.au
+.fi
+.RE
+.PP
+In general, you can get a help message about how to use each system
+by sending email with a subject of "help"
+and a message body containing just the word "help".
+.br
+.ne 1i
+.SH MAILING LIST
+A mailing list has been created so that users of
+.I aegis
+may exchange ideas about how to use the
+.I aegis
+program.
+Discussion may include,
+but is not limited to:
+bugs, enhancements, and applications.
+The list is not moderated.
+.PP
+The address of the mailing list is
+.RS
+.ft CW
+aegis-users@bmr.gov.au
+.ft R
+.RE
+.PP
+To subscribe to this mailing list,
+send an email message to \f(CWmajordomo@bmr.gov.au\fP with
+a message body containing the single line
+.RS
+.ft CW
+subscribe aegis-users
+.ft R
+.RE
+Please note that \f(CWbmr.gov.au\fP is an Internet site,
+so if you have an address which is not readily derived from
+your mail headers (majordomo is only a Perl program, after all)
+you will need to use a message of the form:
+.RS
+.ft CW
+subscribe aegis-users \fIaddress\fP
+.ft R
+.RE
+where \fIaddress\fP is an email address which
+makes sense from an Internet site.
+.PP
+The software which handles this mailing list
+.if n CANNOT
+.if t .B cannot
+send you a copy of the
+.I aegis
+program.
+Please use ftp or ftp-by-email, instead.
+.br
+.ne 1i
+.SH COMPARISON WITH CVS
+One of the most common questions about
+.I aegis
+is "How does it compare with CVS?"
+.PP
+The CVS program aims to provide a repository,
+RCS for sets of files.
+The
+.I aegis
+program aims to provide a baseline,
+a repository,
+consistency of the baseline,
+and validation of changes being made to the baseline.
+.PP
+A simplistic way of thinking of this is "CVS is over RCS",
+but "aegis is over RCS and make".
+Actually CVS requires RCS,
+whereas
+.I aegis
+may be configured to use almost any history tool;
+similarly for the dependency maintenance tool,
+.I aegis
+may be configured to use almost any sufficiently capable
+tool (unfortunately traditional make isn't sufficiently capable,
+but the name is well known and evokes the appropriate functional image).
+.PP
+The most significant point of departure is around the "cvs checkin"
+fucntionality.
+In CVS, this is unconditional;
+a developer can add a poorly though-out code change,
+or even indulge in a little vandalism,
+with nothing to prevent it.
+In contrast,
+the
+.I aegis
+program breaks this step into several pieces:
+the change must be be known to build,
+the change must have tests and those tests be known to have run and passed,
+the change must then be reviewed (double check),
+and then built and tested again (tripple check).
+.PP
+For a more detailed discussion,
+see appendix C of the User Guide.
+.br
+.ne 1i
+.SH NEW IN THIS RELEASE
+A number of features have been added to
+.I aegis
+with this release.
+A few of them are detailed here:
+.PP
+.if n *
+.if t \(bu
+Support has been added for systems without the
+.I seteuid
+system call,
+or those with crippled implementations.
+.PP
+.if n *
+.if t \(bu
+Most of the unimplemented command variants have been finished.
+These include
+.IR "New Change Undo" ,
+.IR "Develop Begin Undo"
+and
+.IR "ReMove PRoject" .
+Most notable of the exceptions is
+.I -ANticipate
+option for the
+.I -CoPy_file
+and
+.I -DIFFerence
+command.
+.PP
+.if n *
+.if t \(bu
+The User Guide has been added to,
+making it a little more complete.
+It still needs more work, sigh.
+.PP
+.if n *
+.if t \(bu
+The code to handle automounters has been made more robust.
+.PP
+.if n *
+.if t \(bu
+The command substitutions have been vastly improved,
+and are now documented.
+.PP
+Plus the usual crop of bug fixes and tinkering.
+For excruciating detail,
+and also acknowlegements of those who generously sent me feedback,
+please see the
+.I CHANGES
+file included in this distribution.
+.br
+.ne 1i
+.SH BUILDING
+Instructions on how to build and test the
+.I aegis
+program
+are to be found in the
+.I BUILDING
+file included in this distribution.
+.br
+.ne 1i
+.SH LICENSE
+The
+.I aegis
+program is free software;
+you can redistribute it and/or modify
+it under the terms of the GNU General Public License as published by
+the Free Software Foundation;
+either version 2 of the License,
+or (at your option) any later version.
+.PP
+The
+.I aegis
+program is distributed in the hope that it will be useful,
+but WITHOUT ANY WARRANTY;
+without even the implied warranty of
+MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.
+See the GNU General Public License for more details.
+.PP
+You should have received a copy of the GNU General Public License
+along with this program; if not, write to the Free Software
+Foundation, Inc., 675 Mass Ave, Cambridge, MA 02139, USA.
+.PP
+It should be in the
+.I LICENSE
+file included in this distribution.
+.br
+.ne 1i
+.SH AUTHOR
+.TS
+tab(;);
+l l l.
+Peter Miller;UUCP;uunet!munnari!bmr.gov.au!pmiller
+\f(CW/\e/\e*\fR;Internet;pmiller@bmr.gov.au
+.TE

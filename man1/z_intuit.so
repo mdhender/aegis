@@ -1,0 +1,35 @@
+.\"
+.\"	aegis - project change supervisor
+.\"	Copyright (C) 1991, 1992, 1993 Peter Miller.
+.\"	All rights reserved.
+.\"
+.\"	This program is free software; you can redistribute it and/or modify
+.\"	it under the terms of the GNU General Public License as published by
+.\"	the Free Software Foundation; either version 2 of the License, or
+.\"	(at your option) any later version.
+.\"
+.\"	This program is distributed in the hope that it will be useful,
+.\"	but WITHOUT ANY WARRANTY; without even the implied warranty of
+.\"	MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+.\"	GNU General Public License for more details.
+.\"
+.\"	You should have received a copy of the GNU General Public License
+.\"	along with this program; if not, write to the Free Software
+.\"	Foundation, Inc., 675 Mass Ave, Cambridge, MA 02139, USA.
+.\"
+.\" MANIFEST: description of how file names are interpreted on command line
+.\"
+.PP
+The \*(n) program will attempt to determine the project file names
+from the file names given on the command line.
+All file names are stored within \*(n) projects as relative to
+the root of the baseline directory tree.
+The development directory and the integration directory are shadows of
+this baseline directory, and so these relative names apply here, too.
+Files named on the command line 
+are first converted to absolute paths if necessary.
+They are then compared with the baseline path,
+the development directory path,
+and the integration directory path,
+to determine a baseline-relative name.
+It is an error if the file named is outside one of these directory trees.
