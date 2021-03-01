@@ -1,6 +1,6 @@
 /*
  *	aegis - project change supervisor
- *	Copyright (C) 1999-2001 Peter Miller;
+ *	Copyright (C) 1999-2002 Peter Miller;
  *	All rights reserved.
  *
  *	This program is free software; you can redistribute it and/or modify
@@ -165,11 +165,11 @@ type wide_output_%s\n", (long)fp, (long)data, (long)len, fp->vptr->typename));
 	else
 	{
 		size_t  nwc;
-	
+
 		nwc = fp->buffer_position - fp->buffer;
 		fp->vptr->write(fp, fp->buffer, nwc);
 		fp->buffer_position = fp->buffer;
-	
+
 		if (len < fp->buffer_size)
 		{
 			memcpy(fp->buffer, data, len * sizeof(wchar_t));

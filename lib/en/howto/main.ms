@@ -115,17 +115,17 @@
 .\" using it.
 .\"
 .\" Then like now, I have the impression that Aegis does things much more
-.\" eligantly and in the right way; or that it's much more modular and cleaner
+.\" elegantly and in the right way; or that it's much more modular and cleaner
 .\" than CVS.  Also, obviously, it offers more (the testing, and reviewing) than
 .\" CVS that is very attractive.  When I tried to get more concrete about
 .\" things, my problem was that Aegis seems very inaccessible:
-.\" * big manuals as oposed to short fact sheets and tutorials of CVS,
+.\" * big manuals as opposed to short fact sheets and tutorials of CVS,
 .\" * much stress on the features that go beyond CVS, that I would probably only
 .\" explore in a second step (for didactic reasons).
 .\" * lack of a comparison to CVS  (that, for example, seems to have some of the
 .\" same advantages over RCS that Aegis has).
 .\"
-.\" I overread that your proposal to use Aegis for Linux kernel development some
+.\" I heard that your proposal to use Aegis for Linux kernel development some
 .\" month ago received very little echo--and I was wondering whether describing
 .\" my problems to you could not help present Aegis better to receive the
 .\" attention it deserves.  This is some kind of unsolicited advice, I suppose.
@@ -142,7 +142,7 @@
 .\" control system that supports distributed access and parallel development.
 .\" All the rest is a nice add-on that I originally thought of solving in
 .\" different ways (even that may not work nicely).  My approach to getting
-.\" familiar with Aegis is to turn all the builing, testing, review forced by
+.\" familiar with Aegis is to turn all the building, testing, review forced by
 .\" other person, etc. off to keep the first step simpler.  Once more familiar
 .\" with this step, I'd add the cool things that Aegis offers one by one.  This
 .\" seems to be the opposite approach to what the manual takes.  Didactically, I
@@ -197,14 +197,14 @@
 .\"
 .\" - I would love an Aegis for dummies tutorial.  Something for people who
 .\" don't want to read the background, comparisons, etc. that is there in the
-.\" documentation.  I assume that chaper 3 in the user's manual goes in this
+.\" documentation.  I assume that chapter 3 in the user's manual goes in this
 .\" direction, but it is too detailed and leaves out distributed development and
-.\" possibly branching (see a poin on finer grain/possibly inconsistent
+.\" possibly branching (see a point on finer grain/possibly inconsistent
 .\" versioning services).  Interesting examples are available for CVS.  If you
 .\" are interested I can find the precise URL.
 .\"
 .\" * Aegis seems to be an interesting testing framework.  For people who are
-.\" mostly interested in this aspect, it may be a good idea to advertize Aegis
+.\" mostly interested in this aspect, it may be a good idea to advertise Aegis
 .\" also under this hat.  Freshmeat may be a good place for this.  See:
 .\" http://freshmeat.net/appindex/development/test-suites.html
 .\" Obviously, comparisons/relations to TET and similar would help a lot to
@@ -219,7 +219,7 @@
 .\" my illustration of my struggles can contribute to getting Aegis used much
 .\" more.
 .\"
-.\" Many thanks for writing (seemignly) excellent open source software and again
+.\" Many thanks for writing (seemingly) excellent open source software and again
 .\" apologies for unsolicited feedback.
 .\"
 .\" Kind regards
@@ -256,15 +256,15 @@
 .\"
 .\" This is in progress.
 .\"
-.\" > I overread that your proposal to use Aegis for Linux kernel
+.\" > I heard that your proposal to use Aegis for Linux kernel
 .\" > development some
 .\" > month ago received very little echo--and I was wondering whether
 .\" > describing
 .\" > my problems to you could not help present Aegis better to receive the
 .\" > attention it deserves.
 .\"
-.\" Myseriously little response.
-.\" You may be correct about the aparrent complexity scaring users away.
+.\" Mysteriously little response.
+.\" You may be correct about the apparent complexity scaring users away.
 .\"
 .\" > I suppose that in the process of
 .\" > checking out Aegis, I can try to contribute to a better description  (I'm
@@ -276,7 +276,7 @@
 .\" But I have bigger plans... after talking to other folks about your
 .\" suggestions, I plan to have a series for ``mini howto'' pages, on
 .\" small subjects.  You suggestion of using the bullet points from
-.\" the web page is an excellect starting point.
+.\" the web page is an excellent starting point.
 .\"
 .\" > - If I do distributed development, and in the situation where a CVS
 .\" > developer would locally install one of the many clients for her specific
@@ -301,9 +301,9 @@
 .\" >   distributed development?
 .\"
 .\" I was trying to emphasize that Aegis will not routinely expose your
-.\" propietary secrets to the world.  It *does* work for the Internet
+.\" proprietary secrets to the world.  It *does* work for the Internet
 .\" (it's just a simple CGI script, after all) but arrangements are
-.\" going to be needed to negiotiate firewalls, and those arrangements
+.\" going to be needed to negotiate firewalls, and those arrangements
 .\" tend to be beyond Aegis' scope.
 .\"
 .\" > - It would be interesting to see a list of companies/projects that use
@@ -325,7 +325,7 @@
 .\" > those tools complementary?  Are they comparable?
 .\"
 .\" Probably complementary.  Aegis delegates all testing, so the
-.\" comparison whould be between Bourne shell and TET, not Aegis and
+.\" comparison would be between Bourne shell and TET, not Aegis and
 .\" TET, I imagine.  I'll have a look, soon-ish.
 .\"
 .\" > * Another point of accessibility:  Would it be possible to put up the

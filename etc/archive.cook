@@ -31,6 +31,7 @@ integration-build-targets =
 	html-targets
 	lib/en/release/release.txt
 	;
+rpm-arch = noarch;
 if [find_command tardy] then
 {
     integration-build-targets +=
@@ -38,10 +39,13 @@ if [find_command tardy] then
 	;
 
     if [find_command rpm] then
-    if [matches %1.D%2 [version]] then
-    if [in [fromto %1.D%2 %2 [version]] 001 002] then
-    if [matches linux%1 [arch]] then
-	integration-build-targets += RPM;
+    {
+	rpm-arch = [collect rpm --showrc | awk "'/^build arch/{print $4}'" ];
+	if [matches %1.D%2 [version]] then
+	if [in [fromto %1.D%2 %2 [version]] 001 002] then
+	if [matches linux%1 [arch]] then
+	    integration-build-targets += RPM;
+    }
 }
 integration-build-targets: [integration-build-targets];
 
@@ -304,9 +308,9 @@ archive/[project_short].gif: lib/icon/[project_short].gif
  * too long to do.
  */
 
-RPM: archive/[project_minus]-1.i386.rpm;
+RPM: archive/[project_minus]-1.[rpm-arch].rpm;
 
-archive/[project_minus]-1.i386.rpm archive/[project_minus]-1.src.rpm:
+archive/[project_minus]-1.[rpm-arch].rpm archive/[project_minus]-1.src.rpm:
 		archive/[project_minus].tar.gz
 		archive/[project_short].gif
 		etc/rpm-build.sh
@@ -321,8 +325,8 @@ archive/[project_minus]-1.i386.rpm archive/[project_minus]-1.src.rpm:
 		RPM-temporary
 		[resolve archive/[project_minus].tar.gz]
 		;
-	mv RPM-temporary/RPMS/i386/[project_minus]-1.i386.rpm
-		archive/[project_minus]-1.i386.rpm
+	mv RPM-temporary/RPMS/[rpm-arch]/[project_minus]-1.[rpm-arch].rpm
+		archive/[project_minus]-1.[rpm-arch].rpm
 		;
 	mv RPM-temporary/SRPMS/[project_minus]-1.src.rpm
 		archive/[project_minus]-1.src.rpm

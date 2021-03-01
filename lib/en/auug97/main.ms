@@ -102,9 +102,19 @@ improvements significantly faster than intuition may indicate, and
 without the intuitvely expected compromise of modularity.  The use of
 a whole project \fImake\fP is not as difficult to put into practice as
 it may at first appear.
-.sp 2
+.sp
 .ll +0.5i
 .in -0.5i
+.TS
+center,allbox;
+lw(3.5i).
+T{
+Miller, P.A. (1998), \fIRecursive Make Considered Harmful,\fP
+.br
+AUUGN Journal of AUUG Inc., 19(1), pp. 14-25.
+T}
+.TE
+.sp 2
 .if t .2C
 .\" ---------------------------------------------------------------------------
 .so 01-intro.so

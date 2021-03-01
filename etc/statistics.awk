@@ -35,6 +35,10 @@ function spiffy(s) {
 	return result
 }
 
+/metrics =/ {
+	++nfiles
+	next
+}
 /name.*value/ {
 	name = $4
 	value = 0 + $7
@@ -45,50 +49,40 @@ function spiffy(s) {
 		min[name] = value
 	if (max[name] < value)
 		max[name] = value
-	if (name == "functions")
-		++nfiles
 }
 END {
-	per_func = summary["functions"]
-	if (per_func < 1)
-		per_func = 1
-	else
-		per_func = 1.0 / per_func
-
 	if (nfiles == 0)
 		per_file = 1
 	else
 		per_file = 1.0 / nfiles
 	print ".TS"
 	print "tab(;);"
-	print "cw(2i) c c c c c"
+	print "c c c c c c"
 	print "c c c c c c"
 	print "l n n n n n."
-	print "Description;Total;Per;Minimum;Average;Maximum"
-	print ";;Function;Per File;Per File;Per File"
+	print "Description;Total;Minimum;Average;Maximum"
+	print ";;Per File;Per File;Per File"
 	print "_"
 	for (name in summary)
 	{
-		printf("T{\n%s\nT};%d;%4.2f;%d;%4.2f;%d\n", \
-			spiffy(name), \
-			summary[name], \
-			summary[name] * per_func, \
+		printf("%s;%d;%d;%4.2f;%d\n",
+			spiffy(name),
+			summary[name],
 			min[name],
 			summary[name] * per_file,
 			max[name]);
 	}
 	print ".TE"
 	print ".sp 0.5"
-	printf "Statistics collected over %d C source files.\n", nfiles
+	printf "Statistics collected over %d source files.\n", nfiles
 	n = ENVIRON["ALL_FILES"] + 0
-	if (n > 0)
+	if (n > nfiles)
 	{
 		printf							\
 		(							\
 			"The remaining %d source files (%d%%)\n",	\
-			(n - nfiles), 100*(n - nfiles)/n		\
+			(n - nfiles), 100 * (n - nfiles)/n		\
 		);
-		print "including header files, documentation and scripts,"
 		print "are not covered here."
 	}
 }

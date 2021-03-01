@@ -250,7 +250,7 @@ string_ty *str_upcase(string_ty *str);
   *	convert to lower case
   *
   * The str_downcase function is used to create a new string where the
-  * upper case characters in thwe input string are converted to lower
+  * upper case characters in the input string are converted to lower
   * case.
   *
   * \param str
@@ -263,6 +263,26 @@ string_ty *str_upcase(string_ty *str);
   *	not</b> be altered.
   */
 string_ty *str_downcase(string_ty *str);
+
+/**
+  * \brief
+  *	convert to title case
+  *
+  * The str_capitalize function is used to create a new string where the
+  * first letter or each word of the inopuyt string are upper case, and
+  * the remaining letters in each word are lower case.  (Sometimes called
+  * Title Case.)
+  *
+  * \param str
+  *	The string to be converted.  Will not be modified (the operation
+  *	is <b>not</b> performed <i>in situ</i>).
+  *
+  * \return
+  *	a pointer to a string in dynamic memory.  Use str_free() when
+  *	finished with.	The contents of the structure pointed to <b>shall
+  *	not</b> be altered.
+  */
+string_ty *str_capitalize(string_ty *str);
 
 /**
   * \brief
@@ -446,7 +466,7 @@ int str_re_match(string_ty *pattern, string_ty *candidate,
   *	not</b> be altered.  Returns NULL if there was an error.
   */
 string_ty *str_re_substitute(string_ty *lhs, string_ty *rhs, string_ty *actual,
-    void (*callback)(const char *), int count);
+    void (*callback)(const char *), int count_);
 
 /**
   * \brief

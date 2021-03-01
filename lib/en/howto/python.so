@@ -136,7 +136,7 @@ guaranteed to always succeed.
 .LP
 In practice, however, there often are housekeeping chores that can be
 done as part of the build process, so you can just as well go ahead and
-reate a Makefile, Cook recipe, or script that performs these tasks and
+create a Makefile, Cook recipe, or script that performs these tasks and
 make that your build step.
 .LP
 Here are some examples of tasks that can be performed during the build
@@ -144,7 +144,7 @@ step:
 .IP \(bu 2n
 Setting the executable flag on your main scripts.  Aegis does not store
 file modes, but it is often convenient to have one or more of the Python
-source files in your project be excutable, so that one does not need to
+source files in your project be executable, so that one does not need to
 invoke Python explicitly to run them.
 .IP \(bu 2n
 Delete unwanted Python object files (\fI.pyc\fP and \fI.pyo\fP files).
@@ -155,7 +155,7 @@ would expect them to fail.  Your build process could use \fIael -cf\fP
 and \fIael -pf\fP) to get a list of 'allowed' scripts, and remove all
 Python object files which do not correspond to any of these.
 .IP \(bu 2n
-Autogenerate your packages \fI__init__.py\fP files.  Python wants you
+Auto generate your packages \fI__init__.py\fP files.  Python wants you
 to declare your intent to have a directory treated as a package by
 creating the \fI__init__.py\fP file (otherwise a stray directory with
 a common name like 'string', 'test', 'common' or 'foo' could shadow
@@ -209,7 +209,7 @@ them to.  \fIPyUnit\fP will consider a test which raises anything other
 than a \fIAssertionError\fP to be an 'error', but in practice baseline
 test failures are often \fIAttributeError\fP exceptions which arise
 when the test invokes methods not present in the old code.  This is
-a legitemate way to verify, as Aegis wants us to, that the test does
+a legitimate way to verify, as Aegis wants us to, that the test does
 indeed invoke and test functionality which is not present the old code.
 .nh 2 "Running your programs"
 .LP

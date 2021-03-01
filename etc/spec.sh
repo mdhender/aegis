@@ -144,7 +144,8 @@ do
 	case $file in
 
 	aefp/* | etc/* | common/* | find_sizes/* | fmtgen/* | \
-	fstrcmp/* | libaegis/* | test/* | test_* | cklinlen/* )
+	fstrcmp/* | libaegis/* | test/* | test_* | cklinlen/* | \
+	simp_file_stat/* )
 		;;
 
 	*/main.c)

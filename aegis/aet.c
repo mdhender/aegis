@@ -405,6 +405,7 @@ test_main()
     int		    regression_flag;
     int		    manual_flag;
     int		    automatic_flag;
+    int		    progress_flag;
     string_list_ty  wl;
     string_list_ty  wl2;
     string_ty	    *s1;
@@ -447,6 +448,7 @@ test_main()
     dir = 0;
     suggest = 0;
     suggest_noise = -1;
+    progress_flag = -1;
     while (arglex_token != arglex_token_eoln)
     {
 	switch (arglex_token)
@@ -500,6 +502,30 @@ test_main()
 	    force = 1;
 	    break;
 
+	case arglex_token_progress:
+	    if (progress_flag == 1)
+		duplicate_option(test_usage);
+	    if (progress_flag >= 0)
+	    {
+		too_many_progress:
+		mutually_exclusive_options
+		(
+		    arglex_token_progress,
+		    arglex_token_progress_not,
+		    test_usage
+		);
+	    }
+	    progress_flag = 1;
+	    break;
+
+	case arglex_token_progress_not:
+	    if (progress_flag == 0)
+		duplicate_option(test_usage);
+	    if (progress_flag >= 0)
+		goto too_many_progress;
+	    progress_flag = 0;
+	    break;
+
 	case arglex_token_file:
 	case arglex_token_directory:
 	    if (arglex() != arglex_token_string)
@@ -533,7 +559,7 @@ test_main()
 	    break;
 
 	case arglex_token_persevere:
-	case arglex_token_no_persevere:
+	case arglex_token_persevere_not:
 	    user_persevere_argument(test_usage);
 	    break;
 
@@ -1188,7 +1214,9 @@ test_main()
      * Do each of the tests.
      */
     trace_string(dir->str_text);
-    brlp = change_test_run_list(cp, &wl, up, baseline_flag);
+    if (progress_flag < 0)
+	progress_flag = 0;
+    brlp = change_test_run_list(cp, &wl, up, baseline_flag, progress_flag);
 
     /*
      * transcribe the results
@@ -1283,6 +1311,7 @@ test_independent()
 {
     int		    automatic_flag;
     int		    manual_flag;
+    int		    progress_flag;
     string_list_ty  wl;
     string_list_ty  wl2;
     string_list_ty  wl_in;
@@ -1305,6 +1334,7 @@ test_independent()
     project_name = 0;
     automatic_flag = 0;
     manual_flag = 0;
+    progress_flag = -1;
     string_list_constructor(&wl);
     arglex();
     while (arglex_token != arglex_token_eoln)
@@ -1325,6 +1355,30 @@ test_independent()
 	    if (automatic_flag)
 		duplicate_option(test_usage);
 	    automatic_flag = 1;
+	    break;
+
+	case arglex_token_progress:
+	    if (progress_flag == 1)
+		duplicate_option(test_usage);
+	    if (progress_flag >= 0)
+	    {
+		too_many_progress:
+		mutually_exclusive_options
+		(
+		    arglex_token_progress,
+		    arglex_token_progress_not,
+		    test_usage
+		);
+	    }
+	    progress_flag = 1;
+	    break;
+
+	case arglex_token_progress_not:
+	    if (progress_flag == 0)
+		duplicate_option(test_usage);
+	    if (progress_flag >= 0)
+		goto too_many_progress;
+	    progress_flag = 0;
 	    break;
 
 	case arglex_token_directory:
@@ -1363,7 +1417,7 @@ test_independent()
 	    break;
 
 	case arglex_token_persevere:
-	case arglex_token_no_persevere:
+	case arglex_token_persevere_not:
 	    user_persevere_argument(test_usage);
 	    break;
 	}
@@ -1646,7 +1700,9 @@ test_independent()
      * (Logging is disabled, because there is no [logical] place
      * to put the log file; the user should redirect stdout and stderr.)
      */
-    brlp = project_test_run_list(pp, &wl, up);
+    if (progress_flag < 0)
+	progress_flag = 0;
+    brlp = project_test_run_list(pp, &wl, up, progress_flag);
 
     /*
      * Release the baseline read lock.

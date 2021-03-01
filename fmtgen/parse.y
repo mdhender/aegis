@@ -176,7 +176,7 @@ base_name(char *s)
 		*cp = 0;
 	for (cp = buffer; *cp; ++cp)
 	{
-		if (!isalnum(*cp))
+		if (!isalnum((unsigned char)*cp))
 			*cp = '_';
 	}
 	return buffer;

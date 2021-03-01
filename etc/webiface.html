@@ -117,11 +117,34 @@ Make a tarball, <i>scp</i> it to SourceForge, unpack at the other end.
 <li>
 Now upload your project.  I use <i>rsync</i> for efficient differential
 uploads.  The directory needs to be inside the chroot jail, but outside
-the <i>htdocs</i> directory.  You need the whole project tree.
+the <i>htdocs</i> directory.
+The instructions assume it is in the
+<tt >/home/groups/<i >p</i>/<i >pr</i>/<i >project</i>/<i >project</i></tt>
+directory.
+You need the whole project tree, but you can leave out derived files
+in the baselines (<i>e.g.</i> <tt>.o</tt> files, </tt>.a</tt> files and
+executables).
 <li>
-Edit <i>/home/groups/a/ae/aegis/com/state</i>
+Edit <tt >/home/groups/<i >p</i>/<i >pr</i>/<i >project</i>/com/aegis/state</tt>
 to point at the project tree.
+Something like <blockquote>
+<pre>where =
+.nf
+[
+  {
+    project_name = "<i>project</i>";
+    directory = "/home/groups/<i >p</i>/<i >pr</i>/<i >project</i>/<i
+    >project</i>";
+  },
+.fi
+];</pre></blockquote>
+<li>
+You will need to create a <tt >/home/groups/<i >p</i>/<i >pr</i>/<i
+>project</i>/lib/aegis/aegis.cgi.conf</tt> file, and use it to the the PATH
+<blockquote><pre >PATH=${PATH}:/home/groups/<i >p</i>/<i >pr</i>/<i
+>project</i >/bin</pre ></blockquote>
+environment variable, so that <tt>aegis.cgi</tt> can find necessary commands.
 </ol>
 If this takes off, I'll ask the SourceForge people to install it, so
-that this is much less necessary.
+that most of these instructions are unnecessary.
 </body></html>

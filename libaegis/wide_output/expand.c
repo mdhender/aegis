@@ -1,6 +1,6 @@
 /*
  *	aegis - project change supervisor
- *	Copyright (C) 1999-2001 Peter Miller;
+ *	Copyright (C) 1999-2002 Peter Miller;
  *	All rights reserved.
  *
  *	This program is free software; you can redistribute it and/or modify
@@ -114,7 +114,7 @@ len = %ld)\n{\n", (long)fp, (long)data, (long)len));
 			wide_output_putwc(this->deeper, wc);
 			this->column = 0;
 			break;
-	
+
 		case (wchar_t)'\t':
 			/* internally, treat tabs as 8 characters wide */
 			for (;;)
@@ -125,13 +125,13 @@ len = %ld)\n{\n", (long)fp, (long)data, (long)len));
 					break;
 			}
 			break;
-	
+
 		case (wchar_t)0:
 		case (wchar_t)' ':
 			wide_output_putwc(this->deeper, (wchar_t)' ');
 			this->column++;
 			break;
-	
+
 		default:
 			language_human();
 			if (!iswprint(wc))

@@ -64,7 +64,7 @@ option_pager_set(n, usage)
     void	    (*usage)_((void));
 {
     if (option_pager_flag == 0 && n == 0)
-	duplicate_option_by_name(arglex_token_no_pager, usage);
+	duplicate_option_by_name(arglex_token_pager_not, usage);
     if (option_pager_flag >= 1 && n != 0)
 	duplicate_option_by_name(arglex_token_pager, usage);
     if (option_pager_flag >= 0)
@@ -72,7 +72,7 @@ option_pager_set(n, usage)
 	mutually_exclusive_options
 	(
 	    arglex_token_pager,
-	    arglex_token_no_pager,
+	    arglex_token_pager_not,
 	    usage
 	);
     }

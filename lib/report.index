@@ -123,6 +123,11 @@ This can sometimes be slow to generate.";
 		filename = "report/proj_files.rpt";
 	},
 	{
+		name = "Project_Gantt";
+		description = "Generate data for import into Ms. Project";
+		filename = "report/proj_gantt.rpt";
+	},
+	{
 		name = "Project_STATistics";
 		description = "Report various statistics about a project";
 		filename = "report/proj_stats.rpt";

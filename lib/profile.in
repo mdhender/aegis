@@ -79,7 +79,7 @@ AEGIS_AUTOMOUNT_POINTS="/tmp_mnt:/a:/.automount"
 export AEGIS_AUTOMOUNT_POINTS
 
 #
-# Each of the Aegis commands has its own alias This is essential for
+# Each of the Aegis commands has its own alias.  This is essential for
 # aecd, and convenient for the others.  (Splitting Aegis into many
 # commands is only efficient if the target system has shared libraries,
 # because the size of the common code portion usually greatly exceeds
@@ -87,7 +87,7 @@ export AEGIS_AUTOMOUNT_POINTS
 #
 # Note: while Bash uses the "function" keyword to define functions, the
 # original Bourne shell does not.  Bash understands the form with out he
-# "fucntion" keyword, so it is omitted.
+# "funtion" keyword, so it is omitted.
 #
 aeb()
 {
@@ -99,7 +99,14 @@ aeca()
 }
 aecd()
 {
-	cd `aegis -cd "$@" -v`
+	ae_response="`aegis -cd "$@" -v`"
+	if test -d "$ae_response"
+	then
+		cd "$ae_response"
+	else
+		echo "$ae_response"
+	fi
+	unset ae_response
 }
 aechown()
 {

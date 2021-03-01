@@ -5,11 +5,11 @@
 #
 Summary: project change supervisor
 Name: aegis
-Version: 4.8
+Version: 4.9
 Release: 1
 Copyright: GPL
 Group: Development/Version Control
-Source: http://www.canb.auug.org.au/~millerp/aegis-4.8.tar.gz
+Source: http://www.canb.auug.org.au/~millerp/aegis-4.9.tar.gz
 URL: http://www.canb.auug.org.au/~millerp/aegis.html
 BuildRoot: /tmp/aegis-build-root
 Icon: aegis.gif
@@ -168,17 +168,10 @@ make RPM_BUILD_ROOT=$RPM_BUILD_ROOT install
 %attr(0644,root,bin) /usr/lib/aegis/en/LC_MESSAGES/aereport.mo
 %attr(0644,root,bin) /usr/lib/aegis/en/LC_MESSAGES/aesub.mo
 %attr(0644,root,bin) /usr/lib/aegis/en/LC_MESSAGES/aetar.mo
-%attr(0644,root,bin) /usr/share/aegis/en/html/chan_awdev.rpt
-%attr(0644,root,bin) /usr/share/aegis/en/html/chan_awint.rpt
-%attr(0644,root,bin) /usr/share/aegis/en/html/chan_awrev.rpt
-%attr(0644,root,bin) /usr/share/aegis/en/html/chan_bedev.rpt
-%attr(0644,root,bin) /usr/share/aegis/en/html/chan_beint.rpt
-%attr(0644,root,bin) /usr/share/aegis/en/html/chan_berev.rpt
 %attr(0644,root,bin) /usr/share/aegis/en/html/chan_files.rpt
 %attr(0644,root,bin) /usr/share/aegis/en/html/chan_hstry.rpt
-%attr(0644,root,bin) /usr/share/aegis/en/html/chan_list.rpt
 %attr(0644,root,bin) /usr/share/aegis/en/html/chan_menu.rpt
-%attr(0644,root,bin) /usr/share/aegis/en/html/chan_outst.rpt
+%attr(0644,root,bin) /usr/share/aegis/en/html/changes.rpt
 %attr(0644,root,bin) /usr/share/aegis/en/html/cp_command.rpt
 %attr(0644,root,bin) /usr/share/aegis/en/html/file_activ.rpt
 %attr(0644,root,bin) /usr/share/aegis/en/html/file_cflct.rpt
@@ -190,6 +183,7 @@ make RPM_BUILD_ROOT=$RPM_BUILD_ROOT install
 %attr(0644,root,bin) /usr/share/aegis/en/html/proj_cch2.rpt
 %attr(0644,root,bin) /usr/share/aegis/en/html/proj_cch3.rpt
 %attr(0644,root,bin) /usr/share/aegis/en/html/proj_files.rpt
+%attr(0644,root,bin) /usr/share/aegis/en/html/proj_filme.rpt
 %attr(0644,root,bin) /usr/share/aegis/en/html/proj_hstg2.rpt
 %attr(0644,root,bin) /usr/share/aegis/en/html/proj_hstg3.rpt
 %attr(0644,root,bin) /usr/share/aegis/en/html/proj_hstgm.rpt
@@ -419,6 +413,7 @@ make RPM_BUILD_ROOT=$RPM_BUILD_ROOT install
 %attr(0644,root,bin) /usr/share/aegis/report/chan_lists.rpt
 %attr(0644,root,bin) /usr/share/aegis/report/chan_log.rpt
 %attr(0644,root,bin) /usr/share/aegis/report/chan_recur.rpt
+%attr(0644,root,bin) /usr/share/aegis/report/chan_so.rpt
 %attr(0644,root,bin) /usr/share/aegis/report/file_activ.rpt
 %attr(0644,root,bin) /usr/share/aegis/report/file_cflct.rpt
 %attr(0644,root,bin) /usr/share/aegis/report/file_hstry.rpt
@@ -429,12 +424,14 @@ make RPM_BUILD_ROOT=$RPM_BUILD_ROOT install
 %attr(0644,root,bin) /usr/share/aegis/report/proj_detai.rpt
 %attr(0644,root,bin) /usr/share/aegis/report/proj_devel.rpt
 %attr(0644,root,bin) /usr/share/aegis/report/proj_files.rpt
+%attr(0644,root,bin) /usr/share/aegis/report/proj_gantt.rpt
 %attr(0644,root,bin) /usr/share/aegis/report/proj_integ.rpt
 %attr(0644,root,bin) /usr/share/aegis/report/proj_lists.rpt
 %attr(0644,root,bin) /usr/share/aegis/report/proj_recur.rpt
 %attr(0644,root,bin) /usr/share/aegis/report/proj_rvwrs.rpt
 %attr(0644,root,bin) /usr/share/aegis/report/proj_staff.rpt
 %attr(0644,root,bin) /usr/share/aegis/report/proj_stats.rpt
+%attr(0644,root,bin) /usr/lib/aegis/ru/LC_MESSAGES/aecomplete.mo
 %attr(0644,root,bin) /usr/lib/aegis/ru/LC_MESSAGES/aedist.mo
 %attr(0644,root,bin) /usr/lib/aegis/ru/LC_MESSAGES/aefind.mo
 %attr(0644,root,bin) /usr/lib/aegis/ru/LC_MESSAGES/aegis.mo

@@ -56,22 +56,42 @@ print("<title>");
 print("Project " ## quote_html(pn) ## ",");
 print("File History Report");
 print("</title></head><body><h1 align=center>");
+
 auto href;
-href = script_name ## "?file@proj_menu+project@" ## quote_url(pn);
-print("Project ``<a href=\"" ## href ## "\">" ## quote_html(pn) ## "</a>'',");
+print("<a href=\"" ## script_name ## "\">Project</a>");
+auto long_project_name;
+auto prj_name_parts;
+prj_name_parts = split(pn, '.');
+href = script_name ## "?file@proj_menu+project@"
+	## quote_url(prj_name_parts[0]);
+long_project_name = "<a href=\"" ## href ## "\" >"
+	## quote_html(prj_name_parts[0]) ## "</a>";
+auto j;
+for (j = 1; j < count(prj_name_parts); j++)
+{
+    href ##= '.' ## prj_name_parts[j];
+    long_project_name ##= ".<a href=\"" ## href ## "\" >"
+    	## quote_html(prj_name_parts[j]) ## "</a>";
+};
+long_project_name = "``" ## long_project_name ## "'',<br>";
+/* HTTP limits lines to 510 characters */
+for (j in wrap(long_project_name, 510))
+    print(j);
+
 if (change_number_set())
 {
     href = script_name ## "?file@chan_menu+project@" ## quote_url(pn)
 	## "+change@" ## change_number();
-    print("Change <a href=\"" ## href ## "\">" ## change_number() ## "</a>,");
+    print("Change <a href=\"" ## href ## "\">" ## change_number() ##
+	"</a>,<br>");
 }
 if (count(arg) == 1)
-    print("File ``" ## quote_html(arg[0]) ## "'',");
-print("<br>File History");
+    print("File ``" ## quote_html(arg[0]) ## "'',<br>");
+print("File History");
 print("</h1>");
 print("<div class=\"information\">");
 
-print("<table>");
+print("<table align=center>");
 
 auto ps;
 ps = project[project_name()].state;
@@ -102,6 +122,8 @@ if (count(arg) == 0)
 auto hist;
 for (file in arg)
     hist[file] = [];
+auto metname, m;
+metname = { };
 
 /*
  * scan all completed changes
@@ -127,7 +149,13 @@ for (ph in ps.branch.history)
 		    change = ph.change_number;
 		    description = cs.brief_description;
 		    move = cf.move;
+		    metrics = cf.metrics;
 		};
+	    if (count(cf.metrics))
+	    {
+		for (m in cf.metrics)
+		    metname[m.name] = true;
+	    }
 	}
     }
 }
@@ -135,7 +163,7 @@ for (ph in ps.branch.history)
 /*
  * print the accumulated history
  */
-auto fh, actions, usages;
+auto fh, actions, usages, rownum;
 for (file in sort(keys(hist)))
 {
     href = script_name ## "?file@file_menu+" ## quote_url(file);
@@ -146,15 +174,32 @@ for (file in sort(keys(hist)))
     print("<span class=\"filename\">" ## quote_html(file) ## "</span></a>");
     print("</td></tr>");
 
-    print("<tr><th></th><th>Type</th><th>Action</th><th>Delta</th>");
+    print("<tr class=\"even-group\">");
+    print("<th></th><th>Type</th><th>Action</th><th>Delta</th>");
     print("<th>When</th>");
-    print("<th>Change</th><th>Edit</th><th>Description</th></tr>");
+    print("<th>Change</th><th>Edit</th><th>Description</th>");
+    for (m in sort(keys(metname)))
+    {
+        print("<th>");
+	auto msplit, ms2;
+	msplit = split(m, "_");
+	for (ms2 in msplit)
+	    print(capitalize(ms2) ## "<br>");
+	print("</th>");
+    }
+    print("</tr>");
+    rownum = 0;
 
     actions = "BS";
     usages = "BS";
     for (fh in hist[file])
     {
-	print("<tr><td>&nbsp;&nbsp;</td><td valign=top>");
+	if (rownum % 6 < 3)
+	    print("<tr class=\"odd-group\">");
+	else
+	    print("<tr class=\"even-group\">");
+	++rownum;
+	print("<td>&nbsp;&nbsp;</td><td valign=top>");
 	if (fh.usage != usages)
 	    print(fh.usage);
 	print("</td><td valign=top>");
@@ -171,7 +216,11 @@ for (file in sort(keys(hist)))
 	print("<a href=\"" ## href ## "\">");
 	print(fh.change ## "</a>");
 	print("</td><td valign=top align=right>");
-	print(fh.edit);
+	href = script_name ## "?file@file_menu";
+	href ##= "+project@" ## quote_url(project_name());
+	href ##= "+change@" ## fh.change ## "+" ## quote_html(file);
+	print("<a href=\"" ## href ## "\">");
+	print(fh.edit ## "</a>");
 	print("</td><td valign=top>");
 	auto part;
 	for (part in wrap_html(quote_html(fh.description), 80))
@@ -190,7 +239,22 @@ for (file in sort(keys(hist)))
 	    print("<span class=\"filename\">" ## quote_html(fh.move)
 		## "</span></a>");
 	}
-	print("</td></tr>");
+	print("</td>");
+
+	auto met;
+	for (m in sort(keys(metname)))
+	{
+	    for (met = 0; met < count(fh.metrics); met++)
+	    {
+		if (fh.metrics[met].name == m)
+		{
+		    print("<td valign=top align=right>");
+		    print(sprintf("%4.2f", fh.metrics[met].value));
+		    print("</td>");
+		}
+	    }
+	}
+	print("</tr>");
 	actions = fh.action;
 	usages = fh.usage;
     }
@@ -213,7 +277,7 @@ print("<p align=center class=\"navbar\">[");
 print("<a href=\"" ## script_name ## "\">Project List</a> |");
 href = script_name ## "?file@proj_menu+project@" ## quote_url(pn);
 print("<a href=\"" ## href ## "\">Project Menu</a> |");
-href = script_name ## "?file@chan_list+project@" ## quote_url(pn);
+href = script_name ## "?file@changes+project@" ## quote_url(pn);
 print("<a href=\"" ## href ## "\">Change List</a>");
 if (change_number_set())
 {

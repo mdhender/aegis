@@ -60,7 +60,7 @@ the end of the project "config" file.
 The usual priority of files (development directory, branch baseline,
 \fIetc\fP, project trunk baseline) is observed when these files are read.
 .PP
-Please note that the physical directies are never searched, only
+Please note that the physical directories are never searched, only the
 Aegis concept of the change and project files is consulted.
 Placing additional files in the physical directories will have
 no effect.
@@ -83,12 +83,12 @@ All of the substitutions described by
 .IR aesub (5)
 are available.
 .PP
-Executed as: the intgerator (for integration builds) or the developer
+Executed as: the integrator (for integration builds) or the developer
 (for development builds).
 Current directory: the integration directory of the change (for
 integration builds) the development directory of the change
 (for development builds).
-Exit status: zero is considered succes, non-zero is a failure
+Exit status: zero is considered success, non-zero is a failure
 and a subsequent successful (exit zero) build will be required.
 .RE
 .TP 8n
@@ -125,7 +125,7 @@ build_covers_all_architectures = boolean;
 .RS
 This field is set to true if the build command, when executed on any
 architecture, results in all architectures being built.  This may be
-accomplished, for example, by using cross-compilation techiniques, or
+accomplished, for example, by using cross-compilation techniques, or
 Cook's ability to nominate hosts on which to execute each build rule.
 .RE
 .TP 8n
@@ -532,7 +532,7 @@ field, below.
 .PP
 Executed as: the project owner.
 Current directory: the base of the history tree.
-Exit status: zero indicates succes, all non-zero exits indicate failure
+Exit status: zero indicates success, all non-zero exits indicate failure
 (the integrate pass will fail).
 .RE
 .TP 8n
@@ -572,7 +572,7 @@ The absolute path of the destination file.
 Executed as: the developer (or the executing user, in the case of
 the -independent option).
 Current directory: the base of the history tree
-Exit status: zero indicates succes, all non-zero exits indicate failure
+Exit status: zero indicates success, all non-zero exits indicate failure
 (the \fIaecp\fP will fail).
 .RE
 .TP 8n
@@ -670,7 +670,7 @@ The absolute path of the history file.
 .TP 8n
 ${Edit}
 .br
-The edit number to be labelled.
+The edit number to be labeled.
 It may be an arbitrary string,
 varying on the particular history tool.
 .TP 8n
@@ -690,8 +690,15 @@ it is set to the value passed in from the command line.
 .PP
 Executed as: the project owner.
 Current directory: the base of the history tree.
-Exit status: zero indicates succes, all non-zero exits indicate failure
+Exit status: zero indicates success, all non-zero exits indicate failure
 (a warning will be issued).
+.PP
+Labeling does not scale, so the use of this command is not encouraged.
+If you have a project with 10,000 files, and a change modified exactly one
+of them, only one \fIhistory_\%put_\%command\fP execution is required,
+which operates on one history file.  If you have labeling turned on, it
+will also be necessary to execute 10,000 \fIhistory_\%label_\%command\fPs,
+to add information Aegis will never use.
 .RE
 .TP 8n
 history_put_trashes_file = (fatal, warn, ignore);
@@ -781,7 +788,7 @@ Executed as: the project owner (for integration diffs), or the
 developer (for development diffs).
 Current directory: the integration directory (for integration diffs),
 or the development directory (for development diffs).
-Exit status: zero indicates succes, all non-zero exits indicate failure
+Exit status: zero indicates success, all non-zero exits indicate failure
 (the aed will fail).
 .RE
 .TP 8n
@@ -889,7 +896,7 @@ relation to reality.
 The most useful option is GNU diff's \fB\-\-ignore-all-space\fP option,
 which will have the effect of ignoring the majority of indenting and
 code formatting changes.  The \fB\-\-ignore-case\fP option could also
-be usefil for case insensitive languages such as FORTRAN or PL/1.
+be useful for case insensitive languages such as FORTRAN or PL/1.
 Avoid options which would alter the number of lines, such as \fB\-
 -ignore-blank-lines\fP or \fB\-\-context\fP as these will produce
 misleading results.
@@ -971,8 +978,8 @@ Executed as: the project owner (for integration tests) or the developer
 Current directory: the integration directory (for integration tests),
 the development directory (for development tests), the project
 baseline (for -bl tests), or the current directory (for
--indenpendent tests).
-Exit status: zero indicates succes, one indicates failure, anything
+-independent tests).
+Exit status: zero indicates success, one indicates failure, anything
 else indicates "no result".
 .RE
 .\" ------------------------------------------------------------------------
@@ -1027,7 +1034,7 @@ and thus never have the execute bit set.
 Executed as: the developer.
 Current directory: the development directory (for development tests),
 the project baseline (for -bl tests).
-Exit status: zero indicates succes, one indicates failure, anything
+Exit status: zero indicates success, one indicates failure, anything
 else indicates "no result".
 .RE
 .\" ------------------------------------------------------------------------
@@ -1069,6 +1076,15 @@ ${Search_Path_Executable}
 Colon separated list of directories to search for executable files and
 executable support files.  Usually it is the same as the above,
 \fIexcept\fP during an ``aet -bl'' command.
+.TP 8n
+${Current}
+.br
+Number of first test in the batch.
+.TP 8n
+${Total}
+.br
+Total number of tests. If this is 0 then no progress messages should be
+issued.
 .PP
 Note that tests are source files,
 and thus never have the execute bit set.
@@ -1411,7 +1427,7 @@ trojan_horse_suspect = [ string ];
 This list of filename patterns is consulted by aedist --receive when it
 is checking for files which could be used to host Trojan horse attacks.
 This will be different for different projects, so you will need to
-update this youself.
+update this yourself.
 The patterns are matched against the whole filename;
 naming only the last filename path element will \fInot\fP work
 (unless the pattern starts with ``\f[CW]*\fP'').
@@ -1441,9 +1457,9 @@ The idea is that, at the very least, programs need to be relinked so
 that \fIaet -reg\fP does not give false negatives.
 .LP
 Combining this with the \fIproject_\%file_\%command\fP (above) can
-alleviate the vast majority of file mo time inconsistencies experienced
-as a result of a project integration and the subsequent changes in the
-baseline's mod times.
+alleviate the vast majority of file modification time inconsistencies
+experienced as a result of a project integration and the subsequent
+changes in the baseline's file modification times.
 .LP
 Unless you are a masochist, do not set this field.  Leave it as the default.
 .TP 8n
@@ -1505,7 +1521,7 @@ Executed as: the project owner (for integration diffs), or the
 developer (for development diffs).
 Current directory: the integration directory (for integration diffs),
 or the development directory (for development diffs).
-Exit status: zero indicates succes, all non-zero exits indicate failure
+Exit status: zero indicates success, all non-zero exits indicate failure
 (the aed will fail).
 .PP
 The problem with this field was that the default usage placed the merged

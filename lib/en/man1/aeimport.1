@@ -1,6 +1,6 @@
 '\" t
 .\"	aegis - project change supervisor
-.\"	Copyright (C) 2001 Peter Miller;
+.\"	Copyright (C) 2001, 2002 Peter Miller;
 .\"	All rights reserved.
 .\"
 .\"	This program is free software; you can redistribute it and/or modify
@@ -65,7 +65,7 @@ The project has no other administrators (use \fIaena\fP(1) to add more).
 .PP
 The project will have all user names found in the history files (see blow)
 installed as developers, reviewers and integrators.  This is probably
-too broad, but firly accurately preproduces the wide-open permissions
+too broad, but fairly accurately reproduces the wide-open permissions
 found in most repositories, and you will want to use \fIaerd\fP(1),
 \fIaerrv\fP(1) and \fIaeri\fP(1) as appropriate to winnow this list.
 .PP
@@ -77,7 +77,7 @@ this if you want a different setting.
 The project's umask is derived from the current user's umask, but
 modified to guarantee that group members will have access and that only
 the project owner will have write access.  In general, it's best of the
-project is \fInot\fP owned by an account with any othe role, as this
+project is \fInot\fP owned by an account with any other role, as this
 prevents a whole class of ``oops, I thought I was somewhere else'' errors.
 .PP
 The project's history commands (see \fIaepconf\fP(5) for more information)
@@ -128,13 +128,13 @@ these change sets.  The following steps are taken:
 1.
 The directory (\fIdirpath\fP) given on the command line, and all
 directories below it, are scanned for appropriate files (for example,
-RCS abd CVS use files with a ``\f[CW],v\fP'' suffix).
+RCS and CVS use files with a ``\f[CW],v\fP'' suffix).
 These files are read to obtain the file's history.
 .sp 0.3
 If you have been using a non-standard file suffix, \*(n) won't be able
 to find the files.
 .sp 0.3
-If you have more than one module in your CVS repository, \*(n) does't
+If you have more than one module in your CVS repository, \*(n) doesn't
 (yet) understand the CVSROOT/modules file.  Pointing \*(n) at your whole
 CVSROOT may produce an unexpectedly large result.
 .TP 2n
@@ -151,8 +151,8 @@ It is not possible to leave all your history files under, say,
 $CVSROOT and have Aegis point to them.
 .TP 2n
 3.
-For each user mentioned in the various file histories, the timestamps
-are examined to find groups of files which were commited at around the
+For each user mentioned in the various file histories, the time stamps
+are examined to find groups of files which were committed at around the
 same time.  Files changed within 1 minute of each other are considered a group.
 .sp 0.3
 Files change within one minute, but by different users, are \fInot\fP
@@ -180,7 +180,7 @@ and the resulting description is less than useful.
 5.
 Tags are turned into delta names by transferring delta names from the
 files they are attached to, to the change sets they are attached to.
-When a tag would appear to be attached to more than one chnage, it is
+When a tag would appear to be attached to more than one change, it is
 attached only to the latest change.
 .sp 0.3
 In common usage, the tags serve a similar purpose as Aegis'
@@ -208,9 +208,10 @@ loosely coupled files, I'll implement it.  Ideas and/or code contributions
 welcome.)
 .TP 2n
 \(bu
-Only RCS format is understood at present.  It should be straigh forward
-to add SCCS support in the future.  Only step 1 of the above process
-requires attention, the rest is file format neutral.
+Only RCS and SCCS formats are understood at present.  It should be
+straight forward to add support for additional formats in the future.
+Only step 1 of the above process requires attention, the rest is file
+format neutral.
 .TP 2n
 \(bu
 There is no support for CVS modules, and there needs to be.
@@ -218,7 +219,7 @@ There is no support for CVS modules, and there needs to be.
 \(bu
 You can't specify the time window size used to determine change sets.
 Time will tell whether this is
-necessary, buts it begs the question: how will you know what window size
+necessary, but it begs the question: how will you know what window size
 you need in order to use the option at all.
 .TP 2n
 \(bu
@@ -239,7 +240,7 @@ The following formats are understood:
 RCS
 Release Control System format has been around for quite a while.
 It is the format underlying CVS (Concurrent Version System).
-This is the deafult if no format name is specified.
+This is the default if no format name is specified.
 .br
 \fBNote:\fP you \fImust\fP have RCS installed before you run \fI\*(n)\fP
 if you use this format, because RCS commands will be run during the import

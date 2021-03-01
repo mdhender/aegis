@@ -1,6 +1,6 @@
 /*
  *	aegis - project change supervisor
- *	Copyright (C) 1994 Peter Miller.
+ *	Copyright (C) 2002 Peter Miller;
  *	All rights reserved.
  *
  *	This program is free software; you can redistribute it and/or modify
@@ -17,10 +17,18 @@
  *	along with this program; if not, write to the Free Software
  *	Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111, USA.
  *
- * MANIFEST: template common/config.h file
- *
- * @configure_input@
+ * MANIFEST: interface definition for libaegis/sub/perl.c
  */
 
-#ifndef COMMON_CONFIG_H
-#define COMMON_CONFIG_H
+#ifndef LIBAEGIS_SUB_PERL_H
+#define LIBAEGIS_SUB_PERL_H
+
+#include <main.h>
+
+struct sub_context_ty;
+struct wstring_list_ty;
+
+struct wstring_ty *sub_perl(struct sub_context_ty *,
+    struct wstring_list_ty *arg);
+
+#endif /* LIBAEGIS_SUB_PERL_H */

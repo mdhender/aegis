@@ -1,6 +1,6 @@
 /*
  *	aegis - project change supervisor
- *	Copyright (C) 2001 Peter Miller;
+ *	Copyright (C) 2001, 2002 Peter Miller;
  *	All rights reserved.
  *
  *	This program is free software; you can redistribute it and/or modify
@@ -30,58 +30,62 @@
 typedef struct file_event_ty file_event_ty;
 struct file_event_ty
 {
-	time_t		when;
-	struct change_ty *cp;
+    time_t	    when;
+    struct change_ty *cp;
 };
 
 typedef struct file_event_list_ty file_event_list_ty;
 struct file_event_list_ty
 {
-	size_t		length;
-	size_t		maximum;
-	file_event_ty	*item;
+    size_t	    length;
+    size_t	    maximum;
+    file_event_ty   *item;
 };
 
-/*
- * NAME
- *	project_file_roll_forward
- *
- * DESCRIPTION
- *	The project_file_roll_forward function is used to recapitilate
- *	the project's history, constructing information about the state
- *	of all files as it goes.  The project_file_roll_forward_get
- *	function is used to extract the results.
- *
- *	pp
- *		The project to apply the listing to.
- *		All parent branches will be visited, too.
- *	limit
- *		The time limit for changes.  Changes on or before this
- *		time will be included.
- *	detailed
- *		If this is false, only the parent branches and the
- *		project itself are visited.  If this is true, all branches
- *		completed within the limt will be visited.
- *
- * CAVEAT
- *	This function is one really big memory leak.
- *	You can't do this to two projects at the same time.
- */
-void project_file_roll_forward _((project_ty *pp, time_t limit, int detailed));
+/**
+  * The project_file_roll_forward function is used to recapitilate
+  * the project's history, constructing information about the state
+  * of all files as it goes.  The project_file_roll_forward_get
+  * function is used to extract the results.
+  *
+  * \param pp
+  *     The project to apply the listing to.
+  *     All parent branches will be visited, too.
+  * \param limit
+  *     The time limit for changes.  Changes on or before this
+  *     time will be included.
+  * \param detailed
+  *     If this is false, only the parent branches and the
+  *     project itself are visited.  If this is true, all branches
+  *     completed within the limt will be visited.
+  *
+  * \caveat
+  *	This function is one really big memory leak.
+  *	You can't do this to two projects at the same time.
+  */
+void project_file_roll_forward(project_ty *pp, time_t limit, int detailed);
 
-/*
- * NAME
- *	project_file_roll_forward_get
- *
- * DESCRIPTION
- *	The project_file_roll_forward_get function is used to obtain the
- *	events for a given file, once project_file_roll_forward has been
- *	called to construct the information.
- *
- * CAVEAT
- *	Do not free the change pointed to, as it may be referenced by
- *	other files' histories.
- */
-file_event_list_ty *project_file_roll_forward_get _((string_ty *));
+/**
+  * The project_file_roll_forward_get function is used to obtain the
+  * events for a given file, once project_file_roll_forward has been
+  * called to construct the information.
+  *
+  * \caveat
+  *    Do not free the change pointed to, as it may be referenced by
+  *    other files' histories.
+  */
+file_event_list_ty *project_file_roll_forward_get(string_ty *);
+
+/**
+  * The project_file_roll_forward_get_last function is used to get the
+  * last file event, used by most functions which deal with deltas.
+  */
+file_event_ty *project_file_roll_forward_get_last(string_ty *);
+
+/**
+  * The project_file_roll_forward_get_older function is used to get the
+  * last-but-one file event, used by aecp -rescind to roll back a change.
+  */
+file_event_ty *project_file_roll_forward_get_older(string_ty *);
 
 #endif /* LIBAEGIS_PROJECT_FILE_ROLL_FORWARD_H */

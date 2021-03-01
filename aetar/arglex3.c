@@ -30,6 +30,8 @@ static arglex_table_ty argtab[] =
 	{ "-Not_Entire_Source", arglex_token_entire_source_not, },
 	{ "-Not_Trojan", arglex_token_trojan_not, },
 	{ "-Partial_Source", arglex_token_entire_source_not, },
+	{ "-Add_Path_Prefix", arglex_token_path_prefix_add, },
+	{ "-Remove_Path_Prefix", arglex_token_path_prefix_remove, },
 	{ "-Receive", arglex_token_receive, },
 	{ "-Send", arglex_token_send, },
 	{ "-Trojan", arglex_token_trojan, },

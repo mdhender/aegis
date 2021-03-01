@@ -1,6 +1,6 @@
 /*
  *	aegis - project change supervisor
- *	Copyright (C) 1999 Peter Miller;
+ *	Copyright (C) 1999, 2002 Peter Miller;
  *	All rights reserved.
  *
  *	This program is free software; you can redistribute it and/or modify
@@ -28,7 +28,12 @@
 FILE *
 setmntent(const char *filename, const char *mode)
 {
-    return fopen(filename, mode);
+    /*
+     * This is a bogus value.  All that is necessary is that it not be
+     * zero (otherwise it looks like the file could not be opened).
+     * By choosing a power of two, we avoid alignment issues, too.
+     */
+    return (FILE *)1024;
 }
 
 
@@ -43,7 +48,7 @@ getmntent(FILE *fp)
 int
 endmntent(FILE *fp)
 {
-    return fclose(fp);
+    return 0;
 }
 
 #endif /* HAVE_MNTENT_H */

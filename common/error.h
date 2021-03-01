@@ -24,7 +24,6 @@
 #define ERROR_H
 
 #include <main.h>
-#include <noreturn.h>
 
 #define error /!/!/
 void error_raw(const char *, ...);

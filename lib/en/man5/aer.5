@@ -353,14 +353,14 @@ if ( lines < 7)
 .RE
 .SS The Local Statement
 The
-.I local
+.I auto
 statement is used to declare variables
 and initialize them to be nul.
 .RS
 .nf
 .ft CW
 .ta 0.5i 1i 1.5i
-local x, y, z;
+auto x, y, z;
 x = 42;
 .ft R
 .fi
@@ -589,6 +589,9 @@ basename
 This function is used to extract the last element from a file path.
 .\" ------------------------------ C ------------------------------
 .TP 8n
+capitalize
+This function converts it argument to a capitalized string in Title Case.
+.TP 8n
 ceil
 This function is used to round a number to an integer,
 towards positive infinity.
@@ -643,6 +646,9 @@ This function is used to count the number of elements in a list or array.
 .TP 8n
 dirname
 This function is used to extract all but the last element from a file path.
+.TP 8n
+downcase
+This functions converts its argument to lower case.
 .\" ------------------------------ E ------------------------------
 .TP 8n
 eject
@@ -748,7 +754,7 @@ characters; these include ``?+#:&='' and non-printing characters.
 This is most often used to generate suitable text for web pages.
 .\" ------------------------------ R ------------------------------
 .TP 8n
-ceil
+round
 This function is used to round a number to an integer,
 towards the closest integer.
 .\" ------------------------------ S ------------------------------
@@ -820,6 +826,9 @@ This function will remove URL quoting from the argument string.
 URL quoting takes the form of a percent sign (%) followed by two
 hex digits.  This is replaced by a single character with the value
 represented by the hex digits.
+.TP 8n
+upcase
+This functions converts its argument to upper case.
 .\" ------------------------------ V ------------------------------
 .\" ------------------------------ W ------------------------------
 .TP 8n

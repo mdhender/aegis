@@ -39,6 +39,12 @@
 ]
 .br
 .B \*(n)
+.B \-list
+[
+.IR option ...
+]
+.br
+.B \*(n)
 .B -Help
 .br
 .B \*(n)
@@ -51,28 +57,166 @@ send Aegis changes as patches, or receive patches and turn them into
 Aegis changes.
 .PP
 Please note that this only works for text files.  If your project uses
-binary files, the \fI\*(n)\fP program, will not be useful, because the
+binary files, the \fI\*(n)\fP program will not be useful because the
 \fIdiff\fP(1) and \fIpatch\fP(1) commands only work on text files.
 Also, this only works for files with names which do not contain white space.
-.SS Notification
-The \fI\*(n)\fP command invokes various other Aegis commands.
-The usual notifications that these commands would issue are issued.
 .PP
 If you need to merge matches together, you could use the GNU patch utils,
 which include a tool to merge patches together.
-.SH OPTIONS
-The following options are understood:
+.SH SEND
+The send variant takes a specified change and constructs a patch
+containing all of the changes to all of the files in that change.
+The result is compressed, and encoded into a text format which can be
+sent as e-mail without being corrupted by the mail transfer agents along
+the way.
+.PP
+This patch is a normal Unix patch, as you would produce using
+\fIdiff\fP(1), \fIgzip\fP(1) and a MIME encoder such as \fImpack\fP(1).
+There are no special formats.  The output can be uncompressed with the
+normal \fIgunzip\fP(1) command and applied with the normal \fIpatch\fP(1)
+command.
+.SS Options
+The following options are understood by the send variant:
 .so o_change.so
-.so o_delta.so
-.so o_file.so
-.so o_cte.so
-.so o_output.so
-(Only valid when used with the list option.)
 .TP 8n
-\fB\-List
-This option may be used to list the file names in the patch.
-.so o_help.so
+\fB\-COmpress
+This option may be used to specify that the output is to be compressed.
+This is the default.
+.TP 8n
+\fB\-No_COmpress
+This option may be used to specify that the output is not to be compressed.
+.so o_cte.so
+.so o_delta.so
+.so o_output.so
 .so o_project.so
+.SH RECEIVE
+The receive variant takes a patch
+and creates an Aegis change (see \fIaenc\fP(1)) to implement the change
+within.  Files are added to the change (see \fIaenf\fP(1), \fIaecp\fP(1),
+\fIaerm\fP(1), \fIaent\fP(1)) and then the patch contents are unpackaged
+into the development directory, and the changes applied to the files.
+.PP
+The patch does not have to be produced by the \fI\*(n)\fP(1) command.
+Normal patches produced by \fIdiff\fP(1) command are also valid input.
+The intent is that you can particicate in normal open source development,
+and also use Aegis, even if your fellow developers are not.
+.PP
+Once unpacked,
+the change is then built (see \fIaeb\fP(1)), differenced (see
+\fIaed\fP(1)), and tested (see \fIaet\fP(1)).
+The automatic process stops at this point,
+so that you can confirm that the change is desired.
+.SS File Names
+It is common for patch files generated using the usual \fIdiff -r\fP
+mechanism to contain extra path prefixes.  The \fI\*(n)\fP(1) command
+attempts to remove these automagically.  This is usually possible because
+patches usually modify files within the project, so the patch file names
+are compared with project file names to guess which and how much path
+prefixes to remove.
+.TP 8n
+\fB\-Remove_Path_Prefix\fP \fIstring\fP
+This option may be used to explicitly specify path prefixes to be removed,
+if present.  It may be specified more than once.
+.PP
+If you have a complex project directory structure,
+from time to time people may send you patches relative to a sub-directory,
+rather than relative to the project root.
+The \fI\*(n)\fP(1) program can't guess this by itself.
+.TP 8n
+\fB\-Add_Path_Prefix\fP \fIstring\fP
+This option may be used to specify the path of a project sub-directory
+in which to apply the patch.
+.SS Notification
+The \fI\*(n)\fP command invokes various other Aegis commands.
+The usual notifications that these commands would issue are issued.
+.SS Options
+The following options are understood by the receive variant:
+.TP 8n
+\fB\-Change\fP \fInumber\fP
+This option may be used to choose the change number to be used,
+otherwise the change number in the patch (if present) will be used if
+it is available, otherwise one will be chosen automatically.
+.TP 8n
+\fB\-DELta\fP \fInumber\fP
+.br
+This option may be used to specify a particular
+delta in the project's history to copy the file from,
+just as for the \fIaecp\fP(1) command.
+You may also use a delta name instead of a delta number.
+.so o_dir.so
+.TP 8n
+\fB\-File\fP \fIfilename\fP
+Read the change set from the specified file.
+The default is to read it from the standard input.
+The filename `-' is understood to mean the standard input.
+.TP 8n
+\fB\-Project\fP \fIname\fP
+This option may be used to set the project name.  If not specified the
+project name in the input package will be used (if present), otherwise
+the usual project name default will be used.
+.SS Security
+Receiving changes by e-mail, and automatically committing them to the
+baseline without checking them, would be a recipe for disaster.
+A number of safeguards are provided:
+.TP 2n
+\(bu
+The format of the package is confirmed to be correct, and the package
+verified for internal consistency, before it is unpacked and acted
+upon.
+.TP 2n
+\(bu
+The automatic portion of the process stops before development ends.  This
+ensures that the receiver validates the change before it is committed,
+and then it must also be reviewed,
+preventing accidental or malicious damage.
+.TP 2n
+\(bu
+The more you use Aegis' test management facilities (see \&\fIaent\fP(1)
+and \&\fIaet\fP(1)) the harder it is for an inadequate change to get into
+the baseline.
+.SH LIST
+The list variant can be used to list the contents of a package without
+actually unpacking it first.
+The output is reminiscent of the \fIaegis -list change-details\fP output.
+.SS Options
+The following options are understood by the list variant:
+.TP 8n
+\fB\-File\fP \fIfilename\fP
+Read the change set from the specified file.
+The default is to read it from the standard input.
+.so o_output.so
+Only useful with the \-List option.
+.SH OPTIONS
+The following options to this command haven't been mentioned yet:
+.so o_help.so
 .so o__rules.so
+.SH FILE FORMAT
+The file format re-uses existing formats, rather than introduce anything
+new.  This means it is possible to extract the contents of a package
+even when \*(n) is unavailable.
+.TP 2n
+\(bu
+On sending, the source files are generated using the \fIdiff\fP(1) program,
+in the same way a normal Unix patch  is generated.
+.br
+On receiving, the differences are applied to the source files, in the
+same manner as the normal \fIpatch\fP(1) program.
+.TP 2n
+\(bu
+On sending, the patch is compressed using the GNU gzip format.  Typically
+primary source files are ASCII text, resulting in significant compression.
+(This is optional.)
+.br
+On receiving, if the patch is compressed it will be automagically
+uncompressed, detection is automatic, you do not need to do this yourself.
+.TP 2n
+\(bu
+On sending,
+the compressed patch is encoded using the MIME base64 encoding.
+This makes the result approximately 33% larger than the compressed binary
+would be, but still smaller than the primary sources.  (This is optional.)
+.br
+On receiving, if the patch is MIME64 encoded it will be automatically
+decoded, detetcion is automatic, you do not need to do this yourself.
 .so z_exit.so
 .so z_cr.so

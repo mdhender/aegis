@@ -1,6 +1,6 @@
 /*
  *	aegis - project change supervisor
- *	Copyright (C) 1999 Peter Miller;
+ *	Copyright (C) 1999, 2002 Peter Miller;
  *	All rights reserved.
  *
  *	This program is free software; you can redistribute it and/or modify
@@ -27,8 +27,14 @@
 #include <ac/stdio.h>
 
 #ifdef HAVE_MNTENT_H
+
 #include <mntent.h>
-#else
+
+#ifndef MOUNTED
+# define MOUNTED "/etc/mtab"
+#endif
+
+#else /* !HAVE_MNTENT_H */
 
 #include <main.h>
 #define MOUNTED "/dev/null"

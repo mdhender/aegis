@@ -111,11 +111,11 @@ ARCHIVE	SITE
 	The latest version of Aegis is available by HTTP from:
 		URL:	http://www.canb.auug.org.au/~millerp/
 		File:	aegis.html	   # the Aegis page
-		File:	aegis.4.8.README   # Description, from tar file
-		File:	aegis.4.8.lsm	   # Description, in LSM format
-		File:	aegis.4.8.ae	   # the complete source, aedist format
-		File:	aegis.4.8.spec	   # RedHat package specification
-		File:	aegis.4.8.tar.gz   # the complete source
+		File:	aegis.4.9.README   # Description, from tar file
+		File:	aegis.4.9.lsm	   # Description, in LSM format
+		File:	aegis.4.9.ae	   # the complete source, aedist format
+		File:	aegis.4.9.spec	   # RedHat package specification
+		File:	aegis.4.9.tar.gz   # the complete source
 
 	This directory also contains a few other pieces	of
 	software written by me.	 Some are referred to in the
@@ -130,11 +130,11 @@ ARCHIVE	SITE
 	archives.  You will be able to find Aegis on any of its
 	mirrors.
 		URL:	ftp://metalab.unc.edu/pub/Linux/devel/vc/
-		File:	aegis.4.8.README   # Description, from tar file
-		File:	aegis.4.8.lsm	   # Description, in LSM format
-		File:	aegis.4.8.spec	   # RedHat package specification
-		File:	aegis.4.8.ae	   # the complete source, aedist format
-		File:	aegis.4.8.tar.gz   # the complete source
+		File:	aegis.4.9.README   # Description, from tar file
+		File:	aegis.4.9.lsm	   # Description, in LSM format
+		File:	aegis.4.9.spec	   # RedHat package specification
+		File:	aegis.4.9.ae	   # the complete source, aedist format
+		File:	aegis.4.9.tar.gz   # the complete source
 	This site is extensively mirrored around the world, so
 	look for a copy	near you (you will get much better
 	response).
@@ -278,15 +278,66 @@ RELEASE	NOTES
 	those who generously sent me feedback, please see the
 	etc/CHANGES.*  files included in this distribution.
 
+   Upgrading
 	In general, all	the machines on	your network need to be
 	running	the same release of Aegis.  While the database
 	format is backwards compatible,	it is rarely forwards
 	compatible in the face of new capabilities.
 
-	A number of features have been added to	Aegis with this
-	release.  A few	of them	are detailed here:
+   Version 4.9
+	* The aepatch(1) and aetar(1) commands now accept -add-
+	path-prefix and	-remove-path-prefix options, for
+	manipulating the filenames when	unpacking an creating a
+	change set.  The aepatch(1) documentation has been
+	significantly improved.
+
+	* There	is a new aecp -rescind option, which may be used
+	to rescind (roll back) a completed change.  See	aecp(1)
+	for more information.
+
+	* The Debian /etc/mailname file	is now understood by the
+	${user email} substitution.
+
+	* There	is a new project_gantt report, which produces
+	comma-separated-value (CSV) output, for	extracting data
+	to import into Ms. Project.  Unfortunately, Mr.	Project
+	does not yet know how to import	CSV files.
+
+	* It is	now possible to	provide	a comment to the
+	aerpass(1) command, just as you	always could to	the
+	aerfail(1) command.
+
+	* The aet(1) program now has a -progress option, to tell
+	you where it is	up to.	See aet(1) for more information.
+
+	* The Russian error messages have been updated.
+
+	* The aeimport(1) program now understands the CVS Attic
+	directory.
+
+	* There	are new	perl, PLural_Forms, capitalize,	downcase
+	and upcase substitutions.  See aer(5) for more
+	information.
+
+	* A work-around	for the	aeimport/delta bug has been
+	added, for projects which were imported	with the buggy
+	aeimport.
+
+	* Aegis	developers will	need to	upgrade	to GNU Autoconf
+	2.53 or	later, as the GNU Autoconf files have been
+	updated	to work	with that version.  This does not affect
+	normal users.
+
+	* Many typos have been fixed in	the documentation, and
+	some improvements have been made.
+
+	* Some build problems have been	fixed.
+
+	* Numerous improvements	have been made to the web
+	interface.
 
    Version 4.8
+
 	* A bugs has been fixed	in the aetar -receive command,
 	where it incorrectly complained	about shorty input files.
 
@@ -404,6 +455,7 @@ RELEASE	NOTES
 	accessed the list of user owned	changes.
 
    Version 4.5
+
 	* It is	now possible to	set pager and editor preferences
 	in your
 
@@ -2118,4 +2170,4 @@ RELEASE	NOTES
 	* The command substitutions have been vastly improved,
 	and are	now documented.
 
-Reference Manual	      Aegis				1
+Reference Manual	      Aegis		   Read	Me(Aegis)

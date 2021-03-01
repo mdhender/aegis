@@ -114,7 +114,7 @@ copyright_years = [ integer ];
 This field details the years in which the change was worked on.
 This field is present in trunk, branch and leaf nodes.
 .PP
-As a change is edited, years in which the chnage was worked on
+As a change is edited, years in which the change was worked on
 accumulate in this field automatically.
 Branches accumulate years as integrations occur.
 You may need to manually edit this,

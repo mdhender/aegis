@@ -1,6 +1,6 @@
 /*
  *	aegis - project change supervisor
- *	Copyright (C) 2001 Peter Miller;
+ *	Copyright (C) 2001, 2002 Peter Miller;
  *	All rights reserved.
  *
  *	This program is free software; you can redistribute it and/or modify
@@ -104,11 +104,11 @@
  *
  *		Now's the time for all folk to come to the aid of their country.
  *
- *	This can be represented, in the Quoted-Printable encoding, as 
+ *	This can be represented, in the Quoted-Printable encoding, as
  *
- *		Now's the time = 
- *		for all folk to come = 
- *		to the aid of their country. 
+ *		Now's the time =
+ *		for all folk to come =
+ *		to the aid of their country.
  *
  *	This provides a mechanism with which long lines are encoded in
  *	such a way as to be restored by the user agent. The 76 character
@@ -136,9 +136,9 @@
  *	reasonably reliable transport through EBCDIC gateways is to also
  *	quote the ASCII characters
  *
- *		!"#$@[\]^`{|}~ 
+ *		!"#$@[\]^`{|}~
  *
- *	according to rule #1. See Appendix B for more information. 
+ *	according to rule #1. See Appendix B for more information.
  *
  *	Because quoted-printable data is generally assumed to be line-
  *	oriented, it is to be expected that the representation of
@@ -159,7 +159,7 @@
  *
  *	For formalists, the syntax of quoted-printable data is described
  *	by the following grammar:
- *	
+ *
  *	quoted-printable := ([*(ptext / SPACE / TAB) ptext] ["="] CRLF)
  *		; Maximum line length of 76 characters excluding CRLF
  *
@@ -183,281 +183,281 @@
 typedef struct input_base64_ty input_base64_ty;
 struct input_base64_ty
 {
-	input_ty	inherited;
-	input_ty	*deeper;
-	int		close_on_close;
-	int		eof;
-	long		pos;
+    input_ty	    inherited;
+    input_ty	    *deeper;
+    int		    close_on_close;
+    int		    eof;
+    long	    pos;
 };
 
 
-static void input_quoted_printable_destructor _((input_ty *));
-
 static void
-input_quoted_printable_destructor(fp)
-	input_ty	*fp;
+input_quoted_printable_destructor(input_ty *fp)
 {
-	input_base64_ty	*this;
+    input_base64_ty *this;
 
-	this = (input_base64_ty *)fp;
-	if (this->close_on_close)
-		input_delete(this->deeper);
-	this->deeper = 0; /* paranoia */
+    this = (input_base64_ty *)fp;
+    if (this->close_on_close)
+	input_delete(this->deeper);
+    this->deeper = 0; /* paranoia */
 }
 
-
-static int hex _((int));
 
 static int
-hex(c)
-	int	c;
+hex(int c)
 {
-	switch (c)
-	{
-	default:
-		return -1;
+    switch (c)
+    {
+    default:
+	return -1;
 
-	case '0': case '1': case '2': case '3': case '4':
-	case '5': case '6': case '7': case '8': case '9': 
-		return (c - '0');
+    case '0':
+    case '1':
+    case '2':
+    case '3':
+    case '4':
+    case '5':
+    case '6':
+    case '7':
+    case '8':
+    case '9':
+	return (c - '0');
 
-	case 'A': case 'B': case 'C': case 'D': case 'E': case 'F': 
-		return (c - 'A' + 10);
+    case 'A':
+    case 'B':
+    case 'C':
+    case 'D':
+    case 'E':
+    case 'F':
+	return (c - 'A' + 10);
 
-	case 'a': case 'b': case 'c': case 'd': case 'e': case 'f': 
-		return (c - 'a' + 10);
-	}
+    case 'a':
+    case 'b':
+    case 'c':
+    case 'd':
+    case 'e':
+    case 'f':
+	return (c - 'a' + 10);
+    }
 }
 
 
-static long input_quoted_printable_read _((input_ty *, void *, size_t));
-
 static long
-input_quoted_printable_read(fp, data, len)
-	input_ty	*fp;
-	void		*data;
-	size_t		len;
+input_quoted_printable_read(input_ty *fp, void *data, size_t len)
 {
-	input_base64_ty	*this;
-	unsigned char	*cp;
-	unsigned char	*end;
-	long		nbytes;
+    input_base64_ty *this;
+    unsigned char   *cp;
+    unsigned char   *end;
+    long	    nbytes;
 
-	this = (input_base64_ty *)fp;
-	if (this->eof)
-		return 0;
-	cp = data;
-	end = cp + len;
-	while (cp < end)
+    this = (input_base64_ty *)fp;
+    if (this->eof)
+	return 0;
+    cp = data;
+    end = cp + len;
+    while (cp < end)
+    {
+	int		c;
+	int		n1;
+	int      	n2;
+
+	c = input_getc(this->deeper);
+	if (c < 0)
 	{
-		int	c;
-		int	n1, n2;
+	    this->eof = 1;
+	    break;
+	}
+	if (c == ' ' || c == '\t')
+	{
+	    static char	    *buffer;
+	    static size_t   bufmax;
+	    size_t	    bufpos;
+	    size_t	    nchars;
 
-		c = input_getc(this->deeper);
-		if (c < 0)
-		{
-			this->eof = 1;
-			break;
-		}
-		if (c == ' ' || c == '\t')
-		{
-			static char	*buffer;
-			static size_t	bufmax;
-			size_t		bufpos;
-			size_t		nchars;
-
-			/*
-			 * We are supposed to suppress white space on
-			 * the ends of lines.  This is because some
-			 * (non-unix, non-windows) mail transfer agents
-			 * add extra white space on the ends of lines.
-			 * (Our corresponding encoding escapes trailing
-			 * spaces and tabs.)
-			 */
-			bufpos = 0;
-			for (;;)
-			{
-				/*
-				 * Stash this character (we may need it later)
-				 */
-				if (bufpos >= bufmax)
-				{
-					bufmax = bufmax * 2 + 8;
-					buffer =
-						mem_change_size(buffer, bufmax);
-				}
-				buffer[bufpos++] = c;
-
-				/*
-				 * See what comes next.
-				 */
-				c = input_getc(this->deeper);
-				if (c < 0)
-					break;
-				if (c == '\n')
-				{
-					*cp++ = '\n';
-					goto next_char;
-				}
-				if (c != ' ' && c != '\t')
-				{
-					input_ungetc(this->deeper, c);
-					break;
-				}
-			}
-
-			/*
-			 * Put as many of the buffered characters into
-			 * the output as possible.  This means we won't
-			 * double handle them (actually, we would O(n**2)
-			 * handle them).
-			 */
-			nchars = end - cp;
-			if (nchars > bufpos)
-				nchars = bufpos;
-			memcpy(cp, buffer, nchars);
-			cp += nchars;
-
-			/*
-			 * If there wasn't room, there is no help for it.
-			 * We will have to give the rest of the buffered
-			 * characters back.  Hopefully next time will
-			 * be big enough for all of them.  The
-			 * pathological case required >16KB of spaces and
-			 * tabs: unlikely.
-			 */
-			while (bufpos > nchars)
-			{
-				--bufpos;
-				input_ungetc(this->deeper, buffer[bufpos]);
-			}
-
-			/*
-			 * Don't fall into the next statement, but start
-			 * this loop from the top.  (We could have run
-			 * out of output buffer).
-			 */
-			continue;
-		}
-
+	    /*
+	     * We are supposed to suppress white space on
+	     * the ends of lines.  This is because some
+	     * (non-unix, non-windows) mail transfer agents
+	     * add extra white space on the ends of lines.
+	     * (Our corresponding encoding escapes trailing
+	     * spaces and tabs.)
+	     */
+	    bufpos = 0;
+	    for (;;)
+	    {
 		/*
-		 * If this isn't an escape sequence, return the literal
-		 * character.
+		 * Stash this character (we may need it later)
 		 */
-		if (c != '=')
+		if (bufpos >= bufmax)
 		{
-			*cp++ = c;
-			continue;
+		    bufmax = bufmax * 2 + 8;
+		    buffer = mem_change_size(buffer, bufmax);
 		}
+		buffer[bufpos++] = c;
 
 		/*
-		 * Grab two hex digits.  If they aren't hex digits,
-		 * it is a format error.
-		 *
-		 * Except for trailing white space; that we ignore.
+		 * See what comes next.
 		 */
 		c = input_getc(this->deeper);
 		if (c < 0)
-			break;
-		if (c == ' ' || c == '\t')
-		{
-			for (;;)
-			{
-				c = input_getc(this->deeper);
-				if (c == '\n')
-					break;
-				if (c != ' ' && c != '\t')
-				{
-					input_fatal_error(this->deeper, "quoted printable: invalid character");
-					/* NOTREACHED */
-				}
-			}
-		}
+		    break;
 		if (c == '\n')
-			continue;
-		n1 = hex(c);
-		if (n1 < 0)
 		{
-			input_fatal_error(fp, "quoted printable: invalid hex character");
-			/* NOTREACHED */
+		    *cp++ = '\n';
+		    goto next_char;
 		}
-		c = input_getc(this->deeper);
-		n2 = hex(c);
-		if (n2 < 0)
+		if (c != ' ' && c != '\t')
 		{
-			input_fatal_error(fp, "quoted printable: invalid hex character");
-			/* NOTREACHED */
+		    input_ungetc(this->deeper, c);
+		    break;
 		}
-		*cp++ = ((n1 << 4) | n2);
-	next_char:
-		;
+	    }
+
+	    /*
+	     * Put as many of the buffered characters into
+	     * the output as possible.	This means we won't
+	     * double handle them (actually, we would O(n**2)
+	     * handle them).
+	     */
+	    nchars = end - cp;
+	    if (nchars > bufpos)
+		nchars = bufpos;
+	    memcpy(cp, buffer, nchars);
+	    cp += nchars;
+
+	    /*
+	     * If there wasn't room, there is no help for it.
+	     * We will have to give the rest of the buffered
+	     * characters back.	 Hopefully next time will
+	     * be big enough for all of them.  The
+	     * pathological case required >16KB of spaces and
+	     * tabs: unlikely.
+	     */
+	    while (bufpos > nchars)
+	    {
+		--bufpos;
+		input_ungetc(this->deeper, buffer[bufpos]);
+	    }
+
+	    /*
+	     * Don't fall into the next statement, but start
+	     * this loop from the top.	(We could have run
+	     * out of output buffer).
+	     */
+	    continue;
 	}
-	nbytes = (cp - (unsigned char *)data);
-	this->pos += nbytes;
-	return nbytes;
+
+	/*
+	 * If this isn't an escape sequence, return the literal
+	 * character.
+	 */
+	if (c != '=')
+	{
+	    *cp++ = c;
+	    continue;
+	}
+
+	/*
+	 * Grab two hex digits.	 If they aren't hex digits,
+	 * it is a format error.
+	 *
+	 * Except for trailing white space; that we ignore.
+	 */
+	c = input_getc(this->deeper);
+	if (c < 0)
+	    break;
+	if (c == ' ' || c == '\t')
+	{
+	    for (;;)
+	    {
+		c = input_getc(this->deeper);
+		if (c == '\n')
+		    break;
+		if (c != ' ' && c != '\t')
+		{
+		    input_fatal_error
+		    (
+			this->deeper,
+			"quoted printable: invalid character"
+		    );
+		    /* NOTREACHED */
+		}
+	    }
+	}
+	if (c == '\n')
+	    continue;
+	n1 = hex(c);
+	if (n1 < 0)
+	{
+	    input_fatal_error(fp, "quoted printable: invalid hex character");
+	    /* NOTREACHED */
+	}
+	c = input_getc(this->deeper);
+	n2 = hex(c);
+	if (n2 < 0)
+	{
+	    input_fatal_error(fp, "quoted printable: invalid hex character");
+	    /* NOTREACHED */
+	}
+	*cp++ = ((n1 << 4) | n2);
+	next_char:
+	;
+    }
+    nbytes = (cp - (unsigned char *)data);
+    this->pos += nbytes;
+    return nbytes;
 }
 
-
-static long input_quoted_printable_ftell _((input_ty *));
 
 static long
-input_quoted_printable_ftell(deeper)
-	input_ty	*deeper;
+input_quoted_printable_ftell(input_ty *deeper)
 {
-	input_base64_ty	*this;
+    input_base64_ty *this;
 
-	this = (input_base64_ty *)deeper;
-	return this->pos;
+    this = (input_base64_ty *)deeper;
+    return this->pos;
 }
 
-
-static struct string_ty *input_quoted_printable_name _((input_ty *));
 
 static struct string_ty *
-input_quoted_printable_name(fp)
-	input_ty	*fp;
+input_quoted_printable_name(input_ty *fp)
 {
-	input_base64_ty	*this;
+    input_base64_ty *this;
 
-	this = (input_base64_ty *)fp;
-	return input_name(this->deeper);
+    this = (input_base64_ty *)fp;
+    return input_name(this->deeper);
 }
 
 
-static long input_quoted_printable_length _((input_ty *));
-
 static long
-input_quoted_printable_length(fp)
-	input_ty	*fp;
+input_quoted_printable_length(input_ty *fp)
 {
-	return -1;
+    return -1;
 }
 
 
 static input_vtbl_ty vtbl =
 {
-	sizeof(input_base64_ty),
-	input_quoted_printable_destructor,
-	input_quoted_printable_read,
-	input_quoted_printable_ftell,
-	input_quoted_printable_name,
-	input_quoted_printable_length,
+    sizeof(input_base64_ty),
+    input_quoted_printable_destructor,
+    input_quoted_printable_read,
+    input_quoted_printable_ftell,
+    input_quoted_printable_name,
+    input_quoted_printable_length,
 };
 
 
 input_ty *
-input_quoted_printable(deeper, coc)
-	input_ty	*deeper;
-	int		coc;
+input_quoted_printable(input_ty *deeper, int coc)
 {
-	input_ty	*result;
-	input_base64_ty	*this;
+    input_ty	    *result;
+    input_base64_ty *this;
 
-	result = input_new(&vtbl);
-	this = (input_base64_ty *)result;
-	this->deeper = deeper;
-	this->close_on_close = coc;
-	this->eof = 0;
-	this->pos = 0;
-	return result;
+    result = input_new(&vtbl);
+    this = (input_base64_ty *)result;
+    this->deeper = deeper;
+    this->close_on_close = coc;
+    this->eof = 0;
+    this->pos = 0;
+    return result;
 }

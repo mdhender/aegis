@@ -1,6 +1,6 @@
 .\"
 .\"	aegis - project change supervisor
-.\"	Copyright (C) 1999, 2001 Peter Miller;
+.\"	Copyright (C) 1999, 2001, 2002 Peter Miller;
 .\"	All rights reserved.
 .\"
 .\"	This program is free software; you can redistribute it and/or modify
@@ -150,7 +150,7 @@ This ensures the maximum number of eyes validate each change.
 .LP
 You will need to add the other staff to the appropriate developer,
 reviewer and integrator roles.  Staff need to always be permitted all
-roles: it is common for junior staff, for example, \fInot\fP to be authorised
+roles: it is common for junior staff, for example, \fInot\fP to be authorized
 as reviewers.
 .LP
 Converting a single user project to a multi-person project is simply editing

@@ -1,0 +1,156 @@
+/*
+ *	aegis - project change supervisor
+ *	Copyright (C) 2002 Peter Miller;
+ *	All rights reserved.
+ *
+ *	This program is free software; you can redistribute it and/or modify
+ *	it under the terms of the GNU General Public License as published by
+ *	the Free Software Foundation; either version 2 of the License, or
+ *	(at your option) any later version.
+ *
+ *	This program is distributed in the hope that it will be useful,
+ *	but WITHOUT ANY WARRANTY; without even the implied warranty of
+ *	MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ *	GNU General Public License for more details.
+ *
+ *	You should have received a copy of the GNU General Public License
+ *	along with this program; if not, write to the Free Software
+ *	Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111, USA.
+ *
+ * MANIFEST: autoconf.cook
+ */
+
+[arch]/bin/%: script/%.in: [arch]/config.status
+	set ['if' [not [defined baseline]] 'then' shallow]
+	single-thread conftest.subs
+{
+	if [not [exists script]] then
+		mkdir script
+			set clearstat;
+	/* these 2 env vars control what is generated */
+	CONFIG_FILES\=[target]\:[resolve script/%.in] CONFIG_HEADERS\=
+		[resolve [arch]/config.status];
+	chmod 755 [target];
+}
+
+/*
+ * The configured files are generated using the config.status script
+ * output by the configure script.  Not all of them are essential to a
+ * build, or are already taken care of, and some are not meaningful.
+ */
+configured_files1 =
+	[match_mask script/%.in [source_files]]
+	;
+configured_files2 =
+	[stringset
+		[match_mask %0%.in [source_files]]
+	-
+		[configured_files1]
+	];
+configured_files =
+	[fromto script/%.in [arch]/bin/% [configured_files1]]
+	[fromto %0%.in [arch]/%0% [configured_files2]]
+	;
+configured_files =
+	[stringset
+		[configured_files]
+	-
+		[arch]/Makefile /* only for integration builds */
+		[arch]/etc/Howto.conf /* make cook trigger this itself */
+		[arch]/etc/config.h
+		[arch]/etc/configure
+	];
+configured_files: [configured_files];
+
+configure: etc/configure.ac install-sh
+{
+	/*
+	 * unfortunately,
+	 * install-sh must be in the current directory
+	 */
+	if [not [exists install-sh]] then
+		ln -s [resolve install-sh] install-sh
+			set clearstat;
+	autoconf [resolve etc/configure.ac] > [target];
+	chmod 755 [target];
+}
+
+/*
+ * The install-sh script can come from a huge range of places, depending
+ * on what distribution you have installed (or whether you built it from
+ * the tarball).
+ */
+if [exists /usr/local/share/autoconf/install-sh] then
+	install-sh = /usr/local/share/autoconf/install-sh;
+else if [exists /usr/share/autoconf/install-sh] then
+	install-sh = /usr/share/autoconf/install-sh;
+else if [exists /usr/local/share/automake/install-sh] then
+	install-sh = /usr/local/share/automake/install-sh;
+else
+	install-sh = /usr/share/automake/install-sh;
+install-sh: [install-sh]
+{
+	cp [need] [target];
+	chmod 755 [target];
+}
+
+configure-prefix = /usr/local;
+if [exists /opt/aegis/bin] then
+	configure-prefix = /opt/aegis;
+if [exists /usr/bin/aegis] then
+	configure-prefix = /usr;
+
+[arch]/config.status: configure install-sh
+{
+	if [not [exists install-sh]] then
+		ln -s [resolve install-sh] install-sh
+			set clearstat;
+
+	[unsplit " "
+	    [catenate CC\= [cc] ]
+	    [catenate CCFLAGS\= [cc_flags] ]
+	    [catenate LDFLAGS\= [ld_flags] ]
+
+	    [pathname [resolve configure]] --cache-file\=/dev/null --verbose
+	    --prefix\=[configure-prefix]
+	    --no-create --srcdir\=.
+
+	    && mv config.status [arch]/config.status
+	    && rm -f config.log
+	];
+}
+
+common/config.h.in: etc/configure.ac
+{
+	autoheader [resolve etc/configure.ac] > [target];
+}
+
+
+[arch]/%0%.h: %0%.h.in [arch]/config.status
+	single-thread conftest.subs
+{
+	if [not [exists [dirname %0%.h]]] then
+		mkdir [dirname %0%.h]
+			set clearstat;
+	/* these 2 env vars control what is generated */
+	CONFIG_FILES\= CONFIG_HEADERS\=[target]\:[resolve %0%.h.in]
+		[resolve [arch]/config.status];
+}
+
+[arch]/%0%: %0%.in [arch]/config.status
+	set ['if' [not [defined baseline]] 'then' shallow]
+	single-thread conftest.subs
+{
+	if [not [exists [dirname %0%]]] then
+		mkdir [dirname %0%]
+			set clearstat;
+	/* these 2 env vars control what is generated */
+	CONFIG_FILES\=[target]\:[resolve %0%.in] CONFIG_HEADERS\=
+		[resolve [arch]/config.status];
+
+	/*
+	 * Make shell scripts and CGI scripts executable.
+	 */
+	if [or [matches %%.cgi %] [matches %%.sh %]] then
+		chmod a+rx [target];
+}

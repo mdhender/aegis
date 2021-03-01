@@ -19,10 +19,93 @@
 .\"
 .\" MANIFEST: document describing new 4.8 features
 .\"
-.\" .PP
-.\" .if n *
-.\" .if t \(bu
-.\" .\" change NN
+.PP
+.if n *
+.if t \(bu
+.\" change 72
+The \fIaepatch\fP(1) and \fIaetar\fP(1) commands now accept
+\-add-path-prefix and \-remove-path-prefix\fP options, for manipulating
+the filenames when unpacking an creating a change set.
+The \fIaepatch\fP(1) documentation has been significantly improved.
+.PP
+.if n *
+.if t \(bu
+.\" change 70
+There is a new \fIaecp -rescind\fP option, which may be used to rescind
+(roll back) a completed change.  See \fIaecp\fP(1) for more information.
+.PP
+.if n *
+.if t \(bu
+.\" change 69
+The Debian \fI/etc/mailname\fP file is now understood by
+the \fI${user email}\fP substitution.
+.PP
+.if n *
+.if t \(bu
+.\" change 65
+There is a new \fIproject_gantt\fP report, which produces
+comma-separated-value (CSV) output, for extracting data to import into
+Ms. Project.  Unfortunately, Mr. Project does not yet know how to import
+CSV files.
+.PP
+.if n *
+.if t \(bu
+.\" change 60
+It is now possible to provide a comment to the \fIaerpass\fP(1) command,
+just as you always could to the \fIaerfail\fP(1) command.
+.PP
+.if n *
+.if t \(bu
+.\" Change 36
+The \fIaet\fP(1) program now has a \-progress option,
+to tell you where it is up to.
+See \fIaet\fP(1) for more information.
+.PP
+.if n *
+.if t \(bu
+.\" Change 26, 61
+The Russian error messages have been updated.
+.PP
+.if n *
+.if t \(bu
+.\" Change 22
+The \fIaeimport\fP(1) program now understands the CVS Attic directory.
+.PP
+.if n *
+.if t \(bu
+.\" change 20, 30, 68
+There are new \fIperl\fP, \fIPLural_Forms\fP, \fIcapitalize\fP,
+\fIdowncase\fP and \fIupcase\fP substitutions.  See \fIaer\fP(5) for
+more information.
+.PP
+.if n *
+.if t \(bu
+.\" Change 16
+A work-around for the aeimport/delta bug has been added,
+for projects which were imported with the buggy aeimport.
+.PP
+.if n *
+.if t \(bu
+.\" Change 14
+Aegis developers will need to upgrade to GNU Autoconf 2.53 or later,
+as the GNU Autoconf files have been updated to work with that version.
+This does not affect normal users.
+.PP
+.if n *
+.if t \(bu
+.\" Change 13, 17, 19, 27, 28, 29, 39, 57, 62, 63
+Many typos have been fixed in the documentation,
+and some improvements have been made.
+.PP
+.if n *
+.if t \(bu
+.\" change 12, 18, 23, 25, 31, 32, 33
+Some build problems have been fixed.
+.PP
+.if n *
+.if t \(bu
+.\" change 11, 15, 35, 37, 50, 52, 53, 56, 59, 66
+Numerous improvements have been made to the web interface.
 .\" ------------------------------------------------------------------------
 .\" Place new text above this line.
 .SS Version 4.8

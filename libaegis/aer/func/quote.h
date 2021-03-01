@@ -1,6 +1,6 @@
 /*
  *	aegis - project change supervisor
- *	Copyright (C) 1998, 1999 Peter Miller;
+ *	Copyright (C) 1998, 1999, 2002 Peter Miller;
  *	All rights reserved.
  *
  *	This program is free software; you can redistribute it and/or modify
@@ -24,7 +24,7 @@
 #define LIBAEGIS_AER_FUNC_QUOTE_H
 
 #include <aer/func.h>
- 
+
 extern rpt_func_ty rpt_func_quote_url;
 extern rpt_func_ty rpt_func_unquote_url;
 extern rpt_func_ty rpt_func_quote_html;

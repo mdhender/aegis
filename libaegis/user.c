@@ -29,6 +29,7 @@
 #include <arglex2.h>
 #include <commit.h>
 #include <error.h>
+#include <file.h>
 #include <fstrcmp.h>
 #include <getgr_cache.h>
 #include <getpw_cache.h>
@@ -2321,7 +2322,7 @@ user_become_undo()
 enum del_pref
 {
     del_pref_unset,
-    del_pref_no_keep,
+    del_pref_keep_not,
     del_pref_interactive,
     del_pref_keep
 };
@@ -2338,7 +2339,7 @@ user_delete_file_argument(usage)
     {
 	mutually_exclusive_options3
 	(
-	    arglex_token_no_keep,
+	    arglex_token_keep_not,
 	    arglex_token_interactive,
 	    arglex_token_keep,
 	    usage
@@ -2357,8 +2358,8 @@ user_delete_file_argument(usage)
 	cmd_line_pref = del_pref_interactive;
 	break;
 
-    case arglex_token_no_keep:
-	cmd_line_pref = del_pref_no_keep;
+    case arglex_token_keep_not:
+	cmd_line_pref = del_pref_keep_not;
 	break;
     }
 }
@@ -2393,8 +2394,8 @@ ask(filename, isdir)
 	{"None", del_pref_keep, 0, },
 	{"Yes", del_pref_unset, 1, },
 	{"True", del_pref_unset, 1, },
-	{"All", del_pref_no_keep, 1, },
-	{"Always", del_pref_no_keep, 1, },
+	{"All", del_pref_keep_not, 1, },
+	{"Always", del_pref_keep_not, 1, },
     };
     table_ty	    *tp;
     char	    buffer[100];
@@ -2457,7 +2458,7 @@ user_delete_file_query(up, filename, isdir)
 	switch (uconf_data->delete_file_preference)
 	{
 	default:
-	    cmd_line_pref = del_pref_no_keep;
+	    cmd_line_pref = del_pref_keep_not;
 	    break;
 
 	case uconf_delete_file_preference_interactive:
@@ -2480,7 +2481,7 @@ user_delete_file_query(up, filename, isdir)
     &&
 	(!isatty(0) || os_background())
     )
-	cmd_line_pref = del_pref_no_keep;
+	cmd_line_pref = del_pref_keep_not;
 
     /*
      * figure the result
@@ -2548,7 +2549,7 @@ user_persevere_argument(usage)
 	uconf_persevere_option = 1;
 	break;
 
-    case arglex_token_no_persevere:
+    case arglex_token_persevere_not:
 	uconf_persevere_option = 0;
 	break;
     }
@@ -2866,20 +2867,33 @@ user_email_address(up)
     user_ty	    *up;
 {
     uconf	    uconf_data;
-    string_ty	    *full_name;
 
     uconf_data = user_uconf_get(up);
     if (!uconf_data->email_address)
     {
+	static string_ty *mailname;
+	string_ty	*dom;
+	string_ty	*full_name;
+
+	/*
+	 * Look for the domain name to go on the right hand side of the @ sign.
+	 */
+	if (!mailname)
+	    mailname = str_from_c("/etc/mailname");
+	os_become_orig();
+	if (os_exists(mailname))
+	    dom = read_whole_file(mailname);
+	else
+	    dom = str_copy(uname_node_get());
+	os_become_undo();
+
+	/*
+	 * Construct the email address.
+	 */
 	full_name = clean_up(user_name2(up));
 	uconf_data->email_address =
-	    str_format
-	    (
-		"%S <%S@%S>",
-		full_name,
-		user_name(up),
-		uname_node_get()
-	    );
+	    str_format("%S <%S@%S>", full_name, user_name(up), dom);
+	str_free(dom);
 	str_free(full_name);
     }
     return uconf_data->email_address;

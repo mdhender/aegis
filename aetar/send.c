@@ -542,7 +542,6 @@ send()
 	ifp = 0;
 	switch (cstate_data->state)
 	{
-	    file_event_list_ty *felp;
 	    file_event_ty  *fep;
 
 	case cstate_state_awaiting_development:
@@ -578,10 +577,9 @@ send()
 	    /*
 	     * Extract the file from history.
 	     */
-	    felp = project_file_roll_forward_get(filename);
-	    if (!felp || !felp->length)
+	    fep = project_file_roll_forward_get_last(filename);
+	    if (!fep)
 		continue;
-	    fep = &felp->item[felp->length - 1];
 	    csrc = change_file_find(fep->cp, filename);
 	    assert(csrc);
 	    if (!csrc)

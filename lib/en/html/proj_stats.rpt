@@ -54,10 +54,28 @@ print("<link rel=\"stylesheet\" type=\"text/css\" href=\"/" ## pn ## ".css\" "
 print("<title>");
 print("Project " ## quote_html(pn) ## " Statistics");
 print("</title></head><body><h1 align=center>");
+
 auto href;
-href = script_name ## "?file@proj_menu+project@" ## quote_url(pn);
-print("Project ``<a href=\"" ## href ## "\">" ## quote_html(pn) ##
-	"</a>'',<br>");
+print("<a href=\"" ## script_name ## "\">Project</a>");
+auto long_project_name;
+auto prj_name_parts;
+prj_name_parts = split(pn, '.');
+href = script_name ## "?file@proj_menu+project@"
+	## quote_url(prj_name_parts[0]);
+long_project_name = "<a href=\"" ## href ## "\" >"
+	## quote_html(prj_name_parts[0]) ## "</a>";
+auto j;
+for (j = 1; j < count(prj_name_parts); j++)
+{
+    href ##= '.' ## prj_name_parts[j];
+    long_project_name ##= ".<a href=\"" ## href ## "\" >"
+    	## quote_html(prj_name_parts[j]) ## "</a>";
+};
+long_project_name = "``" ## long_project_name ## "'',<br>";
+/* HTTP limits lines to 510 characters */
+for (j in wrap(long_project_name, 510))
+    print(j);
+
 print("Statistics");
 print("</h1>");
 print("<div class=\"information\">");
@@ -76,7 +94,7 @@ ps = p.state.branch;
 auto cause_stats, cause_total;
 auto file_action_stats, file_action_total;
 auto file_usage_stats, file_usage_total;
-auto hist_now, hist_time, hist_state, hist_stats, hist_total, j;
+auto hist_now, hist_time, hist_state, hist_stats, hist_total;
 auto hist_total_min, hist_total_max;
 auto hist_chan, hist_min, hist_max;
 hist_now = now();

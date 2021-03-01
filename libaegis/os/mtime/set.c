@@ -20,6 +20,7 @@
  * MANIFEST: wrappers around operating system functions
  */
 
+#include <ac/errno.h>
 #include <ac/stddef.h>
 #include <sys/types.h>
 #include <utime.h>

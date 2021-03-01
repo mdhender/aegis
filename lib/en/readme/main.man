@@ -391,13 +391,11 @@ and also acknowledgments of those who generously sent me feedback,
 please see the
 .I etc/CHANGES.*
 files included in this distribution.
-.PP
+.\" .SS Statistics
+.\" The following statistics were collected from the project source files:
+.\" .so proj_metric.so
+.SS Upgrading
 In general, all the machines on your network need to be running the same
 release of Aegis.  While the database format is backwards compatible,
 it is rarely forwards compatible in the face of new capabilities.
-.PP
-A number of features have been added to
-.I Aegis
-with this release.
-A few of them are detailed here:
 .so new.so

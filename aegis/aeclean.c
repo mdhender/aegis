@@ -368,7 +368,7 @@ clean_main()
 	    /* fall through... */
 
 	case arglex_token_interactive:
-	case arglex_token_no_keep:
+	case arglex_token_keep_not:
 	    user_delete_file_argument(clean_usage);
 	    break;
 	}

@@ -1,6 +1,6 @@
 /*
  *	aegis - project change supervisor
- *	Copyright (C) 1999 Peter Miller;
+ *	Copyright (C) 1999, 2002 Peter Miller;
  *	All rights reserved.
  *
  *	This program is free software; you can redistribute it and/or modify
@@ -20,9 +20,11 @@
  * MANIFEST: metrics.cook
  */
 
-#if 0
 all += metrics.targets ;
-source_file_order += etc/metrics.so ;
+
+metrics_include_file = etc/proj_metric.so;
+#if 0
+source_file_order += [metrics_include_file] ;
 #endif
 
 /*
@@ -30,20 +32,28 @@ source_file_order += etc/metrics.so ;
  * integration pass time.
  */
 metrics.targets =
-	[addsuffix ",S" [match_mask "%0%.c" [source_files]]]
+	[addsuffix ",S"
+	    [stringset [project_files] [change_files] - [metrics_include_file]]
+	]
 	;
 metrics.targets: [metrics.targets];
 
-etc/metrics.so: [metrics.targets] etc/statistics.awk
+[metrics_include_file]: [metrics.targets] etc/statistics.awk
 {
-	ALL_FILES\=[count [stringset [source_files] - [source_files_build]]]
 	[awk] -f [resolve etc/statistics.awk]
-		[resolve [metrics.targets]]
+		`cat -`
 		> [target]
 		;
+data
+[unsplit "\n" [resolve [metrics.targets]]]
+dataend
 }
 
+#if 0
+#if [find_command sw_measure]
+
 %1/%0%2.c,S: %1/%0%2.c
+    set nocascade
 {
 	sw_measure
 		[stringset
@@ -52,4 +62,13 @@ etc/metrics.so: [metrics.targets] etc/statistics.awk
 			[cc_include_flags]
 		]
 		[resolve %1/%0%2.c] [target];
+}
+
+#endif
+#endif
+
+%0%,S: %0%: [arch]/bin/simp_file_stat
+    set nocascade
+{
+    [resolve [arch]/bin/simp_file_stat] [resolve %0%] [target];
 }

@@ -427,22 +427,19 @@ delta_name_main()
 	for (j = 0;; j++)
 	{
 	    fstate_src      src;
-	    file_event_list_ty *felp;
 	    file_event_ty   *fep;
 
 	    src = project_file_nth(pp, j);
 	    if (!src)
 		break;
-	    felp = project_file_roll_forward_get(src->file_name);
-	    if (!felp)
+	    fep = project_file_roll_forward_get_last(src->file_name);
+	    if (!fep)
 	    {
 		/*
 		 * File not yet created at this delta.
 		 */
 		continue;
 	    }
-	    assert(felp->length);
-	    fep = &felp->item[felp->length - 1];
 	    src = change_file_find(fep->cp, src->file_name);
 	    assert(src);
 	    if (src->action == file_action_remove)

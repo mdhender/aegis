@@ -1,6 +1,6 @@
 .\"
 .\"	aegis - project change supervisor
-.\"	Copyright (C) 2001 Peter Miller;
+.\"	Copyright (C) 2001, 2002 Peter Miller;
 .\"	All rights reserved.
 .\"
 .\"	This program is free software; you can redistribute it and/or modify
@@ -23,7 +23,7 @@
 \fB\-Content_Transfer_Encoding\fP \fIname\fP
 .RS
 This option may be used to specify the content transfer encoding to be used.
-It may take one of the folliwing values:
+It may take one of the following values:
 .TP 8n
 None
 No content transfer encoding is to be performed.

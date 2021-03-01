@@ -107,7 +107,7 @@ will be added to the change (make sure there are no object files when
 you do this).
 .IP "\f[CW]aecp\fP"
 Prepares a file in the project for editing within the change; \fIi.e.\fP copy
-file into change from baseline.  Remove simlink if necessary, etc.
+file into change from baseline.  Remove symlink if necessary, etc.
 .IP "\f[CW]aecpu\fP"
 Reverse the effects of the above.
 .IP "\f[CW]aecpu -unch\fP"

@@ -55,16 +55,36 @@ print("<title>");
 
 print("Project " ## quote_html(pn) ## ", File Conflicts");
 print("</title></head><body><h1 align=center>");
+
 auto href;
-href = script_name ## "?file@proj_menu+project@" ## quote_url(pn);
-print("Project ``<a href=\"" ## href ## "\">" ## quote_html(pn) ## "</a>'',");
+print("<a href=\"" ## script_name ## "\">Project</a>");
+auto long_project_name;
+auto prj_name_parts;
+prj_name_parts = split(pn, '.');
+href = script_name ## "?file@proj_menu+project@"
+	## quote_url(prj_name_parts[0]);
+long_project_name = "<a href=\"" ## href ## "\" >"
+	## quote_html(prj_name_parts[0]) ## "</a>";
+auto j;
+for (j = 1; j < count(prj_name_parts); j++)
+{
+    href ##= '.' ## prj_name_parts[j];
+    long_project_name ##= ".<a href=\"" ## href ## "\" >"
+    	## quote_html(prj_name_parts[j]) ## "</a>";
+};
+long_project_name = "``" ## long_project_name ## "'',<br>";
+/* HTTP limits lines to 510 characters */
+for (j in wrap(long_project_name, 510))
+    print(j);
+
 if (change_number_set())
 {
     href = script_name ## "?file@chan_menu+project@" ## quote_url(pn)
 	## "+change@" ## change_number();
-    print("Change <a href=\"" ## href ## "\">" ## change_number() ## "</a>,");
+    print("Change <a href=\"" ## href ## "\">" ## change_number() ##
+	"</a>,<br>");
 }
-print("<br>File Conflicts");
+print("File Conflicts");
 print("</h1>");
 print("<div class=\"information\">");
 
@@ -238,7 +258,7 @@ print("<p align=center class=\"navbar\">[");
 print("<a href=\"" ## script_name ## "\">Project List</a> |");
 href = script_name ## "?file@proj_menu+project@" ## quote_url(pn);
 print("<a href=\"" ## href ## "\">Project Menu</a> |");
-href = script_name ## "?file@chan_list+project@" ## quote_url(pn);
+href = script_name ## "?file@changes+project@" ## quote_url(pn);
 print("<a href=\"" ## href ## "\">Change List</a>");
 if (change_number_set())
 {

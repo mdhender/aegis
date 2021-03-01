@@ -192,10 +192,6 @@ all =
 	configured_files
 	;
 
-
-
-
-
 /*
  * Integration builds also make the shar files for distribution,
  * but only on the primary architecture.
@@ -204,10 +200,6 @@ if [defined change] then
 if [not [defined baseline]] then
 if [in [arch] [primary_arch]] then
 	all += integration-build-targets ;
-if [matches %1.D%2 [version]] then
-	if [in [fromto %1.D%2 %2 [version]] 001 002] then
-            if [matches linux%1 [arch]] then
-		all += RPM;
 
 all: [all]
     set default
@@ -330,6 +322,7 @@ commands =
 		find_sizes
 		aefp
 		cklinlen
+		simp_file_stat
 	];
 
 /*
@@ -385,6 +378,12 @@ aefp_obj =
 	[common_obj]
 	;
 
+simp_file_stat_obj =
+	[arch]/simp_file_stat/main.o
+	[arch]/simp_file_stat/count.o
+	[arch]/common/common.a
+	;
+
 fmtgen_obj =
 	[fromto
 		fmtgen/%0%.y
@@ -435,36 +434,6 @@ source_files_build =
 	[change_files_build] [project_files_build];
 source_files_non_build =
 	[stringset [source_files] - [source_files_build]];
-
-/*
- * The configured files are generated using the config.status script
- * output by the configure script.  Not all of them are essential to a
- * build, or are already taken care of, and some are not meaningful.
- */
-configured_files1 =
-	[match_mask script/%.in [source_files]]
-	;
-configured_files2 =
-	[stringset
-		[match_mask %0%.in [source_files]]
-	-
-		[configured_files1]
-	];
-configured_files =
-	[fromto script/%.in [arch]/bin/% [configured_files1]]
-	[fromto %0%.in [arch]/%0% [configured_files2]]
-	;
-configured_files =
-	[stringset
-		[configured_files]
-	-
-		[arch]/Makefile /* only for integration builds */
-		[arch]/etc/Howto.conf /* make cook trigger this itself */
-		[arch]/etc/config.h
-		[arch]/etc/configure
-	];
-configured_files: [configured_files];
-
 
 /*
  * how to compile C sources
@@ -748,6 +717,7 @@ cascade lib/en/man5/aegstate.5 = [arch]/etc/libdir.so ;
 cascade lib/en/man5/aer.5 = [arch]/etc/libdir.so ;
 cascade lib/en/man5/aerptidx.5 = [arch]/etc/libdir.so ;
 cascade lib/en/man5/aeustate.5 = [arch]/etc/libdir.so ;
+/* cascade lib/en/readme/main.man = etc/proj_metric.so; */
 cascade lib/en/readme/main.man = etc/version.so lib/en/readme/new.so ;
 cascade lib/en/refman/main.man = lib/en/refman/parts.so lib/en/refman/index.so ;
 cascade lib/en/user-guide/c1.0.so = [arch]/etc/libdir.so etc/version.so ;
@@ -795,6 +765,7 @@ cascade libaegis/pstate.c = libaegis/pstate.h ;
 cascade libaegis/rptidx.c = libaegis/rptidx.h ;
 cascade libaegis/sub/delta.c = libaegis/cstate.h ;
 cascade libaegis/sub/expr_lex.c = libaegis/sub/expr_gram.gen.h ;
+cascade libaegis/sub/plural_lex.c = libaegis/sub/plural_gram.gen.h ;
 cascade libaegis/tstrslt.c = libaegis/tstrslt.h ;
 cascade libaegis/uconf.c = libaegis/uconf.h ;
 cascade libaegis/user.h = libaegis/ustate.h libaegis/uconf.h ;
@@ -835,18 +806,12 @@ yacc_flags = -v;
 	chmod 755 [target];
 }
 
-[arch]/bin/%: script/%.in: [arch]/config.status
-	set ['if' [not [defined baseline]] 'then' shallow]
-	single-thread conftest.subs
-{
-	if [not [exists script]] then
-		mkdir script
-			set clearstat;
-	/* these 2 env vars control what is generated */
-	CONFIG_FILES\=[target]\:[resolve script/%.in] CONFIG_HEADERS\=
-		[resolve [arch]/config.status];
-	chmod 755 [target];
-}
+/*
+ * How to automatically configure things to cope with the environment
+ * we find ourselves in.
+ */
+#include-cooked etc/autoconf.cook
+
 
 ranlib = [find_command ranlib];
 
@@ -1019,102 +984,6 @@ etc/CHANGES: [arch]/bin/aereport lib/report/proj_detai.rpt [vs_file]
 		-pw\=80 -pl\=66
 								      set meter;
 }
-
-
-configure: etc/configure.in install-sh
-{
-	/*
-	 * unfortunately,
-	 * install-sh must be in the current directory
-	 */
-	if [not [exists install-sh]] then
-		ln -s [resolve install-sh] install-sh
-			set clearstat;
-	autoconf [resolve etc/configure.in] > [target];
-	chmod 755 [target];
-}
-
-/*
- * The install-sh script can come from a huge range of places, depending
- * on what distribution you have installed (or whether you built it from
- * the tarball).
- */
-if [exists /usr/local/share/autoconf/install-sh] then
-	install-sh = /usr/local/share/autoconf/install-sh;
-else if [exists /usr/share/autoconf/install-sh] then
-	install-sh = /usr/share/autoconf/install-sh;
-else if [exists /usr/local/share/automake/install-sh] then
-	install-sh = /usr/local/share/automake/install-sh;
-else
-	install-sh = /usr/share/automake/install-sh;
-install-sh: [install-sh]
-{
-	cp [need] [target];
-	chmod 755 [target];
-}
-
-[arch]/config.status: configure install-sh
-{
-	if [not [exists install-sh]] then
-		ln -s [resolve install-sh] install-sh
-			set clearstat;
-
-        [unsplit " "
-           [catenate CC\= [cc] ]
-           [catenate CCFLAGS\= [cc_flags] ]
-           [catenate LDFLAGS\= [ld_flags] ]
-
-	   [pathname [resolve configure]] --cache-file\=/dev/null --verbose
-	   --no-create --srcdir\=.
-
-	   && mv config.status [arch]/config.status
-	   && rm -f config.log
-	];
-}
-
-common/config.h.in: etc/configure.in etc/config.h.in
-	etc/config.h.in1 etc/config.h.in2
-{
-	if [exists acconfig.h] then
-		rm acconfig.h
-			set clearstat;
-	cat [resolve etc/config.h.in1] > [target];
-	ln -s [resolve etc/config.h.in] acconfig.h;
-	autoheader [resolve etc/configure.in] >> [target];
-	rm acconfig.h;
-	cat [resolve etc/config.h.in2] >> [target];
-}
-
-
-[arch]/%0%.h: %0%.h.in [arch]/config.status
-	single-thread conftest.subs
-{
-	if [not [exists [dirname %0%.h]]] then
-		mkdir [dirname %0%.h]
-			set clearstat;
-	/* these 2 env vars control what is generated */
-	CONFIG_FILES\= CONFIG_HEADERS\=[target]\:[resolve %0%.h.in]
-		[resolve [arch]/config.status];
-}
-
-[arch]/%0%: %0%.in [arch]/config.status
-	set ['if' [not [defined baseline]] 'then' shallow]
-	single-thread conftest.subs
-{
-	if [not [exists [dirname %0%]]] then
-		mkdir [dirname %0%]
-			set clearstat;
-	/* these 2 env vars control what is generated */
-	CONFIG_FILES\=[target]\:[resolve %0%.in] CONFIG_HEADERS\=
-		[resolve [arch]/config.status];
-
-	/*
-	 * Make shell scripts and CGI scripts executable.
-	 */
-	if [or [matches %%.cgi %] [matches %%.sh %]] then
-		chmod a+rx [target];
-}
-
 
 [arch]/common/find_sizes.h: [arch]/bin/find_sizes
 {

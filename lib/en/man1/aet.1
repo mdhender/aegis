@@ -159,7 +159,7 @@ i.e. that the specific function under test did not work as expected.
 .TP 4n
 No Result
 A test should exit 2 to indicate no result,
-i.e. that the specific function under test could not be exersized
+\fIi.e.\fP that the specific function under test could not be exercised
 because something else went wrong.
 For example, running out of disk space when creating the test input
 files in the
@@ -206,6 +206,20 @@ if not specified, see
 .IR aeuconf (5)
 for more information.
 .so o_project.so
+.TP 8n
+.B -PROGress
+This option may be used to specify that progress messages should be
+issued before each test run or before each batch test run in case
+.I batch_test_command
+field specified in project
+.I config
+file (see
+.IR aeuconf (5)
+for more information).
+.TP 8n
+.B -No_PROGress
+This option may be used to specify that progress messages should be
+suppressed.  This is the default.
 .so o_regress.so
 .TP 8n
 \fB-SUGgest\fP [ \fInumber\fP ]

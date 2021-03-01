@@ -1,6 +1,6 @@
 /*
  *	aegis - project change supervisor
- *	Copyright (C) 2001 Peter Miller;
+ *	Copyright (C) 2001, 2002 Peter Miller;
  *	All rights reserved.
  *
  *	This program is free software; you can redistribute it and/or modify
@@ -26,61 +26,58 @@
 
 
 void
-change_branch_change_remove(cp, change_number)
-	change_ty	*cp;
-	long		change_number;
+change_branch_change_remove(change_ty *cp, long change_number)
 {
-	cstate		cstate_data;
-	cstate_branch_change_list lp;
-	size_t		j;
+    cstate	    cstate_data;
+    cstate_branch_change_list lp;
+    size_t	    j;
 
-	trace(("change_branch_change_remove(cp = %8.8lX, change_number = %ld)\n{\n"/*}*/,
-		(long)cp, change_number));
-	cstate_data = change_cstate_get(cp);
-	assert(cstate_data->branch);
-	if (!cstate_data->branch->change)
-		cstate_data->branch->change =
-			cstate_branch_change_list_type.alloc();
+    trace(("change_branch_change_remove(cp = %8.8lX, change_number = %ld)\n{\n",
+	(long)cp, change_number));
+    cstate_data = change_cstate_get(cp);
+    assert(cstate_data->branch);
+    if (!cstate_data->branch->change)
+	cstate_data->branch->change = cstate_branch_change_list_type.alloc();
+
+    /*
+     * Remove the name from the list, if it is on the list.
+     * Be conservative, look for duplicates.
+     */
+    lp = cstate_data->branch->change;
+    for (j = 0; j < lp->length; ++j)
+    {
+	if (change_number == lp->list[j])
+	{
+	    size_t	    k;
+
+	    for (k = j + 1; k < lp->length; ++k)
+		lp->list[k - 1] = lp->list[k];
+	    lp->length--;
+	    j--;
+	}
+    }
+
+    if (cstate_data->branch->sub_branch)
+    {
+	cstate_branch_sub_branch_list lp2;
 
 	/*
 	 * Remove the name from the list, if it is on the list.
 	 * Be conservative, look for duplicates.
 	 */
-	lp = cstate_data->branch->change;
-	for (j = 0; j < lp->length; ++j)
+	lp2 = cstate_data->branch->sub_branch;
+	for (j = 0; j < lp2->length; ++j)
 	{
-		if (change_number == lp->list[j])
-		{
-			size_t		k;
+	    if (change_number == lp2->list[j])
+	    {
+		size_t		k;
 
-			for (k = j + 1; k < lp->length; ++k)
-				lp->list[k - 1] = lp->list[k];
-			lp->length--;
-			j--;
-		}
+		for (k = j + 1; k < lp2->length; ++k)
+		    lp2->list[k - 1] = lp2->list[k];
+		lp2->length--;
+		j--;
+	    }
 	}
-
-	if (cstate_data->branch->sub_branch)
-	{
-		cstate_branch_sub_branch_list lp2;
-	
-		/*
-		 * Remove the name from the list, if it is on the list.
-		 * Be conservative, look for duplicates.
-		 */
-		lp2 = cstate_data->branch->sub_branch;
-		for (j = 0; j < lp2->length; ++j)
-		{
-			if (change_number == lp2->list[j])
-			{
-				size_t		k;
-	
-				for (k = j + 1; k < lp2->length; ++k)
-					lp2->list[k - 1] = lp2->list[k];
-				lp2->length--;
-				j--;
-			}
-		}
-	}
-	trace((/*{*/"}\n"));
+    }
+    trace(("}\n"));
 }

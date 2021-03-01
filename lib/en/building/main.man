@@ -198,6 +198,8 @@ of these files.
 \f[CW]--prefix=\fP\fIPATH\fP
 This specifies the path prefix to be used in the installation.
 Defaults to \fI/usr/local\fP unless otherwise specified.
+The rest of these building instructions assume you are using
+the default \fI/usr/local\fP as the install prefix.
 .TP 8n
 \f[CW]--exec-prefix=\fP\fIPATH\fP
 You can specify separate installation prefixes for
@@ -314,7 +316,7 @@ $
 .ft R
 .RE
 when running configure.  Substitute the appropriate prefix if you are
-using something other than \fI/usr/local\fP.
+using something other than the default \fI/usr/local\fP prefix.
 Watch the output... it should now find your installed packages correctly.
 .SS PRIVILEGES
 There are a number of items in the generated
@@ -621,7 +623,7 @@ Please note: if you install GNU gettext package into \fI/usr/local\fP
 (for example) you must ensure that the Aegis \fI./configure\fP script is
 told to also look in \fI/usr/local/include\fP for include files (CFLAGS),
 and \fI/usr/local/lib\fP for library files (LDFLAGS).  Otherwise the
-\fI./configure\fP script will incorrecly conclude that GNU Gettext has
+\fI./configure\fP script will incorrectly conclude that GNU Gettext has
 not been installed.
 .PP
 GNU Gettext version 0.11.1 or later is recommended.
@@ -807,6 +809,9 @@ You will need to do a little of the install,
 to create the directory which will contain
 .IR Aegis "'"
 lock file.
+(Note that these building instructions assume you are using the default
+\fI/usr/local\fP as the install prefix.  You will need to substitute as
+appropriate if you are using some other prefix.)
 .RS
 .ft CW
 .nf
@@ -961,7 +966,9 @@ source /usr/local/lib/aegis/cshrc
 to the end of their
 .I .cshrc
 file for the recommended aliases.
-(This may be in a different place, if you specified a --prefix option.)
+(Note that these building instructions assume you are using the default
+\fI/usr/local\fP as the install prefix.  You will need to substitute as
+appropriate if you are using some other prefix.)
 .PP
 There is also a
 .I profile
@@ -1005,6 +1012,9 @@ They are not kept under the
 .I /usr/local/com/aegis
 directory,
 this directory only contains pointers.
+(Note that these building instructions assume you are using the default
+\fI/usr/local\fP as the install prefix.  You will need to substitute as
+appropriate if you are using some other prefix.)
 .SS Web Interface
 If you have a Web server, you may like to install the Aegis web interface.
 You do this by copying the \fIaegis.cgi\fP script from
@@ -1024,8 +1034,9 @@ projects than just the global projects.  You do this by creating a
 and setting the \fIAEGIS_PATH\fP environment variable in it.  This is
 a fragment of Bourne shell script, not just the name.
 .PP
-The files mentioned here may be in a different place,
-if you specified a --prefix option.
+(Note that these building instructions assume you are using the default
+\fI/usr/local\fP as the install prefix.  You will need to substitute as
+appropriate if you are using some other prefix.)
 .br
 .ne 1i
 .SH PRINTED MANUALS

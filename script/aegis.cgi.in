@@ -179,10 +179,10 @@ then
     File=$extra;
 
     cmdcmd="$bindir/aereport -f $datadir/en/html/file_diff.rpt $delta1 \
-	$delta2 $File /tmp/aegis1.$$ /tmp/aegis2.$$ $project  $change -unf"
+	$delta2 $File /tmp/aegis.$$.1 /tmp/aegis.$$.2 $project $change -unf"
 
     # the script will work out where to get the file from
-    cmd="`$cmdcmd  2> /tmp/aegis.$$.log`";
+    cmd="`$cmdcmd 2> /tmp/aegis.$$.log`";
     status=$?
 
     if test $status -ne 0
@@ -202,10 +202,10 @@ then
        	echo 'This page was generated'
        	date
        	echo '</body></html>'
-       	rm /tmp/aegis.$$.log
+       	rm -f /tmp/aegis.$$.*
        	exit 1
     fi
-    rm /tmp/aegis.$$.log
+    rm -f /tmp/aegis.$$.*
 
     eval "$cmd 2> /tmp/aegis.$$.log" > /tmp/aegis.$$.out
     status=$?
@@ -226,7 +226,7 @@ then
        	echo 'This page was generated'
        	date
        	echo '</body></html>'
-       	rm /tmp/aegis.$$.log
+       	rm -f /tmp/aegis.$$.*
        	exit 1
     fi
     rm /tmp/aegis.$$.log
@@ -249,7 +249,7 @@ then
     echo 'This page was generated'
     date
     echo '</body></html>'
-    rm /tmp/aegis.$$.out
+    rm -f /tmp/aegis.$$.*
     exit 0
 fi
 

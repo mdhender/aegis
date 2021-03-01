@@ -1,6 +1,6 @@
 /*
  *	aegis - project change supervisor
- *	Copyright (C) 1995 Peter Miller;
+ *	Copyright (C) 1995, 2002 Peter Miller;
  *	All rights reserved.
  *
  *	This program is free software; you can redistribute it and/or modify
@@ -24,7 +24,7 @@
 #define AEGIS_AER_FUNC_WRAP_H
 
 #include <aer/func.h>
- 
+
 extern rpt_func_ty rpt_func_wrap;
 extern rpt_func_ty rpt_func_wrap_html;
 

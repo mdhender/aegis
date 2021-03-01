@@ -1,6 +1,6 @@
 .\"
 .\"	aegis - project change supervisor
-.\"	Copyright (C) 2001 Peter Miller;
+.\"	Copyright (C) 2001, 2002 Peter Miller;
 .\"	All rights reserved.
 .\"
 .\"	This program is free software; you can redistribute it and/or modify
@@ -31,7 +31,7 @@ and one is from outside Aegis.
 Each section below covers both methods.
 .nh 2 "Relocating a Project"
 .LP
-This section deals with moving a project's files from one filesystem
+This section deals with moving a project's files from one file system
 location to another.
 .nh 3 "From within Aegis"
 .LP

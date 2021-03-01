@@ -213,7 +213,7 @@ move_file_undo_main()
 
 	case arglex_token_keep:
 	case arglex_token_interactive:
-	case arglex_token_no_keep:
+	case arglex_token_keep_not:
 	    user_delete_file_argument(move_file_undo_usage);
 	    break;
 

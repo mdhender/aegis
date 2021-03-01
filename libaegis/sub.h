@@ -24,7 +24,6 @@
 #define SUB_H
 
 #include <str.h>
-#include <noreturn.h>
 
 struct change_ty; /* existence */
 struct project_ty; /* existence */

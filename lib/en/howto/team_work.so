@@ -195,7 +195,7 @@ In the reverse direction, from the maintainer out to the developer,
 developers in an Open Source project probably aren't going to want to
 see each and every change set made to the project.  Again, they can use
 an aggregation (\fIe.g.\fP grab the latest snapshot when each release
-is announced) to resync in larger chunks, less often.  The chances of
+is announced) to re-sync in larger chunks, less often.  The chances of
 an intersection are fairly low (otherwise someone is duplicating effort)
 so the merge is usually quite simple.
 .nh 3 "Multiple Multi-User Sites"

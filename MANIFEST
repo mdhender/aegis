@@ -451,6 +451,7 @@ common/ac/regex.h	 interface definition for common/ac/regex.c
 common/ac/signal.h	 interface definition for common/ac/signal.c
 common/ac/stdarg.h	 insulate against <varargs.h> vs <stdarg.h> differences
 common/ac/stddef.h	 insulate against <stddef.h> presence or absence
+common/ac/stdio.c	 functions to manipulate stdios
 common/ac/stdio.h	 insulate against <stdio.h> vagueries
 common/ac/stdlib.c	 implement missing functions from <stdlib.h>
 common/ac/stdlib.h	 insulate against <stdlib.h> presence or absence
@@ -524,6 +525,7 @@ common/skip_unlucky.h	 interface definition for common/skip_unlucky.c
 common/str.c	 string manipulation functions
 common/str.h	 interface definition for common/str.c
 common/str/bool.c	 functions to manipulate bools
+common/str/capitalize.c	 functions to manipulate capitalizes
 common/str/cat_three.c	 functions to manipulate cat_threes
 common/str/catenate.c	 functions to manipulate catenates
 common/str/downcase.c	 functions to manipulate downcases
@@ -581,13 +583,11 @@ etc/Makefile.head	 instructions to make, how to build the Aegis package
 etc/Makefile.sh	 shell script to generate the Makefile.in file
 etc/aegis.html	 input for archive/aegis.html
 etc/archive.cook	 instructions to cook(1), how to build archive directory
+etc/autoconf.cook	 autoconf.cook
 etc/cfmt.cook	 cfmt.cook
 etc/chan_files.awk	 chan_files.awk
 etc/compat.2.3.in	 compat.2.3.in
-etc/config.h.in	Template information for common/config.h.in
-etc/config.h.in1	Template information for common/config.h.in
-etc/config.h.in2	Template information for common/config.h.in
-etc/configure.in	 how to configure aegis, input to the GNU autoconf program
+etc/configure.ac	 how to configure aegis, input to the GNU autoconf program
 etc/documents.cook	 instructions to cook(1), how to build documents
 etc/documents.html	 input for archive/aegis.html
 etc/download.html	 input for archive/download.html
@@ -782,17 +782,10 @@ lib/en/howto/move_projec.so	 document describing lib/en/howto/move_projecs
 lib/en/howto/new_project.so	 Howto, New project
 lib/en/howto/python.so	 document describing lib/en/howto/python
 lib/en/howto/team_work.so	 Howto, Teamwork
-lib/en/html/chan_awdev.rpt	 report the changes awaiting development
-lib/en/html/chan_awint.rpt	 report the changes awaiting integration
-lib/en/html/chan_awrev.rpt	 report the changes awaiting review
-lib/en/html/chan_bedev.rpt	 report the changes being developed
-lib/en/html/chan_beint.rpt	 report the changes being integrated
-lib/en/html/chan_berev.rpt	 report the changes being reviewed
 lib/en/html/chan_files.rpt	 report the files in a change
 lib/en/html/chan_hstry.rpt	 report the history of a change
-lib/en/html/chan_list.rpt	 report the changes in a project
 lib/en/html/chan_menu.rpt	 menu of change information
-lib/en/html/chan_outst.rpt	 report the lib/en/html/chan_outst.rpt
+lib/en/html/changes.rpt	 report the changes
 lib/en/html/cp_command.rpt	 report the lib/en/html/cp_command.rpt
 lib/en/html/file_activ.rpt	 report the active files in a project
 lib/en/html/file_cflct.rpt	 report the conflicting files in a project
@@ -804,6 +797,7 @@ lib/en/html/proj_cch1.rpt	 report change causes over years
 lib/en/html/proj_cch2.rpt	 report change causes in a year
 lib/en/html/proj_cch3.rpt	 report the changes in a month
 lib/en/html/proj_files.rpt	 report the files in a project
+lib/en/html/proj_filme.rpt	 report the files in a project
 lib/en/html/proj_hstg2.rpt	 report the changes in a year
 lib/en/html/proj_hstg3.rpt	 report the changes in a month
 lib/en/html/proj_hstgm.rpt	 report the change over years
@@ -1009,6 +1003,7 @@ lib/en/readme/new.4.5.so	 document describing new 4.5 features
 lib/en/readme/new.4.6.so	 document describing new 4.6 features
 lib/en/readme/new.4.7.so	 document describing new 4.7 features
 lib/en/readme/new.4.8.so	 document describing new 4.8 features
+lib/en/readme/new.4.9.so	 document describing new 4.9 features
 lib/en/readme/new.so	
 lib/en/readme/windows.so	 document describing lib/en/readme/windowss
 lib/en/refman/index.so	
@@ -1112,6 +1107,7 @@ lib/report/chan_histo.rpt	 report the lib/report/chan_histo.rpt
 lib/report/chan_lists.rpt	 report the changes in a project
 lib/report/chan_log.rpt	 report the lib/report/chan_log.rpt
 lib/report/chan_recur.rpt	 recursive descent of change data structures
+lib/report/chan_so.rpt	 report the lib/report/chan_so.rpt
 lib/report/file_activ.rpt	 report the active files in a project
 lib/report/file_cflct.rpt	 report conflicting files of a change
 lib/report/file_hstry.rpt	 report the history of files
@@ -1122,6 +1118,7 @@ lib/report/proj_brana.rpt	 report the brances in a project
 lib/report/proj_detai.rpt	 report the lib/report/proj_detai.rpt
 lib/report/proj_devel.rpt	 report the developers currently assigned to a project
 lib/report/proj_files.rpt	 report the files constituting a project
+lib/report/proj_gantt.rpt	 report the lib/report/proj_gantt.rpt
 lib/report/proj_integ.rpt	 report the integrators currently assigned to a project
 lib/report/proj_lists.rpt	 report the names and descriptions of all projects
 lib/report/proj_recur.rpt	 recursive descent of project data structures
@@ -1134,6 +1131,7 @@ lib/rp.inews.sh	 command used to notify by usenet that a change has passed revie
 lib/rp.sh	 command used to notify by email that a change has passed review
 lib/rpu.inews.sh	 command used to notify by usenet that a change review passed
 lib/rpu.sh	 command used to notify by email that a change review passed
+lib/ru/LC_MESSAGES/aecomplete.po	 aecomplete.po
 lib/ru/LC_MESSAGES/aecomplete.so	 aecomplete.po
 lib/ru/LC_MESSAGES/aedist.po	 Russian localization
 lib/ru/LC_MESSAGES/aefind.po	 Russian localization
@@ -1246,6 +1244,8 @@ libaegis/aer/expr/struct_asign.c	 functions to manipulate struct member assignme
 libaegis/aer/expr/struct_asign.h	 interface definition for aegis/aer/expr/struct_asign.c
 libaegis/aer/func.c	 functions to manipulate builtin functions
 libaegis/aer/func.h	 interface definition for aegis/aer/func.c
+libaegis/aer/func/capitalize.c	 functions to manipulate capitalizes
+libaegis/aer/func/capitalize.h	 interface definition for libaegis/aer/func/capitalize.c
 libaegis/aer/func/change.c	 functions to manipulate changes
 libaegis/aer/func/change.h	 interface definition for aegis/aer/func/change.c
 libaegis/aer/func/columns.c	 functions to impliment the builtin columns function
@@ -1254,6 +1254,8 @@ libaegis/aer/func/count.c	 functions to implement the builtin count function
 libaegis/aer/func/count.h	 interface definition for aegis/aer/func/count.c
 libaegis/aer/func/dirname.c	 functions to implement the dirname builtin function
 libaegis/aer/func/dirname.h	 interface definition for libaegis/aer/func/dirname.c
+libaegis/aer/func/downcase.c	 functions to manipulate downcases
+libaegis/aer/func/downcase.h	 interface definition for libaegis/aer/func/downcase.c
 libaegis/aer/func/eject.c	 functions to impliment the builtin eject function
 libaegis/aer/func/eject.h	 interface definition for aegis/aer/func/eject.c
 libaegis/aer/func/getenv.c	 functions to implement the builtin getenv function
@@ -1300,6 +1302,8 @@ libaegis/aer/func/title.c	 functions to implement the builtin title function
 libaegis/aer/func/title.h	 interface definition for aegis/aer/func/title.c
 libaegis/aer/func/typeof.c	 functions to impliment the typeof builtin function
 libaegis/aer/func/typeof.h	 interface definition for aegis/aer/func/typeof.c
+libaegis/aer/func/upcase.c	 functions to manipulate upcases
+libaegis/aer/func/upcase.h	 interface definition for libaegis/aer/func/upcase.c
 libaegis/aer/func/wrap.c	 functions to implement the builtin wrap function
 libaegis/aer/func/wrap.h	 interface definition for aegis/aer/func/wrap.c
 libaegis/aer/lex.c	 functions to perform lexical analysis on report scripts
@@ -1980,8 +1984,16 @@ libaegis/sub/librar_direc.c	 functions to manipulate librar_direcs
 libaegis/sub/librar_direc.h	 interface definition for libaegis/sub/librar_direc.c
 libaegis/sub/namemax.c	 functions to manipulate namemaxs
 libaegis/sub/namemax.h	 interface definition for aegis/sub/namemax.c
+libaegis/sub/perl.c	 functions to manipulate perls
+libaegis/sub/perl.h	 interface definition for libaegis/sub/perl.c
 libaegis/sub/plural.c	 functions to manipulate plurals
 libaegis/sub/plural.h	 interface definition for libaegis/sub/plural.c
+libaegis/sub/plural_forms.c	 functions to manipulate plurals
+libaegis/sub/plural_forms.h	 interface definition for libaegis/sub/plural_forms.c
+libaegis/sub/plural_gram.h	 interface definition for libaegis/sub/plural_gram.c
+libaegis/sub/plural_gram.y	 functions to manipulate plural_gram.ys
+libaegis/sub/plural_lex.c	 functions to manipulate plural_lexs
+libaegis/sub/plural_lex.h	 interface definition for libaegis/sub/plural_lex.c
 libaegis/sub/project.c	 functions to manipulate projects
 libaegis/sub/project.h	 interface definition for libaegis/sub/project.c
 libaegis/sub/project/adminis_list.c	 functions to manipulate adminis_lists
@@ -2071,6 +2083,9 @@ script/tkaenc.in	 tcl-tk aenc equivalent
 script/tkaepa.in	 tcl-tk aepa equivalent
 script/tkaer.in	 tcl-tk review assist program contributed by Scott Finneran.
 script/xaegis.in	 wish script to give aegis a GUI interface
+simp_file_stat/count.c	 functions to manipulate counts
+simp_file_stat/count.h	 interface definition for simp_file_stat/count.c
+simp_file_stat/main.c	 operating system start point, and command line argument parsing
 test/00/t0001a.sh	 test -Help for each function
 test/00/t0002a.sh	 Test core functionality.
 test/00/t0003a.sh	 Test 'aegis -VERSion'
@@ -2107,6 +2122,7 @@ test/00/t0033a.sh	 Test the report relational operators
 test/00/t0034a.sh	 Test the aenfu functionality
 test/00/t0035a.sh	 Test the zero'th change functionality
 test/00/t0036a.sh	 Test the aenpr branch functionality
+test/00/t0037a.sh	 Test the progress messages functionality
 test/00/t0038a.sh	 Test aeipass mod time functionality.
 test/00/t0039a.sh	 Test the test correlation functionality
 test/00/t0040a.sh	 Test the large lexer strings functionality
@@ -2173,6 +2189,7 @@ test/01/t0100a.sh	 Test the add_path_suffix subst functionality
 test/01/t0101a.sh	 Test the aenpr -keep functionality
 test/01/t0102a.sh	 Test the aenpr -file functionality
 test/01/t0103a.sh	 Test the report wrap() functionality
+test/01/t0104a.sh	 Test the progress messages functionality with batch_test_command
 test/01/t0105a.sh	 Test aedist functionality
 test/01/t0106a.sh	 Test the symlink functionality
 test/01/t0107a.sh	 Test the capitalize subst functionality
@@ -2224,6 +2241,7 @@ test/01/t0166a.sh	 Test patch -send (diff) functionality
 test/01/t0167a.sh	 Test patch -send (uni) functionality
 test/01/t0168a.sh	 Test patch -send (context) functionality
 test/01/t0169a.sh	 Test patch -rec (uudecode) functionality
+test/01/t0170a.sh	 Test the plural-forms functionality
 test/activity.awk	 Renumber activity lines in tests
 test/activity.sh	 shell script to manipulate activitys
 test_base64/main.c	 functions to manipulate mains

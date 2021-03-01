@@ -312,15 +312,15 @@ new_project_main()
 		mut_exc_keep:
 		mutually_exclusive_options
 		(
-		    arglex_token_no_keep,
 		    arglex_token_keep,
+		    arglex_token_keep_not,
 		    new_project_usage
 		);
 	    }
 	    keep = 1;
 	    break;
 
-	case arglex_token_no_keep:
+	case arglex_token_keep_not:
 	    if (keep == 0)
 		duplicate_option(new_project_usage);
 	    if (keep >= 0)

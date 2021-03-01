@@ -33,10 +33,11 @@
 
 
 batch_result_list_ty *
-project_test_run_list(pp, wlp, up)
+project_test_run_list(pp, wlp, up, progress_flag)
     project_ty	    *pp;
     string_list_ty  *wlp;
     user_ty	    *up;
+    int		    progress_flag;
 {
     change_ty	    *cp;
     batch_result_list_ty *result;
@@ -46,8 +47,9 @@ project_test_run_list(pp, wlp, up)
      * so can set environment variables
      * for the test
      */
-    trace(("project_run_test_list(pp = %08lX, wlp = %08lX, up = %08lX)\n{\n",
-	(long)pp, (long)wlp, (long)up));
+    trace(("project_run_test_list(pp = %08lX, wlp = %08lX, up = %08lX, "
+	"progress_flag = %d)\n{\n",(long)pp, (long)wlp, (long)up,
+	progress_flag));
     cp = change_alloc(pp, project_next_change_number(pp, 1));
     change_bind_new(cp);
     change_architecture_from_pconf(cp);
@@ -62,7 +64,8 @@ project_test_run_list(pp, wlp, up)
 	    cp,
 	    wlp,
 	    up,
-	    0 /* not baseline, positive! */
+	    0, /* not baseline, positive! */
+	    progress_flag
 	);
     change_free(cp);
     trace(("return %08lX;\n", (long)result));
@@ -72,20 +75,23 @@ project_test_run_list(pp, wlp, up)
 
 
 static batch_result_list_ty *change_test_run_list_inner _((change_ty *,
-    string_list_ty *, user_ty *, int));
+    string_list_ty *, user_ty *, int, int, int));
 
 static batch_result_list_ty *
-change_test_run_list_inner(cp, wlp, up, bl)
+change_test_run_list_inner(cp, wlp, up, bl, current, total)
     change_ty	    *cp;
     string_list_ty  *wlp;
     user_ty	    *up;
     int		    bl;
+    int		    current;
+    int		    total;
 {
     pconf	    pconf_data;
     batch_result_list_ty *result;
 
     trace(("change_test_run_list_inner(cp = %08lX, wlp = %08lX, up = %08lX, "
-	"bl = %d)\n{\n", (long)cp, (long)wlp, (long)up, bl));
+	"bl = %d, current = %d, total = %d)\n{\n", (long)cp, (long)wlp,
+	(long)up, bl, current, total));
     pconf_data = change_pconf_get(cp, 1);
     if (wlp->nstrings == 0)
     {
@@ -95,12 +101,12 @@ change_test_run_list_inner(cp, wlp, up, bl)
     else if (pconf_data->batch_test_command)
     {
 	trace(("mark\n"));
-	result = change_test_batch(cp, wlp, up, bl);
+	result = change_test_batch(cp, wlp, up, bl, current, total);
     }
     else
     {
 	trace(("mark\n"));
-	result = change_test_batch_fake(cp, wlp, up, bl);
+	result = change_test_batch_fake(cp, wlp, up, bl, current, total);
     }
     trace(("return %08lX;\n", (long)result));
     trace(("}\n"));
@@ -114,11 +120,12 @@ change_test_run_list_inner(cp, wlp, up, bl)
  */
 
 batch_result_list_ty *
-change_test_run_list(cp, wlp, up, bl)
+change_test_run_list(cp, wlp, up, bl, progress_flag)
     change_ty	    *cp;
     string_list_ty  *wlp;
     user_ty	    *up;
     int		    bl;
+    int 	    progress_flag;
 {
     batch_result_list_ty *result;
     size_t	    multiple;
@@ -127,9 +134,21 @@ change_test_run_list(cp, wlp, up, bl)
 
     multiple = 100;
     if (wlp->nstrings <= multiple)
-	return change_test_run_list_inner(cp, wlp, up, bl);
+    {
+	return
+	    change_test_run_list_inner
+	    (
+		cp,
+		wlp,
+		up,
+		bl,
+		0,
+		progress_flag ? wlp->nstrings : 0
+	    );
+    }
     trace(("change_test_run_list(cp = %08lX, wlp = %08lX, up = %08lX, "
-	"bl = %d)\n{\n", (long)cp, (long)wlp, (long)up, bl));
+	"bl = %d, progress_flag = %d)\n{\n", (long)cp, (long)wlp, (long)up, bl,
+	progress_flag));
     result = batch_result_list_new();
     persevere = user_persevere_preference(up, 1);
     for (j = 0; j < wlp->nstrings; j += multiple)
@@ -145,7 +164,16 @@ change_test_run_list(cp, wlp, up, bl)
 	string_list_constructor(&wl2);
 	for (k = j; k < end; ++k)
 	    string_list_append(&wl2, wlp->string[k]);
-	result2 = change_test_run_list_inner(cp, &wl2, up, bl);
+	result2 =
+	    change_test_run_list_inner
+	    (
+		cp,
+		&wl2,
+		up,
+		bl,
+		j,
+		progress_flag ? wlp->nstrings : 0
+	    );
 	string_list_destructor(&wl2);
 	batch_result_list_append_list(result, result2);
 	batch_result_list_delete(result2);

@@ -236,7 +236,7 @@ command line options.
 relative_filename_preference = (current, base);
 .RS
 This field is consulted by most commands which accept filenames on the
-command line.  It controls wether relative filenames are relative to
+command line.  It controls whether relative filenames are relative to
 the current directory (this is the default), or relative to the base
 of the project source tree.
 .TP 8n
@@ -256,9 +256,16 @@ command line options.
 .RE
 .TP 8n
 email_address = string;
-This field may be used to set the preferred email address.  Defaults to
-\&\fI`whoami`@`hostname`\fP if not set, which is usually not what is
+.RS
+This field may be used to set the preferred email address.
+If not set,
+defaults to
+\&\f[CW]`whoami`@`cat /etc/mailname`\fP if not set, and if
+\fI/etc/mailname\fP exists.
+Otherwise, defaults to
+\&\f[CW]`whoami`@`hostname`\fP if not set, which is usually not what is
 required, particularly if you are behind a firewall.
+.RE
 .TP 8n
 whiteout_preference = (always, never);
 All of the commands which cause a change to remove files will consult

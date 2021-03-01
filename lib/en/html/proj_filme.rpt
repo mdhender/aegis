@@ -1,0 +1,286 @@
+/*
+ *	aegis - project change supervisor
+ *	Copyright (C) 2002 Peter Miller;
+ *	All rights reserved.
+ *
+ *	This program is free software; you can redistribute it and/or modify
+ *	it under the terms of the GNU General Public License as published by
+ *	the Free Software Foundation; either version 2 of the License, or
+ *	(at your option) any later version.
+ *
+ *	This program is distributed in the hope that it will be useful,
+ *	but WITHOUT ANY WARRANTY; without even the implied warranty of
+ *	MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ *	GNU General Public License for more details.
+ *
+ *	You should have received a copy of the GNU General Public License
+ *	along with this program; if not, write to the Free Software
+ *	Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111, USA.
+ *
+ * MANIFEST: report the files in a project
+ */
+
+auto href;
+
+auto script_name;
+script_name = getenv("SCRIPT_NAME");
+if (script_name == "")
+    script_name = "http://localhost/cgi-bin/aegis.cgi";
+
+columns({width = 1000; });
+print("Content-Type: text/html");
+print("");
+print("<!DOCTYPE HTML PUBLIC \"-//W3C//DTD HTML 4.0 Transitional//EN\""
+        ## "\"http://www.w3.org/TR/REC-html40/loose.dtd\">");
+print("<html><head>");
+print("<meta name=\"GENERATOR\" content=\"" ## script_name ## "\">");
+print("<meta http-equiv=\"Content-Type\" "
+        ## "content=\"text/html; charset=ISO-8859-1\">");
+print("<style type=\"text/css\"> "
+        ## "tr.even-group { background-color: #CCCCCC; }"
+        ## "body { background-color: white; }"
+        ## "</style>");
+/*
+ * Netscape 4.x has numerous CSS bugs, two of which need mentioning.
+ * 1. If a style sheet is not present Netscape says 404 Not found, when
+ * it should silently ignore it.  2. Style sheets who's media is not
+ * "screen" will be ignored.  Fortunately we can use (2) to get around (1).
+ */
+print("<link rel=\"stylesheet\" type=\"text/css\" href=\"/aedefault.css\" "
+    ## "media=\"all\">");
+auto pn;
+pn = project_name();
+print("<link rel=\"stylesheet\" type=\"text/css\" href=\"/"
+    ## pn ## ".css\" "
+    ## "media=\"all\">");
+print("<title>");
+print("Project " ## quote_html(pn) ## " File metrics");
+print("</title></head><body><h1 align=center>");
+auto p;
+p = project[pn];
+
+print("<a href=\"" ## script_name ## "\">Project</a>");
+auto long_project_name;
+auto prj_name_parts;
+prj_name_parts = split(pn, '.');
+href = script_name ## "?file@proj_menu+project@"
+	## quote_url(prj_name_parts[0]);
+long_project_name = "<a href=\"" ## href ## "\" >"
+	## quote_html(prj_name_parts[0]) ## "</a>";
+auto j;
+for (j = 1; j < count(prj_name_parts); j++)
+{
+    href ##= '.' ## prj_name_parts[j];
+    long_project_name ##= ".<a href=\"" ## href ## "\" >"
+    	## quote_html(prj_name_parts[j]) ## "</a>";
+};
+long_project_name = "``" ## long_project_name ## "'',";
+/* HTTP limits lines to 510 characters */
+for (j in wrap(long_project_name, 510))
+    print(j);
+
+print('<br>\n');
+print("File metrics");
+print("</h1>");
+print("<div class=\"information\">");
+auto ps;
+ps = p.state.src;
+
+auto sort_col;
+sort_col = 0;
+for (j in arg)
+{
+	if (j ~~ "sort_col:")
+	    sort_col = substr(j, 9, 2);
+}
+auto fh, flist, metcol, m;
+metcol = { };
+for (fh in ps)
+{
+    if (count(fh.metrics) <= 0)
+        continue;
+    for (m in fh.metrics)
+	metcol[m.name] += m.value;
+}
+auto found;
+for (fh in ps)
+{
+    if (count(fh.metrics) <= 0)
+        continue;
+    found = false;
+    if (sort_col < 1)
+	m = "";
+    else
+	m = sort(keys(metcol))[sort_col - 1];
+    for (j in fh.metrics)
+    {
+	if (j.name == m)
+	{
+	    flist[sprintf("%20.2f", j.value) ## fh.file_name] = fh;
+	    found = true;
+	}
+    }
+    if (!found)
+	flist[sprintf("%20.2f", 0) ## fh.file_name] = fh;
+}
+
+/*
+ * If we are going to sort by a particular column the index to flist
+ * needs to include both the value AND the filename so that EVERY file
+ * is included.
+ */
+
+print("<table align=center>");
+print("<tr class=\"even-group\">");
+if (sort_col == 0)
+    print("<th>File Name</th>");
+else
+{
+    href = script_name ## "?file@proj_filme";
+    href ##= "+project@" ## quote_url(pn);
+    print("<th><a href=\"" ## href ## "\">File Name</a></th>");
+}
+print("<th>Revision</th>");
+j = 1;
+for (m in sort(keys(metcol)))
+{
+    print("<th>");
+    if (j != sort_col)
+    {
+       	href = script_name ## "?file@proj_filme+sort_col:" ## j;
+	href ##= "+project@" ## quote_url(pn);
+	print("<a href=\"" ## href ## "\">");
+    }
+    auto msplit, ms2;
+    msplit = split(m, "_");
+    for (ms2 in msplit)
+	print(capitalize(ms2) ## "<br>");
+    if (j != sort_col)
+	print("</a>");
+    print("</th>");
+    ++j;
+}
+print("</tr>");
+
+auto rownum;
+rownum = 0;
+for (fh in sort(keys(flist)))
+{
+    j = flist[fh];
+    if (rownum % 6 < 3)
+        print("<tr class=\"odd-group\">");
+    else
+        print("<tr class=\"even-group\">");
+    rownum++;
+    print("<td valign=top>");
+    href = script_name ## "?file@file_menu+" ## quote_url(j.file_name);
+    href ##= "+project@" ## quote_url(pn);
+    print("<a href=\"" ## href ## "\">");
+    print("<span class=\"filename\">" ## quote_html(j.file_name) ##
+	"</span></a>");
+    if (j.deleted_by)
+    {
+       	href = script_name ## "?file@chan_menu";
+       	href ##= "+project@" ## quote_url(pn);
+       	href ##= "+change@" ## j.deleted_by;
+       	print("<br>Deleted by change");
+       	print("<a href=\"" ## href ## "\">" ## j.deleted_by ## "</a>.");
+    }
+    if (j.about_to_be_created_by)
+    {
+       	href = script_name ## "?file@chan_menu";
+       	href ##= "+project@" ## quote_url(pn);
+       	href ##= "+change@" ## j.about_to_be_created_by;
+       	print("<br>About to be created by change");
+       	print("<a href=\"" ## href ## "\">" ## j.about_to_be_created_by
+	    ## "</a>.");
+    }
+    if (j.locked_by)
+    {
+       	href = script_name ## "?file@chan_menu";
+       	href ##= "+project@" ## quote_url(pn);
+       	href ##= "+change@" ## j.locked_by;
+       	print("<br>Locked by change");
+       	print("<a href=\"" ## href ## "\">" ## j.locked_by ## "</a>.");
+    }
+    if (j.about_to_be_copied_by)
+    {
+       	href = script_name ## "?file@chan_menu";
+       	href ##= "+project@" ## quote_url(pn);
+       	href ##= "+change@" ## j.about_to_be_copied_by;
+       	print("<br>About to be copied by change");
+       	print("<a href=\"" ## href ## "\">" ## j.about_to_be_copied_by
+	    ## "</a>.");
+    }
+    if (j.move != "")
+    {
+       	href = script_name ## "?file@file_menu+" ## quote_url(j.move);
+       	href ##= "+project@" ## quote_url(pn);
+       	print("<br>Moved " ## (j.action == create ? "from" : "to"));
+       	print("<a href=\"" ## href ## "\">");
+       	print("<span class=\"filename\">" ## quote_html(j.move) ##
+	    "</span></a>");
+    }
+    print("</td>");
+
+    print("<td valign=\"top\" align=\"right\">");
+    if (j.edit_origin.revision != "" && j.edit.revision != "")
+    {
+        if (j.edit_origin.revision == j.edit.revision)
+            print(j.edit.revision);
+        else
+            print(j.edit_origin.revision ## " -> " ## j.edit.revision);
+    }
+    else if (j.edit_origin.revision != "")
+       	print(j.edit_origin.revision);
+    else if (j.edit.revision != "")
+       	print(j.edit.revision);
+    print("</td>");
+
+    auto met;
+    for (m in sort(keys(metcol)))
+    {
+	for (met = 0; met < count(j.metrics); met++)
+	{
+	    if (j.metrics[met].name == m)
+	    {
+		print("<td valign=top align=right>");
+		print(sprintf("%4.2f", j.metrics[met].value));
+		print("</td>");
+	    }
+	}
+    }
+    print("</tr>");
+}
+
+print("<tr><td valign=top><hr><br>");
+print("Listed " ## rownum ## " of " ## count(keys(ps)) ## " files.");
+print("</td><td valign=top align=right><hr><br>Total:<br>Average:</td>");
+for (m in sort(keys(metcol)))
+{
+    print("<td valign=top align=right><hr><br>");
+    print(sprintf("%4.2f", metcol[m]) ## "<br>");
+    print(sprintf("%4.2f", metcol[m] / rownum) ## "<br>");
+    print("</td>");
+}
+print("</tr></table>");
+print("</div>");
+print("<hr>");
+print("<div class=\"report-cmd\">");
+print("A similar report may be obtained from the command line, with one of");
+print("<blockquote><samp>ael pf -p " ## quote_html(pn));
+print("aer proj_files -p " ## quote_html(pn) ## "</samp></blockquote>");
+print("</div>");
+print("<hr>");
+print("<p align=\"center\" class=\"navbar\">[");
+print("<a href=\"" ## script_name ## "\">Project List</a>");
+print("|");
+href = script_name ## "?file@proj_menu+project@" ## quote_url(pn);
+print("<a href=\"" ## href ## "\">Project Menu</a>");
+print("|");
+href = script_name ## "?file@changes+project@" ## quote_url(pn);
+print("<a href=\"" ## href ## "\">Change List</a>");
+print("]</p>");
+print("<hr>");
+print("This page was generated " ## now() ## ".");
+print("</body></html>");

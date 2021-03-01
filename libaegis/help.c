@@ -204,7 +204,7 @@ generic_argument(usage)
 		arglex();
 		break;
 
-	case arglex_token_no_pager:
+	case arglex_token_pager_not:
 		option_pager_set(0, usage);
 		arglex();
 		break;

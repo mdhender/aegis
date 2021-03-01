@@ -41,7 +41,7 @@ You will need to install Cook,
 in order to build things.
 Version 2.8 or later, preferably you should track the latest release.
 .IP \(bu 2n
-GNU autoconf 2.13.  Be careful on this one, I'm told 2.50 doesn't work.
+GNU Autoconf 2.53 or later.
 .IP \(bu 2n
 You will need to install FHist, for the history tool.
 .IP \(bu 2n
@@ -50,9 +50,10 @@ You will need to install \fItardy\fP, for manipulating tarballs.
 You will need to install \fIptx\fP(1), for the permuted indexes in the
 documentation.
 .IP \(bu 2n
-You will need to install \fIpsutils\fP, for manipulating the pages output
-by groff.  This used to move the table of contents, which groff puts at
-the end, to the beginning where people want it.
+You need psutils (e.g. http://www.dcs.ed.ac.uk/home/ajcd/psutils/) for
+the psselect utility, to manipulate the documentation files, mostly to
+put the tables of contents at the start, rather than at the end as GNU
+Groff generates them.
 .IP \(bu 2n
 You will need the developer libraries for the \fIrx\fP library (if you
 installed from the tarball, you have these, but if you installed from RPM,
@@ -70,16 +71,18 @@ later include Gettext, you need to developer tools as well.  (You need
 GNU Gettext even on Solaris, because the Solaris Gettext implementation
 is... well... stuffed.)
 .IP \(bu 2n
-You need psutils (e.g. http://www.dcs.ed.ac.uk/home/ajcd/psutils/) for
-the psselect utility, to manipulate the documentation files, mostly to
-put the tables of contents at the start, rather than at the end as GNU
-Groff generates them.
-.IP \(bu 2n
 You need GNU Ghostscript, for the ps2pdf utility, so that you can create
 PDF documents.
 .IP \(bu 2n
 You need \fIuudecode\fP with a \f[CW]-o\fP option (to redirect the output).
 It is part of GNU Sharutils.
+.IP \(bu 2n
+You need to install GNU awk.
+.IP \(bu 2n
+You need a \fIctags\fP(1) command with a \f[CW]-L\fP option
+(to read file names from standard input).
+.IP \(bu 2n
+You need RCS installed for the automated tests.
 .IP \(bu 2n
 \fIProbably more things I've forgotten.\fP
 .nh 2 "Create The Aegis Project"
@@ -425,9 +428,9 @@ First, read the Distributed Development chapter of the User Guide.
 .LP
 Use a simple command such as
 .E(
-aedist -p aegis.\*(v) -bl | \e
+aedist --send -p aegis.\*(v) -bl | \e
 pgp | \e
-mail millerp@canb.auug.org.au
+mail aegis-developers@lists.sourceforge.net
 .E)
 or similar.  (Or maybe \fIaepatch\fP(1) instead.)
 A suitable subject line would be very helpful.
@@ -476,7 +479,7 @@ the report generator, or as a separate program like \f[CW]aesub\fP or
 \f[CW]aefind\fP.  More GUI can be added using Tk/Tcl - unless you have
 grander plans and even then it \fIstill\fP shouldn't be added to the
 set-uid-root executable.
-.nh 2 "Codign Style"
+.nh 2 "Coding Style"
 .LP
 Please try to emulate the existing coding style.
 (Indents recently change from 8 to 4, not all of the code has caugh-up yet.)

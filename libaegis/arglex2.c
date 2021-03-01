@@ -323,7 +323,7 @@ static arglex_table_ty argtab[] =
     },
     {
 	"-Not_Keep",
-	(arglex_token_ty)arglex_token_no_keep,
+	(arglex_token_ty)arglex_token_keep_not,
     },
     {
 	"-Not_Logging",
@@ -335,11 +335,15 @@ static arglex_table_ty argtab[] =
     },
     {
 	"-Not_PAGer",
-	(arglex_token_ty)arglex_token_no_pager,
+	(arglex_token_ty)arglex_token_pager_not,
     },
     {
 	"-Not_PErsevere",
-	(arglex_token_ty)arglex_token_no_persevere,
+	(arglex_token_ty)arglex_token_persevere_not,
+    },
+    {
+        "-Not_PROGress",
+	(arglex_token_ty)arglex_token_progress_not,
     },
     {
 	"-Assume_Symbolic_Links",
@@ -380,6 +384,10 @@ static arglex_table_ty argtab[] =
     {
 	"-PErsevere",
 	(arglex_token_ty)arglex_token_persevere,
+    },
+    {
+        "-PROGress",
+	(arglex_token_ty)arglex_token_progress,
     },
     {
 	"-Project",
@@ -438,6 +446,10 @@ static arglex_table_ty argtab[] =
 	(arglex_token_ty)arglex_token_report,
     },
     {
+	"-REScind",
+	(arglex_token_ty)arglex_token_rescind,
+    },
+    {
 	"-Review_Begin",
 	(arglex_token_ty)arglex_token_review_begin,
     },
@@ -456,6 +468,10 @@ static arglex_table_ty argtab[] =
     {
 	"-Review_Pass_Undo",
 	(arglex_token_ty)arglex_token_review_pass_undo,
+    },
+    {
+	"-Roll_Back",
+	(arglex_token_ty)arglex_token_rescind,
     },
     {
 	"-SUGgest",

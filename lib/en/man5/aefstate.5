@@ -244,7 +244,7 @@ about_to_be_copied_by = integer;
 For each change file that is acting on a project file from a deeper baseline
 than the immediate parent project's baseline,
 the file needs to be added to the immediate parent project.
-Note that this field says that this file record is a placemarker,
+Note that this field says that this file record is a place marker,
 so that it can be deleted again should the change not be integrated
 for some reason.
 .TP 8n
@@ -265,10 +265,10 @@ to suggest suitable tests.
 executable = boolean;
 .RS
 This field is used to remember whether the source file had any executable
-permission sbits set at `develop end' time.  This mode will be restored
+permission bits set at \fIdevelop end\fP time.  This mode will be restored
 (taking the project umask into account) when the file is copied.
 .PP
-This field is only meaningful for changes in the "completed" state,
+This field is only meaningful for changes in the \fIcompleted\fP state,
 because this field is only set by \fIaeip\fP(1).  Until then, the mode
 if the file itself is the authority.
 .RE

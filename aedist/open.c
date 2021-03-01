@@ -1,6 +1,6 @@
 /*
  *	aegis - project change supervisor
- *	Copyright (C) 1999, 2001 Peter Miller;
+ *	Copyright (C) 1999, 2001, 2002 Peter Miller;
  *	All rights reserved.
  *
  *	This program is free software; you can redistribute it and/or modify
@@ -111,7 +111,7 @@ aedist_open(ifn, subject_p)
 	}
 
 	/*
-	 * The contents we are interested in are 
+	 * The contents we are interested in are
 	 * a gzipped cpio archive.
 	 */
 	ifp = input_gunzip(ifp);

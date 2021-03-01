@@ -1,6 +1,6 @@
 /*
  *	aegis - project change supervisor
- *	Copyright (C) 2001 Peter Miller;
+ *	Copyright (C) 2001, 2002 Peter Miller;
  *	All rights reserved.
  *
  *	This program is free software; you can redistribute it and/or modify
@@ -34,6 +34,8 @@ static arglex_table_ty argtab[] =
 	{ "-Send", arglex_token_send, },
 	{ "-Trojan", arglex_token_trojan, },
 	{ "-Not_Trojan", arglex_token_trojan_not, },
+	{ "-Add_Path_Prefix", arglex_token_path_prefix_add, },
+	{ "-Remove_Path_Prefix", arglex_token_path_prefix_remove, },
 	{ 0, }
 };
 

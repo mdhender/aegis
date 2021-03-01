@@ -356,7 +356,7 @@ aels(1)	\*[Page*Of*aels(1)]	T{
 aegis -
 T}	T{
 .ad l
-annotated directory listinbg
+annotated directory listing
 T}
 aeannotate(1)	\*[Page*Of*aeannotate(1)]	T{
 .ad r
@@ -1189,7 +1189,7 @@ aels(1)	\*[Page*Of*aels(1)]	T{
 aegis - annotated
 T}	T{
 .ad l
-directory listinbg
+directory listing
 T}
 aedir(5)	\*[Page*Of*aedir(5)]	T{
 .ad r
@@ -1940,16 +1940,16 @@ T}	T{
 .ad l
 language definition
 T}
-aels(1)	\*[Page*Of*aels(1)]	T{
-.ad r
-aegis - annotated directory
-T}	T{
-.ad l
-listinbg
-T}
 aeannotate(1)	\*[Page*Of*aeannotate(1)]	T{
 .ad r
 aeannotate - annotated source file
+T}	T{
+.ad l
+listing
+T}
+aels(1)	\*[Page*Of*aels(1)]	T{
+.ad r
+aegis - annotated directory
 T}	T{
 .ad l
 listing

@@ -129,10 +129,8 @@ static table_ty table[] =
 };
 
 
-static void reserved_init _((void));
-
 static void
-reserved_init()
+reserved_init(void)
 {
     table_ty	    *tp;
     string_ty	    *s;
@@ -150,11 +148,8 @@ reserved_init()
 }
 
 
-static int reserved _((string_ty *));
-
 static int
-reserved(name)
-    string_ty	    *name;
+reserved(string_ty *name)
 {
     int		    *data;
 
@@ -165,8 +160,7 @@ reserved(name)
 
 
 void
-rpt_lex_open(s)
-    string_ty	    *s;
+rpt_lex_open(string_ty *s)
 {
     reserved_init();
     ip = input_file_text_open(s);
@@ -176,7 +170,7 @@ rpt_lex_open(s)
 
 
 void
-rpt_lex_close()
+rpt_lex_close(void)
 {
     if (error_count)
     {
@@ -200,7 +194,7 @@ rpt_lex_close()
 
 
 int
-aer_report_lex()
+aer_report_lex(void)
 {
     sub_context_ty  *scp;
     int		    c;
@@ -736,15 +730,14 @@ aer_report_lex()
 
 
 void
-aer_report_error(fmt)
-    char	    *fmt;
+aer_report_error(char *fmt)
 {
     aer_lex_error(0, 0, fmt);
 }
 
 
 rpt_pos_ty *
-rpt_lex_pos_get()
+rpt_lex_pos_get(void)
 {
     static rpt_pos_ty *curpos;
     string_ty	    *s;
@@ -766,10 +759,7 @@ rpt_lex_pos_get()
 
 
 void
-aer_lex_error(scp, p, fmt)
-    sub_context_ty  *scp;
-    rpt_pos_ty	    *p;
-    char	    *fmt;
+aer_lex_error(sub_context_ty *scp, rpt_pos_ty *p, char *fmt)
 {
     int		    need_to_delete;
 
@@ -802,9 +792,7 @@ aer_lex_error(scp, p, fmt)
 
 
 void
-rpt_lex_error(p, fmt)
-    rpt_pos_ty	    *p;
-    char	    *fmt;
+rpt_lex_error(rpt_pos_ty *p, char *fmt)
 {
     rpt_pos_error(0, 0, fmt);
 
@@ -835,6 +823,7 @@ fake()
 {
     i18n("parse error"); /* bison */
     i18n("parse error; also virtual memory exceeded"); /* bison */
+    i18n("parse error; also virtual memory exhausted"); /* bison */
     i18n("parser stack overflow"); /* bison */
     i18n("syntax error"); /* yacc */
     i18n("yacc stack overflow"); /* yacc */

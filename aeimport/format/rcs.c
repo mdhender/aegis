@@ -28,231 +28,212 @@
 #include <os.h>
 
 
-static void destructor _((format_ty *));
-
 static void
-destructor(fp)
-	format_ty	*fp;
+destructor(format_ty *fp)
 {
 }
 
 
-static int is_a_candidate _((format_ty *, string_ty *));
-
 static int
-is_a_candidate(fp, filename)
-	format_ty	*fp;
-	string_ty	*filename;
+is_a_candidate(format_ty *fp, string_ty *filename)
 {
-	return
+    return
 	(
-		filename->str_length > 2
+	    filename->str_length > 2
 	&&
-		filename->str_text[filename->str_length - 2] == ','
+	    filename->str_text[filename->str_length - 2] == ','
 	&&
-		filename->str_text[filename->str_length - 1] == 'v'
+	    filename->str_text[filename->str_length - 1] == 'v'
 	);
 }
 
 
-static string_ty * sanitize _((format_ty *, string_ty *));
-
 static string_ty *
-sanitize(fp, filename)
-	format_ty	*fp;
-	string_ty	*filename;
+sanitize(format_ty *fp, string_ty *filename)
 {
-	string_list_ty	sl;
-	static string_ty *rcs = 0;
-	static string_ty *cvs = 0;
-	size_t		j;
-	string_list_ty	sl2;
+    string_list_ty  sl;
+    static string_ty *rcs =	    0;
+    static string_ty *cvs =	    0;
+    static string_ty *attic =	    0;
+    size_t	    j;
+    string_list_ty  sl2;
 
-	if (!rcs)
+    if (!rcs)
+    {
+	rcs = str_from_c("RCS");
+	cvs = str_from_c("CVS");
+	attic = str_from_c("Attic");
+    }
+
+    /*
+     * Break the filename into path elements.
+     */
+    string_list_constructor(&sl);
+    str2wl(&sl, filename, "/", 0);
+
+    /*
+     * Get rid of path elements named "RCS" or "CVS" or "Attic".
+     */
+    string_list_constructor(&sl2);
+    for (j = 0; j < sl.nstrings; ++j)
+    {
+	string_ty	*s;
+
+	s = sl.string[j];
+	if (!str_equal(s, rcs) && !str_equal(s, cvs) && !str_equal(s, attic))
+	    string_list_append(&sl2, s);
+    }
+    string_list_destructor(&sl);
+
+    /*
+     * Remove the ",v" from the end of the last path element.
+     */
+    if (sl2.nstrings)
+    {
+	string_ty	*s;
+
+	s = sl2.string[sl2.nstrings - 1];
+	if
+	(
+	    s->str_length >= 2
+	&&
+	    s->str_text[s->str_length - 2] == ','
+	&&
+	    s->str_text[s->str_length - 1] == 'v'
+	)
 	{
-		rcs = str_from_c("RCS");
-		cvs = str_from_c("CVS");
+	    sl2.string[sl2.nstrings - 1] =
+		str_n_from_c(s->str_text, s->str_length - 2);
+	    str_free(s);
 	}
+    }
 
-	/*
-	 * Break the filename into path elements.
-	 */
-	string_list_constructor(&sl);
-	str2wl(&sl, filename, "/", 0);
-
-	/*
-	 * get rid of path elements named "RCS" or "CVS".
-	 */
-	string_list_constructor(&sl2);
-	for (j = 0; j < sl.nstrings; ++j)
-	{
-		string_ty	*s;
-
-		s = sl.string[j];
-		if (!str_equal(s, rcs) && !str_equal(s, cvs))
-			string_list_append(&sl2, s);
-	}
-	string_list_destructor(&sl);
-
-	/*
-	 * Remove the ",v" from the end of the last path element.
-	 */
-	if (sl2.nstrings)
-	{
-		string_ty	*s;
-
-		s = sl2.string[sl2.nstrings - 1];
-		if
-		(
-			s->str_length >=2
-		&&
-			s->str_text[s->str_length - 2] == ','
-		&&
-			s->str_text[s->str_length - 1] == 'v'
-		)
-		{
-			sl2.string[sl2.nstrings - 1] =
-				str_n_from_c(s->str_text, s->str_length - 2);
-			str_free(s);
-		}
-	}
-
-	/*
-	 * Rebuild the filename from the remaining path elements.
-	 */
-	filename = wl2str(&sl2, 0, sl2.nstrings, "/");
-	string_list_destructor(&sl2);
-	return filename;
+    /*
+     * Rebuild the filename from the remaining path elements.
+     */
+    filename = wl2str(&sl2, 0, sl2.nstrings, "/");
+    string_list_destructor(&sl2);
+    return filename;
 }
 
-
-static format_version_ty *read_versions _((format_ty *, string_ty *,
-	string_ty *));
 
 static format_version_ty *
-read_versions(fp, physical, logical)
-	format_ty	*fp;
-	string_ty	*physical;
-	string_ty	*logical;
+read_versions(format_ty *fp, string_ty *physical, string_ty *logical)
 {
-	return rcs_parse(physical, logical);
+    return rcs_parse(physical, logical);
 }
 
-
-static string_ty *history_put _((format_ty *));
 
 static string_ty *
-history_put(fp)
-	format_ty	*fp;
+history_put(format_ty *fp)
 {
-	return str_from_c("\
-ci -u -d -M -m${quote ($version) ${change description}} \
--t/dev/null ${quote $input} ${quote $history,v}; \
-rcs -U ${quote $history,v}");
+    return
+	str_from_c
+	(
+	    "ci -u -d -M -m${quote ($version) ${change description}} "
+		"-t/dev/null ${quote $input} ${quote $history,v}; "
+	    "rcs -U ${quote $history,v}"
+	);
 }
 
-
-static string_ty *history_get _((format_ty *));
 
 static string_ty *
-history_get(fp)
-	format_ty	*fp;
+history_get(format_ty *fp)
 {
-	return str_from_c("\
-co -r${quote $edit} -p ${quote $history,v} > ${quote $output}");
+    return
+	str_from_c
+	(
+	    "co -r${quote $edit} -p ${quote $history,v} > ${quote $output}"
+	);
 }
 
-
-static string_ty *history_query _((format_ty *));
 
 static string_ty *
-history_query(fp)
-	format_ty	*fp;
+history_query(format_ty	*fp)
 {
-	return str_from_c("\
-rlog -r ${quote $history,v} | awk '/^head:/ {print $$2}'");
+    return
+	str_from_c
+	(
+	    "rlog -r ${quote $history,v} | awk '/^head:/ {print $$2}'"
+	);
 }
 
-
-static string_ty *diff _((format_ty *));
 
 static string_ty *
-diff(fp)
-	format_ty	*fp;
+diff(format_ty *fp)
 {
-	/*
-	 * I'd prefer to say ``diff -U10'', but we can't rely on GNU
-	 * Diff being installed everywhere.  It's a risk even using
-	 * a context diff, because not all non-GNU diff progs have -c.
-	 */
-	return str_from_c("\
-set +e; \
-diff -c ${quote $original} ${quote $input} > ${quote $output}; \
-test $? -le 1");
+    /*
+     * I'd prefer to say ``diff -U10'', but we can't rely on GNU
+     * Diff being installed everywhere.	 It's a risk even using
+     * a context diff, because not all non-GNU diff progs have -c.
+     */
+    return
+	str_from_c
+	(
+	    "set +e; "
+	    "diff -c ${quote $original} ${quote $input} > ${quote $output}; "
+	    "test $? -le 1"
+	);
 }
 
-
-static string_ty *merge _((format_ty *));
 
 static string_ty *
-merge(fp)
-	format_ty	*fp;
+merge(format_ty *fp)
 {
-	return str_from_c("\
-set +e; \
-merge -p -L baseline -L C$c ${quote $mostrecent} ${quote $original} \
-${quote $input} > ${quote $output}; \
-test $? -le 1");
+    return
+	str_from_c
+	(
+	    "set +e; "
+	    "merge -p -L baseline -L C$c ${quote $mostrecent} "
+		"${quote $original} ${quote $input} > ${quote $output}; "
+	    "test $? -le 1"
+	);
 }
 
-
-static void unlock _((format_ty *, string_ty *));
 
 static void
-unlock(fp, filename)
-	format_ty	*fp;
-	string_ty	*filename;
+unlock(format_ty *fp, string_ty *filename)
 {
-	int		flags;
-	string_ty	*cmd;
-	string_ty	*qfn;
+    int		    flags;
+    string_ty	    *cmd;
+    string_ty	    *qfn;
 
-	/*
-	 * -e	means get rid of any access list
-	 * -ko	means no keyword expansion
-	 * -M	means do not send mail
-	 * -q	means operate quietly
-	 * -U	means set locking to non-strict
-	 *
-	 * There doesn't seem to be an option to get rid of all locks.
-	 */
-	qfn = str_quote_shell(filename);
-	cmd = str_format("rcs -e -M -q -U %S", qfn);
-	str_free(qfn);
-	flags = OS_EXEC_FLAG_ERROK;
-	os_execute(cmd, flags, os_curdir());
-	str_free(cmd);
+    /*
+     * -e   means get rid of any access list
+     * -ko  means no keyword expansion
+     * -M   means do not send mail
+     * -q   means operate quietly
+     * -U   means set locking to non-strict
+     *
+     * There doesn't seem to be an option to get rid of all locks.
+     */
+    qfn = str_quote_shell(filename);
+    cmd = str_format("rcs -e -M -q -U %S", qfn);
+    str_free(qfn);
+    flags = OS_EXEC_FLAG_ERROK;
+    os_execute(cmd, flags, os_curdir());
+    str_free(cmd);
 }
 
 
 static format_vtable_ty vtbl =
 {
-	sizeof(format_ty),
-	destructor,
-	is_a_candidate,
-	sanitize,
-	read_versions,
-	history_put,
-	history_get,
-	history_query,
-	diff,
-	merge,
-	unlock,
+    sizeof(format_ty),
+    destructor,
+    is_a_candidate,
+    sanitize,
+    read_versions,
+    history_put,
+    history_get,
+    history_query,
+    diff,
+    merge,
+    unlock,
 };
 
 
 format_ty *
 format_rcs_new()
 {
-	return format_new(&vtbl);
+    return format_new(&vtbl);
 }

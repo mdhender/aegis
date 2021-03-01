@@ -1,6 +1,6 @@
 /*
  *	aegis - project change supervisor
- *	Copyright (C) 2000 Peter Miller;
+ *	Copyright (C) 2000, 2002 Peter Miller;
  *	All rights reserved.
  *
  *	This program is free software; you can redistribute it and/or modify
@@ -30,6 +30,6 @@ struct string_list_ty;
 struct user_ty;
 
 batch_result_list_ty *change_test_batch_fake _((struct change_ty *,
-	struct string_list_ty *, struct user_ty *, int));
+	struct string_list_ty *, struct user_ty *, int, int, int));
 
 #endif /* LIBAEGIS_CHANGE_TEST_BATCH_FAKE_H */

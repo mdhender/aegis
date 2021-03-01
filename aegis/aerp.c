@@ -49,10 +49,8 @@
 #include <user.h>
 
 
-static void review_pass_usage _((void));
-
 static void
-review_pass_usage()
+review_pass_usage(void)
 {
     char	    *progname;
 
@@ -69,19 +67,15 @@ review_pass_usage()
 }
 
 
-static void review_pass_help _((void));
-
 static void
-review_pass_help()
+review_pass_help(void)
 {
     help("aerpass", review_pass_usage);
 }
 
 
-static void review_pass_list _((void));
-
 static void
-review_pass_list()
+review_pass_list(void)
 {
     string_ty	    *project_name;
 
@@ -122,10 +116,49 @@ review_pass_list()
 }
 
 
-static void review_pass_main _((void));
+static void
+check_permissions(change_ty *cp, user_ty *up)
+{
+    cstate	    cstate_data;
+    project_ty	    *pp;
+
+    cstate_data = change_cstate_get(cp);
+    pp = cp->pp;
+
+    /*
+     * it is an error if the change is not in the 'being_reviewed' state.
+     */
+    if (cstate_data->state != cstate_state_being_reviewed)
+	change_fatal(cp, 0, i18n("bad rp state"));
+    if
+    (
+	project_develop_end_action_get(pp)
+    ==
+	pattr_develop_end_action_goto_awaiting_review
+    )
+    {
+	if (!str_equal(change_reviewer_name(cp), user_name(up)))
+	    change_fatal(cp, 0, i18n("not reviewer"));
+    }
+    else
+    {
+	if (!project_reviewer_query(pp, user_name(up)))
+	    project_fatal(pp, 0, i18n("not a reviewer"));
+	if
+	(
+	    !project_developer_may_review_get(pp)
+	&&
+	    str_equal(change_developer_name(cp), user_name(up))
+	)
+	{
+	    change_fatal(cp, 0, i18n("developer may not review"));
+	}
+    }
+}
+
 
 static void
-review_pass_main()
+review_pass_main(void)
 {
     cstate	    cstate_data;
     cstate_history  history_data;
@@ -135,11 +168,15 @@ review_pass_main()
     change_ty	    *cp;
     user_ty	    *up;
     long	    j;
+    string_ty	    *comment =	    0;
+    char	    *reason =	    0;
+    edit_ty	    edit;
 
     trace(("review_pass_main()\n{\n"));
     arglex();
     project_name = 0;
     change_number = 0;
+    edit = edit_not_set;
     while (arglex_token != arglex_token_eoln)
     {
 	switch (arglex_token)
@@ -194,6 +231,68 @@ review_pass_main()
 	    project_name = str_from_c(arglex_value.alv_string);
 	    break;
 
+	case arglex_token_file:
+	    if (comment)
+		duplicate_option(review_pass_usage);
+	    switch (arglex())
+	    {
+	    default:
+		option_needs_file(arglex_token_file, review_pass_usage);
+		/*NOTREACHED*/
+
+	    case arglex_token_string:
+		{
+		    string_ty       *s;
+
+		    os_become_orig();
+		    s = str_from_c(arglex_value.alv_string);
+		    comment = read_whole_file(s);
+		    str_free(s);
+		    os_become_undo();
+		}
+		break;
+
+	    case arglex_token_stdio:
+		os_become_orig();
+		comment = read_whole_file((string_ty *)0);
+		os_become_undo();
+		break;
+	    }
+	    assert(comment);
+	    break;
+
+	case arglex_token_reason:
+	    if (reason)
+		duplicate_option(review_pass_usage);
+	    if (arglex() != arglex_token_string)
+		option_needs_string(arglex_token_reason, review_pass_usage);
+	    reason = arglex_value.alv_string;
+	    break;
+
+	case arglex_token_edit:
+	    if (edit == edit_foreground)
+		duplicate_option(review_pass_usage);
+	    if (edit != edit_not_set)
+	    {
+		too_many_edits:
+		mutually_exclusive_options
+		(
+		    arglex_token_edit,
+		    arglex_token_edit_bg,
+		    review_pass_usage
+		);
+	    }
+	    edit = edit_foreground;
+	    break;
+
+	case arglex_token_edit_bg:
+	    if (edit == edit_background)
+		duplicate_option(review_pass_usage);
+	    if (edit != edit_not_set)
+		goto too_many_edits;
+	    edit = edit_background;
+	    break;
+
 	case arglex_token_wait:
 	case arglex_token_wait_not:
 	    user_lock_wait_argument(review_pass_usage);
@@ -201,6 +300,33 @@ review_pass_main()
 	}
 	arglex();
     }
+
+    if (comment && reason)
+    {
+	mutually_exclusive_options
+	(
+	    arglex_token_file,
+	    arglex_token_reason,
+	    review_pass_usage
+	);
+    }
+    if (edit != edit_not_set && (comment || reason))
+    {
+	mutually_exclusive_options
+	(
+	    (
+		edit == edit_foreground
+	    ?
+		arglex_token_edit
+	    :
+		arglex_token_edit_bg
+	    ),
+	    (comment ? arglex_token_file : arglex_token_reason),
+	    review_pass_usage
+	);
+    }
+    if (reason)
+	comment = str_from_c(reason);
 
     /*
      * locate project data
@@ -225,6 +351,16 @@ review_pass_main()
     change_bind_existing(cp);
 
     /*
+     * create the comment, if necessary
+     * check permissions first
+     */
+    if (edit != edit_not_set)
+    {
+	check_permissions(cp, up);
+	comment = os_edit_new(edit);
+    }
+
+    /*
      * lock the change for writing
      */
     change_cstate_lock_prepare(cp);
@@ -234,30 +370,7 @@ review_pass_main()
     /*
      * it is an error if the change is not in the 'being_reviewed' state.
      */
-    if (cstate_data->state != cstate_state_being_reviewed)
-	change_fatal(cp, 0, i18n("bad rp state"));
-    if
-    (
-	project_develop_end_action_get(pp)
-    ==
-	pattr_develop_end_action_goto_awaiting_review
-    )
-    {
-	if (!str_equal(change_reviewer_name(cp), user_name(up)))
-	    change_fatal(cp, 0, i18n("not reviewer"));
-    }
-    else
-    {
-	if (!project_reviewer_query(pp, user_name(up)))
-	    project_fatal(pp, 0, i18n("not a reviewer"));
-	if
-	(
-	    !project_developer_may_review_get(pp)
-	&&
-	    str_equal(change_developer_name(cp), user_name(up))
-	)
-	    change_fatal(cp, 0, i18n("developer may not review"));
-    }
+    check_permissions(cp, up);
 
     /*
      * change the state
@@ -267,6 +380,7 @@ review_pass_main()
     cstate_data->state = cstate_state_awaiting_integration;
     history_data = change_history_new(cp, up);
     history_data->what = cstate_history_what_review_pass;
+    history_data->why = comment;
 
     /*
      * It is an error if any of the change files have been tampered
@@ -372,7 +486,7 @@ review_pass_main()
 
 
 void
-review_pass()
+review_pass(void)
 {
     static arglex_dispatch_ty dispatch[] =
     {

@@ -71,10 +71,10 @@ exec wish $0 ${1+"$@"}
 # the architecture, project base directory, and the editor you are
 # using (if you leave that blank, tkaegis will try to determine the
 # editor to use from the EDITOR environment variable; if that fails,
-# it will fall back to emacs or vi). 
+# it will fall back to emacs or vi).
 #
 # When you run tkaegis, a window will appear with a menu at the top.
-# The window is used to display the output of aegis commands and some 
+# The window is used to display the output of aegis commands and some
 # other feedback. The menu will initially have only two items, Project
 # and Help. At this stage the Help menu only has an About dialog box.
 #
@@ -83,12 +83,12 @@ exec wish $0 ${1+"$@"}
 # or exit the program. If you create a new project, a dialog box will
 # appear allowing you to enter the project name, directory, and initial
 # branch number. When you press OK the project will be created and should
-# then appear in the Project menu. 
+# then appear in the Project menu.
 #
 # If you select an existing project, a new option will be added to the
 # Project menu, allowing you to delete the project. A Branch menu will
 # also appear. This is similar to the Project menu, but allows you to
-# create, delete, or select project branches. 
+# create, delete, or select project branches.
 #
 # If you select a branch in the branch menu, a Role menu will appear.
 # This will allow you to choose the role that you will be playing,
@@ -96,7 +96,7 @@ exec wish $0 ${1+"$@"}
 # tkaegis uses your UNIX login name and the names of the roleplayers
 # associated with the project and branch, to determine which of the
 # roles it will allow you to choose. If you create a new project, only
-# the administrator role will appear. 
+# the administrator role will appear.
 #
 # Selecting a role will put you in a `mode', which will determine what
 # other menus appear and what you can do next. Each mode will now be
@@ -135,7 +135,7 @@ exec wish $0 ${1+"$@"}
 #    Integrators                      View or change the branch integrator staff
 #       Add (aeni)                    Add an integrator for the branch
 #       View (ael i)                  View the integrators for the branch
-#       Remove (aeri)                 Remove an integrator for the branch 
+#       Remove (aeri)                 Remove an integrator for the branch
 #
 #    Change                           Add, remove, view branch changes
 #       Add New Change (aenc)         Add a new change request
@@ -331,7 +331,8 @@ proc aegis_new_project {proj vers directory} {
 	set directory "$projbasedir/$proj"
     }
     AddStatusLine "Creating project $proj branch $vers directory $directory"
-    return [aegis_do_action_command "-npr $proj -version $vers -directory $directory"]
+    return [aegis_do_action_command "-npr $proj -version $vers \
+	-directory $directory"]
 }
 
 proc aegis_new_branch {branch directory} {
@@ -355,7 +356,7 @@ proc aegis_new_branch {branch directory} {
 # We have to find all the subbranches that are open, and
 # do `develop begin undo' and `new change undo' on them  before
 # we can delete the project
-# We return 0 if nothing was deleted, 1 if all branches were 
+# We return 0 if nothing was deleted, 1 if all branches were
 # deleted, or -1 if some were deleted.
 
 proc aegis_delete_branches {branches} {
@@ -470,7 +471,7 @@ proc aegis_choose_change {act cmd} {
 	destroy .ccpanel
     }
     button .ccpanel.but.view -text "View Details" -command {
-	global branch 
+	global branch
 	set chg ""
 	scan [selection get] "%d" chg
 	set details [aegis_get_change_details $branch $chg]
@@ -481,7 +482,7 @@ proc aegis_choose_change {act cmd} {
     button .ccpanel.but.cancel -text Cancel -command {
 	global change
 	set change ""
-	destroy .ccpanel 
+	destroy .ccpanel
     }
 
     if {$cmd == "lc"} {
@@ -493,7 +494,7 @@ proc aegis_choose_change {act cmd} {
 	destroy .ccpanel
 	return 0
     }
-    scan $changes "%d" firstchange 
+    scan $changes "%d" firstchange
     set changes [split $changes "\n"]
     foreach c $changes {
 	.ccpanel.entries insert end [lreplace $c 1 1 ":"]
@@ -502,7 +503,8 @@ proc aegis_choose_change {act cmd} {
     pack .ccpanel.but .ccpanel.xscroll -side bottom -fill x
     pack .ccpanel.entries -side left -fill x -expand true
     pack .ccpanel.yscroll -side right -fill y
-    pack .ccpanel.but.ok .ccpanel.but.view .ccpanel.but.cancel -side left -fill x
+    pack .ccpanel.but.ok .ccpanel.but.view .ccpanel.but.cancel \
+    	-side left -fill x
 
     if {$cnt == 0} {
 	destroy .ccpanel
@@ -514,7 +516,7 @@ proc aegis_choose_change {act cmd} {
 	if {$act != "" } {
 	    show_message "Info" "Change $change autoselected for $act"
 	}
-	return 1	
+	return 1
     } else {
 	grab set .ccpanel
 	tkwait window .ccpanel
@@ -668,7 +670,8 @@ proc aegis_new_test {branch change testfile} {
 }
 
 proc aegis_get_new_test_files {branch change} {
-    return [aegis_get_info_command "-ntu -l -p $branch -c $change -terse | fgrep test"]
+    return [aegis_get_info_command \
+        "-ntu -l -p $branch -c $change -terse | fgrep test"]
 }
 
 proc aegis_new_test_undo {branch change fname} {
@@ -724,7 +727,8 @@ proc aegis_show_diffs {branch change} {
 	    set wn [join [split $f "./~,"] "_"]
 	    set spawnwin($wn) .$wn
 	    set txt  [exec head -3 $f | tail -1]
-	    if { $txt != "" && [string match "*TOTALS: 0 inserted  0 deleted*" $txt] == 0} {
+	    if { $txt != "" && \
+            [string match "*TOTALS: 0 inserted  0 deleted*" $txt] == 0} {
 	        show_text .$wn $f [exec cat $f]
 	    }
 	}
@@ -847,7 +851,8 @@ proc not_implemented {} {
 
 proc about_tkaegis {} {
     show_message "About tkaegis" \
-	"tkaegis v1.2\nby Graham Wheeler\ngram@cdsec.com\n(c) 1999, All Rights Reserved"
+"tkaegis v1.2\nby Graham Wheeler\ngram@cdsec.com\n\
+(C) 1999, All Rights Reserved"
 }
 
 # Get confirmation for an action
@@ -860,10 +865,11 @@ proc get_confirm {msg} {
     frame .panel.bottom
     label .panel.top.label -text $msg
     button .panel.bottom.ok -text OK -command { destroy .panel; set cnf 1 }
-    button .panel.bottom.cancel -text Cancel -command { destroy .panel; set cnf 0 }
-    pack .panel.top -side top 
-    pack .panel.bottom -side bottom 
-    pack .panel.top.label -side left -fill x 
+    button .panel.bottom.cancel -text Cancel \
+    	-command { destroy .panel; set cnf 0 }
+    pack .panel.top -side top
+    pack .panel.bottom -side bottom
+    pack .panel.top.label -side left -fill x
     pack .panel.bottom.cancel -side right -fill y
     pack .panel.bottom.ok -side left -fill y
     grab set .panel
@@ -903,7 +909,7 @@ proc choose_files {title files} {
     button .cfpanel.but.cancel -text Cancel -command {
 	global scratch
 	set scratch ""
-	destroy .cfpanel 
+	destroy .cfpanel
     }
     foreach f $files {
 	.cfpanel.entries insert end $f
@@ -943,7 +949,8 @@ proc select_change {cmd {act ""} } {
 	    }
         }
 	if {$ok == 0} {
-	   show_message "Error" "Action not applicable to current selected change $change"
+	   show_message "Error" \
+	   	"Action not applicable to current selected change $change"
 	   if [get_confirm "Select a different change?"] {
 	       set change ""
 	   } else {
@@ -1179,14 +1186,14 @@ proc new_project {} {
 	destroy .panel
     }
 
-    pack .panel.name .panel.vers .panel.dir  -side top 
-    pack .panel.buts -side bottom 
+    pack .panel.name .panel.vers .panel.dir  -side top
+    pack .panel.buts -side bottom
     pack .panel.name.namelabel .panel.name.nameentry -side left \
-	-padx 1m -pady 2m -fill x 
+	-padx 1m -pady 2m -fill x
     pack .panel.vers.verslabel .panel.vers.versentry -side left \
-	-padx 1m -pady 2m -fill x 
+	-padx 1m -pady 2m -fill x
     pack .panel.dir.dirlabel .panel.dir.direntry -side left \
-	-padx 1m -pady 2m -fill x 
+	-padx 1m -pady 2m -fill x
     pack .panel.buts.cancel -side right -fill y
     pack .panel.buts.ok -side left -fill y
 
@@ -1316,12 +1323,12 @@ proc new_branch {} {
 	destroy .panel
     }
 
-    pack .panel.name .panel.dir -side top 
-    pack .panel.buts -side bottom 
+    pack .panel.name .panel.dir -side top
+    pack .panel.buts -side bottom
     pack .panel.name.namelabel .panel.name.nameentry -side left \
-	-padx 1m -pady 2m -fill x 
+	-padx 1m -pady 2m -fill x
     pack .panel.dir.dirlabel .panel.dir.direntry -side left \
-	-padx 1m -pady 2m -fill x 
+	-padx 1m -pady 2m -fill x
     pack .panel.buts.cancel -side right -fill y
     pack .panel.buts.ok -side left -fill y
 
@@ -1430,7 +1437,7 @@ proc enter_administrate_mode {} {
 proc fetch_branch_attributes {} {
     global branch pdescription powner pgroup pumask presidue
     global devmayrev devmayint revmayint devmaychg deftestexempt
-    set presidue "" 
+    set presidue ""
     set lines [aegis_get_project_attributes $branch]
     if {$lines != ""} {
 	set lines [split $lines "\n"]
@@ -1484,15 +1491,15 @@ proc edit_branch_attributes {} {
     entry .panel.desc.entry -width 20 -relief sunken -bd 2 \
 	-textvariable pdescription
     checkbutton .panel.options1.devmayrev -text "Developer may review" \
-	-variable devmayrev 
+	-variable devmayrev
     checkbutton .panel.options2.devmayint -text "Developer may integrate" \
-	-variable devmayint 
+	-variable devmayint
     checkbutton .panel.options3.revmayint -text "Reviewer may integrate" \
-	-variable revmayint 
+	-variable revmayint
     checkbutton .panel.options4.devmaychg -text "Developer may create changes" \
 	-variable devmaychg
     checkbutton .panel.options5.deftestexempt -text "Default test exempt" \
-	-variable deftestexempt 
+	-variable deftestexempt
     button .panel.bottom.ok -text OK -command { destroy .panel }
     button .panel.bottom.cancel -text Cancel -command {
 	set pdescription "X";destroy .panel
@@ -1733,15 +1740,15 @@ proc edit_change_attributes {title fname} {
     pack .panel.cause2.ee .panel.cause2.ei .panel.cause2.eb -side left -fill x
 
     checkbutton .panel.opts.tx -text "New Test Exempt"\
-	    -variable ctestexempt 
+	    -variable ctestexempt
     checkbutton .panel.opts.bx -text "Baseline Test Exempt"\
-	    -variable cblexempt 
+	    -variable cblexempt
     checkbutton .panel.opts.rx -text "Regression Test Exempt"\
-	    -variable cregexempt 
+	    -variable cregexempt
     pack .panel.opts.tx .panel.opts.bx .panel.opts.rx -side left -fill x
 
     button .panel.bottom.ok -text OK -command {
-	destroy .panel 
+	destroy .panel
     }
     button .panel.bottom.cancel -text Cancel -command {
 	global ctitle; set ctitle ""; destroy .panel }
@@ -1857,17 +1864,19 @@ proc add_develop_menus {} {
           AddDropDownMenuCommand file "Remove Existing File" remove_file
           AddDropDownMenuCommand file "Restore Existing File" remove_file_undo
           AddDropDownMenuCommand file "Change Existing File" copy_file
-          AddDropDownMenuCommand file "Undo Changes to Existing File" copy_file_undo
-    
+          AddDropDownMenuCommand file "Undo Changes to Existing File" \
+	  	copy_file_undo
+
         AddMainMenuItem build Build
           AddDropDownMenuCommand build "Build Project" build_project
-    
+
         AddMainMenuItem test Test
           AddDropDownMenuCommand test "Add New Test Script" new_test
           AddDropDownMenuCommand test "Discard New Test Script" new_test_undo
           AddDropDownMenuSeparator test
           AddDropDownMenuCommand test "Run New Tests" run_tests
-          AddDropDownMenuCommand test "Run Regression Tests" run_regression_tests
+          AddDropDownMenuCommand test "Run Regression Tests" \
+	  	run_regression_tests
           AddDropDownMenuCommand test "Run Baseline Test" run_baseline_test
     }
 }
@@ -1949,11 +1958,12 @@ proc new_file {} {
     label .panel.top.label -text "File name:"
     entry .panel.top.entry -width 20 -relief sunken -bd 2 -textvariable scratch
     button .panel.bottom.ok -text OK -command { destroy .panel }
-    button .panel.bottom.cancel -text Cancel -command { set scratch "";destroy .panel }
-    pack .panel.top -side top 
-    pack .panel.bottom -side bottom 
+    button .panel.bottom.cancel -text Cancel \
+    	-command { set scratch "";destroy .panel }
+    pack .panel.top -side top
+    pack .panel.bottom -side bottom
     pack .panel.top.label .panel.top.entry -side left -padx 1m -pady 2m \
-	-fill x 
+	-fill x
     pack .panel.bottom.cancel -side right -fill y
     pack .panel.bottom.ok -side left -fill y
     focus .panel.top.entry
@@ -2043,14 +2053,14 @@ proc build_project {} {
 	show_text .build "Build Failed" [exec cat aegis.log]
     }
 }
-    
+
 proc new_test {} {
     global branch change
     if [aegis_new_test $branch $change testfile] {
 	run_editor $testfile
     }
 }
-    
+
 proc new_test_undo {} {
     global branch change
     set files [aegis_get_new_test_files $branch $change]
@@ -2061,7 +2071,7 @@ proc new_test_undo {} {
 	}
     }
 }
-    
+
 proc run_tests {} {
     global branch change
     if [winfo exists .test] { destroy .test }
@@ -2071,7 +2081,7 @@ proc run_tests {} {
 	show_text .test "Error" [exec cat aegis.log]
     }
 }
-    
+
 proc run_regression_tests {} {
     global branch change
     if [winfo exists .regtest] { destroy .regtest }
@@ -2081,7 +2091,7 @@ proc run_regression_tests {} {
 	show_text .regtest "Error" [exec cat aegis.log]
     }
 }
-    
+
 proc run_baseline_test {} {
     global branch change
     if [winfo exists .bltest] { destroy .bltest }
@@ -2091,7 +2101,7 @@ proc run_baseline_test {} {
 	show_text .bl_test "Error" [exec cat aegis.log]
     }
 }
-    
+
 proc remove_develop_menus {} {
     global has_develop_menus
     if {$has_develop_menus} {
@@ -2193,7 +2203,8 @@ proc enter_integrate_mode {} {
           AddDropDownMenuCommand integrate "Build" integrate_build
           AddDropDownMenuSeparator integrate
           AddDropDownMenuCommand integrate "New Tests" integrate_new_tests
-          AddDropDownMenuCommand integrate "Baseline Test" integrate_baseline_test
+          AddDropDownMenuCommand integrate "Baseline Test" \
+	  		integrate_baseline_test
           AddDropDownMenuCommand integrate "Regression Test" \
 			integrate_regression_tests
           AddDropDownMenuSeparator integrate
@@ -2203,7 +2214,7 @@ proc enter_integrate_mode {} {
 }
 
 proc integrate_begin {} {
-    global branch change 
+    global branch change
     if [select_change "ib" "begin integration"] {
 	aegis_integrate_begin $branch $change
     }

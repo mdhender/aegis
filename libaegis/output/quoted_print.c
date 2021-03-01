@@ -1,6 +1,6 @@
 /*
  *	aegis - project change supervisor
- *	Copyright (C) 2001 Peter Miller;
+ *	Copyright (C) 2001, 2002 Peter Miller;
  *	All rights reserved.
  *
  *	This program is free software; you can redistribute it and/or modify
@@ -104,11 +104,11 @@
  *
  *		Now's the time for all folk to come to the aid of their country.
  *
- *	This can be represented, in the Quoted-Printable encoding, as 
+ *	This can be represented, in the Quoted-Printable encoding, as
  *
- *		Now's the time = 
- *		for all folk to come = 
- *		to the aid of their country. 
+ *		Now's the time =
+ *		for all folk to come =
+ *		to the aid of their country.
  *
  *	This provides a mechanism with which long lines are encoded in
  *	such a way as to be restored by the user agent. The 76 character
@@ -136,9 +136,9 @@
  *	reasonably reliable transport through EBCDIC gateways is to also
  *	quote the ASCII characters
  *
- *		!"#$@[\]^`{|}~ 
+ *		!"#$@[\]^`{|}~
  *
- *	according to rule #1. See Appendix B for more information. 
+ *	according to rule #1. See Appendix B for more information.
  *
  *	Because quoted-printable data is generally assumed to be line-
  *	oriented, it is to be expected that the representation of
@@ -159,7 +159,7 @@
  *
  *	For formalists, the syntax of quoted-printable data is described
  *	by the following grammar:
- *	
+ *
  *	quoted-printable := ([*(ptext / SPACE / TAB) ptext] ["="] CRLF)
  *		; Maximum line length of 76 characters excluding CRLF
  *
@@ -184,349 +184,309 @@
  */
 #define MAX_LINE_LEN 76
 
-static char hex[16] = "0123456789ABCDEF";
+static char	hex[16] =	"0123456789ABCDEF";
 
 typedef struct glyph_t glyph_t;
 struct glyph_t
 {
-	char	text;
-	char	quote_it;
-	int	width;
-	int	cumulative;
+    char	    text;
+    char	    quote_it;
+    int		    width;
+    int		    cumulative;
 };
 
 typedef struct output_quoted_printable_ty output_quoted_printable_ty;
 struct output_quoted_printable_ty
 {
-	output_ty	inherited;
-	output_ty	*deeper;
-	int		delete_on_close;
-	int		allow_international_characters;
+    output_ty	    inherited;
+    output_ty	    *deeper;
+    int		    delete_on_close;
+    int		    allow_international_characters;
 
-	glyph_t		glyph[MAX_LINE_LEN + 1];
-	int		pos;
+    glyph_t	    glyph[MAX_LINE_LEN + 1];
+    int		    pos;
 };
 
 
-static void end_of_line _((output_quoted_printable_ty *this, int soft));
-
 static void
-end_of_line(this, soft)
-	output_quoted_printable_ty *this;
-	int		soft;
+end_of_line(output_quoted_printable_ty *this, int soft)
 {
-	glyph_t		*cp;
-	glyph_t		*end;
-	int		c;
+    glyph_t	    *cp;
+    glyph_t	    *end;
+    int		    c;
 
-	cp = this->glyph;
-	end = cp + this->pos;
-	for (; cp < end; ++cp)
+    cp = this->glyph;
+    end = cp + this->pos;
+    for (; cp < end; ++cp)
+    {
+	c = (unsigned char)cp->text;
+	if (cp->quote_it)
 	{
-		c = (unsigned char)cp->text;
-		if (cp->quote_it)
-		{
-			output_fputc(this->deeper, '=');
-			output_fputc(this->deeper, hex[(c >> 4) & 15]);
-			output_fputc(this->deeper, hex[ c       & 15]);
-		}
-		else
-			output_fputc(this->deeper, c);
+	    output_fputc(this->deeper, '=');
+	    output_fputc(this->deeper, hex[(c >> 4) & 15]);
+	    output_fputc(this->deeper, hex[c & 15]);
 	}
-	if (soft)
-		output_fputc(this->deeper, '=');
-	output_fputc(this->deeper, '\n');
-	this->pos = 0;
+	else
+	    output_fputc(this->deeper, c);
+    }
+    if (soft)
+	output_fputc(this->deeper, '=');
+    output_fputc(this->deeper, '\n');
+    this->pos = 0;
 }
 
 
-static void end_of_line_partial _((output_quoted_printable_ty *));
-
 static void
-end_of_line_partial(this)
-	output_quoted_printable_ty *this;
+end_of_line_partial(output_quoted_printable_ty *this)
 {
-	int		oldpos;
-	int		newpos;
-	int		newpos_max;
-	int		j;
+    int		    oldpos;
+    int		    newpos;
+    int		    newpos_max;
+    int		    j;
 
-	/*
-	 * The line is loo long.  We need to back up a few
-	 * characters.	We must allow one column for the '='
-	 * soft line break
-	 * (which is why we wsay >=MAX_LINE_LEN instead of >MAX_LINE_LEN).
-	 */
-	oldpos = this->pos;
-	newpos = this->pos;
-	while (newpos > 0 && this->glyph[newpos].cumulative >= MAX_LINE_LEN)
-		--newpos;
-	newpos_max = newpos;
+    /*
+     * The line is loo long.  We need to back up a few
+     * characters.  We must allow one column for the '='
+     * soft line break
+     * (which is why we wsay >=MAX_LINE_LEN instead of >MAX_LINE_LEN).
+     */
+    oldpos = this->pos;
+    newpos = this->pos;
+    while (newpos > 0 && this->glyph[newpos].cumulative >= MAX_LINE_LEN)
+	--newpos;
+    newpos_max = newpos;
 
-	/*
-	 * It's worth hunting for a white space character, it looks nicer.
-	 */
-	while
-	(
-		newpos > 0
-	&&
-		this->glyph[newpos - 1].text != ' '
-	&&
-		this->glyph[newpos - 1].text != '\t'
-	)
-		--newpos;
-	if (newpos == 0)
-		newpos = newpos_max;
+    /*
+     * It's worth hunting for a white space character, it looks nicer.
+     */
+    while
+    (
+	newpos > 0
+    &&
+	this->glyph[newpos - 1].text != ' '
+    &&
+	this->glyph[newpos - 1].text != '\t'
+    )
+	--newpos;
+    if (newpos == 0)
+	newpos = newpos_max;
 
-	/*
-	 * re-write the line length, and emit the partial line.
-	 */
-	this->pos = newpos;
-	end_of_line(this, 1);
+    /*
+     * re-write the line length, and emit the partial line.
+     */
+    this->pos = newpos;
+    end_of_line(this, 1);
 
-	/*
-	 * Move everything down.
-	 */
-	for (j = 0; j + newpos < oldpos; ++j)
-	{
-		glyph_t *gp= this->glyph + j;
-		*gp = this->glyph[newpos + j];
-		gp->cumulative = (j ? gp[-1].cumulative : 0) + gp->width;
-	}
-	this->pos = oldpos - newpos;
-}
-
-
-static void end_of_line_hard _((output_quoted_printable_ty *));
-
-static void
-end_of_line_hard(this)
-	output_quoted_printable_ty *this;
-{
-	/*
-	 * We are required to quote trailing spaces or tabs.
-	 */
-	if (this->pos)
-	{
-		glyph_t *gp = this->glyph + this->pos - 1;
-		if (gp->text == ' ' || gp->text == '\t')
-		{
-			gp->quote_it = 1;
-			gp->cumulative += 3 - gp->width;
-			gp->width = 3;
-
-			/*
-			 * This could make the line longer than the
-			 * maximum, in which case we need to emit the
-			 * partial line first.
-			 */
-			if (gp->cumulative > MAX_LINE_LEN)
-				end_of_line_partial(this);
-		}
-	}
-
-	/*
-	 * now emit the whole lot.
-	 */
-	end_of_line(this, 0);
-}
-
-
-static void output_quoted_printable_destructor _((output_ty *));
-
-static void
-output_quoted_printable_destructor(fp)
-	output_ty	*fp;
-{
-	output_quoted_printable_ty *this;
-
-	this = (output_quoted_printable_ty *)fp;
-	while (this->pos)
-		end_of_line_partial(this);
-	if (this->delete_on_close)
-		output_delete(this->deeper);
-}
-
-
-static void output_quoted_printable_write _((output_ty *, const void *,
-	size_t));
-
-static void
-output_quoted_printable_write(fp, p, len)
-	output_ty	*fp;
-	const void	*p;
-	size_t		len;
-{
-	output_quoted_printable_ty *this;
+    /*
+     * Move everything down.
+     */
+    for (j = 0; j + newpos < oldpos; ++j)
+    {
 	glyph_t		*gp;
-	int		col1, col2;
-	const unsigned char *data;
 
-	this = (output_quoted_printable_ty *)fp;
-	data = p;
-	while (len > 0)
-	{
-		unsigned char c = *data++;
-		--len;
-
-		if (c == '\n')
-		{
-			end_of_line_hard(this);
-			continue;
-		}
-	
-		gp = this->glyph + this->pos;
-		gp->text = c;
-		gp->width = 1;
-		gp->quote_it = 0;
-		gp->cumulative = 0;
-		switch (c)
-		{
-		case '=':
-			gp->width = 3;
-			gp->quote_it = 1;
-			break;
-	
-		case '\t':
-			col1 = (this->pos ? gp[-1].cumulative : 0);
-			col2 = (col1 + 8) & ~7;
-			gp->width = col2 - col1;
-			break;
-			
-		default:
-			/* C locale */
-			if
-			(
-				(
-					this->allow_international_characters
-				?
-					c < ' '
-				:
-					!isprint(c)
-				)
-			&&
-				!isspace(c)
-			)
-			{
-				gp->width = 3;
-				gp->quote_it = 1;
-			}
-			break;
-		}
-		gp->cumulative = (this->pos ? gp[-1].cumulative : 0) + gp->width;
-		this->pos++;
-	
-		if (gp->cumulative > MAX_LINE_LEN)
-			end_of_line_partial(this);
-	}
+	gp = this->glyph + j;
+	*gp = this->glyph[newpos + j];
+	gp->cumulative = (j ? gp[-1].cumulative : 0) + gp->width;
+    }
+    this->pos = oldpos - newpos;
 }
 
-
-static void output_quoted_printable_flush _((output_ty *));
 
 static void
-output_quoted_printable_flush(fp)
-	output_ty	*fp;
+end_of_line_hard(output_quoted_printable_ty *this)
 {
-	output_quoted_printable_ty *this;
+    /*
+     * We are required to quote trailing spaces or tabs.
+     */
+    if (this->pos)
+    {
+	glyph_t		*gp;
 
-	this = (output_quoted_printable_ty *)fp;
-	output_flush(this->deeper);
+	gp = this->glyph + this->pos - 1;
+	if (gp->text == ' ' || gp->text == '\t')
+	{
+	    gp->quote_it = 1;
+	    gp->cumulative += 3 - gp->width;
+	    gp->width = 3;
+
+	    /*
+	     * This could make the line longer than the
+	     * maximum, in which case we need to emit the
+	     * partial line first.
+	     */
+	    if (gp->cumulative > MAX_LINE_LEN)
+		end_of_line_partial(this);
+	}
+    }
+
+    /*
+     * now emit the whole lot.
+     */
+    end_of_line(this, 0);
 }
 
 
-static string_ty *output_quoted_printable_filename _((output_ty *));
+static void
+output_quoted_printable_destructor(output_ty *fp)
+{
+    output_quoted_printable_ty *this;
+
+    this = (output_quoted_printable_ty *)fp;
+    while (this->pos)
+	end_of_line_partial(this);
+    if (this->delete_on_close)
+	output_delete(this->deeper);
+}
+
+
+static void
+output_quoted_printable_write(output_ty *fp, const void *p, size_t len)
+{
+    output_quoted_printable_ty *this;
+    glyph_t	    *gp;
+    int		    col1;
+    int 	    col2;
+    const unsigned char *data;
+
+    this = (output_quoted_printable_ty *)fp;
+    data = p;
+    while (len > 0)
+    {
+	unsigned char	c;
+
+	c = *data++;
+	--len;
+	if (c == '\n')
+	{
+	    end_of_line_hard(this);
+	    continue;
+	}
+
+	gp = this->glyph + this->pos;
+	gp->text = c;
+	gp->width = 1;
+	gp->quote_it = 0;
+	gp->cumulative = 0;
+	switch (c)
+	{
+	case '=':
+	    gp->width = 3;
+	    gp->quote_it = 1;
+	    break;
+
+	case '\t':
+	    col1 = (this->pos ? gp[-1].cumulative : 0);
+	    col2 = (col1 + 8) & ~7;
+	    gp->width = col2 - col1;
+	    break;
+
+	default:
+	    /* C locale */
+	    if
+	    (
+		(this->allow_international_characters ? c < ' ' : !isprint(c))
+	    &&
+		!isspace(c)
+	    )
+	    {
+		gp->width = 3;
+		gp->quote_it = 1;
+	    }
+	    break;
+	}
+	gp->cumulative = (this->pos ? gp[-1].cumulative : 0) + gp->width;
+	this->pos++;
+
+	if (gp->cumulative > MAX_LINE_LEN)
+	    end_of_line_partial(this);
+    }
+}
+
+
+static void
+output_quoted_printable_flush(output_ty *fp)
+{
+    output_quoted_printable_ty *this;
+
+    this = (output_quoted_printable_ty *)fp;
+    output_flush(this->deeper);
+}
+
 
 static string_ty *
-output_quoted_printable_filename(fp)
-	output_ty	*fp;
+output_quoted_printable_filename(output_ty *fp)
 {
-	output_quoted_printable_ty *this;
+    output_quoted_printable_ty *this;
 
-	this = (output_quoted_printable_ty *)fp;
-	return output_filename(this->deeper);
+    this = (output_quoted_printable_ty *)fp;
+    return output_filename(this->deeper);
 }
 
-
-static long output_quoted_printable_ftell _((output_ty *));
 
 static long
-output_quoted_printable_ftell(fp)
-	output_ty	*fp;
+output_quoted_printable_ftell(output_ty *fp)
 {
-	output_quoted_printable_ty *this;
+    output_quoted_printable_ty *this;
 
-	this = (output_quoted_printable_ty *)fp;
-	return output_ftell(this->deeper);
+    this = (output_quoted_printable_ty *)fp;
+    return output_ftell(this->deeper);
 }
 
-
-static int output_quoted_printable_page_width _((output_ty *));
 
 static int
-output_quoted_printable_page_width(fp)
-	output_ty	*fp;
+output_quoted_printable_page_width(output_ty *fp)
 {
-	return MAX_LINE_LEN;
+    return MAX_LINE_LEN;
 }
 
-
-static int output_quoted_printable_page_length _((output_ty *));
 
 static int
-output_quoted_printable_page_length(fp)
-	output_ty	*fp;
+output_quoted_printable_page_length(output_ty *fp)
 {
-	output_quoted_printable_ty *this;
+    output_quoted_printable_ty *this;
 
-	this = (output_quoted_printable_ty *)fp;
-	return output_page_length(this->deeper);
+    this = (output_quoted_printable_ty *)fp;
+    return output_page_length(this->deeper);
 }
 
-
-static void output_quoted_printable_eoln _((output_ty *));
 
 static void
-output_quoted_printable_eoln(fp)
-	output_ty	*fp;
+output_quoted_printable_eoln(output_ty *fp)
 {
-	output_quoted_printable_ty *this;
+    output_quoted_printable_ty *this;
 
-	this = (output_quoted_printable_ty *)fp;
-	if (this->pos)
-		end_of_line_hard(this);
+    this = (output_quoted_printable_ty *)fp;
+    if (this->pos)
+	end_of_line_hard(this);
 }
 
 
 static output_vtbl_ty vtbl =
 {
-	sizeof(output_quoted_printable_ty),
-	output_quoted_printable_destructor,
-	output_quoted_printable_filename,
-	output_quoted_printable_ftell,
-	output_quoted_printable_write,
-	output_quoted_printable_flush,
-	output_quoted_printable_page_width,
-	output_quoted_printable_page_length,
-	output_quoted_printable_eoln,
-	"quoted_printable",
+    sizeof(output_quoted_printable_ty),
+    output_quoted_printable_destructor,
+    output_quoted_printable_filename,
+    output_quoted_printable_ftell,
+    output_quoted_printable_write,
+    output_quoted_printable_flush,
+    output_quoted_printable_page_width,
+    output_quoted_printable_page_length,
+    output_quoted_printable_eoln,
+    "quoted_printable",
 };
 
 
 output_ty *
-output_quoted_printable(deeper, delete_on_close, minimum)
-	output_ty	*deeper;
-	int		delete_on_close;
-	int		minimum;
+output_quoted_printable(output_ty *deeper, int delete_on_close, int minimum)
 {
-	output_ty	*result;
-	output_quoted_printable_ty *this;
+    output_ty	    *result;
+    output_quoted_printable_ty *this;
 
-	result = output_new(&vtbl);
-	this = (output_quoted_printable_ty *)result;
-	this->deeper = deeper;
-	this->delete_on_close = !!delete_on_close;
-	this->pos = 0;
-	this->allow_international_characters = !!minimum;
-	return result;
+    result = output_new(&vtbl);
+    this = (output_quoted_printable_ty *)result;
+    this->deeper = deeper;
+    this->delete_on_close = !!delete_on_close;
+    this->pos = 0;
+    this->allow_international_characters = !!minimum;
+    return result;
 }

@@ -40,6 +40,7 @@
 #include <project/history.h>
 #include <receive.h>
 #include <slurp.h>
+#include <str_list.h>
 #include <sub.h>
 #include <trace.h>
 #include <undo.h>
@@ -47,10 +48,8 @@
 #include <zero.h>
 
 
-static void usage _((void));
-
 static void
-usage()
+usage(void)
 {
     char	    *progname;
 
@@ -61,12 +60,35 @@ usage()
 }
 
 
-static void mangle_file_names _((patch_list_ty *, project_ty *));
+static string_ty *
+is_a_path_prefix(string_ty *haystack, string_ty *needle)
+{
+    if
+    (
+	haystack->str_length > needle->str_length
+    &&
+	haystack->str_text[needle->str_length] == '/'
+    &&
+	0 == memcmp(haystack->str_text, needle->str_text, needle->str_length)
+    )
+    {
+	return
+	    str_n_from_c
+	    (
+		haystack->str_text + needle->str_length + 1,
+		haystack->str_length - needle->str_length - 1
+	    );
+    }
+    return 0;
+}
+
+
+static string_ty *path_prefix_add;
+static string_list_ty path_prefix_remove;
+
 
 static void
-mangle_file_names(plp, pp)
-    patch_list_ty   *plp;
-    project_ty	    *pp;
+mangle_file_names(patch_list_ty *plp, project_ty *pp)
 {
     typedef struct cmp_t cmp_t;
     struct cmp_t
@@ -85,11 +107,48 @@ mangle_file_names(plp, pp)
     string_ty	    *dev_null;
 
     /*
+     * First we chew over the filenames according to the path prefix
+     * options on the command line.
+     *
+     * First remove any path prefixes we have been asked to remove.
+     * Second add a path prefix if we have been asked to.
+     */
+    trace(("mangle_file_names()\n{\n"));
+    for (j = 0; j < plp->length; ++j)
+    {
+	p = plp->item[j];
+	for (idx = 0; idx < p->name.nstrings; ++idx)
+	{
+	    size_t          k;
+
+	    for (k = 0; k < path_prefix_remove.nstrings; ++k)
+	    {
+		s =
+	    	    is_a_path_prefix
+		    (
+			p->name.string[idx],
+			path_prefix_remove.string[k]
+		    );
+		if (s)
+		{
+		    str_free(p->name.string[idx]);
+		    p->name.string[idx] = s;
+		}
+	    }
+	    if (path_prefix_add)
+	    {
+		s = os_path_cat(path_prefix_add, p->name.string[idx]);
+		str_free(p->name.string[idx]);
+		p->name.string[idx] = s;
+	    }
+	}
+    }
+
+    /*
      * Look for the name with the fewest removed leading path
      * compenents that produces a file name which exists in the
      * project.
      */
-    trace(("mangle_file_names()\n{\n"));
     dev_null = str_from_c("/dev/null");
     best.npaths = 32767;
     best.idx = 32767;
@@ -174,12 +233,8 @@ mangle_file_names(plp, pp)
 }
 
 
-static long number_of_files _((string_ty *, long));
-
 static long
-number_of_files(project_name, change_number)
-    string_ty	    *project_name;
-    long	    change_number;
+number_of_files(string_ty *project_name, long change_number)
 {
     project_ty	    *pp;
     change_ty	    *cp;
@@ -197,7 +252,7 @@ number_of_files(project_name, change_number)
 
 
 void
-receive()
+receive(void)
 {
     string_ty	    *ifn;
     string_ty	    *s;
@@ -340,6 +395,22 @@ receive()
 		delta = arglex_value.alv_string;
 		break;
 	    }
+	    break;
+
+	case arglex_token_path_prefix_add:
+	    if (path_prefix_add)
+		duplicate_option(usage);
+	    if (arglex() != arglex_token_string)
+		option_needs_file(arglex_token_path_prefix_add, usage);
+	    path_prefix_add = str_from_c(arglex_value.alv_string);
+	    break;
+
+	case arglex_token_path_prefix_remove:
+	    if (arglex() != arglex_token_string)
+		option_needs_file(arglex_token_path_prefix_add, usage);
+	    s = str_from_c(arglex_value.alv_string);
+	    string_list_append_unique(&path_prefix_remove, s);
+	    str_free(s);
 	    break;
 	}
 	arglex();

@@ -22,6 +22,7 @@
 
 #include <ac/stdio.h>
 #include <ac/stdlib.h>
+#include <ac/string.h>
 
 #include <arglex3.h>
 #include <change.h>
@@ -37,15 +38,14 @@
 #include <project/history.h>
 #include <receive.h>
 #include <str.h>
+#include <str_list.h>
 #include <sub.h>
 #include <undo.h>
 #include <user.h>
 
 
-static void usage _((void));
-
 static void
-usage()
+usage(void)
 {
     char	    *progname;
 
@@ -56,8 +56,59 @@ usage()
 }
 
 
+static string_ty *
+is_a_path_prefix(string_ty *haystack, string_ty *needle)
+{
+    if
+    (
+	haystack->str_length > needle->str_length
+    &&
+	haystack->str_text[needle->str_length] == '/'
+    &&
+	0 == memcmp(haystack->str_text, needle->str_text, needle->str_length)
+    )
+    {
+	return
+	    str_n_from_c
+	    (
+		haystack->str_text + needle->str_length + 1,
+		haystack->str_length - needle->str_length - 1
+	    );
+    }
+    return 0;
+}
+
+
+static string_ty *path_prefix_add;
+static string_list_ty path_prefix_remove;
+
+
+static void
+mangle(string_ty **filename_p)
+{
+    size_t          k;
+    string_ty       *s;
+
+    for (k = 0; k < path_prefix_remove.nstrings; ++k)
+    {
+	s = is_a_path_prefix(*filename_p, path_prefix_remove.string[k]);
+	if (s)
+	{
+	    str_free(*filename_p);
+	    *filename_p = s;
+	}
+    }
+    if (path_prefix_add)
+    {
+	s = os_path_cat(path_prefix_add, *filename_p);
+	str_free(*filename_p);
+	*filename_p = s;
+    }
+}
+
+
 void
-receive()
+receive(void)
 {
     string_ty       *project_name;
     long            change_number;
@@ -180,6 +231,22 @@ receive()
 	    }
 	    devdir = str_format(" --directory %s", arglex_value.alv_string);
 	    break;
+
+	case arglex_token_path_prefix_add:
+	    if (path_prefix_add)
+		duplicate_option(usage);
+	    if (arglex() != arglex_token_string)
+		option_needs_file(arglex_token_path_prefix_add, usage);
+	    path_prefix_add = str_from_c(arglex_value.alv_string);
+	    break;
+
+	case arglex_token_path_prefix_remove:
+	    if (arglex() != arglex_token_string)
+		option_needs_file(arglex_token_path_prefix_add, usage);
+	    s = str_from_c(arglex_value.alv_string);
+	    string_list_append_unique(&path_prefix_remove, s);
+	    str_free(s);
+	    break;
 	}
 	arglex();
     }
@@ -241,9 +308,14 @@ cause = external_bug;\n"
     /*
      * Begin development of the new change.
      */
-    s = str_format
-	("aegis --develop-begin %ld --project %S --verbose%s",
-	change_number, project_name, (devdir ? devdir->str_text : ""));
+    s =
+	str_format
+	(
+	    "aegis --develop-begin %ld --project %S --verbose%s",
+	    change_number,
+	    project_name,
+	    (devdir ? devdir->str_text : "")
+	);
     os_execute(s, OS_EXEC_FLAG_INPUT, dot);
     str_free(s);
     os_become_undo();
@@ -284,6 +356,11 @@ cause = external_bug;\n"
 	os_become_undo();
 	if (!ip)
 	    break;
+
+	/*
+	 * Mangle the file name if necessary.
+	 */
+	mangle(&filename);
 
 	/*
 	 * Work out if the file sxists in the project.

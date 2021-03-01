@@ -40,13 +40,13 @@ AC_EGREP_CPP(yes,[#ifdef __pyrsoft
   yes
 #endif], CC="/usr/ccs/bin/cc"
 RANLIB="echo no need to ranlib"
-AC_MSG_RESULT([yes, thats unfortunate]),AC_MSG_RESULT([no, thats good]))
+AC_MSG_RESULT(yes),AC_MSG_RESULT(no))
 fi
 
 AC_PROG_INSTALL
 AC_PROG_YACC
 AC_PROG_RANLIB
-AC_AIX
+dnl AC_AIX  - omitted because it hangs?!?
 AC_MINIX
 AC_ISC_POSIX
 AC_OBJEXT
@@ -66,14 +66,17 @@ AC_CHECK_LIB(m, main)
 AC_CHECK_LIB(rx, main)
 AC_CHECK_LIB(z, main)
 dnl The -lclu library is for OSF/1 clustering
-AC_HAVE_LIBRARY(clu)
+AC_CHECK_LIB(clu, main)
 AC_CHECK_PROGS(MSGFMT, gmsgfmt msgfmt, msgfmt)
 AC_CHECK_PROGS(MSGCAT, gmsgcat msgcat)
 AC_CHECK_PROGS(GROFF, groff roff)
 AC_CHECK_PROGS(SOELIM, roffpp gsoelim soelim)
 AC_CHECK_PROGS(AWK, gawk nawk awk, awk)
 AC_PATH_PROG(WISH, wish, /usr/local/bin/wish)
+
 AC_PATH_PROG(PERL, perl, /usr/local/bin/perl)
+AC_DEFINE_UNQUOTED(CONF_PERL, ["$PERL"],
+[Set this to be the absolute path of a Perl interpreter.])
 
 dnl
 dnl	Test if groff takes -ms or -mgs for the macro package.
@@ -114,7 +117,9 @@ struct winsize ws; ws.ws_col = 0; exit(ws.ws_col);
 exit(1);
 #endif
 }]
-, AC_DEFINE(HAVE_winsize_SYS_IOCTL_H)
+, AC_DEFINE(HAVE_winsize_SYS_IOCTL_H,1,
+[Define this symbol if your system as <sys/ioctl.h> AND it
+defines TIOCGWINSZ and struct winsize.])
 AC_MSG_RESULT([sys/ioctl.h]),
 AC_MSG_RESULT([not found]),
 AC_MSG_RESULT(cross))
@@ -132,7 +137,9 @@ struct winsize ws; ws.ws_col = 0; exit(ws.ws_col);
 exit(1);
 #endif
 }]
-, AC_DEFINE(HAVE_winsize_TERMIOS_H)
+, AC_DEFINE(HAVE_winsize_TERMIOS_H,1,
+[Define this symbol if your system as <termios.h> AND it
+defines TIOCGWINSZ and struct winsize.])
 AC_MSG_RESULT([termios.h]),
 AC_MSG_RESULT([not found]),
 AC_MSG_RESULT(cross))
@@ -151,7 +158,8 @@ int test(fmt)char*fmt;{va_list ap;char*a;int x;
 va_start(ap,fmt);a=va_arg(ap,char*);x=(a!=foo);va_end(ap);return x;}
 int main(argc,argv)int argc;char**argv;{
 exit(test("",foo));}]
-, AC_DEFINE(HAVE_STDARG_H)
+, AC_DEFINE(HAVE_STDARG_H,1,
+[Define this symbol of your system has <stdarg.h> AND it works.])
 AC_MSG_RESULT(yes),
 AC_MSG_RESULT(no),
 AC_MSG_RESULT(cross))
@@ -164,7 +172,8 @@ AC_TRY_RUN([
 #include <stdlib.h>
 int main(){mblen(0,0);
 exit(mblen("OK", 2) != 1);}],
-AC_DEFINE(HAVE_MBLEN)
+AC_DEFINE(HAVE_MBLEN,1,
+[Define this symbol of your system has mblen AND it works.])
 AC_MSG_RESULT(yes),
 AC_MSG_RESULT(no),
 AC_MSG_RESULT(cross))
@@ -179,9 +188,9 @@ AC_HEADER_TIME
 AC_C_CONST
 AC_SYS_LONG_FILE_NAMES
 AC_CHECK_FUNCS(clu_info getpgrp gettext iswctype mbrtowc pathconf regcomp \
-	seteuid setlocale setresuid setreuid sighold sigprocmask strcasecmp \
-	strncasecmp strerror strftime strsignal strtoul tcgetpgrp wcrtomb \
-	wcslen wcwidth)
+	seteuid setlocale setresuid setreuid sighold sigprocmask snprintf \
+	strcasecmp strncasecmp strerror strftime strsignal strtoul tcgetpgrp \
+	vsnprintf wcrtomb wcslen wcwidth)
 
 dnl
 dnl	Check to see if wint_t is defined.
@@ -196,7 +205,9 @@ AC_TRY_COMPILE([
 #endif
 ],
 [ wint_t x; ],
-AC_DEFINE(HAVE_WINT_T)
+AC_DEFINE(HAVE_WINT_T,1,
+[Define this symbol of your system has the wint_t type defined.
+It is usually in <stddef.h> or <wctype.h>.])
 AC_MSG_RESULT(yes),
 AC_MSG_RESULT(no))dnl
 
@@ -221,7 +232,9 @@ AC_TRY_COMPILE([
 #endif
 ],
 [ mbstate_t x; ],
-AC_DEFINE(HAVE_MBSTATE_T)
+AC_DEFINE(HAVE_MBSTATE_T,1,
+[Define this symbol of your system has the mbstate_t type defined.
+It is usually in <stddef.h> or <wchar.h>.])
 AC_MSG_RESULT(yes),
 AC_MSG_RESULT(no))dnl
 
@@ -243,7 +256,8 @@ AC_TRY_RUN([
 #endif
 int main(argc,argv)int argc;char**argv;{
 exit(iswprint('a') == 0);}]
-, AC_DEFINE(HAVE_ISWPRINT)
+, AC_DEFINE(HAVE_ISWPRINT,1,
+[Define this symbol of your system has iswprint() AND it works.])
 AC_MSG_RESULT(yes),
 AC_MSG_RESULT(no),
 AC_MSG_RESULT(cross))dnl
@@ -259,7 +273,9 @@ int main(argc, argv) int argc; char **argv; {
 if (getpgrp(32767) == getpgrp(0)) exit(2);
 #endif
 exit(0); }]
-, AC_DEFINE(CONF_getpgrp_arg, 0)
+, AC_DEFINE(CONF_getpgrp_arg, 0,
+[Set this to a suitable argument for the getpgrp function to discover
+the process group of the current process.])
 AC_MSG_RESULT(zero),
 AC_DEFINE(CONF_getpgrp_arg, [])
 AC_MSG_RESULT(empty),
@@ -272,7 +288,9 @@ dnl
 AC_MSG_CHECKING([for pw_comment in struct passwd])
 AC_TRY_COMPILE([#include <pwd.h>], [struct passwd *pw;
 pw = getpwnam("root"); printf("%s\n", pw->pw_comment);],
-AC_DEFINE(HAVE_pw_comment)
+AC_DEFINE(HAVE_pw_comment,1,
+[Define this symbol if your system has
+the pw_comment field in the passwd struct defined in <pwd.h>.])
 AC_MSG_RESULT(yes),AC_MSG_RESULT(no))dnl
 
 dnl
@@ -292,7 +310,9 @@ AC_TRY_COMPILE([
 #endif
 #endif], [struct tm *tm;
 printf("%s\n", tm->tm_zone);],
-AC_DEFINE(HAVE_tm_zone)
+AC_DEFINE(HAVE_tm_zone,1,
+[Define this symbol if your system has
+the tm_zone field in the tm struct defined in <time.h>.])
 AC_MSG_RESULT(yes),AC_MSG_RESULT(no))dnl
 
 dnl
@@ -307,7 +327,9 @@ if test "z$SH" = "z"; then
     fi
 fi
 AC_SUBST(SH)
-AC_DEFINE_UNQUOTED(CONF_SHELL, ["$SH"])
+AC_DEFINE_UNQUOTED(CONF_SHELL, ["$SH"],
+[Set this to be the absolute path of a Bourne shell
+which understands functions.])
 AC_MSG_RESULT($SH)
 
 dnl
@@ -410,7 +432,9 @@ AC_TRY_RUN([
 int main(argc, argv) int argc; char **argv; {
 enum foo { bar, baz } fubar;
 exit(sizeof(fubar) != sizeof(int));
-}], AC_DEFINE(CONF_enum_is_int)
+}], AC_DEFINE(CONF_enum_is_int,1,
+[Define this symbol if your compiler
+makes all enums the same size as ints.])
 AC_MSG_RESULT(yes),
 AC_MSG_RESULT(no),
 AC_MSG_RESULT(cross))
@@ -490,6 +514,79 @@ if test ${PROGRAM_SUFFIX-NONE} != NONE -a ${program_suffix-NONE} != NONE; then
 PROGRAM_SUFFIX=${program_suffix}
 fi
 AC_SUBST(PROGRAM_SUFFIX)
+
+AH_TOP(
+[/*
+ *	aegis - project change supervisor
+ *	Copyright (C) 1991-2002 Peter Miller.
+ *	All rights reserved.
+ *
+ *	This program is free software; you can redistribute it and/or modify
+ *	it under the terms of the GNU General Public License as published by
+ *	the Free Software Foundation; either version 2 of the License, or
+ *	(at your option) any later version.
+ *
+ *	This program is distributed in the hope that it will be useful,
+ *	but WITHOUT ANY WARRANTY; without even the implied warranty of
+ *	MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ *	GNU General Public License for more details.
+ *
+ *	You should have received a copy of the GNU General Public License
+ *	along with this program; if not, write to the Free Software
+ *	Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111, USA.
+ *
+ * MANIFEST: template common/config.h file
+ */
+
+#ifndef COMMON_CONFIG_H
+#define COMMON_CONFIG_H
+])
+
+AH_BOTTOM(
+[/*
+ * This defines the file creation mask.  See umask(2) for more information.
+ * Some bits are not available, because aegis is _meant_ to be paranoid.
+ * Owner: always has read, write and search/exec.
+ * Group: always has read and search/exec, so that developers can get at the
+ *	baseline.  There is never group write, because then developers
+ *	could trash the baseline, which is counter-productive.
+ * Others: There is never others write, for the same reason as group.
+ *	Others read and search/execute is configurable.
+ *
+ * The permissions mask in binary looks like
+ *	000 010 X1X
+ * where the Xs may be configured.
+ *
+ * Alternatives for default umask are thus
+ *	027	others get nothing
+ *	026	others can execute the results if they know where they are going
+ *	022	others can see and copy and execute anything
+ *	023	don't do this (why is left as an exersize for the reader)
+ *
+ * Projects have a configurable umask, this is just the default.
+ *	See aepattr(1) for more information.
+ */
+#define DEFAULT_UMASK 026
+
+/*
+ * These symbols define where non-system user IDs start,
+ * and where non-system group IDs start.
+ * This is mostly to ensure that accounts "root" and "bin"
+ * and "uucp" are not project owners.
+ */
+#define AEGIS_MIN_UID 100
+#define AEGIS_MIN_GID 10
+
+/*
+ * There is more to do, but we need to insulate it from config.status,
+ * because it screws up the #undef lines.  They are all implications of
+ * the above information, so there is no need for you to edit the file,
+ * if you are configuring Aegis manually.
+ */
+#include <config.messy.h>
+
+#endif /* COMMON_CONFIG_H */])
+
 
 AC_OUTPUT(Makefile lib/cshrc lib/profile etc/libdir.so
 	common/libdir.c etc/compat.2.3)

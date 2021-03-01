@@ -92,6 +92,6 @@ if (delta2 == "c")
 else
 	cmd ##= "$bindir/aegis -cp -ind -baserel -p " ## project_name() ## " "
 	    ## second ## " " ## src ## " -o " ## dst2;
-cmd ##= " && ae_diff2htm " ## dst1 ## " " ## dst2 ## "; ";
+cmd ##= " && $bindir/ae_diff2htm " ## dst1 ## " " ## dst2 ## "; ";
 cmd ##= "rm -f " ## dst1 ## " " ## dst2;
 print(cmd);

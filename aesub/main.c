@@ -1,6 +1,6 @@
 /*
  *	aegis - project change supervisor
- *	Copyright (C) 1999, 2001 Peter Miller;
+ *	Copyright (C) 1999, 2001, 2002 Peter Miller;
  *	All rights reserved.
  *
  *	This program is free software; you can redistribute it and/or modify
@@ -52,18 +52,16 @@
  *	briefly describe how to used the 'aegis -RePorT' command.
  */
 
-static void aesub_usage _((void));
-
 static void
-aesub_usage()
+aesub_usage(void)
 {
-	char		*progname;
+    char	    *progname;
 
-	progname = progname_get();
-	fprintf(stderr, "usage: %s [ <option>... ] <string>...\n", progname);
-	fprintf(stderr, "       %s -List [ <option>... ]\n", progname);
-	fprintf(stderr, "       %s -Help\n", progname);
-	quit(1);
+    progname = progname_get();
+    fprintf(stderr, "usage: %s [ <option>... ] <string>...\n", progname);
+    fprintf(stderr, "       %s -List [ <option>... ]\n", progname);
+    fprintf(stderr, "       %s -Help\n", progname);
+    quit(1);
 }
 
 
@@ -79,12 +77,10 @@ aesub_usage()
  *	describe in detail how to use the `aesub' command.
  */
 
-static void aesub_help _((void));
-
 static void
-aesub_help()
+aesub_help(void)
 {
-	help(0, aesub_usage);
+    help(0, aesub_usage);
 }
 
 
@@ -101,147 +97,141 @@ aesub_help()
  *	them to stdout.
  */
 
-static void aesub_main _((void));
-
 static void
-aesub_main()
+aesub_main(void)
 {
-	string_ty	*project_name;
-	long		change_number;
-	string_list_ty	arg;
-	string_ty	*s;
-	project_ty	*pp;
-	user_ty		*up;
-	sub_context_ty	*scp;
-	size_t		j;
-	int		baseline;
+    string_ty	    *project_name;
+    long	    change_number;
+    string_list_ty  arg;
+    string_ty	    *s;
+    project_ty	    *pp;
+    user_ty	    *up;
+    sub_context_ty  *scp;
+    size_t	    j;
+    int		    baseline;
 
-	trace(("aesub_main()\n{\n"/*}*/));
-	project_name = 0;
-	change_number = 0;
-	baseline = 0;
-	string_list_constructor(&arg);
-	while (arglex_token != arglex_token_eoln)
+    trace(("aesub_main()\n{\n"));
+    project_name = 0;
+    change_number = 0;
+    baseline = 0;
+    string_list_constructor(&arg);
+    while (arglex_token != arglex_token_eoln)
+    {
+	switch (arglex_token)
 	{
-		switch (arglex_token)
-		{
-		default:
-			generic_argument(aesub_usage);
-			continue;
+	default:
+	    generic_argument(aesub_usage);
+	    continue;
 
-		case arglex_token_change:
-			if (change_number)
-				duplicate_option(aesub_usage);
-			if (arglex() != arglex_token_number)
-				option_needs_number(arglex_token_change, aesub_usage);
-			change_number = arglex_value.alv_number;
-			if (change_number == 0)
-				change_number = MAGIC_ZERO;
-			else if (change_number < 1)
-			{
-				scp = sub_context_new();
-				sub_var_set_long(scp, "Number", change_number);
-				fatal_intl
-				(
-					scp,
-					i18n("change $number out of range")
-				);
-				/*NOTREACHED*/
-			}
-			break;
+	case arglex_token_change:
+	    if (change_number)
+		duplicate_option(aesub_usage);
+	    if (arglex() != arglex_token_number)
+		option_needs_number(arglex_token_change, aesub_usage);
+	    change_number = arglex_value.alv_number;
+	    if (change_number == 0)
+		change_number = MAGIC_ZERO;
+	    else if (change_number < 1)
+	    {
+		scp = sub_context_new();
+		sub_var_set_long(scp, "Number", change_number);
+		fatal_intl(scp, i18n("change $number out of range"));
+		/*NOTREACHED*/
+	    }
+	    break;
 
-		case arglex_token_project:
-			if (project_name)
-				duplicate_option(aesub_usage);
-			if (arglex() != arglex_token_string)
-				option_needs_name(arglex_token_project, aesub_usage);
-			project_name = str_from_c(arglex_value.alv_string);
-			break;
+	case arglex_token_project:
+	    if (project_name)
+		duplicate_option(aesub_usage);
+	    if (arglex() != arglex_token_string)
+		option_needs_name(arglex_token_project, aesub_usage);
+	    project_name = str_from_c(arglex_value.alv_string);
+	    break;
 
-		case arglex_token_string:
-		case arglex_token_number:
-			s = str_from_c(arglex_value.alv_string);
-			string_list_append(&arg, s);
-			str_free(s);
-			break;
+	case arglex_token_string:
+	case arglex_token_number:
+	    s = str_from_c(arglex_value.alv_string);
+	    string_list_append(&arg, s);
+	    str_free(s);
+	    break;
 
-		case arglex_token_baseline:
-			if (baseline)
-				duplicate_option(aesub_usage);
-			baseline = 1;
-			break;
-		}
-		arglex();
+	case arglex_token_baseline:
+	    if (baseline)
+		duplicate_option(aesub_usage);
+	    baseline = 1;
+	    break;
 	}
-	if (change_number && baseline)
+	arglex();
+    }
+    if (change_number && baseline)
+    {
+	mutually_exclusive_options
+	(
+	    arglex_token_change,
+	    arglex_token_baseline,
+	    aesub_usage
+	);
+    }
+
+    /*
+     * locate project data
+     */
+    if (!project_name)
+	project_name = user_default_project();
+    pp = project_alloc(project_name);
+    str_free(project_name);
+    project_bind_existing(pp);
+
+    /*
+     * locate user data
+     */
+    up = user_executing(pp);
+
+    /*
+     * locate change data
+     */
+    if (baseline)
+    {
+	for (j = 0; j < arg.nstrings; ++j)
 	{
-		mutually_exclusive_options
-		(
-			arglex_token_change,
-			arglex_token_baseline,
-			aesub_usage
-		);
+	    if (j)
+		putchar(' ');
+	    scp = sub_context_New("command line", j + 1);
+	    s = substitute_p(scp, pp, arg.string[j]);
+	    sub_context_delete(scp);
+	    fputs(s->str_text, stdout);
+	    str_free(s);
 	}
+    }
+    else
+    {
+	change_ty	*cp;
 
-	/*
-	 * locate project data
-	 */
-	if (!project_name)
-		project_name = user_default_project();
-	pp = project_alloc(project_name);
-	str_free(project_name);
-	project_bind_existing(pp);
+	if (!change_number)
+	    change_number = user_default_change(up);
+	cp = change_alloc(pp, change_number);
+	change_bind_existing(cp);
 
-	/*
-	 * locate user data
-	 */
-	up = user_executing(pp);
-
-	/*
-	 * locate change data
-	 */
-	if (baseline)
+	for (j = 0; j < arg.nstrings; ++j)
 	{
-		for (j = 0; j < arg.nstrings; ++j)
-		{
-			if (j)
-				putchar(' ');
-			scp = sub_context_New("command line", j + 1);
-			s = substitute_p(scp, pp, arg.string[j]);
-			sub_context_delete(scp);
-			fputs(s->str_text, stdout);
-			str_free(s);
-		}
+	    if (j)
+		putchar(' ');
+	    scp = sub_context_New("command line", j + 1);
+	    s = substitute(scp, cp, arg.string[j]);
+	    sub_context_delete(scp);
+	    fputs(s->str_text, stdout);
+	    str_free(s);
 	}
-	else
-	{
-		change_ty	*cp;
+	change_free(cp);
+    }
+    putchar('\n');
 
-		if (!change_number)
-			change_number = user_default_change(up);
-		cp = change_alloc(pp, change_number);
-		change_bind_existing(cp);
-	
-		for (j = 0; j < arg.nstrings; ++j)
-		{
-			if (j)
-				putchar(' ');
-			scp = sub_context_New("command line", j + 1);
-			s = substitute(scp, cp, arg.string[j]);
-			sub_context_delete(scp);
-			fputs(s->str_text, stdout);
-			str_free(s);
-		}
-		change_free(cp);
-	}
-	putchar('\n');
-
-	/*
-	 * clean up and go home
-	 */
-	project_free(pp);
-	string_list_destructor(&arg);
-	trace((/*{*/"}\n"));
+    /*
+     * clean up and go home
+     */
+    project_free(pp);
+    string_list_destructor(&arg);
+    trace(("}\n"));
 }
 
 
@@ -258,41 +248,37 @@ aesub_main()
  *	Where it goes depends on the command line.
  */
 
-int main _((int, char **));
-
 int
-main(argc, argv)
-	int		argc;
-	char		**argv;
+main(int argc, char **argv)
 {
-	r250_init();
-	os_become_init_mortal();
-	arglex2_init(argc, argv);
-	str_initialize();
-	env_initialize();
-	language_init();
-	switch (arglex())
-	{
-	default:
-		aesub_main();
-		break;
+    r250_init();
+    os_become_init_mortal();
+    arglex2_init(argc, argv);
+    str_initialize();
+    env_initialize();
+    language_init();
+    switch (arglex())
+    {
+    default:
+	aesub_main();
+	break;
 
-	case arglex_token_help:
-		aesub_help();
-		break;
+    case arglex_token_help:
+	aesub_help();
+	break;
 
-	case arglex_token_version:
-		version_copyright();
-		break;
-	}
-	exit(0);
-	return 0;
+    case arglex_token_version:
+	version_copyright();
+	break;
+    }
+    exit(0);
+    return 0;
 }
 
 #if 0
 void
 dummy()
 {
-	i18n("dummy.sub");
+    i18n("dummy.sub");
 }
 #endif

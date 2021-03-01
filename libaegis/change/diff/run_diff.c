@@ -83,7 +83,7 @@ original = \"%s\", input = \"%s\", output = \"%s\")\n{\n"/*}*/,
 	case cstate_state_being_integrated:
 		dd = change_integration_directory_get(cp, 0);
 		break;
-	
+
 	default:
 		dd = os_tmpdir();
 		break;

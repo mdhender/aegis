@@ -166,7 +166,7 @@ print("<p align=center class=\"navbar\">[");
 print("<a href=\"" ## script_name ## "\">Project List</a> |");
 href = script_name ## "?file@proj_menu+project@" ## quote_url(pn);
 print("<a href=\"" ## href ## "\">Project Menu</a> |");
-href = script_name ## "?file@chan_list+project@" ## quote_url(pn);
+href = script_name ## "?file@changes+project@" ## quote_url(pn);
 print("<a href=\"" ## href ## "\">Change List</a> |");
 href = script_name ## "?file@chan_menu+project@" ## quote_url(pn)
 	## "+change@" ## cn ;

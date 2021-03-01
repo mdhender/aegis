@@ -44,9 +44,9 @@ produce an annotated listing of the named source file.
 .PP
 The columns specified by the user (see the \fB\--column\fP option, below)
 are used of the left hand side of the output.  Two additional columns
-are alwats added: the line number and the source code.
+are always added: the line number and the source code.
 .PP
-If no columns are specfied, the default columns are
+If no columns are specified, the default columns are
 .TS
 center,tab(;);
 l l l l.
@@ -55,9 +55,9 @@ l l l l.
 \-column;'${change developer}';Who;8
 .TE
 The \fI$version\fP string always contains enough information to reproduce
-the entiure project baseline at the time of the delta.  The first portion
+the entire project baseline at the time of the delta.  The first portion
 is the project branch, and the second portion (following the `D') is
-the delta number; use these to form the -branch and -delta optoons for
+the delta number; use these to form the -branch and -delta options for
 an \fIaecp\fP(1) command.
 .PP
 At the end of the listing, accumulated statistics are presented,
@@ -83,9 +83,9 @@ and \fIvice versa\fP.
 .TP 8n
 \fB\-Diff_Option\fP \fIstring\fP
 This option may be used to pass addition arguments to the diff commands
-that is run between each delta of the file.  Use with caustion: poor
-choice of options can render aeannotate inoperable, or yeild meaningless
-results.  Probably the best use of thsi option is to pass the \fB\-b\fP
+that is run between each delta of the file.  Use with caution: poor
+choice of options can render aeannotate inoperable, or yield meaningless
+results.  Probably the best use of this option is to pass the \fB\-b\fP
 option, to ignore white space changes, because this ignores the vast
 majority of cosmetic formatting changes, showing you the content changes
 instead.  The \fB\-i\fP option, to ignore case, can also be useful for

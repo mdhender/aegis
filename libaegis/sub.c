@@ -82,7 +82,9 @@
 #include <sub/length.h>
 #include <sub/librar_direc.h>
 #include <sub/namemax.h>
+#include <sub/perl.h>
 #include <sub/plural.h>
+#include <sub/plural_forms.h>
 #include <sub/project.h>
 #include <sub/project/adminis_list.h>
 #include <sub/project/baseline.h>
@@ -383,7 +385,9 @@ static sub_table_ty table[] =
     /* Number */
     /* Output */
     /* ORiginal */
+    {"PERL", sub_perl, },
     {"PLural", sub_plural, },
+    {"PLural_Forms", sub_plural_forms, },
     {"Project", sub_project, },
     {"Project_Specific", sub_project_specific, },
     {"QUote", sub_quote, },

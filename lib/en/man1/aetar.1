@@ -105,6 +105,21 @@ It is not necessary for the sender to have the \fIaetar\fP(1) command.
 It is possible to use the regular \fItar czf\fP command to create the
 the tarball.  You may want to use the \fItardy\fP(1) command to manipulate
 the filenames before extraction.
+.SS File Names
+It is common for tar files generated to distribute open source projects
+to contain a path prefix.
+.TP 8n
+\fB\-Remove_Path_Prefix\fP \fIstring\fP
+This option may be used to explicitly specify path prefixes to be removed,
+if present.  It may be specified more than once.
+.PP
+If you have a complex project directory structure,
+from time to time people may send you tarballs relative to a sub-directory,
+rather than relative to the project root.
+.TP 8n
+\fB\-Add_Path_Prefix\fP \fIstring\fP
+This option may be used to specify the path of a project sub-directory
+in which to apply the tarball.
 .SS Notification
 The \fI\*(n)\fP command invokes various other Aegis commands.
 The usual notifications that these commands would issue are issued.
@@ -181,10 +196,15 @@ new.  This means it is possible to extract the contents of a package
 even when \*(n) is unavailable.
 .TP 2n
 \(bu
-The source files and other information is stored as a \fItar\fP(1) archive.
+The source files and other information is stored as a normal Unix
+\fItar\fP(1) archive.
 .TP 2n
 \(bu
-The archive is compressed using the GNU gzip format.  Typically primary
-source files are ASCII text, resulting in significant compression.
+On sending, the tarball is compressed using the GNU gzip format.
+Typically primary source files are ASCII text, resulting in significant
+compression.  (This is optional.)
+.br
+On receiving, if the tarball is compressed it will be automagically
+uncompressed, detection is automatic, you do not need to do this yourself.
 .so z_exit.so
 .so z_cr.so

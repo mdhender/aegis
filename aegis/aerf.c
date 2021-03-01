@@ -48,10 +48,8 @@
 #include <user.h>
 
 
-static void review_fail_usage _((void));
-
 static void
-review_fail_usage()
+review_fail_usage(void)
 {
     char	    *progname;
 
@@ -75,19 +73,15 @@ review_fail_usage()
 }
 
 
-static void review_fail_help _((void));
-
 static void
-review_fail_help()
+review_fail_help(void)
 {
     help("aerfail", review_fail_usage);
 }
 
 
-static void review_fail_list _((void));
-
 static void
-review_fail_list()
+review_fail_list(void)
 {
     string_ty	    *project_name;
 
@@ -128,12 +122,8 @@ review_fail_list()
 }
 
 
-static void check_permissions _((change_ty *, user_ty *));
-
 static void
-check_permissions(cp, up)
-    change_ty	    *cp;
-    user_ty	    *up;
+check_permissions(change_ty *cp, user_ty *up)
 {
     cstate	    cstate_data;
     project_ty	    *pp;
@@ -173,10 +163,8 @@ check_permissions(cp, up)
 }
 
 
-static void review_fail_main _((void));
-
 static void
-review_fail_main()
+review_fail_main(void)
 {
     string_ty	    *s;
     sub_context_ty  *scp;
@@ -389,7 +377,7 @@ review_fail_main()
     change_bind_existing(cp);
 
     /*
-     * create the commant, if necessary
+     * create the comment, if necessary
      * check permissions first
      */
     if (edit != edit_not_set)
@@ -504,7 +492,7 @@ review_fail_main()
 
 
 void
-review_fail()
+review_fail(void)
 {
     static arglex_dispatch_ty dispatch[] =
     {

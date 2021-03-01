@@ -1,6 +1,6 @@
 /*
  *	aegis - project change supervisor
- *	Copyright (C) 1999 Peter Miller;
+ *	Copyright (C) 1999, 2002 Peter Miller;
  *	All rights reserved.
  *
  *	This program is free software; you can redistribute it and/or modify
@@ -33,22 +33,22 @@
 typedef struct column_ty column_ty;
 struct column_ty
 {
-	wide_output_ty	*content; /* actually wide_output_column_ty */
-	output_ty	*content_filter;
+    wide_output_ty  *content; /* actually wide_output_column_ty */
+    output_ty	    *content_filter;
 };
 
 typedef struct col_unformatted_ty col_unformatted_ty;
 struct col_unformatted_ty
 {
-	col_ty		inherited;
-	wide_output_ty	*deeper;
-	int		delete_on_close;
+    col_ty	    inherited;
+    wide_output_ty  *deeper;
+    int		    delete_on_close;
 
-	wchar_t		separator;
+    wchar_t	    separator;
 
-	size_t		ncolumns;
-	size_t		ncolumns_max;
-	column_ty	*column;
+    size_t	    ncolumns;
+    size_t	    ncolumns_max;
+    column_ty	    *column;
 };
 
 
@@ -64,31 +64,28 @@ struct col_unformatted_ty
  *	this instance.
  */
 
-static void destructor _((col_ty *));
-
 static void
-destructor(fp)
-	col_ty		*fp;
+destructor(col_ty *fp)
 {
-	col_unformatted_ty *this;
-	size_t		j;
+    col_unformatted_ty *this;
+    size_t	    j;
 
-	trace(("col_unformatted::destructor(fp = %08lX)\n{\n", (long)fp));
-	this = (col_unformatted_ty *)fp;
-	for (j = 0; j < this->ncolumns; ++j)
-	{
-		column_ty	*cp;
+    trace(("col_unformatted::destructor(fp = %08lX)\n{\n", (long)fp));
+    this = (col_unformatted_ty *)fp;
+    for (j = 0; j < this->ncolumns; ++j)
+    {
+	column_ty	*cp;
 
-		/* The delcb() will do all the work. */
-		cp = &this->column[j];
-		if (cp->content_filter)
-			output_delete(cp->content_filter);
-	}
-	if (this->column)
-		mem_free(this->column);
-	if (this->delete_on_close)
-		wide_output_delete(this->deeper);
-	trace(("}\n"));
+	/* The delcb() will do all the work. */
+	cp = &this->column[j];
+	if (cp->content_filter)
+	    output_delete(cp->content_filter);
+    }
+    if (this->column)
+	mem_free(this->column);
+    if (this->delete_on_close)
+	wide_output_delete(this->deeper);
+    trace(("}\n"));
 }
 
 
@@ -105,40 +102,36 @@ destructor(fp)
  *	wide_output_callback when the content filter is created.
  */
 
-static void delcb _((output_ty *, void *));
-
 static void
-delcb(fp, arg)
-	output_ty	*fp;
-	void		*arg;
+delcb(output_ty *fp, void *arg)
 {
-	col_unformatted_ty *this;
-	size_t		j;
+    col_unformatted_ty *this;
+    size_t	    j;
 
-	/* called just before a wide output is deleted */
-	trace(("col_unformatted::delcb(fp = %08lX, arg = %08lX)\n{\n",
-		(long)fp, (long)arg));
-	this = (col_unformatted_ty *)arg;
-	for (j = 0; j < this->ncolumns; ++j)
-	{
-		column_ty	*cp;
+    /* called just before a wide output is deleted */
+    trace(("col_unformatted::delcb(fp = %08lX, arg = %08lX)\n{\n",
+	(long)fp, (long)arg));
+    this = (col_unformatted_ty *)arg;
+    for (j = 0; j < this->ncolumns; ++j)
+    {
+	column_ty	*cp;
 
-		cp = &this->column[j];
-		if (cp->content_filter != fp)
-			continue;
-		cp->content = 0;
-		cp->content_filter = 0;
-		break;
-	}
+	cp = &this->column[j];
+	if (cp->content_filter != fp)
+	    continue;
+	cp->content = 0;
+	cp->content_filter = 0;
+	break;
+    }
 
-	while
-	(
-		this->ncolumns > 0
-	&&
-		this->column[this->ncolumns - 1].content_filter == 0
-	)
-		this->ncolumns--;
-	trace(("}\n"));
+    while
+    (
+	this->ncolumns > 0
+    &&
+	this->column[this->ncolumns - 1].content_filter == 0
+    )
+	this->ncolumns--;
+    trace(("}\n"));
 }
 
 
@@ -166,86 +159,75 @@ delcb(fp, arg)
  *	Use output_delete when you are done with it.
  */
 
-static output_ty *create _((col_ty *, int, int, const char *));
-
 static output_ty *
-create(fp, left, right, title)
-	col_ty		*fp;
-	int		left;
-	int		right;
-	const char	*title;
+create(col_ty *fp, int left, int right, const char *title)
 {
-	col_unformatted_ty *this;
-	column_ty	*cp;
-	wide_output_ty	*fp4;
+    col_unformatted_ty *this;
+    column_ty	    *cp;
+    wide_output_ty  *fp4;
 
-	/*
-	 * we ignore the left, right and title arguments.
-	 */
-	trace(("col_unformatted::create(fp = %08lX, left = %d, right = %d, title = %08lX)\n{\n",
-		(long)fp, left, right, (long)title));
-	left = 0;
-	right = 0;
-	title = 0;
+    /*
+     * we ignore the left, right and title arguments.
+     */
+    trace(("col_unformatted::create(fp = %08lX, left = %d, right = %d, "
+	"title = %08lX)\n{\n", (long)fp, left, right, (long)title));
+    left = 0;
+    right = 0;
+    title = 0;
 
-	/*
-	 * make sure we grok enough columns
-	 */
-	this = (col_unformatted_ty *)fp;
-	if (this->ncolumns >= this->ncolumns_max)
+    /*
+     * make sure we grok enough columns
+     */
+    this = (col_unformatted_ty *)fp;
+    if (this->ncolumns >= this->ncolumns_max)
+    {
+	size_t		nbytes;
+	int		old;
+
+	old = this->ncolumns_max;
+	this->ncolumns_max = this->ncolumns_max * 2 + 4;
+	nbytes = this->ncolumns_max * sizeof(this->column[0]);
+	this->column = mem_change_size(this->column, nbytes);
+	while (old < this->ncolumns_max)
 	{
-		size_t		nbytes;
-		int		old;
-
-		old = this->ncolumns_max;
-		this->ncolumns_max = this->ncolumns_max * 2 + 4;
-		nbytes = this->ncolumns_max * sizeof(this->column[0]);
-		this->column = mem_change_size(this->column, nbytes);
-		while (old < this->ncolumns_max)
-		{
-			cp = &this->column[old++];
-			cp->content = 0;
-		}
+	    cp = &this->column[old++];
+	    cp->content = 0;
 	}
+    }
 
-	/*
-	 * allocate storage for the column content
-	 */
-	trace(("mark\n"));
-	cp = &this->column[this->ncolumns++];
-	cp->content =
-		wide_output_column_open
-		(
-			wide_output_page_width(this->deeper),
-			wide_output_page_length(this->deeper)
-		);
+    /*
+     * allocate storage for the column content
+     */
+    trace(("mark\n"));
+    cp = &this->column[this->ncolumns++];
+    cp->content =
+	wide_output_column_open
+	(
+    	    wide_output_page_width(this->deeper),
+    	    wide_output_page_length(this->deeper)
+	);
 
-	/*
-	 * What the client of the interface sees is a de-tabbed
-	 * filter into the column content.
-	 * It isn't wrapped, and it isn't truncated.
-	 */
-	trace(("mark\n"));
-	fp4 = wide_output_expand_open(cp->content, 1);
-	cp->content_filter = output_to_wide_open(fp4, 1);
-	output_delete_callback(cp->content_filter, delcb, this);
-	trace(("return %08lX;\n", (long)cp->content_filter));
-	trace(("}\n"));
-	return cp->content_filter;
+    /*
+     * What the client of the interface sees is a de-tabbed
+     * filter into the column content.
+     * It isn't wrapped, and it isn't truncated.
+     */
+    trace(("mark\n"));
+    fp4 = wide_output_expand_open(cp->content, 1);
+    cp->content_filter = output_to_wide_open(fp4, 1);
+    output_delete_callback(cp->content_filter, delcb, this);
+    trace(("return %08lX;\n", (long)cp->content_filter));
+    trace(("}\n"));
+    return cp->content_filter;
 }
 
 
-static void title _((col_ty *, const char *, const char *));
-
 static void
-title(fp, s1, s2)
-	col_ty		*fp;
-	const char	*s1;
-	const char	*s2;
+title(col_ty *fp, const char *s1, const char *s2)
 {
-	trace(("col_unformatted::title(fp = %08lX)\n{\n", (long)fp));
-	/* do nothing */
-	trace(("}\n"));
+    trace(("col_unformatted::title(fp = %08lX)\n{\n", (long)fp));
+    /* do nothing */
+    trace(("}\n"));
 }
 
 
@@ -265,86 +247,83 @@ title(fp, s1, s2)
  *	with a speace between them.
  */
 
-static void eoln _((col_ty *));
-
 static void
-eoln(fp)
-	col_ty		*fp;
+eoln(col_ty *fp)
 {
-	col_unformatted_ty *this;
-	size_t		j;
-	int		col;
+    col_unformatted_ty *this;
+    size_t	    j;
+    int		    col;
+
+    /*
+     * Send the first line of each column, only.
+     */
+    trace(("col_unformatted::eoln(fp = %08lX)\n{\n", (long)fp));
+    this = (col_unformatted_ty *)fp;
+    col = 0;
+    for (j = 0; j < this->ncolumns; ++j)
+    {
+	column_ty	*cp;
+	column_row_ty	*crp;
+	wchar_t		*wp;
+	size_t		wp_len;
 
 	/*
-	 * Send the first line of each column, only.
+	 * flush the output first
 	 */
-	trace(("col_unformatted::eoln(fp = %08lX)\n{\n", (long)fp));
-	this = (col_unformatted_ty *)fp;
-	col = 0;
-	for (j = 0; j < this->ncolumns; ++j)
+	cp = &this->column[j];
+	trace(("cp = %08lX;\n", (long)cp));
+	if (!cp->content_filter)
+	    continue;
+	output_end_of_line(cp->content_filter);
+	output_flush(cp->content_filter);
+
+	/*
+	 * Find the text for this column.
+	 */
+	assert(cp->content);
+	crp = wide_output_column_get(cp->content, 0);
+	trace(("crp = %08lX;\n", (long)crp));
+	wp = 0;
+	wp_len = 0;
+	if (crp)
 	{
-		column_ty	*cp;
-		column_row_ty	*crp;
-		wchar_t		*wp;
-		size_t		wp_len;
-
-		/*
-		 * flush the output first
-		 */
-		cp = &this->column[j];
-		trace(("cp = %08lX;\n", (long)cp));
-		if (!cp->content_filter)
-			continue;
-		output_end_of_line(cp->content_filter);
-		output_flush(cp->content_filter);
-	
-		/*
-		 * Find the text for this column.
-		 */
-		assert(cp->content);
-		crp = wide_output_column_get(cp->content, 0);
-		trace(("crp = %08lX;\n", (long)crp));
-		wp = 0;
-		wp_len = 0;
-		if (crp)
-		{
-			wp = crp->text;
-			wp_len = crp->length;
-		}
-
-		/*
-		 * Trim off leading and trailing spaces.
-		 */
-		while (wp_len > 0 && *wp == (wchar_t)' ')
-		{
-			++wp;
-			--wp_len;
-		}
-		while (wp_len > 0 && wp[wp_len - 1] == (wchar_t)' ')
-			--wp_len;
-
-		/*
-		 * If there is anything to print, produce a separator
-		 * and the text.  If there is not, but the separator is
-		 * not a space (e.g. a comma, for CSV files) emit the
-		 * separator anyway.
-		 */
-		if (wp_len > 0)
-		{
-			if (col++)
-				wide_output_putwc(this->deeper, this->separator);
-			wide_output_write(this->deeper, wp, wp_len);
-		}
-		else if (this->separator != (wchar_t)' ' && col++)
-			wide_output_putwc(this->deeper, this->separator);
-
-		/*
-		 * reset content buffers
-		 */
-		wide_output_column_reset(cp->content);
+	    wp = crp->text;
+	    wp_len = crp->length;
 	}
-	wide_output_putwc(this->deeper, (wchar_t)'\n');
-	trace(("}\n"));
+
+	/*
+	 * Trim off leading and trailing spaces.
+	 */
+	while (wp_len > 0 && *wp == (wchar_t)' ')
+	{
+	    ++wp;
+	    --wp_len;
+	}
+	while (wp_len > 0 && wp[wp_len - 1] == (wchar_t)' ')
+	    --wp_len;
+
+	/*
+	 * If there is anything to print, produce a separator
+	 * and the text.  If there is not, but the separator is
+	 * not a space (e.g. a comma, for CSV files) emit the
+	 * separator anyway.
+	 */
+	if (wp_len > 0)
+	{
+	    if (col++)
+	       	wide_output_putwc(this->deeper, this->separator);
+	    wide_output_write(this->deeper, wp, wp_len);
+	}
+	else if (this->separator != (wchar_t)' ' && col++)
+	    wide_output_putwc(this->deeper, this->separator);
+
+	/*
+	 * reset content buffers
+	 */
+	wide_output_column_reset(cp->content);
+    }
+    wide_output_putwc(this->deeper, (wchar_t)'\n');
+    trace(("}\n"));
 }
 
 
@@ -361,18 +340,15 @@ eoln(fp)
  *	a blank line.
  */
 
-static void eject _((col_ty *));
-
 static void
-eject(fp)
-	col_ty		*fp;
+eject(col_ty *fp)
 {
-	col_unformatted_ty *this;
+    col_unformatted_ty *this;
 
-	trace(("col_unformatted::eject(fp = %08lX)\n{\n", (long)fp));
-	this = (col_unformatted_ty *)fp;
-	wide_output_putwc(this->deeper, '\n');
-	trace(("}\n"));
+    trace(("col_unformatted::eject(fp = %08lX)\n{\n", (long)fp));
+    this = (col_unformatted_ty *)fp;
+    wide_output_putwc(this->deeper, '\n');
+    trace(("}\n"));
 }
 
 
@@ -389,30 +365,25 @@ eject(fp)
  *	pages, so this function does nothing.
  */
 
-static void need _((col_ty *, int));
-
 static void
-need(fp, n)
-	col_ty		*fp;
-	int		n;
+need(col_ty *fp, int n)
 {
-	trace(("col_unformatted::need(fp = %08lX, nlines = %d)\n{\n",
-		(long)fp, n));
-	/* do nothing, the page is infinitely long */
-	trace(("}\n"));
+    trace(("col_unformatted::need(fp = %08lX, nlines = %d)\n{\n", (long)fp, n));
+    /* do nothing, the page is infinitely long */
+    trace(("}\n"));
 }
 
 
 static col_vtbl_ty vtbl =
 {
-	sizeof(col_unformatted_ty),
-	destructor,
-	create,
-	title,
-	eoln,
-	eject,
-	need,
-	"unformatted",
+    sizeof(col_unformatted_ty),
+    destructor,
+    create,
+    title,
+    eoln,
+    eject,
+    need,
+    "unformatted",
 };
 
 
@@ -439,23 +410,21 @@ static col_vtbl_ty vtbl =
  */
 
 col_ty *
-col_unformatted_open(deeper, delete_on_close)
-	wide_output_ty	*deeper;
-	int		delete_on_close;
+col_unformatted_open(wide_output_ty *deeper, int delete_on_close)
 {
-	col_ty		*result;
-	col_unformatted_ty *this;
+    col_ty	    *result;
+    col_unformatted_ty *this;
 
-	trace(("col_unformatted::new(deeper = %08lX)\n{\n", (long)deeper));
-	result = col_new(&vtbl);
-	this = (col_unformatted_ty *)result;
-	this->deeper = deeper;
-	this->delete_on_close = delete_on_close;
-	this->ncolumns = 0;
-	this->ncolumns_max = 0;
-	this->column = 0;
-	this->separator = (wchar_t)' ';
-	trace(("return %08lX;\n", (long)result));
-	trace(("}\n"));
-	return result;
+    trace(("col_unformatted::new(deeper = %08lX)\n{\n", (long)deeper));
+    result = col_new(&vtbl);
+    this = (col_unformatted_ty *)result;
+    this->deeper = deeper;
+    this->delete_on_close = delete_on_close;
+    this->ncolumns = 0;
+    this->ncolumns_max = 0;
+    this->column = 0;
+    this->separator = (wchar_t)' ';
+    trace(("return %08lX;\n", (long)result));
+    trace(("}\n"));
+    return result;
 }

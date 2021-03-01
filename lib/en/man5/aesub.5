@@ -437,13 +437,44 @@ to the file system maximum.
 .\" -------------------- O --------------------
 .\" -------------------- P --------------------
 .TP 8n
+PERL
+This function requires zero arguments.
+It is replaced by the absolute path of a Perl interpreter.
+.br
+.TP 8n
 PLural
 .br
 This function requires 2 or 3 arguments.
 The first argument is evaluated as a number,
 if it is plural (not equal to 1) the second argument is the result,
 otherwise the third argument is the result (or empty if not given).
-This is mostly used to pluralize sentences in error messages.
+This is mostly used to pluralize sentences in Germainic error messages.
+.TP 8n
+PLural_Forms
+.RS
+The \fIplural_forms\fP substitution is similar to the
+\fI${plural}\fP substitution, except that it reads and understands the
+\f[CW]Plural-Forms:\fP header in the message catalogue.  This means that
+it understands a greater range of pluralization mechanisms than the simple
+\fI${plural}\fP substitution.
+(For a description of the \f[CW]Plural-Forms:\fP header,
+see the GNU Gettext manual.)
+.PP
+The first argument is the number.  Second is the singular form
+(corresponding to the \f[CW]Plural-Forms:\fP expression evaluating to
+zero), the third and subsequent arguments are the various plural forms
+(corresponding to the \f[CW]Plural-Forms:\fP expression evaluating to 1,
+2, 3, \fIetc\fP.
+.PP
+The \f[CW]Plural-Forms:\fP expression is required evaluate to less than
+\f[CW]nplurals\fP.  If it does not, the second arguement (the singular
+form) is used.  If there are too few arguments to this substitution,
+the second argument (the singular form) is again used.
+.PP
+Note that in the default case (used for English and other Germanic
+languages), the arguments are the \fIreverse\fP of those expected by
+the \fI${plural}\fP substitution.
+.RE
 .TP 8n
 Project
 .RS
@@ -580,7 +611,7 @@ Select amongst a set of values.
 The first argument is expected to be a number.
 If the number is zero, the second argument is used;
 if the number is one, the third argument is used; etc.
-If the number is negative, or exceeds the avalable arguments,
+If the number is negative, or exceeds the available arguments,
 the last argument is used.
 .\" -------------------- T --------------------
 .TP 8n

@@ -675,12 +675,11 @@ copy_file_independent()
 	s1 = wl.string[j];
 	if (delta_date != NO_TIME_SET)
 	{
-	    file_event_list_ty *felp;
 	    file_event_ty  *fep;
 	    fstate_src      old_src;
 
-	    felp = project_file_roll_forward_get(s1);
-	    if (!felp)
+	    fep = project_file_roll_forward_get_last(s1);
+	    if (!fep)
 	    {
 		/*
 		 * The file doesn't exist yet at this
@@ -688,8 +687,6 @@ copy_file_independent()
 		 */
 		continue;
 	    }
-	    assert(felp->length);
-	    fep = &felp->item[felp->length - 1];
 
 	    old_src = change_file_find(fep->cp, s1);
 	    assert(old_src);
@@ -836,6 +833,7 @@ copy_file_main()
     int             based;
     string_ty       *base;
     sub_context_ty  *scp;
+    int             rescind;
 
     trace(("copy_file_main()\n{\n"));
     arglex();
@@ -852,6 +850,7 @@ copy_file_main()
     branch = 0;
     trunk = 0;
     read_only = 0;
+    rescind = 0;
     while (arglex_token != arglex_token_eoln)
     {
 	switch (arglex_token)
@@ -1052,6 +1051,12 @@ copy_file_main()
 	case arglex_token_current_relative:
 	    user_relative_filename_preference_argument(copy_file_usage);
 	    break;
+
+	case arglex_token_rescind:
+	    if (rescind)
+		duplicate_option(copy_file_usage);
+	    rescind = 1;
+	    break;
 	}
 	arglex();
     }
@@ -1093,6 +1098,36 @@ copy_file_main()
 	    arglex_token_delta_from_change,
 	    copy_file_usage
 	);
+    }
+    if
+    (
+	rescind
+    &&
+	!delta_name
+    &&
+	delta_number < 0
+    &&
+	!delta_from_change
+    &&
+	delta_date == NO_TIME_SET
+    )
+    {
+	scp = sub_context_new();
+	sub_var_set_charstar
+	(
+	    scp,
+	    "Name1",
+	    arglex_token_name(arglex_token_rescind)
+	);
+	sub_var_set_charstar
+	(
+	    scp,
+	    "Name2",
+	    arglex_token_name(arglex_token_delta)
+	);
+	fatal_intl(scp, i18n("$name1 needs $name2"));
+	/* NOTREACHED */
+	sub_context_delete(scp);
     }
 
     /*
@@ -1490,16 +1525,16 @@ copy_file_main()
 	string_ty       *from;
 	string_ty       *to;
 	fstate_src      old_src = 0;
+	fstate_src      older_src = 0;
 
 	s1 = wl.string[j];
 	if (delta_date != NO_TIME_SET)
 	{
-	    file_event_list_ty *felp;
 	    file_event_ty   *fep;
 	    int             from_unlink = 0;
 
-	    felp = project_file_roll_forward_get(s1);
-	    if (!felp)
+	    fep = project_file_roll_forward_get_last(s1);
+	    if (!fep)
 	    {
 		fstate_src      p_src_data;
 
@@ -1507,6 +1542,9 @@ copy_file_main()
 		 * This file had not yet been created at
 		 * the time of the delta.  Arrange for
 		 * it to look like it's being removed.
+		 *
+		 * In the case of -rescind, it doesn't exist at the
+		 * previous delta, either, so remove it in this case, too.
 		 *
 		 * This is a memory leak.
 		 */
@@ -1527,21 +1565,28 @@ copy_file_main()
 		    old_src->edit = history_version_type.alloc();
 		    old_src->edit->revision = str_from_c("1.1");
 		}
+		older_src = old_src;
 	    }
 	    else
 	    {
-		assert(felp->length);
-		fep = &felp->item[felp->length - 1];
 		old_src = change_file_find(fep->cp, s1);
+		if (rescind)
+		{
+		    fep = project_file_roll_forward_get_older(s1);
+		    older_src = change_file_find(fep->cp, s1);
+		}
+		else
+		    older_src = old_src;
 	    }
 	    assert(old_src);
-	    if (old_src->action == file_action_remove)
+	    assert(older_src);
+	    if (older_src->action == file_action_remove)
 	    {
 		from = str_from_c("/dev/null");
 	    }
 	    else
 	    {
-		from = project_file_version_path(pp2, old_src, &from_unlink);
+		from = project_file_version_path(pp2, older_src, &from_unlink);
 	    }
 
 	    /*
@@ -1570,7 +1615,7 @@ copy_file_main()
 	    mode = 0444;
 	    if (!read_only)
 		mode |= 0600;
-	    if (old_src->executable)
+	    if (older_src->executable)
 		mode |= 0111;
 	    mode &= ~change_umask(cp);
 	    os_chmod(to, mode);
@@ -1610,6 +1655,7 @@ copy_file_main()
 	     */
 	    old_src = project_file_find(pp2, s1);
 	    assert(old_src);
+	    older_src = old_src;
 
 	    /*
 	     * copy the file
@@ -1647,7 +1693,8 @@ copy_file_main()
 	    fstate_src      c_src_data;
 	    fstate_src      p_src_data;
 
-	    p_src_data = old_src ? old_src : project_file_find(pp2, s1);
+	    assert(!old_src == !older_src);
+	    p_src_data = older_src ? older_src : project_file_find(pp2, s1);
 	    assert(p_src_data);
 	    assert(p_src_data->edit);
 	    assert(p_src_data->edit->revision);
@@ -1689,6 +1736,20 @@ copy_file_main()
 			break;
 		    }
 		}
+	    }
+	    if (old_src != older_src)
+	    {
+		/*
+		 * In the case of -rescind, crank forward to the following
+		 * version.  That way we have copied the previous version,
+		 * but claim the following version.  This will have the
+		 * effect to backing out the delta specified.
+		 */
+		assert(old_src);
+		p_src_data = old_src;
+		assert(p_src_data);
+		assert(p_src_data->edit);
+		assert(p_src_data->edit->revision);
 	    }
 
 	    /*

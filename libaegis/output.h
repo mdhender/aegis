@@ -1,6 +1,6 @@
 /*
  *	aegis - project change supervisor
- *	Copyright (C) 1999 Peter Miller;
+ *	Copyright (C) 1999, 2002 Peter Miller;
  *	All rights reserved.
  *
  *	This program is free software; you can redistribute it and/or modify
@@ -84,11 +84,7 @@ void output_write _((output_ty *, const void *, size_t));
 void output_flush _((output_ty *));
 int output_page_width _((output_ty *));
 int output_page_length _((output_ty *));
-void output_fprintf _((output_ty *, const char *, ...))
-#ifdef __GNUC__
-	__attribute__ ((__format__ (__printf__, 2, 3)))
-#endif
-		;
+void output_fprintf _((output_ty *, const char *, ...)) ATTR_PRINTF(2, 3);
 void output_vfprintf _((output_ty *, const char *, va_list));
 void output_end_of_line _((output_ty *));
 void output_delete_callback _((output_ty *, output_delete_callback_ty,

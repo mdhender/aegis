@@ -1,6 +1,6 @@
 /*
  *	aegis - project change supervisor
- *	Copyright (C) 1994, 1995, 1996, 1997, 1999 Peter Miller;
+ *	Copyright (C) 1994-1997, 1999, 2002 Peter Miller;
  *	All rights reserved.
  *
  *	This program is free software; you can redistribute it and/or modify
@@ -34,270 +34,253 @@
 #include <trace.h>
 
 
-static rpt_value_ty *pw_to_struct _((struct passwd *));
-
 static rpt_value_ty *
-pw_to_struct(pw)
-	struct passwd	*pw;
+pw_to_struct(struct passwd *pw)
 {
-	rpt_value_ty	*result;
-	string_ty	*name;
-	string_ty	*s;
-	rpt_value_ty	*value;
-	char		*full_name;
-	char		*comma;
+    rpt_value_ty    *result;
+    string_ty	    *name;
+    string_ty	    *s;
+    rpt_value_ty    *value;
+    char	    *full_name;
+    char	    *comma;
 
-	trace(("pw_to_struct()\n{\n"/*}*/));
-	result = rpt_value_struct((struct symtab_ty *)0);
+    trace(("pw_to_struct()\n{\n" /*}*/));
+    result = rpt_value_struct((struct symtab_ty *)0);
 
-	trace(("pw_name\n"));
-	name = str_from_c("pw_name");
-	s = str_from_c(pw->pw_name);
-	value = rpt_value_string(s);
-	str_free(s);
-	rpt_value_struct__set(result, name, value);
-	str_free(name);
-	assert(value->reference_count == 2);
-	rpt_value_free(value);
+    trace(("pw_name\n"));
+    name = str_from_c("pw_name");
+    s = str_from_c(pw->pw_name);
+    value = rpt_value_string(s);
+    str_free(s);
+    rpt_value_struct__set(result, name, value);
+    str_free(name);
+    assert(value->reference_count==2);
+    rpt_value_free(value);
 
-	trace(("pw_uid\n"));
-	name = str_from_c("pw_uid");
-	value = rpt_value_integer((long)pw->pw_uid);
-	rpt_value_struct__set(result, name, value);
-	str_free(name);
-	assert(value->reference_count == 2);
-	rpt_value_free(value);
+    trace(("pw_uid\n"));
+    name = str_from_c("pw_uid");
+    value = rpt_value_integer((long)pw->pw_uid);
+    rpt_value_struct__set(result, name, value);
+    str_free(name);
+    assert(value->reference_count==2);
+    rpt_value_free(value);
 
-	trace(("pw_gid\n"));
-	name = str_from_c("pw_gid");
-	value = rpt_value_integer((long)pw->pw_gid);
-	rpt_value_struct__set(result, name, value);
-	str_free(name);
-	assert(value->reference_count == 2);
-	rpt_value_free(value);
+    trace(("pw_gid\n"));
+    name = str_from_c("pw_gid");
+    value = rpt_value_integer((long)pw->pw_gid);
+    rpt_value_struct__set(result, name, value);
+    str_free(name);
+    assert(value->reference_count==2);
+    rpt_value_free(value);
 
-	trace(("pw_gecos\n"));
-	name = str_from_c("pw_gecos");
-	if (pw->pw_gecos && pw->pw_gecos[0])
-		full_name = pw->pw_gecos;
+    trace(("pw_gecos\n"));
+    name = str_from_c("pw_gecos");
+    if (pw->pw_gecos && pw->pw_gecos[0])
+	full_name = pw->pw_gecos;
 #ifdef HAVE_pw_comment
-	else if (pw->pw_comment && pw->pw_comment[0])
-		full_name = pw->pw_comment;
+    else if (pw->pw_comment && pw->pw_comment[0])
+	full_name = pw->pw_comment;
 #endif
-	else
-		full_name = pw->pw_name;
+    else
+	full_name = pw->pw_name;
 
-	/*
-	 * Some systems add lots of other stuff to the full name field
-	 * in the passwd file.  We are only interested in the name.
-	 */
-	comma = strchr(full_name, ',');
-	if (comma)
-		s = str_n_from_c(full_name, comma - full_name);
-	else
-		s = str_from_c(full_name);
-	value = rpt_value_string(s);
-	str_free(s);
-	rpt_value_struct__set(result, name, value);
-	str_free(name);
-	trace(("pw_comment\n"));
-	name = str_from_c("pw_comment");
-	rpt_value_struct__set(result, name, value);
-	str_free(name);
-	assert(value->reference_count == 3);
-	rpt_value_free(value);
+    /*
+     * Some systems add lots of other stuff to the full name field
+     * in the passwd file.  We are only interested in the name.
+     */
+    comma = strchr(full_name, ',');
+    if (comma)
+	s = str_n_from_c(full_name, comma - full_name);
+    else
+	s = str_from_c(full_name);
+    value = rpt_value_string(s);
+    str_free(s);
+    rpt_value_struct__set(result, name, value);
+    str_free(name);
+    trace(("pw_comment\n"));
+    name = str_from_c("pw_comment");
+    rpt_value_struct__set(result, name, value);
+    str_free(name);
+    assert(value->reference_count==3);
+    rpt_value_free(value);
 
-	trace(("pw_dir\n"));
-	name = str_from_c("pw_dir");
-	s = str_from_c(pw->pw_dir);
-	value = rpt_value_string(s);
-	str_free(s);
-	rpt_value_struct__set(result, name, value);
-	str_free(name);
-	assert(value->reference_count == 2);
-	rpt_value_free(value);
+    trace(("pw_dir\n"));
+    name = str_from_c("pw_dir");
+    s = str_from_c(pw->pw_dir);
+    value = rpt_value_string(s);
+    str_free(s);
+    rpt_value_struct__set(result, name, value);
+    str_free(name);
+    assert(value->reference_count==2);
+    rpt_value_free(value);
 
-	trace(("pw_shell\n"));
-	name = str_from_c("pw_shell");
-	s = str_from_c(pw->pw_shell);
-	value = rpt_value_string(s);
-	str_free(s);
-	rpt_value_struct__set(result, name, value);
-	str_free(name);
-	assert(value->reference_count == 2);
-	rpt_value_free(value);
+    trace(("pw_shell\n"));
+    name = str_from_c("pw_shell");
+    s = str_from_c(pw->pw_shell);
+    value = rpt_value_string(s);
+    str_free(s);
+    rpt_value_struct__set(result, name, value);
+    str_free(name);
+    assert(value->reference_count==2);
+    rpt_value_free(value);
 
-	trace(("return %08lX;\n", (long)result));
-	trace((/*{*/"}\n"));
-	return result;
+    trace(("return %08lX;\n", (long)result));
+    trace(( /*{*/"}\n"));
+    return result;
 }
 
 
-static rpt_value_ty *lookup _((rpt_value_ty *, rpt_value_ty *, int));
-
 static rpt_value_ty *
-lookup(lhs, rhs, lvalue)
-	rpt_value_ty	*lhs;
-	rpt_value_ty	*rhs;
-	int		lvalue;
+lookup(rpt_value_ty *lhs, rpt_value_ty *rhs, int lvalue)
 {
-	rpt_value_ty	*rhs2;
-	rpt_value_ty	*result;
-	struct passwd	*pw;
-	string_ty	*s;
+    rpt_value_ty    *rhs2;
+    rpt_value_ty    *result;
+    struct passwd   *pw;
+    string_ty	    *s;
 
-	trace(("value_passwd::lookup()\n{\n"/*}*/));
-	rhs2 = rpt_value_arithmetic(rhs);
-	if (rhs2->method->type == rpt_value_type_integer)
-	{
-		int		uid;
+    trace(("value_passwd::lookup()\n{\n" /*}*/));
+    rhs2 = rpt_value_arithmetic(rhs);
+    if (rhs2->method->type == rpt_value_type_integer)
+    {
+	int		uid;
 
-		uid = rpt_value_integer_query(rhs2);
-		rpt_value_free(rhs2);
-		pw = getpwuid_cached(uid);
-		if (pw)
-			result = pw_to_struct(pw);
-		else
-		{
-			sub_context_ty	*scp;
-
-			scp = sub_context_new();
-			sub_var_set_long(scp, "Number", uid);
-			s = subst_intl(scp, i18n("uid $number unknown"));
-			sub_context_delete(scp);
-			result = rpt_value_error((struct rpt_pos_ty *)0, s);
-			str_free(s);
-		}
-	}
+	uid = rpt_value_integer_query(rhs2);
+	rpt_value_free(rhs2);
+	pw = getpwuid_cached(uid);
+	if (pw)
+	    result = pw_to_struct(pw);
 	else
 	{
-		rpt_value_free(rhs2);
-		rhs2 = rpt_value_stringize(rhs);
-		if (rhs2->method->type == rpt_value_type_string)
-		{
-			string_ty	*name;
+	    sub_context_ty  *scp;
 
-			name = rpt_value_string_query(rhs2);
-			pw = getpwnam_cached(name);
-			if (pw)
-				result = pw_to_struct(pw);
-			else
-			{
-				sub_context_ty	*scp;
-
-				scp = sub_context_new();
-				sub_var_set_string(scp, "Name", name);
-				s = subst_intl(scp, i18n("user $name unknown"));
-				sub_context_delete(scp);
-				result = rpt_value_error((struct rpt_pos_ty *)0, s);
-				str_free(s);
-			}
-		}
-		else
-		{
-			sub_context_ty	*scp;
-
-			scp = sub_context_new();
-			sub_var_set_charstar(scp, "Name1", "passwd");
-			sub_var_set_charstar(scp, "Name2", rhs->method->name);
-			s = subst_intl(scp, i18n("illegal lookup ($name1[$name2])"));
-			sub_context_delete(scp);
-			result = rpt_value_error((struct rpt_pos_ty *)0, s);
-			str_free(s);
-		}
-		rpt_value_free(rhs2);
+	    scp = sub_context_new();
+	    sub_var_set_long(scp, "Number", uid);
+	    s = subst_intl(scp, i18n("uid $number unknown"));
+	    sub_context_delete(scp);
+	    result = rpt_value_error((struct rpt_pos_ty *)0, s);
+	    str_free(s);
 	}
-	trace(("return %08lX;\n", (long)result));
-	trace((/*{*/"}\n"));
-	return result;
-}
-
-
-static rpt_value_ty *keys _((rpt_value_ty *));
-
-static rpt_value_ty *
-keys(vp)
-	rpt_value_ty	*vp;
-{
-	rpt_value_ty	*result;
-	struct passwd	*pw;
-	string_ty	*s;
-	rpt_value_ty	*ep;
-
-	result = rpt_value_list();
-	setpwent();
-	for (;;)
+    }
+    else
+    {
+	rpt_value_free(rhs2);
+	rhs2 = rpt_value_stringize(rhs);
+	if (rhs2->method->type == rpt_value_type_string)
 	{
-		pw = getpwent();
-		if (!pw)
-			break;
-		
-		s = str_from_c(pw->pw_name);
-		ep = rpt_value_string(s);
+	    string_ty	    *name;
+
+	    name = rpt_value_string_query(rhs2);
+	    pw = getpwnam_cached(name);
+	    if (pw)
+		result = pw_to_struct(pw);
+	    else
+	    {
+		sub_context_ty	*scp;
+
+		scp = sub_context_new();
+		sub_var_set_string(scp, "Name", name);
+		s = subst_intl(scp, i18n("user $name unknown"));
+		sub_context_delete(scp);
+		result = rpt_value_error((struct rpt_pos_ty *)0, s);
 		str_free(s);
-		rpt_value_list_append(result, ep);
-		rpt_value_free(ep);
+	    }
 	}
-	return result;
+	else
+	{
+	    sub_context_ty  *scp;
+
+	    scp = sub_context_new();
+	    sub_var_set_charstar(scp, "Name1", "passwd");
+	    sub_var_set_charstar(scp, "Name2", rhs->method->name);
+	    s = subst_intl(scp, i18n("illegal lookup ($name1[$name2])"));
+	    sub_context_delete(scp);
+	    result = rpt_value_error((struct rpt_pos_ty *)0, s);
+	    str_free(s);
+	}
+	rpt_value_free(rhs2);
+    }
+    trace(("return %08lX;\n", (long)result));
+    trace(( /*{*/"}\n"));
+    return result;
 }
 
-
-static rpt_value_ty *count _((rpt_value_ty *));
 
 static rpt_value_ty *
-count(vp)
-	rpt_value_ty	*vp;
+keys(rpt_value_ty *vp)
 {
-	struct passwd	*pw;
-	long		n;
+    rpt_value_ty    *result;
+    struct passwd   *pw;
+    string_ty	    *s;
+    rpt_value_ty    *ep;
 
-	n = 0;
-	setpwent();
-	for (;;)
-	{
-		pw = getpwent();
-		if (!pw)
-			break;
-		++n;
-	}
-	return rpt_value_integer(n);
+    result = rpt_value_list();
+    setpwent();
+    for (;;)
+    {
+	pw = getpwent();
+	if (!pw)
+	    break;
+
+	s = str_from_c(pw->pw_name);
+	ep = rpt_value_string(s);
+	str_free(s);
+	rpt_value_list_append(result, ep);
+	rpt_value_free(ep);
+    }
+    return result;
 }
 
 
-static char *type_of _((rpt_value_ty *));
+static rpt_value_ty *
+count(rpt_value_ty *vp)
+{
+    struct passwd   *pw;
+    long	    n;
+
+    n = 0;
+    setpwent();
+    for (;;)
+    {
+	pw = getpwent();
+	if (!pw)
+	    break;
+	++n;
+    }
+    return rpt_value_integer(n);
+}
+
 
 static char *
-type_of(this)
-	rpt_value_ty	*this;
+type_of(rpt_value_ty *this)
 {
-	return "struct";
+    return "struct";
 }
 
 
 static rpt_value_method_ty method =
 {
-	sizeof(rpt_value_ty),
-	"passwd",
-	rpt_value_type_structure,
-	0, /* construct */
-	0, /* destruct */
-	0, /* arithmetic */
-	0, /* stringize */
-	0, /* booleanize */
-	lookup,
-	keys,
-	count,
-	type_of,
-	0, /* undefer */
+    sizeof(rpt_value_ty),
+    "passwd",
+    rpt_value_type_structure,
+    0, /* construct */
+    0, /* destruct */
+    0, /* arithmetic */
+    0, /* stringize */
+    0, /* booleanize */
+    lookup,
+    keys,
+    count,
+    type_of,
+    0, /* undefer */
 };
 
 
 rpt_value_ty *
-rpt_value_passwd()
+rpt_value_passwd(void)
 {
-	static rpt_value_ty *vp;
+    static rpt_value_ty *vp;
 
-	if (!vp)
-		vp = rpt_value_alloc(&method);
-	return rpt_value_copy(vp);
+    if (!vp)
+	vp = rpt_value_alloc(&method);
+    return rpt_value_copy(vp);
 }

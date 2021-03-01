@@ -148,6 +148,11 @@ not even the baseline read lock.
 This option may be used to specify that the file is to be used to
 insulate the change from the baseline.  The user does not intend to edit
 the file.  These files must be uncopied before development may end.
+.TP 8n
+.B \-REScind
+This option may be used to rescind (roll back) a completed change.
+The change to rescind (roll back) is specified in the usual way, with
+one of the --delta options.
 .so o_terse.so
 .so o_trunk.so
 .so o_verbose.so
@@ -174,6 +179,57 @@ the file is already in the change and the
 .B -OverWrite
 option is not specified.
 .so z_exit.so
+.br
+.ne 1i
+.SH EXAMPLES
+Here are some simple examples.
+Remember that most commands are relative to the current directory, even
+though these examples assume you are at the base of the development
+directory tree.
+.SS Copy Whole Project
+To copy the whole project into your change, use the command
+.RS
+aecp .
+.RE
+The trailing dot is part of the command, it means "the currect directory
+and everything below it".  This works for any directory in your project source
+tree, if you want to be more seledctive.
+.SS Prroduce Earlier Project Version
+You you wish to exactly reproduces the sources for an earlier version
+of your project, you need to know the edelta number (use \fIael
+proj-history\fP to find it).  Then use this command:
+.RS
+aecp -delta \fIn\fP .
+.RE
+where \fIn\fP is the delta number from the project history.
+Again, the trailing dot is part of the command.
+By using the \fI$version\fP substitution (see \fIaesub\fP(5) for more
+information) you can embed this delta number into your program before
+distributing it.
+.PP
+It is also possible to give a previous change number, instead,
+using this command:
+.RS
+aecp -delta-from-change \fIn\fP .
+.RE
+where \fIn\fP is the change number of interest.
+Again, the trailing dot is part of the command.
+.SS Rescind a Change
+When you need to rescind (back out) a completed change, it will probably
+have been some time ago, so you need to know the delta number or change
+number.
+Use this command:
+.RS
+aecp -delta \fIn\fP -rescind .
+.RE
+where \fIn\fP is the delta number of interest.
+All of the other \-delta variantrs also work, so if you know the change
+number, you can be more selective about which files to copy:
+.RS
+aecp -delta-from-change \fIn\fP `aegis -l cf -ter -c \fIn\fP`
+.RE
+where \fIn\fP is the change number of interest.
+This only copies the files which were in the offending change.
 .br
 .ne 1i
 .SH SEE ALSO

@@ -25,7 +25,7 @@
 .IP \(bu 2n
 Add a section to the branching chapter of the User Guide, describing
 how a developer may use a branch to temporarily waive the build command.
-After a series of chnages on this branch, the build command is restored,
+After a series of changes on this branch, the build command is restored,
 and the branch development ended.  This allows regular "non working"
 commits, without losing any of the strengths of the Aegis process.
 Submitted: 7-Mar-2000
@@ -80,8 +80,8 @@ Submitted: PMiller, 28-jun-99
 .\" ------------------------------------------------------------------------
 .IP \(bu 2n
 in the branching chapter, have a section about using sub-branches
-to turn build_command off (or to ignore exit status), and inregrate lots
-of teeny tiny bug fixes,
+to turn build_command off (or to ignore exit status), and integrate lots
+of teensy tiny bug fixes,
 and then turn it on again.
 In the front, reference the branching chapter in ``how to extend the
 Aegis process''  Can mention extra review steps there, too.
@@ -115,12 +115,12 @@ Submitted: choffman@dvcorp.com, 22 Jun 1999
 .IP \(bu 2n
 Document the build_time_adjust_notify_command in the DMT chapter of the
 User Guide.  Update the example projects to use it.  Update the config
-exmaple to use it.
-Submitted: PMiller, 4-apr-99
+example to use it.
+Submitted: PMiller, 4-Apr-99
 .\" ------------------------------------------------------------------------
 .IP \(bu 2n
 Mention binary files in the diff and merge section
-(may provide aebinfil command to help choose which behaviour?)
+(may provide aebinfil command to help choose which behavior?)
 Submitted: PMiller, 31-mar-99
 .\" ------------------------------------------------------------------------
 .IP \(bu 2n
@@ -197,19 +197,19 @@ Jerry says he has written most of this.
 Submitted: jerry.pendergraft@endocardial.com 3-Nov-99
 .\" ------------------------------------------------------------------------
 .IP \(bu 2n
-ael change_history - write as a repot and then include project history
+ael change_history - write as a report and then include project history
 for sub branches.
 Don't forget the web reports, too.
-Sumbitted:Jerry Pendergraft <jerry@endocardial.com>, 30 Aug 1999
+Submitted:Jerry Pendergraft <jerry@endocardial.com>, 30 Aug 1999
 .\" ------------------------------------------------------------------------
 .IP \(bu 2n
-ael outstanding_changes - rewite as a report and then include sub branches.
+ael outstanding_changes - rewrite as a report and then include sub branches.
 Don't forget the web reports, too.
 Submitted: Jerry Pendergraft <jerry@endocardial.com>, 30 Aug 1999
 .\" ------------------------------------------------------------------------
 .IP \(bu 2n
 ael project_history - rewrite as a report and then include parents and
-sub branches.  Don'f forget the web reports, too.
+sub branches.  Don't forget the web reports, too.
 Submitted: Jerry Pendergraft <jerry@endocardial.com>, 30 Aug 1999
 .\" ------------------------------------------------------------------------
 .IP \(bu 2n
@@ -245,9 +245,9 @@ Should also put user name under change state, as in change lists.
 It would be nice to have a way to specify a timeout for aegis tests.  If a
 single test does not finish within this time, it should be aborted and
 considered `No Result'.  Then aet should continue with the next test (as
-appropriate if --perservere was given).  A `--timeout' argument to `aet'
+appropriate if --persevere was given).  A `--timeout' argument to `aet'
 would do the trick, and also a project config field.  The implementation
-could be interesting, since signalling the forked aegis child process
+could be interesting, since signaling the forked aegis child process
 might not be enough to stop all processes (process groups?).
 Submitted: Ralf Fassel <ralf@akutech.de>, 24-Jan-2001
 .\" ------------------------------------------------------------------------
@@ -268,7 +268,7 @@ not just in \f[CW]aegis/aed.c\fP
 Submitted: Ralf Fassel <ralf@akutech.de>, 25 Feb 2000
 .\" ------------------------------------------------------------------------
 .IP \(bu 2n
-Add progess (%) indicators (aeib was specific example, but there may be
+Add progress (%) indicators (aeib was specific example, but there may be
 others \fIe.g.\fP symlink farms and aecp, even aede for big changes)
 for use by the GUI interfaces - and maybe the text interface too.
 Submitted: Ralf Fassel <ralf@akutech.de> 10 Dec 1999
@@ -296,7 +296,7 @@ Aedist to add project history to end of description when sending change set.
 Submitted: Jerry Pendergraft <jerry@endocardial.com>, Dec-2000
 .\" ------------------------------------------------------------------------
 .IP \(bu 2n
-can we separate change creation from other adminstrator permissions?
+can we separate change creation from other administrator permissions?
 can we make "everyone" able to create changes?
 Submitted: Ewolt Wolters <ewolt@pallas-athena.com>, 28 Jun 1999
 .\" ------------------------------------------------------------------------
@@ -311,7 +311,7 @@ Submitted: John Huddleston <jhudd@cody.itc.nrcs.usda.gov>, 19 Mar 1999
 [IF there were editable file attributes]
 add coupling between files (as file attribute)
 this means when you aecp, you get a set of files
-(see a command to set it, need to carry it thu integration, etc.)
+(see a command to set it, need to carry it thru integration, etc.)
 Submitted: PMiller, 18-Feb-99
 .\" ------------------------------------------------------------------------
 .IP \(bu 2n
@@ -372,7 +372,7 @@ Warn them not to in the manual pages.
 .\" ------------------------------------------------------------------------
 .IP \(bu 2n
 list locks - need to spot the case where *all* of a set are taken (all 64k)
-and report sensably (not 64K lines)
+and report sensibly (not 64K lines)
 .\" ------------------------------------------------------------------------
 .IP \(bu 2n
 aemv does not correctly check the -to- filename.
@@ -413,8 +413,8 @@ Add pseudo change do can do many integrations at once (this pseudo change
 would be created by aeib and destroyed by aeipass, aeifail or aeibu).
 .\" ------------------------------------------------------------------------
 .IP \(bu 2n
-Version punctuation: at the moment ypou gets dots between the branch
-numbers.  Need more flexible punctuation: especially, want a hyohen first,
+Version punctuation: at the moment you gets dots between the branch
+numbers.  Need more flexible punctuation: especially, want a hyphen first,
 then dots (sometimes).
 .\" ------------------------------------------------------------------------
 .IP \(bu 2n
@@ -429,7 +429,7 @@ Should aecp -del fake aenf for deleted files in earlier deltas?
 Submitted: markm@endo.com
 .\" ------------------------------------------------------------------------
 .IP \(bu 2n
-initernationalize -interactive
+internationalize -interactive
 .\" ------------------------------------------------------------------------
 .IP \(bu 2n
 Enhance aet to allow reviewers to run tests.
@@ -438,7 +438,7 @@ Enhance aet to allow reviewers to run tests.
 check library state files on project creation
 	``I was creating a new release from a large project. After copying the
 	baseline and creating hundreds of history files the aenrls failed
-	because the library dir I specified wasn't writeable by aegis and no
+	because the library dir I specified wasn't writable by aegis and no
 	state file was created. Couldn't this be checked first?''
 Submitted: Lloyd Fischer <lloyd@dvcorp.com>
 .\" ------------------------------------------------------------------------
@@ -476,7 +476,7 @@ Submitted: Ralf Fassel <ralf@akutech.de> 3-Mar-2002
 .\" ========================================================================
 .nh 4 "More O(1) Scalability"
 .IP \(bu 2n
-Need to suppliment the {project,change}_file_find and
+Need to supplement the {project,change}_file_find and
 {project,change}_file_nth interfaces with
 {project,change}_file_name_nth interfaces.
 Then, use them as often as possible.
@@ -485,7 +485,7 @@ Then, use them as often as possible.
 Need the fstate file to have a manifest field;
 access this for file names.
 Then, store each file into in a separate file;
-only access this file is file state is requied.
+only access this file is file state is required.
 .\" ------------------------------------------------------------------------
 .IP \(bu 2n
 The presence or absence of the manifest field in the top-level fstate
@@ -528,15 +528,15 @@ Submitted: PMiller, 22-Jun-99
 building documentation needs to talk about libz some more.
 particularly, you either need it on ROOT's LD_LIBRARY_PATH
 or you need to static link it.
-Submitted: Ralf Fassel <ralf@akutech.de> 5-apr-99
+Submitted: Ralf Fassel <ralf@akutech.de> 5-Apr-99
 .\" ------------------------------------------------------------------------
 .IP \(bu 2n
 have configure script whine about missing libz
-Submitted: PMiller, 7 apr 99
+Submitted: PMiller, 7 Apr 99
 .\" ------------------------------------------------------------------------
 .IP \(bu 2n
 have configure script whine about missing regcomp
-Submitted: PMiller, 7 apr 99
+Submitted: PMiller, 7 Apr 99
 .\" ------------------------------------------------------------------------
 .IP \(bu 2n
 Sample documentation needs to make the \fIgroup\fP thing obvious.
@@ -544,7 +544,7 @@ And also the umask at aenpr time!
 Submitted: Alan Zimmerman <alanz@electrosolv.co.za>, 5 Apr 1999
 .\" ------------------------------------------------------------------------
 .IP \(bu 2n
-genertated makefile CC=cc needs to quote cc incase has spaces
+generated makefile CC=cc needs to quote cc in case has spaces
 Submitted: Aaron Johnson <adj@ccltd.com>, 31 Mar 1999
 .\" ------------------------------------------------------------------------
 .IP \(bu 2n
@@ -560,7 +560,7 @@ Submitted: Graham Wheeler <gram@cdsec.com> 27 Jan 1999
 .nh 3 "Database"
 .IP \(bu 2n
 Should the Aegis database be replaced by XML?
-(This would have \fIhuge\fP backwards compatability issues.)
+(This would have \fIhuge\fP backwards compatibility issues.)
 Maybe we need a way to project the Aegis database into XML?
 Submitted: Mark Veltzer <mark2776@yahoo.com>, 16 Aug 2001
 .\" ------------------------------------------------------------------------

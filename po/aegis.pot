@@ -786,6 +786,16 @@ msgid	"$name1 and $name2"
 msgstr	"$name1 and $name2"
 
 #
+# This error message is issued when an option which needs to be
+# accompanied by another option, but that option is not present.
+#
+# 	$Name1		The name of the offending option.
+# 	$Name2		The name of the offending option.
+#
+msgid	"$name1 needs $name2"
+msgstr	"the $name1 option must be accompanied the $name2 option"
+
+#
 # This format string is used to glue together two items in the
 # architecture names list.  Not used for the last two.
 #
@@ -1631,6 +1641,17 @@ msgstr	"baseline read lock not available"
 #
 msgid	"baseline write lock not available"
 msgstr	"baseline write lock not available"
+
+#
+# This error message is issued before running batch_test_command if
+# progress messages were requested
+#
+# 	$Current	Number of the first test in batch
+# 	$Last		Number of the last test in batch
+# 	$Total		Total number of tests
+#
+msgid	"batch test from $current to $last of $total"
+msgstr	"tests $current-$last of $total, ${date %%H:%%M}"
 
 # -----------------------------------------------------------------------------
 #
@@ -4123,6 +4144,13 @@ msgstr	"unable to work out what you meant to say, because it was too "
 #
 # This error message is issued when bison finds an error at parse time.
 #
+msgid	"parse error; also virtual memory exhausted"
+msgstr	"unable to work out what you meant to say, because it was too "
+	"complicated to fit in memory"
+
+#
+# This error message is issued when bison finds an error at parse time.
+#
 msgid	"parser stack overflow"
 msgstr	"unable to work out what you meant to say, because it was too "
 	"complicated and blew my stack"
@@ -4675,6 +4703,16 @@ msgstr	"unable to work out what you meant to say"
 #
 msgid	"tab width $number out of range"
 msgstr	"a tab width of $number is out of range"
+
+#
+# This error message is issued before running test_command if
+# progress messages were requested
+#
+#      $Current        Current test number
+#      $Total          Total number of tests
+#
+msgid	"test $current of $total"
+msgstr	"test $current of $total, ${date %%H:%%M}"
 
 #
 # This verbose message is issued when aent determines the list of

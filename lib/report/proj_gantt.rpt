@@ -1,0 +1,424 @@
+/*
+ *	aegis - project change supervisor
+ *	Copyright (C) 2002 Peter Miller;
+ *	All rights reserved.
+ *
+ *	This program is free software; you can redistribute it and/or modify
+ *	it under the terms of the GNU General Public License as published by
+ *	the Free Software Foundation; either version 2 of the License, or
+ *	(at your option) any later version.
+ *
+ *	This program is distributed in the hope that it will be useful,
+ *	but WITHOUT ANY WARRANTY; without even the implied warranty of
+ *	MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ *	GNU General Public License for more details.
+ *
+ *	You should have received a copy of the GNU General Public License
+ *	along with this program; if not, write to the Free Software
+ *	Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111, USA.
+ *
+ * MANIFEST: report the lib/report/proj_gantt.rpt
+ *
+ *
+ * How to use this report...
+ *
+ * Start Ms. Project
+ * Open...
+ *	You'll need to select "All Files (*.*)"
+ *	Click on [Open]
+ *
+ * You will then see a new dialog box with a list of import formats
+ *	select "Default task information"
+ *	Click on [Edit...]
+ *
+ * Under the "Options" tab
+ *	make sure "Tasks" is selected
+ *	make sure "Import include headers" is selected
+ *	select comma as the "Text delimiter"
+ *
+ * Under the "Task Mapping" tab
+ *	Click [Add All]
+ *	Click [OK]
+ *
+ * Now you are back in the "Import Format" dialog
+ *	Clock [Open]
+ *
+ * At this point, Ms. Project reads the file and digests it.  It can
+ * take a long time for a large project, so you will need to be
+ * patient.
+ *
+ * You will probably need to change Ms. Project's idea of the start
+ * date of the project.  For some reason, it doesn't do thos
+ * automatically on import.
+ *
+ * You will probably need to change the time line scale (double click on it).
+ */
+
+columns({ right = 0; });
+auto ps, cn, cs, h, stats, sep;
+
+/*
+ * The separator can be "," or "\t".
+ * It may not be anything else.
+ */
+sep = ",";
+
+print("ID" ## sep ## "Task_Name" ## sep ## "Outline_Level" ## sep ##
+	"Duration" ## sep ## "Percent_Complete" ## sep ##
+	"Start_Date" ## sep ## "Finish_Date" ## sep ## "Predecessors" ## sep ##
+	"Resource_Names");
+
+stats =
+{
+	awaiting_development = {};
+	being_developed = {};
+	being_reviewed = {};
+	awaiting_integration = {};
+	being_integrated = {};
+	completed = {};
+};
+
+auto prev_when, prev_state, new_state;
+
+ps = project[project_name()].state.branch;
+for (cn in sort(keys(ps.change)))
+{
+	cs = ps.change[cn];
+	prev_when = 0;
+	prev_state = "unknown";
+	for (h in cs.history)
+	{
+		new_state = "unknown";
+		if (h.what == new_change)
+		{
+			new_state = "awaiting_development";
+		}
+		else if (h.what == develop_begin ||
+			h.what == develop_end_undo ||
+			h.what == review_fail ||
+			h.what == integrate_fail)
+		{
+			new_state = "being_developed";
+		}
+		else if (h.what == develop_begin_undo)
+		{
+			new_state = "awaiting_development";
+		}
+		else if (h.what == develop_end ||
+			h.what == review_pass_undo)
+		{
+			new_state = "being_reviewed";
+		}
+		else if (h.what == review_pass ||
+			h.what == integrate_begin_undo)
+		{
+			new_state = "awaiting_integration";
+		}
+		else if (h.what == integrate_begin)
+		{
+			new_state = "being_integrated";
+		}
+		else if (h.what == integrate_pass)
+		{
+			new_state = "completed";
+		}
+		else
+		{
+			new_state = "unknown";
+		}
+		if (prev_state != "unknown")
+		{
+			stats[prev_state].sum +=
+				working_days(prev_when, h.when);
+			stats[prev_state].count++;
+		}
+		prev_state = new_state;
+		prev_when = h.when;
+	}
+}
+
+for (cn in keys(stats))
+{
+	h = stats[cn];
+	if (h.count == 0)
+		h.average = 1;
+	else
+		h.average = h.sum / h.count;
+}
+
+auto n, administrator, developer, reviewer, integrator, cur_user;
+n = 1;
+for (cn in sort(keys(ps.change)))
+{
+	cs = ps.change[cn];
+	prev_when = 0;
+	prev_state = "unknown";
+	administrator = "unknown";
+	developer = "unknown";
+	reviewer = "unknown";
+	integrator = "unknown";
+	auto tmp;
+	tmp = subst("["##sep##"\n]", " ", cs.brief_description);
+	print
+	(
+		/* ID */
+		n ## sep ##
+
+		/* Task_Name */
+		"C" ## cn ## ": " ## tmp ## sep ##
+
+		/* Outline_Level */
+		"1"
+	);
+	n++;
+	for (h in cs.history)
+	{
+		new_state = "unknown";
+		if (h.what == new_change)
+		{
+			new_state = "awaiting_development";
+			administrator = h.who;
+			cur_user = administrator;
+		}
+		else if (h.what == develop_begin)
+		{
+			developer = h.who;
+			new_state = "being_developed";
+			cur_user = developer;
+		}
+		else if (h.what == develop_end_undo ||
+			h.what == review_fail ||
+			h.what == integrate_fail)
+		{
+			new_state = "being_developed";
+			cur_user = developer;
+		}
+		else if (h.what == develop_begin_undo)
+		{
+			new_state = "awaiting_development";
+			cur_user = developer;
+		}
+		else if (h.what == develop_end ||
+			h.what == review_pass_undo)
+		{
+			new_state = "being_reviewed";
+			cur_user = developer;
+		}
+		else if (h.what == review_pass)
+		{
+			reviewer = h.who;
+			new_state = "awaiting_integration";
+			cur_user = reviewer;
+		}
+		else if (h.what == integrate_begin_undo)
+		{
+			new_state = "awaiting_integration";
+			cur_user = reviewer;
+		}
+		else if (h.what == integrate_begin)
+		{
+			integrator = h.who;
+			new_state = "being_integrated";
+			cur_user = integrator;
+		}
+		else if (h.what == integrate_pass)
+		{
+			new_state = "completed";
+			cur_user = integrator;
+		}
+		else
+		{
+			new_state = "unknown";
+			cur_user = "unknown";
+		}
+
+		if (prev_state != "unknown")
+		{
+			print
+			(
+				/* ID */
+				n ## sep ##
+
+				/* Task_Name */
+				prev_state ## sep ##
+
+				/* Outline_Level */
+				"2" ## sep ##
+
+				/* Duration */
+				sep ##
+
+				/* Percent_Complete */
+				"100" ## sep ##
+
+				/* Start_date */
+				strftime("%m/%d/%Y %H:%M:%S", prev_when) ##
+				sep ##
+
+				/* Finish_Date */
+				strftime("%m/%d/%Y %H:%M:%S", h.when) ##
+				sep ##
+
+				/* Predecessors */
+				(prev_state != "awaiting_development"
+				? (n - 1) : "") ## sep ##
+
+				/* Resource_Names */
+				cur_user
+			);
+			stats[prev_state].sum += h.when - prev_when;
+			stats[prev_state].count++;
+			n++;
+		}
+		prev_state = new_state;
+		prev_when = h.when;
+	}
+	if (prev_state == "awaiting_development")
+	{
+		print
+		(
+			/* ID */
+			n ## sep ##
+
+			/* Task_Name */
+			"awaiting_development" ## sep ##
+
+			/* Outline_Level */
+			"2" ## sep ##
+
+			/* Duration */
+			stats["awaiting_development"].average ##
+			" day" ## sep ##
+
+			/* Percent_Complete */
+			"0"
+		);
+		n++;
+		prev_state = "being_developed";
+	}
+	if (prev_state == "being_developed")
+	{
+		print
+		(
+			/* ID */
+			n ## sep ##
+
+			/* Task_Name */
+			"being_developed" ## sep ##
+
+			/* Outline_Level */
+			"2" ## sep ##
+
+			/* Duration */
+			stats["being_developed"].average ## " day" ## sep ##
+
+			/* Percebnt_Complete */
+			"0" ## sep ##
+
+			/* Start_Date */
+			sep ##
+
+			/* Finish_Date */
+			sep ##
+
+			/* Predecessors */
+			(n - 1)
+		);
+		n++;
+		prev_state = "being_reviewed";
+	}
+	if (prev_state == "being_reviewed")
+	{
+		print
+		(
+			/* ID */
+			n ## sep ##
+
+			/* Task_Name */
+			"being_reviewed" ## sep ##
+
+			/* Outline_Level */
+			"2" ## sep ##
+
+			/* Duration */
+			stats["being_reviewed"].average ## " day" ## sep ##
+
+			/* Percent_Complete */
+			"0" ## sep ##
+
+			/* Start_Date */
+			sep ##
+
+			/* Finish_Date */
+			sep ##
+
+			/* Predecessors */
+			(n - 1)
+		);
+		n++;
+		prev_state = "awaiting_integration";
+	}
+	if (prev_state == "awaiting_integration")
+	{
+		print
+		(
+			/* ID */
+			n ## sep ##
+
+			/* Task_Name */
+			"awaiting_integration" ## sep ##
+
+			/* Outline_Level */
+			"2" ## sep ##
+
+			/* Duration */
+			stats["awaiting_integration"].average ##
+			" day" ## sep ##
+
+			/* Percent_Complete */
+			"0" ## sep ##
+
+			/* Start_Date */
+			sep ##
+
+			/* Finish_Date */
+			sep ##
+
+			/* Predecessors */
+			(n - 1)
+		);
+		n++;
+		prev_state = "being_integrated";
+	}
+	if (prev_state == "being_integrated")
+	{
+		print
+		(
+			/* ID */
+			n ## sep ##
+
+			/* Task_Name */
+			"being_integrated" ## sep ##
+
+			/* Outline_Level */
+			"2" ## sep ##
+
+			/* Duration */
+			stats["being_integrated"].average ## " day" ## sep ##
+
+			/* Percent_Complete */
+			"0" ## sep ##
+
+			/* Start_Date */
+			sep ##
+
+			/* Finish_Date */
+			sep ##
+
+			/* Predecessors */
+			(n - 1)
+		);
+		n++;
+		prev_state = "completed";
+	}
+}

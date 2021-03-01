@@ -22,6 +22,7 @@
 #
 aefp_files=
 cklinlen_files=
+simp_file_stat_files=
 aegis_files=
 clean_files="core bin/find_sizes\$(EXEEXT) bin/fmtgen\$(EXEEXT)		\
 	libaegis/libaegis.\$(LIBEXT) common/common.\$(LIBEXT) .bin	\
@@ -149,7 +150,7 @@ do
 		commands_bin="$commands_bin bin/$name\$(EXEEXT)"
 
 		case $name in
-		aefp | fmtgen | find_sizes | cklinlen )
+		aefp | fmtgen | find_sizes | cklinlen | simp_file_stat )
 			;;
 		test_*)
 			;;
@@ -270,7 +271,7 @@ do
 		echo '	@sleep 1'
 		;;
 
-	aefp)
+	aefp | simp_file_stat )
 		echo "bin/$name\$(EXEEXT): \$(${name}_files) \
 common/common.\$(LIBEXT) .bin"
 		echo '	@sleep 1'

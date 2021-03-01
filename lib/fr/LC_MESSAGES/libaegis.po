@@ -565,6 +565,17 @@ msgid	"$name1 and $name2"
 msgstr	"$name1 et $name2"
 
 #
+# TRANSLATION REQUIRED
+# This error message is issued when an option which needs to be
+# accompanied by another option, but that option is not present.
+#
+# 	$Name1		The name of the offending option.
+# 	$Name2		The name of the offending option.
+#
+msgid	"$name1 needs $name2"
+msgstr	"the $name1 option must be accompanied the $name2 option"
+
+#
 # This format string is used to glue together two items in the
 # architecture names list.  Not used for the last two.
 #
@@ -780,6 +791,18 @@ msgstr	"verrou de lire pour base de réference n'est pas disponible"
 #
 msgid	"baseline write lock not available"
 msgstr	"verrou d'ecrire pour base de réference n'est pas disponible"
+
+#
+# TRANSLATION REQUIRED
+# This error message is issued before running batch_test_command if
+# progress messages were requested
+#
+# 	$Current	Number of the first test in batch
+# 	$Last		Number of the last test in batch
+# 	$Total		Total number of tests
+#
+msgid	"batch test from $current to $last of $total"
+msgstr	"batch test from $current to $last of $total"
 
 #
 # This message is issued when an inappropriate e?e:e is attempted.
@@ -2196,6 +2219,13 @@ msgstr	"ne comprendre pas ce que vous voulez dire; parce qu'il est trop "
 #
 # This error message is issued when bison finds an error at parse time.
 #
+msgid	"parse error; also virtual memory exhausted"
+msgstr	"ne comprendre pas ce que vous voulez dire; parce qu'il est trop "
+	"compliqué de reste au mémoire"
+
+#
+# This error message is issued when bison finds an error at parse time.
+#
 msgid	"parser stack overflow"
 msgstr	"ne comprendre pas ce que vous voulez dire; parce qu'il est trop "
 	"compliqué de reste en pile"
@@ -2485,6 +2515,17 @@ msgstr	"ne comprendre pas ce que vous voulez dire"
 #
 msgid	"tab width $number out of range"
 msgstr	"largeur du 'tab' $number hors gamme"
+
+#
+# TRANSLATION REQUIRED
+# This error message is issued before running test_command if
+# progress messages were requested
+#
+#      $Current        Current test number
+#      $Total          Total number of tests
+#
+msgid	"test $current of $total"
+msgstr	"test $current of $total"
 
 #
 # This error message is issued when Aegis is invoked in test mode, but

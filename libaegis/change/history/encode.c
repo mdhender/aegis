@@ -1,6 +1,6 @@
 /*
  *	aegis - project change supervisor
- *	Copyright (C) 2001 Peter Miller;
+ *	Copyright (C) 2001, 2002 Peter Miller;
  *	All rights reserved.
  *
  *	This program is free software; you can redistribute it and/or modify
@@ -169,7 +169,7 @@ src->file_name = \"%s\")\n{\n", (long)cp, src->file_name->str_text));
 				intl_yuck = 1;
 				ascii_yuck = 1;
 				break;
-			
+
 			case ' ':
 			case '\f':
 			case '\n':

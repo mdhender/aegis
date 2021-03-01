@@ -1,6 +1,6 @@
 /*
  *	aegis - project change supervisor
- *	Copyright (C) 1999-2001 Peter Miller;
+ *	Copyright (C) 1999-2002 Peter Miller;
  *	All rights reserved.
  *
  *	This program is free software; you can redistribute it and/or modify
@@ -98,7 +98,7 @@ wide_output_truncate_write(fp, data, len)
 	{
 		wchar_t wc = *data++;
 		--len;
-	
+
 		switch (wc)
 		{
 		case '\n':
@@ -118,11 +118,11 @@ wide_output_truncate_write(fp, data, len)
 			this->buf_pos = 0;
 			this->column = 0;
 			break;
-	
+
 		default:
 			/*
 			 * If we have already become too wide, don't
-			 * make the deeper unnecessary function calls. 
+			 * make the deeper unnecessary function calls.
 			 */
 			if (this->column >= this->width)
 				break;

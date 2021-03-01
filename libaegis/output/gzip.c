@@ -1,6 +1,6 @@
 /*
  *	aegis - project change supervisor
- *	Copyright (C) 1999 Peter Miller;
+ *	Copyright (C) 1999, 2002 Peter Miller;
  *	All rights reserved.
  *
  *	This program is free software; you can redistribute it and/or modify
@@ -62,7 +62,7 @@ drop_dead(this, err)
 	sub_context_ty	*scp;
 
 	scp = sub_context_new();
-	sub_var_set_charstar(scp, "ERRNO", z_error(err)); 
+	sub_var_set_charstar(scp, "ERRNO", z_error(err));
 	sub_var_override(scp, "ERRNO");
 	sub_var_set_string(scp, "File_Name", output_filename(this->deeper));
 	fatal_intl(scp,  i18n("gzip $filename: $errno"));

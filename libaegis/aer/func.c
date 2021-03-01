@@ -1,6 +1,6 @@
 /*
  *	aegis - project change supervisor
- *	Copyright (C) 1994, 1995, 1996, 1997, 1998, 1999, 2000, 2001 Peter Miller;
+ *	Copyright (C) 1994-2002 Peter Miller;
  *	All rights reserved.
  *
  *	This program is free software; you can redistribute it and/or modify
@@ -20,10 +20,12 @@
  * MANIFEST: functions to manipulate builtin functions
  */
 
+#include <aer/func/capitalize.h>
 #include <aer/func/change.h>
 #include <aer/func/columns.h>
 #include <aer/func/count.h>
 #include <aer/func/dirname.h>
+#include <aer/func/downcase.h>
 #include <aer/func/eject.h>
 #include <aer/func/getenv.h>
 #include <aer/func/gettime.h>
@@ -47,6 +49,7 @@
 #include <aer/func/terse.h>
 #include <aer/func/title.h>
 #include <aer/func/typeof.h>
+#include <aer/func/upcase.h>
 #include <aer/func/wrap.h>
 #include <aer/value/func.h>
 #include <symtab.h>
@@ -55,12 +58,14 @@
 static rpt_func_ty *table[] =
 {
 	&rpt_func_basename,
+	&rpt_func_capitalize,
 	&rpt_func_ceil,
 	&rpt_func_change_number,
 	&rpt_func_change_number_set,
 	&rpt_func_columns,
 	&rpt_func_count,
 	&rpt_func_dirname,
+	&rpt_func_downcase,
 	&rpt_func_eject,
 	&rpt_func_floor,
 	&rpt_func_getenv,
@@ -92,6 +97,7 @@ static rpt_func_ty *table[] =
 	&rpt_func_trunc,
 	&rpt_func_typeof,
 	&rpt_func_unquote_url,
+	&rpt_func_upcase,
 	&rpt_func_working_days,
 	&rpt_func_wrap,
 	&rpt_func_wrap_html,

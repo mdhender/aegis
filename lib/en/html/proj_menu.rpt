@@ -54,7 +54,34 @@ print("<link rel=\"stylesheet\" type=\"text/css\" href=\"/" ## pn ## ".css\" "
 	## "media=\"all\">");
 print("<title>Project " ## quote_html(pn));
 print("</title></head><body><h1 align=center>");
-print("Project ``" ## quote_html(pn) ## "''");
+
+auto href;
+print("<a href=\"" ## script_name ## "\">Project</a>");
+auto long_project_name;
+auto prj_name_parts;
+prj_name_parts = split(pn, '.');
+if (count(prj_name_parts) < 2)
+    long_project_name = quote_html(pn);
+else
+{
+    href = script_name ## "?file@proj_menu+project@"
+	## quote_url(prj_name_parts[0]);
+    long_project_name = "<a href=\"" ## href ## "\" >"
+	## quote_html(prj_name_parts[0]) ## "</a>";
+    auto j;
+    for (j = 1; j < count(prj_name_parts) - 1; j++)
+    {
+	href ##= '.' ## prj_name_parts[j];
+	long_project_name ##= ".<a href=\"" ## href ## "\" >"
+	    ## quote_html(prj_name_parts[j]) ## "</a>";
+    }
+    long_project_name ##= "." ##
+	quote_html(prj_name_parts[count(prj_name_parts) - 1]);
+}
+long_project_name = "``" ## long_project_name ## "'',<br>";
+/* HTTP limits lines to 510 characters */
+for (j in wrap(long_project_name, 510))
+    print(j);
 print("</h1>");
 
 print("<div class=\"brief-description\">");
@@ -74,8 +101,24 @@ print("<div class=\"information\">");
 print("<h2>Information Available</h2>");
 print("<dl>");
 
-auto href;
-href = script_name ## "?file@chan_list+project@" ## quote_url(pn);
+/* Links to sub branches. */
+auto sbr, sub_brs;
+sub_brs = p.state.branch.sub_branch;
+if (count(sub_brs) > 0)
+{
+    print("<dt>Branches<dd>");
+    j = 1;
+    for (sbr in sort(sub_brs))
+    {
+	href = script_name ## "?file@proj_menu+project@" ## pn ## "." ## sbr;
+	print("<a href=\"" ## href ## "\">" ## pn ## "." ## sbr ## "</a>" ##
+	    (j == count(sub_brs) ? "" : ","));
+	++j;
+    }
+    print("<p>");
+}
+
+href = script_name ## "?file@changes+project@" ## quote_url(pn);
 print("<dt><a href=\"" ## href ## "\">");
 print("Changes");
 print("</a><dd>");
@@ -85,18 +128,30 @@ print("progress, and those which have been completed.");
 print("<p>");
 print("Change lists are also available broken down by change state:");
 print("<ul>");
-href = script_name ## "?file@chan_awdev+project@" ## quote_url(pn);
+href = script_name ## "?file@changes+state:awaiting_development+project@"
+	## quote_url(pn);
 print("<li><a href=\"" ## href ## "\">awaiting development</a>");
-href = script_name ## "?file@chan_bedev+project@" ## quote_url(pn);
+href = script_name ## "?file@changes+state:being_developed+project@"
+	## quote_url(pn);
 print("<li><a href=\"" ## href ## "\">being developed</a>");
-href = script_name ## "?file@chan_berev+project@" ## quote_url(pn);
-print("<li><a href=\"" ## href ## "\">being reviewed</a>");
-href = script_name ## "?file@chan_awrev+project@" ## quote_url(pn);
+href = script_name ## "?file@changes+state:awaiting_review+project@"
+	## quote_url(pn);
 print("<li><a href=\"" ## href ## "\">awaiting review</a>");
-href = script_name ## "?file@chan_awint+project@" ## quote_url(pn);
+href = script_name ## "?file@changes+state:being_reviewed+project@"
+	## quote_url(pn);
+print("<li><a href=\"" ## href ## "\">being reviewed</a>");
+href = script_name ## "?file@changes+state:being_reviewed+project@"
+	## quote_url(pn);
+print("<li><a href=\"" ## href ## "\">awaiting review</a>");
+href = script_name ## "?file@changes+state:awaiting_review+project@"
+	## quote_url(pn);
 print("<li><a href=\"" ## href ## "\">awaiting integration</a>");
-href = script_name ## "?file@chan_beint+project@" ## quote_url(pn);
+href = script_name ## "?file@changes+state:awaiting_integration+project@"
+	## quote_url(pn);
 print("<li><a href=\"" ## href ## "\">being integrated</a>");
+href = script_name ## "?file@changes+state:-completed+project@"
+	## quote_url(pn);
+print("<li><a href=\"" ## href ## "\">not completed</a>");
 href = script_name ## "?file@proj_hstry+project@" ## quote_url(pn);
 print("<li><a href=\"" ## href ## "\">completed</a>");
 print("</ul>");
@@ -124,6 +179,14 @@ print("</a><dd>");
 print("This item will provide you with a listing of the files which");
 print("are the project master source.	Links are provided to individual");
 print("file information.");
+
+href = script_name ## "?file@proj_filme+project@" ## quote_url(pn);
+print("<dt><a href=\"" ## href ## "\">");
+print("File Metrics");
+print("</a><dd>");
+print("This item will provide you with a listing of the files with file");
+print("metrics.  (Each project defines its own metrics, none by default.)");
+print("Links are provided to individual file information.");
 
 href = script_name ## "?file@file_activ+project@" ## quote_url(pn);
 print("<dt><a href=\"" ## href ## "\">");

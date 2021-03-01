@@ -1,6 +1,6 @@
 /*
  *	aegis - project change supervisor
- *	Copyright (C) 1998 Peter Miller;
+ *	Copyright (C) 1998, 2002 Peter Miller;
  *	All rights reserved.
  *
  *	This program is free software; you can redistribute it and/or modify
@@ -61,7 +61,7 @@ gif_create(path, width, height)
 	result->height = height;
 	result->mode = gif_mode_rdwr;
 	result->mime = 0;
-	
+
 	/*
 	 * allocate the image
 	 */

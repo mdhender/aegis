@@ -1,6 +1,6 @@
 /*
  *	aegis - project change supervisor
- *	Copyright (C) 1999 Peter Miller;
+ *	Copyright (C) 1999, 2002 Peter Miller;
  *	All rights reserved.
  *
  *	This program is free software; you can redistribute it and/or modify
@@ -39,11 +39,11 @@ change_new_test_filename_get(cp, n, is_auto)
 	scp = sub_context_new();
 	pconf_data = change_pconf_get(cp, 1);
 	assert(pconf_data->new_test_filename);
-	sub_var_set_long(scp, "Hundred", n / 100); 
+	sub_var_set_long(scp, "Hundred", n / 100);
 	sub_var_optional(scp, "Hundred");
-	sub_var_set_long(scp, "Number", n); 
+	sub_var_set_long(scp, "Number", n);
 	/* do not gettext these next two names */
-	sub_var_set_charstar(scp, "Type", (is_auto ? "automatic" : "manual")); 
+	sub_var_set_charstar(scp, "Type", (is_auto ? "automatic" : "manual"));
 	sub_var_optional(scp, "Type");
 	result = substitute(scp, cp, pconf_data->new_test_filename);
 	sub_context_delete(scp);
