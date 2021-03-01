@@ -1,7 +1,7 @@
 //
 //	aegis - project change supervisor
 //	Copyright (C) 1999-2008 Peter Miller
-//	Copyright (C) 2004, 2005, 2007, 2008 Walter Franzini;
+//	Copyright (C) 2004, 2005, 2007, 2008 Walter Franzini
 //
 //	This program is free software; you can redistribute it and/or modify
 //	it under the terms of the GNU General Public License as published by

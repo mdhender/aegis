@@ -268,7 +268,7 @@ $bin/ae-repo-ci --repository=svn --module file://$work/svnroot/$AEGIS_PROJECT \
     -c 10 > log 2>&1
 if test $? -ne 0 ; then cat log; fail; fi
 
-test -f $work/svnroot/db/revs/2 || fail
+test -f $work/svnroot/db/revs/2 -o -f $work/svnroot/db/revs/0/2 || fail
 
 # --------------------------------------------------------------------------
 
@@ -364,7 +364,7 @@ $bin/ae-repo-ci --repository=svn --module file://$work/svnroot/$AEGIS_PROJECT \
     -c 3 > log 2>&1
 if test $? -ne 0 ; then cat log; fail; fi
 
-test -f $work/svnroot/db/revs/3 || fail
+test -f $work/svnroot/db/revs/3 -o -f $work/svnroot/db/revs/0/3 || fail
 
 #
 # Only definite negatives are possible.

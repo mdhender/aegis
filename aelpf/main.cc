@@ -225,8 +225,15 @@ main(int argc, char **argv)
     if (change_number > 0)
     {
 	//
+	// locate user data
+	//
+        user_ty::pointer up = user_ty::create();
+
+	//
 	// locate change data
 	//
+	if (!change_number)
+	    change_number = up->default_change(pp);
 	cp = change_alloc(pp, change_number);
 	change_bind_existing(cp);
     }

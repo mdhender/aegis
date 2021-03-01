@@ -3,6 +3,7 @@
 .so ../man1/ae-repo-ci.1
 .so ../man1/ae-sccs-put.1
 .so ../man1/ae_c.1
+.so ../man1/ae_diff2htm.1
 .so ../man1/ae_p.1
 .so ../man1/aeannotate.1
 .so ../man1/aeb.1

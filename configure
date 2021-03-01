@@ -6083,12 +6083,12 @@ _ACEOF
 else
 
     { echo "$as_me:$LINENO: result:
-        You make like to have the file magic number library installed in
+        You may like to have the file magic number library installed in
         order to build Aegis.  This will result is superior Content-Type
         information being inserted at several points in the code.
         Homepage: http://www.darwinsys.com/file/" >&5
 echo "${ECHO_T}
-        You make like to have the file magic number library installed in
+        You may like to have the file magic number library installed in
         order to build Aegis.  This will result is superior Content-Type
         information being inserted at several points in the code.
         Homepage: http://www.darwinsys.com/file/" >&6; }
@@ -6325,11 +6325,11 @@ _ACEOF
 else
 
     { echo "$as_me:$LINENO: result:
-        You make like to have the multi-protocol file transfer library
+        You may like to have the multi-protocol file transfer library
         installed in order to build Aegis.
         Homepage: http://curl.haxx.se/" >&5
 echo "${ECHO_T}
-        You make like to have the multi-protocol file transfer library
+        You may like to have the multi-protocol file transfer library
         installed in order to build Aegis.
         Homepage: http://curl.haxx.se/" >&6; }
     OK=no

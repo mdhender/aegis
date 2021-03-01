@@ -41,7 +41,7 @@ AEGIS_FLAGS="delete_file_preference = no_keep; \
 	persevere_preference = all; \
 	log_file_preference = never;"
 export AEGIS_FLAGS
-AEGIS_THROTTLE=-1
+AEGIS_THROTTLE=2
 export AEGIS_THROTTLE
 
 here=`pwd`
@@ -211,7 +211,8 @@ $bin/aegis -review-fail 10 -f failure-message > log 2>&1
 if test $? -ne 0 ; then cat log; no_result; fi
 
 activity="change details 228"
-$bin/aegis -list change-details -c 10 -v > log 2>&1
+# > log 2>&1
+$bin/aegis -list change-details -c 10 -v
 if test $? -ne 0 ; then cat log; fail; fi
 
 #

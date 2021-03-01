@@ -1,7 +1,7 @@
 //
 //	aegis - project change supervisor
 //	Copyright (C) 2006-2008 Peter Miller
-//	Copyright (C) 2006 Walter Franzini
+//	Copyright (C) 2006, 2008 Walter Franzini
 //
 //	This program is free software; you can redistribute it and/or modify
 //	it under the terms of the GNU General Public License as published by
@@ -27,6 +27,7 @@
 #include <common/trace.h>
 #include <libaegis/arglex2.h>
 #include <libaegis/change/architecture/find_variant.h>
+#include <libaegis/change/branch.h>
 #include <libaegis/change/file.h>
 #include <libaegis/change/identifier.h>
 #include <libaegis/help.h>
@@ -56,6 +57,8 @@ finish_merge(change_identifier &cid)
 {
     project_ty *pp = cid.get_pp();
     change::pointer cp = cid.get_cp();
+    if (change_is_a_branch(cp))
+        return false;
     if (cp->is_being_integrated())
 	return false;
 
@@ -161,6 +164,8 @@ finish_diff(change_identifier &cid)
     // Make sure that we terminate elegantly if no diff is required
     // for this project.
     //
+    if (change_is_a_branch(cp))
+        return false;
     if (!change_diff_required(cp))
 	return false;
 
@@ -245,11 +250,9 @@ finish_diff(change_identifier &cid)
 
 	case file_action_transparent:
 	    //
-	    // Transparent files are not differenced when integrating.
+	    // Ignore transparent files.
 	    //
-	    if (integrating)
-		continue;
-	    break;
+            continue;
 	}
 
 	//
@@ -661,16 +664,6 @@ finish_development(change_identifier &cid)
 }
 
 
-static const char *
-home()
-{
-    const char *cp = getenv("HOME");
-    if (!cp)
-	cp = "/";
-    return cp;
-}
-
-
 static void
 finish_integration(change_identifier &cid)
 {
@@ -678,7 +671,7 @@ finish_integration(change_identifier &cid)
 
     project_ty *pp = cid.get_pp();
     change::pointer cp = cid.get_cp();
-    nstring dir = home();
+    nstring dir = nstring(pp->trunk_get()->home_path_get());
     nstring command = "aegis --integrate-pass --project="
 	+ nstring(project_name_get(pp)).quote_shell() + " --change="
 	+ nstring::format("%ld", magic_zero_decode(cp->number))

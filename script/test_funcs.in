@@ -3,7 +3,7 @@
 #	aegis - project change supervisor
 #	Copyright (C) 2006 Jerry Pendergraft
 #	Copyright (C) 2007, 2008 Peter Miller
-#	Copyright (C) 2007 Walter Franzini
+#	Copyright (C) 2007, 2008 Walter Franzini
 #
 #	This program is free software; you can redistribute it and/or modify
 #	it under the terms of the GNU General Public License as published by
@@ -74,6 +74,7 @@ pass()
 	set +x
 	echo PASSED
 	cd $here
+	find $work -type d -user $USER -exec chmod u=rwx {} \;
 	rm -rf $work
 	exit 0
 }
@@ -81,7 +82,8 @@ fail()
 {
 	set +x
 	cd $here
-	rm -rf $work
+	find $work -type d -user $USER -exec chmod u=rwx {} \;
+        rm -rf $work
 	echo "FAILED test of $TEST_SUBJECT ($activity)" 1>&2
 	exit 1
 }
@@ -89,6 +91,7 @@ no_result()
 {
 	set +x
 	cd $here
+	find $work -type d -user $USER -exec chmod u=rwx {} \;
 	rm -rf $work
 	echo "NO RESULT for test of $TEST_SUBJECT ($activity)" 1>&2
 	exit 2

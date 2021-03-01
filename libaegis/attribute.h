@@ -1,7 +1,7 @@
 //
 //	aegis - project change supervisor
 //	Copyright (C) 2004-2008 Peter Miller
-//	Copyright (C) 2006 Walter Franzini;
+//	Copyright (C) 2006, 2008 Walter Franzini
 //
 //	This program is free software; you can redistribute it and/or modify
 //	it under the terms of the GNU General Public License as published by
@@ -22,6 +22,8 @@
 #define LIBAEGIS_ATTRIBUTE_H
 
 #include <libaegis/common.h>
+
+#define AEIPASS_ASSIGN_FILE_UUID        "aeipass-option:assign-file-uuid"
 
 /**
   * The attributes_list_find function is used to find a specific

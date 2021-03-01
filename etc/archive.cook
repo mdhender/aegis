@@ -17,11 +17,25 @@
  * along with this program. If not, see <http://www.gnu.org/licenses/>.
  */
 
-branch_version_normalized = [split "." [version_short]] 0 0;
+branch_version_normalized = [split "." [version_short]];
+is_stable_branch =
+    [expr
+        [words [branch_version_normalized]] "==" 2
+    &&
+        [word 2 [branch_version_normalized] 1 1] % 2 "==" 0
+    ];
 branch_project_minus = [project_minus];
-if [expr [word 2 [branch_version_normalized]] % 2] then
+if [is_stable_branch] then
+{
+    other_branch =
+        [unsplit "."
+            [word 1 [branch_version_normalized]]
+            [expr [word 2 [branch_version_normalized]] ^ 1]
+        ];
+    integration-build-targets += archive/[other_branch]/index.html;
+}
+else
     branch_project_minus = [project_short]-[version];
-
 
 integration-build-targets +=
         archive/change_log.txt
@@ -236,7 +250,7 @@ if [matches linux%1 [arch]] then
 
 etc/CHANGES.txt: [arch]/bin/aegis
 {
-    [resolve [arch]/bin/aegis] -list project_details -p [project_short]
+    [resolve [arch]/bin/aegis] -list project_details -p [project]
         -pw\=80 -pl\=66 -v > [target]
                                                                 set meter;
 }
@@ -319,7 +333,8 @@ archive/[project_minus].patch.gz: [patch_files]
 [project_short].spec: etc/spec.sh [source_files]
 {
         version\=[version_short]
-        sh [resolve etc/spec.sh] [source_files] > [target];
+        suidbins\=\"[set-uid-root-commands]\"
+        sh [resolve etc/spec.sh] > [target];
 }
 
 archive/[project_minus].spec: [project_short].spec
@@ -625,4 +640,20 @@ archive/eg_oss_%.ae: web/eg_oss_%.sh
         aegis.conf.d/merge\=[resolve lib/config.example/merge]
         output\=[target]
         ;
+}
+
+if [is_stable_branch] then
+{
+    other_branch_baseline = [collect aegis -cd -br [other_branch] -bl];
+
+    /*
+     * The development branch index file is changed every delta, because
+     * the delta number is in the page title.
+     */
+    archive/[other_branch]/index.html:
+        [other_branch_baseline]/archive/index.html
+    {
+        rsync -a [other_branch_baseline]/archive/ archive/[other_branch]/
+            set meter;
+    }
 }

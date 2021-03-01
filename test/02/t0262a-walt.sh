@@ -125,7 +125,7 @@ check_it()
                 -e 's/uuid = ".*"/uuid = "UUID"/' \
 		< $2 > $work/sed.out
 	if test $? -ne 0; then no_result; fi
-	diff -U100 $1 $work/sed.out
+	diff $1 $work/sed.out
 	if test $? -ne 0; then fail; fi
 }
 

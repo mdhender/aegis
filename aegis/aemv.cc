@@ -1,7 +1,7 @@
 //
 //	aegis - project change supervisor
 //	Copyright (C) 1993-1999, 2001-2008 Peter Miller
-//	Copyright (C) 2005 Walter Franzini;
+//	Copyright (C) 2005, 2008 Walter Franzini
 //
 //	This program is free software; you can redistribute it and/or modify
 //	it under the terms of the GNU General Public License as published by
@@ -603,7 +603,7 @@ move_file_main(void)
                 // strings if they refer to the top of the
                 // development directory tree.
                 //
-                filename_old = wl_in.string[j];
+                filename_old = str_copy(wl_in.string[j]);
                 if (old_name->str_length)
                 {
                     filename_tail = os_below_dir(old_name, filename_old);

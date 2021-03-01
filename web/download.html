@@ -32,7 +32,7 @@
 <img src="aegis.png" align=left>
 <img src="missiku/dgn_dir_2.png" align=right>
 <center>Aegis
-.if (\*(o)) \*(V)
+.ie (\*(o)) \*(V)
 .el \*(v)
 <br>Files for Download</center></h1>
 This page contains links to files which may be downloaded.  These files
@@ -89,10 +89,10 @@ build Aegis.
     <tr>
     <td valign=top>
     <a
-.if (\*(o)) href="aegis-\*(V).tar.gz"
+.ie (\*(o)) href="aegis-\*(V).tar.gz"
 .el href="aegis-\*(v).tar.gz"
     ><tt>
-.if (\*(o)) aegis-\*(V).tar.gz
+.ie (\*(o)) aegis-\*(V).tar.gz
 .el aegis-\*(v).tar.gz
     </tt></a>
     </td>
@@ -103,10 +103,10 @@ build Aegis.
     <tr>
     <td valign=top>
     <a
-.if (\*(o)) href="aegis-\*(V).ae"
+.ie (\*(o)) href="aegis-\*(V).ae"
 .el href="aegis-\*(v).ae"
     ><tt>
-.if (\*(o)) aegis-\*(V).ae
+.ie (\*(o)) aegis-\*(V).ae
 .el aegis-\*(v).ae
     </tt></a>
     </td>

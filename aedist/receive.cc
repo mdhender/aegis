@@ -56,7 +56,7 @@
 #include <libaegis/undo.h>
 #include <libaegis/user.h>
 
-#include <aeannotate/usage.h>
+#include <aedist/usage.h>
 #include <aedist/arglex3.h>
 #include <aedist/change/functor/invent_build.h>
 #include <aedist/open.h>
@@ -2128,6 +2128,28 @@ receive_main(void)
 		str_free(qfn);
 		os_execute(s, OS_EXEC_FLAG_INPUT, dd);
 	    }
+            if (!src_data->uuid)
+            {
+                //
+                // The incoming change set does NOT specify an UUID
+                // for this file, ensure it does NOT have an UUID
+                // added locally.
+                //
+                string_ty *qfn = str_quote_shell(src_data->file_name);
+                nstring s =
+                    nstring::format
+                    (
+                        "aegis --file-attributes --project %s --change=%ld "
+                        "--base-rel %s %s=false%s",
+                        project_name->str_text,
+                        magic_zero_decode(change_number),
+                        qfn->str_text,
+                        AEIPASS_ASSIGN_FILE_UUID,
+                        trace_options.c_str()
+                    );
+                str_free(qfn);
+                os_execute(s, OS_EXEC_FLAG_INPUT, dd);
+            }
 	    break;
 
 	case file_action_modify:

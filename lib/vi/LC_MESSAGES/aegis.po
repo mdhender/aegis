@@ -4273,6 +4273,19 @@ msgid	"no files copied"
 msgstr	"tìm $number lỗi nghiêm trọng nên không có tập tin được sao chép"
 
 #
+# This error message is issued when an aediff command fails.  Errors are
+# printed out as they are found, but frequently errors happen together,
+# so the aediff command finds as many as possible before aborting.  This
+# error is emitted when it aborts.
+#
+#          $Number        Number of fatal errors found.
+#                         (Optional)
+#
+#,fuzzy
+msgid   "no files diffed"
+msgstr "found $number fatal error${plural $number s}, no files diffed"
+
+#
 # This error message is issued when an aecpu command fails.  Errors are
 # printed out as they are found, but frequently errors happen together,
 # so the aecpu command finds as many as possible before aborting.  This

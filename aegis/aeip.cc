@@ -39,6 +39,7 @@
 #include <libaegis/arglex2.h>
 #include <libaegis/arglex/change.h>
 #include <libaegis/arglex/project.h>
+#include <libaegis/attribute.h>
 #include <libaegis/change/branch.h>
 #include <libaegis/change/file.h>
 #include <libaegis/change/identifier.h>
@@ -722,6 +723,26 @@ integrate_pass_main(void)
             str_free(p_src_data->uuid);
             p_src_data->uuid = 0;
         }
+
+        //
+        // If a file is being created we usually assign to it a new
+        // UUID.  The aedist -rec command may ask to not assign the
+        // UUID if the received change-set does not have an UUID
+        // assigned to the file.
+        //
+        bool assign_file_uuid =
+            attributes_list_find_boolean
+            (
+                c_src_data->attribute,
+                AEIPASS_ASSIGN_FILE_UUID,
+                true
+            );
+        attributes_list_remove
+        (
+            c_src_data->attribute,
+            AEIPASS_ASSIGN_FILE_UUID
+        );
+
         if
         (
             !c_src_data->uuid
@@ -729,6 +750,8 @@ integrate_pass_main(void)
             c_src_data->action == file_action_create
         &&
             !change_was_a_branch(cp)
+        &&
+            assign_file_uuid
         )
             c_src_data->uuid = universal_unique_identifier();
         if (c_src_data->uuid)

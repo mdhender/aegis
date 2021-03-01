@@ -4,7 +4,7 @@
 #       Copyright (C) 2005 Matthew Lee;
 #       All rights reserved.
 #       Copyright (C) 2007, 2008 Peter Miller
-#       Copyright (C) 2007 Walter Franzini
+#       Copyright (C) 2007, 2008 Walter Franzini
 #
 #       This program is free software; you can redistribute it and/or modify
 #       it under the terms of the GNU General Public License as published by
@@ -72,7 +72,7 @@ Content-Length: NNN
 EOF
 
     activity="check_one 74"
-    diff -u aeget.served.expected aeget.served.stripped > log 2>&1;
+    diff aeget.served.expected aeget.served.stripped > log 2>&1;
     if test $? -ne 0 ; then cat log; fail ; fi
 }
 
@@ -112,7 +112,7 @@ Content-Length: NNN
 EOF
 
     activity="check_two 114"
-    diff -u aeget.served.expected aeget.served.stripped > log 2>&1;
+    diff aeget.served.expected aeget.served.stripped > log 2>&1;
     if test $? -ne 0 ; then cat log; fail; fi
 }
 
@@ -168,7 +168,7 @@ Content-Length: NNN
 EOF
 
     activity="check_three 170"
-    diff -u aeget.served.expected aeget.served.stripped > log 2>&1;
+    diff aeget.served.expected aeget.served.stripped > log 2>&1;
     if test $? -ne 0 ; then cat log; fail; fi
 }
 

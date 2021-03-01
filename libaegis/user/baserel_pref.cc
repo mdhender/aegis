@@ -18,6 +18,8 @@
 //
 
 #include <common/error.h> // for assert
+#include <common/trace.h>
+
 #include <libaegis/arglex2.h>
 #include <libaegis/help.h>
 #include <libaegis/user.h>
@@ -29,6 +31,7 @@ static int user_relative_filename_preference_option = -1;
 void
 user_ty::relative_filename_preference_argument(void (*usage)(void))
 {
+    trace(("%s\n", __PRETTY_FUNCTION__));
     if (user_relative_filename_preference_option >= 0)
 	duplicate_option(usage);
     switch (arglex_token)
@@ -54,6 +57,8 @@ uconf_relative_filename_preference_ty
 user_ty::relative_filename_preference(
     uconf_relative_filename_preference_ty dflt)
 {
+    trace(("%s\n", __PRETTY_FUNCTION__));
+    trace(("this = %p\n", this));
     if (user_relative_filename_preference_option < 0)
     {
 	uconf_ty *ucp = uconf_get();

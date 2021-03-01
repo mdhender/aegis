@@ -195,7 +195,7 @@ using the \[lq]\fIaenpr\fP\[rq] command, or use the \[lq]\f[CW]--library\fP
 \fI/usr/local/com/aegis\fP\[rq] option of the \fIaenpr\fP command.
 .nh 3 "Web Visibility"
 .LP
-If you have a Web server, you make like to install the Aegis web interface.
+If you have a Web server, you may like to install the Aegis web interface.
 You do this by copying the \fIaeget\fP program from
 \fI\*(B)/aeget\fP into your web server's \fIcgi-bin\fP directory.
 There is a \fIaeget.instal\fP helper script,

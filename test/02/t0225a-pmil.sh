@@ -19,7 +19,7 @@
 #	<http://www.gnu.org/licenses>.
 #
 
-if bzip2 --version > /dev/null 2>&1
+if bzip2 --version < /dev/null > /dev/null 2>&1
 then
         :
 else

@@ -239,7 +239,7 @@ output_quoted_printable::eoln_partial()
     //
     long oldpos = pos;
     long newpos = pos;
-    while (newpos > 0 && glyph[newpos].cumulative >= MAX_LINE_LEN)
+    while (newpos > 0 && glyph[newpos - 1].cumulative >= MAX_LINE_LEN)
 	--newpos;
     long newpos_max = newpos;
 

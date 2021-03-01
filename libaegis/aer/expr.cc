@@ -1,6 +1,7 @@
 //
 //	aegis - project change supervisor
 //	Copyright (C) 1994-1996, 2002-2008 Peter Miller
+//      Copyright (C) 2008 Walter Franzini
 //
 //	This program is free software; you can redistribute it and/or modify
 //	it under the terms of the GNU General Public License as published by
@@ -79,6 +80,7 @@ rpt_expr::append(const rpt_expr::pointer &ep)
     {
         trace(("pos = NULL\n"));
     }
+
     trace(("}\n"));
 }
 
@@ -149,6 +151,7 @@ rpt_expr::evaluate(bool resolve_deferred, bool deref)
     {
         trace(("%s\n", pos->representation().c_str()));
     }
+
     rpt_value::pointer result = evaluate();
     trace(("resolve_deferred = %s\n", (resolve_deferred ? "true" : "false")));
     trace(("result->name() = \"%s\"\n", result->name()));

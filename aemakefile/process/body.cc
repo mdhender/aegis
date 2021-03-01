@@ -202,7 +202,7 @@ process_body::per_file(const nstring &filename)
         print << tmp << ": " << file << " bin/test_base64\n";
         print << "\tbin/test_base64 -uu -i -nh " << file << " $@\n";
         print << "\n";
-        print << "$(RPM_BUILD_ROOT)$(datadir)/icon/" << rest << ": " << tmp
+        print << "$(DESTDIR)$(datadir)/icon/" << rest << ": " << tmp
 	      << " " << tmp.dirname() << "/.mkdir.datadir\n";
         print << "\t$(INSTALL_DATA) " << tmp << " $@\n";
     }
@@ -214,7 +214,7 @@ process_body::per_file(const nstring &filename)
         print << "lib/icon/" << rest << ": " << file << " bin/test_base64\n";
         print << "\tbin/test_base64 -uu -i -nh " << file << " $@\n";
         print << "\n";
-        print << "$(RPM_BUILD_ROOT)$(datadir)/icon/" << rest << ": lib/icon/"
+        print << "$(DESTDIR)$(datadir)/icon/" << rest << ": lib/icon/"
 	      << rest << " " << dir << "/.mkdir.datadir\n";
         print << "\t$(INSTALL_DATA) " << "lib/icon/" << rest << " $@\n";
     }
@@ -229,24 +229,24 @@ process_body::per_file(const nstring &filename)
 	nstring rest(basename(file));
 	nstring dir(file.dirname());
 	print << "\n";
-	print << "$(RPM_BUILD_ROOT)$(datadir)/" << rest << ": " << file << " "
+	print << "$(DESTDIR)$(datadir)/" << rest << ": " << file << " "
 	    << dir << "/.mkdir.datadir\n";
 	print << "\t$(INSTALL_SCRIPT) " << file << " $@\n";
 
 	if (file == "lib/profile")
 	{
 	    print << "\n";
-	    print << "$(RPM_BUILD_ROOT)$(sysconfdir)/profile.d/aegis.sh: "
-		"$(RPM_BUILD_ROOT)$(datadir)/" << rest << "\n";
-	    print << "\t-@mkdir -p $(RPM_BUILD_ROOT)$(sysconfdir)/profile.d\n";
+	    print << "$(DESTDIR)$(sysconfdir)/profile.d/aegis.sh: "
+		"$(DESTDIR)$(datadir)/" << rest << "\n";
+	    print << "\t-@mkdir -p $(DESTDIR)$(sysconfdir)/profile.d\n";
 	    print << "\t-ln -s $(datadir)/" << rest << " $@\n";
 	}
 	else
 	{
 	    print << "\n";
-	    print << "$(RPM_BUILD_ROOT)$(sysconfdir)/profile.d/aegis.csh: "
-		"$(RPM_BUILD_ROOT)$(datadir)/" << rest << "\n";
-	    print << "\t-@mkdir -p $(RPM_BUILD_ROOT)$(sysconfdir)/profile.d\n";
+	    print << "$(DESTDIR)$(sysconfdir)/profile.d/aegis.csh: "
+		"$(DESTDIR)$(datadir)/" << rest << "\n";
+	    print << "\t-@mkdir -p $(DESTDIR)$(sysconfdir)/profile.d\n";
 	    print << "\t-ln -s $(datadir)/" << rest << " $@\n";
 	}
     }
@@ -255,7 +255,7 @@ process_body::per_file(const nstring &filename)
 	nstring rest(trim_dir(file));
 	nstring dir(file.dirname());
 	print << "\n";
-	print << "$(RPM_BUILD_ROOT)$(datadir)/" << rest << ": " << file << " "
+	print << "$(DESTDIR)$(datadir)/" << rest << ": " << file << " "
 	    << dir << "/.mkdir.datadir\n";
 	print << "\t$(INSTALL_SCRIPT) " << file << " $@\n";
     }
@@ -276,7 +276,7 @@ process_body::per_file(const nstring &filename)
 	print << "\t$(SH) etc/msgfmt.sh --msgfmt=$(MSGFMT) --msgcat=$(MSGCAT) "
 	    "--output=$@ " << file << "\n";
 	print << "\n";
-	print << "$(RPM_BUILD_ROOT)$(NLSDIR)/" << stem << ".mo: lib/" << stem
+	print << "$(DESTDIR)$(NLSDIR)/" << stem << ".mo: lib/" << stem
 	    << ".mo " << dir << "/.mkdir.libdir\n";
 	print << "\t$(INSTALL_DATA) lib/" << stem << ".mo $@\n";
     }
@@ -292,7 +292,7 @@ process_body::per_file(const nstring &filename)
 	read_dependency_file(file, dep);
 
 	print << "\n";
-	print << "$(RPM_BUILD_ROOT)$(datadir)/" << stem << ": " << file << " "
+	print << "$(DESTDIR)$(datadir)/" << stem << ": " << file << " "
 	    << dir << "/.mkdir.datadir " << dep << "\n";
 	print << "\t$(SOELIM) -I" << dir << " -Ietc " << file
 	    << " | sed '/^\\.lf/d' > $${TMPDIR-/tmp}/aegis.tmp\n";
@@ -302,7 +302,7 @@ process_body::per_file(const nstring &filename)
 	if (file.field('/', 1) == "en")
 	{
 	    print << "\n";
-	    print << "$(RPM_BUILD_ROOT)$(mandir)/" << part << ": " << file
+	    print << "$(DESTDIR)$(mandir)/" << part << ": " << file
 		<< " " << dep << " ." << ugly << "dir\n";
 	    print << "\t$(SOELIM) -I" << dir << " -Ietc " << file
 		<< " | sed '/^\\.lf/d' > $${TMPDIR-/tmp}/aegis.tmp\n";
@@ -351,7 +351,7 @@ process_body::per_file(const nstring &filename)
 	    << " | $(GROFF) -R -t -p " << macros << " -mpic -mpspic > $@\n";
 
 	print << "\n";
-	print << "$(RPM_BUILD_ROOT)$(datadir)/" << stem2 << ".ps: lib/" << stem2
+	print << "$(DESTDIR)$(datadir)/" << stem2 << ".ps: lib/" << stem2
 	    << ".ps lib/" << stem3 << "/.mkdir.datadir\n";
 	print << "\t$(INSTALL_DATA) lib/" << stem2 << ".ps $@\n";
 
@@ -362,7 +362,7 @@ process_body::per_file(const nstring &filename)
 	    << " | $(GROFF) -Tdvi -R -t -p " << macros << " -mpic > $@\n";
 
 	print << "\n";
-	print << "$(RPM_BUILD_ROOT)$(datadir)/" << stem2 << ".dvi: lib/"
+	print << "$(DESTDIR)$(datadir)/" << stem2 << ".dvi: lib/"
 	    << stem2 << ".dvi lib/" << stem3 << "/.mkdir.datadir\n";
 	print << "\t$(INSTALL_DATA) lib/" << stem2 << ".dvi $@\n";
 
@@ -373,7 +373,7 @@ process_body::per_file(const nstring &filename)
 	    << " | $(GROFF) -Tascii -R -t -p " << macros << " -mpic > $@\n";
 
 	print << "\n";
-	print << "$(RPM_BUILD_ROOT)$(datadir)/" << stem2 << ".txt: lib/"
+	print << "$(DESTDIR)$(datadir)/" << stem2 << ".txt: lib/"
 	    << stem2 << ".txt lib/" << stem3 << "/.mkdir.datadir\n";
 	print << "\t$(INSTALL_DATA) lib/" << stem2 << ".txt $@\n";
     }
@@ -382,7 +382,7 @@ process_body::per_file(const nstring &filename)
 	nstring stem(file.c_str() + 4, file.size() - 4);
 	nstring dir(file.dirname());
 	print << "\n";
-	print << "$(RPM_BUILD_ROOT)$(datadir)/" << stem << ": " << file << " "
+	print << "$(DESTDIR)$(datadir)/" << stem << ": " << file << " "
 	    << dir << "/.mkdir.datadir\n";
 	print << "\t$(INSTALL_DATA) " << file << " $@\n";
     }
@@ -437,7 +437,7 @@ process_body::per_file(const nstring &filename)
 	print << "\tcp " << file << " $@\n";
 	print << "\tchmod a+rx $@\n";
 
-        nstring installed_name = "$(RPM_BUILD_ROOT)$(bindir)/$(PROGRAM_PREFIX)"
+        nstring installed_name = "$(DESTDIR)$(bindir)/$(PROGRAM_PREFIX)"
             + name + "$(PROGRAM_SUFFIX)$(EXEEXT)";
 	print << "\n";
         print << installed_name << ": " << bin_name << " .bindir\n";

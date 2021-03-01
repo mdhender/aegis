@@ -43,7 +43,7 @@ IFS="$save_ifs"
 #
 # The command line should have two file names on it, diff them and output HTML.
 #
-if [ "$have_diff2html" == "yes" ]
+if test "$have_diff2html" = "yes"
 then
     diff2html "$@"
 else

@@ -193,6 +193,7 @@ static int      debug;
 static void
 report_error(const rpt_value::pointer &vp)
 {
+    trace(("%s\n", __PRETTY_FUNCTION__));
     const rpt_value_error *rve =
         dynamic_cast<const rpt_value_error *>(vp.get());
     if (!rve)
@@ -208,6 +209,7 @@ static void
 walker(void *, descend_message_ty msg, string_ty *path_unres,
     string_ty *path_maybe, string_ty *path_res, struct stat *st)
 {
+    trace(("%s\n", __PRETTY_FUNCTION__));
     switch (msg)
     {
     case descend_message_file:
@@ -234,6 +236,7 @@ static change::pointer cp;
 string_ty *
 stack_relative(string_ty *fn)
 {
+    trace(("%s\n", __PRETTY_FUNCTION__));
     assert(stack);
     os_become_orig();
     string_ty *s1 = os_pathname(fn, 1);
@@ -271,6 +274,7 @@ stack_relative(string_ty *fn)
 string_ty *
 stack_nth(int n)
 {
+    trace(("%s\n", __PRETTY_FUNCTION__));
     assert(n >= 0);
     assert(stack);
     assert(stack->nstrings);
@@ -285,6 +289,7 @@ stack_nth(int n)
 int
 stack_eliminate(string_ty *filename)
 {
+    trace(("%s\n", __PRETTY_FUNCTION__));
     fstate_src_ty *src = project_file_find(pp, filename, view_path_simple);
     if (!src)
         return 0;
@@ -308,9 +313,9 @@ stack_eliminate(string_ty *filename)
 void
 cmdline_grammar(int argc, char **argv)
 {
+    trace(("%s\n", __PRETTY_FUNCTION__));
     extern int yyparse(void);
     size_t          j;
-    user_ty::pointer up;
     cstate_ty       *cstate_data;
     int             based;
 
@@ -375,6 +380,7 @@ cmdline_grammar(int argc, char **argv)
     pp->bind_existing();
 
     stack = new string_list_ty();
+    user_ty::pointer up = user_ty::create();
     if (baseline)
     {
         if (change_number)
@@ -392,17 +398,11 @@ cmdline_grammar(int argc, char **argv)
          */
         project_search_path_get(pp, stack, 1);
 
-        up.reset();
         cp = 0;
         cstate_data = 0;
     }
     else
     {
-        /*
-         * locate user data
-         */
-        up = user_ty::create();
-
         /*
          * locate change data
          */
@@ -419,7 +419,6 @@ cmdline_grammar(int argc, char **argv)
              */
             project_search_path_get(pp, stack, 1);
 
-            up.reset();
             cp = 0;
             cstate_data = 0;
         }
@@ -447,6 +446,7 @@ cmdline_grammar(int argc, char **argv)
      * 3. if the file is inside the baseline, ok
      * 4. if neither, error
      */
+    assert(up);
     based =
         (
             stack->nstrings >= 1
@@ -514,6 +514,7 @@ cmdline_grammar(int argc, char **argv)
 static tree::pointer
 make_sure_has_side_effects(const tree::pointer &x)
 {
+    trace(("%s\n", __PRETTY_FUNCTION__));
     if (x->useful())
         return x;
 

@@ -28,14 +28,14 @@
 <link rel="shortcut icon" href="favicon.ico" type="image/x-icon">
 .br
 <title>Aegis
-.if (\*(o)) \*(V)
+.ie (\*(o)) \*(V)
 .el \*(v)
 </title></head>
 <body bgcolor="#ffffff"><h1>
 <img src="aegis.png" align=left>
 <img src="aegis.png" align=right>
 <center>Aegis
-.if (\*(o)) \*(V)
+.ie (\*(o)) \*(V)
 .el \*(v)
 </center></h1>
 Aegis is a transaction-based software configuration management system.
@@ -321,7 +321,7 @@ src="missiku/dgn_dir_2.png" border=0></a><p><br></td>
 	download files.
     <li>
         The <a href="building.pdf">BUILDING</a> file in the <a
-.if (\*(o)) href="aegis-\*(V).tar.gz"
+.ie (\*(o)) href="aegis-\*(V).tar.gz"
 .el href="aegis-\*(v).tar.gz"
         >tarball</a> contains instructions
         for building Aegis, or you could use the nicely formatted

@@ -1,6 +1,7 @@
 //
 //	aegis - project change supervisor
 //	Copyright (C) 2004-2008 Peter Miller
+//	Copyright (C) 2008 Walter Franzini
 //
 //	This program is free software; you can redistribute it and/or modify
 //	it under the terms of the GNU General Public License as published by
@@ -33,6 +34,7 @@
 #include <libaegis/help.h>
 #include <libaegis/option.h>
 #include <libaegis/os.h>
+#include <libaegis/project.h>
 #include <libaegis/project/identifi_sub/branch.h>
 #include <libaegis/project/identifi_sub/plain.h>
 #include <libaegis/sub.h>
@@ -233,16 +235,45 @@ diff()
     // file has one.  We then use the meta-data to obtain the first and
     // second versions of the file.
     //
-    fstate_src_ty *src =
-        change_file_find(second.get_cp(), filename, view_path_simple);
-    if (!src)
+    // We look for meta-data separately to cope with a bug that make
+    // it possible for two files to have the same name but different
+    // UUIDs.
+    //
+    int number_of_errors = 0;
+    fstate_src_ty *src1 =
+        change_file_find(first.get_cp(), filename, view_path_simple);
+    if (!src1)
     {
-        src = change_file_find_fuzzy(second.get_cp(), filename.get_ref());
-        if (src)
+        src1 = change_file_find_fuzzy(first.get_cp(), filename.get_ref());
+        if (src1)
         {
             sub_context_ty sc;
             sc.var_set_string("File_Name", filename);
-            sc.var_set_string("Guess", src->file_name);
+            sc.var_set_string("Guess", src1->file_name);
+            change_error
+            (
+                first.get_cp(),
+                &sc,
+                i18n("no $filename, closest is $guess")
+            );
+        }
+
+        sub_context_ty sc;
+        sc.var_set_string("File_Name", filename);
+        change_error(first.get_cp(), &sc, i18n("no $filename"));
+        ++number_of_errors;
+    }
+
+    fstate_src_ty *src2 =
+        change_file_find(second.get_cp(), filename, view_path_simple);
+    if (!src2)
+    {
+        src2 = change_file_find_fuzzy(second.get_cp(), filename.get_ref());
+        if (src2)
+        {
+            sub_context_ty sc;
+            sc.var_set_string("File_Name", filename);
+            sc.var_set_string("Guess", src2->file_name);
             change_error
             (
                 second.get_cp(),
@@ -254,12 +285,21 @@ diff()
         sub_context_ty sc;
         sc.var_set_string("File_Name", filename);
         change_error(second.get_cp(), &sc, i18n("no $filename"));
+        ++number_of_errors;
     }
 
-    file_revision lhs = first.get_file_revision(src, barf_adev);
+    if (number_of_errors > 0)
+    {
+	sub_context_ty sc;
+	sc.var_set_long("Number", number_of_errors);
+	sc.var_optional("Number");
+	project_fatal(second.get_pp(), &sc, i18n("no files diffed"));
+    }
+
+    file_revision lhs = first.get_file_revision(src1, barf_adev);
     trace(("lhs=%s\n", lhs.get_path().c_str()));
 
-    file_revision rhs = second.get_file_revision(src, barf_adev);
+    file_revision rhs = second.get_file_revision(src2, barf_adev);
     trace(("rhs=%s\n", rhs.get_path().c_str()));
 
     //

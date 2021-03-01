@@ -37,7 +37,7 @@ usage() {
 
 
 run() {
-	if test "$whoami" = '0'
+	if test "$whoami" = 'root'
 	then
 		su nobody -c "$shell $1"
 		echo $? > $2

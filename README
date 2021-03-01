@@ -96,12 +96,12 @@ ARCHIVE	SITE
 	The latest version of Aegis is available by HTTP from:
 
 		URL:	http://www.canb.auug.org.au/~millerp/
-		File:	aegis.html	    # the Aegis	page
-		File:	aegis.4.24.README   # Description, from	tar file
-		File:	aegis.4.24.lsm	    # Description, in LSM format
-		File:	aegis.4.24.ae	    # the complete source, aedist format
-		File:	aegis.4.24.spec	    # RedHat package specification
-		File:	aegis.4.24.tar.gz   # the complete source
+		File:	aegis.html	      #	the Aegis page
+		File:	aegis.4.24.1.README   #	Description, from tar file
+		File:	aegis.4.24.1.lsm      #	Description, in	LSM format
+		File:	aegis.4.24.1.ae	      #	the complete source, aedist format
+		File:	aegis.4.24.1.spec     #	RedHat package specification
+		File:	aegis.4.24.1.tar.gz   #	the complete source
 
 	This directory also contains a few other pieces	of software written by
 	me.  Some are referred to in the Aegis documentation.  Please have a
@@ -114,11 +114,11 @@ ARCHIVE	SITE
 	will be	able to	find Aegis on any of its mirrors.
 
 		URL:	ftp://metalab.unc.edu/pub/Linux/devel/vc/
-		File:	aegis.4.24.README   # Description, from	tar file
-		File:	aegis.4.24.lsm	    # Description, in LSM format
-		File:	aegis.4.24.spec	    # RedHat package specification
-		File:	aegis.4.24.ae	    # the complete source, aedist format
-		File:	aegis.4.24.tar.gz   # the complete source
+		File:	aegis.4.24.1.README   #	Description, from tar file
+		File:	aegis.4.24.1.lsm      #	Description, in	LSM format
+		File:	aegis.4.24.1.spec     #	RedHat package specification
+		File:	aegis.4.24.1.ae	      #	the complete source, aedist format
+		File:	aegis.4.24.1.tar.gz   #	the complete source
 	This site is extensively mirrored around the world, so look for	a copy
 	near you (you will get much better response).
 
@@ -250,6 +250,60 @@ RELEASE	NOTES
 	compatible, it is rarely forwards compatible in	the face of new
 	capabilities.
 
+   Version 4.24.1 (24-Sep-2008)
+	Security: [ #2079025 ] This update fix two security problems
+	discovered by the Debian crew (Debian #496400 and #496402) You are
+	encouraged to upgrade.
+
+	Removed	functionalities: In response to	one of the two above security
+	problem, the aegis.cgi program has been	removed.
+
+	* Test 222 has been improved to	cope with some different ways SVN
+	stores revision	information, remaining backwards compatible.
+
+	* A bug	in the distributed development machinery has been fixed: it no
+	longer add the file UUID to created files without an UUID in the
+	remote repository.  This prevents the existence	of the same file with
+	different UUIDs	in different repositories.
+
+	* [ #1942614 ] Some build problem discovered by	the Debian crew	has
+	been fixed.  Specifically: improve 'make clean'	(Debian	bug 442482),
+	add a minor man-page (Debian patch), make test in ae_diff2htm portable
+	(Debian	bug 464484), fix whoami	test in	etc/test.sh (Debian bug
+	393624), add shell magic to ae-cvs-ci (Debian patch).
+
+	* The aediff command now behave	as expected when invoked for a file
+	that, due to a bug in aeipass, is present with two different UUIDs in
+	the repository.	 Previously it used to generate	a diff between the
+	empty file and the second revision of the file.
+
+	* A bug	has been fixed in aefind, it no	longer segfaults when given
+	the -baseline option.
+
+	* A bug	has been fixed in aefinish: it no longer segfault if a branch
+	was to be finished and it contained a transparent file.
+
+	* A bug	has been fixed in the aecp -ind	-output	- option, it no	longer
+	tries to set the permission mode of stdout.
+
+	* A bug	has been fixed in aeib,	it no longer complains that
+	transparent files have been tampered with.
+
+	* A couple of memory leaks introduced with the time safe work has been
+	plugged.
+
+	* The makefile has been	changed	to use DESTDIR (advocated by GNU).
+
+	* A test script	has been improved to work with older bzip2.
+
+	* Small	improvement to test_funcs, reintroduce the chown invocation
+	for the	directory under	$work/.
+
+	* This change set modify the aefinish command to jump the project home
+	path instead of	the user home directory	(since it may be inaccessible)
+
+	* This aegis.spec file (used for RPM builds) has been improved.
+
    Version 4.24	(09-Mar-2008)
 	* Numerous portability improvements.
 
@@ -376,34 +430,37 @@ RELEASE	NOTES
 	* The symlink farm now handle derived files registered within Aegis
 	more like normal derived files.
 
-	* [ 1697199 ] The change_pconf_get function no longer looks for
-	historical versions of files, if it can	help it.  This makes many
-	things go faster and solved the	problem	of configuration fields
-	redefinition.  While this change does not make Aegis more time safe,
-	it cures one of	the symptoms.
+	* The change_pconf_get function	no longer looks	for historical
+	versions of files, if it can help it.  This makes many things go
+	faster and solved the problem of configuration fields redefinition.
+	While this change does not make	Aegis more time	safe, it cures one of
+	the symptoms.
 
 	* Fixed	test 222 to work with recent releases of subversion.
 
-	* The aepconf(5) man page has been improved.
+	* The aepconf(5) has been improved.
 
 	* [ Debian 435422 ] The	reference manual was wrongly referring to
 	-Page-Headings instead of -Page-Header.	 The documentation has been
 	updated	to match the source code.
 
+	* The test/02/t0257a-walt.sh script has	been back-ported from the
+	development branch (4.23) to prevent bug #...... to appear in the
+	stable branch.
+
 	* [ 1704108 ] The aecp(1) -delta command now follows the whiteout
 	preference when	copying	a "removed"file.
 
-	* [ 1704100 ] A	bug has	been fixed that	caused aecp(1) -delta X	to
+	* [ 1685304 ] A	bug has	been fixed that	caused aecp(1) -delta X	to
 	copy in	a change also a	file with the old name of a file aemv(1)ed
 	before delta X.
 
 	* The generated	Makefile now installs aelock(1)	with the correct
 	permissions.
 
-	* [ 1701701 ] A	bug has	been fixed in the aetar(1) command, it no
-	longer creates tarballs	that cause BSD and other tar to	complain like
-	this: tar: End of archive volume 1 reached tar:	Unexpected EOF on
-	archive	file
+	* A bug	has been fixed in the aetar(1) command,	it no longer creates
+	tarballs that cause BSD	tar to complain	like this: tar:	End of archive
+	volume 1 reached tar: Unexpected EOF on	archive	file
 
 	* The configure	script now handle correctly the	datadir	substitution.
 

@@ -672,7 +672,7 @@ GETTING	HELP
 	When reporting problems, please	include	the version number given by
 	the
 		% aegis	-version
-		aegis version 4.D021
+		aegis version 4.D007
 		...
 		%
 	command.  Please run this command to get the exact number, do not send

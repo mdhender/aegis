@@ -129,7 +129,7 @@ src="http://sourceforge.net/sflogo.php?group_id=224&amp;type=1"
     <li>
     Now you can <i>make</i> as normal.
     <li>
-    You can use the RPM_BUILD_ROOT setting of the Makefile, or you can
+    You can use the DESTDIR setting of the Makefile, or you can
     <i>mkdir -p /home/groups/a/ae/aegis/cgi-bin</i>
     <li>
     When you <i>make install</i>, you will then need to cull the install
@@ -196,40 +196,35 @@ cd
 rm xxx.tgz
 </pre>
 .fi
-    </blockquote>
-    The tarball is about 15MB so the upload time isn't too bad.
-    <li>
-    <a name="num7">Now upload your project.</a>
-    I use <i>rsync</i> for efficient differential
-    uploads.  The directory needs to be inside the chroot jail, but outside
-    the <i>htdocs</i> directory.
-    The instructions assume it is in the
-    <tt >/home/groups/<i >p</i>/<i >pr</i>/<i >project</i>/<i >project</i></tt>
-    directory.
-    You need the whole project tree, but you can leave out derived files
-    in the baselines (<i>e.g.</i> <tt>.o</tt> files, <tt>.a</tt> files and
-    executables).
-    <li>
-    Edit <tt >/home/groups/<i >p</i>/<i >pr</i>/<i
-    >project</i>/com/aegis/state</tt> to point at the project tree.
-    Something like <blockquote>
-.nf
+</blockquote>
+The tarball is about 15MB so the upload time isn't too bad.
+<li>
+<a name="num7">Now upload your project.</a>
+I use <i>rsync</i> for efficient differential
+uploads.  The directory needs to be inside the chroot jail, but outside
+the <i>htdocs</i> directory.
+The instructions assume it is in the
+<tt >/home/groups/<i >p</i>/<i >pr</i>/<i >project</i>/<i >project</i></tt>
+directory.
+You need the whole project tree, but you can leave out derived files
+in the baselines (<i>e.g.</i> <tt>.o</tt> files, <tt>.a</tt> files and
+executables).
+<li>
+Edit <tt >/home/groups/<i >p</i>/<i >pr</i>/<i >project</i>/com/aegis/state</tt>
+to point at the project tree.
+Something like <blockquote>
 <pre>where =
+.nf
 [
   {
     project_name = "<i>project</i>";
     directory = "/home/groups/<i >p</i>/<i >pr</i>/<i >project</i>/<i
     >project</i>";
   },
-];</pre>
 .fi
-    </blockquote>
-    <li>
-    If this takes off, I'll ask the SourceForge people to install it, so
-    that most of these instructions are unnecessary.
-    </ol>
-</td></tr>
-.br
-</table>
-.so footer.so
+];</pre></blockquote>
+<li>
+</ol>
+If this takes off, I'll ask the SourceForge people to install it, so
+that most of these instructions are unnecessary.
 </body></html>

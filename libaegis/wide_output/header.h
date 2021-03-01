@@ -20,6 +20,8 @@
 #ifndef LIBAEGIS_WIDE_OUTPUT_HEADER_H
 #define LIBAEGIS_WIDE_OUTPUT_HEADER_H
 
+#include <common/ac/time.h>
+
 #include <common/wstring.h>
 #include <libaegis/wide_output.h>
 

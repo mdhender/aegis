@@ -53,7 +53,7 @@
 #
 msgid ""
 msgstr ""
-"POT-Creation-Date: Mon Mar 10 08:53:38 EST 2008\n"
+"POT-Creation-Date: Wed Sep 24 23:46:26 CEST 2008\n"
 "PO-Revision-Date: 2008-01-09\n"
 "Last-Translator: Ralf Fassel <ralf@akutech.de>\n"
 "MIME-Version: 1.0\n"
@@ -99,7 +99,7 @@ msgstr "Zur Option $Name muß eine gültige URL angegeben werden"
 #
 #       $File_Name      The name of the offending file.
 #
-#: aegis/aede.cc:416 aegis/aeib.cc:1070 aegis/aeib.cc:1100 aegis/aerb.cc:331
+#: aegis/aede.cc:416 aegis/aeib.cc:1066 aegis/aeib.cc:1096 aegis/aerb.cc:331
 #: aegis/aerb.cc:356 aegis/aerp.cc:469 aegis/aerp.cc:493
 msgid "$filename altered"
 msgstr "Datei \"$filename\" wurde verändert"
@@ -261,7 +261,7 @@ msgstr "Datei \"$filename\" existiert bereits im Projekt"
 #
 #       $File_Name      The offending file name.
 #
-#: aegis/aecp.cc:1566
+#: aegis/aecp.cc:1568
 msgid "$filename is built"
 msgstr ""
 "Datei \"$filename\" wird durch Build erzeugt, sie kann nicht in einen Change "
@@ -414,7 +414,7 @@ msgstr "Test \"$filename\" auf $architecture übersprungen"
 #
 #       $File_Name      The offending file.
 #
-#: aegis/aede.cc:312 aegis/aede.cc:321 aegis/aeip.cc:589
+#: aegis/aede.cc:312 aegis/aede.cc:321 aegis/aeip.cc:590
 msgid "$filename unchanged"
 msgstr ""
 "Die Datei \"$filename\" wurde nicht verändert, sie sollte nicht im Change "
@@ -426,8 +426,8 @@ msgstr ""
 #
 #       $File_Name      The offending command line argument.
 #
-#: aefind/cmdline.y:256 aefind/cmdline.y:257 aegis/aeb.cc:419
-#: aegis/aecp.cc:490 aegis/aecp.cc:1382 aegis/aecpu.cc:328 aegis/aed.cc:280
+#: aefind/cmdline.y:259 aefind/cmdline.y:260 aegis/aeb.cc:419
+#: aegis/aecp.cc:489 aegis/aecp.cc:1384 aegis/aecpu.cc:328 aegis/aed.cc:280
 #: aegis/aed.cc:999 aegis/aemt.cc:366 aegis/aemtu.cc:312 aegis/aemv.cc:541
 #: aegis/aemv.cc:578 aegis/aemvu.cc:301 aegis/aenf.cc:462 aegis/aenfu.cc:330
 #: aegis/aent.cc:386 aegis/aentu.cc:346 aegis/aerm.cc:384 aegis/aermu.cc:363
@@ -653,7 +653,7 @@ msgstr ""
 #                       absolute path, but not always.
 #       $FieLD_Name     The name of the absent field.
 #
-#: aegis/aeip.cc:1514 libaegis/change/cstate/get.cc:79
+#: aegis/aeip.cc:1537 libaegis/change/cstate/get.cc:79
 #: libaegis/change/cstate/get.cc:155 libaegis/change/cstate/get.cc:169
 #: libaegis/change/cstate/get.cc:183 libaegis/change/file/metrics/get.cc:40
 #: libaegis/change/file/metrics/get.cc:52 libaegis/change/pconf/get.cc:280
@@ -1097,7 +1097,7 @@ msgstr "$function: unbekannte Formatangabe '$name'"
 #
 #       $Message        The message to be issued.
 #
-#: aefind/cmdline.y:202 aegis/aede.cc:504 aegis/aenf.cc:580 aegis/aent.cc:553
+#: aefind/cmdline.y:203 aegis/aede.cc:504 aegis/aenf.cc:580 aegis/aent.cc:553
 #: libaegis/aer/value/error.cc:99 libaegis/aer/value/error.cc:101
 #: libaegis/change/error.cc:57 libaegis/change/fatal.cc:57
 #: libaegis/change/verbose.cc:57 libaegis/change/warning.cc:65
@@ -1259,7 +1259,7 @@ msgstr "$name1 und $name2"
 #       $Name1          The name of the offending option.
 #       $Name2          The name of the offending option.
 #
-#: aegis/aecp.cc:1091
+#: aegis/aecp.cc:1093
 msgid "$name1 needs $name2"
 msgstr "Die Option $name1 braucht die Option $name2"
 
@@ -1300,7 +1300,7 @@ msgstr "$value1 ** $value2: $errno"
 # version of Aegis compiled without the DEBUG define in common/main.h
 # turned on.
 #
-#: aefind/cmdline.y:1130 libaegis/help.cc:246
+#: aefind/cmdline.y:1131 libaegis/help.cc:246
 msgid "-TRace needs DEBUG"
 msgstr ""
 "Warnung: die Option -TRace ist nur efektiv, wenn Aegis mit dem  DEBUG Flag "
@@ -1391,7 +1391,7 @@ msgstr "Absolute Pfadangabe notwendig"
 # This verbose message is issued when aeipass is updating the modification
 # times of all the files in the integration directory.
 #
-#: aegis/aeip.cc:2047
+#: aegis/aeip.cc:2070
 msgid "adjust file modification times"
 msgstr "anpassen der Datei-Änderungszeiten"
 
@@ -1464,7 +1464,7 @@ msgstr "füge Log an \"$filename\""
 # This progress message is issued when aeib copies the source files form
 # the development directory into the integration directory.
 #
-#: aegis/aeib.cc:1162
+#: aegis/aeib.cc:1158
 msgid "apply change to integration directory"
 msgstr "kopiere den Change in das Integrationsverzeichnis"
 
@@ -1572,7 +1572,7 @@ msgstr "Attributstext in Datei \"$filename\" belassen"
 # This error message is issued when the change is not in a suitable state
 # to search within for files.
 #
-#: aefind/cmdline.y:434
+#: aefind/cmdline.y:433
 msgid "bad aefind state"
 msgstr ""
 "Dieser Change ist im Status '$state', er muß im 'being developed' Status "
@@ -1625,7 +1625,7 @@ msgstr ""
 # directly into a branch.  You must use a change on the branch for
 # that.
 #
-#: aegis/aecp.cc:1210 aegis/aemv.cc:454
+#: aegis/aecp.cc:1212 aegis/aemv.cc:454
 msgid "bad branch cp"
 msgstr ""
 "Sie können Dateien nicht direkt in einen Branch kopieren, Sie müssen einen "
@@ -1762,7 +1762,7 @@ msgstr ""
 # This error message is issued when an attempt is made to copy files
 # into a change which is not in the 'being developed' state.
 #
-#: aegis/aecp.cc:1202
+#: aegis/aecp.cc:1204
 msgid "bad cp state"
 msgstr ""
 "Dieser Change ist im '$state' Status, er muß im 'being developed' Status "
@@ -1807,7 +1807,7 @@ msgstr ""
 #
 #       $File_Name      The name of the offending file.
 #
-#: aegis/aecp.cc:1498
+#: aegis/aecp.cc:1500
 msgid "bad cp, file $filename dup"
 msgstr ""
 "Datei \"$filename\" ist bereits im Change, sie wird nicht überschrieben; "
@@ -1916,7 +1916,7 @@ msgstr ""
 # This error message is issued when an aeipass command is invoked on a
 # change which is not in the 'being integrated' state.
 #
-#: aegis/aeip.cc:483
+#: aegis/aeip.cc:484
 msgid "bad ip state"
 msgstr ""
 "Dieser Change ist im '$state' Status, er muß im 'being integrated' Status "
@@ -1929,7 +1929,7 @@ msgstr ""
 #       $Outstanding    A list of outstanding architectures to be built,
 #                       or empty if all are outstanding.  (Optional)
 #
-#: aegis/aeip.cc:1202
+#: aegis/aeip.cc:1225
 msgid "bad ip, build required"
 msgstr ""
 "Dieser Change muß einen erfolgreichen 'aegis -Build' $outstanding "
@@ -1942,7 +1942,7 @@ msgstr ""
 #       $Outstanding    A list of outstanding architectures to be tested,
 #                       or empty if all are outstanding.  (Optional)
 #
-#: aegis/aeip.cc:1234
+#: aegis/aeip.cc:1257
 msgid "bad ip, test -bl required"
 msgstr ""
 "Dieser Change muß einen erfolgreichen 'aegis -Test -BaseLine' $outstanding "
@@ -1955,7 +1955,7 @@ msgstr ""
 #       $Outstanding    A list of outstanding architectures to be tested,
 #                       or empty if all are outstanding.  (Optional)
 #
-#: aegis/aeip.cc:1254
+#: aegis/aeip.cc:1277
 msgid "bad ip, test -reg required"
 msgstr ""
 "Dieser Change muß einen erfolgreichen 'aegis -Test REGression' $outstanding "
@@ -1968,7 +1968,7 @@ msgstr ""
 #       $Outstanding    A list of outstanding architectures to be tested,
 #                       or empty if all are outstanding.  (Optional)
 #
-#: aegis/aeip.cc:1218
+#: aegis/aeip.cc:1241
 msgid "bad ip, test required"
 msgstr ""
 "Dieser Change muß einen erfolgreichen 'aegis -Test  $outstanding "
@@ -2118,7 +2118,7 @@ msgstr ""
 # This fatal error message is issued when a change is not in a suitable
 # state from which to make a distribution change set.
 #
-#: aediff/diff.cc:65 aepatch/send.cc:556 aerevml/send.cc:236
+#: aediff/diff.cc:67 aepatch/send.cc:556 aerevml/send.cc:236
 msgid "bad patch send state"
 msgstr ""
 "Dieser Change ist im Status $state; er muß in einem späteren Status sein um "
@@ -2440,7 +2440,7 @@ msgstr ""
 #
 #       $File_Name      The name of the offending file.
 #
-#: aegis/aeip.cc:1022
+#: aegis/aeip.cc:1045
 msgid "build trashed $filename"
 msgstr ""
 "Die Source-Datei \"$filename\" scheint durch den Build verändert worden zu "
@@ -2499,7 +2499,7 @@ msgstr ""
 #
 #       $Number         The offending change number.
 #
-#: aefind/cmdline.y:1179 aegis/aecp.cc:232 aegis/aecp.cc:949 aegis/aed.cc:655
+#: aefind/cmdline.y:1180 aegis/aecp.cc:231 aegis/aecp.cc:951 aegis/aed.cc:655
 #: aegis/aentu.cc:196 libaegis/arglex/change.cc:226
 #: libaegis/arglex/change.cc:404
 msgid "change $number out of range"
@@ -2523,7 +2523,7 @@ msgstr ""
 # This message is issued when aedist --receive cancells a change because
 # the change is alreday present in the repository.  No action required.
 #
-#: aedist/receive.cc:718 aedist/receive.cc:2424 aepatch/receive.cc:1200
+#: aedist/receive.cc:718 aedist/receive.cc:2446 aepatch/receive.cc:1200
 msgid "change already present"
 msgstr ""
 "Dieser Change wurde abgebrochen, weil das Changeset bereits vorhanden ist."
@@ -2712,7 +2712,7 @@ msgstr "Content Transfer Encoding \"$name\" unbekannt"
 # This progress message is issued for aecp file when aecp completes
 # successfully.
 #
-#: aegis/aecp.cc:734 aegis/aecp.cc:2035
+#: aegis/aecp.cc:736 aegis/aecp.cc:2037
 msgid "copied $filename"
 msgstr "Datei \"$filename\" kopiert"
 
@@ -2728,7 +2728,7 @@ msgstr "Kopiere Baseline"
 # This progress message is issued when aeib creates a copy of
 # the baseline to construct the integration directory.
 #
-#: aegis/aeib.cc:1150
+#: aegis/aeib.cc:1146
 msgid "copy baseline to integration directory"
 msgstr "Kopiere Baseline ins Integrations-Verzeichnis"
 
@@ -2747,7 +2747,7 @@ msgstr "Kopiere Change Source-Dateien"
 #       $Number         The number of files copied.
 #                       (Optional)
 #
-#: aegis/aecp.cc:2079
+#: aegis/aecp.cc:2081
 msgid "copy file complete"
 msgstr "$number ${plural $number Dateien Datei} kopiert"
 
@@ -2823,7 +2823,7 @@ msgstr ""
 #
 #       $Name           The offending string.
 #
-#: aegis/aecp.cc:920 libaegis/help/date_unknown.cc:31
+#: aegis/aecp.cc:922 libaegis/help/date_unknown.cc:31
 msgid "date $name unknown"
 msgstr "der Text \"$name\" sieht nicht wie eine Datumsangabe aus"
 
@@ -2832,7 +2832,7 @@ msgstr "der Text \"$name\" sieht nicht wie eine Datumsangabe aus"
 # which is in the future.  Unlike times in the past, the answer could
 # change at a later date.  This is Damon Poole's "time safe" property.
 #
-#: aedist/send.cc:918 aegis/aecp.cc:402 aegis/aecp.cc:1234 aepatch/send.cc:515
+#: aedist/send.cc:918 aegis/aecp.cc:401 aegis/aecp.cc:1236 aepatch/send.cc:515
 #: aetar/send.cc:492 libaegis/change/identifi_sub/set_change.cc:71
 msgid "date in the future"
 msgstr ""
@@ -2862,7 +2862,7 @@ msgstr ""
 #
 #       $Number         The offending delta number.
 #
-#: aedist/send.cc:580 aegis/aecp.cc:184 aegis/aecp.cc:896 aegis/aedn.cc:169
+#: aedist/send.cc:580 aegis/aecp.cc:183 aegis/aecp.cc:898 aegis/aedn.cc:169
 #: aepatch/send.cc:335 aetar/send.cc:290
 #: libaegis/change/identifi_sub/cmd_lin_par.cc:83
 msgid "delta $number out of range"
@@ -2983,7 +2983,7 @@ msgstr "$number Fehler gefunden, es wurden keine Dateien für Diff bearbeitet"
 # differenced.  Can occur in both the 'being developed' and 'being
 # integrated' states.
 #
-#: aegis/aede.cc:584 aegis/aeip.cc:666
+#: aegis/aede.cc:584 aegis/aeip.cc:667
 msgid "diff required"
 msgstr ""
 "Dieser Change muß einen 'aegis -Diff' erfolgreich durchlaufen, bevor er den "
@@ -3013,7 +3013,7 @@ msgstr "Verzeichnis muß relativ sein (darf nicht mit / beginnen)"
 #       $Number         The number of files found in the directory
 #                       (Optional)
 #
-#: aegis/aecp.cc:1304 aegis/aecp.cc:1454 aegis/aecpu.cc:394 aegis/aemt.cc:416
+#: aegis/aecp.cc:1306 aegis/aecp.cc:1456 aegis/aecpu.cc:394 aegis/aemt.cc:416
 #: aegis/aemtu.cc:378 aegis/aemvu.cc:356 aegis/aenf.cc:530 aegis/aenfu.cc:386
 #: aegis/aentu.cc:404 aegis/aerm.cc:444 aegis/aermu.cc:419 aegis/aet.cc:934
 #: aegis/aet.cc:1802
@@ -3027,7 +3027,7 @@ msgstr ""
 # This progress message is issued when aeipass is deleting the
 # development directory and the old baseline directory.
 #
-#: aegis/aeip.cc:2185
+#: aegis/aeip.cc:2208
 msgid "discard old directories"
 msgstr "alte Verzeichnisse werden entfernt"
 
@@ -4107,7 +4107,7 @@ msgstr ""
 #
 # This progress message is issued when aeib complete successfully.
 #
-#: aegis/aeib.cc:1306
+#: aegis/aeib.cc:1302
 msgid "integrate begin complete"
 msgstr "Integration hat begonnen"
 
@@ -4130,7 +4130,7 @@ msgstr "Integration fehlgeschlagen, zurück zum Entwickler"
 #
 # This progress message is issued when aeipass completes successfully.
 #
-#: aegis/aeip.cc:2205
+#: aegis/aeip.cc:2228
 msgid "integrate pass complete"
 msgstr "Integration abgeschlossen"
 
@@ -4140,7 +4140,7 @@ msgstr "Integration abgeschlossen"
 #
 #       $Number         Number of fatal errors found.
 #
-#: aegis/aeip.cc:1269
+#: aegis/aeip.cc:1292
 msgid "integrate pass fail"
 msgstr "$number Fehler gefunden, dieser Change bleibt im Status '$state'"
 
@@ -4194,7 +4194,7 @@ msgstr ""
 # Some UNIX will allow to delete an active directory, and some will
 # not, so it is an error.
 #
-#: aegis/aeip.cc:1343
+#: aegis/aeip.cc:1366
 msgid "leave baseline"
 msgstr "Bitte verlassen Sie das Baseline-Verzeichnis"
 
@@ -4204,7 +4204,7 @@ msgstr "Bitte verlassen Sie das Baseline-Verzeichnis"
 # Some UNIX will allow to delete an active directory, and some will
 # not, so it is an error.
 #
-#: aegis/aeip.cc:1339
+#: aegis/aeip.cc:1362
 msgid "leave dev dir"
 msgstr "Bitte verlassen Sie das Bearbeitungs-Verzeichnis"
 
@@ -4214,7 +4214,7 @@ msgstr "Bitte verlassen Sie das Bearbeitungs-Verzeichnis"
 # Some UNIX will allow to delete an active directory, and some will
 # not, so it is an error.
 #
-#: aegis/aeibu.cc:283 aegis/aeif.cc:117 aegis/aeip.cc:1341
+#: aegis/aeibu.cc:283 aegis/aeif.cc:117 aegis/aeip.cc:1364
 msgid "leave int dir"
 msgstr "Bitte verlassen Sie das Integrations-Verzeichnis"
 
@@ -4222,7 +4222,7 @@ msgstr "Bitte verlassen Sie das Integrations-Verzeichnis"
 # This progress message is issued when aeib creates a virtual copy of
 # the baseline to construct the integration directory.
 #
-#: aegis/aeib.cc:1140
+#: aegis/aeib.cc:1136
 msgid "link baseline to integration directory"
 msgstr "Linke Baseline ins Integrations-Verzeichnis"
 
@@ -4289,7 +4289,7 @@ msgstr "Schleifenbedingung muss Typ Bool sein (angegeben wurde $name)"
 #
 #       $File_Name      The name of the offending file.
 #
-#: aefind/descend.cc:76 aegis/aeip.cc:286 aels/list.cc:138 libaegis/dir.cc:62
+#: aefind/descend.cc:77 aegis/aeip.cc:287 aels/list.cc:138 libaegis/dir.cc:62
 #: libaegis/dir_stack.cc:111
 msgid "lstat $filename: $errno"
 msgstr "lstat $filename: $errno"
@@ -4779,12 +4779,12 @@ msgstr ""
 #
 #       $File_Name      The offending file name.
 #
-#: aeannotate/annotate.cc:181 aediff/diff.cc:256 aegis/aecp.cc:559
-#: aegis/aecp.cc:1548 aegis/aecpu.cc:441 aegis/aed.cc:307 aegis/aed.cc:340
-#: aegis/aed.cc:1032 aegis/aefa.cc:117 aegis/aemt.cc:493 aegis/aemtu.cc:425
-#: aegis/aemv.cc:141 aegis/aemvu.cc:403 aegis/aenfu.cc:441 aegis/aentu.cc:459
-#: aegis/aerm.cc:535 aegis/aermu.cc:472 aegis/aet.cc:1022 aegis/aet.cc:1821
-#: libaegis/change/identifi_sub/file_revisio.cc:108
+#: aeannotate/annotate.cc:181 aediff/diff.cc:263 aediff/diff.cc:287
+#: aegis/aecp.cc:558 aegis/aecp.cc:1550 aegis/aecpu.cc:441 aegis/aed.cc:307
+#: aegis/aed.cc:340 aegis/aed.cc:1032 aegis/aefa.cc:117 aegis/aemt.cc:493
+#: aegis/aemtu.cc:425 aegis/aemv.cc:141 aegis/aemvu.cc:403 aegis/aenfu.cc:441
+#: aegis/aentu.cc:459 aegis/aerm.cc:535 aegis/aermu.cc:472 aegis/aet.cc:1022
+#: aegis/aet.cc:1821 libaegis/change/identifi_sub/file_revisio.cc:108
 #: libaegis/change/identifi_sub/filerevuuid.cc:87
 msgid "no $filename"
 msgstr "Datei \"$filename\" it unbekannt"
@@ -4810,10 +4810,10 @@ msgstr "Datei \"$filename\" ist nicht mehr in der Baseline"
 #       $Guess          The best guess as to the most possible filename
 #                       the user may have meant.
 #
-#: aediff/diff.cc:250 aegis/aecp.cc:555 aegis/aecp.cc:1544 aegis/aecpu.cc:438
-#: aegis/aefa.cc:112 aegis/aemt.cc:469 aegis/aemtu.cc:422 aegis/aemv.cc:131
-#: aegis/aemvu.cc:400 aegis/aenfu.cc:432 aegis/aentu.cc:450 aegis/aerm.cc:526
-#: aegis/aermu.cc:463 aegis/aet.cc:1013
+#: aediff/diff.cc:257 aediff/diff.cc:281 aegis/aecp.cc:554 aegis/aecp.cc:1546
+#: aegis/aecpu.cc:438 aegis/aefa.cc:112 aegis/aemt.cc:469 aegis/aemtu.cc:422
+#: aegis/aemv.cc:131 aegis/aemvu.cc:400 aegis/aenfu.cc:432 aegis/aentu.cc:450
+#: aegis/aerm.cc:526 aegis/aermu.cc:463 aegis/aet.cc:1013
 #: libaegis/change/identifi_sub/file_revisio.cc:104
 msgid "no $filename, closest is $guess"
 msgstr ""
@@ -4902,7 +4902,7 @@ msgstr ""
 #
 #       $Name           The offending delta name.
 #
-#: aegis/aecp.cc:416 aegis/aecp.cc:1248
+#: aegis/aecp.cc:415 aegis/aecp.cc:1250
 #: libaegis/change/history/delta_name/by.cc:90
 #: libaegis/change/history/delta_name/to_change.cc:90
 #: libaegis/project/delta2change.cc:57
@@ -4977,7 +4977,7 @@ msgstr ""
 #
 #       $Name           The name of the -Output option.
 #
-#: aegis/aecp.cc:516 aegis/aecp.cc:1415
+#: aegis/aecp.cc:515 aegis/aecp.cc:1417
 msgid "no dir with $name"
 msgstr "für die Option $name dürfen keine Verzeichnisse angegeben werden"
 
@@ -4985,7 +4985,7 @@ msgstr "für die Option $name dürfen keine Verzeichnisse angegeben werden"
 # This error message is issued when a command which requires file names
 # on the command line is not given any.
 #
-#: aeannotate/annotate.cc:762 aegis/aecp.cc:289 aegis/aecp.cc:1029
+#: aeannotate/annotate.cc:762 aegis/aecp.cc:288 aegis/aecp.cc:1031
 #: aegis/aecpu.cc:212 aegis/aecpu.cc:470 aegis/aefa.cc:217 aegis/aefa.cc:483
 #: aegis/aefa.cc:783 aegis/aemt.cc:247 aegis/aemtu.cc:204 aegis/aemtu.cc:454
 #: aegis/aemvu.cc:193 aegis/aenf.cc:304 aegis/aenfu.cc:216 aegis/aentu.cc:232
@@ -5023,11 +5023,25 @@ msgstr ""
 #       $Number         Number of fatal errors found.
 #                       (Optional)
 #
-#: aegis/aecp.cc:569 aegis/aecp.cc:1578
+#: aegis/aecp.cc:568 aegis/aecp.cc:1580
 msgid "no files copied"
 msgstr ""
 "$number ${plural $number fatale fataler} Fehler gefunden, es wurden keine "
 "Dateien in den Change kopiert"
+
+#
+# This error message is issued when an aediff command fails.  Errors are
+# printed out as they are found, but frequently errors happen together,
+# so the aediff command finds as many as possible before aborting.  This
+# error is emitted when it aborts.
+#
+#        $Number         Number of fatal errors found.
+#                        (Optional)
+#
+#: aediff/diff.cc:296
+#, fuzzy
+msgid "no files diffed"
+msgstr "found $number fatal error${plural $number s}, no files diffed"
 
 #
 # This error message is issued when an aecpu command fails.  Errors are
@@ -5305,7 +5319,7 @@ msgstr "Benutzer \"$user\" ist kein Integrator"
 # change which is in the being developed state, but the requesting user
 # is not the change's developer.
 #
-#: aegis/aeb.cc:258 aegis/aeclean.cc:441 aegis/aecp.cc:1212 aegis/aecpu.cc:256
+#: aegis/aeb.cc:258 aegis/aeclean.cc:441 aegis/aecp.cc:1214 aegis/aecpu.cc:256
 #: aegis/aed.cc:176 aegis/aed.cc:853 aegis/aedbu.cc:200 aegis/aede.cc:242
 #: aegis/aemt.cc:293 aegis/aemtu.cc:248 aegis/aemv.cc:456 aegis/aemvu.cc:237
 #: aegis/aenf.cc:377 aegis/aenfu.cc:262 aegis/aent.cc:298 aegis/aentu.cc:278
@@ -5330,7 +5344,7 @@ msgstr "Es muß immer mindestens einen Administrator geben"
 # is not the change's integrator.
 #
 #: aegis/aeb.cc:270 aegis/aed.cc:848 aegis/aeibu.cc:222 aegis/aeif.cc:135
-#: aegis/aeip.cc:485 aegis/aet.cc:777
+#: aegis/aeip.cc:486 aegis/aet.cc:777
 msgid "not integrator"
 msgstr ""
 "Benutzer \"$user\" ist nicht der Integrator, nur Benutzer \"$developer\" "
@@ -5614,7 +5628,7 @@ msgstr "Attribute geändert"
 #
 #       $File_Name      The name of the offending file.
 #
-#: aefind/descend.cc:134 aegis/aeip.cc:267 aels/list.cc:206
+#: aefind/descend.cc:135 aegis/aeip.cc:268 aels/list.cc:206
 #: aesubunit/subunit.cc:90 libaegis/dir.cc:88 libaegis/dir_stack.cc:208
 #: libaegis/gif/open.cc:81 libaegis/input/curl.cc:514
 #: libaegis/input/file.cc:152 libaegis/input/stdin.cc:71
@@ -5944,7 +5958,7 @@ msgstr "benötigt kein Argument"
 # fingerprints are absent, and restarting the integration will cause
 # them to be created.
 #
-#: aegis/aeip.cc:925
+#: aegis/aeip.cc:948
 msgid "restart integration after upgrade"
 msgstr ""
 "Es sollten keine Changes im Status $state sein, wenn eine neue Version von "
@@ -6045,7 +6059,7 @@ msgstr "setuid (User-Id setzen) $arg: $errno"
 #       $Number         The number of files actually given.
 #                       (Optional)
 #
-#: aegis/aecp.cc:337 aegis/aecp.cc:1105
+#: aegis/aecp.cc:336 aegis/aecp.cc:1107
 msgid "single file with -Output"
 msgstr ""
 "Genau eine Quell-Datei darf angegeben werden, wenn die -Output Option "
@@ -6110,7 +6124,7 @@ msgstr "die Standardausgabe"
 #
 #       $File_Name      The name of the offending file.
 #
-#: aefind/descend.cc:91 aefind/descend.cc:100 aels/list.cc:150
+#: aefind/descend.cc:92 aefind/descend.cc:101 aels/list.cc:150
 #: aels/list.cc:159 libaegis/aer/func/mtime.cc:124
 #: libaegis/aer/value/pstate.cc:89 libaegis/change/build/symlinks.cc:334
 #: libaegis/dir.cc:72 libaegis/dir_stack.cc:131 libaegis/dir_stack.cc:169
@@ -6329,7 +6343,7 @@ msgstr "der Name \"$name\" ist nicht definiert"
 # into the future.  Commonest sighting is when aeipass needs to sleep.
 # Also used as a debug message, only visable when DEBUG is defined.
 #
-#: aegis/aeip.cc:2145 libaegis/os/throttle.cc:71
+#: aegis/aeip.cc:2168 libaegis/os/throttle.cc:71
 msgid "throttling $number seconds"
 msgstr ""
 "Warte $number Sekunde${plural $number n}, damit die Änderungszeiten der "
@@ -6376,7 +6390,7 @@ msgstr ""
 # This error message is issued when too few files names are specified on
 # the command line.
 #
-#: aediff/diff.cc:213 aegis/aemv.cc:404
+#: aediff/diff.cc:215 aegis/aemv.cc:404
 msgid "too few files named"
 msgstr "Zu viele Dateien angegeben"
 
@@ -6386,7 +6400,7 @@ msgstr "Zu viele Dateien angegeben"
 #
 #       $File_Name      The name of the offending file.
 #
-#: aegis/aeb.cc:433 aegis/aecp.cc:1431 aegis/aecp.cc:1465 aegis/aecpu.cc:363
+#: aegis/aeb.cc:433 aegis/aecp.cc:1433 aegis/aecp.cc:1467 aegis/aecpu.cc:363
 #: aegis/aecpu.cc:406 aegis/aed.cc:610 aegis/aemt.cc:394 aegis/aemt.cc:428
 #: aegis/aemtu.cc:346 aegis/aemtu.cc:390 aegis/aemvu.cc:332 aegis/aemvu.cc:368
 #: aegis/aenf.cc:473 aegis/aenfu.cc:362 aegis/aenfu.cc:400 aegis/aent.cc:396
@@ -6930,7 +6944,7 @@ msgstr ""
 # This error message is issued when your search expression doesn't
 # do anything.
 #
-#: aefind/cmdline.y:528
+#: aefind/cmdline.y:529
 msgid "warning: expression has no side effects, assuming you meant -PRint"
 msgstr ""
 "Warnung: Ausdruck hat keine Nebeneffekte, es wird angenommen, daß -PRint "
@@ -6964,7 +6978,7 @@ msgstr "Warnung: Datei \"$filename\" muß gemerged werden"
 #       $Number         The number of seconds into the future.
 #                       (Optional)
 #
-#: aegis/aeip.cc:2170
+#: aegis/aeip.cc:2193
 msgid "warning: file times in future"
 msgstr ""
 "Warnung: Datei-Änderungszeiten reichen $number Sekunde${plural $number n} in "
@@ -7043,7 +7057,7 @@ msgstr ""
 # This warning is issued when a received file could have a Trojan horse
 # attack in it, but the use said to keep going.
 #
-#: aedist/receive.cc:2227 aepatch/receive.cc:1213
+#: aedist/receive.cc:2249 aepatch/receive.cc:1213
 msgid "warning: potential trojan, proceeding anyway"
 msgstr ""
 "Warnung: dieser Change enthält Dateien, die einen Trojaner-Angriff "
@@ -7054,7 +7068,7 @@ msgstr ""
 # This warning is issued when a received file could have a Trojan horse
 # attack in it.
 #
-#: aedist/receive.cc:2284 aedist/receive.cc:2496 aepatch/receive.cc:1231
+#: aedist/receive.cc:2306 aedist/receive.cc:2518 aepatch/receive.cc:1231
 #: aepatch/receive.cc:1290
 msgid "warning: potential trojan, review before completing development"
 msgstr ""

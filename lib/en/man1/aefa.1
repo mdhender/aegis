@@ -1,6 +1,7 @@
 '\" t
 .\"     aegis - project change supervisor
 .\"     Copyright (C) 2004, 2006-2008 Peter Miller
+.\"     Copyright (C) 2008 Walter Franzini
 .\"
 .\"     This program is free software; you can redistribute it and/or modify
 .\"     it under the terms of the GNU General Public License as published by
@@ -124,6 +125,13 @@ change sets.  The \fIaetar\fP and \fIaerevml\fP commands work similarly.
 Change sets which contain \f[I]only\fP thee files will be omitted
 from the \f[I]aedist \-inventory\fP output.
 Think of it as a "local only" flag.
+.TP 8n
+aeipass-options:assign-file-uuid
+boolean.  If false, \fIaeipass\fP will not assign a fresh UUID to this
+file.  This flag is set by \fIaedist\fP -rec if the action associated
+with the file is a create and the file is missing the UUID.  This
+behaviour is needed to prevent the effect of having different UUIDs
+assigned to the same file in different repositories.
 .SH OPTIONS
 The following options are understood:
 .so o_baserel.so

@@ -39,6 +39,7 @@
 static void
 merge_uconf(uconf_ty *data, uconf_ty *tmp)
 {
+    trace(("%s\n", __PRETTY_FUNCTION__));
     if (!data->default_project_name && tmp->default_project_name)
     {
 	data->default_project_name = str_copy(tmp->default_project_name);
@@ -176,6 +177,7 @@ merge_uconf(uconf_ty *data, uconf_ty *tmp)
 static void
 read_and_merge(uconf_ty *data, const nstring &filename)
 {
+    trace(("%s\n", __PRETTY_FUNCTION__));
     uconf_ty	    *uconf_new;
 
     //
@@ -197,6 +199,7 @@ read_and_merge(uconf_ty *data, const nstring &filename)
 static void
 fix_default_change(uconf_ty *uconf_data)
 {
+    trace(("%s\n", __PRETTY_FUNCTION__));
     if
     (
 	(uconf_data->mask & uconf_default_change_number_mask)

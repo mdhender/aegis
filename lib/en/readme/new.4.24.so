@@ -1,6 +1,7 @@
 .\"
 .\" aegis - project change supervisor
 .\" Copyright (C) 2008 Peter Miller
+.\" Copyright (C) 2008 Walter Franzini
 .\"
 .\" This program is free software; you can redistribute it and/or modify
 .\" it under the terms of the GNU General Public License as published by
@@ -26,4 +27,117 @@
 .\" .\" Change NN
 .\" ------------------------------------------------------------------------
 .\" Place new text above this line.
+.SS Version 4.24.1 (24-Sep-2008)
+.PP
+.B Security:
+[ #2079025 ] This update fix two security problems discovered by the
+Debian crew (Debian #496400 and #496402)
+You are encouraged to upgrade.
+.PP
+\f[B]Removed functionalities:\f[R]
+In response to one of the two above security problem, the aegis.cgi
+program has been removed.
+.PP
+.if n *
+.if t \(bu
+.\" aegis.4.24.C202
+Test 222 has been improved to cope with some different ways SVN stores
+revision information, remaining backwards compatible.
+.PP
+.if n *
+.if t \(bu
+.\" aegis.4.24.D003
+A bug in the distributed development machinery has been fixed: it no
+longer add the file UUID to created files without an UUID in the
+remote repository.
+This prevents the existence of the same file with different
+UUIDs in different repositories.
+.PP
+.if n *
+.if t \(bu
+.\" change 1001
+[ #1942614 ] Some build problem discovered by the Debian crew has been
+fixed.
+Specifically: improve 'make clean' (Debian bug 442482), add a
+minor man-page (Debian patch), make test in ae_diff2htm portable
+(Debian bug 464484), fix whoami test in etc/test.sh (Debian bug
+393624), add shell magic to ae-cvs-ci (Debian patch).
+.PP
+.if n *
+.if t \(bu
+.\" change 507
+The aediff command now behave as expected when invoked for a file
+that, due to a bug in aeipass, is present with two different UUIDs in
+the repository.
+Previously it used to generate a diff between the empty file and the
+second revision of the file.
+.PP
+.if n *
+.if t \(bu
+.\" aegis.4.24.D013
+.\" Change 189
+A bug has been fixed in aefind, it no longer segfaults when
+given the -baseline option.
+.PP
+.if n *
+.if t \(bu
+.\" aegis.4.24.D012
+.\" Change 177
+A bug has been fixed in aefinish: it no longer segfault if a branch
+was to be finished and it contained a transparent file.
+.PP
+.if n *
+.if t \(bu
+.\" aegis.4.24.D011
+.\" Change 170
+A bug has been fixed in the aecp -ind -output - option, it no
+longer tries to set the permission mode of stdout.
+.PP
+.if n *
+.if t \(bu
+.\" aegis.4.24.D010
+.\" Change 178
+A bug has been fixed in aeib, it no longer complains that
+transparent files have been tampered with.
+.PP
+.if n *
+.if t \(bu
+.\" aegis.4.24.D007
+.\" Change 517
+A couple of memory leaks introduced with the time safe work has
+been plugged.
+.PP
+.if n *
+.if t \(bu
+.\" aegis.4.24.D015
+.\" Change 503
+The makefile has been changed to use DESTDIR (advocated by GNU).
+.PP
+.if n *
+.if t \(bu
+.\" aegis.4.24.D014
+.\" Change 1000
+A test script has been improved to work with older bzip2.
+.PP
+.if n *
+.if t \(bu
+.\" aegis.4.24.D009
+.\" Change 551
+Small improvement to test_funcs, reintroduce the chown
+invocation for the directory under $work/.
+.PP
+.if n *
+.if t \(bu
+.\" aegis.4.24.D008
+.\" Change 550
+This change set modify the aefinish command to jump the project
+home path instead of the user home directory (since it may be
+inaccessible)
+.PP
+.if n *
+.if t \(bu
+.\" aegis.4.24.D005
+.\" Change 12
+.\" walter, Sat Aug 16 16:08:30 2008, aegis.spec bug
+This aegis.spec file (used for RPM builds) has been improved.
 .SS Version 4.24 (09-Mar-2008)

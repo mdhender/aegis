@@ -1,7 +1,7 @@
 .\"
 .\"	aegis - project change supervisor
 .\"	Copyright (C) 2006, 2008 Peter Miller
-.\"	Copyright (C) 2007, 2008 Walter Franzini
+.\"	Copyright (C) 2007 Walter Franzini
 .\"
 .\"	This program is free software; you can redistribute it and/or modify
 .\"	it under the terms of the GNU General Public License as published by
@@ -52,11 +52,11 @@ like normal derived files.
 .PP
 .if n *
 .if t \(bu
-[ 1697199 ] The change_pconf_get function no longer looks for
-historical versions of files, if it can help it.  This makes many
-things go faster and solved the problem of configuration fields
-redefinition.  While this change does not make Aegis more time safe,
-it cures one of the symptoms.
+The change_pconf_get function no longer looks for historical versions
+of files, if it can help it.  This makes many things go faster and
+solved the problem of configuration fields redefinition.  While this
+change does not make Aegis more time safe, it cures one of the
+symptoms.
 . \"
 . \" 4.22.C341
 . \"
@@ -70,7 +70,7 @@ Fixed test 222 to work with recent releases of subversion.
 .PP
 .if n *
 .if t \(bu
-The \f[I]aepconf\f[P](5) man page has been improved.
+The \f[I]aepconf\f[P](5) has been improved.
 . \"
 . \" 4.22.C624
 . \"
@@ -80,6 +80,15 @@ The \f[I]aepconf\f[P](5) man page has been improved.
 [ Debian 435422 ] The reference manual was wrongly referring to
 -Page-Headings instead of -Page-Header.  The documentation has been
 updated to match the source code.
+. \"
+. \" 4.22.C561
+. \"
+.PP
+.if n *
+.if t \(bu
+The test/02/t0257a-walt.sh script has been back-ported from the
+development branch (4.23) to prevent bug #...... to appear in the
+stable branch.
 . \"
 . \" 4.22.C578
 . \"
@@ -94,7 +103,7 @@ preference when copying a "removed"file.
 .PP
 .if n *
 .if t \(bu
-[ 1704100 ] A bug has been fixed that caused \f[I]aecp\f[P](1) -delta
+[ 1685304 ] A bug has been fixed that caused \f[I]aecp\f[P](1) -delta
 X to copy in a change also a file with the old name of a file
 \f[I]aemv\f[P](1)ed before delta X.
 . \"
@@ -111,9 +120,8 @@ correct permissions.
 .PP
 .if n *
 .if t \(bu
-[ 1701701 ] A bug has been fixed in the \f[I]aetar\f[P](1) command, it
-no longer creates tarballs that cause BSD and other tar to complain
-like this:
+A bug has been fixed in the \f[I]aetar\f[P](1) command, it no longer
+creates tarballs that cause BSD tar to complain like this:
 tar: End of archive volume 1 reached
 tar: Unexpected EOF on archive file
 . \"

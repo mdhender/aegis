@@ -594,7 +594,7 @@ if test $? -ne 0; then no_result; fi
 find $workchan -type f -print | LANG=C sort > $work/list
 if test $? -ne 0; then fail; fi
 
-diff -u ok $work/list
+diff ok $work/list
 if test $? -ne 0; then fail; fi
 
 #

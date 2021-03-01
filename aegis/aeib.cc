@@ -1046,13 +1046,9 @@ integrate_begin_main(void)
 
         case file_action_insulate:
             assert(0);
-            break;
+            // fall through...
 
         case file_action_transparent:
-            if (change_was_a_branch(cp))
-                continue;
-            break;
-
         case file_action_remove:
             continue;
         }

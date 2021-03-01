@@ -21,13 +21,14 @@
 #include <common/ac/sys/types.h>
 #include <common/ac/sys/stat.h>
 
-#include <aefind/cmdline.h>
-#include <aefind/descend.h>
+#include <common/str_list.h>
+#include <common/trace.h>
 #include <libaegis/glue.h>
 #include <libaegis/os.h>
-#include <common/str_list.h>
 #include <libaegis/sub.h>
-#include <common/trace.h>
+
+#include <aefind/cmdline.h>
+#include <aefind/descend.h>
 #include <aefind/tree.h>
 
 
@@ -153,6 +154,7 @@ descend(string_ty *path, int resolve, descend_callback_ty callback, void *arg)
     resolved_path = stat_stack(path, &st);
     if ((st.st_mode & S_IFMT) == S_IFDIR)
     {
+        trace(("mark\n"));
 	callback
 	(
 	    arg,
@@ -162,6 +164,7 @@ descend(string_ty *path, int resolve, descend_callback_ty callback, void *arg)
 	    resolved_path,
 	    &st
 	);
+        trace(("mark\n"));
 	string_list_ty wl;
 	readdir_stack(path, &wl);
 	for (j = 0; j < wl.nstrings; ++j)
@@ -171,6 +174,7 @@ descend(string_ty *path, int resolve, descend_callback_ty callback, void *arg)
 		descend(s, resolve, callback, arg);
 	    str_free(s);
 	}
+        trace(("mark\n"));
 	callback
 	(
 	    arg,
@@ -183,6 +187,7 @@ descend(string_ty *path, int resolve, descend_callback_ty callback, void *arg)
     }
     else
     {
+        trace(("mark\n"));
 	callback
 	(
     	    arg,

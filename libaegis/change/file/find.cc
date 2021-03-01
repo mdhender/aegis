@@ -173,9 +173,15 @@ change_file_find(change::pointer cp, const nstring &file_name,
 
 	next:
 	if (as_view_path == view_path_first)
-	    break;
-	if (cp2->number == TRUNK_CHANGE_NUMBER)
-	    break;
+        {
+            change_free(cp2);
+            break;
+        }
+        if (cp2->number == TRUNK_CHANGE_NUMBER)
+        {
+            change_free(cp2);
+            break;
+        }
         if
         (
             limit != TIME_NOT_SET
@@ -184,7 +190,10 @@ change_file_find(change::pointer cp, const nstring &file_name,
         &&
             cp2->pp->is_a_trunk()
         )
+        {
+            change_free(cp2);
             break;
+        }
 
         change::pointer next_change = view_path_next_change(cp2, limit);
         change_free(cp2);

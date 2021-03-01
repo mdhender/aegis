@@ -209,7 +209,7 @@ AC_CHECK_LIB(crypt, crypt)
 AC_CHECK_LIB(magic, magic_file, ,
   [
     AC_MSG_RESULT([
-        You make like to have the file magic number library installed in
+        You may like to have the file magic number library installed in
         order to build Aegis.  This will result is superior Content-Type
         information being inserted at several points in the code.
         Homepage: http://www.darwinsys.com/file/])
@@ -260,7 +260,7 @@ dnl
 AC_CHECK_LIB(curl, curl_multi_perform, [],
   [
     AC_MSG_RESULT([
-        You make like to have the multi-protocol file transfer library
+        You may like to have the multi-protocol file transfer library
         installed in order to build Aegis.
         Homepage: http://curl.haxx.se/])
     OK=no

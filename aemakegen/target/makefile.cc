@@ -176,10 +176,9 @@ target_makefile::begin()
     printf("# On a network, this would only be shared between machines\n");
     printf("# of identical cpu-hw-os flavour.  It can be read-only.\n");
     printf("#\n");
-    printf("# The $(DESTDIR) is for Debian packaging.\n");
-    printf("# The $(RPM_BUILD_ROOT) is for RPM packaging.\n");
+    printf("# The $(DESTDIR) is for packaging.\n");
     printf("#\n");
-    printf("bindir = $(DESTDIR)$(RPM_BUILD_ROOT)@bindir@\n");
+    printf("bindir = $(DESTDIR)@bindir@\n");
     printf("\n");
     printf("#\n");
     printf("# where to put the manuals\n");
@@ -187,10 +186,9 @@ target_makefile::begin()
     printf("# On a network, this would be shared between all machines\n");
     printf("# on the network.  It can be read-only.\n");
     printf("#\n");
-    printf("# The $(DESTDIR) is for Debian packaging.\n");
-    printf("# The $(RPM_BUILD_ROOT) is for RPM packaging.\n");
+    printf("# The $(DESTDIR) is for packaging.\n");
     printf("#\n");
-    printf("mandir = $(DESTDIR)$(RPM_BUILD_ROOT)@mandir@\n");
+    printf("mandir = $(DESTDIR)@mandir@\n");
 
     if (seen_datadir)
     {
@@ -201,12 +199,22 @@ target_makefile::begin()
         printf("# On a network, this would be shared between all\n");
         printf("# machines on the network.  It can be read-only.\n");
         printf("#\n");
-        printf("# The $(DESTDIR) is for Debian packaging.\n");
-        printf("# The $(RPM_BUILD_ROOT) is for RPM packaging.\n");
+        printf("# The $(DESTDIR) is for packaging.\n");
         printf("#\n");
-        printf("DATADIR = $(DESTDIR)$(RPM_BUILD_ROOT)@datadir@\n");
-        printf("DATAROOTDIR = $(DESTDIR)$(RPM_BUILD_ROOT)@datarootdir@\n");
+        printf("DATADIR = $(DESTDIR)@datadir@\n");
     }
+    else
+        printf("\n# define this to silence ./configure warning\n");
+    //
+    // In order to stop ./configure complaining about
+    //
+    //     config.status: WARNING: Makefile.in seems to ignore the
+    //     --datarootdir setting
+    //
+    // it is necessary to define this *always*, not just when you use
+    // the @datadir@, to get the message to go away.  Sheesh.
+    //
+    printf("DATAROOTDIR = $(DESTDIR)@datarootdir@\n");
 
     if (seen_libdir)
     {
@@ -218,10 +226,9 @@ target_makefile::begin()
         printf("# machines of identical architecture.  It can be\n");
         printf("# read-only.\n");
         printf("#\n");
-        printf("# The $(DESTDIR) is for Debian packaging.\n");
-        printf("# The $(RPM_BUILD_ROOT) is for RPM packaging.\n");
+        printf("# The $(DESTDIR) is for packaging.\n");
         printf("#\n");
-        printf("LIBDIR = $(DESTDIR)$(RPM_BUILD_ROOT)@libdir@\n");
+        printf("LIBDIR = $(DESTDIR)@libdir@\n");
     }
 
     if (seen_yacc)
@@ -654,7 +661,7 @@ target_makefile::process(const nstring &a_fn, bool is_a_script)
         all_bin.push_back_unique(bin_name);
         clean_files.push_back_unique(bin_name);
 
-        nstring install_name = "$(RPM_BUILD_ROOT)$(bindir)/$(PROGRAM_PREFIX)"
+        nstring install_name = "$(bindir)/$(PROGRAM_PREFIX)"
             + name + "$(PROGRAM_SUFFIX)" + exeext;
         printf("\n");
         printf("%s: %s .bindir\n", install_name.c_str(), bin_name.c_str());
@@ -861,8 +868,10 @@ target_makefile::end()
 
     printf("\n");
     test_files.sort();
-    printf("sure: %s\n", test_files.unsplit().c_str());
-    printf("\t@echo Passed All Tests\n");
+    printf("sure:");
+    if (!test_files.empty())
+        printf(" %s", test_files.unsplit().c_str());
+    printf("\n\t@echo Passed All Tests\n");
 
     printf("\n");
     printf("clean-obj:\n");

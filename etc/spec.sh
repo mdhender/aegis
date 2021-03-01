@@ -19,44 +19,39 @@
 #	<http://www.gnu.org/licenses/>.
 #
 version=${version-0.0.0}
-echo '#'
-echo '# This file is GENERATED.  Please DO NOT send the maintainer'
-echo '# patches to this file.  If there is a problemn with this file,'
-echo '# fix etc/spec.sh, and set the etc/spec.sh patch to the maintainer.'
-echo '#'
-echo 'Summary: project change supervisor'
-echo 'Name: aegis'
-echo "Version: ${version}"
-echo 'Release: 1'
-echo 'License: GPL'
-echo 'Group: Development/Version Control'
-echo "Source: http://www.canb.auug.org.au/~millerp/aegis-${version}.tar.gz"
-echo 'URL: http://www.canb.auug.org.au/~millerp/aegis.html'
-echo 'BuildRoot: /tmp/aegis-build-root'
-echo 'Icon: aegis.xpm'
+# Name and date will refer to integration, which may be appropriate.
+date_str=`date +"%a %b %d %Y"`
+name_str=`aesub '${User email}'`
+cat <<fubar
+#
+# This file is GENERATED.  Please DO NOT send the maintainer
+# patches to this file.  If there is a problemn with this file,
+# fix etc/spec.sh, and set the etc/spec.sh patch to the maintainer.
+#
+# Users of this spec file are strongly advised to change the Release
+# field to something meaningful in their context.
+#
+Summary: project change supervisor
+Name: aegis
+Version: ${version}
+Release: 1
+License: GPL
+Group: Development/Version Control
+Source: http://aegis.sourceforge.net/aegis-${version}.tar.gz
+URL: http://aegis.sourceforge.net
+BuildRoot: %{_tmppath}/%{name}-%{version}-%{release}-root
 
 #
 # Build-time prerequisites, things you have to have installed so that
 # this package will build successfully, correctly and completely.
 #
-# We want -lmagic, too, but it isn't an RPM package yet.  It will be
-# file-devel or magic-devel, eventually.
+# Note: on RedHat-like systems, libmagic stuff is in the "file" package.
+# e2fsprogs is used for UUID.
 #
-echo 'BuildPrereq: bison, curl-devel, diffutils, gawk, gettext >= 0.11.4'
-echo 'BuildPrereq: groff >= 1.15, perl, libxml2-devel >= 1.8.17, tk'
-echo 'BuildPrereq: zlib-devel, bzip2-devel'
+BuildPrereq: bison, curl-devel, diffutils, gawk, gettext >= 0.11.4
+BuildPrereq: groff >= 1.15, perl, libxml2-devel >= 1.8.17, tk
+BuildPrereq: zlib-devel, bzip2-devel, e2fsprogs-devel, file >= 4
 
-prefix=/usr
-#
-# RPM only has install-time relocatable packages.  It has no support for
-# build-time relocatable packages.  Therefore, we must NOT specify a Spec
-# prefix, or the installed locations will not match the built locations.
-#
-#echo "Prefix: $prefix"
-
-echo ''
-
-cat << 'fubar'
 %description
 Aegis is a transaction-based software configuration management system.
 It provides a framework within which a team of developers may work
@@ -79,236 +74,71 @@ Group: Development/Version Control
 Aegis documentation in PostScript format.
 
 %prep
+
+%setup
+
+%build
+%configure --sysconfdir=/etc --prefix=%{_prefix} --mandir=%{_mandir} \
+  --with-nlsdir=%{_datadir}/locale
+make
+
+%install
+rm -rf %{buildroot}
+make DESTDIR=%{buildroot} install
+# If rpmbuild does not strip your binaries, consider adding
+#   INSTALL_PROGRAM='/usr/bin/install -s'
+# to the above arguments to "make".
+
+#
+# See the comment at the top of this file.  If you don't like
+# the file attributes, or there is a file missing, DO NOT send
+# the maintainer a patch to this file.  This file is GENERATED.
+# If you want different attributes, fix the etc/spec.sh file,
+# and send THAT patch to the maintainer.
+#
+
+%files
+%defattr (-,root,root)
+%_prefix/bin/*
 fubar
+for FILE in $suidbins
+do
+echo "%attr(4755,root,bin) %_prefix/bin/$FILE"
+done
+cat <<fubar
+%_prefix/share/locale/*/LC_MESSAGES/*
+%_prefix/share/aegis/*
+%attr(0644,root,root) %_prefix/share/aegis/icon/*
+%attr(0755,root,bin) /etc/profile.d/aegis.*
+%attr(0755,root,bin) %dir %_prefix/com/aegis
+%_mandir/man1/*
+%_mandir/man5/*
+
+%files txtdocs
+%_datadir/aegis/*/*.txt
+
+%files psdocs
+%_datadir/aegis/*/*.ps
+
 
 #
-# Following the FHS we must install man pages under /usr/share/man.
-# We use that directory if it already exists, otherwise the old Aegis
-# behaviour (/usr/man) is preserved.
-# Note: this apply to the system used to create the spec file.
+# This next bit is done because when using Aegis with NFS, these
+# files must have EXACTLY the same uid and gid on all systems.
+# Unfortunately, RPM won't let you give exact numeric uids and gids,
+# and the names for low-numbered uids and gids are essentially
+# random across the various Unix implementations.  Sigh.
 #
-if test -d $prefix/share/man
-then
-    mandir=$prefix/share/man
-else
-    mandir=$prefix/man
-fi
+%post
+chown -R 3 %_prefix/com/aegis && chgrp -R 3 %_prefix/com/aegis
 
-echo '%setup'
-echo ''
-echo '%build'
-echo "%configure --sysconfdir=/etc --prefix=$prefix --mandir=$mandir"
-echo 'make'
-echo ''
-echo '%install'
-echo 'make RPM_BUILD_ROOT=$RPM_BUILD_ROOT install'
+%clean
+rm -rf %{buildroot}
 
-#
-# remember things for the %files section
-#
-files_ro="$prefix/share/aegis/icon/64x64.png \
-    $prefix/share/aegis/icon/aegis.gif \
-    $prefix/share/aegis/icon/bigger.png \
-    $prefix/share/aegis/icon/rss.gif"
-files_rx=
-txtdocs=
-psdocs=
-dirs="$prefix/com/aegis $prefix/share/aegis/icon"
-name=`echo dir_${prefix} | sed 's/[^a-zA-Z0-9]/_/g'`
-eval "${name}=yes"
-eval "${name}_share=yes"
-eval "${name}_lib=yes"
-eval "${name}_com=yes"
-eval "${name}_man=yes"
-eval "${name}_man_man1=yes"
-eval "${name}_man_man5=yes"
+%changelog
+* ${date_str} ${name_str} ${version}-1
+- Update to ${version}
 
-remember_prog()
-{
-	name=`echo ${1} | sed 's/[^a-zA-Z0-9]/_/g'`
-	if eval "test \"\${${name}-no}\" != yes"
-	then
-		eval "${name}=yes"
-		files_rx="$files_rx $prefix/bin/${1}"
-	fi
-}
-remember_dir()
-{
-	case "${1}" in
-	/)
-		;;
-	*)
-		remember_dir `dirname ${1}`
-
-		name=`echo dir_${1} | sed 's/[^a-zA-Z0-9]/_/g'`
-		if eval "test \"\${${name}-no}\" != yes"
-		then
-			eval "${name}=yes"
-			dirs="$dirs ${1}"
-		fi
-		;;
-	esac
-}
-
-for file in $*
-do
-	case $file in
-	*.in)
-		file=`echo $file | sed 's|[.]in$||'`
-		;;
-	esac
-
-	case $file in
-
-	aefp/* | etc/* | common/* | fmtgen/* | \
-	fstrcmp/* | libaegis/* | test/* | test_* | cklinlen/* | \
-	aemanifest/* | aemakefile/* )
-		;;
-
-	*/main.cc)
-		dir=`echo $file | sed 's|/.*||'`
-		remember_prog $dir
-		;;
-
-	script/aegis.synpic | script/ae-symlinks)
-		;;
-
-	script/*)
-		prog=`echo $file | sed 's|.*/||'`
-		remember_prog $prog
-		;;
-
-	lib/*/LC_MESSAGES/libaegis.po)
-		;;
-
-	lib/*.po)
-		stem=`echo $file | sed 's|^lib/\(.*\)\.po$|\1|'`
-		dst="$prefix/lib/aegis/$stem.mo"
-		files_ro="$files_ro $dst"
-		remember_dir `dirname $dst`
-		;;
-
-	lib/*/*/*.so | lib/*/*/*.bib | lib/*/*/*.pic)
-		;;
-
-	lib/*.uue )
-		;;
-
-	lib/*/man?/*)
-		# Some versions of RPM gzip man pages for free.  This is
-		# a pain in the behind.  Use a pattern to find them.  Sigh.
-		stem=`echo $file | sed 's|^lib/||'`
-		dst="$prefix/share/aegis/${stem}*"
-		files_ro="$files_ro $dst"
-		remember_dir `dirname $dst`
-
-		case $file in
-		lib/en/*)
-			stem2=`echo $file | sed 's|^lib/en/||'`
-			dst="$mandir/${stem2}*"
-			files_ro="$files_ro $dst"
-			remember_dir `dirname $dst`
-			;;
-		esac
-		;;
-
-	lib/*/*/main.*)
-		stem=`echo $file | sed 's|^lib/\(.*\)/main.*$|\1|'`
-		psdocs="$psdocs $prefix/share/aegis/$stem.ps"
-		txtdocs="$txtdocs $prefix/share/aegis/$stem.txt"
-		;;
-
-	lib/*.sh)
-		rest=`echo $file | sed 's|^lib/||'`
-		dst="$prefix/share/aegis/$rest"
-		files_rx="$files_rx $dst"
-		remember_dir `dirname $dst`
-		;;
-
-	lib/cshrc.in | lib/profile.in | lib/cshrc | lib/profile )
-		rest=`echo $file | sed -e 's|^lib/||' -e 's|\.in$||'`
-		dst="$prefix/share/aegis/$rest"
-		files_rx="$files_rx $dst"
-		remember_dir `dirname $dst`
-		;;
-
-	lib/*)
-		rest=`echo $file | sed 's|^lib/||'`
-		dst="$prefix/share/aegis/$rest"
-		files_ro="$files_ro $dst"
-		remember_dir `dirname $dst`
-		;;
-
-	*)
-		;;
-	esac
-done
-
-grumble()
-{
-	echo '#'
-	echo "# See the comment at the top of this file.  If you don't like"
-	echo '# the file attributes, or there is a file missing, DO NOT send'
-	echo '# the maintainer a patch to this file.  This file is GENERATED.'
-	echo '# If you want different attributes, fix the etc/spec.sh file,'
-	echo '# and send THAT patch to the maintainer.'
-	echo '#'
-}
-
-echo ''
-grumble
-echo '%files'
-for file in $dirs
-do
-	echo "%attr(0755,root,bin) %dir $file"
-done
-for file in $files_rx
-do
-	case $file in
-	*/bin/aegis | */bin/aeimport | */bin/aelock)
-		echo "%attr(4755,root,bin) $file"
-		;;
-	*)
-		echo "%attr(0755,root,bin) $file"
-		;;
-	esac
-done
-for file in $files_ro
-do
-	echo "%attr(0644,root,bin) $file"
-done
-echo "%attr(0755,root,bin) /etc/profile.d/aegis.sh"
-echo "%attr(0755,root,bin) /etc/profile.d/aegis.csh"
-
-echo ''
-grumble
-echo '%files txtdocs'
-echo "%attr(0755,root,bin) %dir $prefix/share/aegis"
-for file in $txtdocs
-do
-	echo "%attr(0644,root,bin) $file"
-done
-
-echo ''
-grumble
-echo '%files psdocs'
-echo "%attr(0755,root,bin) %dir $prefix/share/aegis"
-for file in $psdocs
-do
-	echo "%attr(0644,root,bin) $file"
-done
-
-echo ''
-echo '#'
-echo '# This next bit is done because when using Aegis with NFS, these'
-echo '# files must have EXACTLY the same uid and gid on all systems.'
-echo "# Unfortunately, RPM won't let you give exact numeric uids and gids,"
-echo '# and the names for low-numbered uids and gids are essentially'
-echo '# random across the various Unix implementations.  Sigh.'
-echo '#'
-echo '%post'
-echo "chown -R 3 $prefix/com/aegis && chgrp -R 3 $prefix/com/aegis"
-
-echo ''
-echo '%clean'
-echo 'rm -rf $RPM_BUILD_ROOT'
+* Thu Apr 03 2008 Ralph A. Smith <smithra@users.sourceforge.net> 4.24-0
+- Rationalized spec file to emulate RedHat practices.
+- See the Aegis project website for prior history.
+fubar

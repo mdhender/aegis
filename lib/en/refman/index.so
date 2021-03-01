@@ -190,6 +190,13 @@ T}	T{
 .ad l
 aede-policy - check change set is ready for aede
 T}
+ae_diff2htm(1)	\*[Page*Of*ae_diff2htm(1)]	T{
+.ad r
+
+T}	T{
+.ad l
+ae diff2htm - wraps the diff2html command
+T}
 aediff(1)	\*[Page*Of*aediff(1)]	T{
 .ad r
 
@@ -1226,6 +1233,13 @@ T}	T{
 .ad l
 color by change state
 T}
+ae_diff2htm(1)	\*[Page*Of*ae_diff2htm(1)]	T{
+.ad r
+ae diff2htm - wraps the diff2html
+T}	T{
+.ad l
+command
+T}
 aeibu(1)	\*[Page*Of*aeibu(1)]	T{
 .ad r
 aegis -Integrate Begin Undo - reverse the aeib
@@ -1519,6 +1533,20 @@ aegis -Develop End - complete
 T}	T{
 .ad l
 development of a change
+T}
+ae_diff2htm(1)	\*[Page*Of*ae_diff2htm(1)]	T{
+.ad r
+ae diff2htm - wraps the
+T}	T{
+.ad l
+diff2html command
+T}
+ae_diff2htm(1)	\*[Page*Of*ae_diff2htm(1)]	T{
+.ad r
+ae
+T}	T{
+.ad l
+diff2htm - wraps the diff2html command
 T}
 aed(1)	\*[Page*Of*aed(1)]	T{
 .ad r
@@ -2296,6 +2324,20 @@ aegis locks -
 T}	T{
 .ad l
 how locking works, and which commands use them
+T}
+ae_diff2htm(1)	\*[Page*Of*ae_diff2htm(1)]	T{
+.ad r
+ae diff2htm - wraps the diff2
+T}	T{
+.ad l
+html command
+T}
+ae_diff2htm(1)	\*[Page*Of*ae_diff2htm(1)]	T{
+.ad r
+ae diff2
+T}	T{
+.ad l
+htm - wraps the diff2html command
 T}
 aeimport(1)	\*[Page*Of*aeimport(1)]	T{
 .ad r
@@ -4354,6 +4396,13 @@ aegis locks - how locking
 T}	T{
 .ad l
 works, and which commands use them
+T}
+ae_diff2htm(1)	\*[Page*Of*ae_diff2htm(1)]	T{
+.ad r
+ae diff2htm -
+T}	T{
+.ad l
+wraps the diff2html command
 T}
 aexml(1)	\*[Page*Of*aexml(1)]	T{
 .ad r
